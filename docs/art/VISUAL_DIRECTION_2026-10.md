@@ -3254,3 +3254,7 @@ art.
 - **Earlier review evidence** (the study sheets, the faction direction
   reviews' captures) still shows plates; the review scripts no longer
   capture four players of one faction.
+
+The faction-styled naval units of every faction (bead `pulp_wars-w5j.2`, not live yet: the ships keep the shared art until `pulp_wars-w5j.3`) are described in [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md).
+
+The Steampunk Dwarf faction's direction and production art, its naval set included (bead `pulp_wars-78i.5`, not live yet), is described in [factions/DWARF.md](factions/DWARF.md).

@@ -1,0 +1,36 @@
+{
+  "id": "brass-titan-a-key-b",
+  "jobId": "b43443f3-9c30-4c23-a6c0-601f61253793",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-brass-titan",
+    "subject": "UNIT:DWARF:JUGGERNAUT",
+    "faction": "DWARF",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 78704,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: a classic wind-up toy key of bright copper sticking out of its back behind the right shoulder: a short shaft with a flat round handle with two round holes, like a clock key. Do not change anything else: keep both copper smokestacks with their white steam, the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: a classic wind-up toy key of bright copper sticking out of its back behind the right shoulder: a short shaft with a flat round handle with two round holes, like a clock key. Do not change anything else: keep both copper smokestacks with their white steam, the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: a classic wind-up toy key of bright copper sticking out of its back behind the right shoulder: a short shaft with a flat round handle with two round holes, like a clock key. Do not change anything else: keep both copper smokestacks with their white steam, the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Add only one thing: a classic wind-up toy key of bright copper sticking out of its back behind the right shoulder: a short shaft with a flat round handle with two round holes, like a clock key. Do not change anything else: keep both copper smokestacks with their white steam, the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "brass-titan-a-edit",
+      "candidate": 0,
+      "sha256": "209ae0699ce7e528912bc941f4bb2c7848947a15e1286d8f20f0f2b83d5bdffd"
+    }
+  }
+}

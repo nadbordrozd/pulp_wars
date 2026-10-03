@@ -1,0 +1,36 @@
+{
+  "id": "dwarf-city-1-calm-a-edit",
+  "jobId": "fa465f58-c26a-4e13-8e48-810279b23c4c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-city-1",
+    "subject": "CITY:DWARF:1",
+    "faction": "DWARF",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 75102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass, the dirt and the round slab under the hold, so the stone hall, its door, the chimney and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roof, the iron door, the steam, the tall iron pole, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass, the dirt and the round slab under the hold, so the stone hall, its door, the chimney and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roof, the iron door, the steam, the tall iron pole, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass, the dirt and the round slab under the hold, so the stone hall, its door, the chimney and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roof, the iron door, the steam, the tall iron pole, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass, the dirt and the round slab under the hold, so the stone hall, its door, the chimney and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roof, the iron door, the steam, the tall iron pole, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "dwarf-city-1-calm-a",
+      "candidate": 0,
+      "sha256": "a923b3801293ba6ec5c78fd90f3e161de49694def3b93d9bcc17ce8b81bf3189"
+    }
+  }
+}

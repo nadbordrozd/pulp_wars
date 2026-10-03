@@ -1,0 +1,36 @@
+{
+  "id": "steam-cannon-a-lamp-b",
+  "jobId": "1a386e23-cdf0-4ea0-be29-dc3e7600a4ec",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-steam-cannon",
+    "subject": "UNIT:DWARF:CATAPULT",
+    "faction": "DWARF",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the round copper boiler behind the barrel, just below the smokestack. Do not change anything else: the end of the barrel stays a dark empty hole, and nothing is added on the ground. Keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the round copper boiler behind the barrel, just below the smokestack. Do not change anything else: the end of the barrel stays a dark empty hole, and nothing is added on the ground. Keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the round copper boiler behind the barrel, just below the smokestack. Do not change anything else: the end of the barrel stays a dark empty hole, and nothing is added on the ground. Keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the round copper boiler behind the barrel, just below the smokestack. Do not change anything else: the end of the barrel stays a dark empty hole, and nothing is added on the ground. Keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "steam-cannon-a",
+      "candidate": 0,
+      "sha256": "02f7c9525d1e02fc08b17a4ce382730b3c981d905d9695b8e9016aeef4be9c76"
+    }
+  }
+}

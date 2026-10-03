@@ -1,0 +1,64 @@
+{
+  "id": "portrait-clockwork-gunner-b",
+  "jobId": "sync-c1f58778-7781-404e-aed6-5c7d7d18f2db",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-portrait-dwarf-clockwork-gunner",
+    "subject": "PORTRAIT:DWARF:MARKSMAN",
+    "faction": "DWARF",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 79202,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+        "text": "Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges.",
+        "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DWARF.json",
+        "text": "Subject: Clockwork Gunner portrait, head and shoulders of a chunky cute wind-up automaton with no dwarf inside: a small domed soot-black iron head with two round glass eye lenses and no face, no beard and no mouth, a bright green signal lamp, colour #2bd94a, on top of the head, round riveted iron shoulders, a round copper boiler chest with a small white-faced gauge, a big copper wind-up key behind the shoulder, and the copper barrels of its gatling arm beside it."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A close-up bust of a machine: the head is a round iron dome with no face at all, its front a flat riveted iron plate with two round glass lenses side by side; the green lamp on top; round iron shoulders fill the bottom of the square.",
+        "negative": "full body, legs, feet, dwarf, beard, human face, nose, mouth, cheeks, skin, eyebrows, person, child, boy"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Clockwork Gunner portrait, head and shoulders of a chunky cute wind-up automaton with no dwarf inside: a small domed soot-black iron head with two round glass eye lenses and no face, no beard and no mouth, a bright green signal lamp, colour #2bd94a, on top of the head, round riveted iron shoulders, a round copper boiler chest with a small white-faced gauge, a big copper wind-up key behind the shoulder, and the copper barrels of its gatling arm beside it. A close-up bust of a machine: the head is a round iron dome with no face at all, its front a flat riveted iron plate with two round glass lenses side by side; the green lamp on top; round iron shoulders fill the bottom of the square.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, dwarf, beard, human face, nose, mouth, cheeks, skin, eyebrows, person, child, boy",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Clockwork Gunner portrait, head and shoulders of a chunky cute wind-up automaton with no dwarf inside: a small domed soot-black iron head with two round glass eye lenses and no face, no beard and no mouth, a bright green signal lamp, colour #2bd94a, on top of the head, round riveted iron shoulders, a round copper boiler chest with a small white-faced gauge, a big copper wind-up key behind the shoulder, and the copper barrels of its gatling arm beside it. A close-up bust of a machine: the head is a round iron dome with no face at all, its front a flat riveted iron plate with two round glass lenses side by side; the green lamp on top; round iron shoulders fill the bottom of the square. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, dwarf, beard, human face, nose, mouth, cheeks, skin, eyebrows, person, child, boy."
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "dwarf-city-3-calm-a-edit",
+  "jobId": "e1ca2271-1119-4ba9-a538-1e898a7462ad",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-city-3",
+    "subject": "CITY:DWARF:3",
+    "faction": "DWARF",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 75122,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass and the dirt slab under the city, so the walls, towers, halls, the rock peak and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper domes and roofs, the chimneys and steam, the cog wheel, the tall iron pole, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass and the dirt slab under the city, so the walls, towers, halls, the rock peak and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper domes and roofs, the chimneys and steam, the cog wheel, the tall iron pole, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass and the dirt slab under the city, so the walls, towers, halls, the rock peak and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper domes and roofs, the chimneys and steam, the cog wheel, the tall iron pole, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass and the dirt slab under the city, so the walls, towers, halls, the rock peak and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper domes and roofs, the chimneys and steam, the cog wheel, the tall iron pole, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "dwarf-city-3-calm-a",
+      "candidate": 0,
+      "sha256": "4edfe6d8b80884ced7d4ebae0a2c83f99cae6f743ec5ec5addc81f40b79fe033"
+    }
+  }
+}

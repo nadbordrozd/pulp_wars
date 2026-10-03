@@ -1,0 +1,37 @@
+{
+  "id": "dwarf-battleship-steam-a",
+  "jobId": "47a7f23c-b3a5-47c0-b406-983909da6101",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dwarf",
+    "asset": "chibi-naval-dwarf-battleship",
+    "subject": "UNIT:DWARF:BATTLESHIP",
+    "faction": "DWARF",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 96711,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim and a copper band; the stone castle becomes a squat iron gun turret; the red sails, masts and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim and a copper band; the stone castle becomes a squat iron gun turret; the red sails, masts and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim and a copper band; the stone castle becomes a squat iron gun turret; the red sails, masts and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim and a copper band; the stone castle becomes a squat iron gun turret; the red sails, masts and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "battleship-d-edit",
+      "candidate": 1,
+      "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+    }
+  }
+}

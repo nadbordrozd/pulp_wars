@@ -1,0 +1,643 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-dwarf",
+  "recipes": {
+    "dwarf-battleship-steam-a": {
+      "id": "dwarf-battleship-steam-a",
+      "asset": "chibi-naval-dwarf-battleship",
+      "jobId": "47a7f23c-b3a5-47c0-b406-983909da6101",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-battleship",
+        "subject": "UNIT:DWARF:BATTLESHIP",
+        "faction": "DWARF",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 96711,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim and a copper band; the stone castle becomes a squat iron gun turret; the red sails, masts and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim and a copper band; the stone castle becomes a squat iron gun turret; the red sails, masts and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim and a copper band; the stone castle becomes a squat iron gun turret; the red sails, masts and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+        "editInstruction": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim and a copper band; the stone castle becomes a squat iron gun turret; the red sails, masts and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "battleship-d-edit",
+          "candidate": 1,
+          "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+        }
+      },
+      "submittedAt": "2026-10-03T10:56:06.324Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/dwarf-battleship-steam-a.png",
+      "rawSheetSha256": "61c65754e37b79f4457cb3584a0d743a291630316354b2f328966d09939e5046",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.006,
+          "footprintWidthShare": 0.942,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.006,
+          "footprintWidthShare": 0.942,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T10:56:48.050Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The carrack turned into a riveted steam ironclad: a long iron hull with a grey rim and a copper waterline band, a squat iron turret with green lamps, two copper stacks with steam.",
+        "reviewedAt": "2026-10-03T11:01:09.993Z"
+      }
+    },
+    "dwarf-patrol-boat-steam-a": {
+      "id": "dwarf-patrol-boat-steam-a",
+      "asset": "chibi-naval-dwarf-patrol-boat",
+      "jobId": "ec18c983-049c-4788-8cb9-ebaa19f5a416",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-patrol-boat",
+        "subject": "UNIT:DWARF:PATROL_BOAT",
+        "faction": "DWARF",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 96701,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel on the side and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel on the side and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel on the side and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+        "editInstruction": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel on the side and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "patrol-boat-a-edit",
+          "candidate": 0,
+          "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+        }
+      },
+      "submittedAt": "2026-10-03T10:55:34.985Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/dwarf-patrol-boat-steam-a.png",
+      "rawSheetSha256": "c3e9e0b6e574183645c42717d9dfbadb347f406c8645ddbd66639756fad487dd",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9259,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9259,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T10:56:06.307Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The cog turned into a soot-iron steam tug: riveted iron hull with a grey rim, a tall copper stack with white steam, a copper paddle wheel and the green lamp; the shared hull's footprint and waterline.",
+        "reviewedAt": "2026-10-03T11:01:09.501Z"
+      }
+    },
+    "dwarf-portrait-battleship-steam-a": {
+      "id": "dwarf-portrait-battleship-steam-a",
+      "asset": "chibi-naval-dwarf-portrait-battleship",
+      "jobId": "baad4381-78d4-408c-ad16-3a9d9db3e01e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-portrait-battleship",
+        "subject": "PORTRAIT:DWARF:BATTLESHIP",
+        "faction": "DWARF",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96741,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-battleship-b",
+          "candidate": 0,
+          "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+        }
+      },
+      "submittedAt": "2026-10-03T10:57:51.447Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/dwarf-portrait-battleship-steam-a.png",
+      "rawSheetSha256": "dae8a362c2b82909ec2127bb592b5cea74bc36a0301b58c60e13c47813695084",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7222,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7222,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T10:58:24.828Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Battleship portrait as the ironclad: iron hull and turret, two copper stacks with steam, green lamps.",
+        "reviewedAt": "2026-10-03T11:01:11.461Z"
+      }
+    },
+    "dwarf-portrait-patrol-boat-steam-a": {
+      "id": "dwarf-portrait-patrol-boat-steam-a",
+      "asset": "chibi-naval-dwarf-portrait-patrol-boat",
+      "jobId": "c7c59ff1-977d-4803-912b-356c0a1afc63",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-portrait-patrol-boat",
+        "subject": "PORTRAIT:DWARF:PATROL_BOAT",
+        "faction": "DWARF",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96731,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-patrol-boat-a",
+          "candidate": 0,
+          "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+        }
+      },
+      "submittedAt": "2026-10-03T10:57:19.405Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/dwarf-portrait-patrol-boat-steam-a.png",
+      "rawSheetSha256": "fdbee7b519bffae6a54e1c47b63bc921cec6f39b15817b97e8931494133254f7",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9063,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9063,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T10:57:50.835Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The Patrol Boat portrait as the iron steam tug: copper stack, steam, paddle wheel, green lamp.",
+        "reviewedAt": "2026-10-03T11:01:10.990Z"
+      }
+    },
+    "dwarf-transport-steam-a": {
+      "id": "dwarf-transport-steam-a",
+      "asset": "chibi-naval-dwarf-transport",
+      "jobId": "18a43dd5-1017-4b66-8788-cb89d99fc46c",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-transport",
+        "subject": "UNIT:DWARF:EMBARKED_TRANSPORT",
+        "faction": "DWARF",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 96721,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a steam barge: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red tarp becomes dark brown leather #4a3426 tied with copper bands; the pennant pole becomes a short copper #d06a2a smokestack puffing white steam; add a small bright green #2bd94a lamp. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a steam barge: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red tarp becomes dark brown leather #4a3426 tied with copper bands; the pennant pole becomes a short copper #d06a2a smokestack puffing white steam; add a small bright green #2bd94a lamp. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a steam barge: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red tarp becomes dark brown leather #4a3426 tied with copper bands; the pennant pole becomes a short copper #d06a2a smokestack puffing white steam; add a small bright green #2bd94a lamp. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+        "editInstruction": "Turn it into a steam barge: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red tarp becomes dark brown leather #4a3426 tied with copper bands; the pennant pole becomes a short copper #d06a2a smokestack puffing white steam; add a small bright green #2bd94a lamp. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "embarked-transport-a-edit",
+          "candidate": 0,
+          "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+        }
+      },
+      "submittedAt": "2026-10-03T10:56:48.054Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/dwarf-transport-steam-a.png",
+      "rawSheetSha256": "2e37a11d7b4593ad94878414859533ceac5f6c6dbeb633c0315763fa88057337",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.0279,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0279,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T10:57:19.386Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 1,
+        "notes": "The barge turned into a steam barge: an iron hull with oars, the cargo under dark leather, a short copper stack with steam and green lamps.",
+        "reviewedAt": "2026-10-03T11:01:10.452Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-naval-dwarf-battleship": {
+      "id": "chibi-naval-dwarf-battleship",
+      "subject": "UNIT:DWARF:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dwarf-battleship-steam-a",
+      "candidate": 0,
+      "candidateSha256": "2281ba28d381926b863e9fce6b7cdc0dd14fa1edd21379047e2f19324ff35a69",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-dwarf-battleship.png",
+        "sha256": "11d37621d2d86d65a654297154f909b62809cd8378ea03b3564265e44fa05133",
+        "pixelSha256": "d90f7034d084f8fdec6010837193f57e21af8f61b205abe8c86d8c07641a8ccc",
+        "width": 88,
+        "height": 96
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 158,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 44,
+        "y": 56
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 16,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.006,
+        "footprintWidthShare": 0.942,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The carrack turned into a riveted steam ironclad: a long iron hull with a grey rim and a copper waterline band, a squat iron turret with green lamps, two copper stacks with steam.",
+      "acceptedAt": "2026-10-03T11:01:09.993Z"
+    },
+    "chibi-naval-dwarf-patrol-boat": {
+      "id": "chibi-naval-dwarf-patrol-boat",
+      "subject": "UNIT:DWARF:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dwarf-patrol-boat-steam-a",
+      "candidate": 0,
+      "candidateSha256": "f33218742fe952d64210d1ed45bba34f51db3620a66ed2a4fbc326d0743da62e",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-dwarf-patrol-boat.png",
+        "sha256": "f33218742fe952d64210d1ed45bba34f51db3620a66ed2a4fbc326d0743da62e",
+        "pixelSha256": "4ccf4790860633347918f3ff33eb993d558e69cc6b4950928f7b65ed2bdada36",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9259,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The cog turned into a soot-iron steam tug: riveted iron hull with a grey rim, a tall copper stack with white steam, a copper paddle wheel and the green lamp; the shared hull's footprint and waterline.",
+      "acceptedAt": "2026-10-03T11:01:09.501Z"
+    },
+    "chibi-naval-dwarf-portrait-battleship": {
+      "id": "chibi-naval-dwarf-portrait-battleship",
+      "subject": "PORTRAIT:DWARF:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "dwarf-portrait-battleship-steam-a",
+      "candidate": 0,
+      "candidateSha256": "a3fef79c4dc4152265f1b6747e9c3ab9c40f22514f308ae3691143baa070115e",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-dwarf-portrait-battleship.png",
+        "sha256": "20310c3e61c993896cbfddbbb0fc70d4e9e27c3a2dc72733accf90ef05db912c",
+        "pixelSha256": "7f1771728f12be4e368172e471561074454d2382f3881d516a89bf3fda2d3021",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 12,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7222,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The Battleship portrait as the ironclad: iron hull and turret, two copper stacks with steam, green lamps.",
+      "acceptedAt": "2026-10-03T11:01:11.461Z"
+    },
+    "chibi-naval-dwarf-portrait-patrol-boat": {
+      "id": "chibi-naval-dwarf-portrait-patrol-boat",
+      "subject": "PORTRAIT:DWARF:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "dwarf-portrait-patrol-boat-steam-a",
+      "candidate": 0,
+      "candidateSha256": "d5cb91df6f521a50d23a9568558748ada011dd27b6551a5616b4db0e92820461",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-dwarf-portrait-patrol-boat.png",
+        "sha256": "d5cb91df6f521a50d23a9568558748ada011dd27b6551a5616b4db0e92820461",
+        "pixelSha256": "7368a4367501046d7f9106cae6cd4e2ddb90265ced103b3c08826cd01253eeed",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9063,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The Patrol Boat portrait as the iron steam tug: copper stack, steam, paddle wheel, green lamp.",
+      "acceptedAt": "2026-10-03T11:01:10.990Z"
+    },
+    "chibi-naval-dwarf-transport": {
+      "id": "chibi-naval-dwarf-transport",
+      "subject": "UNIT:DWARF:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dwarf-transport-steam-a",
+      "candidate": 1,
+      "candidateSha256": "35a89efd7bb27d25bc9361ad43a864b64b412f30c053e3cb2acb013798acbae9",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-dwarf-transport.png",
+        "sha256": "35a89efd7bb27d25bc9361ad43a864b64b412f30c053e3cb2acb013798acbae9",
+        "pixelSha256": "e20a95e17a147e762c6c9e0979fd0f6ff421207a9be2e354a425e5b26066b927",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 11,
+        "groundShare": 0.0279,
+        "footprintWidthShare": 0.8667,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The barge turned into a steam barge: an iron hull with oars, the cargo under dark leather, a short copper stack with steam and green lamps.",
+      "acceptedAt": "2026-10-03T11:01:10.452Z"
+    }
+  }
+}

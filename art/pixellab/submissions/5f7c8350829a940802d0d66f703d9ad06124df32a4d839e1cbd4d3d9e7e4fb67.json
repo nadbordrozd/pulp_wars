@@ -1,0 +1,37 @@
+{
+  "id": "mound-rider-b",
+  "jobId": "ab5f7b44-0c5f-426a-8c54-1dbb39adcc75",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-mound-rider",
+    "subject": "UNIT:DWARF:MOUND_RIDER",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 56,
+      "height": 48
+    },
+    "seed": 77012,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: beside the drill, the head of a war hammer sticks up out of the earth: a chunky block of riveted soot-black iron with a light grey rim and a copper band, on a short handle. Keep the heap of dark brown earth, the grey rocks, the copper drill with its spiral grooves, the steam puff, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: beside the drill, the head of a war hammer sticks up out of the earth: a chunky block of riveted soot-black iron with a light grey rim and a copper band, on a short handle. Keep the heap of dark brown earth, the grey rocks, the copper drill with its spiral grooves, the steam puff, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: beside the drill, the head of a war hammer sticks up out of the earth: a chunky block of riveted soot-black iron with a light grey rim and a copper band, on a short handle. Keep the heap of dark brown earth, the grey rocks, the copper drill with its spiral grooves, the steam puff, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Add only one thing: beside the drill, the head of a war hammer sticks up out of the earth: a chunky block of riveted soot-black iron with a light grey rim and a copper band, on a short handle. Keep the heap of dark brown earth, the grey rocks, the copper drill with its spiral grooves, the steam puff, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "mound-a-drill",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "a2fe28befb5cba0c77e64d81334fcacb9e95be64db567516eade32a8ddd7dfaa"
+    }
+  }
+}

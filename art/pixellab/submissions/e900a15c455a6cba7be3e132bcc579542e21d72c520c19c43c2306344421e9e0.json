@@ -1,0 +1,36 @@
+{
+  "id": "gyrocopter-a-lamp-b",
+  "jobId": "5dcdbffc-7b00-4a0f-b5d7-8e1330ef7788",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-gyrocopter",
+    "subject": "UNIT:DWARF:RAIDER",
+    "faction": "DWARF",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the side of the soot-black iron pod below the pilot. Do not change anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the bomb, the empty space under it, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the side of the soot-black iron pod below the pilot. Do not change anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the bomb, the empty space under it, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the side of the soot-black iron pod below the pilot. Do not change anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the bomb, the empty space under it, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the side of the soot-black iron pod below the pilot. Do not change anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the bomb, the empty space under it, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "gyrocopter-a-edit",
+      "candidate": 0,
+      "sha256": "b12bf53b7816258ef9b7c3fa9cf0a5559d3eaec34df4fd40c208223ac0f55d36"
+    }
+  }
+}

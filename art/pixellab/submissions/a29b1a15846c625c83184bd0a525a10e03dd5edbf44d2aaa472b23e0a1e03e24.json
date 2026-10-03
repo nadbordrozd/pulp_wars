@@ -1,0 +1,36 @@
+{
+  "id": "hammerer-a-edit",
+  "jobId": "4e402c08-e572-42bb-b5b8-1f2aa44b9921",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-hammerer",
+    "subject": "UNIT:DWARF:FIGHTER",
+    "faction": "DWARF",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the two small white puffs sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top with nothing on it; do not redraw anything else. Keep the goggles, the ginger beard, the face, the armour, the hammer, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the two small white puffs sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top with nothing on it; do not redraw anything else. Keep the goggles, the ginger beard, the face, the armour, the hammer, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the two small white puffs sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top with nothing on it; do not redraw anything else. Keep the goggles, the ginger beard, the face, the armour, the hammer, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the two small white puffs sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top with nothing on it; do not redraw anything else. Keep the goggles, the ginger beard, the face, the armour, the hammer, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "hammerer-a",
+      "candidate": 0,
+      "sha256": "a2aa549bd381b9a54f107ea72c2cbeb0a8f33df5de41718ba57d91829f885e39"
+    }
+  }
+}

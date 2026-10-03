@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-dwarf",
+  "title": "Naval units in the Steampunk Dwarf look: a soot-iron steam paddle boat, a riveted steam ironclad and a steam barge, and the two warship portraits",
+  "bead": "pulp_wars-78i.5",
+  "faction": "DWARF",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-naval-dwarf-patrol-boat",
+      "subject": "UNIT:DWARF:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-naval-dwarf-battleship",
+      "subject": "UNIT:DWARF:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-naval-dwarf-transport",
+      "subject": "UNIT:DWARF:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-naval-dwarf-portrait-patrol-boat",
+      "subject": "PORTRAIT:DWARF:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-naval-dwarf-portrait-battleship",
+      "subject": "PORTRAIT:DWARF:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "dwarf-patrol-boat-steam-a",
+      "asset": "chibi-naval-dwarf-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 96701,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "patrol-boat-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel on the side and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+      "notes": "The batch-4 cog as a soot-iron steam paddle boat, the shared hull's footprint and waterline (NAVAL_FACTIONS.md)."
+    },
+    {
+      "id": "dwarf-battleship-steam-a",
+      "asset": "chibi-naval-dwarf-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 96711,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "battleship-d-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim and a copper band; the stone castle becomes a squat iron gun turret; the red sails, masts and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+      "notes": "The batch-4 carrack as a riveted steam ironclad."
+    },
+    {
+      "id": "dwarf-transport-steam-a",
+      "asset": "chibi-naval-dwarf-transport",
+      "endpoint": "edit-image-pixen",
+      "seed": 96721,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "embarked-transport-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a steam barge: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red tarp becomes dark brown leather #4a3426 tied with copper bands; the pennant pole becomes a short copper #d06a2a smokestack puffing white steam; add a small bright green #2bd94a lamp. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+      "notes": "The batch-4 barge as a soot-iron steam barge with the cargo under leather."
+    },
+    {
+      "id": "dwarf-portrait-patrol-boat-steam-a",
+      "asset": "chibi-naval-dwarf-portrait-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 96731,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+      "notes": "The batch-5 Patrol Boat portrait with the map sprite's changes."
+    },
+    {
+      "id": "dwarf-portrait-battleship-steam-a",
+      "asset": "chibi-naval-dwarf-portrait-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 96741,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-battleship-b",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+      "notes": "The batch-5 Battleship portrait with the map sprite's changes."
+    }
+  ]
+}

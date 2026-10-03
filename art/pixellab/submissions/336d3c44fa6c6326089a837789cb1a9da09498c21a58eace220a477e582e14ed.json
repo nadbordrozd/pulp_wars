@@ -1,0 +1,36 @@
+{
+  "id": "dwarf-city-2-calm-a-edit",
+  "jobId": "f7776db3-8f0b-458a-bedc-e546eb4f4355",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-city-2",
+    "subject": "CITY:DWARF:2",
+    "faction": "DWARF",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 75112,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass and the dirt slab under the town, and the grass inside its wall, so the stone tower, the houses, the wall and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roofs, the cog, the iron gate, the tall iron pole, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass and the dirt slab under the town, and the grass inside its wall, so the stone tower, the houses, the wall and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roofs, the cog, the iron gate, the tall iron pole, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass and the dirt slab under the town, and the grass inside its wall, so the stone tower, the houses, the wall and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roofs, the cog, the iron gate, the tall iron pole, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass and the dirt slab under the town, and the grass inside its wall, so the stone tower, the houses, the wall and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roofs, the cog, the iron gate, the tall iron pole, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "dwarf-city-2-calm-a",
+      "candidate": 0,
+      "sha256": "046a61718272b632176d38a3d2381c28448b4cdf29404368280cce59d6688297"
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "bead": "pulp_wars-78i.5",
+  "note": "Measured on the eight unit masters; shares are of the opaque pixels of the units the band is measured on.",
+  "palette": [
+    {
+      "role": "Outline",
+      "use": "the thick outline",
+      "measuredOn": "all",
+      "mean": "#050405",
+      "tones": [
+        "#000000",
+        "#1e1d22",
+        "#1a1a1f",
+        "#15171a"
+      ],
+      "share": 27.9
+    },
+    {
+      "role": "Soot iron",
+      "use": "machine bodies, helmets, armour",
+      "measuredOn": "machines",
+      "mean": "#37393b",
+      "tones": [
+        "#4d4d4e",
+        "#323235",
+        "#1d2125",
+        "#3a3c3e"
+      ],
+      "share": 17.8
+    },
+    {
+      "role": "Iron rim",
+      "use": "the light rim on lit iron edges",
+      "measuredOn": "machines",
+      "mean": "#9c9c9d",
+      "tones": [
+        "#babac4",
+        "#94929e",
+        "#aaaaa7",
+        "#74787b"
+      ],
+      "share": 11.1
+    },
+    {
+      "role": "Copper, lit",
+      "use": "boilers, pipes, bands, stacks, the drill",
+      "measuredOn": "machines",
+      "mean": "#de6f2a",
+      "tones": [
+        "#da5d1d",
+        "#e16d2e",
+        "#c34e1c",
+        "#d35f25"
+      ],
+      "share": 12.3
+    },
+    {
+      "role": "Copper, shade",
+      "use": "the shade of copper",
+      "measuredOn": "machines",
+      "mean": "#812e11",
+      "tones": [
+        "#9e370e",
+        "#8e2511",
+        "#9d2b13",
+        "#a53e12"
+      ],
+      "share": 14
+    },
+    {
+      "role": "Ginger beard",
+      "use": "beards (Hammerer, Engineer)",
+      "measuredOn": "dwarves",
+      "mean": "#be5826",
+      "tones": [
+        "#a44119",
+        "#912d03",
+        "#ec7721",
+        "#8d3621"
+      ],
+      "share": 18.7
+    },
+    {
+      "role": "Dark leather",
+      "use": "aprons, straps, caps",
+      "measuredOn": "dwarves",
+      "mean": "#4e2417",
+      "tones": [
+        "#3f2720",
+        "#46190e",
+        "#6b2f1e",
+        "#603725"
+      ],
+      "share": 12.9
+    },
+    {
+      "role": "Steam white",
+      "use": "steam and gauge faces",
+      "measuredOn": "all",
+      "mean": "#f0f1ee",
+      "tones": [
+        "#f5f5f5",
+        "#e1e2e1",
+        "#eaedeb",
+        "#fdfbef"
+      ],
+      "share": 3.7
+    },
+    {
+      "role": "Signal-green lamp",
+      "use": "the reserve lamp on every machine",
+      "measuredOn": "all",
+      "mean": "#4ac14a",
+      "tones": [
+        "#6be2b5",
+        "#68ef3a",
+        "#73ea3f",
+        "#5be42d"
+      ],
+      "share": 0.8
+    }
+  ],
+  "presentation": {
+    "iron": "#37393b",
+    "ironRim": "#9c9c9d",
+    "copper": "#de6f2a",
+    "copperShade": "#812e11",
+    "beard": "#be5826",
+    "leather": "#4e2417",
+    "steam": "#f0f1ee",
+    "lamp": "#4ac14a",
+    "lampLit": "#68ef3a",
+    "earthDark": "#3d2a1e",
+    "earth": "#6e4b30",
+    "earthLight": "#a07a52",
+    "sandbag": "#c9b48a",
+    "sandbagShade": "#8f7a58",
+    "outline": "#1b1512"
+  }
+}

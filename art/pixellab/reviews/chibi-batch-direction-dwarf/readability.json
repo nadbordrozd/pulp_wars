@@ -1,0 +1,1204 @@
+{
+  "bead": "pulp_wars-78i.5",
+  "measure": "CIE76 colour difference (about 10 is clear at a glance, 20 and more are different colours), the worst of normal vision, deuteranopia and protanopia, and the WCAG luminance contrast; band means measured on the unit masters (palette.json).",
+  "ironAgainstOutline": {
+    "sootIron": {
+      "iron": "#37393b",
+      "deltaE": 22.6,
+      "contrast": 1.8
+    },
+    "rim": {
+      "rim": "#9c9c9d",
+      "deltaE": 63.3,
+      "contrast": 7.5,
+      "rimAgainstIronContrast": 4.3
+    },
+    "bareSootReference": {
+      "colour": "#2b2a28",
+      "contrast": 1.4
+    }
+  },
+  "copper": {
+    "lit": "#de6f2a",
+    "shade": "#812e11",
+    "litAgainst": [
+      {
+        "a": "copper #de6f2a",
+        "b": "Undead violet #a221ee",
+        "deltaE": 137.5,
+        "contrast": 1.6,
+        "deuteranopiaDeltaE": 131.1,
+        "protanopiaDeltaE": 130.9,
+        "hueA": 23,
+        "hueB": 278,
+        "worst": 130.9
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Martian magenta #f30a96",
+        "deltaE": 80,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 60,
+        "protanopiaDeltaE": 81.5,
+        "hueA": 23,
+        "hueB": 324,
+        "worst": 60
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Ice Folk ice blue #24abfc",
+        "deltaE": 114.8,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 112.1,
+        "protanopiaDeltaE": 97.7,
+        "hueA": 23,
+        "hueB": 203,
+        "worst": 97.7
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Dinosaur red-orange #fe7500",
+        "deltaE": 20.2,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 15.7,
+        "protanopiaDeltaE": 12.4,
+        "hueA": 23,
+        "hueB": 28,
+        "worst": 12.4
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Goblin leather #955627",
+        "deltaE": 29.4,
+        "contrast": 1.8,
+        "deuteranopiaDeltaE": 25.7,
+        "protanopiaDeltaE": 21,
+        "hueA": 23,
+        "hueB": 26,
+        "worst": 21
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Goblin rust #8a4625",
+        "deltaE": 33.9,
+        "contrast": 2.1,
+        "deuteranopiaDeltaE": 32.2,
+        "protanopiaDeltaE": 29.6,
+        "hueA": 23,
+        "hueB": 20,
+        "worst": 29.6
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Goblin leather shadow #5f2407",
+        "deltaE": 46.3,
+        "contrast": 3.7,
+        "deuteranopiaDeltaE": 45.9,
+        "protanopiaDeltaE": 42.2,
+        "hueA": 23,
+        "hueB": 20,
+        "worst": 42.2
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Goblin gunmetal #47545b",
+        "deltaE": 78.2,
+        "contrast": 2.4,
+        "deuteranopiaDeltaE": 69.8,
+        "protanopiaDeltaE": 58.3,
+        "hueA": 23,
+        "hueB": 201,
+        "worst": 58.3
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Goblin olive skin #8a952f",
+        "deltaE": 57.3,
+        "contrast": 1,
+        "deuteranopiaDeltaE": 10,
+        "protanopiaDeltaE": 7.9,
+        "hueA": 23,
+        "hueB": 66,
+        "worst": 7.9
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Human crimson #c50d25",
+        "deltaE": 34.8,
+        "contrast": 1.9,
+        "deuteranopiaDeltaE": 20,
+        "protanopiaDeltaE": 33.8,
+        "hueA": 23,
+        "hueB": 352,
+        "worst": 20
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Martian chrome #d1dbe1",
+        "deltaE": 77.5,
+        "contrast": 2.3,
+        "deuteranopiaDeltaE": 66.4,
+        "protanopiaDeltaE": 64,
+        "hueA": 23,
+        "hueB": 203,
+        "worst": 64
+      },
+      {
+        "a": "copper #de6f2a",
+        "b": "Banned rust-dark copper #8c4a2a",
+        "deltaE": 34.4,
+        "contrast": 2,
+        "deuteranopiaDeltaE": 32.6,
+        "protanopiaDeltaE": 29.6,
+        "hueA": 23,
+        "hueB": 20,
+        "worst": 29.6
+      }
+    ],
+    "shadeAgainst": [
+      {
+        "a": "copper shade #812e11",
+        "b": "Undead violet #a221ee",
+        "deltaE": 120.7,
+        "contrast": 1.7,
+        "deuteranopiaDeltaE": 111.7,
+        "protanopiaDeltaE": 112.6,
+        "hueA": 15,
+        "hueB": 278,
+        "worst": 111.7
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Martian magenta #f30a96",
+        "deltaE": 71.3,
+        "contrast": 2.3,
+        "deuteranopiaDeltaE": 47.2,
+        "protanopiaDeltaE": 62.9,
+        "hueA": 15,
+        "hueB": 324,
+        "worst": 47.2
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Ice Folk ice blue #24abfc",
+        "deltaE": 101.2,
+        "contrast": 3.6,
+        "deuteranopiaDeltaE": 97.2,
+        "protanopiaDeltaE": 87.9,
+        "hueA": 15,
+        "hueB": 203,
+        "worst": 87.9
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Dinosaur red-orange #fe7500",
+        "deltaE": 52,
+        "contrast": 3.3,
+        "deuteranopiaDeltaE": 48.9,
+        "protanopiaDeltaE": 45.2,
+        "hueA": 15,
+        "hueB": 28,
+        "worst": 45.2
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Goblin leather #955627",
+        "deltaE": 17.5,
+        "contrast": 1.6,
+        "deuteranopiaDeltaE": 11.2,
+        "protanopiaDeltaE": 14.4,
+        "hueA": 15,
+        "hueB": 26,
+        "worst": 11.2
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Goblin rust #8a4625",
+        "deltaE": 11.2,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 7.1,
+        "protanopiaDeltaE": 8,
+        "hueA": 15,
+        "hueB": 20,
+        "worst": 7.1
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Goblin leather shadow #5f2407",
+        "deltaE": 13.5,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 11,
+        "protanopiaDeltaE": 8,
+        "hueA": 15,
+        "hueB": 20,
+        "worst": 8
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Goblin gunmetal #47545b",
+        "deltaE": 56.1,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 44.2,
+        "protanopiaDeltaE": 36.2,
+        "hueA": 15,
+        "hueB": 201,
+        "worst": 36.2
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Goblin olive skin #8a952f",
+        "deltaE": 61.1,
+        "contrast": 2.8,
+        "deuteranopiaDeltaE": 27.4,
+        "protanopiaDeltaE": 42.1,
+        "hueA": 15,
+        "hueB": 66,
+        "worst": 27.4
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Human crimson #c50d25",
+        "deltaE": 32.8,
+        "contrast": 1.5,
+        "deuteranopiaDeltaE": 14.9,
+        "protanopiaDeltaE": 7.9,
+        "hueA": 15,
+        "hueB": 352,
+        "worst": 7.9
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Martian chrome #d1dbe1",
+        "deltaE": 77.7,
+        "contrast": 6.4,
+        "deuteranopiaDeltaE": 67.6,
+        "protanopiaDeltaE": 69.9,
+        "hueA": 15,
+        "hueB": 203,
+        "worst": 67.6
+      },
+      {
+        "a": "copper shade #812e11",
+        "b": "Banned rust-dark copper #8c4a2a",
+        "deltaE": 13.1,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 8.6,
+        "protanopiaDeltaE": 9.9,
+        "hueA": 15,
+        "hueB": 20,
+        "worst": 8.6
+      }
+    ],
+    "specReference": {
+      "colour": "#c27c3a",
+      "againstLit": 20.1
+    }
+  },
+  "beard": {
+    "mean": "#be5826",
+    "against": [
+      {
+        "a": "beard #be5826",
+        "b": "Undead violet #a221ee",
+        "deltaE": 129,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 122.3,
+        "protanopiaDeltaE": 121.7,
+        "hueA": 20,
+        "hueB": 278,
+        "worst": 121.7
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Martian magenta #f30a96",
+        "deltaE": 73.4,
+        "contrast": 1.1,
+        "deuteranopiaDeltaE": 51.9,
+        "protanopiaDeltaE": 71.6,
+        "hueA": 20,
+        "hueB": 324,
+        "worst": 51.9
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Ice Folk ice blue #24abfc",
+        "deltaE": 107.8,
+        "contrast": 1.8,
+        "deuteranopiaDeltaE": 104.4,
+        "protanopiaDeltaE": 90.8,
+        "hueA": 20,
+        "hueB": 203,
+        "worst": 90.8
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Dinosaur red-orange #fe7500",
+        "deltaE": 31.5,
+        "contrast": 1.7,
+        "deuteranopiaDeltaE": 27.7,
+        "protanopiaDeltaE": 24.9,
+        "hueA": 20,
+        "hueB": 28,
+        "worst": 24.9
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Goblin leather #955627",
+        "deltaE": 19.9,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 13.2,
+        "protanopiaDeltaE": 7.9,
+        "hueA": 20,
+        "hueB": 26,
+        "worst": 7.9
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Goblin rust #8a4625",
+        "deltaE": 22.3,
+        "contrast": 1.5,
+        "deuteranopiaDeltaE": 19.6,
+        "protanopiaDeltaE": 16.5,
+        "hueA": 20,
+        "hueB": 20,
+        "worst": 16.5
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Goblin leather shadow #5f2407",
+        "deltaE": 34.2,
+        "contrast": 2.6,
+        "deuteranopiaDeltaE": 33.3,
+        "protanopiaDeltaE": 29.4,
+        "hueA": 20,
+        "hueB": 20,
+        "worst": 29.4
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Goblin gunmetal #47545b",
+        "deltaE": 68.6,
+        "contrast": 1.7,
+        "deuteranopiaDeltaE": 58.6,
+        "protanopiaDeltaE": 46.9,
+        "hueA": 20,
+        "hueB": 201,
+        "worst": 46.9
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Goblin olive skin #8a952f",
+        "deltaE": 57.1,
+        "contrast": 1.4,
+        "deuteranopiaDeltaE": 6.3,
+        "protanopiaDeltaE": 21,
+        "hueA": 20,
+        "hueB": 66,
+        "worst": 6.3
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Human crimson #c50d25",
+        "deltaE": 28.8,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 7.4,
+        "protanopiaDeltaE": 20.8,
+        "hueA": 20,
+        "hueB": 352,
+        "worst": 7.4
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Martian chrome #d1dbe1",
+        "deltaE": 75,
+        "contrast": 3.2,
+        "deuteranopiaDeltaE": 63.3,
+        "protanopiaDeltaE": 62.3,
+        "hueA": 20,
+        "hueB": 203,
+        "worst": 62.3
+      },
+      {
+        "a": "beard #be5826",
+        "b": "Banned rust-dark copper #8c4a2a",
+        "deltaE": 23.1,
+        "contrast": 1.5,
+        "deuteranopiaDeltaE": 20.2,
+        "protanopiaDeltaE": 16.7,
+        "hueA": 20,
+        "hueB": 20,
+        "worst": 16.7
+      },
+      {
+        "a": "beard #be5826",
+        "b": "CORAL #f06762",
+        "deltaE": 24.9,
+        "contrast": 1.5,
+        "deuteranopiaDeltaE": 18.8,
+        "protanopiaDeltaE": 24.7,
+        "hueA": 20,
+        "hueB": 2,
+        "worst": 18.8
+      },
+      {
+        "a": "beard #be5826",
+        "b": "TEAL #28b7a4",
+        "deltaE": 94,
+        "contrast": 1.8,
+        "deuteranopiaDeltaE": 55.1,
+        "protanopiaDeltaE": 44.8,
+        "hueA": 20,
+        "hueB": 172,
+        "worst": 44.8
+      },
+      {
+        "a": "beard #be5826",
+        "b": "GOLD #e2b63f",
+        "deltaE": 46.5,
+        "contrast": 2.4,
+        "deuteranopiaDeltaE": 27.8,
+        "protanopiaDeltaE": 39.1,
+        "hueA": 20,
+        "hueB": 44,
+        "worst": 27.8
+      },
+      {
+        "a": "beard #be5826",
+        "b": "VIOLET #a277d2",
+        "deltaE": 87.9,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 89.7,
+        "protanopiaDeltaE": 86.2,
+        "hueA": 20,
+        "hueB": 268,
+        "worst": 86.2
+      }
+    ],
+    "againstCopper": 12.8,
+    "specReference": {
+      "colour": "#c8642a",
+      "againstMean": 5.3
+    }
+  },
+  "leather": {
+    "mean": "#4e2417",
+    "against": [
+      {
+        "a": "leather #4e2417",
+        "b": "Undead violet #a221ee",
+        "deltaE": 113.8,
+        "contrast": 2.5,
+        "deuteranopiaDeltaE": 96.3,
+        "protanopiaDeltaE": 99.7,
+        "hueA": 14,
+        "hueB": 278,
+        "worst": 96.3
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Martian magenta #f30a96",
+        "deltaE": 78.5,
+        "contrast": 3.3,
+        "deuteranopiaDeltaE": 43.2,
+        "protanopiaDeltaE": 51.8,
+        "hueA": 14,
+        "hueB": 324,
+        "worst": 43.2
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Ice Folk ice blue #24abfc",
+        "deltaE": 85.7,
+        "contrast": 5.2,
+        "deuteranopiaDeltaE": 85.5,
+        "protanopiaDeltaE": 80.2,
+        "hueA": 14,
+        "hueB": 203,
+        "worst": 80.2
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Dinosaur red-orange #fe7500",
+        "deltaE": 77.2,
+        "contrast": 4.9,
+        "deuteranopiaDeltaE": 71.1,
+        "protanopiaDeltaE": 62.8,
+        "hueA": 14,
+        "hueB": 28,
+        "worst": 62.8
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Goblin leather #955627",
+        "deltaE": 31.1,
+        "contrast": 2.3,
+        "deuteranopiaDeltaE": 30.8,
+        "protanopiaDeltaE": 30.4,
+        "hueA": 14,
+        "hueB": 26,
+        "worst": 30.4
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Goblin rust #8a4625",
+        "deltaE": 24.7,
+        "contrast": 1.9,
+        "deuteranopiaDeltaE": 24.3,
+        "protanopiaDeltaE": 21.9,
+        "hueA": 14,
+        "hueB": 20,
+        "worst": 21.9
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Goblin leather shadow #5f2407",
+        "deltaE": 14.8,
+        "contrast": 1.1,
+        "deuteranopiaDeltaE": 13,
+        "protanopiaDeltaE": 12,
+        "hueA": 14,
+        "hueB": 20,
+        "worst": 12
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Goblin gunmetal #47545b",
+        "deltaE": 35.1,
+        "contrast": 1.7,
+        "deuteranopiaDeltaE": 28.9,
+        "protanopiaDeltaE": 26.3,
+        "hueA": 14,
+        "hueB": 201,
+        "worst": 26.3
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Goblin olive skin #8a952f",
+        "deltaE": 62.8,
+        "contrast": 4.1,
+        "deuteranopiaDeltaE": 47.8,
+        "protanopiaDeltaE": 59.2,
+        "hueA": 14,
+        "hueB": 66,
+        "worst": 47.8
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Human crimson #c50d25",
+        "deltaE": 56.4,
+        "contrast": 2.2,
+        "deuteranopiaDeltaE": 36.5,
+        "protanopiaDeltaE": 17.9,
+        "hueA": 14,
+        "hueB": 352,
+        "worst": 17.9
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Martian chrome #d1dbe1",
+        "deltaE": 73.4,
+        "contrast": 9.4,
+        "deuteranopiaDeltaE": 69.6,
+        "protanopiaDeltaE": 72.2,
+        "hueA": 14,
+        "hueB": 203,
+        "worst": 69.6
+      },
+      {
+        "a": "leather #4e2417",
+        "b": "Banned rust-dark copper #8c4a2a",
+        "deltaE": 24.6,
+        "contrast": 2,
+        "deuteranopiaDeltaE": 24.2,
+        "protanopiaDeltaE": 22.3,
+        "hueA": 14,
+        "hueB": 20,
+        "worst": 22.3
+      }
+    ]
+  },
+  "steam": {
+    "mean": "#f0f1ee",
+    "against": [
+      {
+        "a": "steam #f0f1ee",
+        "b": "Undead violet #a221ee",
+        "deltaE": 121,
+        "contrast": 4.6,
+        "deuteranopiaDeltaE": 88,
+        "protanopiaDeltaE": 95.2,
+        "hueA": 79,
+        "hueB": 278,
+        "worst": 88
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Martian magenta #f30a96",
+        "deltaE": 94.4,
+        "contrast": 3.5,
+        "deuteranopiaDeltaE": 36.3,
+        "protanopiaDeltaE": 60,
+        "hueA": 79,
+        "hueB": 324,
+        "worst": 36.3
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Ice Folk ice blue #24abfc",
+        "deltaE": 58.4,
+        "contrast": 2.2,
+        "deuteranopiaDeltaE": 63.7,
+        "protanopiaDeltaE": 52.5,
+        "hueA": 79,
+        "hueB": 203,
+        "worst": 52.5
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Dinosaur red-orange #fe7500",
+        "deltaE": 91.5,
+        "contrast": 2.4,
+        "deuteranopiaDeltaE": 75.4,
+        "protanopiaDeltaE": 71.6,
+        "hueA": 79,
+        "hueB": 28,
+        "worst": 71.6
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Goblin leather #955627",
+        "deltaE": 67.3,
+        "contrast": 5.1,
+        "deuteranopiaDeltaE": 62.4,
+        "protanopiaDeltaE": 64.8,
+        "hueA": 79,
+        "hueB": 26,
+        "worst": 62.4
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Goblin rust #8a4625",
+        "deltaE": 70.5,
+        "contrast": 6.2,
+        "deuteranopiaDeltaE": 64.1,
+        "protanopiaDeltaE": 67,
+        "hueA": 79,
+        "hueB": 20,
+        "worst": 64.1
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Goblin leather shadow #5f2407",
+        "deltaE": 82.1,
+        "contrast": 10.6,
+        "deuteranopiaDeltaE": 76.5,
+        "protanopiaDeltaE": 79.9,
+        "hueA": 79,
+        "hueB": 20,
+        "worst": 76.5
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Goblin gunmetal #47545b",
+        "deltaE": 60.5,
+        "contrast": 6.9,
+        "deuteranopiaDeltaE": 60.8,
+        "protanopiaDeltaE": 59.7,
+        "hueA": 79,
+        "hueB": 201,
+        "worst": 59.7
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Goblin olive skin #8a952f",
+        "deltaE": 63.1,
+        "contrast": 2.9,
+        "deuteranopiaDeltaE": 59,
+        "protanopiaDeltaE": 65.9,
+        "hueA": 79,
+        "hueB": 66,
+        "worst": 59
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Human crimson #c50d25",
+        "deltaE": 93.2,
+        "contrast": 5.4,
+        "deuteranopiaDeltaE": 65.4,
+        "protanopiaDeltaE": 67.5,
+        "hueA": 79,
+        "hueB": 352,
+        "worst": 65.4
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Martian chrome #d1dbe1",
+        "deltaE": 9.8,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 9.8,
+        "protanopiaDeltaE": 9.1,
+        "hueA": 79,
+        "hueB": 203,
+        "worst": 9.1
+      },
+      {
+        "a": "steam #f0f1ee",
+        "b": "Banned rust-dark copper #8c4a2a",
+        "deltaE": 68.5,
+        "contrast": 5.9,
+        "deuteranopiaDeltaE": 62.6,
+        "protanopiaDeltaE": 65,
+        "hueA": 79,
+        "hueB": 20,
+        "worst": 62.6
+      }
+    ]
+  },
+  "lamp": {
+    "mean": "#4ac14a",
+    "againstPlayers": [
+      {
+        "a": "lamp #4ac14a",
+        "b": "CORAL #f06762",
+        "deltaE": 111,
+        "contrast": 1.3,
+        "deuteranopiaDeltaE": 10,
+        "protanopiaDeltaE": 44.7,
+        "hueA": 120,
+        "hueB": 2,
+        "worst": 10
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "TEAL #28b7a4",
+        "deltaE": 52.3,
+        "contrast": 1.1,
+        "deuteranopiaDeltaE": 48.9,
+        "protanopiaDeltaE": 54.7,
+        "hueA": 120,
+        "hueB": 172,
+        "worst": 48.9
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "GOLD #e2b63f",
+        "deltaE": 62.7,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 20.6,
+        "protanopiaDeltaE": 7.2,
+        "hueA": 120,
+        "hueB": 44,
+        "worst": 7.2
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "VIOLET #a277d2",
+        "deltaE": 128.5,
+        "contrast": 1.5,
+        "deuteranopiaDeltaE": 85.2,
+        "protanopiaDeltaE": 104.6,
+        "hueA": 120,
+        "hueB": 268,
+        "worst": 85.2
+      }
+    ],
+    "againstAccents": [
+      {
+        "a": "lamp #4ac14a",
+        "b": "Undead violet #a221ee",
+        "deltaE": 185.4,
+        "contrast": 2.3,
+        "deuteranopiaDeltaE": 119,
+        "protanopiaDeltaE": 141.9,
+        "hueA": 120,
+        "hueB": 278,
+        "worst": 119
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Martian magenta #f30a96",
+        "deltaE": 153,
+        "contrast": 1.7,
+        "deuteranopiaDeltaE": 47.5,
+        "protanopiaDeltaE": 94.3,
+        "hueA": 120,
+        "hueB": 324,
+        "worst": 47.5
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Ice Folk ice blue #24abfc",
+        "deltaE": 110.7,
+        "contrast": 1.1,
+        "deuteranopiaDeltaE": 99,
+        "protanopiaDeltaE": 105.2,
+        "hueA": 120,
+        "hueB": 203,
+        "worst": 99
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Dinosaur red-orange #fe7500",
+        "deltaE": 107,
+        "contrast": 1.2,
+        "deuteranopiaDeltaE": 27.6,
+        "protanopiaDeltaE": 14.5,
+        "hueA": 120,
+        "hueB": 28,
+        "worst": 14.5
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Goblin leather #955627",
+        "deltaE": 83.7,
+        "contrast": 2.5,
+        "deuteranopiaDeltaE": 23.5,
+        "protanopiaDeltaE": 40.9,
+        "hueA": 120,
+        "hueB": 26,
+        "worst": 23.5
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Goblin rust #8a4625",
+        "deltaE": 90.1,
+        "contrast": 3,
+        "deuteranopiaDeltaE": 29.5,
+        "protanopiaDeltaE": 49.4,
+        "hueA": 120,
+        "hueB": 20,
+        "worst": 29.5
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Goblin leather shadow #5f2407",
+        "deltaE": 96.1,
+        "contrast": 5.2,
+        "deuteranopiaDeltaE": 45,
+        "protanopiaDeltaE": 62.8,
+        "hueA": 120,
+        "hueB": 20,
+        "worst": 45
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Goblin gunmetal #47545b",
+        "deltaE": 83.8,
+        "contrast": 3.3,
+        "deuteranopiaDeltaE": 60.7,
+        "protanopiaDeltaE": 74.2,
+        "hueA": 120,
+        "hueB": 201,
+        "worst": 60.7
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Goblin olive skin #8a952f",
+        "deltaE": 40.1,
+        "contrast": 1.4,
+        "deuteranopiaDeltaE": 9.5,
+        "protanopiaDeltaE": 13.6,
+        "hueA": 120,
+        "hueB": 66,
+        "worst": 9.5
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Human crimson #c50d25",
+        "deltaE": 125.2,
+        "contrast": 2.6,
+        "deuteranopiaDeltaE": 21.2,
+        "protanopiaDeltaE": 53.4,
+        "hueA": 120,
+        "hueB": 352,
+        "worst": 21.2
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Martian chrome #d1dbe1",
+        "deltaE": 77.9,
+        "contrast": 1.7,
+        "deuteranopiaDeltaE": 52.1,
+        "protanopiaDeltaE": 65.2,
+        "hueA": 120,
+        "hueB": 203,
+        "worst": 52.1
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Banned rust-dark copper #8c4a2a",
+        "deltaE": 88.9,
+        "contrast": 2.9,
+        "deuteranopiaDeltaE": 29.1,
+        "protanopiaDeltaE": 49,
+        "hueA": 120,
+        "hueB": 20,
+        "worst": 29.1
+      }
+    ],
+    "againstTerrain": [
+      {
+        "a": "lamp #4ac14a",
+        "b": "Grass #89b75b",
+        "deltaE": 26.6,
+        "contrast": 1,
+        "deuteranopiaDeltaE": 5.7,
+        "protanopiaDeltaE": 12.1,
+        "hueA": 120,
+        "hueB": 90,
+        "worst": 5.7
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Forest #769a51",
+        "deltaE": 35.7,
+        "contrast": 1.4,
+        "deuteranopiaDeltaE": 15.1,
+        "protanopiaDeltaE": 23.7,
+        "hueA": 120,
+        "hueB": 89,
+        "worst": 15.1
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Mountain rock #a2aab6",
+        "deltaE": 79.6,
+        "contrast": 1,
+        "deuteranopiaDeltaE": 52.1,
+        "protanopiaDeltaE": 66.9,
+        "hueA": 120,
+        "hueB": 216,
+        "worst": 52.1
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Snow #f5f8fc",
+        "deltaE": 81.1,
+        "contrast": 2.2,
+        "deuteranopiaDeltaE": 55.3,
+        "protanopiaDeltaE": 66.9,
+        "hueA": 120,
+        "hueB": 214,
+        "worst": 55.3
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Shallow Water #8fd3dc",
+        "deltaE": 71.7,
+        "contrast": 1.4,
+        "deuteranopiaDeltaE": 58.5,
+        "protanopiaDeltaE": 68.6,
+        "hueA": 120,
+        "hueB": 187,
+        "worst": 58.5
+      },
+      {
+        "a": "lamp #4ac14a",
+        "b": "Deep Water #4277a5",
+        "deltaE": 97.7,
+        "contrast": 2,
+        "deuteranopiaDeltaE": 80.1,
+        "protanopiaDeltaE": 90.1,
+        "hueA": 120,
+        "hueB": 208,
+        "worst": 80.1
+      }
+    ]
+  },
+  "onTerrain": {
+    "Grass": {
+      "iron": 69.9,
+      "ironContrast": 5,
+      "rim": 52.2,
+      "copper": 72.3,
+      "beard": 72.4,
+      "outlineContrast": 8.7
+    },
+    "Forest": {
+      "iron": 56.8,
+      "ironContrast": 3.6,
+      "rim": 43.4,
+      "copper": 68,
+      "beard": 65.8,
+      "outlineContrast": 6.4
+    },
+    "Mountain rock": {
+      "iron": 45.9,
+      "ironContrast": 5,
+      "rim": 8.4,
+      "copper": 74.7,
+      "beard": 69.3,
+      "outlineContrast": 8.7
+    },
+    "Snow": {
+      "iron": 73.7,
+      "ironContrast": 10.9,
+      "rim": 33,
+      "copper": 79.6,
+      "beard": 78.7,
+      "outlineContrast": 19.2
+    },
+    "Shallow Water": {
+      "iron": 60.7,
+      "ironContrast": 7,
+      "rim": 27.1,
+      "copper": 91,
+      "beard": 87.3,
+      "outlineContrast": 12.2
+    },
+    "Deep Water": {
+      "iron": 37.9,
+      "ironContrast": 2.4,
+      "rim": 34,
+      "copper": 95.9,
+      "beard": 87.4,
+      "outlineContrast": 4.3
+    }
+  },
+  "nearestLookAlike": [
+    {
+      "unit": "Hammerer",
+      "nearest": "Human CATAPULT",
+      "palette": 9.1,
+      "deuteranopia": 4.9,
+      "lightness": 4,
+      "silhouette": 0.48,
+      "nearestOfRole": "Human FIGHTER",
+      "paletteOfRole": 14.2
+    },
+    {
+      "unit": "Gyrocopter",
+      "nearest": "Goblin KNIGHT",
+      "palette": 11,
+      "deuteranopia": 6.2,
+      "lightness": 19,
+      "silhouette": 0.41,
+      "nearestOfRole": "Goblin RAIDER",
+      "paletteOfRole": 11.8
+    },
+    {
+      "unit": "Clockwork Gunner",
+      "nearest": "Goblin KNIGHT",
+      "palette": 10.2,
+      "deuteranopia": 5.9,
+      "lightness": 10.1,
+      "silhouette": 0.55,
+      "nearestOfRole": "Human MARKSMAN",
+      "paletteOfRole": 12.3
+    },
+    {
+      "unit": "Steam Mole",
+      "nearest": "Human CATAPULT",
+      "palette": 9.2,
+      "deuteranopia": 4.5,
+      "lightness": 3.1,
+      "silhouette": 0.43,
+      "nearestOfRole": "Human GUARD",
+      "paletteOfRole": 11.8
+    },
+    {
+      "unit": "Engineer",
+      "nearest": "Goblin CAPTAIN",
+      "palette": 10.6,
+      "deuteranopia": 6.9,
+      "lightness": 6.4,
+      "silhouette": 0.63,
+      "nearestOfRole": "Goblin CAPTAIN",
+      "paletteOfRole": 10.6
+    },
+    {
+      "unit": "Steam Cannon",
+      "nearest": "Goblin KNIGHT",
+      "palette": 10.4,
+      "deuteranopia": 5.5,
+      "lightness": 16.6,
+      "silhouette": 0.58,
+      "nearestOfRole": "Human CATAPULT",
+      "paletteOfRole": 10.7
+    },
+    {
+      "unit": "Steam Tank",
+      "nearest": "Human CATAPULT",
+      "palette": 10.5,
+      "deuteranopia": 5.7,
+      "lightness": 3.6,
+      "silhouette": 0.52,
+      "nearestOfRole": "Goblin KNIGHT",
+      "paletteOfRole": 10.6
+    },
+    {
+      "unit": "Brass Titan",
+      "nearest": "Goblin KNIGHT",
+      "palette": 10.3,
+      "deuteranopia": 5.7,
+      "lightness": 10.5,
+      "silhouette": 0.5,
+      "nearestOfRole": "Human JUGGERNAUT",
+      "paletteOfRole": 12.9
+    }
+  ],
+  "familyDistance": [
+    {
+      "unit": "Gyrocopter",
+      "fromHammerer": 7.4
+    },
+    {
+      "unit": "Clockwork Gunner",
+      "fromHammerer": 5.4
+    },
+    {
+      "unit": "Steam Mole",
+      "fromHammerer": 5.3
+    },
+    {
+      "unit": "Engineer",
+      "fromHammerer": 6.2
+    },
+    {
+      "unit": "Steam Cannon",
+      "fromHammerer": 6.1
+    },
+    {
+      "unit": "Steam Tank",
+      "fromHammerer": 5.4
+    },
+    {
+      "unit": "Brass Titan",
+      "fromHammerer": 6.3
+    }
+  ],
+  "hueCheck": [
+    {
+      "unit": "Hammerer",
+      "keyBandPixels": 0
+    },
+    {
+      "unit": "Gyrocopter",
+      "keyBandPixels": 0
+    },
+    {
+      "unit": "Clockwork Gunner",
+      "keyBandPixels": 0
+    },
+    {
+      "unit": "Steam Mole",
+      "keyBandPixels": 0
+    },
+    {
+      "unit": "Engineer",
+      "keyBandPixels": 0
+    },
+    {
+      "unit": "Steam Cannon",
+      "keyBandPixels": 0
+    },
+    {
+      "unit": "Steam Tank",
+      "keyBandPixels": 0
+    },
+    {
+      "unit": "Brass Titan",
+      "keyBandPixels": 0
+    }
+  ]
+}

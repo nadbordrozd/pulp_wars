@@ -652,3 +652,36 @@ See [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md).
 `ice-folk`; `<FACTION>` is `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN` or
 `ICE_FOLK`. 30 assets from 48 recipes (48 PixelLab calls). A self-launched
 Martian machine afloat stays drawn as itself and has no naval sprite.
+
+## Steampunk Dwarf production art: batches `direction-dwarf` and `naval-dwarf` (bead `pulp_wars-78i.5`)
+
+A seventh faction's art, made before the faction is in the game and **not
+registered**: the entries are in
+[`chibi-direction-dwarf-art-manifest.ts`](../../src/assets/chibi-direction-dwarf-art-manifest.ts),
+which nothing imports until bead `pulp_wars-78i.6` (the review scenes
+excepted). Fixed faction colours (soot-black iron with a light rim, red
+copper, dark leather, white steam, ginger-copper beards, the signal-green
+lamp on every machine), no owner mask. See [DWARF.md](factions/DWARF.md).
+
+| Subjects                                                                     | Assets                                                       | Class and canvas                                                   |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `UNIT:DWARF:FIGHTER`, `MARKSMAN`, `GUARD`, `CAPTAIN`                         | Hammerer, Clockwork Gunner, Steam Mole, Engineer             | `STANDARD_UNIT`, 56 x 80                                           |
+| `UNIT:DWARF:RAIDER`, `CATAPULT`, `KNIGHT`                                    | Gyrocopter, Steam Cannon, Steam Tank                         | `LARGE_UNIT`, 72 x 88                                              |
+| `UNIT:DWARF:JUGGERNAUT`                                                      | Brass Titan                                                  | `GIANT_UNIT`, 88 x 104                                             |
+| `UNIT:DWARF:MOUND`, `UNIT:DWARF:MOUND_RIDER`                                 | the tunnel mound and the rider's mound                       | `STANDARD_UNIT`, 56 x 48 (`icon` class, the Egg precedent)         |
+| `PORTRAIT:DWARF:<ROLE>`                                                      | eight portraits                                              | `PORTRAIT`, 48 x 48                                                |
+| `CITY:DWARF:1` to `3`                                                        | the forge hold                                               | `SETTLEMENT`, 80 x 80, 88 x 88, 96 x 88; pennant anchors recorded  |
+| `ICON:ACTION:TUNNEL`, `BOMB_RUN`, `ASSEMBLE`, `KNOCKBACK`, `PLATED`          | five command and ability icons                               | `ICON`, 48 x 48                                                    |
+| `ICON:ACTION:DWARF:TEND_WOUNDED`                                             | Repair                                                       | `ICON`, 48 x 48                                                    |
+| `ICON:TECH:DWARF:FORTIFICATION`, `ICON:TECH:DWARF:EXPLOSIVES`                | Dig In and Blasting Charges                                  | `ICON`, 48 x 48                                                    |
+| `ICON:STATUS:CLOCKWORK`, `ICON:STATUS:DUG_IN`                                | the clockwork and dug-in glyphs                              | `ICON`, 48 x 48                                                    |
+| `EFFECT:ERUPTION`, `BOMB_BLAST`, `STEAM_PUFF`, `REPAIR_SPARKS`               | four effect sprites                                          | `EFFECT`, 48 x 48 (puff and sparks 40 x 40), palette `dwarf-forge` |
+| `UNIT:DWARF:PATROL_BOAT`, `BATTLESHIP`, `EMBARKED_TRANSPORT` (generic naval) | `chibi-naval-dwarf-patrol-boat`, `-battleship`, `-transport` | the shared ships' canvases (72 x 88, 88 x 96, 72 x 72)             |
+| `PORTRAIT:DWARF:PATROL_BOAT`, `BATTLESHIP` (generic naval)                   | `chibi-naval-dwarf-portrait-patrol-boat`, `-battleship`      | `PORTRAIT`, 48 x 48                                                |
+
+40 assets from 89 recipes (89 PixelLab calls, one failed at PixelLab); a
+41st, the eruption's dirt ring, was retired. The Dig In earthwork, the
+eruption ring, the eruption and bomb timelines and the Gyrocopter's shadow
+are code-drawn or code-driven; their pure functions and constants are in
+[`chibi-direction-dwarf-presentation.ts`](../../src/assets/chibi-direction-dwarf-presentation.ts)
+and described in [DWARF.md](factions/DWARF.md#code-drawn-pieces).

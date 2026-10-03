@@ -1,0 +1,37 @@
+{
+  "id": "dwarf-transport-steam-a",
+  "jobId": "18a43dd5-1017-4b66-8788-cb89d99fc46c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dwarf",
+    "asset": "chibi-naval-dwarf-transport",
+    "subject": "UNIT:DWARF:EMBARKED_TRANSPORT",
+    "faction": "DWARF",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96721,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a steam barge: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red tarp becomes dark brown leather #4a3426 tied with copper bands; the pennant pole becomes a short copper #d06a2a smokestack puffing white steam; add a small bright green #2bd94a lamp. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a steam barge: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red tarp becomes dark brown leather #4a3426 tied with copper bands; the pennant pole becomes a short copper #d06a2a smokestack puffing white steam; add a small bright green #2bd94a lamp. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a steam barge: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red tarp becomes dark brown leather #4a3426 tied with copper bands; the pennant pole becomes a short copper #d06a2a smokestack puffing white steam; add a small bright green #2bd94a lamp. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a steam barge: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red tarp becomes dark brown leather #4a3426 tied with copper bands; the pennant pole becomes a short copper #d06a2a smokestack puffing white steam; add a small bright green #2bd94a lamp. Nothing red. Keep the oars, boat shape, size, thick black outline and style the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "embarked-transport-a-edit",
+      "candidate": 0,
+      "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+    }
+  }
+}

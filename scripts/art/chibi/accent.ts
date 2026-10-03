@@ -129,6 +129,30 @@ export const ACCENT_PRESETS = {
     hueSpread: 0.3,
     saturation: { scale: 1.4, add: 0.3, max: 0.95 },
   },
+  /**
+   * The Steampunk Dwarf copper shade (bead pulp_wars-78i.5, DWARF.md). The
+   * Dwarves have no colour accent to pin: PixelLab draws their copper as
+   * a red copper (lit about `#d86020`, hue 18), and its darkest shades
+   * sometimes fall to hue 352 to 5, the owner key's band (the Clockwork
+   * Gunner, two portraits and the cog icon had 5 to 64 such pixels). The
+   * step finds those deep red-copper shades (hue 340 to 9, a band that
+   * wraps round 0, saturation at least 0.45, value at least 0.2) and moves
+   * them into copper at hue 7 to 14 with a quarter of their spread, so no
+   * pixel of any Dwarf sprite is in the key band. The lit copper, the
+   * ginger beards (hue 17 to 22), skin, leather, iron, steam and the green
+   * lamp lie outside the band and are never touched.
+   */
+  "dwarf-copper": {
+    band: {
+      hueFrom: 340,
+      hueTo: 9,
+      saturationMin: 0.45,
+      valueMin: 0.2,
+      hueCentre: 4,
+    },
+    hue: 13,
+    hueSpread: 0.25,
+  },
 } as const satisfies Readonly<Record<string, AccentSpec>>;
 
 export type AccentPresetName = keyof typeof ACCENT_PRESETS;
@@ -175,8 +199,11 @@ export function isAccentColour(
 ): boolean {
   const { hue, saturation, value } = rgbToHsv(r, g, b);
   return (
-    hue >= spec.band.hueFrom &&
-    hue <= spec.band.hueTo &&
+    // A band whose `hueFrom` exceeds its `hueTo` wraps round 0 (bead
+    // pulp_wars-78i.5, `dwarf-copper`); the earlier presets do not wrap.
+    (spec.band.hueFrom <= spec.band.hueTo
+      ? hue >= spec.band.hueFrom && hue <= spec.band.hueTo
+      : hue >= spec.band.hueFrom || hue <= spec.band.hueTo) &&
     saturation >= spec.band.saturationMin &&
     value >= spec.band.valueMin
   );
@@ -229,7 +256,11 @@ export function accentRaster(base: RgbaRaster, spec: AccentSpec): AccentResult {
         source[offset + 2] ?? 0,
       );
       const hue =
-        spec.hue + (hue360(hsv.hue) - spec.band.hueCentre) * spec.hueSpread;
+        spec.hue +
+        (spec.band.hueFrom <= spec.band.hueTo
+          ? hue360(hsv.hue) - spec.band.hueCentre
+          : hueOffset(hsv.hue, spec.band.hueCentre)) *
+          spec.hueSpread;
       let { saturation, value } = hsv;
       if (spec.floor !== undefined && value < spec.floor.valueMin)
         value = spec.floor.valueMin;
@@ -274,4 +305,13 @@ export function accentRaster(base: RgbaRaster, spec: AccentSpec): AccentResult {
 
 function hue360(hue: number): number {
   return ((hue % 360) + 360) % 360;
+}
+
+/**
+ * The signed hue difference from the centre of a band that wraps round 0,
+ * -180 to 180, the short way round. Bands that do not wrap keep the plain
+ * difference above, byte for byte.
+ */
+function hueOffset(hue: number, centre: number): number {
+  return hue360(hue - centre + 180) - 180;
 }

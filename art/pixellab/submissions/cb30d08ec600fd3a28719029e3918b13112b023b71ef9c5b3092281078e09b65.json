@@ -1,0 +1,36 @@
+{
+  "id": "portrait-hammerer-a-edit",
+  "jobId": "0d5da038-dffc-410f-a9e7-42b4d9475db5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-portrait-dwarf-hammerer",
+    "subject": "PORTRAIT:DWARF:FIGHTER",
+    "faction": "DWARF",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 79002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the white puffs and the little pipes sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top; do not redraw anything else. Keep the goggles, the ginger beard, the face, the shoulder plates, the hammer, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the white puffs and the little pipes sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top; do not redraw anything else. Keep the goggles, the ginger beard, the face, the shoulder plates, the hammer, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the white puffs and the little pipes sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top; do not redraw anything else. Keep the goggles, the ginger beard, the face, the shoulder plates, the hammer, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the white puffs and the little pipes sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top; do not redraw anything else. Keep the goggles, the ginger beard, the face, the shoulder plates, the hammer, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-hammerer-a",
+      "candidate": 0,
+      "sha256": "79cc75ed246ff71c8b5c523cd0e8a3e7c53b6f779eecf821a437cac6e15fab3a"
+    }
+  }
+}

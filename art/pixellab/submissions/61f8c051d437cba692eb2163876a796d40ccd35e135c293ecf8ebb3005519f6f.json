@@ -1,0 +1,36 @@
+{
+  "id": "steam-cannon-a-iron",
+  "jobId": "83269514-0edc-4fd6-88b9-0962a334234e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-steam-cannon",
+    "subject": "UNIT:DWARF:CATAPULT",
+    "faction": "DWARF",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78204,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the carriage and wheels: the orange-brown carriage becomes soot-black riveted iron plates #3a3835 with a light warm grey #8a8580 top edge, and the wheels become soot-black iron wheels with copper hubs, so nothing looks like wood. Keep the black barrel, the copper boiler with its green lamp and steam, the two dwarf gunners, the shapes, black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the carriage and wheels: the orange-brown carriage becomes soot-black riveted iron plates #3a3835 with a light warm grey #8a8580 top edge, and the wheels become soot-black iron wheels with copper hubs, so nothing looks like wood. Keep the black barrel, the copper boiler with its green lamp and steam, the two dwarf gunners, the shapes, black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the carriage and wheels: the orange-brown carriage becomes soot-black riveted iron plates #3a3835 with a light warm grey #8a8580 top edge, and the wheels become soot-black iron wheels with copper hubs, so nothing looks like wood. Keep the black barrel, the copper boiler with its green lamp and steam, the two dwarf gunners, the shapes, black outline and art style the same, on a transparent background.",
+    "editInstruction": "Recolour only the carriage and wheels: the orange-brown carriage becomes soot-black riveted iron plates #3a3835 with a light warm grey #8a8580 top edge, and the wheels become soot-black iron wheels with copper hubs, so nothing looks like wood. Keep the black barrel, the copper boiler with its green lamp and steam, the two dwarf gunners, the shapes, black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "steam-cannon-a-lamp-b",
+      "candidate": 1,
+      "sha256": "f2ebf8ff8eba5aea6c27f05ff6822220e006c680a5273865d9a23b37373d7ca1"
+    }
+  }
+}

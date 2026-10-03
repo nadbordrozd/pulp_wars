@@ -1,0 +1,36 @@
+{
+  "id": "mound-a-drill",
+  "jobId": "4cdeeba6-56d5-47df-8613-63fdf9e70adb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-mound",
+    "subject": "UNIT:DWARF:MOUND",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 56,
+      "height": 48
+    },
+    "seed": 77003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the orange cone on top: it becomes a big drill bit, wider at its base, of polished copper #d06a2a with three dark #3d2a1e spiral grooves winding round it and a small light grey steel point, so it is clearly a drill and not a flame. Keep the round heap of dark brown earth, the grey rocks, the white steam puff, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the orange cone on top: it becomes a big drill bit, wider at its base, of polished copper #d06a2a with three dark #3d2a1e spiral grooves winding round it and a small light grey steel point, so it is clearly a drill and not a flame. Keep the round heap of dark brown earth, the grey rocks, the white steam puff, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the orange cone on top: it becomes a big drill bit, wider at its base, of polished copper #d06a2a with three dark #3d2a1e spiral grooves winding round it and a small light grey steel point, so it is clearly a drill and not a flame. Keep the round heap of dark brown earth, the grey rocks, the white steam puff, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Change only the orange cone on top: it becomes a big drill bit, wider at its base, of polished copper #d06a2a with three dark #3d2a1e spiral grooves winding round it and a small light grey steel point, so it is clearly a drill and not a flame. Keep the round heap of dark brown earth, the grey rocks, the white steam puff, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "mound-a-edit",
+      "candidate": 0,
+      "sha256": "a2b26c6d90be051313ae2fb9522a998f455a0a068f6e8016817ea873117bef38"
+    }
+  }
+}

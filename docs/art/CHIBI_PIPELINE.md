@@ -1101,3 +1101,89 @@ with `evidence.json` (the planned pieces and the dock text). The default
 look tones terrain toward the Grass mean; a Rift piece keeps pixels darker
 than any Grass pixel (luma below 100) out of that toning, so the chasm keeps
 its depth while its Grass matches the cells around it.
+
+## The Dwarf batches (bead `pulp_wars-78i.5`)
+
+Batches `direction-dwarf` and `naval-dwarf` hold the direction study and the
+production art of a seventh faction, the
+[Steampunk Dwarves](factions/DWARF.md): faction `DWARF`,
+`fixedFactionColours`, 35 assets (eight units, the two tunnel mounds, eight
+portraits, ten icons, four effects, City 1 to 3) and the five naval pieces,
+from 89 recipes, all new PixelLab calls. **Nothing registers them yet:**
+the entries are in
+[`chibi-direction-dwarf-art-manifest.ts`](../../src/assets/chibi-direction-dwarf-art-manifest.ts),
+which no game module imports until bead `pulp_wars-78i.6`. They added these
+pipeline pieces:
+
+- **`dwarf-copper` accent preset**
+  ([`accent.ts`](../../scripts/art/chibi/accent.ts)) and **bands that wrap
+  round 0**: a preset whose `hueFrom` exceeds its `hueTo` matches hues from
+  `hueFrom` up to 360 and from 0 to `hueTo`, and measures the hue offset
+  the short way round its centre. The earlier presets do not wrap and keep
+  their derivation byte for byte (their masters re-derive unchanged). The
+  Dwarves have no colour accent to pin; the preset moves the deepest
+  red-copper shades (hue 340 to 9, saturation at least 0.45, value at least
+  0.2) to copper at hue 7 to 14, so no Dwarf master has a pixel in the owner
+  key's band. Every Dwarf asset but the effects names it.
+- **Subjects**: `UNIT:DWARF:<ROLE>`, `UNIT:DWARF:MOUND` and
+  `UNIT:DWARF:MOUND_RIDER`, `PORTRAIT:DWARF:<ROLE>`, `CITY:DWARF:<level>`,
+  `ICON:ACTION:{TUNNEL,BOMB_RUN,ASSEMBLE,KNOCKBACK,PLATED}`,
+  `ICON:ACTION:DWARF:TEND_WOUNDED` (Repair), `ICON:TECH:DWARF:{FORTIFICATION,EXPLOSIVES}`
+  (Dig In, Blasting Charges), `ICON:STATUS:{CLOCKWORK,DUG_IN}` and
+  `EFFECT:{ERUPTION,BOMB_BLAST,STEAM_PUFF,REPAIR_SPARKS}` (the type
+  `DwarfArtSubjectV7` in [`chibi-art-v7.ts`](../../src/assets/chibi-art-v7.ts),
+  and `DWARF` and the two status names in the manifest's subject pattern);
+  the naval subjects `UNIT:DWARF:<naval role>` and
+  `PORTRAIT:DWARF:<warship>` are the generic naval subjects of bead
+  `pulp_wars-w5j.3` (`navalArtSubjectV7`), live once `DWARF` is a faction.
+- **Effects** are `palette-map` assets on
+  `scripts/art/chibi/palettes/dwarf-forge.png`, written by
+  `npx tsx scripts/art/dwarf-direction/forge-palette.ts` (a test checks the
+  bytes).
+- **The 32 px lineup** of the spec runs before any batch:
+  `npx tsx scripts/art/dwarf-direction/lineup.ts --recipes a,b,c,d --tag T`
+  (the Hammerer, Gyrocopter, Steam Cannon and Steam Tank recipes) writes
+  `lineup-study-T`, and `--masters` measures the accepted masters. Its
+  thresholds are calibrated on the 120 same-role pairs of the six accepted
+  factions ([`measure.ts`](../../scripts/art/dwarf-direction/measure.ts)).
+
+What worked, added to the prompt notes of the earlier batches:
+
+- **The faction layer reaches every class, icons included**: a fragment
+  that names the faction's people ("dwarves") or its small props ("round
+  goggles", "white-faced pressure gauges") put a white-bearded dwarf or a
+  goggled gadget with a face into every icon creation, whatever the
+  negative said. Keep figures and face-like props in the subject lines.
+- **A sibling edit of one clean icon makes the rest**: "Redraw it as a
+  different object in the same style: …" on the accepted Bomb Run icon
+  gave clean Tunnel, Assemble and Repair icons; an edit sends no faction
+  layer.
+- **"Add only one tiny detail: … on the <part>"** adds a 3 px lamp where
+  asked; without the part named it went into a cannon's muzzle.
+- **"Like a butterfly" draws a butterfly**: a wind-up key is "a short shaft
+  with a flat round handle with two round holes, like a clock key".
+- **Erasing a flyer's skids leaves its gap** (the Martian Saucer's legs).
+- **Effect creations put sparks on a campfire** twice; a sibling edit of
+  the accepted steam puff made them. A ring of earth turned into a black
+  tyre once palette-mapped: dark earth and grey rock map onto the
+  palette's iron and outline. Prefer code-driven copies of a burst.
+
+`npm run art:chibi-dwarf-direction-review` writes
+`art/pixellab/reviews/chibi-batch-direction-dwarf/`: `lineup-{1x,x3}.png`
+and `lineup.json` (with the `lineup-study-*` files of the study),
+`roster-{x4,1x}.png` and `roster-zoom-0.75.png` (each unit on Grass, Forest,
+Mountain and Snow beside the other six factions' unit of its role, and the
+mounds), `terrain-x2.png` (also the Rift and both waters, the mounds and
+the Dig In earthwork), `portraits-x4.png`, `icons-x4.png`, `effects-x3.png`,
+`mound-x3.png` (the mounds and the earthwork on every terrain, Snow and a
+city centre), `eruption-frames-x3.png` (the eruption timeline on a board
+mock), `cities-x3.png`, `naval-x4.png` (the Dwarf ships beside the six
+fleets), `palette.{png,json}`, `readability.json` and the scenes
+`scene-{mixed,terrain,coast}-{desktop,phone}-zoom-{1,0.75}.png` of
+[`scene.ts`](../../scripts/art/dwarf-direction/scene.ts), drawn by the real
+board host in the live look as the game passes it, which has no base plates
+since bead `pulp_wars-w5j.3`, the six other fleets from the live registry,
+with the Dwarf rasters under Human stand-in subjects and the mounds under a
+Dinosaur stand-in. No sheet draws a plate. Captures start Vite on port
+6534 unless `--port` says otherwise and need `CHROME_PATH` (and `node` on
+the `PATH` for Vite); `--copy-to DIR` copies the key sheets.

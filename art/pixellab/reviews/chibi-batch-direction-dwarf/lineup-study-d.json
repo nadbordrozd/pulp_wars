@@ -1,0 +1,697 @@
+{
+  "bead": "pulp_wars-78i.5",
+  "note": "Study recipes hammerer-a-edit:0, gyrocopter-a-lamp-b:1, steam-cannon-a-lamp-b:1, steam-tank-a-lamp:0 (candidate 0 unless given).",
+  "thresholds": {
+    "palette": 18.6,
+    "simulated": 13.1,
+    "lightness": 7.1,
+    "silhouette": 0.65
+  },
+  "calibrationPairs": 120,
+  "pairs": [
+    {
+      "dwarf": "Hammerer",
+      "rival": "Necromancer",
+      "measure": {
+        "palette": 24.8,
+        "deuteranopia": 18.1,
+        "protanopia": 17.2,
+        "greyPalette": 1.6,
+        "lightness": 9.6,
+        "meanLightness": [
+          29.5,
+          28.2
+        ],
+        "silhouette": 0.69,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "dwarf": "Hammerer",
+      "rival": "Lich",
+      "measure": {
+        "palette": 21.6,
+        "deuteranopia": 15.5,
+        "protanopia": 14.3,
+        "greyPalette": 1.1,
+        "lightness": 8,
+        "meanLightness": [
+          29.5,
+          29.3
+        ],
+        "silhouette": 0.55,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "dwarf": "Hammerer",
+      "rival": "Vampire",
+      "measure": {
+        "palette": 20.5,
+        "deuteranopia": 13.9,
+        "protanopia": 13.3,
+        "greyPalette": 1.4,
+        "lightness": 7.2,
+        "meanLightness": [
+          29.5,
+          24.3
+        ],
+        "silhouette": 0.55,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    {
+      "dwarf": "Steam Tank",
+      "rival": "Scrap Buggy",
+      "measure": {
+        "palette": 10.6,
+        "deuteranopia": 6,
+        "protanopia": 5.2,
+        "greyPalette": 1.8,
+        "lightness": 17.3,
+        "meanLightness": [
+          34.5,
+          16.2
+        ],
+        "silhouette": 0.59,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    {
+      "dwarf": "Steam Cannon",
+      "rival": "Rocket Cart",
+      "measure": {
+        "palette": 20.5,
+        "deuteranopia": 10.9,
+        "protanopia": 10.9,
+        "greyPalette": 1.4,
+        "lightness": 9.6,
+        "meanLightness": [
+          34.2,
+          24.6
+        ],
+        "silhouette": 0.65,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    {
+      "dwarf": "Gyrocopter",
+      "rival": "Saucer",
+      "measure": {
+        "palette": 24.2,
+        "deuteranopia": 20.5,
+        "protanopia": 20.6,
+        "greyPalette": 1.7,
+        "lightness": 9.3,
+        "meanLightness": [
+          36.9,
+          46.5
+        ],
+        "silhouette": 0.47,
+        "distinct": true,
+        "reasons": []
+      }
+    }
+  ],
+  "goblinRoster": {
+    "Hammerer": {
+      "Goblin": {
+        "palette": 20.2,
+        "deuteranopia": 6.4,
+        "protanopia": 6,
+        "greyPalette": 1.4,
+        "lightness": 4,
+        "meanLightness": [
+          29.5,
+          26.4
+        ],
+        "silhouette": 0.67,
+        "distinct": false,
+        "reasons": [
+          "colour too close",
+          "greyscale too close"
+        ]
+      },
+      "Wolf Rider": {
+        "palette": 11.3,
+        "deuteranopia": 6,
+        "protanopia": 5.7,
+        "greyPalette": 1.3,
+        "lightness": 6.7,
+        "meanLightness": [
+          29.5,
+          23.3
+        ],
+        "silhouette": 0.57,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Bomb Chucker": {
+        "palette": 17,
+        "deuteranopia": 7.3,
+        "protanopia": 7.4,
+        "greyPalette": 1.4,
+        "lightness": 8.9,
+        "meanLightness": [
+          29.5,
+          20.4
+        ],
+        "silhouette": 0.67,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Orc Brute": {
+        "palette": 16,
+        "deuteranopia": 10.7,
+        "protanopia": 8.3,
+        "greyPalette": 2.2,
+        "lightness": 11.2,
+        "meanLightness": [
+          29.5,
+          18.2
+        ],
+        "silhouette": 0.75,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Orc Warboss": {
+        "palette": 11.4,
+        "deuteranopia": 7.1,
+        "protanopia": 5.7,
+        "greyPalette": 1.4,
+        "lightness": 3.5,
+        "meanLightness": [
+          29.5,
+          26.5
+        ],
+        "silhouette": 0.64,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Rocket Cart": {
+        "palette": 19.8,
+        "deuteranopia": 11.2,
+        "protanopia": 10.4,
+        "greyPalette": 1.3,
+        "lightness": 5.5,
+        "meanLightness": [
+          29.5,
+          24.6
+        ],
+        "silhouette": 0.55,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Scrap Buggy": {
+        "palette": 10.8,
+        "deuteranopia": 6.2,
+        "protanopia": 6,
+        "greyPalette": 1.5,
+        "lightness": 11.8,
+        "meanLightness": [
+          29.5,
+          16.2
+        ],
+        "silhouette": 0.6,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Troll": {
+        "palette": 16.1,
+        "deuteranopia": 11.6,
+        "protanopia": 9.4,
+        "greyPalette": 2.9,
+        "lightness": 9.8,
+        "meanLightness": [
+          29.5,
+          21.3
+        ],
+        "silhouette": 0.49,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    "Steam Tank": {
+      "Goblin": {
+        "palette": 23.5,
+        "deuteranopia": 8.8,
+        "protanopia": 7.7,
+        "greyPalette": 3.1,
+        "lightness": 8.2,
+        "meanLightness": [
+          34.5,
+          26.4
+        ],
+        "silhouette": 0.52,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Wolf Rider": {
+        "palette": 12,
+        "deuteranopia": 6.1,
+        "protanopia": 5.1,
+        "greyPalette": 2.3,
+        "lightness": 12.2,
+        "meanLightness": [
+          34.5,
+          23.3
+        ],
+        "silhouette": 0.68,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Bomb Chucker": {
+        "palette": 22,
+        "deuteranopia": 11.6,
+        "protanopia": 11.1,
+        "greyPalette": 2.1,
+        "lightness": 14.4,
+        "meanLightness": [
+          34.5,
+          20.4
+        ],
+        "silhouette": 0.59,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Orc Brute": {
+        "palette": 17.9,
+        "deuteranopia": 13.9,
+        "protanopia": 11.5,
+        "greyPalette": 4.7,
+        "lightness": 16.7,
+        "meanLightness": [
+          34.5,
+          18.2
+        ],
+        "silhouette": 0.65,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Orc Warboss": {
+        "palette": 13.8,
+        "deuteranopia": 9.1,
+        "protanopia": 8.1,
+        "greyPalette": 1.5,
+        "lightness": 8.3,
+        "meanLightness": [
+          34.5,
+          26.5
+        ],
+        "silhouette": 0.58,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Rocket Cart": {
+        "palette": 24.4,
+        "deuteranopia": 14.4,
+        "protanopia": 13.4,
+        "greyPalette": 1.3,
+        "lightness": 10.3,
+        "meanLightness": [
+          34.5,
+          24.6
+        ],
+        "silhouette": 0.62,
+        "distinct": true,
+        "reasons": []
+      },
+      "Scrap Buggy": {
+        "palette": 10.6,
+        "deuteranopia": 6,
+        "protanopia": 5.2,
+        "greyPalette": 1.8,
+        "lightness": 17.3,
+        "meanLightness": [
+          34.5,
+          16.2
+        ],
+        "silhouette": 0.59,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Troll": {
+        "palette": 18.6,
+        "deuteranopia": 15.1,
+        "protanopia": 13.4,
+        "greyPalette": 5.7,
+        "lightness": 15.9,
+        "meanLightness": [
+          34.5,
+          21.3
+        ],
+        "silhouette": 0.62,
+        "distinct": true,
+        "reasons": []
+      }
+    },
+    "Steam Cannon": {
+      "Goblin": {
+        "palette": 22.6,
+        "deuteranopia": 9.8,
+        "protanopia": 7,
+        "greyPalette": 2.8,
+        "lightness": 7.5,
+        "meanLightness": [
+          34.2,
+          26.4
+        ],
+        "silhouette": 0.54,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Wolf Rider": {
+        "palette": 11.4,
+        "deuteranopia": 5.4,
+        "protanopia": 4.2,
+        "greyPalette": 2,
+        "lightness": 11.5,
+        "meanLightness": [
+          34.2,
+          23.3
+        ],
+        "silhouette": 0.58,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Bomb Chucker": {
+        "palette": 19.1,
+        "deuteranopia": 9.4,
+        "protanopia": 8.1,
+        "greyPalette": 1.6,
+        "lightness": 13.7,
+        "meanLightness": [
+          34.2,
+          20.4
+        ],
+        "silhouette": 0.51,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Orc Brute": {
+        "palette": 19.2,
+        "deuteranopia": 14.1,
+        "protanopia": 11.6,
+        "greyPalette": 4.7,
+        "lightness": 15.9,
+        "meanLightness": [
+          34.2,
+          18.2
+        ],
+        "silhouette": 0.58,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Orc Warboss": {
+        "palette": 14,
+        "deuteranopia": 10.4,
+        "protanopia": 9.2,
+        "greyPalette": 1.5,
+        "lightness": 7.6,
+        "meanLightness": [
+          34.2,
+          26.5
+        ],
+        "silhouette": 0.61,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Rocket Cart": {
+        "palette": 20.5,
+        "deuteranopia": 10.9,
+        "protanopia": 10.9,
+        "greyPalette": 1.4,
+        "lightness": 9.6,
+        "meanLightness": [
+          34.2,
+          24.6
+        ],
+        "silhouette": 0.65,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Scrap Buggy": {
+        "palette": 10.4,
+        "deuteranopia": 5.5,
+        "protanopia": 4.8,
+        "greyPalette": 1.9,
+        "lightness": 16.6,
+        "meanLightness": [
+          34.2,
+          16.2
+        ],
+        "silhouette": 0.58,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Troll": {
+        "palette": 18.7,
+        "deuteranopia": 14.8,
+        "protanopia": 13.1,
+        "greyPalette": 5.1,
+        "lightness": 14.5,
+        "meanLightness": [
+          34.2,
+          21.3
+        ],
+        "silhouette": 0.57,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    },
+    "Gyrocopter": {
+      "Goblin": {
+        "palette": 24.2,
+        "deuteranopia": 10.3,
+        "protanopia": 7.7,
+        "greyPalette": 2.5,
+        "lightness": 9.9,
+        "meanLightness": [
+          36.9,
+          26.4
+        ],
+        "silhouette": 0.4,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Wolf Rider": {
+        "palette": 11.8,
+        "deuteranopia": 6.1,
+        "protanopia": 4.9,
+        "greyPalette": 2.2,
+        "lightness": 13.9,
+        "meanLightness": [
+          36.9,
+          23.3
+        ],
+        "silhouette": 0.48,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Bomb Chucker": {
+        "palette": 22.1,
+        "deuteranopia": 12.1,
+        "protanopia": 10.6,
+        "greyPalette": 1.9,
+        "lightness": 16.1,
+        "meanLightness": [
+          36.9,
+          20.4
+        ],
+        "silhouette": 0.46,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Orc Brute": {
+        "palette": 17.7,
+        "deuteranopia": 13.3,
+        "protanopia": 10.7,
+        "greyPalette": 4.1,
+        "lightness": 18.4,
+        "meanLightness": [
+          36.9,
+          18.2
+        ],
+        "silhouette": 0.44,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Orc Warboss": {
+        "palette": 14.6,
+        "deuteranopia": 10.1,
+        "protanopia": 9,
+        "greyPalette": 2.1,
+        "lightness": 10.5,
+        "meanLightness": [
+          36.9,
+          26.5
+        ],
+        "silhouette": 0.42,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Rocket Cart": {
+        "palette": 25,
+        "deuteranopia": 14.7,
+        "protanopia": 14.2,
+        "greyPalette": 1.3,
+        "lightness": 12.2,
+        "meanLightness": [
+          36.9,
+          24.6
+        ],
+        "silhouette": 0.44,
+        "distinct": true,
+        "reasons": []
+      },
+      "Scrap Buggy": {
+        "palette": 11,
+        "deuteranopia": 6.2,
+        "protanopia": 5.3,
+        "greyPalette": 1.8,
+        "lightness": 19,
+        "meanLightness": [
+          36.9,
+          16.2
+        ],
+        "silhouette": 0.41,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      },
+      "Troll": {
+        "palette": 18.5,
+        "deuteranopia": 14.5,
+        "protanopia": 12.6,
+        "greyPalette": 5.6,
+        "lightness": 16.5,
+        "meanLightness": [
+          36.9,
+          21.3
+        ],
+        "silhouette": 0.47,
+        "distinct": false,
+        "reasons": [
+          "colour too close"
+        ]
+      }
+    }
+  },
+  "goblinRosterFailures": {
+    "Dwarf": 29,
+    "Human": 23,
+    "Undead": 16,
+    "Dinosaur": 7,
+    "Martian": 1,
+    "Ice Folk": 11
+  },
+  "dwarfColours": {
+    "Hammerer": [
+      "#46190e 9.8%",
+      "#1e2326 8.3%",
+      "#767a7e 5.1%",
+      "#912d03 5%",
+      "#43444d 5%",
+      "#6b2f1e 4.9%",
+      "#d7611d 4.2%",
+      "#585864 3.1%"
+    ],
+    "Steam Tank": [
+      "#383a3c 14%",
+      "#1d2125 10.3%",
+      "#f5f5f5 8.1%",
+      "#da5d1d 7.2%",
+      "#babac4 7.2%",
+      "#94929e 6%",
+      "#772609 4.9%",
+      "#484a4b 4.5%"
+    ],
+    "Steam Cannon": [
+      "#323235 10.1%",
+      "#9a350e 8.8%",
+      "#fdfbef 4.7%",
+      "#87827d 4.3%",
+      "#272525 3.9%",
+      "#6e2308 3.6%",
+      "#ddd8ca 3.4%",
+      "#626262 3.4%"
+    ],
+    "Gyrocopter": [
+      "#4d4d4e 14%",
+      "#3a3c3d 8.3%",
+      "#e1e2e1 7.6%",
+      "#212526 7.4%",
+      "#8b8a8b 6.4%",
+      "#a6aba7 5.8%",
+      "#f17a1f 4%",
+      "#651703 3.9%"
+    ]
+  },
+  "verdict": "FAIL",
+  "failing": [
+    "Steam Tank / Scrap Buggy: colour too close",
+    "Steam Cannon / Rocket Cart: colour too close"
+  ]
+}

@@ -497,8 +497,10 @@ describe("the Martian accent derivation (pulp_wars-t6s.6)", () => {
         valueMin: 0.96,
       },
     });
-    // The Ice Folk bead (pulp_wars-7g3.5) adds `ice-folk-blue` beside them.
+    // The Ice Folk bead (pulp_wars-7g3.5) adds `ice-folk-blue` beside them,
+    // the Dwarf bead (pulp_wars-78i.5) `dwarf-copper`.
     expect(Object.keys(ACCENT_PRESETS).sort()).toEqual([
+      "dwarf-copper",
       "ice-folk-blue",
       "martian-magenta",
       "undead-violet",

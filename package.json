@@ -73,6 +73,7 @@
     "art:chibi-undead-direction-review": "tsx scripts/art/chibi-undead-direction-review.ts",
     "art:chibi-martian-direction-review": "tsx scripts/art/chibi-martian-direction-review.ts",
     "art:chibi-ice-folk-direction-review": "tsx scripts/art/chibi-ice-folk-direction-review.ts",
+    "art:chibi-dwarf-direction-review": "tsx scripts/art/chibi-dwarf-direction-review.ts",
     "art:chibi-dinosaur-direction-review": "tsx scripts/art/chibi-dinosaur-direction-review.ts",
     "art:chibi-naval-faction-review": "tsx scripts/art/chibi-naval-faction-review.ts",
     "art:faction-looks-review": "tsx scripts/art/faction-looks-review.ts",

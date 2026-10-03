@@ -1,0 +1,37 @@
+{
+  "id": "icon-tunnel-d",
+  "jobId": "a4d70799-715f-475a-a4da-481341c4984f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-icon-action-tunnel",
+    "subject": "ICON:ACTION:TUNNEL",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: one big cone-shaped bright copper drill bit with dark spiral grooves, point down, diving into a small heap of dark brown earth with two clods of dirt flying up. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: one big cone-shaped bright copper drill bit with dark spiral grooves, point down, diving into a small heap of dark brown earth with two clods of dirt flying up. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: one big cone-shaped bright copper drill bit with dark spiral grooves, point down, diving into a small heap of dark brown earth with two clods of dirt flying up. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: one big cone-shaped bright copper drill bit with dark spiral grooves, point down, diving into a small heap of dark brown earth with two clods of dirt flying up. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-bomb-run-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "3fe857a26e2469f6d5d1b725283d34d6cacf9162741e71e29c4778bb4333587d"
+    }
+  }
+}

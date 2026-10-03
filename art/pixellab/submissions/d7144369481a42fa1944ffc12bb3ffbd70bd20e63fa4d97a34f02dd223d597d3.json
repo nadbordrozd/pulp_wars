@@ -1,0 +1,36 @@
+{
+  "id": "steam-tank-a-copper",
+  "jobId": "159a5608-6b19-4312-bf74-3723cbbedccc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-steam-tank",
+    "subject": "UNIT:DWARF:KNIGHT",
+    "faction": "DWARF",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the top of the dome above the copper band: it becomes a cap of bright polished copper, colour #d86a2a, with darker copper #9a4416 shading and a pale #f2b27a shine, so the tank is copper on top and soot-black iron below. Keep the soot-black iron lower dome with its rivets, the copper band, the wheels, the cannon snout, the smokestack and its white steam, the dwarf in the hatch, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the top of the dome above the copper band: it becomes a cap of bright polished copper, colour #d86a2a, with darker copper #9a4416 shading and a pale #f2b27a shine, so the tank is copper on top and soot-black iron below. Keep the soot-black iron lower dome with its rivets, the copper band, the wheels, the cannon snout, the smokestack and its white steam, the dwarf in the hatch, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the top of the dome above the copper band: it becomes a cap of bright polished copper, colour #d86a2a, with darker copper #9a4416 shading and a pale #f2b27a shine, so the tank is copper on top and soot-black iron below. Keep the soot-black iron lower dome with its rivets, the copper band, the wheels, the cannon snout, the smokestack and its white steam, the dwarf in the hatch, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the top of the dome above the copper band: it becomes a cap of bright polished copper, colour #d86a2a, with darker copper #9a4416 shading and a pale #f2b27a shine, so the tank is copper on top and soot-black iron below. Keep the soot-black iron lower dome with its rivets, the copper band, the wheels, the cannon snout, the smokestack and its white steam, the dwarf in the hatch, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "steam-tank-a",
+      "candidate": 0,
+      "sha256": "1f28cf904c0a4a6c33a3b0a886e7105c3f93256a8c3cd2078665cea39fdd67c3"
+    }
+  }
+}

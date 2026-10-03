@@ -1,0 +1,36 @@
+{
+  "id": "steam-cannon-a-lamp",
+  "jobId": "960d2cc6-1307-4781-815f-4a3277d0cf5f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-steam-cannon",
+    "subject": "UNIT:DWARF:CATAPULT",
+    "faction": "DWARF",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: one small round bright signal-green lamp, colour #2bd94a with a white #e8ffe8 glint, about three pixels wide, set in a little copper ring on the side of the iron carriage. Do not change anything else: keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: one small round bright signal-green lamp, colour #2bd94a with a white #e8ffe8 glint, about three pixels wide, set in a little copper ring on the side of the iron carriage. Do not change anything else: keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: one small round bright signal-green lamp, colour #2bd94a with a white #e8ffe8 glint, about three pixels wide, set in a little copper ring on the side of the iron carriage. Do not change anything else: keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only one thing: one small round bright signal-green lamp, colour #2bd94a with a white #e8ffe8 glint, about three pixels wide, set in a little copper ring on the side of the iron carriage. Do not change anything else: keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "steam-cannon-a",
+      "candidate": 0,
+      "sha256": "02f7c9525d1e02fc08b17a4ce382730b3c981d905d9695b8e9016aeef4be9c76"
+    }
+  }
+}

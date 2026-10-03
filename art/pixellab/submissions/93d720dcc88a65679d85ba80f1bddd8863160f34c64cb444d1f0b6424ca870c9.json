@@ -1,0 +1,37 @@
+{
+  "id": "dwarf-portrait-battleship-steam-a",
+  "jobId": "baad4381-78d4-408c-ad16-3a9d9db3e01e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dwarf",
+    "asset": "chibi-naval-dwarf-portrait-battleship",
+    "subject": "PORTRAIT:DWARF:BATTLESHIP",
+    "faction": "DWARF",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96741,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-battleship-b",
+      "candidate": 0,
+      "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+    }
+  }
+}

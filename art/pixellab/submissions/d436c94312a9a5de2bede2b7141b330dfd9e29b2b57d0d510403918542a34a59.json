@@ -1,0 +1,36 @@
+{
+  "id": "brass-titan-a-edit",
+  "jobId": "3051f1ee-2439-4bd3-b22a-2bb61b42be28",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-brass-titan",
+    "subject": "UNIT:DWARF:JUGGERNAUT",
+    "faction": "DWARF",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 78702,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the head: it becomes a smooth domed soot-black iron head with two round glass eye lenses and nothing else, no nose, no mouth, no moustache and no skin, so it is clearly a machine with no one inside. Keep the green lamp, the copper chest with its furnace door, the iron arms and legs, the stacks and their steam, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the head: it becomes a smooth domed soot-black iron head with two round glass eye lenses and nothing else, no nose, no mouth, no moustache and no skin, so it is clearly a machine with no one inside. Keep the green lamp, the copper chest with its furnace door, the iron arms and legs, the stacks and their steam, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the head: it becomes a smooth domed soot-black iron head with two round glass eye lenses and nothing else, no nose, no mouth, no moustache and no skin, so it is clearly a machine with no one inside. Keep the green lamp, the copper chest with its furnace door, the iron arms and legs, the stacks and their steam, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the head: it becomes a smooth domed soot-black iron head with two round glass eye lenses and nothing else, no nose, no mouth, no moustache and no skin, so it is clearly a machine with no one inside. Keep the green lamp, the copper chest with its furnace door, the iron arms and legs, the stacks and their steam, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "brass-titan-a",
+      "candidate": 0,
+      "sha256": "76bd9ec045fac01f141a96159f13d0d59d66c8adf14d78a28d09dcb5b8a374c0"
+    }
+  }
+}

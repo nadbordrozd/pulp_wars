@@ -1,0 +1,51 @@
+{
+  "id": "effect-eruption-a",
+  "jobId": "sync-755c37d3-1534-41d7-ba57-1091aa35a1a8",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-effect-dwarf-eruption",
+    "subject": "EFFECT:ERUPTION",
+    "faction": "DWARF",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 74101,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-icon.txt",
+        "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-effect.txt + scripts/art/chibi/fragments/class-effect.negative.txt",
+        "text": "Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, text, letters, numbers, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DWARF.json",
+        "text": "Subject: a burst of earth bursting up from the ground: many chunky dark brown clods of dirt and grey rocks flying up and outward in a tall fan from one point, with a big round puff of pale dust and white steam at its foot and a few small bright sparks; floating in empty space."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a burst of earth bursting up from the ground: many chunky dark brown clods of dirt and grey rocks flying up and outward in a tall fan from one point, with a big round puff of pale dust and white steam at its foot and a few small bright sparks; floating in empty space.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Class: one bold chunky item sprite of a single small magical thing for a turn-based strategy game map, with a big simple silhouette, thick single-colour black outline, big simple shapes and flat solid colours with one shadow tone, very few details; it must read at a glance at 40 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: a burst of earth bursting up from the ground: many chunky dark brown clods of dirt and grey rocks flying up and outward in a tall fan from one point, with a big round puff of pale dust and white steam at its foot and a few small bright sparks; floating in empty space. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, icon frame, round badge, medallion, emblem, button, border, circular background, square background, background scenery, ground, ground tile, grass, island, dirt, earth, pedestal, plate, stand, base, shadow, campfire, fire, explosion, character, person, creature, red, crimson, blood, gore, orange, yellow, gold, bright green, lime, cyan, teal, turquoise, purple, violet, translucent, see-through, soft glow."
+  }
+}

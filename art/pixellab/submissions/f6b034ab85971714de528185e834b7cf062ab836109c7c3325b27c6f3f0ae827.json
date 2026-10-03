@@ -1,0 +1,36 @@
+{
+  "id": "brass-titan-a-key",
+  "jobId": "6c941a87-7067-40aa-b354-da8049380002",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-brass-titan",
+    "subject": "UNIT:DWARF:JUGGERNAUT",
+    "faction": "DWARF",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 78703,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: one big bright copper wind-up key sticking up out of its back between the shoulders, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the shoulders. Do not change anything else: keep the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, the stacks and steam, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: one big bright copper wind-up key sticking up out of its back between the shoulders, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the shoulders. Do not change anything else: keep the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, the stacks and steam, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: one big bright copper wind-up key sticking up out of its back between the shoulders, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the shoulders. Do not change anything else: keep the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, the stacks and steam, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Add only one thing: one big bright copper wind-up key sticking up out of its back between the shoulders, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the shoulders. Do not change anything else: keep the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, the stacks and steam, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "brass-titan-a-edit",
+      "candidate": 0,
+      "sha256": "209ae0699ce7e528912bc941f4bb2c7848947a15e1286d8f20f0f2b83d5bdffd"
+    }
+  }
+}

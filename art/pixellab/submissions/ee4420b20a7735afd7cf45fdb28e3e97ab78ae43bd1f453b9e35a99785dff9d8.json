@@ -1,0 +1,37 @@
+{
+  "id": "effect-repair-sparks-c",
+  "jobId": "eb9ed190-6137-4f56-b368-4fa23692315b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-effect-dwarf-repair-sparks",
+    "subject": "EFFECT:REPAIR_SPARKS",
+    "faction": "DWARF",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 74144,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different thing in the same style: a small star-shaped spray of six short bright pale yellow and white spark streaks flying outward from one point in the middle, with two tiny copper dots. Nothing else: no steam, no flame, no base, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different thing in the same style: a small star-shaped spray of six short bright pale yellow and white spark streaks flying outward from one point in the middle, with two tiny copper dots. Nothing else: no steam, no flame, no base, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different thing in the same style: a small star-shaped spray of six short bright pale yellow and white spark streaks flying outward from one point in the middle, with two tiny copper dots. Nothing else: no steam, no flame, no base, on a transparent background.",
+    "editInstruction": "Redraw it as a different thing in the same style: a small star-shaped spray of six short bright pale yellow and white spark streaks flying outward from one point in the middle, with two tiny copper dots. Nothing else: no steam, no flame, no base, on a transparent background.",
+    "source": {
+      "recipe": "effect-steam-puff-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "1b9dd2f32e2e4c643b8a8d741c579afd2880b51a99a874d52fadd91cb7c8c62e"
+    }
+  }
+}

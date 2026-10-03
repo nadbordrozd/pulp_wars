@@ -1,0 +1,36 @@
+{
+  "id": "effect-eruption-ring-a-edit",
+  "jobId": "79a5ae4c-4aef-45a1-9566-7bef83590b77",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-effect-dwarf-eruption-ring",
+    "subject": "EFFECT:ERUPTION_RING",
+    "faction": "DWARF",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 74112,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the red ring: it becomes chunky clods of dark brown earth, colour #6e4b30 with dark #3d2a1e shading, broken into lumps with gaps, so nothing is red. Keep the grey rocks, the pale dust puffs, the round shape with its empty middle, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the red ring: it becomes chunky clods of dark brown earth, colour #6e4b30 with dark #3d2a1e shading, broken into lumps with gaps, so nothing is red. Keep the grey rocks, the pale dust puffs, the round shape with its empty middle, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the red ring: it becomes chunky clods of dark brown earth, colour #6e4b30 with dark #3d2a1e shading, broken into lumps with gaps, so nothing is red. Keep the grey rocks, the pale dust puffs, the round shape with its empty middle, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Recolour only the red ring: it becomes chunky clods of dark brown earth, colour #6e4b30 with dark #3d2a1e shading, broken into lumps with gaps, so nothing is red. Keep the grey rocks, the pale dust puffs, the round shape with its empty middle, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-eruption-ring-a",
+      "candidate": 0,
+      "sha256": "f1d6713ef3b5c1a0ecfcf321786d35af78fa03b62a710885c5fab62cb7f50bca"
+    }
+  }
+}

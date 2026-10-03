@@ -1,0 +1,36 @@
+{
+  "id": "effect-repair-sparks-a-edit",
+  "jobId": "1390203a-a190-40b1-9d4b-d748657eb740",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-effect-dwarf-repair-sparks",
+    "subject": "EFFECT:REPAIR_SPARKS",
+    "faction": "DWARF",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 74142,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the spray of pale yellow and white spark streaks at the top: the red flame and the round striped base under it are removed, leaving empty transparent background there, so only the fan of sparks floats alone. Keep the sparks, outline and art style the same."
+      }
+    ],
+    "prompt": "Erase everything except the spray of pale yellow and white spark streaks at the top: the red flame and the round striped base under it are removed, leaving empty transparent background there, so only the fan of sparks floats alone. Keep the sparks, outline and art style the same.",
+    "negativePrompt": "",
+    "description": "Erase everything except the spray of pale yellow and white spark streaks at the top: the red flame and the round striped base under it are removed, leaving empty transparent background there, so only the fan of sparks floats alone. Keep the sparks, outline and art style the same.",
+    "editInstruction": "Erase everything except the spray of pale yellow and white spark streaks at the top: the red flame and the round striped base under it are removed, leaving empty transparent background there, so only the fan of sparks floats alone. Keep the sparks, outline and art style the same.",
+    "source": {
+      "recipe": "effect-repair-sparks-a",
+      "candidate": 0,
+      "sha256": "ef06bd16c522fe484be95a92c2a2d3d4663482b31826b9cdd30617106cee4216"
+    }
+  }
+}

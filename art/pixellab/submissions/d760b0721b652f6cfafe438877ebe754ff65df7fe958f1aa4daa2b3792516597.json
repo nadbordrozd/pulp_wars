@@ -1,0 +1,37 @@
+{
+  "id": "icon-repair-d",
+  "jobId": "4f49ff35-c697-4260-9f20-8056d894b509",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-icon-action-repair",
+    "subject": "ICON:ACTION:DWARF:TEND_WOUNDED",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73134,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: one big soot-black iron wrench lying diagonally with a light grey shine, and three small bright white and pale yellow sparks flying from its open jaw. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: one big soot-black iron wrench lying diagonally with a light grey shine, and three small bright white and pale yellow sparks flying from its open jaw. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: one big soot-black iron wrench lying diagonally with a light grey shine, and three small bright white and pale yellow sparks flying from its open jaw. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: one big soot-black iron wrench lying diagonally with a light grey shine, and three small bright white and pale yellow sparks flying from its open jaw. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-bomb-run-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "3fe857a26e2469f6d5d1b725283d34d6cacf9162741e71e29c4778bb4333587d"
+    }
+  }
+}

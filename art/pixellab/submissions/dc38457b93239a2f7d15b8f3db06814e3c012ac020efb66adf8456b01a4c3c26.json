@@ -1,0 +1,36 @@
+{
+  "id": "mound-a-edit",
+  "jobId": "d37bbeb4-3a22-4f4b-857b-0f1b3debbe0a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-mound",
+    "subject": "UNIT:DWARF:MOUND",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 56,
+      "height": 48
+    },
+    "seed": 77002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Bury the machine: the copper drill machine lying on top of the heap disappears under the dark brown earth, so only the shining cone-shaped copper drill tip pokes straight up out of the top of the heap, with one small white steam puff beside it. Keep the round heap of dark brown earth, the grey rocks, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Bury the machine: the copper drill machine lying on top of the heap disappears under the dark brown earth, so only the shining cone-shaped copper drill tip pokes straight up out of the top of the heap, with one small white steam puff beside it. Keep the round heap of dark brown earth, the grey rocks, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Bury the machine: the copper drill machine lying on top of the heap disappears under the dark brown earth, so only the shining cone-shaped copper drill tip pokes straight up out of the top of the heap, with one small white steam puff beside it. Keep the round heap of dark brown earth, the grey rocks, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Bury the machine: the copper drill machine lying on top of the heap disappears under the dark brown earth, so only the shining cone-shaped copper drill tip pokes straight up out of the top of the heap, with one small white steam puff beside it. Keep the round heap of dark brown earth, the grey rocks, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "mound-a",
+      "candidate": 0,
+      "sha256": "80ad7a129363bb8dcc7176bf05e1e4db4df92971f34b4e3a8e9d3cad541ac7c1"
+    }
+  }
+}

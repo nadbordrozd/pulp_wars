@@ -1,0 +1,37 @@
+{
+  "id": "dwarf-patrol-boat-steam-a",
+  "jobId": "ec18c983-049c-4788-8cb9-ebaa19f5a416",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dwarf",
+    "asset": "chibi-naval-dwarf-patrol-boat",
+    "subject": "UNIT:DWARF:PATROL_BOAT",
+    "faction": "DWARF",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96701,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel on the side and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel on the side and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel on the side and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a steam paddle boat: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the red sail, mast and pennant become one tall copper #d06a2a smokestack puffing white steam; add a copper paddle wheel on the side and a small bright green #2bd94a lamp. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "patrol-boat-a-edit",
+      "candidate": 0,
+      "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+    }
+  }
+}

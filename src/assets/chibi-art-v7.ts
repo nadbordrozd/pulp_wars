@@ -59,7 +59,8 @@ export type ArtSubjectV7 =
   | ChibiEffectSubjectV7
   | MartianArtSubjectV7
   | IceFolkArtSubjectV7
-  | NavalFactionArtSubjectV7;
+  | NavalFactionArtSubjectV7
+  | DwarfArtSubjectV7;
 
 /**
  * The naval sprites a player sees (bead pulp_wars-w5j.2, NAVAL_FACTIONS.md):
@@ -139,6 +140,41 @@ export function navalSharedSubjectV7(
     ? null
     : (`${parts[0] as "UNIT" | "PORTRAIT"}:${role}` as ArtSubjectV7);
 }
+
+/**
+ * Steampunk Dwarf art subjects (bead pulp_wars-78i.5, DWARF.md): the units,
+ * the tunnel mound and the rider's mound (drawn where a burrowed unit
+ * would stand), their portraits, the forge-hold City 1-3, the command,
+ * ability, status and technology icons (`ICON:ACTION:DWARF:TEND_WOUNDED` is
+ * Repair; `ICON:TECH:DWARF:*` are Dig In and Blasting Charges, the Dwarf
+ * names of Fortification and Explosives) and the effect sprites. The art
+ * exists before the faction is wired in: nothing resolves these subjects
+ * until the UI bead (pulp_wars-78i.6) registers them. The Dwarf naval
+ * subjects need no type here: they are NavalFactionArtSubjectV7
+ * (`UNIT:DWARF:<ROLE>`, `PORTRAIT:DWARF:<ROLE>`, what navalArtSubjectV7
+ * returns) as soon as the engine bead makes `DWARF` a FactionIdV7.
+ */
+export type DwarfArtSubjectV7 =
+  | `UNIT:DWARF:${DwarfArtRoleV7 | "MOUND" | "MOUND_RIDER"}`
+  | `PORTRAIT:DWARF:${DwarfArtRoleV7}`
+  | `CITY:DWARF:${1 | 2 | 3}`
+  | `ICON:ACTION:${"TUNNEL" | "BOMB_RUN" | "ASSEMBLE" | "KNOCKBACK" | "PLATED"}`
+  | "ICON:ACTION:DWARF:TEND_WOUNDED"
+  | `ICON:TECH:DWARF:${"FORTIFICATION" | "EXPLOSIVES"}`
+  | `ICON:STATUS:${"CLOCKWORK" | "DUG_IN"}`
+  | `EFFECT:${DwarfEffectIdV7}`;
+
+/**
+ * Dwarf effect sprites: ERUPTION (the ground bursting at a surfacing Mole;
+ * smaller copies make the ring over its eight tiles), BOMB_BLAST (a
+ * Gyrocopter's bomb landing), STEAM_PUFF (Assemble, Knockback, the tunnel)
+ * and REPAIR_SPARKS (the Engineer's Repair).
+ */
+export type DwarfEffectIdV7 =
+  "ERUPTION" | "BOMB_BLAST" | "STEAM_PUFF" | "REPAIR_SPARKS";
+
+/** Roles with their own Dwarf art (docs/art/factions/DWARF.md). */
+export type DwarfArtRoleV7 = UndeadArtRoleV7;
 
 /** The Rift pieces (bead pulp_wars-9s0.5, docs/art/classes/terrain-tiles.md). */
 export type RiftPieceV7 =

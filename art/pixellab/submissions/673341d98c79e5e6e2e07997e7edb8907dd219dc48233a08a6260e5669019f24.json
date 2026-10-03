@@ -1,0 +1,63 @@
+{
+  "id": "portrait-steam-tank-b",
+  "jobId": "sync-2fa59831-a07d-4c69-a945-f5be74fb6291",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-portrait-dwarf-steam-tank",
+    "subject": "PORTRAIT:DWARF:KNIGHT",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 79602,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-icon.txt",
+        "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+        "text": "Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges.",
+        "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+        "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DWARF.json",
+        "text": "Subject: Steam Tank, a chunky cute round steam tank shown whole: a big domed body of soot-black riveted iron with a bright copper band, a short thick cannon snout, a tall copper smokestack with a big white steam cloud, a goggled dwarf with a huge bushy ginger-copper beard, colour #c8642a, in the top hatch, and one small bright signal-green lamp, colour #2bd94a, on the dome."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "One big round black iron dome filling most of the square, seen from the front-right, the cannon snout pointing at the viewer's right; the dwarf's head only peeks out of the small hatch on top.",
+        "negative": "grass, ground, slab, platform, open frame, buggy, caterpillar tracks, modern tank, arms, legs, robot, copper body"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Steam Tank, a chunky cute round steam tank shown whole: a big domed body of soot-black riveted iron with a bright copper band, a short thick cannon snout, a tall copper smokestack with a big white steam cloud, a goggled dwarf with a huge bushy ginger-copper beard, colour #c8642a, in the top hatch, and one small bright signal-green lamp, colour #2bd94a, on the dome. One big round black iron dome filling most of the square, seen from the front-right, the cannon snout pointing at the viewer's right; the dwarf's head only peeks out of the small hatch on top.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, slab, platform, open frame, buggy, caterpillar tracks, modern tank, arms, legs, robot, copper body",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Steam Tank, a chunky cute round steam tank shown whole: a big domed body of soot-black riveted iron with a bright copper band, a short thick cannon snout, a tall copper smokestack with a big white steam cloud, a goggled dwarf with a huge bushy ginger-copper beard, colour #c8642a, in the top hatch, and one small bright signal-green lamp, colour #2bd94a, on the dome. One big round black iron dome filling most of the square, seen from the front-right, the cannon snout pointing at the viewer's right; the dwarf's head only peeks out of the small hatch on top. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, ground, slab, platform, open frame, buggy, caterpillar tracks, modern tank, arms, legs, robot, copper body."
+  }
+}

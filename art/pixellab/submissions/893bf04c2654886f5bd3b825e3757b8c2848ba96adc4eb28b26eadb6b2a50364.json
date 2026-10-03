@@ -1,0 +1,64 @@
+{
+  "id": "portrait-hammerer-a",
+  "jobId": "sync-1adcf597-3635-4ae4-9c4a-381de0deb2cb",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-portrait-dwarf-hammerer",
+    "subject": "PORTRAIT:DWARF:FIGHTER",
+    "faction": "DWARF",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 79001,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+        "text": "Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges.",
+        "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DWARF.json",
+        "text": "Subject: Hammerer portrait, head and shoulders of a chunky cute dwarf warrior: a friendly face with light peach skin, a big round nose and small eyes, a huge bushy ginger-copper beard, colour #c8642a, filling the bottom of the square, a round riveted soot-black iron helmet with a copper rim and round goggles pushed up on it, soot-black iron shoulder plates, and the riveted iron head of a war hammer banded in copper raised beside the head."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A close-up bust: the helmeted head with its huge beard and the shoulders fill the whole square; no legs.",
+        "negative": "full body, legs, feet, horns, white beard, green skin"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Hammerer portrait, head and shoulders of a chunky cute dwarf warrior: a friendly face with light peach skin, a big round nose and small eyes, a huge bushy ginger-copper beard, colour #c8642a, filling the bottom of the square, a round riveted soot-black iron helmet with a copper rim and round goggles pushed up on it, soot-black iron shoulder plates, and the riveted iron head of a war hammer banded in copper raised beside the head. A close-up bust: the helmeted head with its huge beard and the shoulders fill the whole square; no legs.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, horns, green skin",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Hammerer portrait, head and shoulders of a chunky cute dwarf warrior: a friendly face with light peach skin, a big round nose and small eyes, a huge bushy ginger-copper beard, colour #c8642a, filling the bottom of the square, a round riveted soot-black iron helmet with a copper rim and round goggles pushed up on it, soot-black iron shoulder plates, and the riveted iron head of a war hammer banded in copper raised beside the head. A close-up bust: the helmeted head with its huge beard and the shoulders fill the whole square; no legs. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, horns, green skin."
+  }
+}

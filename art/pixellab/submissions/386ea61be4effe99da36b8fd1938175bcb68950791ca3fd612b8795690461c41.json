@@ -1,0 +1,36 @@
+{
+  "id": "steam-mole-a-drill",
+  "jobId": "d471059a-6964-4387-b6bd-7b50f7ba09ef",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-steam-mole",
+    "subject": "UNIT:DWARF:GUARD",
+    "faction": "DWARF",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the front: replace the round open front of the tub with one huge pointed cone-shaped drill bit of bright copper with dark spiral grooves, pointing forward to the lower right, as long as the tub. Keep the small signal-green lamp on the side, the soot-black iron tub, the tracks, the stack and its steam, the dwarf in the hatch, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the front: replace the round open front of the tub with one huge pointed cone-shaped drill bit of bright copper with dark spiral grooves, pointing forward to the lower right, as long as the tub. Keep the small signal-green lamp on the side, the soot-black iron tub, the tracks, the stack and its steam, the dwarf in the hatch, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the front: replace the round open front of the tub with one huge pointed cone-shaped drill bit of bright copper with dark spiral grooves, pointing forward to the lower right, as long as the tub. Keep the small signal-green lamp on the side, the soot-black iron tub, the tracks, the stack and its steam, the dwarf in the hatch, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Change only the front: replace the round open front of the tub with one huge pointed cone-shaped drill bit of bright copper with dark spiral grooves, pointing forward to the lower right, as long as the tub. Keep the small signal-green lamp on the side, the soot-black iron tub, the tracks, the stack and its steam, the dwarf in the hatch, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "steam-mole-a",
+      "candidate": 0,
+      "sha256": "01f8e049d1aaff7bae3edffe2ce0c12b737db5d34394702ad33c5b19e37674b4"
+    }
+  }
+}

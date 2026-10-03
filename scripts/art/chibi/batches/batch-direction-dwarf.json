@@ -1,0 +1,1586 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-dwarf",
+  "title": "Steampunk Dwarf units, portraits, icons, effects, the tunnel mound and the forge-hold City 1-3 in fixed faction colours",
+  "bead": "pulp_wars-78i.5",
+  "faction": "DWARF",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-dwarf-hammerer",
+      "subject": "UNIT:DWARF:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-gyrocopter",
+      "subject": "UNIT:DWARF:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-steam-cannon",
+      "subject": "UNIT:DWARF:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-steam-tank",
+      "subject": "UNIT:DWARF:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-clockwork-gunner",
+      "subject": "UNIT:DWARF:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-steam-mole",
+      "subject": "UNIT:DWARF:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-engineer",
+      "subject": "UNIT:DWARF:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-brass-titan",
+      "subject": "UNIT:DWARF:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-portrait-dwarf-hammerer",
+      "subject": "PORTRAIT:DWARF:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-portrait-dwarf-gyrocopter",
+      "subject": "PORTRAIT:DWARF:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-portrait-dwarf-clockwork-gunner",
+      "subject": "PORTRAIT:DWARF:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-portrait-dwarf-steam-mole",
+      "subject": "PORTRAIT:DWARF:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-portrait-dwarf-engineer",
+      "subject": "PORTRAIT:DWARF:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-portrait-dwarf-steam-cannon",
+      "subject": "PORTRAIT:DWARF:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-portrait-dwarf-steam-tank",
+      "subject": "PORTRAIT:DWARF:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-portrait-dwarf-brass-titan",
+      "subject": "PORTRAIT:DWARF:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-action-tunnel",
+      "subject": "ICON:ACTION:TUNNEL",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-action-bomb-run",
+      "subject": "ICON:ACTION:BOMB_RUN",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-action-assemble",
+      "subject": "ICON:ACTION:ASSEMBLE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-action-repair",
+      "subject": "ICON:ACTION:DWARF:TEND_WOUNDED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-action-knockback",
+      "subject": "ICON:ACTION:KNOCKBACK",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-action-plated",
+      "subject": "ICON:ACTION:PLATED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-status-clockwork",
+      "subject": "ICON:STATUS:CLOCKWORK",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-status-dug-in",
+      "subject": "ICON:STATUS:DUG_IN",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-tech-dig-in",
+      "subject": "ICON:TECH:DWARF:FORTIFICATION",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-icon-tech-blasting-charges",
+      "subject": "ICON:TECH:DWARF:EXPLOSIVES",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-mound",
+      "subject": "UNIT:DWARF:MOUND",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 56,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-mound-rider",
+      "subject": "UNIT:DWARF:MOUND_RIDER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 56,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-effect-dwarf-eruption",
+      "subject": "EFFECT:ERUPTION",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/dwarf-forge.png",
+        "sha256": "7a05064ff1d54563f0d88050eba22bc182e98b834980013fa86020233ae99d74"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-dwarf-bomb-blast",
+      "subject": "EFFECT:BOMB_BLAST",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/dwarf-forge.png",
+        "sha256": "7a05064ff1d54563f0d88050eba22bc182e98b834980013fa86020233ae99d74"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-dwarf-steam-puff",
+      "subject": "EFFECT:STEAM_PUFF",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/dwarf-forge.png",
+        "sha256": "7a05064ff1d54563f0d88050eba22bc182e98b834980013fa86020233ae99d74"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-dwarf-repair-sparks",
+      "subject": "EFFECT:REPAIR_SPARKS",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/dwarf-forge.png",
+        "sha256": "7a05064ff1d54563f0d88050eba22bc182e98b834980013fa86020233ae99d74"
+      }
+    },
+    {
+      "id": "chibi-direction-dwarf-city-1",
+      "subject": "CITY:DWARF:1",
+      "subjectKey": "CITY:DWARF:1/CALM",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-city-2",
+      "subject": "CITY:DWARF:2",
+      "subjectKey": "CITY:DWARF:2/CALM",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 88,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-direction-dwarf-city-3",
+      "subject": "CITY:DWARF:3",
+      "subjectKey": "CITY:DWARF:3/CALM",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 96,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "hammerer-a",
+      "asset": "chibi-direction-dwarf-hammerer",
+      "endpoint": "create-image-pixen",
+      "seed": 78001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "horns, horned helmet, axe, shield, cape, green skin, white hair, tall, thin, elf",
+      "notes": "Lineup unit 1 (spec 16.4): a fresh creation with the unit class."
+    },
+    {
+      "id": "gyrocopter-a",
+      "asset": "chibi-direction-dwarf-gyrocopter",
+      "endpoint": "create-image-pixen",
+      "seed": 78101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The gyrocopter is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "disc, saucer, dome, glass dome, airship, balloon, wings, airplane, bird, helicopter cabin, closed cockpit",
+      "notes": "Lineup unit 2: a fresh creation with the machine class; the landing skids are there to be removed by an edit, which leaves the flyer's gap under it (the Martian Saucer's legs)."
+    },
+    {
+      "id": "steam-cannon-a",
+      "asset": "chibi-direction-dwarf-steam-cannon",
+      "endpoint": "create-image-pixen",
+      "seed": 78201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The cannon and its carriage are drawn large and fill most of the width of the image.",
+      "negativeAddendum": "rockets, fireworks, wooden cart, wooden wheels, open frame, goblin, horse, catapult",
+      "notes": "Lineup unit 3: a fresh creation with the machine class."
+    },
+    {
+      "id": "steam-tank-a",
+      "asset": "chibi-direction-dwarf-steam-tank",
+      "endpoint": "create-image-pixen",
+      "seed": 78301,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The tank is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "open frame, buggy, car, spikes, rust, goblin, caterpillar tracks, modern tank, camouflage",
+      "notes": "Lineup unit 4: a fresh creation with the machine class."
+    },
+    {
+      "id": "steam-tank-a-copper",
+      "asset": "chibi-direction-dwarf-steam-tank",
+      "endpoint": "edit-image-pixen",
+      "seed": 78302,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "steam-tank-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the top of the dome above the copper band: it becomes a cap of bright polished copper, colour #d86a2a, with darker copper #9a4416 shading and a pale #f2b27a shine, so the tank is copper on top and soot-black iron below. Keep the soot-black iron lower dome with its rivets, the copper band, the wheels, the cannon snout, the smokestack and its white steam, the dwarf in the hatch, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Lineup study: steam-tank-a measures 10.7 from the Goblin Scrap Buggy in palette distance (6.2 for a deuteranope), closer than nine in ten pairs of the accepted factions; does a copper cap move it away?"
+    },
+    {
+      "id": "steam-tank-a-lamp",
+      "asset": "chibi-direction-dwarf-steam-tank",
+      "endpoint": "edit-image-pixen",
+      "seed": 78303,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "steam-tank-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: one small round bright signal-green lamp, colour #2bd94a with a white #e8ffe8 glint, about three pixels wide, set in a little copper ring on the front of the iron dome below the hatch. Do not change anything else: keep the soot-black iron dome, the copper band, the wheels, the cannon snout, the smokestack and its white steam, the dwarf in the hatch, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Lineup study: the reserve signal-green gauge lamp of the spec (16.4) on the Steam Tank, the pair that fails the colour measure."
+    },
+    {
+      "id": "hammerer-a-edit",
+      "asset": "chibi-direction-dwarf-hammerer",
+      "endpoint": "edit-image-pixen",
+      "seed": 78002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "hammerer-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the two small white puffs sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top with nothing on it; do not redraw anything else. Keep the goggles, the ginger beard, the face, the armour, the hammer, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "hammerer-a is the right dwarf, but two white steam puffs on the helmet read as white horns or feathers (the Orc Warboss has a horned helmet)."
+    },
+    {
+      "id": "gyrocopter-a-edit",
+      "asset": "chibi-direction-dwarf-gyrocopter",
+      "endpoint": "edit-image-pixen",
+      "seed": 78102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gyrocopter-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the two thin landing skids and their struts under the gyrocopter, leaving empty transparent background there, so it flies with nothing under it except the round black bomb hanging from the seat; do not redraw anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the shapes, thick black outline and art style exactly the same.",
+      "notes": "gyrocopter-a is the right open rotor craft; removing its skids leaves the flyer's gap under it, as the Martian Saucer's legs were removed."
+    },
+    {
+      "id": "steam-cannon-a-lamp",
+      "asset": "chibi-direction-dwarf-steam-cannon",
+      "endpoint": "edit-image-pixen",
+      "seed": 78202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "steam-cannon-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: one small round bright signal-green lamp, colour #2bd94a with a white #e8ffe8 glint, about three pixels wide, set in a little copper ring on the side of the iron carriage. Do not change anything else: keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The lineup fails the colour measure for the Steam Tank and the Scrap Buggy, so every Dwarf machine carries the reserve signal-green lamp (spec 16.4)."
+    },
+    {
+      "id": "steam-cannon-a-lamp-b",
+      "asset": "chibi-direction-dwarf-steam-cannon",
+      "endpoint": "edit-image-pixen",
+      "seed": 78203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "steam-cannon-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the round copper boiler behind the barrel, just below the smokestack. Do not change anything else: the end of the barrel stays a dark empty hole, and nothing is added on the ground. Keep the cannon barrel, the copper boiler and its steam, the two dwarf gunners, the wheels, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "steam-cannon-a-lamp put the lamp in the muzzle, like a glowing barrel, and dropped a loose copper ring on the ground; name the boiler as the place."
+    },
+    {
+      "id": "steam-cannon-a-iron",
+      "asset": "chibi-direction-dwarf-steam-cannon",
+      "endpoint": "edit-image-pixen",
+      "seed": 78204,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "steam-cannon-a-lamp-b",
+        "candidate": 1
+      },
+      "editInstruction": "Recolour only the carriage and wheels: the orange-brown carriage becomes soot-black riveted iron plates #3a3835 with a light warm grey #8a8580 top edge, and the wheels become soot-black iron wheels with copper hubs, so nothing looks like wood. Keep the black barrel, the copper boiler with its green lamp and steam, the two dwarf gunners, the shapes, black outline and art style the same, on a transparent background.",
+      "notes": "steam-cannon-a-lamp-b (candidate 1) is right, but its orange-brown carriage and spoked wheels read as a wooden cart, like the Goblin Rocket Cart; the spec asks for closed iron."
+    },
+    {
+      "id": "gyrocopter-a-lamp",
+      "asset": "chibi-direction-dwarf-gyrocopter",
+      "endpoint": "edit-image-pixen",
+      "seed": 78103,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gyrocopter-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the side of the soot-black iron pod below the pilot. Do not change anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the bomb, the empty space under it, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The reserve signal-green lamp on every Dwarf machine (the lineup fails the colour measure for the Steam Tank and the Steam Cannon)."
+    },
+    {
+      "id": "gyrocopter-a-lamp-b",
+      "asset": "chibi-direction-dwarf-gyrocopter",
+      "endpoint": "edit-image-pixen",
+      "seed": 78104,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gyrocopter-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one tiny detail: one small round bright signal-green lamp dot, colour #2bd94a, about three pixels wide, on the side of the soot-black iron pod below the pilot. Do not change anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the bomb, the empty space under it, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Retry of gyrocopter-a-lamp, whose job failed at PixelLab."
+    },
+    {
+      "id": "clockwork-gunner-a",
+      "asset": "chibi-direction-dwarf-clockwork-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 78401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "dwarf, beard, face, mouth, person, human, skin, hat, helmet with a face, rifle stock, wooden gun",
+      "notes": "Batch, after the lineup: a fresh creation with the unit class (a figure with feet); the signal-green lamp is in the subject line."
+    },
+    {
+      "id": "steam-mole-a",
+      "asset": "chibi-direction-dwarf-steam-mole",
+      "endpoint": "create-image-pixen",
+      "seed": 78501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The machine is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "animal, mole animal, fur, claws, wheels, open frame, rust, wings",
+      "notes": "Batch: a fresh creation with the machine class."
+    },
+    {
+      "id": "engineer-a",
+      "asset": "chibi-direction-dwarf-engineer",
+      "endpoint": "create-image-pixen",
+      "seed": 78601,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "helmet, horns, hammer, axe, shield, cape, green skin, white hair, tall, thin, elf, staff",
+      "notes": "Batch: a fresh creation with the unit class, the Hammerer's body language."
+    },
+    {
+      "id": "brass-titan-a",
+      "asset": "chibi-direction-dwarf-brass-titan",
+      "endpoint": "create-image-pixen",
+      "seed": 78701,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The giant is drawn large and fills most of the height of the image.",
+      "negativeAddendum": "dwarf, beard, face, mouth, person, human, skin, brass, gold, yellow, fire in the chest, glowing chest, sword, axe, cape, horns",
+      "notes": "Batch: a fresh creation with the unit class at the JUGGERNAUT canvas."
+    },
+    {
+      "id": "steam-mole-a-drill",
+      "asset": "chibi-direction-dwarf-steam-mole",
+      "endpoint": "edit-image-pixen",
+      "seed": 78502,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "steam-mole-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the front: replace the round open front of the tub with one huge pointed cone-shaped drill bit of bright copper with dark spiral grooves, pointing forward to the lower right, as long as the tub. Keep the small signal-green lamp on the side, the soot-black iron tub, the tracks, the stack and its steam, the dwarf in the hatch, thick black outline and art style the same, on a transparent background.",
+      "notes": "steam-mole-a is the right tub, but its front is a round open ring like a cannon mouth, not a drill."
+    },
+    {
+      "id": "brass-titan-a-edit",
+      "asset": "chibi-direction-dwarf-brass-titan",
+      "endpoint": "edit-image-pixen",
+      "seed": 78702,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brass-titan-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the head: it becomes a smooth domed soot-black iron head with two round glass eye lenses and nothing else, no nose, no mouth, no moustache and no skin, so it is clearly a machine with no one inside. Keep the green lamp, the copper chest with its furnace door, the iron arms and legs, the stacks and their steam, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "brass-titan-a is the right giant, but it has a goggled face with a brown moustache: the Titan is fully mechanical."
+    },
+    {
+      "id": "clockwork-gunner-a-key",
+      "asset": "chibi-direction-dwarf-clockwork-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 78402,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "clockwork-gunner-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: one big bright copper wind-up key sticking up out of its back behind the head, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the left shoulder. Do not change anything else: keep the green lamp, the iron body, the copper belly, the gatling arm, the claw, the legs, the steam, thick black outline and art style the same, on a transparent background.",
+      "notes": "clockwork-gunner-a is the right automaton, but the wind-up key the spec asks for is not visible."
+    },
+    {
+      "id": "brass-titan-a-key",
+      "asset": "chibi-direction-dwarf-brass-titan",
+      "endpoint": "edit-image-pixen",
+      "seed": 78703,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brass-titan-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: one big bright copper wind-up key sticking up out of its back between the shoulders, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the shoulders. Do not change anything else: keep the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, the stacks and steam, thick black outline and art style the same, on a transparent background.",
+      "notes": "brass-titan-a-edit has the machine head, but the wind-up key the spec asks for is not visible."
+    },
+    {
+      "id": "brass-titan-a-key-b",
+      "asset": "chibi-direction-dwarf-brass-titan",
+      "endpoint": "edit-image-pixen",
+      "seed": 78704,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "brass-titan-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: a classic wind-up toy key of bright copper sticking out of its back behind the right shoulder: a short shaft with a flat round handle with two round holes, like a clock key. Do not change anything else: keep both copper smokestacks with their white steam, the iron head with its eye lenses, the green lamp, the copper chest, the arms, the axe, the legs, thick black outline and art style the same, on a transparent background.",
+      "notes": "brass-titan-a-key drew the key as a big orange butterfly in place of the smokestacks and their steam."
+    },
+    {
+      "id": "portrait-hammerer-a",
+      "asset": "chibi-direction-portrait-dwarf-hammerer",
+      "endpoint": "create-image-pixen",
+      "seed": 79001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the helmeted head with its huge beard and the shoulders fill the whole square; no legs.",
+      "negativeAddendum": "full body, legs, feet, horns, white beard, green skin",
+      "notes": "Portrait sample: a fresh creation with the portrait class and the Ice Folk close-up addendum."
+    },
+    {
+      "id": "portrait-gyrocopter-a",
+      "asset": "chibi-direction-portrait-dwarf-gyrocopter",
+      "endpoint": "create-image-pixen",
+      "seed": 79101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The gyrocopter fills the whole square.",
+      "negativeAddendum": "grass, ground, slab, platform, disc, saucer, airplane, wings, landing skids",
+      "notes": "Portrait sample of a machine: the icon class shows the whole object, as the Catapult and ship portraits do."
+    },
+    {
+      "id": "portrait-clockwork-gunner-a",
+      "asset": "chibi-direction-portrait-dwarf-clockwork-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 79201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the iron head with its green lamp and the round shoulders fill the whole square; no legs.",
+      "negativeAddendum": "full body, legs, feet, dwarf, beard, face, mouth, skin, person",
+      "notes": "Portrait sample: a fresh creation with the portrait class and a close-up addendum."
+    },
+    {
+      "id": "portrait-steam-mole-a",
+      "asset": "chibi-direction-portrait-dwarf-steam-mole",
+      "endpoint": "create-image-pixen",
+      "seed": 79301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The machine fills the whole square.",
+      "negativeAddendum": "grass, ground, slab, platform, animal, mole animal, fur, claws, wheels",
+      "notes": "Portrait sample of a machine: the icon class."
+    },
+    {
+      "id": "portrait-engineer-a",
+      "asset": "chibi-direction-portrait-dwarf-engineer",
+      "endpoint": "create-image-pixen",
+      "seed": 79401,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the head with its leather cap, goggles and huge beard and the shoulders fill the whole square; no legs.",
+      "negativeAddendum": "full body, legs, feet, helmet, horns, white beard, green skin",
+      "notes": "A fresh creation with the portrait class and a close-up addendum."
+    },
+    {
+      "id": "portrait-steam-cannon-a",
+      "asset": "chibi-direction-portrait-dwarf-steam-cannon",
+      "endpoint": "create-image-pixen",
+      "seed": 79501,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cannon fills the whole square.",
+      "negativeAddendum": "grass, ground, slab, platform, rockets, fireworks, wooden cart",
+      "notes": "A machine portrait with the icon class."
+    },
+    {
+      "id": "portrait-steam-tank-a",
+      "asset": "chibi-direction-portrait-dwarf-steam-tank",
+      "endpoint": "create-image-pixen",
+      "seed": 79601,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The tank fills the whole square.",
+      "negativeAddendum": "grass, ground, slab, platform, open frame, buggy, caterpillar tracks, modern tank",
+      "notes": "A machine portrait with the icon class."
+    },
+    {
+      "id": "portrait-brass-titan-a",
+      "asset": "chibi-direction-portrait-dwarf-brass-titan",
+      "endpoint": "create-image-pixen",
+      "seed": 79701,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the iron head with its green lamp and the huge shoulders fill the whole square; no legs.",
+      "negativeAddendum": "full body, legs, feet, dwarf, beard, moustache, face, mouth, skin, person, brass, gold",
+      "notes": "A fresh creation with the portrait class and a close-up addendum."
+    },
+    {
+      "id": "portrait-hammerer-a-edit",
+      "asset": "chibi-direction-portrait-dwarf-hammerer",
+      "endpoint": "edit-image-pixen",
+      "seed": 79002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-hammerer-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the white puffs and the little pipes sticking up from the top of the helmet, so the round soot-black iron helmet has a smooth round top; do not redraw anything else. Keep the goggles, the ginger beard, the face, the shoulder plates, the hammer, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-hammerer-a is the right bust, but has the white helmet puffs that were removed from the map sprite."
+    },
+    {
+      "id": "portrait-clockwork-gunner-b",
+      "asset": "chibi-direction-portrait-dwarf-clockwork-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 79202,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust of a machine: the head is a round iron dome with no face at all, its front a flat riveted iron plate with two round glass lenses side by side; the green lamp on top; round iron shoulders fill the bottom of the square.",
+      "negativeAddendum": "full body, legs, feet, dwarf, beard, human face, nose, mouth, cheeks, skin, eyebrows, person, child, boy",
+      "notes": "portrait-clockwork-gunner-a drew a boy's face under the helmet: the Gunner has no one inside."
+    },
+    {
+      "id": "portrait-steam-cannon-b",
+      "asset": "chibi-direction-portrait-dwarf-steam-cannon",
+      "endpoint": "create-image-pixen",
+      "seed": 79502,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The cannon fills the whole square; its carriage and wheels are soot-black riveted iron, never wood.",
+      "negativeAddendum": "grass, ground, slab, platform, rockets, fireworks, wooden cart, wood, brown wheels, hood, cloak",
+      "notes": "portrait-steam-cannon-a has a brown wooden-looking cart and a hooded gunner, close to the Goblin Rocket Cart."
+    },
+    {
+      "id": "portrait-steam-tank-b",
+      "asset": "chibi-direction-portrait-dwarf-steam-tank",
+      "endpoint": "create-image-pixen",
+      "seed": 79602,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "One big round black iron dome filling most of the square, seen from the front-right, the cannon snout pointing at the viewer's right; the dwarf's head only peeks out of the small hatch on top.",
+      "negativeAddendum": "grass, ground, slab, platform, open frame, buggy, caterpillar tracks, modern tank, arms, legs, robot, copper body",
+      "notes": "portrait-steam-tank-a is an orange robot-like body with arms, not the black domed tank of the map sprite."
+    },
+    {
+      "id": "icon-tunnel-a",
+      "asset": "chibi-direction-icon-action-tunnel",
+      "endpoint": "create-image-pixen",
+      "seed": 73101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, fire, machine, tracks",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-bomb-run-a",
+      "asset": "chibi-direction-icon-action-bomb-run",
+      "endpoint": "create-image-pixen",
+      "seed": 73111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, fire, explosion, airplane, helicopter body",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-assemble-a",
+      "asset": "chibi-direction-icon-action-assemble",
+      "endpoint": "create-image-pixen",
+      "seed": 73121,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, robot, door key, lock",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-repair-a",
+      "asset": "chibi-direction-icon-action-repair",
+      "endpoint": "create-image-pixen",
+      "seed": 73131,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, fire, green cross, heart",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-knockback-a",
+      "asset": "chibi-direction-icon-action-knockback",
+      "endpoint": "create-image-pixen",
+      "seed": 73141,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, fire, explosion, cannon carriage, wheels",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-plated-a",
+      "asset": "chibi-direction-icon-action-plated",
+      "endpoint": "create-image-pixen",
+      "seed": 73151,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, shield with heraldry, cross, gold",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-clockwork-a",
+      "asset": "chibi-direction-icon-status-clockwork",
+      "endpoint": "create-image-pixen",
+      "seed": 73161,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, clock face, numbers, several cogs",
+      "notes": "A fresh creation with the icon class: the clockwork glyph."
+    },
+    {
+      "id": "icon-dug-in-a",
+      "asset": "chibi-direction-icon-status-dug-in",
+      "endpoint": "create-image-pixen",
+      "seed": 73171,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, shovel, hole, well, castle",
+      "notes": "A fresh creation with the icon class: the dug-in status glyph (the earthwork ring of the spec's Dig In marker)."
+    },
+    {
+      "id": "icon-dig-in-a",
+      "asset": "chibi-direction-icon-tech-dig-in",
+      "endpoint": "create-image-pixen",
+      "seed": 73181,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, wood, wooden handle",
+      "notes": "A fresh creation with the icon class: Dig In, the Dwarf name of Fortification."
+    },
+    {
+      "id": "icon-blasting-charges-a",
+      "asset": "chibi-direction-icon-tech-blasting-charges",
+      "endpoint": "create-image-pixen",
+      "seed": 73191,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, dwarf, hand, firework, rocket, red, paper, explosion, fire",
+      "notes": "A fresh creation with the icon class: Blasting Charges, the Dwarf name of Explosives (not a Goblin firework)."
+    },
+    {
+      "id": "icon-tunnel-b",
+      "asset": "chibi-direction-icon-action-tunnel",
+      "endpoint": "create-image-pixen",
+      "seed": 73102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the drill and the earth: no person, no creature and no figure anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, beard, man, gnome, hand, grass, ground tile, slab, platform, fire, machine, tracks",
+      "notes": "icon-tunnel-a drew a white-bearded dwarf riding the drill: the first fragment named \"dwarves\", which reaches every class. This recipe uses the fragment without a figure."
+    },
+    {
+      "id": "icon-assemble-b",
+      "asset": "chibi-direction-icon-action-assemble",
+      "endpoint": "create-image-pixen",
+      "seed": 73122,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the key and the cog: no person, no creature and no figure anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, beard, man, gnome, hand, robot, grass, ground tile, slab, platform, door key, lock",
+      "notes": "icon-assemble-a drew a dwarf beside the cog."
+    },
+    {
+      "id": "icon-repair-b",
+      "asset": "chibi-direction-icon-action-repair",
+      "endpoint": "create-image-pixen",
+      "seed": 73132,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the wrench and its sparks: no person, no creature and no figure anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, beard, man, gnome, hand, grass, ground tile, slab, platform, fire, green cross, heart",
+      "notes": "icon-repair-a drew a white-bearded dwarf holding the wrench."
+    },
+    {
+      "id": "icon-knockback-b",
+      "asset": "chibi-direction-icon-action-knockback",
+      "endpoint": "create-image-pixen",
+      "seed": 73142,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the ball, the steam puff and the arrow: no person, no creature, no machine and no figure anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, beard, man, gnome, hand, cannon, barrel, wheels, carriage, grass, ground tile, slab, platform, fire, explosion",
+      "notes": "icon-knockback-a drew a whole cannon with a dwarf and a steam ring, not a push."
+    },
+    {
+      "id": "icon-plated-b",
+      "asset": "chibi-direction-icon-action-plated",
+      "endpoint": "create-image-pixen",
+      "seed": 73152,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the plate itself, blank and plain: no person, no face, no picture on it and no figure anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, portrait, picture, frame, beard, man, gnome, hand, grass, ground tile, slab, platform, shield with heraldry, cross, gold",
+      "notes": "icon-plated-a framed a dwarf's portrait in the plate."
+    },
+    {
+      "id": "icon-dug-in-b",
+      "asset": "chibi-direction-icon-status-dug-in",
+      "endpoint": "create-image-pixen",
+      "seed": 73172,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the ring of earth and sandbags, empty in the middle: no person, no creature and no figure anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, beard, man, gnome, hand, shovel, hole, well, castle, grass, ground tile, slab, platform",
+      "notes": "icon-dug-in-a drew a dwarf standing in the ring."
+    },
+    {
+      "id": "icon-dig-in-b",
+      "asset": "chibi-direction-icon-tech-dig-in",
+      "endpoint": "create-image-pixen",
+      "seed": 73182,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the shovel, the earth and the sandbags: no person, no creature and no figure anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, beard, man, gnome, hand, wood, wooden handle, grass, ground tile, slab, platform",
+      "notes": "icon-dig-in-a drew a dwarf with a shovel on a round base."
+    },
+    {
+      "id": "icon-blasting-charges-b",
+      "asset": "chibi-direction-icon-tech-blasting-charges",
+      "endpoint": "create-image-pixen",
+      "seed": 73192,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the charge itself: no person, no creature and no figure anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, beard, man, gnome, hand, firework, rocket, red, paper, explosion, fire, grass, ground tile, slab, platform",
+      "notes": "icon-blasting-charges-a drew a dwarf holding a drill."
+    },
+    {
+      "id": "icon-tunnel-c",
+      "asset": "chibi-direction-icon-action-tunnel",
+      "endpoint": "create-image-pixen",
+      "seed": 73103,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the drill bit and the earth: a plain object with no eyes, no goggles and no face, and no person or creature anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, eyes, goggles, beard, man, gnome, hand, robot, grass, ground tile, slab, platform, fire, machine, tracks, smokestack",
+      "notes": "icon-tunnel-b is a drill robot with goggles: the fragment's goggles and gauges gave every object a face. This recipe uses the fragment without them (goggles and gauges are in the unit subject lines)."
+    },
+    {
+      "id": "icon-assemble-c",
+      "asset": "chibi-direction-icon-action-assemble",
+      "endpoint": "create-image-pixen",
+      "seed": 73123,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the key and the cog, plain objects with no eyes, no goggles and no face, and no person or creature anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, eyes, goggles, beard, man, gnome, hand, robot, machine, grass, ground tile, slab, platform, door key, lock",
+      "notes": "icon-assemble-b drew a goggled machine beside the key."
+    },
+    {
+      "id": "icon-repair-c",
+      "asset": "chibi-direction-icon-action-repair",
+      "endpoint": "create-image-pixen",
+      "seed": 73133,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the wrench and its sparks, a plain tool with no eyes, no goggles and no face, and no person or creature anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, eyes, goggles, beard, man, gnome, hand, robot, machine, grass, ground tile, slab, platform, fire, green cross, heart",
+      "notes": "icon-repair-b drew a goggled gadget with the wrench."
+    },
+    {
+      "id": "icon-knockback-c",
+      "asset": "chibi-direction-icon-action-knockback",
+      "endpoint": "create-image-pixen",
+      "seed": 73143,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the ball, the steam puff and the arrow, plain shapes with no eyes and no face; no cannon, no person and no creature anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, eyes, goggles, beard, man, gnome, hand, cannon, barrel, wheels, carriage, robot, grass, ground tile, slab, platform, fire, explosion",
+      "notes": "icon-knockback-b drew a cannon with a dwarf."
+    },
+    {
+      "id": "icon-plated-c",
+      "asset": "chibi-direction-icon-action-plated",
+      "endpoint": "create-image-pixen",
+      "seed": 73153,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the plate itself, blank and plain, seen at a slight angle: no eyes, no goggles, no face, no picture on it and no person anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, eyes, goggles, helmet, portrait, picture, frame, beard, man, gnome, hand, grass, ground tile, slab, platform, shield with heraldry, cross, gold",
+      "notes": "icon-plated-b framed a goggled helmet in the plate."
+    },
+    {
+      "id": "icon-dig-in-c",
+      "asset": "chibi-direction-icon-tech-dig-in",
+      "endpoint": "create-image-pixen",
+      "seed": 73183,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the shovel, the earth and the sandbags, plain objects with no eyes and no face, and no person or creature anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, eyes, goggles, beard, man, gnome, hand, robot, wood, wooden handle, grass, ground tile, slab, platform",
+      "notes": "icon-dig-in-b drew a dwarf with a shovel again."
+    },
+    {
+      "id": "icon-blasting-charges-c",
+      "asset": "chibi-direction-icon-tech-blasting-charges",
+      "endpoint": "create-image-pixen",
+      "seed": 73193,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the charge itself, a plain object with no eyes, no goggles and no face, and no person or creature anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, eyes, goggles, beard, man, gnome, hand, robot, firework, rocket, red, paper, explosion, fire, grass, ground tile, slab, platform",
+      "notes": "icon-blasting-charges-b drew the charge as a goggled gadget."
+    },
+    {
+      "id": "icon-tunnel-d",
+      "asset": "chibi-direction-icon-action-tunnel",
+      "endpoint": "edit-image-pixen",
+      "seed": 73104,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-bomb-run-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one big cone-shaped bright copper drill bit with dark spiral grooves, point down, diving into a small heap of dark brown earth with two clods of dirt flying up. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+      "notes": "Three creations of the Tunnel icon drew a dwarf or a goggled gadget: the faction layer reaches the icon class. An edit sends only its instruction, so the clean Bomb Run icon is redrawn as the drill."
+    },
+    {
+      "id": "icon-assemble-d",
+      "asset": "chibi-direction-icon-action-assemble",
+      "endpoint": "edit-image-pixen",
+      "seed": 73124,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-bomb-run-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one big bright copper wind-up key, a short shaft with a flat round handle with two round holes, lying across one soot-black iron cog wheel with square teeth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+      "notes": "Three creations of the Assemble icon drew a dwarf or a goggled machine; redrawn from the clean Bomb Run icon."
+    },
+    {
+      "id": "icon-repair-d",
+      "asset": "chibi-direction-icon-action-repair",
+      "endpoint": "edit-image-pixen",
+      "seed": 73134,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-bomb-run-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different object in the same style: one big soot-black iron wrench lying diagonally with a light grey shine, and three small bright white and pale yellow sparks flying from its open jaw. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+      "notes": "Three creations of the Repair icon drew a dwarf or a goggled gadget; redrawn from the clean Bomb Run icon."
+    },
+    {
+      "id": "mound-a",
+      "asset": "chibi-direction-dwarf-mound",
+      "endpoint": "create-image-pixen",
+      "seed": 77001,
+      "requestSize": {
+        "width": 56,
+        "height": 48
+      },
+      "promptAddendum": "Only the heap of earth with the drill tip: no machine body, no person and no creature anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, eyes, goggles, beard, mole animal, animal, machine body, tracks, wheels, grass, ground tile, slab, platform, volcano, fire",
+      "notes": "The mound sample: an owned-style board piece in the unit's place, made with the icon class like the Dinosaur Egg (the unit class would give it a face and feet)."
+    },
+    {
+      "id": "mound-rider-a",
+      "asset": "chibi-direction-dwarf-mound-rider",
+      "endpoint": "create-image-pixen",
+      "seed": 77011,
+      "requestSize": {
+        "width": 56,
+        "height": 48
+      },
+      "promptAddendum": "Only the heap of earth with the drill tip and the hammer head: no machine body, no person and no creature anywhere.",
+      "negativeAddendum": "dwarf, person, character, figure, face, eyes, goggles, beard, hand, arm, mole animal, animal, machine body, tracks, wheels, grass, ground tile, slab, platform, volcano, fire",
+      "notes": "The rider's mound, a fresh creation beside the plain one."
+    },
+    {
+      "id": "effect-eruption-a",
+      "asset": "chibi-direction-effect-dwarf-eruption",
+      "endpoint": "create-image-pixen",
+      "seed": 74101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "First effect sample: the eruption, the faction's wow moment."
+    },
+    {
+      "id": "effect-eruption-ring-a",
+      "asset": "chibi-direction-effect-dwarf-eruption",
+      "endpoint": "create-image-pixen",
+      "seed": 74111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "The ring of dirt scaled over the eight tiles of an eruption."
+    },
+    {
+      "id": "effect-bomb-blast-a",
+      "asset": "chibi-direction-effect-dwarf-bomb-blast",
+      "endpoint": "create-image-pixen",
+      "seed": 74121,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "The Gyrocopter's bomb landing."
+    },
+    {
+      "id": "effect-steam-puff-a",
+      "asset": "chibi-direction-effect-dwarf-steam-puff",
+      "endpoint": "create-image-pixen",
+      "seed": 74131,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "The steam puff of Assemble, Knockback and the tunnel."
+    },
+    {
+      "id": "effect-repair-sparks-a",
+      "asset": "chibi-direction-effect-dwarf-repair-sparks",
+      "endpoint": "create-image-pixen",
+      "seed": 74141,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "The Engineer's Repair sparks."
+    },
+    {
+      "id": "mound-a-edit",
+      "asset": "chibi-direction-dwarf-mound",
+      "endpoint": "edit-image-pixen",
+      "seed": 77002,
+      "requestSize": {
+        "width": 56,
+        "height": 48
+      },
+      "source": {
+        "recipe": "mound-a",
+        "candidate": 0
+      },
+      "editInstruction": "Bury the machine: the copper drill machine lying on top of the heap disappears under the dark brown earth, so only the shining cone-shaped copper drill tip pokes straight up out of the top of the heap, with one small white steam puff beside it. Keep the round heap of dark brown earth, the grey rocks, thick black outline and art style the same, on a transparent background.",
+      "notes": "mound-a shows the whole drill machine lying on the heap; the spec's mound is earth with only the drill tip breaking through."
+    },
+    {
+      "id": "effect-eruption-b",
+      "asset": "chibi-direction-effect-dwarf-eruption",
+      "endpoint": "create-image-pixen",
+      "seed": 74102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The burst fills the whole square from edge to edge; there is nothing under it: no ground, no slab and no grass.",
+      "negativeAddendum": "slab, platform, tile, grass, island, volcano, lava, flame",
+      "notes": "effect-eruption-a is a small burst standing on a grass slab."
+    },
+    {
+      "id": "effect-eruption-ring-a-edit",
+      "asset": "chibi-direction-effect-dwarf-eruption",
+      "endpoint": "edit-image-pixen",
+      "seed": 74112,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-eruption-ring-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the red ring: it becomes chunky clods of dark brown earth, colour #6e4b30 with dark #3d2a1e shading, broken into lumps with gaps, so nothing is red. Keep the grey rocks, the pale dust puffs, the round shape with its empty middle, thick black outline and art style the same, on a transparent background.",
+      "notes": "effect-eruption-ring-a has the right ring, but it is a red and white band like a life buoy, not flying dirt."
+    },
+    {
+      "id": "effect-bomb-blast-b",
+      "asset": "chibi-direction-effect-dwarf-bomb-blast",
+      "endpoint": "create-image-pixen",
+      "seed": 74122,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The puff floats alone on a fully transparent background: nothing behind it, no checker pattern, no ground.",
+      "negativeAddendum": "checkerboard, pattern, background, grass, ground, slab, tile, flame, fire, rocket",
+      "notes": "effect-bomb-blast-a is drawn on an opaque checkered and green background."
+    },
+    {
+      "id": "effect-repair-sparks-a-edit",
+      "asset": "chibi-direction-effect-dwarf-repair-sparks",
+      "endpoint": "edit-image-pixen",
+      "seed": 74142,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "effect-repair-sparks-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything except the spray of pale yellow and white spark streaks at the top: the red flame and the round striped base under it are removed, leaving empty transparent background there, so only the fan of sparks floats alone. Keep the sparks, outline and art style the same.",
+      "notes": "effect-repair-sparks-a puts the sparks on a campfire-like flame and base."
+    },
+    {
+      "id": "mound-a-drill",
+      "asset": "chibi-direction-dwarf-mound",
+      "endpoint": "edit-image-pixen",
+      "seed": 77003,
+      "requestSize": {
+        "width": 56,
+        "height": 48
+      },
+      "source": {
+        "recipe": "mound-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the orange cone on top: it becomes a big drill bit, wider at its base, of polished copper #d06a2a with three dark #3d2a1e spiral grooves winding round it and a small light grey steel point, so it is clearly a drill and not a flame. Keep the round heap of dark brown earth, the grey rocks, the white steam puff, thick black outline and art style the same, on a transparent background.",
+      "notes": "mound-a-edit is the right heap, but its orange cone with no grooves reads as a flame on a volcano at a glance."
+    },
+    {
+      "id": "effect-repair-sparks-b",
+      "asset": "chibi-direction-effect-dwarf-repair-sparks",
+      "endpoint": "create-image-pixen",
+      "seed": 74143,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "promptAddendum": "Only the sparks, flying out from one bright point in the middle of the square: no flame, no fire, no base and nothing under them.",
+      "negativeAddendum": "flame, fire, campfire, candle, base, slab, ground, grass, torch",
+      "notes": "effect-repair-sparks-a stands on a campfire; its edit kept the flame and erased the sparks."
+    },
+    {
+      "id": "effect-repair-sparks-c",
+      "asset": "chibi-direction-effect-dwarf-repair-sparks",
+      "endpoint": "edit-image-pixen",
+      "seed": 74144,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "effect-steam-puff-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Redraw it as a different thing in the same style: a small star-shaped spray of six short bright pale yellow and white spark streaks flying outward from one point in the middle, with two tiny copper dots. Nothing else: no steam, no flame, no base, on a transparent background.",
+      "notes": "Two creations of the sparks drew a campfire under them; the clean steam puff is redrawn as sparks by an edit."
+    },
+    {
+      "id": "mound-rider-b",
+      "asset": "chibi-direction-dwarf-mound-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 77012,
+      "requestSize": {
+        "width": 56,
+        "height": 48
+      },
+      "source": {
+        "recipe": "mound-a-drill",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Add only one thing: beside the drill, the head of a war hammer sticks up out of the earth: a chunky block of riveted soot-black iron with a light grey rim and a copper band, on a short handle. Keep the heap of dark brown earth, the grey rocks, the copper drill with its spiral grooves, the steam puff, thick black outline and art style the same, on a transparent background.",
+      "notes": "mound-rider-a is a cluttered heap of pipes with no clear hammer; the rider's mound is the accepted mound plus a hammer head (spec 16.1)."
+    },
+    {
+      "id": "dwarf-city-1-calm-a",
+      "asset": "chibi-direction-dwarf-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 75101,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "negativeAddendum": "dwarf, person, character, figure, flag on the pole, red, gold, brass, wood, timber, thatch, green, grass",
+      "notes": "City sample: the calm settlement class, as the Martian and Ice Folk direction cities."
+    },
+    {
+      "id": "dwarf-city-2-calm-a",
+      "asset": "chibi-direction-dwarf-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 75111,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "negativeAddendum": "dwarf, person, character, figure, flag on the pole, red, gold, brass, wood, timber, thatch, green, grass",
+      "notes": "City 2: the calm settlement class."
+    },
+    {
+      "id": "dwarf-city-3-calm-a",
+      "asset": "chibi-direction-dwarf-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 75121,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "negativeAddendum": "dwarf, person, character, figure, flag on the pole, red, gold, brass, wood, timber, thatch, green, grass",
+      "notes": "City 3: the calm settlement class."
+    },
+    {
+      "id": "dwarf-city-1-calm-a-edit",
+      "asset": "chibi-direction-dwarf-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 75102,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "dwarf-city-1-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass, the dirt and the round slab under the hold, so the stone hall, its door, the chimney and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roof, the iron door, the steam, the tall iron pole, the colours, outline and art style exactly the same.",
+      "notes": "The hold stands on a round grass slab."
+    },
+    {
+      "id": "dwarf-city-2-calm-a-edit",
+      "asset": "chibi-direction-dwarf-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 75112,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "dwarf-city-2-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass and the dirt slab under the town, and the grass inside its wall, so the stone tower, the houses, the wall and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper roofs, the cog, the iron gate, the tall iron pole, the colours, outline and art style exactly the same.",
+      "notes": "The town stands on a grass and dirt slab."
+    },
+    {
+      "id": "dwarf-city-3-calm-a-edit",
+      "asset": "chibi-direction-dwarf-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 75122,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "dwarf-city-3-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass and the dirt slab under the city, so the walls, towers, halls, the rock peak and the iron pole stand directly on a transparent background with nothing at all under them. Keep the grey stone, the copper domes and roofs, the chimneys and steam, the cog wheel, the tall iron pole, the colours, outline and art style exactly the same.",
+      "notes": "The city stands on a grass and dirt slab."
+    }
+  ]
+}

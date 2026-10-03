@@ -1,0 +1,40 @@
+{
+  "bead": "pulp_wars-78i.5",
+  "batches": [
+    "direction-dwarf",
+    "naval-dwarf"
+  ],
+  "command": "npm run art:chibi-dwarf-direction-review",
+  "note": "No sheet or capture draws a base plate. The scene-* captures register the Dwarf rasters under Human (and the mounds under Dinosaur) stand-in subjects (scripts/art/dwarf-direction/scene.ts): the faction is not in the engine yet. The lineup-study-* files are the study before batching (scripts/art/dwarf-direction/lineup.ts).",
+  "files": [
+    "cities-x3.png",
+    "effects-x3.png",
+    "eruption-frames-x3.png",
+    "icons-x4.png",
+    "lineup-1x.png",
+    "lineup-x3.png",
+    "lineup.json",
+    "mound-x3.png",
+    "naval-x4.png",
+    "palette.json",
+    "palette.png",
+    "portraits-x4.png",
+    "readability.json",
+    "roster-1x.png",
+    "roster-x4.png",
+    "roster-zoom-0.75.png",
+    "scene-coast-desktop-zoom-0.75.png",
+    "scene-coast-desktop-zoom-1.png",
+    "scene-coast-phone-zoom-0.75.png",
+    "scene-coast-phone-zoom-1.png",
+    "scene-mixed-desktop-zoom-0.75.png",
+    "scene-mixed-desktop-zoom-1.png",
+    "scene-mixed-phone-zoom-0.75.png",
+    "scene-mixed-phone-zoom-1.png",
+    "scene-terrain-desktop-zoom-0.75.png",
+    "scene-terrain-desktop-zoom-1.png",
+    "scene-terrain-phone-zoom-0.75.png",
+    "scene-terrain-phone-zoom-1.png",
+    "terrain-x2.png"
+  ]
+}

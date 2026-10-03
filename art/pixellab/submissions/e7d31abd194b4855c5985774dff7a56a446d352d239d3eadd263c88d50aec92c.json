@@ -1,0 +1,37 @@
+{
+  "id": "icon-assemble-d",
+  "jobId": "51c6edfa-0dc8-4f3e-8061-719acfe6a7db",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-icon-action-assemble",
+    "subject": "ICON:ACTION:ASSEMBLE",
+    "faction": "DWARF",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73124,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw it as a different object in the same style: one big bright copper wind-up key, a short shaft with a flat round handle with two round holes, lying across one soot-black iron cog wheel with square teeth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw it as a different object in the same style: one big bright copper wind-up key, a short shaft with a flat round handle with two round holes, lying across one soot-black iron cog wheel with square teeth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw it as a different object in the same style: one big bright copper wind-up key, a short shaft with a flat round handle with two round holes, lying across one soot-black iron cog wheel with square teeth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "editInstruction": "Redraw it as a different object in the same style: one big bright copper wind-up key, a short shaft with a flat round handle with two round holes, lying across one soot-black iron cog wheel with square teeth. Nothing else: no rotor, no bomb, no face. Thick black outline, flat colours, on a transparent background.",
+    "source": {
+      "recipe": "icon-bomb-run-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "3fe857a26e2469f6d5d1b725283d34d6cacf9162741e71e29c4778bb4333587d"
+    }
+  }
+}

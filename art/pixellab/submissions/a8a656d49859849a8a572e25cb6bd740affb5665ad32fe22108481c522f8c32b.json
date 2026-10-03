@@ -1,0 +1,64 @@
+{
+  "id": "gyrocopter-a",
+  "jobId": "sync-4acd6c18-ab6d-485b-abcd-bd7b5791c7e7",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-gyrocopter",
+    "subject": "UNIT:DWARF:RAIDER",
+    "faction": "DWARF",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78101,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+        "text": "Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges.",
+        "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-machine.txt + scripts/art/chibi/fragments/class-machine.negative.txt",
+        "text": "Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DWARF.json",
+        "text": "Subject: Gyrocopter, a chunky cute small flying machine: a small open seat frame of soot-black iron tubes with one small dwarf pilot sitting in it, wearing round goggles and a dark leather cap, with a huge bushy ginger-copper beard, colour #c8642a; one big flat two-blade rotor on a short mast above the pilot; a small copper engine with a short smokestack puffing a white steam cloud behind the seat; a short tail boom with a little propeller; one round black bomb hanging under the seat; two thin iron landing skids under it; an open frame of tubes, never a disc or a saucer; simple shapes and very few details."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The gyrocopter is drawn large and fills most of the width of the image.",
+        "negative": "disc, saucer, dome, glass dome, airship, balloon, wings, airplane, bird, helicopter cabin, closed cockpit"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Gyrocopter, a chunky cute small flying machine: a small open seat frame of soot-black iron tubes with one small dwarf pilot sitting in it, wearing round goggles and a dark leather cap, with a huge bushy ginger-copper beard, colour #c8642a; one big flat two-blade rotor on a short mast above the pilot; a small copper engine with a short smokestack puffing a white steam cloud behind the seat; a short tail boom with a little propeller; one round black bomb hanging under the seat; two thin iron landing skids under it; an open frame of tubes, never a disc or a saucer; simple shapes and very few details. The gyrocopter is drawn large and fills most of the width of the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, saucer, dome, glass dome, airship, balloon, wings, airplane, bird, helicopter cabin, closed cockpit",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk dwarves of the deep mountain forges. Their fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets, gears, round goggles and white-faced pressure gauges. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Gyrocopter, a chunky cute small flying machine: a small open seat frame of soot-black iron tubes with one small dwarf pilot sitting in it, wearing round goggles and a dark leather cap, with a huge bushy ginger-copper beard, colour #c8642a; one big flat two-blade rotor on a short mast above the pilot; a small copper engine with a short smokestack puffing a white steam cloud behind the seat; a short tail boom with a little propeller; one round black bomb hanging under the seat; two thin iron landing skids under it; an open frame of tubes, never a disc or a saucer; simple shapes and very few details. The gyrocopter is drawn large and fills most of the width of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, saucer, dome, glass dome, airship, balloon, wings, airplane, bird, helicopter cabin, closed cockpit."
+  }
+}

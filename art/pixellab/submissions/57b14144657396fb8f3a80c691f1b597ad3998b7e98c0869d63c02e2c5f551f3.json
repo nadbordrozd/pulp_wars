@@ -1,0 +1,36 @@
+{
+  "id": "gyrocopter-a-edit",
+  "jobId": "3bd0b666-eea7-4b2b-aa1f-2b0916aa3a54",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-gyrocopter",
+    "subject": "UNIT:DWARF:RAIDER",
+    "faction": "DWARF",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 78102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the two thin landing skids and their struts under the gyrocopter, leaving empty transparent background there, so it flies with nothing under it except the round black bomb hanging from the seat; do not redraw anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the shapes, thick black outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Change only one thing: erase the two thin landing skids and their struts under the gyrocopter, leaving empty transparent background there, so it flies with nothing under it except the round black bomb hanging from the seat; do not redraw anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the shapes, thick black outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the two thin landing skids and their struts under the gyrocopter, leaving empty transparent background there, so it flies with nothing under it except the round black bomb hanging from the seat; do not redraw anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the shapes, thick black outline and art style exactly the same.",
+    "editInstruction": "Change only one thing: erase the two thin landing skids and their struts under the gyrocopter, leaving empty transparent background there, so it flies with nothing under it except the round black bomb hanging from the seat; do not redraw anything else. Keep the rotor, the dwarf pilot, the iron pod, the copper engine and its steam, the tail, the shapes, thick black outline and art style exactly the same.",
+    "source": {
+      "recipe": "gyrocopter-a",
+      "candidate": 0,
+      "sha256": "850f41624f9b71c597e9dc4b2eb1e348393a5e45d45d94821cb2487704a96b49"
+    }
+  }
+}

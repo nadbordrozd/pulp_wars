@@ -1,0 +1,36 @@
+{
+  "id": "clockwork-gunner-a-key",
+  "jobId": "11622cde-f244-46cf-a943-aea1b269f436",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-dwarf",
+    "asset": "chibi-direction-dwarf-clockwork-gunner",
+    "subject": "UNIT:DWARF:MARKSMAN",
+    "faction": "DWARF",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 78402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: one big bright copper wind-up key sticking up out of its back behind the head, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the left shoulder. Do not change anything else: keep the green lamp, the iron body, the copper belly, the gatling arm, the claw, the legs, the steam, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: one big bright copper wind-up key sticking up out of its back behind the head, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the left shoulder. Do not change anything else: keep the green lamp, the iron body, the copper belly, the gatling arm, the claw, the legs, the steam, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: one big bright copper wind-up key sticking up out of its back behind the head, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the left shoulder. Do not change anything else: keep the green lamp, the iron body, the copper belly, the gatling arm, the claw, the legs, the steam, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Add only one thing: one big bright copper wind-up key sticking up out of its back behind the head, a short shaft with a wide flat two-lobed handle like a butterfly, clearly visible above the left shoulder. Do not change anything else: keep the green lamp, the iron body, the copper belly, the gatling arm, the claw, the legs, the steam, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "clockwork-gunner-a",
+      "candidate": 0,
+      "sha256": "1a400d7ef50b5fb98fde4c9979c384b6d0c239b3a791d3555a13280517b7fa3b"
+    }
+  }
+}
