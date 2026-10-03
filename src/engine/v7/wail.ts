@@ -8,12 +8,19 @@ import {
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
 import { isLivingUnitV7 } from "./afflictions";
-import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
+import { fortificationPartsForUnitV7 } from "./combat";
+import { publicUnitIsDugInV7 } from "./dwarf";
 import { arePlayersHostileV7 } from "./economy";
 import type { CombatSplashEntryV7 } from "./events";
+import {
+  hiddenBlizzardPossibleV7,
+  isSnowV7,
+  unitOwnerIsIceFolkV7,
+} from "./ice-folk";
 import { absorbHitV7, shieldOfV7 } from "./martian";
 import { isUnitVisibleToPlayerV7 } from "./observation";
-import type { CoordV7, GameStateV7, UnitStateV7 } from "./types";
+import { tileAtV7 } from "./spatial-economy";
+import type { CoordV7, GameStateV7, TerrainIdV7, UnitStateV7 } from "./types";
 import type { PlayerViewV7, PublicUnitV7 } from "./view";
 
 /** Revision 13 section 6.6: Wail reaches every tile within Chebyshev 2. */
@@ -34,12 +41,26 @@ export interface WailTargetV7 {
   readonly shieldDamage: number;
 }
 
-/** Public Wail preview (section 6.6); it equals the resolution exactly. */
+/**
+ * One public Wail target. `hiddenBlizzardPossible`: a Witch the viewer
+ * cannot see may stand next to this Ice Folk target (section 10.10), and her
+ * Blizzard's Snow would give it Snow cover and lower the hit; the numbers
+ * are those without that Snow (the Snow the viewer knows of). Set only when
+ * that Snow would change them.
+ */
+export interface PublicWailTargetV7 extends WailTargetV7 {
+  readonly hiddenBlizzardPossible: boolean;
+}
+
+/**
+ * Public Wail preview (section 6.6); it equals the resolution exactly
+ * except for a target flagged `hiddenBlizzardPossible`.
+ */
 export interface WailPreviewV7 {
   readonly unitId: UnitId;
   readonly at: CoordV7;
   readonly attack2: number;
-  readonly targets: readonly (WailTargetV7 & {
+  readonly targets: readonly (PublicWailTargetV7 & {
     readonly leavesGrave: boolean;
     /** Revision 14: the death rises as the biter's Zombie (no Grave). */
     readonly bittenRises: boolean;
@@ -52,6 +73,22 @@ type WailUnitV7 = Pick<
 >;
 
 /**
+ * The facts of a Wail target's position that its damage reads: its tile's
+ * terrain and Snow, its fortification by source (as
+ * `fortificationPartsForUnitV7` splits it: the City Walls levels, and the
+ * Field Defense part, in which the Dwarf revision's Dig In is one level),
+ * and its Martian Shield. The reducer passes the canonical facts and the
+ * public preview the viewer's, into the one {@link wailTargetV7}.
+ */
+export interface WailTargetFactsV7 {
+  readonly terrain: TerrainIdV7 | null | undefined;
+  readonly snow: boolean;
+  readonly walls: number;
+  readonly fieldDefense: number;
+  readonly shield: number;
+}
+
+/**
  * Canonical Wail targets of `banshee`, sorted by (y, x, id): every alive,
  * hostile, living (owner not UNDEAD) unit visible to the Banshee's owner
  * within {@link WAIL_RADIUS_V7}. Land, naval, and embarked units qualify.
@@ -60,7 +97,6 @@ export function wailTargetsV7(
   state: GameStateV7,
   banshee: UnitStateV7,
 ): readonly WailTargetV7[] {
-  const attack2 = unitRoleRuleV7(state, banshee).attack2;
   return sortTargets(
     state.units
       .filter(
@@ -74,38 +110,33 @@ export function wailTargetsV7(
           isUnitVisibleToPlayerV7(state, banshee.ownerId, unit),
       )
       .map((unit) => {
-        const bonus = defenseBonusForUnitV7(state, unit);
-        const fortificationLevel = fortificationLevelForUnitV7(state, unit);
-        return target(
-          state,
-          banshee,
-          attack2,
-          unit,
-          defense2For(
-            unitRoleRuleV7(state, unit).defense2,
-            unit,
-            fortificationLevel,
-          ),
-          bonus.numerator,
-          bonus.denominator,
-          fortificationLevel,
-          shieldOfV7(state.shields, unit.id),
-        );
+        const parts = fortificationPartsForUnitV7(state, unit);
+        return wailTargetV7(state, banshee, unit, {
+          terrain: tileAtV7(state.board, unit.at)?.terrain,
+          snow: isSnowV7(state, unit.at),
+          walls: parts.walls,
+          fieldDefense: parts.fieldDefense,
+          shield: shieldOfV7(state.shields, unit.id),
+        });
       }),
   );
 }
 
 /**
  * Observation-safe Wail targets of an own `banshee` computed from the public
- * view alone. The view lists exactly the units the viewer can see, and every
- * target must be visible, so this equals {@link wailTargetsV7}.
+ * view alone, with the reducer's own {@link wailTargetV7}. The view lists
+ * exactly the units the viewer can see, and every target must be visible,
+ * so the targets are those of {@link wailTargetsV7}. The facts are public:
+ * the tile's terrain and level (Walls plus Field Defense, in the target
+ * owner's territory), Dig In from the target's public stats, and the Snow
+ * the viewer knows of. Only a hidden Witch's Blizzard can make the result
+ * differ, which `hiddenBlizzardPossible` flags.
  */
 export function publicWailTargetsV7(
   view: PlayerViewV7,
   banshee: PublicUnitV7,
-): readonly WailTargetV7[] {
-  const attack2 = unitRoleRuleV7(view, banshee).attack2;
-  const targets: WailTargetV7[] = [];
+): readonly PublicWailTargetV7[] {
+  const targets: PublicWailTargetV7[] = [];
   for (const unit of view.units) {
     if (
       unit.hp <= 0 ||
@@ -117,31 +148,38 @@ export function publicWailTargetsV7(
       continue;
     const tile = publicTile(view, unit.at);
     if (tile?.explored !== true) continue;
-    // The Martian revision: a walker or flyer has no fortification or cover.
-    const takesCover = unitTakesCoverV7(view, unit);
-    const fortificationLevel =
-      takesCover && tile.territoryOwnerId === unit.ownerId
+    // The public tile level is Walls plus Field Defense (as in the combat
+    // preview). The Dwarf revision section 8: Dig In is one level in the
+    // Field Defense part (`max`, never added), counted outside territory too.
+    const tileLevel =
+      tile.territoryOwnerId === unit.ownerId
         ? (tile.fortificationLevel ?? 0)
         : 0;
-    const covered =
-      takesCover && (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
-    targets.push(
-      target(
-        view,
-        banshee,
-        attack2,
-        unit,
-        defense2For(
-          unitRoleRuleV7(view, unit).defense2,
-          unit,
-          fortificationLevel,
-        ),
-        covered ? 3 : 1,
-        covered ? 2 : 1,
-        fortificationLevel,
-        shieldOfV7(view.shields, unit.id),
-      ),
-    );
+    const tileFieldDefense = Math.min(tileLevel, tile.fieldDefense ? 1 : 0);
+    const dugIn = publicUnitIsDugInV7(view, unit.id);
+    const facts: WailTargetFactsV7 = {
+      terrain: tile.terrain,
+      snow: isSnowV7(view, unit.at),
+      walls: tileLevel - tileFieldDefense,
+      fieldDefense: Math.max(tileFieldDefense, dugIn ? 1 : 0),
+      shield: shieldOfV7(view.shields, unit.id),
+    };
+    const known = wailTargetV7(view, banshee, unit, facts);
+    // Section 10.10: a hidden Witch's Blizzard can only add Snow (never on
+    // water or a Rift); the target is flagged when that Snow changes it.
+    const withHiddenSnow =
+      !facts.snow &&
+      tile.biome !== null &&
+      tile.terrain !== "RIFT" &&
+      hiddenBlizzardPossibleV7(view, unit)
+        ? wailTargetV7(view, banshee, unit, { ...facts, snow: true })
+        : known;
+    targets.push({
+      ...known,
+      hiddenBlizzardPossible:
+        withHiddenSnow.damage !== known.damage ||
+        withHiddenSnow.shieldDamage !== known.shieldDamage,
+    });
   }
   return sortTargets(targets);
 }
@@ -221,20 +259,41 @@ export function wailDamageV7(input: {
   );
 }
 
-function target(
+/**
+ * One Wail target from its position facts, shared by the reducer
+ * ({@link wailTargetsV7}) and the public preview
+ * ({@link publicWailTargetsV7}): the ordinary damage formula with the
+ * Banshee's Attack against the target's Defense, fortification, embarked or
+ * Egg Defense, and cover (Forest, Mountain, and the Ice Folk revision's
+ * Snow cover, section 6.2: an Ice Folk unit on Snow whose own fortification
+ * level is 0). The Martian revision: a walker or flyer has no fortification
+ * or cover (section 7.1), and the Shield absorbs the hit first (5.3).
+ */
+export function wailTargetV7(
   roster: FactionRosterV7,
   banshee: WailUnitV7,
-  attack2: number,
   unit: WailUnitV7,
-  defense2: number,
-  defenseBonusNumerator: number,
-  defenseBonusDenominator: number,
-  fortificationLevel: number,
-  shield: number,
+  facts: WailTargetFactsV7,
 ): WailTargetV7 {
-  // The Martian revision section 5.3: the Shield absorbs the Wail first.
+  const takesCover = unitTakesCoverV7(roster, unit);
+  const fortificationLevel = takesCover ? facts.walls + facts.fieldDefense : 0;
+  const snowCover =
+    takesCover &&
+    unitOwnerIsIceFolkV7(roster, unit) &&
+    facts.snow &&
+    fortificationLevel === 0;
+  const covered =
+    takesCover &&
+    (facts.terrain === "FOREST" || facts.terrain === "MOUNTAIN" || snowCover);
+  const defenseBonusNumerator = covered ? 3 : 1;
+  const defenseBonusDenominator = covered ? 2 : 1;
+  const defense2 = defense2For(
+    unitRoleRuleV7(roster, unit).defense2,
+    unit,
+    fortificationLevel,
+  );
   const hit = wailDamageV7({
-    attack2,
+    attack2: unitRoleRuleV7(roster, banshee).attack2,
     attackerHp: banshee.hp,
     attackerMaxHp: banshee.maxHp,
     defense2,
@@ -243,9 +302,13 @@ function target(
     defenseBonusNumerator,
     defenseBonusDenominator,
     armour: (value) => armouredDamageV7(roster, unit, value),
-    shield,
+    shield: facts.shield,
   });
-  const { shieldDamage, hpDamage: damage } = absorbHitV7(shield, unit.hp, hit);
+  const { shieldDamage, hpDamage: damage } = absorbHitV7(
+    facts.shield,
+    unit.hp,
+    hit,
+  );
   return {
     unitId: unit.id,
     at: { x: unit.at.x, y: unit.at.y },

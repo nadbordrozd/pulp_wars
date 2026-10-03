@@ -17,6 +17,7 @@ import {
   type TendWoundedPreviewV7,
   type WailPreviewV7,
 } from "../engine/index";
+import { HIDDEN_BLIZZARD_PREVIEW_V7 } from "./ice-folk-presentation-v7";
 
 /**
  * Presentation helpers for revision 13 Undead (spec section 10). Every helper
@@ -453,6 +454,23 @@ export interface WailTargetPresentationV7 {
   readonly leavesGrave: boolean;
   /** Revision 14: the death rises as the biter's Zombie. */
   readonly bittenRises: boolean;
+  /**
+   * The Ice Folk revision (section 10.10): a hidden Witch's Blizzard may
+   * lower this damage, as the combat preview's caveat.
+   */
+  readonly hiddenBlizzardPossible: boolean;
+}
+
+/**
+ * The board label of one Wail target: the damage ("?" when a hidden
+ * Blizzard may change it) and "Rises" for a bitten death.
+ */
+export function wailTargetLabelV7(target: {
+  readonly damage: number;
+  readonly bittenRises: boolean;
+  readonly hiddenBlizzardPossible: boolean;
+}): string {
+  return `−${target.damage}${target.hiddenBlizzardPossible ? "?" : ""}${target.bittenRises ? " · Rises" : ""}`;
 }
 
 export function wailTargetsPresentationV7(
@@ -469,11 +487,15 @@ export function wailTargetsPresentationV7(
       dies: target.dies,
       leavesGrave: target.leavesGrave,
       bittenRises: target.bittenRises,
+      hiddenBlizzardPossible: target.hiddenBlizzardPossible,
     };
   });
 }
 
-/** Accessible Wail summary: target count, then per-target damage and deaths. */
+/**
+ * Accessible Wail summary: target count, then per-target damage and deaths,
+ * and the combat preview's hidden-Blizzard caveat when any target has it.
+ */
 export function wailPreviewDescriptionV7(
   view: PlayerViewV7,
   preview: WailPreviewV7,
@@ -483,10 +505,13 @@ export function wailPreviewDescriptionV7(
   const list = targets
     .map(
       (target) =>
-        `${target.label} −${target.damage}${target.bittenRises ? " (dies, rises as a Zombie)" : target.dies ? " (dies)" : ""}`,
+        `${target.label} −${target.damage}${target.hiddenBlizzardPossible ? "?" : ""}${target.bittenRises ? " (dies, rises as a Zombie)" : target.dies ? " (dies)" : ""}`,
     )
     .join(", ");
-  return `Hits ${targets.length} ${targets.length === 1 ? "enemy" : "enemies"} within 2 tiles${kills > 0 ? `, ${kills} ${kills === 1 ? "dies" : "die"}` : ""}: ${list}`;
+  const caveat = targets.some((target) => target.hiddenBlizzardPossible)
+    ? `. ${HIDDEN_BLIZZARD_PREVIEW_V7}`
+    : "";
+  return `Hits ${targets.length} ${targets.length === 1 ? "enemy" : "enemies"} within 2 tiles${kills > 0 ? `, ${kills} ${kills === 1 ? "dies" : "die"}` : ""}: ${list}${caveat}`;
 }
 
 export function raiseDeadPreviewDescriptionV7(

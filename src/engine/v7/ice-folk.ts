@@ -504,6 +504,38 @@ export function knownWinterV7(
 }
 
 /**
+ * Section 10.10: whether a Witch the viewer cannot see may stand within
+ * `BLIZZARD_RADIUS_V7` of `unit`, a land-form Ice Folk unit: a tile in that
+ * radius (the unit's own excepted) is unexplored. Her Blizzard may then add
+ * Snow, and so Snow cover, under the unit and halve a ranged hit on it,
+ * which the view does not show (a Witch on an explored tile is known,
+ * section 6.5). Shared by the combat and Wail previews.
+ */
+export function hiddenBlizzardPossibleV7(
+  view: PlayerViewV7,
+  unit: Pick<UnitStateV7, "ownerId" | "form" | "at">,
+): boolean {
+  if (!isIceFolkLandUnitV7(view, unit)) return false;
+  for (
+    let y = unit.at.y - BLIZZARD_RADIUS_V7;
+    y <= unit.at.y + BLIZZARD_RADIUS_V7;
+    y += 1
+  )
+    for (
+      let x = unit.at.x - BLIZZARD_RADIUS_V7;
+      x <= unit.at.x + BLIZZARD_RADIUS_V7;
+      x += 1
+    ) {
+      const at = { x, y };
+      if ((x === unit.at.x && y === unit.at.y) || !onBoard(view.board, at))
+        continue;
+      if (view.board.tiles[indexOf(view.board, at)]?.explored === false)
+        return true;
+    }
+  return false;
+}
+
+/**
  * Section 6.3 (root ruling 4): whether `unit` is protected by a Blizzard's
  * ranged-damage halving: a land-form Ice Folk unit within
  * `BLIZZARD_RADIUS_V7` of a land-form Ice Witch of its own seat. `witches`

@@ -2836,7 +2836,9 @@ Disintegrator ([section 21.5](#215-snow)).
   Snap, and Sweep previews are exact; a combat preview whose defender is a
   land-form Ice Folk unit with an unexplored tile within 1 sets
   `hiddenBlizzardPossible`, because a hidden Witch could change its cover
-  and halve a ranged hit. No event reveals a hidden Witch; a Move that
+  and halve a ranged hit; a Wail preview target sets it when such a Witch's
+  Snow would lower its damage ([section 17.9](#179-wail)). No event
+  reveals a hidden Witch; a Move that
   meets her Blizzard is interrupted (`SNOW`) and reveals her only through
   the mover's own sight.
 - **Dwarf mounds and per-turn lists.** A mound is public on every explored
@@ -3382,12 +3384,16 @@ infect, and a Dwarf construct never rises. Event
   kills takes its Thralls with it; the Banshee
   is handled. Event `WAIL_RESOLVED` (then
   `UNIT_DIED` with cause `WAIL` per death). The preview `previewWailV7`
-  lists exactly the resolved targets (only visible units are targets), but
-  it reads cover only from Forest and Mountain and fortification only from
-  the tile (Walls and Field Defense in the target's own territory): it
-  leaves out an Ice Folk target's Snow cover and a Dwarf target's Dig In, so
-  for such a target it can show more damage than the Wail deals, with no
-  flag ([section 24](#24-known-discrepancies)).
+  lists exactly the resolution's targets (only visible units are targets)
+  and computes each with the reducer's own per-target function
+  (`wailTargetV7`) from public facts: the tile's terrain and fortification
+  level, a Dwarf target's Dig In from its public stats, and an Ice Folk
+  target's Snow cover from the Snow the viewer knows of. It equals the
+  result except for a target flagged `hiddenBlizzardPossible` (an Ice Folk
+  target with an unexplored tile within 1 whose damage the Snow of a hidden
+  Witch's Blizzard would lower; the preview shows the damage without that
+  Snow, the board label marks it "?", and the description adds "A hidden
+  Blizzard may change this", as for an attack).
 
 ### 17.10 Commands, events, and queries
 
@@ -5107,7 +5113,8 @@ snow(tile) =
    its own (its owner's Walled center, or Field Defense in its owner's
    territory) has no Snow cover, whatever the attack ignores; on a Forest or
    Mountain it keeps the terrain cover. Acid ignores Snow cover like any
-   cover. Wail uses it (the target's cover).
+   cover. Wail uses it (the target's cover), and so does its public
+   preview, from the Snow the viewer knows of.
 
 For a land-form ground unit of any other faction (movement mode `GROUND`):
 
@@ -5439,7 +5446,8 @@ tail.
   flag; Attack 2 for an attack after a planned Move), Cold Blood, Sweep, and
   Shatter, and accept the option `assumeTargetChilled`. Every preview
   equals the resolution, except one flagged `hiddenBlizzardPossible` or
-  `touchesUnexplored`. `queryThreatenedTilesV7` gives a visible Ice Folk
+  `touchesUnexplored` (a Wail preview flags it per target).
+  `queryThreatenedTilesV7` gives a visible Ice Folk
   unit its Glide reach on known Snow, a Mountain-born unit its Mountain
   paths, a Sabretooth its reach through ZOC, a Yeti the distance-2 tiles
   from every Mountain origin, and a Boulder Yeti range 2 from every tile it
@@ -5879,7 +5887,7 @@ dug-in Hammerer 4 and takes 8 (in the open 5 and 5).
   it. The combat preview carries `dugIn`, and its level is in
   `fortificationLevel`. Fixed damage (eruptions, bombs, blasts, Kaboom,
   Sweep, Plague) ignores it; Wail, which uses the ordinary formula, reads
-  it.
+  it, and so does the public Wail preview (from the target's public stats).
 
 ### 22.8 Engineer: Repair and Assemble
 
@@ -6465,12 +6473,11 @@ As of `pulp-wars-poc-7r32` the rules in this document match the code for
 the seven factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay, the Ice Folk faction of the Ice Folk overlay, and the
-Dwarf faction of the Dwarf overlay, with one open item: the public Wail
-preview below.
+Dwarf faction of the Dwarf overlay. No item is open.
 
-**Open.**
+**Resolved by a code change** (`pulp_wars-7g3.9`):
 
-- **An inexact Wail preview without a flag.** The Ice Folk overlay's section
+- **An inexact Wail preview without a flag (resolved).** The Ice Folk overlay's section
   11 says every preview equals its resolution except one flagged
   `hiddenBlizzardPossible` or `touchesUnexplored`, and the Dwarf overlay's
   section 14 says every Dwarf-related preview is exact (a Wail reads Dig In,
@@ -6486,8 +6493,11 @@ preview below.
   a narrower form of this (overlay section 19.3 note 6: a hidden Witch's
   Blizzard), and the Ice Folk fold stated it as a reading of the viewer's
   `snow` flags, which the code does not do; this fold measured both cases
-  against the code ([section 17.9](#179-wail) states the code's behavior).
-  It is not resolved here (a code change).
+  against the code. `pulp_wars-7g3.9` resolved it: the preview now computes
+  each target with the reducer's own `wailTargetV7` from public facts (Snow
+  cover and Dig In included) and flags a target a hidden Witch's Blizzard
+  could change with `hiddenBlizzardPossible`; the Wail itself is unchanged
+  ([section 17.9](#179-wail)).
 
 **Ice Folk overlay against the code** (`pulp_wars-7g3.8`; resolved by
 stating the code's behavior):

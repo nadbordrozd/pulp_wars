@@ -107,6 +107,7 @@ import {
   canBeChilledV7,
   chillOfV7,
   coldSnapTargetsV7,
+  hiddenBlizzardPossibleV7,
   isChilledV7,
   isIceFolkLandUnitV7,
   matchHasIceFolkV7,
@@ -6432,9 +6433,7 @@ function publicCombatPreviewCore(
     sweep,
     // Section 10.10: a hidden Witch next to an Ice Folk defender may change
     // its cover and halve a ranged hit.
-    hiddenBlizzardPossible:
-      isIceFolkLandUnitV7(view, target) &&
-      adjacentPublicTiles(view, target.at).some((tile) => !tile.explored),
+    hiddenBlizzardPossible: hiddenBlizzardPossibleV7(view, target),
     dugIn,
     unflinchingApplied: unflinching,
     platedApplied:

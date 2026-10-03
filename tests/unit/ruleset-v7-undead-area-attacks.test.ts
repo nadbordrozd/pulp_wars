@@ -257,6 +257,7 @@ describe("ruleset-7 revision-13 Wail: targets and damage", () => {
           damage: 0,
           dies: false,
           shieldDamage: 0,
+          hiddenBlizzardPossible: false,
           leavesGrave: false,
           bittenRises: false,
         },

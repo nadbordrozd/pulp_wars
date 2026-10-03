@@ -42,6 +42,7 @@ import {
   combatPreviewSemanticNoteV7,
   matchHasUndeadV7,
   tendTargetLabelV7,
+  wailTargetLabelV7,
   type AfflictionIdV7,
 } from "../undead-presentation-v7";
 import {
@@ -3984,9 +3985,8 @@ function addAbilityPreviews(
           layer: 7.5,
           at: target.at,
           abilityStyle: "WAIL",
-          label: target.bittenRises
-            ? `−${target.damage} · Rises`
-            : `−${target.damage}`,
+          // A hidden Blizzard's caveat (Ice Folk) marks the damage "?".
+          label: wailTargetLabelV7(target),
           lethal: target.dies,
         });
     }
