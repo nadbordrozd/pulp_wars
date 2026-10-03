@@ -21,8 +21,8 @@ const archive = JSON.parse(
 if (archive.rulesetId !== "pulp-wars-poc-7r2")
   throw new Error("Archived revision-2 release corpus identity changed");
 if (
-  RULESET_7_ID !== "pulp-wars-poc-7r23" ||
-  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r23.current" ||
+  RULESET_7_ID !== "pulp-wars-poc-7r24" ||
+  SAVE_STORAGE_KEY_V7 !== "pulpWars.save.v7r24.current" ||
   parseMatchSetupV7({
     rulesetId: RULESET_7_ID,
     seed: 0,
@@ -36,11 +36,12 @@ if (
     mapType: "CONTINENTS",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   }) === null ||
-  FACTION_IDS_V7.join(",") !== "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN" ||
+  FACTION_IDS_V7.join(",") !==
+    "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK" ||
   FACTION_TREE_IDS_V7.join(",") !==
-    "ORIGINAL_BASELINE_V5,UNDEAD_BASELINE_V1,GOBLIN_BASELINE_V1,DINOSAUR_BASELINE_V1,MARTIAN_BASELINE_V1"
+    "ORIGINAL_BASELINE_V5,UNDEAD_BASELINE_V1,GOBLIN_BASELINE_V1,DINOSAUR_BASELINE_V1,MARTIAN_BASELINE_V1,ICE_FOLK_BASELINE_V1"
 )
-  throw new Error("Current Martian-revision release identity is invalid");
+  throw new Error("Current Ice Folk-revision release identity is invalid");
 
 const vitest = path.join(root, "node_modules/vitest/vitest.mjs");
 const result = spawnSync(
@@ -86,6 +87,16 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-martian-abilities.test.ts",
     "tests/unit/ruleset-v7-martian-interactions.test.ts",
     "tests/unit/ruleset-v7-martian-headless.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-identity.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-helpers.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-faction.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-chill.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-shatter.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-snow.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-units.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-interactions.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-persistence.test.ts",
+    "tests/unit/ruleset-v7-ice-folk-headless.test.ts",
     "tests/unit/ruleset-v7-dinosaur-form-audit.test.ts",
     "tests/unit/ruleset-v7-dinosaur-ai-basics.test.ts",
     "tests/unit/ruleset-v7-save.test.ts",
@@ -98,7 +109,7 @@ const result = spawnSync(
   { cwd: root, stdio: "inherit" },
 );
 if (result.status !== 0)
-  throw new Error("Current Martian-revision release contract tests failed");
+  throw new Error("Current Ice Folk-revision release contract tests failed");
 process.stdout.write(
-  "ruleset-7 current release PASS: the revision-23 identity and the revision-20 sturdiness numbers (Human core land roles, Caveman); the Martian faction engine (Shields, heat rays and Cooling, Pierce, Stride, Flying and self-launch, Beam Down, Mind Control and Thralls, the Tractor Beam) with exact public previews and headless Normal matches without errors; the revision-21 Conqueror, Land Baron, Sea Dog, and Slayer achievements; the revision-20 Triceratops Charge! (run-up, ignored fortification, Push and follow) with exact public previews, the T-Rex cost and hatch time, Nesting's city slot and Wallbreaker, and the full heal of a Promotion and of a growth stage; the revision-19 Dinosaur faction core (registration, roster, capacity slots, Grow, Wild, Acid, Armoured, substitutions, Showcase) and Eggs (LAY_EGG, hatching, Shaman Hatch, Nesting, destruction, capture, Abandon Egg); revision-18 movement and Showcase; the revision-17 Goblin faction core (registration, roster, the starting Goblin, substitutions, Warrens, Gang Up, Plunder, WAAAGH!, Troll regeneration, the Field Defense restriction); revision-16a orthogonal Shallow Water with the 25% Shallow minimum, capital growth floor and CAPITAL_GROWTH, Normal AI growth-first opening; revision-16b 2-tile boats (Patrol Boat and embarked Move 2, DISEMBARK spends one point) and the landing preview; revision-15 three-turn Plague with first-turn spread, Zombie 18 HP; revision-14 Plague, Bitten, unanswered Vampire, Lich Attack 3, village table, and income caps; revision-13 faction registration (Human and Undead rosters), revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
+  "ruleset-7 current release PASS: the revision-24 identity and the Ice Folk faction engine (Chill and Shatter, Snow, Blizzards, Cold Snap, Deep Winter, Brittle, Glide, Mountain-born, Rockfall, Sweep, Trample, Prowl, the Frost Giant's Cold Aura) with exact public previews and headless Normal matches without errors; the revision-23 sturdiness numbers (Human core land roles, Caveman); the Martian faction engine (Shields, heat rays and Cooling, Pierce, Stride, Flying and self-launch, Beam Down, Mind Control and Thralls, the Tractor Beam) with exact public previews and headless Normal matches without errors; the revision-21 Conqueror, Land Baron, Sea Dog, and Slayer achievements; the revision-20 Triceratops Charge! (run-up, ignored fortification, Push and follow) with exact public previews, the T-Rex cost and hatch time, Nesting's city slot and Wallbreaker, and the full heal of a Promotion and of a growth stage; the revision-19 Dinosaur faction core (registration, roster, capacity slots, Grow, Wild, Acid, Armoured, substitutions, Showcase) and Eggs (LAY_EGG, hatching, Shaman Hatch, Nesting, destruction, capture, Abandon Egg); revision-18 movement and Showcase; the revision-17 Goblin faction core (registration, roster, the starting Goblin, substitutions, Warrens, Gang Up, Plunder, WAAAGH!, Troll regeneration, the Field Defense restriction); revision-16a orthogonal Shallow Water with the 25% Shallow minimum, capital growth floor and CAPITAL_GROWTH, Normal AI growth-first opening; revision-16b 2-tile boats (Patrol Boat and embarked Move 2, DISEMBARK spends one point) and the landing preview; revision-15 three-turn Plague with first-turn spread, Zombie 18 HP; revision-14 Plague, Bitten, unanswered Vampire, Lich Attack 3, village table, and income caps; revision-13 faction registration (Human and Undead rosters), revision-12 rules (free opening research, Fertile Ground mask, Raider Escape), roster, economy, naval, logistics, privacy, persistence, UI, and identity contracts; archived revision-2 corpus preserved\n",
 );

@@ -117,6 +117,35 @@ export interface CombatPreviewV7 {
   readonly defenderShieldDamage: number;
   /** What the attacker's Shield absorbs of the retaliation. */
   readonly attackerShieldDamage: number;
+  /**
+   * The Ice Folk revision (section 5.5): the defender shatters. Then
+   * `damageToDefender` is its whole remaining HP, `defenderDies` is true,
+   * and there is no retaliation (`DEFENDER_DIED`).
+   */
+  readonly shatters: boolean;
+  /** Section 7.4: the Snow Hunter's Cold Blood is in `attack2`. */
+  readonly coldBloodApplied: boolean;
+  /**
+   * Section 7.2: the attack is a Yeti's Rockfall from distance 2; `attack2`
+   * is the Rockfall value.
+   */
+  readonly rockfallApplied: boolean;
+  /** Section 7.6: the Boulder Yeti's Planted bonus is in `attack2`. */
+  readonly plantedApplied: boolean;
+  /**
+   * Section 6.3: the hit on the defender was halved by a Blizzard;
+   * `damageToDefender` is the halved value.
+   */
+  readonly blizzardHalved: boolean;
+  /** Section 6.2: the defender's cover comes from Snow. */
+  readonly snowCover: boolean;
+  /** Section 7.5: a Mammoth's Sweep; its flank victims are `splash`. */
+  readonly sweep: boolean;
+  /**
+   * Section 10.10: only in a public preview, an unexplored tile lies within
+   * 1 of an Ice Folk defender, so a hidden Witch may change the result.
+   */
+  readonly hiddenBlizzardPossible: boolean;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -343,7 +372,9 @@ export type DomainEventV7 =
         | "EXPLOSIVES"
         | "OCCUPATION"
         /** Revision 17: every explosion clears its whole 3 × 3 blast area. */
-        | "EXPLOSION";
+        | "EXPLOSION"
+        /** The Ice Folk revision: a Mammoth attack (section 7.5). */
+        | "TRAMPLE";
     }
   | {
       readonly kind: "LAND_GRANTED";
@@ -508,6 +539,25 @@ export type DomainEventV7 =
       readonly unitIds: readonly UnitId[];
     }
   | {
+      /**
+       * The Ice Folk revision (section 11): `sourceUnitId` of `playerId`
+       * (a Sled's Bolas, an Ice Witch's Cold Snap, or a Frost Giant's Cold
+       * Aura) chilled every listed unit; each result is its Chill entry
+       * after the application, in unit-ID order. A projection keeps the
+       * results the viewer can see (and a target owner's own entries, with
+       * `sourceUnitId` null when the source is hidden).
+       */
+      readonly kind: "UNITS_CHILLED";
+      readonly playerId: PlayerId;
+      readonly sourceUnitId: UnitId | null;
+      readonly source: "BOLAS" | "COLD_SNAP" | "COLD_AURA";
+      readonly results: readonly {
+        readonly unitId: UnitId;
+        readonly sluggish: boolean;
+        readonly turnsLeft: 0 | 1 | 2;
+      }[];
+    }
+  | {
       readonly kind: "WOUNDED_TENDED";
       readonly captainId: UnitId;
       readonly results: readonly {
@@ -519,6 +569,11 @@ export type DomainEventV7 =
         readonly curedPlague: boolean;
         /** Revision 14: the tended unit was bitten and is cured. */
         readonly curedBitten: boolean;
+        /**
+         * The Ice Folk revision (section 10.5): the tended unit was Chilled
+         * and its entry is now thawing.
+         */
+        readonly curedChill: boolean;
       }[];
     }
   | {
@@ -579,7 +634,12 @@ export type DomainEventV7 =
          * The Martian revision: a flyer entered an unexplored cell that is
          * a settlement center it cannot stand on.
          */
-        | "SETTLEMENT_FORBIDDEN";
+        | "SETTLEMENT_FORBIDDEN"
+        /**
+         * The Ice Folk revision (section 6.5): the unit entered Snow it could
+         * not know about (a hidden Ice Witch's Blizzard) and stopped there.
+         */
+        | "SNOW";
     }
   | {
       readonly kind: "TILES_REVEALED";
@@ -694,7 +754,12 @@ export type DomainEventV7 =
         /** Revision 19: an Egg destroyed because its home city was captured. */
         | "CITY_CAPTURED"
         /** The Martian revision: a Thrall collapsed with its Brain. */
-        | "BRAIN_LOST";
+        | "BRAIN_LOST"
+        /**
+         * The Ice Folk revision (section 5.5): a shattered unit (no Grave,
+         * no death blast; a Bitten one still rises).
+         */
+        | "SHATTER";
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */

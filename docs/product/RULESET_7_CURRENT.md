@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r23`, for all four playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r24`, for all four playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), and Dinosaur (`DINOSAUR`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
@@ -26,18 +26,25 @@ numbers of `pulp-wars-poc-7r23`
 Fighter, Raider, and Marksman 12 HP, Guard 17, Caveman 10). The Undead, the
 Goblins, and the Dinosaurs are part of the ordinary game: faction choice is
 offered in every match setup, with no development flag. Every number below
-was checked against the engine code at `pulp-wars-poc-7r23`.
+was checked against the engine code at `pulp-wars-poc-7r23`;
+`pulp-wars-poc-7r24` (`pulp_wars-7g3.3`) registers the Ice Folk overlay and
+changes no rule of the four factions.
 
-**Pending overlays, not folded.** The engine at `pulp-wars-poc-7r23` also
+**Pending overlays, not folded.** The engine at `pulp-wars-poc-7r24` also
 registers a fifth faction, `MARTIAN`, whose rules are in the
 [Martian overlay](RULESET_7_MARTIANS.md) (engine implemented by
 `pulp_wars-t6s.2` at `pulp-wars-poc-7r22`; its Normal AI and UI are pending,
 so the browser setup does not offer it and a Martian seat plays with the
-generic Normal policy). The [Ice Folk overlay](RULESET_7_ICE_FOLK.md) is a
-specification only, with no engine code. This document does not describe
-either faction: wherever it lists "every faction", it means the four
+generic Normal policy). It also registers a sixth faction, `ICE_FOLK`, whose
+rules are in the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (engine
+implemented by `pulp_wars-7g3.3` at `pulp-wars-poc-7r24`; its Normal AI and
+UI are pending, so the browser setup does not offer it). This document does
+not describe either faction: wherever it lists "every faction", it means the four
 playable ones, and the Martian additions to shared state, commands, events,
-and previews are neutral in a match without a Martian seat
+and previews are neutral in a match without a Martian seat, and the Ice
+Folk additions (the `chilled` list, the `snow` and `blizzard` tile flags,
+the `chill` unit stat, `curedChill`, and eight combat-preview fields) in a
+match without an Ice Folk seat
 ([section 21](#21-known-discrepancies)).
 
 **Supersedes for current play:** [Ruleset 7 baseline](RULESET_7.md) and its
@@ -117,23 +124,23 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 ## 1. Identity and compatibility
 
-| Boundary                                   | Current value                                                                                                                                                                                        |
-| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r23`                                                                                                                                                                                 |
-| Game-state schema                          | `7`                                                                                                                                                                                                  |
-| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                  |
-| Browser autosave                           | `pulpWars.save.v7r23.current`                                                                                                                                                                        |
-| Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                           |
-| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN` (the last is the pending Martian overlay)                                                                                                      |
-| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`                                                                                    |
-| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`                        |
-| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"                                                                                  |
-| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                        |
-| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`: the browser setup offers these four; the engine and the headless tools also accept `MARTIAN` ([Martian overlay](RULESET_7_MARTIANS.md), not folded here) |
+| Boundary                                   | Current value                                                                                                                                                                                                                                              |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ruleset                                    | `pulp-wars-poc-7r24`                                                                                                                                                                                                                                       |
+| Game-state schema                          | `7`                                                                                                                                                                                                                                                        |
+| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                        |
+| Browser autosave                           | `pulpWars.save.v7r24.current`                                                                                                                                                                                                                              |
+| Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                 |
+| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK` (the last two are the pending Martian and Ice Folk overlays)                                                                                                                             |
+| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`                                                                                                                  |
+| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`                                         |
+| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"                                                                                                              |
+| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                              |
+| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`: the browser setup offers these four; the engine and the headless tools also accept `MARTIAN` and `ICE_FOLK` ([Martian](RULESET_7_MARTIANS.md) and [Ice Folk](RULESET_7_ICE_FOLK.md) overlays, not folded here) |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r22`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r23`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -146,9 +153,11 @@ separate [Ruleset 6](RULESET_6.md) route.
   progress to seven entries. The Martian overlay (`7r22`) registered the
   fifth faction with its own state lists, commands, and events
   ([section 21](#21-known-discrepancies)). `pulp_wars-0hi.3` (`7r23`)
-  changed only numbers (Human and Caveman HP) and no shape.
+  changed only numbers (Human and Caveman HP) and no shape. The Ice Folk
+  overlay (`7r24`) registered the sixth faction with the `chilled` list, the
+  `THROW_BOLAS` and `COLD_SNAP` commands, and the `UNITS_CHILLED` event.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r22.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r23.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -2977,6 +2986,7 @@ Attack 3, Defense 2):
 | 21       | `pulp-wars-poc-7r21` | `pulp_wars-9s0.4`: Conqueror, Land Baron, Sea Dog, and Slayer achievements (seven entitlements per seat)                                                           | [revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md)          |
 | —        | `pulp-wars-poc-7r22` | `pulp_wars-t6s.2`: Martian faction engine, not offered in setup (AI and UI pending); **not folded** into this document                                             | [Martian overlay](RULESET_7_MARTIANS.md)                      |
 | 20 (bal) | `pulp-wars-poc-7r23` | `pulp_wars-0hi.3` coarse Dry Land balance: Human Fighter, Raider, and Marksman 12 HP, Guard 17; Caveman 10                                                         | [revision 20](RULESET_7_REVISION_20.md#63-tuning-record)      |
+| —        | `pulp-wars-poc-7r24` | `pulp_wars-7g3.3`: Ice Folk faction engine, not offered in setup (AI and UI pending); **not folded** into this document                                            | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                     |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -3098,11 +3108,11 @@ code's behavior is stated:
 
 ## 21. Known discrepancies
 
-No rule discrepancy is open: as of `pulp-wars-poc-7r23` the rules in this
+No rule discrepancy is open: as of `pulp-wars-poc-7r24` the rules in this
 document match the code for the four playable factions, including the
 Dinosaur faction of revisions 19 and 20 and the achievements of revision 21.
 
-**Pending overlay in the code.** The engine at `pulp-wars-poc-7r23` also
+**Pending overlays in the code.** The engine at `pulp-wars-poc-7r24` also
 contains the [Martian overlay](RULESET_7_MARTIANS.md) (`pulp_wars-t6s.2`),
 which this document does not describe: the `MARTIAN` faction and
 `MARTIAN_BASELINE_V1` tree in the frozen orders, the commands `BEAM_DOWN`,
@@ -3120,9 +3130,19 @@ one of them is empty, neutral, or never offered, and the overlay's parity
 requirement is that such a match is identical to the previous identity apart
 from identity and those neutral fields. The browser setup does not offer
 the faction, and a Martian seat plays with the generic Normal policy until
-`pulp_wars-t6s.3` and `t6s.4` land. The [Ice Folk
-overlay](RULESET_7_ICE_FOLK.md) is a specification with no code. Neither is
-folded.
+`pulp_wars-t6s.3` and `t6s.4` land. It also contains the [Ice Folk
+overlay](RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`, `7r24`): the `ICE_FOLK`
+faction and `ICE_FOLK_BASELINE_V1` tree, the commands `THROW_BOLAS` and
+`COLD_SNAP` (after `TRACTOR_BEAM`), the event `UNITS_CHILLED` (after
+`UNITS_RALLIED`), the `UNIT_DIED` cause `SHATTER`, the
+`FIELD_DEFENSE_DESTROYED` reason `TRAMPLE`, the `UNIT_MOVE_INTERRUPTED`
+reason `SNOW`, `curedChill` in Tend results, the state and view list
+`chilled`, the view tile flags `snow` and `blizzard`, eight combat-preview
+fields, the `chill` unit stat and `iceFolk` block, and the Witch support,
+Deep Winter, and Brittle unlocks. In a match without an Ice Folk seat every
+one of them is empty, false, or never offered, under the same parity
+requirement. The browser setup does not offer the faction. Neither overlay
+is folded.
 
 The revision 13–21 overlays keep superseded values (for example the
 Lich's Attack 2.5 and 20-HP Zombie in revision 13, unlimited Plague in

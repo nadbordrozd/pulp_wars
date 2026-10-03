@@ -62,6 +62,7 @@ export * from "./v7/growth";
 export * from "./v7/infect";
 export * from "./v7/map";
 export * from "./v7/martian";
+export * from "./v7/ice-folk";
 export * from "./v7/movement";
 export * from "./v7/observation";
 export * from "./v7/order";

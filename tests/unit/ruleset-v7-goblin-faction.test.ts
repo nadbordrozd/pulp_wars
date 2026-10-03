@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r23 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r23");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r23.current");
-    expect(PRIOR_RULESET_7_IDS.at(-7)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(22);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-7)).toBe(
+  it("keeps r16 among the prior identities after the r24 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r24");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r24.current");
+    expect(PRIOR_RULESET_7_IDS.at(-8)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(23);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-8)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -157,6 +157,7 @@ describe("ruleset-7 Goblin faction registration", () => {
       "GOBLIN",
       "DINOSAUR",
       "MARTIAN",
+      "ICE_FOLK",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -164,6 +165,7 @@ describe("ruleset-7 Goblin faction registration", () => {
       "GOBLIN_BASELINE_V1",
       "DINOSAUR_BASELINE_V1",
       "MARTIAN_BASELINE_V1",
+      "ICE_FOLK_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("GOBLIN")).toBe("GOBLIN_BASELINE_V1");
     expect(FACTION_TREES_V7.GOBLIN.faction).toBe("GOBLIN");
@@ -183,6 +185,7 @@ describe("ruleset-7 Goblin faction registration", () => {
       ["GOBLIN", 1, 2, false],
       ["DINOSAUR", 0, 0, false],
       ["MARTIAN", 0, 0, false],
+      ["ICE_FOLK", 0, 0, false],
     ]);
   });
 
@@ -694,6 +697,7 @@ describe("ruleset-7 Goblin technology", () => {
       ["GOBLIN", 0, 1],
       ["DINOSAUR", 1, 0],
       ["MARTIAN", 1, 0],
+      ["ICE_FOLK", 1, 0],
     ]);
     const goblin = technologyCapabilitiesV7(all, "GOBLIN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
@@ -714,6 +718,7 @@ describe("ruleset-7 Goblin technology", () => {
       GOBLIN: { COMMERCE: "Plunder" },
       DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
       MARTIAN: { FORTIFICATION: "Force Fields", EXPLOSIVES: "Disintegrator" },
+      ICE_FOLK: { FORTIFICATION: "Deep Winter", EXPLOSIVES: "Brittle" },
     });
     const state = goblinArenaV7(
       ["GOBLIN", "ORIGINAL"],
@@ -760,6 +765,7 @@ describe("ruleset-7 Goblin starting units", () => {
       GOBLIN: 1,
       DINOSAUR: 1,
       MARTIAN: 1,
+      ICE_FOLK: 1,
     });
     let checkedSeats = 0;
     for (const [seed, mapType, factions] of [

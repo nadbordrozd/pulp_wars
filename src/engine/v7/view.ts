@@ -18,10 +18,12 @@ import {
 import { isResourceRevealedV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
+import { knownWinterV7 } from "./ice-folk";
 import type {
   BoardSizeV7,
   BiomeIdV7,
   AchievementIdV7,
+  ChillStatusV7,
   CoolingStatusV7,
   CoordV7,
   EggStatusV7,
@@ -69,6 +71,17 @@ export type PlayerTileViewV7 =
       readonly site: "CAPITAL" | "VILLAGE" | "CITY" | null;
       readonly territoryCityId: CityId | null;
       readonly territoryOwnerId: PlayerId | null;
+      /**
+       * The Ice Folk revision (section 6.5): the derived Snow the viewer
+       * knows of: territory and Deep Winter Snow, and the Blizzard of a
+       * Witch the viewer can see. The UI draws the overlay from it.
+       * `viewForV7` always sets both flags on an explored tile; they are
+       * optional in the type only so that hand-built scene fixtures (art
+       * review scenes) need not spell out `false`. Readers test `=== true`.
+       */
+      readonly snow?: boolean;
+      /** Within 1 of an Ice Witch the viewer can see (water included). */
+      readonly blizzard?: boolean;
     };
 
 export interface PlayerBoardViewV7 {
@@ -259,6 +272,11 @@ export interface PlayerViewV7 {
   readonly thralls: readonly PublicThrallStatusV7[];
   /** The Martian revision: the Mind Control cooldowns of visible Brains. */
   readonly mindControlCooldowns: readonly MindControlCooldownV7[];
+  /**
+   * The Ice Folk revision (section 5.1): the Chill entries of every unit in
+   * `units`, sorted by unit ID (Chill is public on a visible unit).
+   */
+  readonly chilled: readonly ChillStatusV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -312,6 +330,12 @@ export function viewForV7(
   const viewer = state.players.find((player) => player.id === viewerId);
   if (viewer === undefined) throw new RangeError(`Unknown viewer: ${viewerId}`);
   const explored = new Set(viewer.explored.map(key));
+  // The Ice Folk revision section 6.5: the Snow and Blizzard the viewer knows.
+  const winter = knownWinterV7(
+    state,
+    viewerId,
+    new Set(viewer.explored.map((at) => at.y * state.board.width + at.x)),
+  );
   const visibleCities = state.cities.filter((city) =>
     explored.has(key(city.at)),
   );
@@ -373,6 +397,8 @@ export function viewForV7(
           ? tile.territoryCityId
           : null,
       territoryOwnerId: territory?.ownerId ?? null,
+      snow: winter.snow.has(tile.at.y * state.board.width + tile.at.x),
+      blizzard: winter.blizzard.has(tile.at.y * state.board.width + tile.at.x),
     };
   });
   const tilesByCoord = new Map(
@@ -617,7 +643,12 @@ export function viewForV7(
     units: publicUnits,
     unitStats: visibleUnits.map((unit) =>
       publicUnitStatsForViewerV7(
-        publicUnitStatsV7(state, unit),
+        // The Ice Folk revision: Snow cover from the Snow the viewer knows.
+        publicUnitStatsV7(state, unit, {
+          snowAt: (at) => winter.snow.has(at.y * state.board.width + at.x),
+          blizzardAt: (at) =>
+            winter.blizzard.has(at.y * state.board.width + at.x),
+        }),
         unit.ownerId === viewerId,
         explored.has(key(unit.at)),
         visibleUnitIds,
@@ -710,6 +741,14 @@ export function viewForV7(
       .map((entry) => ({
         unitId: entry.unitId,
         turnsRemaining: entry.turnsRemaining,
+      })),
+    // The Ice Folk revision: Chill is public on every visible unit.
+    chilled: state.chilled
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({
+        unitId: entry.unitId,
+        sluggish: entry.sluggish,
+        turnsLeft: entry.turnsLeft,
       })),
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
@@ -835,6 +874,8 @@ const HIDDEN_POSITION_MODIFIERS_V7 = new Set([
   "MOUNTAIN",
   "FOREST",
   "HIGH_GROUND",
+  // The Ice Folk revision: Snow cover depends on the position.
+  "SNOW",
 ]);
 
 function publicUnitStatsForViewerV7(

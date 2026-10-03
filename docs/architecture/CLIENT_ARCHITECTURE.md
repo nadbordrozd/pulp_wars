@@ -2,9 +2,9 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r23` (autosave
-`pulpWars.save.v7r23.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r22.current`), whose rules for the four factions
+The current client runs `pulp-wars-poc-7r24` (autosave
+`pulpWars.save.v7r24.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r23.current`), whose rules for the four factions
 the setup screen offers, Human, Undead, Goblin, and Dinosaur, are described
 by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
 (`pulp_wars-c87.9` folded revisions 19–21 into it). The Dinosaur faction of
@@ -189,6 +189,60 @@ The Classic look and LEGACY have no Martian art: a Martian unit is the Human
 sprite of its role with the saucer badge (the rule of every earlier
 faction), and a Martian city the Human city; every marker is code-drawn in
 both.
+
+## Ice Folk engine boundary (`pulp_wars-7g3.3`)
+
+The engine registers a sixth faction, `ICE_FOLK`
+([Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md)), with every rule of
+that document. **The client does not offer it yet:** the setup screen's
+faction list (`FACTIONS` in `src/render/dom/app-view-v7.ts`) leaves it out
+until the Ice Folk UI bead (`pulp_wars-7g3.6`), and no Ice Folk sprite,
+marker, Snow overlay, button, or Help text is wired in (the art of
+`pulp_wars-7g3.5` is checked in but not drawn). The only render changes of
+the engine bead are the display label "Ice Folk" and unlock texts for the
+three new technology unlock kinds (`WITCH_SUPPORT`, `DEEP_WINTER`,
+`BRITTLE`), which the exhaustive switches need to compile.
+
+Snow and the Blizzard are derived, never stored: the engine computes them
+from the state on demand (`winterV7` in `src/engine/v7/ice-folk.ts`, cached
+per immutable state object only), and the view carries what the viewer
+knows of them. What the Ice Folk UI reads, all from `PlayerViewV7` and the
+public queries:
+
+- the tile flags `snow` and `blizzard` on every explored view tile
+  (territory and Deep Winter Snow, and the Blizzard of a Witch the viewer
+  can see, water included). They are optional in the type only so that
+  hand-built scene fixtures need not spell out `false`; readers test
+  `=== true`;
+- `view.chilled`: one `{ unitId, sluggish, turnsLeft }` entry per visible
+  Chilled unit, public like HP;
+- `publicUnitStatsV7(...).chill` for every unit (`null` without Chill) and
+  `.iceFolk` for units of an Ice Folk seat (`onSnow`, `inBlizzard`,
+  `snowCover`, `glides`, `mountainBorn`, `shatterThreshold`, `rockfall`,
+  `planted`, `sweepDamage`, `blizzard`), with the `SNOW` (Snow cover)
+  Defense source and the `PLANTED` Attack source;
+- the commands `THROW_BOLAS` and `COLD_SNAP` in `queryPlayerCommandsV7`,
+  with the exact previews `previewBolasV7` (including the viewer's attacks
+  that would then shatter the target) and `previewColdSnapV7` (visible
+  targets), both null unless the command is offered;
+- the combat-preview fields `shatters`, `coldBloodApplied`,
+  `rockfallApplied`, `plantedApplied`, `blizzardHalved`, `snowCover`,
+  `sweep` (the flank hits are the `splash` entries), and
+  `hiddenBlizzardPossible` (a hidden Witch may halve the shot: the preview
+  is not exact), and the `assumeTargetChilled` option of
+  `queryCombatPreviewV7` and `estimateCombatV7`;
+- `curedChill` in Tend Wounded previews and results;
+- the event `UNITS_CHILLED` (its `sourceUnitId` is null when the viewer
+  cannot see the source), the `UNIT_DIED` cause `SHATTER` (no Grave, no
+  blast), the `FIELD_DEFENSE_DESTROYED` reason `TRAMPLE`, the
+  `UNIT_MOVE_INTERRUPTED` reason `SNOW`, and the move-rejection reason
+  `SNOW_STOPS_MOVE`;
+- `MOVE` offers that already follow Glide, deep snow, Mountain-born, and
+  Prowl.
+
+In a match without an Ice Folk seat the `chilled` lists are empty, every
+tile flag is `false`, and the new fields have their neutral values, so every
+existing screen is unchanged.
 
 ## 0. Ruleset-6 replacement boundary
 

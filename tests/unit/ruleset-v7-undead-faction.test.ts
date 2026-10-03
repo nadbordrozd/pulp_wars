@@ -81,14 +81,15 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r23");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r23.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r24");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r24.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
       "GOBLIN",
       "DINOSAUR",
       "MARTIAN",
+      "ICE_FOLK",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -96,6 +97,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       "GOBLIN_BASELINE_V1",
       "DINOSAUR_BASELINE_V1",
       "MARTIAN_BASELINE_V1",
+      "ICE_FOLK_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("ORIGINAL")).toBe("ORIGINAL_BASELINE_V5");
     expect(factionTreeIdV7("UNDEAD")).toBe("UNDEAD_BASELINE_V1");
@@ -105,6 +107,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       GOBLIN: "Goblin",
       DINOSAUR: "Dinosaur",
       MARTIAN: "Martian",
+      ICE_FOLK: "Ice Folk",
     });
     expect(Object.keys(RULESET_7.factionTrees)).toEqual([
       "ORIGINAL",
@@ -112,6 +115,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       "GOBLIN",
       "DINOSAUR",
       "MARTIAN",
+      "ICE_FOLK",
     ]);
     expect(FACTION_TREES_V7.UNDEAD.faction).toBe("UNDEAD");
     expect(() => assertRuleset7Registry()).not.toThrow();
@@ -121,11 +125,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r22 and preserves the r23 save", () => {
+  it("cleans obsolete keys through v7r23 and preserves the r24 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r22.current",
+      "pulpWars.save.v7r23.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(22);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(23);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -139,7 +143,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r20.current", "r20"],
       ["pulpWars.save.v7r21.current", "r21"],
       ["pulpWars.save.v7r22.current", "r22"],
-      [SAVE_STORAGE_KEY_V7, "r23"],
+      ["pulpWars.save.v7r23.current", "r23"],
+      [SAVE_STORAGE_KEY_V7, "r24"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -156,8 +161,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r20.current",
         "pulpWars.save.v7r21.current",
         "pulpWars.save.v7r22.current",
+        "pulpWars.save.v7r23.current",
       ],
-      removedCount: 11,
+      removedCount: 12,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1541,6 +1547,14 @@ describe("ruleset-7 all-Human parity digests", () => {
   // and `attackerShieldDamage: 0`, and the neutral `shieldDamage: 0` of
   // splash entries, all removed before hashing like the earlier neutral
   // fields.
+  // The Ice Folk revision (`pulp_wars-7g3.3`) reproduces every digest below
+  // unchanged as well: its only all-Human differences are the empty
+  // `chilled` list of the state and the view, the tile flags `snow: false`
+  // and `blizzard: false` of every explored view tile, the `chill: null`
+  // unit stat, `curedChill: false` in Tend results, and the eight neutral
+  // combat-preview fields (`shatters`, `coldBloodApplied`,
+  // `rockfallApplied`, `plantedApplied`, `blizzardHalved`, `snowCover`,
+  // `sweep`, `hiddenBlizzardPossible`, all false), removed before hashing.
   // `pulp_wars-0hi.3` (revision 20 section 6.3: Human Fighter, Raider, and
   // Marksman 12 HP, Guard 17) re-pins the command, event, final state, view,
   // and command digests of both matches; map and post-generation PRNG
@@ -1652,10 +1666,11 @@ describe("ruleset-7 all-Human parity digests", () => {
           return {
             ...event,
             results: event.results.map(
-              ({ curedPlague, curedBitten, ...rest }) => {
-                expect({ curedPlague, curedBitten }).toEqual({
+              ({ curedPlague, curedBitten, curedChill, ...rest }) => {
+                expect({ curedPlague, curedBitten, curedChill }).toEqual({
                   curedPlague: false,
                   curedBitten: false,
+                  curedChill: false,
                 });
                 return rest;
               },
@@ -1683,8 +1698,27 @@ describe("ruleset-7 all-Human parity digests", () => {
           defenderShieldDamage,
           attackerShieldDamage,
           splash: shieldedSplash,
+          shatters,
+          coldBloodApplied,
+          rockfallApplied,
+          plantedApplied,
+          blizzardHalved,
+          snowCover,
+          sweep,
+          hiddenBlizzardPossible,
           ...previewWithoutSplash
         } = event.preview;
+        // The Ice Folk revision: eight neutral combat-preview fields.
+        expect([
+          shatters,
+          coldBloodApplied,
+          rockfallApplied,
+          plantedApplied,
+          blizzardHalved,
+          snowCover,
+          sweep,
+          hiddenBlizzardPossible,
+        ]).toEqual([false, false, false, false, false, false, false, false]);
         // The Martian revision: the four neutral combat-preview fields and
         // the neutral `shieldDamage: 0` of every splash entry.
         expect({
@@ -1757,6 +1791,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           cooling,
           thralls,
           mindControlCooldowns,
+          chilled,
           ...rest
         } = value as {
           graves: unknown;
@@ -1767,6 +1802,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           cooling: unknown;
           thralls: unknown;
           mindControlCooldowns: unknown;
+          chilled: unknown;
         };
         void _graves;
         void _plagued;
@@ -1779,13 +1815,26 @@ describe("ruleset-7 all-Human parity digests", () => {
           thralls: [],
           mindControlCooldowns: [],
         });
+        // The Ice Folk revision: the empty Chill list, and the neutral tile
+        // flags and unit stat, removed (any other value fails the match).
+        expect(chilled).toEqual([]);
+        let winterValues = 0;
         const neutral = JSON.parse(
           JSON.stringify(rest).replaceAll(RULESET_7_ID, "IDENTITY"),
+          function (key, item: unknown) {
+            if ((key === "snow" || key === "blizzard") && item === false)
+              return undefined;
+            if (key === "chill" && item === null) return undefined;
+            if (key === "snow" || key === "blizzard" || key === "chill")
+              winterValues += 1;
+            return item;
+          },
         ) as {
           players: { achievementEntitlements?: unknown[] }[];
           viewer?: { achievementEntitlements: unknown[] };
           achievementProgress?: unknown[];
         };
+        expect(winterValues).toBe(0);
         // Revision 21 appends four entitlements (and, in a view, four
         // progress entries) after the revision-5 three; they are removed
         // before hashing.

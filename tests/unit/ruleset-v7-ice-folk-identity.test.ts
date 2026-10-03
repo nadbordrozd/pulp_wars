@@ -1,0 +1,162 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+import {
+  PRIOR_RULESET_7_IDS,
+  RULESET_7,
+  RULESET_7_ID,
+  createPlayableGameV7,
+  createReplayV7,
+  parseGameStateV7,
+  parseMatchSetupV7,
+  parseReplayFileV7,
+} from "../../src/engine/index";
+import {
+  OBSOLETE_SAVE_STORAGE_KEYS_V7,
+  SAVE_STORAGE_KEY_V7,
+  cleanupObsoleteRuleset7Saves,
+  createSaveEnvelopeV7,
+  parseSaveV7,
+  type StorageAdapter,
+} from "../../src/persistence/index";
+import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
+
+// The Ice Folk revision (`pulp_wars-7g3.3`): identity
+// (docs/product/RULESET_7_ICE_FOLK.md sections 2.1 and 15).
+
+/** The revision number of this identity (`pulp-wars-poc-7rNN`). */
+const REVISION = 24;
+const ID = `pulp-wars-poc-7r${REVISION}`;
+const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
+
+class MemoryStorage implements StorageAdapter {
+  readonly values: Map<string, string>;
+  constructor(entries: readonly (readonly [string, string])[] = []) {
+    this.values = new Map(entries);
+  }
+  getItem(key: string): string | null {
+    return this.values.get(key) ?? null;
+  }
+  setItem(key: string, value: string): void {
+    this.values.set(key, value);
+  }
+  removeItem(key: string): void {
+    this.values.delete(key);
+  }
+}
+
+describe("the Ice Folk revision identity", () => {
+  it("is the next identity, with a gap-free prior list ending in the previous one, and its save key", () => {
+    expect(RULESET_7_ID).toBe(ID);
+    expect(RULESET_7.id).toBe(ID);
+    expect(SAVE_STORAGE_KEY_V7).toBe(`pulpWars.save.v7r${REVISION}.current`);
+    expect([...PRIOR_RULESET_7_IDS]).toEqual([
+      "pulp-wars-poc-7",
+      ...Array.from(
+        { length: REVISION - 2 },
+        (_, index) => `pulp-wars-poc-7r${index + 2}`,
+      ),
+    ]);
+    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe(PREVIOUS_ID);
+    expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
+    expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
+      "pulpWars.save.v7.current",
+      ...Array.from(
+        { length: REVISION - 2 },
+        (_, index) => `pulpWars.save.v7r${index + 2}.current`,
+      ),
+    ]);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
+  });
+
+  it("cleans the obsolete keys through the previous identity's and preserves everything else", () => {
+    const previousKey = `pulpWars.save.v7r${REVISION - 1}.current`;
+    const storage = new MemoryStorage([
+      ["pulpWars.save.v7r22.current", "martian"],
+      [previousKey, "previous"],
+      [SAVE_STORAGE_KEY_V7, "current"],
+      ["pulpWars.save.current", "v6"],
+      ["pulpWars.settings.v1", "settings"],
+      ["pulpWars.unrelated", "unrelated"],
+    ]);
+    expect(cleanupObsoleteRuleset7Saves(storage)).toEqual({
+      removedKeys: ["pulpWars.save.v7r22.current", previousKey],
+      removedCount: 2,
+      warning: null,
+    });
+    expect([...storage.values.keys()]).toEqual([
+      SAVE_STORAGE_KEY_V7,
+      "pulpWars.save.current",
+      "pulpWars.settings.v1",
+      "pulpWars.unrelated",
+    ]);
+  });
+
+  it("rejects the previous identity's setups, states, replays, and saves without migration", () => {
+    const setup = goblinSetupV7(["ICE_FOLK", "ORIGINAL"]);
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    expect(created.state.rulesetId).toBe(ID);
+    const oldSetup = { ...setup, rulesetId: PREVIOUS_ID };
+    expect(parseMatchSetupV7(setup)).not.toBeNull();
+    expect(parseMatchSetupV7(oldSetup)).toBeNull();
+    expect(
+      parseGameStateV7({
+        ...created.state,
+        rulesetId: PREVIOUS_ID,
+        setup: oldSetup,
+      }),
+    ).toBeNull();
+    // A previous-identity state never had a `chilled` list; it is not
+    // migrated either.
+    const { chilled: _chilled, ...withoutChill } = created.state;
+    void _chilled;
+    expect(parseGameStateV7(withoutChill)).toBeNull();
+    expect(
+      parseReplayFileV7({
+        format: "pulp-wars-replay",
+        version: 7,
+        setup: oldSetup,
+        commands: [],
+        checkpoints: [],
+      }),
+    ).toEqual({ kind: "INCOMPATIBLE_REPLAY" });
+    const save = createSaveEnvelopeV7(
+      { state: created.state, replay: createReplayV7(setup) },
+      "2026-10-03T12:00:00.000Z",
+    );
+    expect(parseSaveV7(JSON.stringify(save))).toMatchObject({ kind: "VALID" });
+    expect(
+      parseSaveV7(
+        JSON.stringify({
+          ...save,
+          rulesetId: PREVIOUS_ID,
+          setup: oldSetup,
+          state: { ...save.state, rulesetId: PREVIOUS_ID },
+        }),
+      ),
+    ).toMatchObject({ kind: "INCOMPATIBLE" });
+  });
+
+  it("names the current save key in every browser probe and review script that hard-codes one", () => {
+    // The Martian UI probe showed that a hard-coded save key breaks on an
+    // identity bump: every `saveKey`/`SAVE_KEY` constant must be current.
+    for (const file of [
+      "scripts/browser-smoke-v7.ts",
+      "scripts/browser-dinosaur-review-v7.ts",
+      "scripts/browser-martian-review-v7.ts",
+    ]) {
+      const text = readFileSync(
+        join(import.meta.dirname, "..", "..", file),
+        "utf8",
+      );
+      const keys = [
+        ...text.matchAll(
+          /(?:saveKey|SAVE_KEY)\s*=\s*"(pulpWars\.save\.v7r\d+\.current)"/g,
+        ),
+      ].map((match) => match[1]);
+      expect(keys.length, file).toBeGreaterThan(0);
+      for (const key of keys) expect(key, file).toBe(SAVE_STORAGE_KEY_V7);
+    }
+  });
+});

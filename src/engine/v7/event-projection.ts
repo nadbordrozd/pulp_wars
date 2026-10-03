@@ -150,6 +150,26 @@ export function projectEventsV7(
       }
       continue;
     }
+    // The Ice Folk revision section 6.5: UNITS_CHILLED keeps the results
+    // the viewer can see (or owns); a viewer that cannot see the source gets
+    // its entries with `sourceUnitId` null; none left drops the event.
+    if (event.kind === "UNITS_CHILLED") {
+      const seen = (unitId: UnitId): boolean =>
+        beforeVisible.has(unitId) || afterVisible.has(unitId);
+      const results = event.results.filter(
+        (entry) => ownedBeforeOrAfter(entry.unitId) || seen(entry.unitId),
+      );
+      const sourceSeen =
+        event.playerId === viewerId ||
+        (event.sourceUnitId !== null && seen(event.sourceUnitId));
+      if (results.length > 0)
+        projected.push({
+          ...event,
+          sourceUnitId: sourceSeen ? event.sourceUnitId : null,
+          results,
+        });
+      continue;
+    }
     const ids = unitIds(event);
     if (event.kind === "UNIT_MOVE_INTERRUPTED")
       for (const unit of afterState.units)

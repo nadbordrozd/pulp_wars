@@ -5,7 +5,9 @@ import {
   canEnterTerrainV7,
   flyerMayStandOnSiteV7,
   technologyCapabilitiesV7,
+  terrainStopsMoveV7,
   unitFliesV7,
+  unitIsMountainBornV7,
   unitMovementModeV7,
   unitRoleRuleV7,
   type MovementModeV7,
@@ -15,6 +17,14 @@ import {
   arePlayersHostileV7,
   isActivePortV7,
 } from "./economy";
+import {
+  deepSnowStopsUnitV7,
+  knownWinterV7,
+  unitAvoidsForeignSitesV7,
+  unitGlidesV7,
+  unitIgnoresZocStopsV7,
+  winterV7,
+} from "./ice-folk";
 import {
   isUnitVisibleToPlayerV7,
   withUnitAtForObservationV7,
@@ -42,8 +52,12 @@ export type MovementFailureReasonV7 =
   | "ZOC_STOPS_MOVE"
   | "ALLY_TERRITORY_FORBIDDEN"
   // The Martian revision section 7.2: a flyer cannot end a Move on a neutral
-  // village center or on the center of a city it does not own.
-  | "SETTLEMENT_FORBIDDEN";
+  // village center or on the center of a city it does not own (the Ice Folk
+  // revision: nor can a Sabretooth).
+  | "SETTLEMENT_FORBIDDEN"
+  // The Ice Folk revision section 6.2 (3): deep snow ends the Move of
+  // another faction's ground unit, so a path cannot continue past it.
+  | "SNOW_STOPS_MOVE";
 
 export type MovementPathResultV7 =
   | {
@@ -62,7 +76,9 @@ export type MovementPathResultV7 =
           | "ZOC"
           // The Martian revision: a flyer entered an unexplored cell that
           // is a settlement center it cannot stand on.
-          | "SETTLEMENT_FORBIDDEN";
+          | "SETTLEMENT_FORBIDDEN"
+          // The Ice Folk revision: Snow the mover could not know about.
+          | "SNOW";
       } | null;
     }
   | { readonly legal: false; readonly reason: MovementFailureReasonV7 };
@@ -115,6 +131,8 @@ function validateMovementPathWithOptionsV7(
   const mode: MovementModeV7 =
     unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
   const flies = mode === "FLY";
+  // The Ice Folk revision section 7.1: Mountain-born (land form only).
+  const mountainBorn = unitIsMountainBornV7(state, unit);
   const navigation = player.researchedTechs.includes("NAVIGATION");
   const knownBeforeCommand = player.explored;
   let explored = player.explored;
@@ -125,6 +143,35 @@ function validateMovementPathWithOptionsV7(
   // alone decides the step cost (revision 18, section 4.1).
   let currentRoadNode = isUsableRoadNodeV7(state, player, current);
   let spentPoints2 = 0;
+  // The Ice Folk revision (sections 6.1, 6.2, and 6.5): Snow is read once,
+  // from the state before the command. An Ice Folk unit Glides (a step that
+  // leaves Snow costs half); another faction's ground unit stops on entering
+  // Snow, and Snow it could not know about (a hidden Witch's Blizzard)
+  // interrupts the Move. A Sabretooth Prowls through zones of control and,
+  // like a flyer, never ends on a settlement center it does not own.
+  const winter = winterV7(state);
+  const glides = unitGlidesV7(state, unit);
+  const snowStopped =
+    winter.snow.size > 0 &&
+    deepSnowStopsUnitV7(
+      state,
+      unit,
+      capabilities.forestMovementFreedomRoles.includes(unit.role),
+    );
+  const knownSnow = snowStopped
+    ? knownWinterV7(
+        state,
+        player.id,
+        new Set(
+          knownBeforeCommand.map((at) => at.y * state.board.width + at.x),
+        ),
+      ).snow
+    : winter.snow;
+  const snowAt = (at: CoordV7): boolean =>
+    winter.snow.size > 0 && winter.snow.has(at.y * state.board.width + at.x);
+  const prowls = unitIgnoresZocStopsV7(state, unit);
+  const ownSitesOnly = flies || unitAvoidsForeignSitesV7(state, unit);
+  let currentSnow = snowAt(current);
 
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
@@ -135,7 +182,7 @@ function validateMovementPathWithOptionsV7(
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     const wasExplored = contains(explored, step);
     const wasKnownBeforeCommand = contains(knownBeforeCommand, step);
-    spentPoints2 += currentRoadNode ? 1 : 2;
+    spentPoints2 += currentRoadNode || (glides && currentSnow) ? 1 : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     const owner = tileOwner(state, tile);
@@ -185,6 +232,7 @@ function validateMovementPathWithOptionsV7(
               afloat: false,
               engineering: capabilities.mountainMovement,
               navigation,
+              mountainBorn,
             })
         : !canEnterTerrainV7({
             terrain: tile.terrain,
@@ -192,11 +240,13 @@ function validateMovementPathWithOptionsV7(
             afloat: true,
             engineering: capabilities.mountainMovement,
             navigation,
+            mountainBorn: false,
           });
     // The Martian revision section 7.2: a flyer may pass over a settlement
-    // center it does not own but never ends a Move there.
+    // center it does not own but never ends a Move there (the Ice Folk
+    // revision section 7.7: nor does a Sabretooth).
     const forbiddenSite =
-      flies &&
+      ownSitesOnly &&
       !passThroughProbe &&
       index === path.length - 1 &&
       !flyerMayStandOnSiteV7(
@@ -209,7 +259,12 @@ function validateMovementPathWithOptionsV7(
         return { legal: false, reason: "SETTLEMENT_FORBIDDEN" };
       // An unexplored center: the Move is accepted and interrupted, like a
       // Move into a hidden unit, so a rejection reveals nothing.
-      const entered = lastFreeEnteredPath(state, unit, traversedPath, flies);
+      const entered = lastFreeEnteredPath(
+        state,
+        unit,
+        traversedPath,
+        ownSitesOnly,
+      );
       return {
         legal: true,
         destination: entered.at(-1) ?? unit.at,
@@ -230,7 +285,12 @@ function validateMovementPathWithOptionsV7(
           legal: false,
           reason: occupied ? "OCCUPIED" : "ENGINEERING_REQUIRED",
         };
-      const entered = lastFreeEnteredPath(state, unit, traversedPath, flies);
+      const entered = lastFreeEnteredPath(
+        state,
+        unit,
+        traversedPath,
+        ownSitesOnly,
+      );
       return {
         legal: true,
         destination: entered.at(-1) ?? unit.at,
@@ -253,9 +313,11 @@ function validateMovementPathWithOptionsV7(
     explored = sight.explored;
     revealed.push(...sight.revealed);
     const observationState = withUnitAtForObservationV7(state, unit.id, step);
-    // The Martian revision section 7.2: a flyer ignores hostile ZOC.
+    // The Martian revision section 7.2: a flyer ignores hostile ZOC; the Ice
+    // Folk revision section 7.7: a Sabretooth is not stopped by it.
     const entersZoc =
       !flies &&
+      !prowls &&
       inHostileZoc(observationState, { ...unit, at: step }, step, explored);
     const newlyEncounteredZoc =
       entersZoc &&
@@ -263,19 +325,60 @@ function validateMovementPathWithOptionsV7(
     // The stop is waived only on a Road edge: both ends usable Road nodes.
     const stepRoadNode = isUsableRoadNodeV7(state, player, step);
     // The Martian revision section 7.1: a walker or flyer is never stopped
-    // by terrain.
-    const terrainStops =
-      mode === "GROUND" &&
-      !(currentRoadNode && stepRoadNode) &&
-      (tile.terrain === "MOUNTAIN" ||
-        (tile.terrain === "FOREST" && !ignoresForest));
+    // by terrain; the Ice Folk revision section 7.1: nor is a Mountain-born
+    // unit by a Mountain.
+    const roadEdge = currentRoadNode && stepRoadNode;
+    const groundStops = terrainStopsMoveV7({
+      terrain: tile.terrain,
+      movementMode: mode,
+      mountainBorn,
+      ignoresForest,
+      roadEdge,
+    });
+    // The Ice Folk revision section 6.2 (3): deep snow, waived by a Road edge.
+    const stepSnow = snowAt(step);
+    const snowStops = snowStopped && stepSnow && !roadEdge;
+    const terrainStops = groundStops || snowStops;
     const stops = !wasExplored || terrainStops || entersZoc;
     traversedPath.push(step);
     current = step;
     currentRoadNode = stepRoadNode;
+    currentSnow = stepSnow;
     if (stops && index < path.length - 1) {
+      // Section 6.5: Snow the mover could not know about (a hidden Witch's
+      // Blizzard) interrupts the Move there instead of rejecting it. Every
+      // Blizzard tile is next to its Witch, so this Move usually meets her
+      // zone of control too; the Snow is reported.
+      if (
+        snowStops &&
+        wasExplored &&
+        !groundStops &&
+        !knownSnow.has(step.y * state.board.width + step.x)
+      ) {
+        const entered = lastFreeEnteredPath(
+          state,
+          unit,
+          traversedPath,
+          ownSitesOnly,
+        );
+        return {
+          legal: true,
+          destination: entered.at(-1) ?? unit.at,
+          traversedPath: entered,
+          spentPoints2,
+          stopped: true,
+          explored,
+          revealed: unique(revealed),
+          interruption: { at: step, reason: "SNOW" },
+        };
+      }
       if (newlyEncounteredZoc) {
-        const entered = lastFreeEnteredPath(state, unit, traversedPath, flies);
+        const entered = lastFreeEnteredPath(
+          state,
+          unit,
+          traversedPath,
+          ownSitesOnly,
+        );
         return {
           legal: true,
           destination: entered.at(-1) ?? unit.at,
@@ -291,11 +394,13 @@ function validateMovementPathWithOptionsV7(
         legal: false,
         reason: !wasExplored
           ? "UNEXPLORED_INTERMEDIATE"
-          : mode === "GROUND" && tile.terrain === "MOUNTAIN"
+          : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
             ? "MOUNTAIN_STOPS_MOVE"
             : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
               ? "FOREST_STOPS_MOVE"
-              : "ZOC_STOPS_MOVE",
+              : snowStops
+                ? "SNOW_STOPS_MOVE"
+                : "ZOC_STOPS_MOVE",
       };
     }
     if (stops)
@@ -332,6 +437,9 @@ export function reachableMovementPathsV7(
   // Revision 19 section 6.2: an Egg never moves.
   if (player === undefined || unit.form === "EGG") return [];
   const flies = unitFliesV7(state, unit);
+  // The Ice Folk revision section 7.7: a Sabretooth, like a flyer, never
+  // ends on a settlement center it does not own.
+  const ownSitesOnly = flies || unitAvoidsForeignSitesV7(state, unit);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -367,7 +475,7 @@ export function reachableMovementPathsV7(
             (flies || other.ownerId === unit.ownerId) &&
             same(other.at, destination),
         ) ||
-        (flies &&
+        (ownSitesOnly &&
           !flyerMayStandOnSiteV7(
             tileAtV7(state.board, destination)?.site ?? null,
             state.cities.find((city) => same(city.at, destination))?.ownerId ??
@@ -399,6 +507,7 @@ export function reachablePlayerMovementPathsV7(
   if (unit.form === "EGG") return [];
   const context = publicMovementContextV7(view);
   const flies = unitFliesV7(view, unit);
+  const ownSitesOnly = flies || unitAvoidsForeignSitesV7(view, unit);
   const queue: CoordV7[][] = [[]];
   const best = new Map<string, number>([[key(unit.at), 0]]);
   const results = new Map<string, ReachablePathV7>();
@@ -431,7 +540,7 @@ export function reachablePlayerMovementPathsV7(
         context.unitsByPosition
           .get(destinationKey)
           ?.some((other) => other.id !== unit.id) === true ||
-        (flies &&
+        (ownSitesOnly &&
           !publicFlyerMayStandV7(view, unit, publicTileAt(view, destination)));
       if (ownOccupied && validation.stopped) continue;
       best.set(destinationKey, validation.spentPoints2);
@@ -539,6 +648,8 @@ function validatePlayerMovementPathWithContextV7(
   const mode: MovementModeV7 =
     unit.form === "LAND" ? unitMovementModeV7(view, unit) : "GROUND";
   const flies = mode === "FLY";
+  // The Ice Folk revision section 7.1: Mountain-born (land form only).
+  const mountainBorn = unitIsMountainBornV7(view, unit);
   const navigation = view.viewer.researchedTechs.includes("NAVIGATION");
   let current = unit.at;
   let currentRoadNode = isUsablePublicRoadNodeV7(
@@ -547,6 +658,21 @@ function validatePlayerMovementPathWithContextV7(
     context,
   );
   let spentPoints2 = 0;
+  // The Ice Folk revision (section 6.2): Glide and deep snow from the
+  // public Snow flags; Prowl; a Sabretooth's settlement restriction.
+  const glides = unitGlidesV7(view, unit);
+  const snowStopped = deepSnowStopsUnitV7(
+    view,
+    unit,
+    capabilities.forestMovementFreedomRoles.includes(unit.role),
+  );
+  const prowls = unitIgnoresZocStopsV7(view, unit);
+  const ownSitesOnly = flies || unitAvoidsForeignSitesV7(view, unit);
+  const publicSnowAt = (at: CoordV7): boolean => {
+    const tile = publicTileAt(view, at);
+    return tile?.explored === true && tile.snow === true;
+  };
+  let currentSnow = publicSnowAt(current);
   const traversedPath: CoordV7[] = [];
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
@@ -582,7 +708,7 @@ function validatePlayerMovementPathWithContextV7(
       )
         return { legal: false, reason: "ENGINEERING_REQUIRED" };
     }
-    spentPoints2 += currentRoadNode ? 1 : 2;
+    spentPoints2 += currentRoadNode || (glides && currentSnow) ? 1 : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
@@ -615,11 +741,12 @@ function validatePlayerMovementPathWithContextV7(
         afloat: false,
         engineering: capabilities.mountainMovement,
         navigation,
+        mountainBorn,
       })
     )
       return { legal: false, reason: "ENGINEERING_REQUIRED" };
     if (
-      flies &&
+      ownSitesOnly &&
       !passThroughProbe &&
       index === path.length - 1 &&
       !publicFlyerMayStandV7(view, unit, tile)
@@ -628,28 +755,39 @@ function validatePlayerMovementPathWithContextV7(
     const ignoresForest = capabilities.forestMovementFreedomRoles.includes(
       unit.role,
     );
-    const entersZoc = !flies && publicHostileZoc(view, unit, step, context);
+    const entersZoc =
+      !flies && !prowls && publicHostileZoc(view, unit, step, context);
     const stepRoadNode = isUsablePublicRoadNodeV7(view, tile, context);
+    const roadEdge = currentRoadNode && stepRoadNode;
+    const stepSnow = tile.explored && tile.snow === true;
+    const snowStops = snowStopped && stepSnow && !roadEdge;
     const terrainStops =
-      mode === "GROUND" &&
       tile.explored &&
-      !(currentRoadNode && stepRoadNode) &&
-      (tile.terrain === "MOUNTAIN" ||
-        (tile.terrain === "FOREST" && !ignoresForest));
+      (terrainStopsMoveV7({
+        terrain: tile.terrain,
+        movementMode: mode,
+        mountainBorn,
+        ignoresForest,
+        roadEdge,
+      }) ||
+        snowStops);
     const stops = !tile.explored || terrainStops || entersZoc;
     traversedPath.push(step);
     current = step;
     currentRoadNode = stepRoadNode;
+    currentSnow = stepSnow;
     if (stops && index < path.length - 1)
       return {
         legal: false,
         reason: !tile.explored
           ? "UNEXPLORED_INTERMEDIATE"
-          : mode === "GROUND" && tile.terrain === "MOUNTAIN"
+          : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
             ? "MOUNTAIN_STOPS_MOVE"
             : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
               ? "FOREST_STOPS_MOVE"
-              : "ZOC_STOPS_MOVE",
+              : snowStops
+                ? "SNOW_STOPS_MOVE"
+                : "ZOC_STOPS_MOVE",
       };
     if (stops)
       return {
@@ -937,7 +1075,7 @@ function lastFreeEnteredPath(
   state: Pick<GameStateV7, "units" | "board" | "cities">,
   unit: UnitStateV7,
   entered: readonly CoordV7[],
-  flies: boolean,
+  ownSitesOnly: boolean,
 ): readonly CoordV7[] {
   for (let length = entered.length; length > 0; length -= 1) {
     const at = entered[length - 1];
@@ -946,7 +1084,7 @@ function lastFreeEnteredPath(
       !state.units.some(
         (other) => other.id !== unit.id && other.hp > 0 && same(other.at, at),
       ) &&
-      (!flies ||
+      (!ownSitesOnly ||
         flyerMayStandOnSiteV7(
           tileAtV7(state.board, at)?.site ?? null,
           state.cities.find((city) => same(city.at, at))?.ownerId ?? null,

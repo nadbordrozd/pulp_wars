@@ -114,8 +114,8 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         expect(created.ok).toBe(true);
         accepted += 1;
       }
-    // The Martian revision: five factions (25, 125, and 625 mixes).
-    expect(accepted).toBe(25 + 125 + 625);
+    // The Ice Folk revision: six factions (36, 216, and 1296 mixes).
+    expect(accepted).toBe(36 + 216 + 1296);
     for (const aiMode of ["RIVAL", "COOPERATIVE"] as const)
       expect(createPlayableGameV7(showcaseSetup(THREE, { aiMode })).ok).toBe(
         true,
@@ -182,15 +182,17 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         cooling,
         thralls,
         mindControlCooldowns,
+        chilled,
         ...revision19State
       } = created.state;
       expect(eggs).toEqual([]);
-      expect([shields, cooling, thralls, mindControlCooldowns]).toEqual([
-        [],
-        [],
-        [],
-        [],
-      ]);
+      expect([
+        shields,
+        cooling,
+        thralls,
+        mindControlCooldowns,
+        chilled,
+      ]).toEqual([[], [], [], [], []]);
       for (const player of revision19State.players)
         expect(player.achievementEntitlements.slice(3)).toEqual(
           ["CONQUEROR", "LAND_BARON", "SEA_DOG", "SLAYER"].map(
@@ -805,6 +807,7 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       "Troll",
       "Brontosaurus",
       "Colossus",
+      "Frost Giant",
     ]);
   });
 });

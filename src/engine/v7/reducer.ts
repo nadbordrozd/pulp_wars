@@ -4,6 +4,7 @@ import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
+  DEEP_WINTER_RECOVER_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
@@ -15,6 +16,7 @@ import {
   effectiveRoleRuleV7,
   flyerMayStandOnSiteV7,
   unitFliesV7,
+  unitIsMountainBornV7,
   unitMovementModeV7,
   EMBARKED_LANDING_MAX_SPENT_V7,
   embarkedMovementSpentV7,
@@ -31,10 +33,27 @@ import {
   unitRoleRuleV7,
   isResourceRevealedV7,
   playerTechnologyResearchCostV7,
+  primaryActionBlockedAfterMoveV7,
+  sluggishUnitMovedV7,
   type BasicEconomicCommandKindV7,
   type SpatialEconomicCommandKindV7,
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
+import {
+  attackMaximumRangeV7,
+  canBeChilledV7,
+  chillCountdownV7,
+  coldSnapTargetsV7,
+  isChilledV7,
+  isIceFolkLandUnitV7,
+  prunedIceFolkV7,
+  resolveColdAuraV7,
+  unitAvoidsForeignSitesV7,
+  unitsChilledEventV7,
+  withChillAppliedV7,
+  withChillCuredV7,
+  withinBolasRangeV7,
+} from "./ice-folk";
 import {
   ACHIEVEMENT_REQUIRED_TECH_V7,
   LAND_BARON_CITIES_V7,
@@ -212,7 +231,11 @@ export type RuleErrorCodeV7 =
   // (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `BLOCKED`).
   | "BEAM_DOWN_NOT_LEGAL"
   | "MIND_CONTROL_NOT_LEGAL"
-  | "TRACTOR_BEAM_NOT_LEGAL";
+  | "TRACTOR_BEAM_NOT_LEGAL"
+  // The Ice Folk revision: an illegal Bolas (`EMBARKED`, `TARGET_IMMUNE`,
+  // `OUT_OF_RANGE`) or Cold Snap (`EMBARKED`, `NO_TARGET`).
+  | "BOLAS_NOT_LEGAL"
+  | "COLD_SNAP_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -494,6 +517,10 @@ function applyCommandCoreV7(
     return applyMindControl(stateInput, state, actor, command);
   if (command.kind === "TRACTOR_BEAM")
     return applyTractorBeam(stateInput, state, actor, command);
+  if (command.kind === "THROW_BOLAS")
+    return applyThrowBolas(stateInput, state, actor, command);
+  if (command.kind === "COLD_SNAP")
+    return applyColdSnap(stateInput, state, actor, command.unitId);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -1553,6 +1580,11 @@ function applyDisembark(
       afloat: false,
       engineering: player.researchedTechs.includes("ENGINEERING"),
       navigation: player.researchedTechs.includes("NAVIGATION"),
+      // The Ice Folk revision section 7.1: the unit lands in land form.
+      mountainBorn: unitIsMountainBornV7(state, {
+        ownerId: unit.ownerId,
+        role: unit.role,
+      }),
     }) ||
     (territoryOwner !== undefined &&
       territoryOwner !== actor &&
@@ -1563,9 +1595,13 @@ function applyDisembark(
   )
     return rejected(original, "MOVEMENT_ILLEGAL");
   // The Martian revision section 7.2: a flyer cannot land on a neutral
-  // village center or on the center of a city it does not own.
+  // village center or on the center of a city it does not own (the Ice Folk
+  // revision section 7.7: nor can a Sabretooth).
   if (
-    landingMode === "FLY" &&
+    unitAvoidsForeignSitesV7(state, {
+      ownerId: unit.ownerId,
+      role: unit.role,
+    }) &&
     !flyerMayStandOnSiteV7(
       tile.site,
       state.cities.find((city) => same(city.at, command.at))?.ownerId ?? null,
@@ -1935,7 +1971,7 @@ function applyHatch(
   if (
     shaman.activation.overrunActive ||
     primaryUsed(shaman) ||
-    (shaman.activation.moved && !rule.mayUsePrimaryActionAfterMove)
+    primaryActionBlockedAfterMoveV7(state, shaman)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: shaman.id });
   if (shaman.form !== "LAND")
@@ -2060,6 +2096,7 @@ function applyBeamDown(
       afloat: false,
       engineering: player.researchedTechs.includes("ENGINEERING"),
       navigation: player.researchedTechs.includes("NAVIGATION"),
+      mountainBorn: unitIsMountainBornV7(state, passenger),
     }) ||
     state.units.some((unit) => unit.hp > 0 && same(unit.at, command.to)) ||
     state.treasureChests.some((chest) => same(chest, command.to)) ||
@@ -2169,7 +2206,11 @@ function applyMindControl(
   const brain = actorCheck.unit;
   if (!unitRoleRuleV7(state, brain).abilities.includes("MIND_CONTROL"))
     return rejected(original, "UNIT_ROLE_INVALID", { role: brain.role });
-  if (brain.activation.overrunActive || primaryUsed(brain))
+  if (
+    brain.activation.overrunActive ||
+    primaryUsed(brain) ||
+    primaryActionBlockedAfterMoveV7(state, brain)
+  )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: brain.id });
   if (brain.form !== "LAND")
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: "EMBARKED" });
@@ -2329,7 +2370,11 @@ function applyTractorBeam(
   const mothership = actorCheck.unit;
   if (!unitRoleRuleV7(state, mothership).abilities.includes("TRACTOR_BEAM"))
     return rejected(original, "UNIT_ROLE_INVALID", { role: mothership.role });
-  if (mothership.activation.overrunActive || primaryUsed(mothership))
+  if (
+    mothership.activation.overrunActive ||
+    primaryUsed(mothership) ||
+    primaryActionBlockedAfterMoveV7(state, mothership)
+  )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: mothership.id });
   if (mothership.form !== "LAND")
     return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", { reason: "EMBARKED" });
@@ -2424,6 +2469,137 @@ function applyTractorBeam(
       events,
     );
     return accepted(checked(staged), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * The Ice Folk revision (section 7.3): `THROW_BOLAS`. Rejections in the
+ * order of the section's table; the result applies Chill to the target, and
+ * the Sled has used its primary action.
+ */
+function applyThrowBolas(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "THROW_BOLAS" }>,
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const sled = actorCheck.unit;
+  if (!unitRoleRuleV7(state, sled).abilities.includes("BOLAS"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: sled.role });
+  if (
+    sled.activation.overrunActive ||
+    primaryUsed(sled) ||
+    primaryActionBlockedAfterMoveV7(state, sled)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: sled.id });
+  if (sled.form !== "LAND")
+    return rejected(original, "BOLAS_NOT_LEGAL", { reason: "EMBARKED" });
+  const target = state.units.find(
+    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
+  );
+  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
+    return rejected(original, "TARGET_NOT_FOUND", {
+      targetUnitId: command.targetUnitId,
+    });
+  if (!arePlayersHostileV7(state, actor, target.ownerId))
+    return rejected(original, "TARGET_ALLIED");
+  if (!canBeChilledV7(state, actor, target))
+    return rejected(original, "BOLAS_NOT_LEGAL", { reason: "TARGET_IMMUNE" });
+  if (!withinBolasRangeV7(sled.at, target.at))
+    return rejected(original, "BOLAS_NOT_LEGAL", { reason: "OUT_OF_RANGE" });
+  try {
+    const applied = withChillAppliedV7(state.chilled, [target.id]);
+    return accepted(
+      checked({
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        chilled: applied.chilled,
+        units: state.units.map((unit) =>
+          unit.id === sled.id
+            ? {
+                ...unit,
+                activation: {
+                  ...unit.activation,
+                  specialActed: true,
+                  handled: true,
+                },
+              }
+            : unit,
+        ),
+      }),
+      [unitsChilledEventV7(actor, sled.id, "BOLAS", applied.results)],
+    );
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * The Ice Folk revision (section 6.4): `COLD_SNAP`. The Witch applies Chill
+ * to every unit she can Chill that her owner sees within 2 tiles, and has
+ * used her primary action.
+ */
+function applyColdSnap(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  unitId: UnitStateV7["id"],
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const witch = actorCheck.unit;
+  if (!unitRoleRuleV7(state, witch).abilities.includes("COLD_SNAP"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: witch.role });
+  if (
+    witch.activation.overrunActive ||
+    primaryUsed(witch) ||
+    primaryActionBlockedAfterMoveV7(state, witch)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: witch.id });
+  if (witch.form !== "LAND")
+    return rejected(original, "COLD_SNAP_NOT_LEGAL", { reason: "EMBARKED" });
+  const targets = coldSnapTargetsV7(
+    state,
+    witch,
+    state.units.filter((unit) => isUnitVisibleToPlayerV7(state, actor, unit)),
+  );
+  if (targets.length === 0)
+    return rejected(original, "COLD_SNAP_NOT_LEGAL", { reason: "NO_TARGET" });
+  try {
+    const applied = withChillAppliedV7(
+      state.chilled,
+      targets.map((unit) => unit.id),
+    );
+    return accepted(
+      checked({
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        chilled: applied.chilled,
+        units: state.units.map((unit) =>
+          unit.id === witch.id
+            ? {
+                ...unit,
+                activation: {
+                  ...unit.activation,
+                  specialActed: true,
+                  handled: true,
+                },
+              }
+            : unit,
+        ),
+      }),
+      [unitsChilledEventV7(actor, witch.id, "COLD_SNAP", applied.results)],
+    );
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
@@ -3087,6 +3263,7 @@ function treasureKnightPlacement(
           afloat: false,
           engineering: player.researchedTechs.includes("ENGINEERING"),
           navigation: player.researchedTechs.includes("NAVIGATION"),
+          mountainBorn: unitIsMountainBornV7(state, { ownerId: actor, role }),
         }) ||
         state.units.some((unit) => unit.hp > 0 && same(unit.at, candidate)) ||
         state.treasureChests.some((chest) => same(chest, candidate))
@@ -3122,8 +3299,7 @@ function applyAttack(
     (!attacker.activation.overrunActive && primaryUsed(attacker)) ||
     (!attacker.activation.overrunActive &&
       attacker.activation.attacksUsed >= 1) ||
-    (attacker.activation.moved &&
-      !rule.mayUsePrimaryActionAfterMove &&
+    (primaryActionBlockedAfterMoveV7(state, attacker) &&
       attacker.activation.attacksUsed === 0)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: attacker.id });
@@ -3146,7 +3322,16 @@ function applyAttack(
   )
     return rejected(original, "TARGET_ALLIED");
   const distance = chebyshev(attacker.at, defender.at);
-  if (distance < rule.minimumRange || distance > rule.range)
+  // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2.
+  if (
+    distance < rule.minimumRange ||
+    distance >
+      attackMaximumRangeV7(
+        state,
+        attacker,
+        tileAtV7(state.board, attacker.at)?.terrain,
+      )
+  )
     return rejected(original, "TARGET_OUT_OF_RANGE");
   try {
     const calculated = calculateCombatPreviewV7(
@@ -3170,6 +3355,7 @@ function applyAttack(
             "ENGINEERING",
           ),
           navigation: false,
+          mountainBorn: unitIsMountainBornV7(state, attacker),
         }));
     const preview =
       canAdvance === calculated.advances
@@ -3262,16 +3448,22 @@ function applyAttack(
     const defenseReason = destinationTile?.fieldDefense
       ? attacker.role === "CATAPULT"
         ? "CATAPULT"
-        : preview.inspiredApplied && distance === 1 && !preview.attackerDies
-          ? "INSPIRED"
-          : distance === 1 &&
-              !preview.attackerDies &&
-              attacker.form === "LAND" &&
-              requirePlayer(state, actor).researchedTechs.includes("EXPLOSIVES")
-            ? "EXPLOSIVES"
-            : preview.advances
-              ? "OCCUPATION"
-              : null
+        : // The Ice Folk revision section 7.5: Trample, whatever survives.
+          attacker.form === "LAND" &&
+            unitRoleMechanicsV7(state, attacker).tramplesFieldDefense
+          ? "TRAMPLE"
+          : preview.inspiredApplied && distance === 1 && !preview.attackerDies
+            ? "INSPIRED"
+            : distance === 1 &&
+                !preview.attackerDies &&
+                attacker.form === "LAND" &&
+                requirePlayer(state, actor).researchedTechs.includes(
+                  "EXPLOSIVES",
+                )
+              ? "EXPLOSIVES"
+              : preview.advances
+                ? "OCCUPATION"
+                : null
       : null;
     let board =
       defenseReason === null || destinationTile === undefined
@@ -3340,11 +3532,15 @@ function applyAttack(
     // convert rises as its biter's Zombie instead of leaving a Grave.
     const died = (
       victim: UnitStateV7,
-      cause: "ATTACK" | "SPLASH" | "RETALIATION",
+      cause: "ATTACK" | "SPLASH" | "RETALIATION" | "SHATTER",
     ): void => {
       const bite = biteOfV7(state, victim.id);
       if (bite === undefined || victim.form !== "LAND") {
-        graves = recordCombatDeathV7(state, graves, victim, cause, events);
+        // The Ice Folk revision section 5.5: a shattered unit leaves no
+        // Grave.
+        if (cause === "SHATTER")
+          events.push({ kind: "UNIT_DIED", unitId: victim.id, cause });
+        else graves = recordCombatDeathV7(state, graves, victim, cause, events);
         return;
       }
       const allocation = allocateUnitId(nextEntityId);
@@ -3362,7 +3558,8 @@ function applyAttack(
       units = [...units, rising];
     };
     if (preview.defenderInfected) infect(attacker, defender, "ATTACK");
-    else if (preview.defenderDies) died(defender, "ATTACK");
+    else if (preview.defenderDies)
+      died(defender, preview.shatters ? "SHATTER" : "ATTACK");
     for (const splash of preview.splash)
       if (splash.dies)
         died(
@@ -3433,7 +3630,12 @@ function applyAttack(
       readonly unit: UnitStateV7;
       readonly cause: ExplosionCauseV7;
     }[] = [];
-    if (preview.defenderDies && isExplodingUnitV7(state, defender))
+    // The Ice Folk revision section 5.5: a shattered unit never explodes.
+    if (
+      preview.defenderDies &&
+      !preview.shatters &&
+      isExplodingUnitV7(state, defender)
+    )
       initialExplosions.push({ unit: defender, cause: "DEATH" });
     for (const splash of preview.splash) {
       const victim = requireValue(
@@ -3619,10 +3821,7 @@ function supportCaptain(
   const rule = unitRoleRuleV7(state, captain);
   if (captain.form !== "LAND" || !rule.abilities.includes(ability))
     return rejected(original, "UNIT_ROLE_INVALID", { role: captain.role });
-  if (
-    primaryUsed(captain) ||
-    (captain.activation.moved && !rule.mayUsePrimaryActionAfterMove)
-  )
+  if (primaryUsed(captain) || primaryActionBlockedAfterMoveV7(state, captain))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   return { captain };
 }
@@ -3685,7 +3884,8 @@ function applyTendWounded(
   const result = supportCaptain(original, state, actor, unitId, "TEND_WOUNDED");
   if ("accepted" in result) return result;
   // Revision 14 section 5: Tend Wounded also cures Plague and Bitten, so a
-  // plagued or bitten unit is a target even at full HP.
+  // plagued or bitten unit is a target even at full HP. The Ice Folk
+  // revision section 10.5: it cures Chill too (the entry becomes thawing).
   const plaguedIds = new Set(state.plagued.map((entry) => entry.unitId));
   const bittenIds = new Set(state.bitten.map((entry) => entry.unitId));
   const targets = state.units
@@ -3697,7 +3897,8 @@ function applyTendWounded(
         unit.id !== result.captain.id &&
         (unit.hp < unit.maxHp ||
           plaguedIds.has(unit.id) ||
-          bittenIds.has(unit.id)) &&
+          bittenIds.has(unit.id) ||
+          isChilledV7(state.chilled, unit.id)) &&
         !unit.activation.tendedThisTurn &&
         chebyshev(result.captain.at, unit.at) === 1,
     )
@@ -3714,6 +3915,10 @@ function applyTendWounded(
       commandIndex: nextSafe(state.commandIndex),
       plagued: state.plagued.filter((entry) => !amounts.has(entry.unitId)),
       bitten: state.bitten.filter((entry) => !amounts.has(entry.unitId)),
+      chilled: targets.reduce(
+        (chilled, unit) => withChillCuredV7(chilled, unit.id),
+        state.chilled,
+      ),
       units: state.units.map((unit) =>
         unit.id === result.captain.id
           ? {
@@ -3743,6 +3948,7 @@ function applyTendWounded(
           hpAfter: unit.hp + (amounts.get(unit.id) ?? 0),
           curedPlague: plaguedIds.has(unit.id),
           curedBitten: bittenIds.has(unit.id),
+          curedChill: isChilledV7(state.chilled, unit.id),
         })),
       },
     ],
@@ -3771,7 +3977,7 @@ function graveActionActor(
   if (
     unit.activation.overrunActive ||
     primaryUsed(unit) ||
-    (unit.activation.moved && !rule.mayUsePrimaryActionAfterMove)
+    primaryActionBlockedAfterMoveV7(state, unit)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   return { unit };
@@ -4110,7 +4316,7 @@ function applyPillage(
     unitFliesV7(state, unit)
   )
     return rejected(original, "PILLAGE_INVALID_TARGET");
-  if (primaryUsed(unit))
+  if (primaryUsed(unit) || sluggishUnitMovedV7(state, unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   const player = requirePlayer(state, actor);
   if (!player.researchedTechs.includes("RAIDING"))
@@ -4631,7 +4837,9 @@ function applyEndTurn(
     // Inspired and Overrun and before the income preview.
     const cooled = coolingStepV7(expiredUnits, actor);
     const fields = rechargeShieldsAtEndTurnV7(cooled, actor);
-    const expired = fields.state;
+    // The Ice Folk revision section 5.4: the Chill countdown of the
+    // player's units, after the Force Fields recharge (no event).
+    const expired = chillCountdownV7(fields.state, actor);
     const preview = playerIncomeV7(expired, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");
@@ -4658,18 +4866,22 @@ function applyEndTurn(
         mindControlCooldownStepV7(reset, nextPlayer.id),
         nextPlayer.id,
       );
-      const next = recharge.state;
+      // The Ice Folk revision section 7.8: the Cold Aura runs after the
+      // Shield recharge and before Plague.
+      const aura = resolveColdAuraV7(recharge.state, nextPlayer.id);
+      const next = aura.state;
       const plague = resolveStartTurnPlagueAndChainV7(next, nextPlayer.id);
       const hatch = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
       const afflicted =
         hatch.events.length === 0 && hatch.state === plague.state
           ? plague
           : { state: hatch.state, events: [...plague.events, ...hatch.events] };
-      return recharge.events.length === 0
+      const before = [...recharge.events, ...aura.events];
+      return before.length === 0
         ? afflicted
         : {
             state: afflicted.state,
-            events: [...recharge.events, ...afflicted.events],
+            events: [...before, ...afflicted.events],
           };
     });
     const turnStarted = started.events[0];
@@ -4755,10 +4967,7 @@ function applyWail(
   const rule = unitRoleRuleV7(state, banshee);
   if (banshee.form !== "LAND" || !rule.abilities.includes("WAIL"))
     return rejected(original, "UNIT_ROLE_INVALID", { role: banshee.role });
-  if (
-    primaryUsed(banshee) ||
-    (banshee.activation.moved && !rule.mayUsePrimaryActionAfterMove)
-  )
+  if (primaryUsed(banshee) || primaryActionBlockedAfterMoveV7(state, banshee))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   try {
     const targets = wailTargetsV7(state, banshee);
@@ -4933,7 +5142,11 @@ function applyKaboom(
   const exploder = actorCheck.unit;
   if (!unitRoleRuleV7(state, exploder).abilities.includes("KABOOM"))
     return rejected(original, "UNIT_ROLE_INVALID", { role: exploder.role });
-  if (primaryUsed(exploder) || exploder.activation.overrunActive)
+  if (
+    primaryUsed(exploder) ||
+    exploder.activation.overrunActive ||
+    sluggishUnitMovedV7(state, exploder)
+  )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   if (exploder.form !== "LAND")
     return rejected(original, "KABOOM_NOT_LEGAL", { reason: "EMBARKED" });
@@ -5242,7 +5455,16 @@ function recoveryAmount(state: GameStateV7, unit: UnitStateV7): number {
       ? 4
       : 0;
   if (unit.form === "EMBARKED") return 0;
-  if (inOwnTerritory(state, unit)) return 4;
+  // The Ice Folk revision section 6.6: Deep Winter heals an Ice Folk land
+  // unit 6 in its owner's territory.
+  if (inOwnTerritory(state, unit))
+    return isIceFolkLandUnitV7(state, unit) &&
+      technologyCapabilitiesV7(
+        requirePlayer(state, unit.ownerId).researchedTechs,
+        playerFactionV7(state, unit.ownerId),
+      ).deepWinter
+      ? DEEP_WINTER_RECOVER_V7
+      : 4;
   return restlessOutsideOwnTerritory(state, unit) ? 0 : 2;
 }
 
@@ -5423,11 +5645,12 @@ function rewardDisplacementCellV7(
           afloat: false,
           engineering: owner.researchedTechs.includes("ENGINEERING"),
           navigation: owner.researchedTechs.includes("NAVIGATION"),
+          mountainBorn: unitIsMountainBornV7(state, unit),
         })
       )
         return false;
       if (
-        movementMode === "FLY" &&
+        unitAvoidsForeignSitesV7(state, unit) &&
         !flyerMayStandOnSiteV7(
           tile.site,
           state.cities.find((city) => same(city.at, at))?.ownerId ?? null,
@@ -5769,8 +5992,9 @@ function checked(state: GameStateV7): GameStateV7 {
   // Revision 19: drop the countdowns of Eggs that left the board. The
   // Martian revision: drop the Shield, Cooling, Thrall, and cooldown entries
   // of units that left the board.
+  // The Ice Folk revision: drop the Chill entries of units that left it.
   const result = parseGameStateV7(
-    prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+    prunedIceFolkV7(prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state)))),
   );
   if (result === null) throw new RangeError("INVALID_STATE");
   return result;

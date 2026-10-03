@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r23" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r24" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -34,8 +34,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r20",
   "pulp-wars-poc-7r21",
   "pulp-wars-poc-7r22",
+  "pulp-wars-poc-7r23",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r23.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r24.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
@@ -43,6 +44,8 @@ export const FACTION_IDS_V7 = Object.freeze([
   "DINOSAUR",
   // The Martian revision (docs/product/RULESET_7_MARTIANS.md).
   "MARTIAN",
+  // The Ice Folk revision (docs/product/RULESET_7_ICE_FOLK.md).
+  "ICE_FOLK",
 ] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
@@ -50,6 +53,7 @@ export const FACTION_TREE_IDS_V7 = Object.freeze([
   "GOBLIN_BASELINE_V1",
   "DINOSAUR_BASELINE_V1",
   "MARTIAN_BASELINE_V1",
+  "ICE_FOLK_BASELINE_V1",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -145,6 +149,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "BEAM_DOWN",
   "MIND_CONTROL",
   "TRACTOR_BEAM",
+  // The Ice Folk revision: the Sled's Bolas and the Ice Witch's Cold Snap.
+  "THROW_BOLAS",
+  "COLD_SNAP",
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
@@ -246,6 +253,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_REWARD_GRANTED",
   "UNIT_SPAWN_DISPLACED",
   "UNITS_RALLIED",
+  // The Ice Folk revision: a Bolas, a Cold Snap, or a Cold Aura chilled units.
+  "UNITS_CHILLED",
   "WOUNDED_TENDED",
   "DEAD_RAISED",
   "GRAVE_DEVOURED",
@@ -549,8 +558,28 @@ export interface GameStateV7 {
    * seat.
    */
   readonly mindControlCooldowns: readonly MindControlCooldownV7[];
+  /**
+   * The Ice Folk revision (section 5.1): one Chill entry per frosted or
+   * thawing unit, sorted by `unitId`. Always empty in a match whose setup
+   * has no ICE_FOLK seat. It is the only stored Ice Folk state: Snow and the
+   * Blizzard are derived on every read.
+   */
+  readonly chilled: readonly ChillStatusV7[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/**
+ * The Ice Folk revision (section 5.1): the Chill entry of `unitId`. The unit
+ * is Chilled while `turnsLeft` is at least 1 and thawing at 0; it is
+ * sluggish while `sluggish` is true (only with `turnsLeft` 2). The legal
+ * combinations are `{ true, 2 }`, `{ false, 2 }`, `{ false, 1 }`, and
+ * `{ false, 0 }`.
+ */
+export interface ChillStatusV7 {
+  readonly unitId: UnitId;
+  readonly sluggish: boolean;
+  readonly turnsLeft: 0 | 1 | 2;
 }
 
 /** The Martian revision: the current Shield (at least 1) of `unitId`. */

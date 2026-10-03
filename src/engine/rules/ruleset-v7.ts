@@ -134,6 +134,22 @@ export type TechnologyUnlockV7 =
    * owner's heat rays ignore the defender's fortification.
    */
   | { readonly kind: "DISINTEGRATOR" }
+  /**
+   * The Ice Folk revision (docs/product/RULESET_7_ICE_FOLK.md section 4):
+   * the Ice Witch's Cold Snap (the Ice Folk `ADMINISTRATION`).
+   */
+  | { readonly kind: "WITCH_SUPPORT" }
+  /**
+   * The Ice Folk revision, Deep Winter (the Ice Folk `FORTIFICATION`):
+   * neutral land within two tiles of each own city center is Snow, and
+   * Recover heals 6 in own territory.
+   */
+  | { readonly kind: "DEEP_WINTER" }
+  /**
+   * The Ice Folk revision, Brittle (the Ice Folk `EXPLOSIVES`): the Shatter
+   * threshold is 4 instead of 3.
+   */
+  | { readonly kind: "BRITTLE" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -197,7 +213,22 @@ export type UnitRoleAbilityV7 =
   | "MIND_CONTROL"
   | "TRACTOR_BEAM"
   | "FLY"
-  | "STRIDE";
+  | "STRIDE"
+  // The Ice Folk revision (section 3): Mountain-born, the Yeti's Rockfall,
+  // the Sled's Bolas, the Snow Hunter's Cold Blood, the Mammoth's Sweep and
+  // Trample, the Ice Witch's Blizzard and Cold Snap, the Boulder Yeti's
+  // Boulders, the Sabretooth's Prowl, and the Frost Giant's Cold Aura.
+  | "MOUNTAIN_BORN"
+  | "ROCKFALL"
+  | "BOLAS"
+  | "COLD_BLOOD"
+  | "SWEEP"
+  | "TRAMPLE"
+  | "BLIZZARD"
+  | "COLD_SNAP"
+  | "BOULDERS"
+  | "PROWL"
+  | "COLD_AURA";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -288,6 +319,44 @@ export interface RoleMechanicsV7 {
   readonly shield: 0 | 1 | 2 | 3 | 4;
   /** The Martian revision (section 7): the role's movement mode. */
   readonly movementMode: MovementModeV7;
+  /**
+   * The Ice Folk revision (section 7.1): Mountain-born. In land form the
+   * unit enters a Mountain without Engineering and a Mountain does not end
+   * its Move. False for every role of every other faction.
+   */
+  readonly mountainBorn: boolean;
+  /**
+   * The Ice Folk revision (section 6.2): Glide. In land form a step that
+   * leaves a Snow tile costs one half-point. True for every Ice Folk land
+   * role except the Sabretooth; false for every other faction.
+   */
+  readonly glides: boolean;
+  /**
+   * The Ice Folk revision (section 7.7): Prowl. Entering hostile zone of
+   * control does not end the unit's Move (the Sabretooth).
+   */
+  readonly ignoresZocStops: boolean;
+  /** The Ice Folk revision (section 7.5): the Sweep damage (0 without). */
+  readonly sweepDamage: number;
+  /**
+   * The Ice Folk revision (section 7.5): Trample, every attack destroys
+   * Field Defense on the target's tile (reason `TRAMPLE`).
+   */
+  readonly tramplesFieldDefense: boolean;
+  /**
+   * The Ice Folk revision (section 7.6): Boulders, every attack ignores the
+   * defender's fortification for the whole exchange (cover stays).
+   */
+  readonly ignoresFortification: boolean;
+  /** The Ice Folk revision (section 7.6): the Planted `attack2` bonus. */
+  readonly plantedBonus2: number;
+  /**
+   * The Ice Folk revision (section 7.2): the `attack2` of a Rockfall (an
+   * attack at distance 2 from a Mountain), or 0 without Rockfall.
+   */
+  readonly rockfallAttack2: number;
+  /** The Ice Folk revision (section 7.4): the Cold Blood `attack2` bonus. */
+  readonly coldBloodBonus2: number;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -914,6 +983,15 @@ const mechanics = (
           armourReduction: 0,
           shield: 0,
           movementMode: "GROUND",
+          mountainBorn: false,
+          glides: false,
+          ignoresZocStops: false,
+          sweepDamage: 0,
+          tramplesFieldDefense: false,
+          ignoresFortification: false,
+          plantedBonus2: 0,
+          rockfallAttack2: 0,
+          coldBloodBonus2: 0,
           ...overrides[roleId],
         },
       ]),
@@ -1710,6 +1788,222 @@ export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
   roleMechanics: MARTIAN_ROLE_MECHANICS_V7,
 });
 
+/**
+ * The Ice Folk technology graph (docs/product/RULESET_7_ICE_FOLK.md section
+ * 4): identical to ORIGINAL_BASELINE_V5 except that Administration grants
+ * `WITCH_SUPPORT` instead of Captain support, Chivalry grants no Overrun,
+ * Fortification (displayed as Deep Winter) grants `DEEP_WINTER` instead of
+ * `BUILD_FIELD_DEFENSE`, and Explosives (displayed as Brittle) keeps both of
+ * its unlocks and adds `BRITTLE`.
+ */
+export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
+  deepFreeze(
+    ORIGINAL_BASELINE_V5_NODES.map((original) =>
+      node(
+        original.id,
+        original.branch,
+        original.tier,
+        original.prerequisites,
+        [
+          ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+            unlock.kind === "CAPTAIN_SUPPORT"
+              ? [{ kind: "WITCH_SUPPORT" }]
+              : unlock.kind === "OVERRUN"
+                ? []
+                : unlock.kind === "COMMAND" &&
+                    unlock.command === "BUILD_FIELD_DEFENSE"
+                  ? [{ kind: "DEEP_WINTER" }]
+                  : [unlock],
+          ),
+          ...(original.id === "EXPLOSIVES"
+            ? [{ kind: "BRITTLE" } as const]
+            : []),
+        ],
+      ),
+    ),
+  );
+
+/** The Ice Folk roster (docs/product/RULESET_7_ICE_FOLK.md section 3). */
+export const ICE_FOLK_ROLE_RULES_V7: Readonly<
+  Record<UnitRoleIdV7, EffectiveRoleRuleV7>
+> = deepFreeze({
+  FIGHTER: role({
+    role: "FIGHTER",
+    label: "Yeti",
+    tacticalRole: "LINE",
+    cost: 2,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "MOUNTAIN_BORN", "ROCKFALL"],
+  }),
+  RAIDER: role({
+    role: "RAIDER",
+    label: "Sled",
+    tacticalRole: "SKIRMISHER",
+    cost: 3,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 2,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SCOUTING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "BOLAS"],
+  }),
+  MARKSMAN: role({
+    role: "MARKSMAN",
+    label: "Snow Hunter",
+    tacticalRole: "RANGED",
+    cost: 3,
+    maxHp: 8,
+    attack2: 4,
+    defense2: 2,
+    move: 1,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "MARKSMANSHIP",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "COLD_BLOOD"],
+  }),
+  GUARD: role({
+    role: "GUARD",
+    label: "Mammoth",
+    tacticalRole: "DEFENDER",
+    cost: 6,
+    maxHp: 20,
+    attack2: 5,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "DRILL",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE"],
+  }),
+  CAPTAIN: role({
+    role: "CAPTAIN",
+    label: "Ice Witch",
+    tacticalRole: "SUPPORT",
+    cost: 5,
+    maxHp: 12,
+    attack2: 2,
+    defense2: 2,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "ADMINISTRATION",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "BLIZZARD", "COLD_SNAP"],
+  }),
+  CATAPULT: role({
+    role: "CATAPULT",
+    label: "Boulder Yeti",
+    tacticalRole: "SIEGE",
+    cost: 8,
+    maxHp: 12,
+    attack2: 4,
+    defense2: 3,
+    move: 2,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "SAWMILLING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "BOULDERS", "MOUNTAIN_BORN"],
+  }),
+  KNIGHT: role({
+    role: "KNIGHT",
+    label: "Sabretooth",
+    tacticalRole: "BREAKTHROUGH",
+    cost: 9,
+    maxHp: 14,
+    attack2: 6,
+    defense2: 2,
+    move: 3,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "CHIVALRY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "PROWL"],
+  }),
+  JUGGERNAUT: role({
+    role: "JUGGERNAUT",
+    label: "Frost Giant",
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: 40,
+    attack2: 8,
+    defense2: 8,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "PUSH", "COLD_AURA", "MOUNTAIN_BORN"],
+  }),
+  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
+  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+});
+
+/**
+ * The Ice Folk engine mechanics (section 11): no role builds Field Defense;
+ * the Yeti, the Boulder Yeti, and the Frost Giant are Mountain-born; every
+ * land role but the Sabretooth Glides; the Sabretooth Prowls; the Mammoth
+ * Sweeps and Tramples; the Boulder Yeti ignores fortification, is Planted
+ * when unmoved, and never advances; the Yeti has Rockfall and the Snow
+ * Hunter Cold Blood. Every role uses one slot. Boats are Human boats.
+ */
+export const ICE_FOLK_ROLE_MECHANICS_V7 = mechanics({
+  FIGHTER: {
+    buildsFieldDefense: false,
+    mountainBorn: true,
+    glides: true,
+    rockfallAttack2: 3,
+  },
+  RAIDER: { glides: true },
+  MARKSMAN: { glides: true, coldBloodBonus2: 1 },
+  GUARD: {
+    buildsFieldDefense: false,
+    glides: true,
+    sweepDamage: 2,
+    tramplesFieldDefense: true,
+  },
+  CAPTAIN: { glides: true },
+  CATAPULT: {
+    advancesAfterKill: false,
+    mountainBorn: true,
+    glides: true,
+    ignoresFortification: true,
+    plantedBonus2: 2,
+  },
+  KNIGHT: { ignoresZocStops: true },
+  JUGGERNAUT: { mountainBorn: true, glides: true },
+  BATTLESHIP: { splash: true },
+});
+
+export const ICE_FOLK_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "ICE_FOLK_BASELINE_V1",
+  faction: "ICE_FOLK",
+  startingTechIds: [],
+  nodes: ICE_FOLK_BASELINE_V1_NODES,
+  roleRules: ICE_FOLK_ROLE_RULES_V7,
+  roleMechanics: ICE_FOLK_ROLE_MECHANICS_V7,
+});
+
 /** Frozen faction registrations; there is no cross-faction fallback. */
 export const FACTION_TREES_V7: Readonly<
   Record<FactionIdV7, FactionTechnologyTreeV7>
@@ -1719,6 +2013,7 @@ export const FACTION_TREES_V7: Readonly<
   GOBLIN: GOBLIN_BASELINE_V1_TREE,
   DINOSAUR: DINOSAUR_BASELINE_V1_TREE,
   MARTIAN: MARTIAN_BASELINE_V1_TREE,
+  ICE_FOLK: ICE_FOLK_BASELINE_V1_TREE,
 });
 
 export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
@@ -1728,6 +2023,7 @@ export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
     GOBLIN: "Goblin",
     DINOSAUR: "Dinosaur",
     MARTIAN: "Martian",
+    ICE_FOLK: "Ice Folk",
   });
 
 /**
@@ -1747,6 +2043,8 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
   // The Martian revision: Fortification and Explosives are renamed.
   MARTIAN: { FORTIFICATION: "Force Fields", EXPLOSIVES: "Disintegrator" },
+  // The Ice Folk revision: Fortification and Explosives are renamed.
+  ICE_FOLK: { FORTIFICATION: "Deep Winter", EXPLOSIVES: "Brittle" },
 });
 
 export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
@@ -1780,9 +2078,15 @@ export interface FactionRulesV7 {
    * Revision 19: the mechanical role of the treasure chest unit (`KNIGHT`
    * for Human, Undead, and Goblin; `RAIDER` for Dinosaur, the Raptor, and
    * for Martian, the Saucer). The serialized `TREASURE_CAPTURED` reward
-   * literal stays `KNIGHT`.
+   * literal stays `KNIGHT`. The Ice Folk revision: the Sled (`RAIDER`).
    */
   readonly treasureUnitRole: UnitRoleIdV7;
+  /**
+   * The Ice Folk revision (section 6): the faction's land is Snow and its
+   * land-form units get the Snow benefits (Glide and Snow cover); every
+   * other faction's ground units are stopped by Snow.
+   */
+  readonly snow: boolean;
 }
 
 export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
@@ -1792,30 +2096,42 @@ export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
       cityCapacityBonus: 0,
       gangUpMaximum: 0,
       treasureUnitRole: "KNIGHT",
+      snow: false,
     },
     UNDEAD: {
       restless: true,
       cityCapacityBonus: 0,
       gangUpMaximum: 0,
       treasureUnitRole: "KNIGHT",
+      snow: false,
     },
     GOBLIN: {
       restless: false,
       cityCapacityBonus: 1,
       gangUpMaximum: 2,
       treasureUnitRole: "KNIGHT",
+      snow: false,
     },
     DINOSAUR: {
       restless: false,
       cityCapacityBonus: 0,
       gangUpMaximum: 0,
       treasureUnitRole: "RAIDER",
+      snow: false,
     },
     MARTIAN: {
       restless: false,
       cityCapacityBonus: 0,
       gangUpMaximum: 0,
       treasureUnitRole: "RAIDER",
+      snow: false,
+    },
+    ICE_FOLK: {
+      restless: false,
+      cityCapacityBonus: 0,
+      gangUpMaximum: 0,
+      treasureUnitRole: "RAIDER",
+      snow: true,
     },
   });
 
@@ -1984,6 +2300,85 @@ export function unitRoleMechanicsV7(
   unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
 ): RoleMechanicsV7 {
   return roleMechanicsV7(unit.role, playerFactionV7(roster, unit.ownerId));
+}
+
+/**
+ * The Chill facts the sluggish helpers read (canonical state and public view
+ * alike): the roster and the Ice Folk `chilled` side list.
+ */
+export interface SluggishLookupV7 extends FactionRosterV7 {
+  readonly chilled?: readonly {
+    readonly unitId: number;
+    readonly sluggish: boolean;
+  }[];
+}
+
+/**
+ * The Ice Folk revision (docs/product/RULESET_7_ICE_FOLK.md section 5.3):
+ * whether the unit is sluggish (its Chill entry has `sluggish: true`). It is
+ * false for every unit of a match without an Ice Folk seat.
+ */
+export function unitIsSluggishV7(
+  lookup: SluggishLookupV7,
+  unit: { readonly id: number },
+): boolean {
+  const chilled = lookup.chilled;
+  if (chilled === undefined || chilled.length === 0) return false;
+  return chilled.some((entry) => entry.unitId === unit.id && entry.sluggish);
+}
+
+/**
+ * THE single "may this unit use a primary action after moving" rule (the
+ * Ice Folk revision, section 5.3): its role rule's
+ * `mayUsePrimaryActionAfterMove`, and it is not sluggish. Every read of the
+ * role flag for a concrete unit goes through this helper; role-level reads
+ * (production values, role tables) keep the role flag. A source audit in
+ * `tests/unit/ruleset-v7-ice-folk-helpers.test.ts` pins the call sites.
+ */
+export function unitMayActAfterMoveV7(
+  lookup: SluggishLookupV7,
+  unit: {
+    readonly id: number;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
+): boolean {
+  return (
+    unitRoleRuleV7(lookup, unit).mayUsePrimaryActionAfterMove &&
+    !unitIsSluggishV7(lookup, unit)
+  );
+}
+
+/**
+ * Whether a primary action is refused because the unit has moved this turn
+ * (the activation flag `moved`, an interrupted Move included) and may not act
+ * after moving ({@link unitMayActAfterMoveV7}).
+ */
+export function primaryActionBlockedAfterMoveV7(
+  lookup: SluggishLookupV7,
+  unit: {
+    readonly id: number;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly activation: { readonly moved: boolean };
+  },
+): boolean {
+  return unit.activation.moved && !unitMayActAfterMoveV7(lookup, unit);
+}
+
+/**
+ * The plain sluggish gate (section 5.3) of the actions that do not read the
+ * role flag (Kaboom and Pillage, which every unit may use after moving): a
+ * sluggish unit that has moved may not use them.
+ */
+export function sluggishUnitMovedV7(
+  lookup: SluggishLookupV7,
+  unit: {
+    readonly id: number;
+    readonly activation: { readonly moved: boolean };
+  },
+): boolean {
+  return unit.activation.moved && unitIsSluggishV7(lookup, unit);
 }
 
 /** Kills a unit needs before it may be promoted (once). */
@@ -2195,6 +2590,31 @@ export const MIND_CONTROL_THRALL_LIMIT_V7 = 2;
 /** The Martian revision (section 8.4): the exact Tractor Beam distance. */
 export const TRACTOR_BEAM_RANGE_V7 = 2;
 
+/** The Ice Folk revision (section 5.5): the Shatter threshold. */
+export const SHATTER_HP_V7 = 3;
+/** The Ice Folk revision (section 5.5): the Shatter threshold with Brittle. */
+export const BRITTLE_SHATTER_HP_V7 = 4;
+/** The Ice Folk revision (section 5.2): `turnsLeft` of an applied Chill. */
+export const CHILL_TURNS_V7 = 2;
+/** The Ice Folk revision (section 7.3): the Bolas reach (Chebyshev). */
+export const BOLAS_RANGE_V7 = 2;
+/** The Ice Folk revision (section 6.4): the Cold Snap reach (Chebyshev). */
+export const COLD_SNAP_RANGE_V7 = 2;
+/** The Ice Folk revision (section 6.3): the Blizzard radius (Chebyshev). */
+export const BLIZZARD_RADIUS_V7 = 1;
+/** The Ice Folk revision (section 6.6): the Deep Winter radius (Chebyshev). */
+export const DEEP_WINTER_RADIUS_V7 = 2;
+/** The Ice Folk revision (section 6.6): Recover in own territory. */
+export const DEEP_WINTER_RECOVER_V7 = 6;
+/** The Ice Folk revision (section 7.5): a Sweep flank hit. */
+export const SWEEP_DAMAGE_V7 = 2;
+/** The Ice Folk revision (section 7.2): the Rockfall `attack2`. */
+export const ROCKFALL_ATTACK2_V7 = 3;
+/** The Ice Folk revision (section 7.6): the Planted `attack2` bonus. */
+export const PLANTED_BONUS2_V7 = 2;
+/** The Ice Folk revision (section 7.4): the Cold Blood `attack2` bonus. */
+export const COLD_BLOOD_BONUS2_V7 = 1;
+
 /** The unit facts the Martian registry helpers read. */
 export interface MartianUnitFactsV7 {
   readonly ownerId: PlayerId;
@@ -2255,15 +2675,17 @@ export function halfPowerAttack2V7(attack2: number): number {
 
 /**
  * THE shared "can this unit enter this terrain" rule (the Martian revision,
- * section 7 and concern 11). Every rule that asks whether a unit may stand
- * on a tile goes through it: `MOVE`, `DISEMBARK`, the advance after a kill,
- * Push and Tractor Beam destinations, Beam Down, reward displacement, and
- * treasure-unit placement. `afloat` is whether the unit is, or would be on
- * that tile, a naval or embarked unit.
+ * section 7 and concern 11; the Ice Folk revision section 7.1). Every rule
+ * that asks whether a unit may stand on a tile goes through it: `MOVE`,
+ * `DISEMBARK`, the advance after a kill, Push and Tractor Beam destinations,
+ * Beam Down, reward displacement, and treasure-unit placement. `afloat` is
+ * whether the unit is, or would be on that tile, a naval or embarked unit;
+ * `mountainBorn` whether its role is Mountain-born in land form.
  *
  * - Grass and Forest: every land-form unit.
- * - Mountain: a land-form unit whose owner has Engineering, and every
- *   walker and flyer (Stride and Flying need no Engineering).
+ * - Mountain: a land-form unit whose owner has Engineering, every walker
+ *   and flyer (Stride and Flying need no Engineering), and every
+ *   Mountain-born unit (the Ice Folk Yeti, Boulder Yeti, and Frost Giant).
  * - Shallow Water: afloat units only.
  * - Deep Water: afloat units whose owner has Navigation.
  *
@@ -2281,6 +2703,7 @@ export function canEnterTerrainV7(input: {
   readonly afloat: boolean;
   readonly engineering: boolean;
   readonly navigation: boolean;
+  readonly mountainBorn: boolean;
 }): boolean {
   switch (input.terrain) {
     case "GRASS":
@@ -2288,13 +2711,80 @@ export function canEnterTerrainV7(input: {
       return !input.afloat;
     case "MOUNTAIN":
       return (
-        !input.afloat && (input.engineering || input.movementMode !== "GROUND")
+        !input.afloat &&
+        (input.engineering ||
+          input.movementMode !== "GROUND" ||
+          input.mountainBorn)
       );
     case "SHALLOW_WATER":
       return input.afloat;
     case "DEEP_WATER":
       return input.afloat && input.navigation;
   }
+}
+
+/**
+ * THE shared "does entering this tile end the Move" terrain rule (the Martian
+ * revision section 7.1; the Ice Folk revision section 7.1). A walker or
+ * flyer is never stopped by terrain. For a ground unit a Mountain ends the
+ * Move unless the unit is Mountain-born, and a Forest unless the unit has
+ * Forest freedom (Fieldcraft); a step along a Road edge (both ends usable
+ * Road nodes for the mover) waives both.
+ */
+export function terrainStopsMoveV7(input: {
+  readonly terrain: TerrainIdV7;
+  readonly movementMode: MovementModeV7;
+  readonly mountainBorn: boolean;
+  readonly ignoresForest: boolean;
+  readonly roadEdge: boolean;
+}): boolean {
+  return (
+    input.movementMode === "GROUND" &&
+    !input.roadEdge &&
+    ((input.terrain === "MOUNTAIN" && !input.mountainBorn) ||
+      (input.terrain === "FOREST" && !input.ignoresForest))
+  );
+}
+
+/**
+ * The Ice Folk revision (section 7.1): whether the unit is Mountain-born now
+ * (a land-form unit whose role is `mountainBorn` under its owner's
+ * registration). An embarked or naval unit never is.
+ */
+export function unitIsMountainBornV7(
+  roster: FactionRosterV7,
+  unit: {
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form?: UnitFormV7;
+  },
+): boolean {
+  return (
+    (unit.form === undefined || unit.form === "LAND") &&
+    unitRoleMechanicsV7(roster, unit).mountainBorn
+  );
+}
+
+/**
+ * The Ice Folk revision (section 7.1) `unitMayEnterMountainV7`: whether the
+ * unit, in land form, may enter a Mountain: {@link canEnterTerrainV7} for a
+ * Mountain with the unit's movement mode, Mountain-born, and `engineering`
+ * (its owner's Engineering, or what the caller may assume about it).
+ */
+export function unitMayEnterMountainV7(
+  roster: FactionRosterV7,
+  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+  engineering: boolean,
+  movementMode: MovementModeV7 = unitMovementModeV7(roster, unit),
+): boolean {
+  return canEnterTerrainV7({
+    terrain: "MOUNTAIN",
+    movementMode,
+    afloat: false,
+    engineering,
+    navigation: false,
+    mountainBorn: unitRoleMechanicsV7(roster, unit).mountainBorn,
+  });
 }
 
 /**
@@ -2430,6 +2920,17 @@ export interface TechnologyCapabilitiesV7 {
    * defender's fortification.
    */
   readonly raysIgnoreFortification: boolean;
+  /**
+   * The Ice Folk revision, Deep Winter: Snow spreads to the neutral land
+   * within two tiles of the player's city centers, and its land units
+   * recover 6 in its territory.
+   */
+  readonly deepWinter: boolean;
+  /**
+   * The Ice Folk revision: the player's Shatter threshold
+   * (`SHATTER_HP_V7`, or `BRITTLE_SHATTER_HP_V7` with Brittle).
+   */
+  readonly shatterThreshold: number;
 }
 
 export function technologyCapabilitiesV7(
@@ -2474,6 +2975,8 @@ export function technologyCapabilitiesV7(
   let ignoresCityWalls = false;
   let shieldsRechargeAtEndTurn = false;
   let raysIgnoreFortification = false;
+  let deepWinter = false;
+  let shatterThreshold = SHATTER_HP_V7;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -2550,6 +3053,13 @@ export function technologyCapabilitiesV7(
       case "DISINTEGRATOR":
         raysIgnoreFortification = true;
         break;
+      case "DEEP_WINTER":
+        deepWinter = true;
+        break;
+      case "BRITTLE":
+        shatterThreshold = BRITTLE_SHATTER_HP_V7;
+        break;
+      case "WITCH_SUPPORT":
       case "BRAIN_SUPPORT":
       case "CAPTAIN_SUPPORT":
       case "NECROMANCER_SUPPORT":
@@ -2596,6 +3106,8 @@ export function technologyCapabilitiesV7(
     ignoresCityWalls,
     shieldsRechargeAtEndTurn,
     raysIgnoreFortification,
+    deepWinter,
+    shatterThreshold,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

@@ -1,6 +1,14 @@
 # Ruleset 7: Ice Folk faction
 
-**Status:** contract (`pulp_wars-7g3.2`), not yet implemented. It is an
+**Status:** contract (`pulp_wars-7g3.2`); **the engine is implemented**
+(`pulp_wars-7g3.3`, identity `pulp-wars-poc-7r24`: every rule, command, event,
+query, and state shape of this document). **The Normal AI
+([section 12](#12-normal-ai-requirements), `pulp_wars-7g3.4`), the UI
+([section 13](#13-ui-requirements), `pulp_wars-7g3.6`), and coarse balance
+(`pulp_wars-7g3.7`) are pending:** an Ice Folk seat plays with the generic
+Normal policy and the setup screen does not offer the faction. What the
+implementation changed or made precise is in
+[section 19](#19-implementation-notes-pulp_wars-7g33). It is an
 overlay over the rules in force when `pulp_wars-7g3.3` starts: the
 [Martian faction](RULESET_7_MARTIANS.md) (epic `pulp_wars-t6s`, whose engine
 landed on `main` in commit `d88503c`, `pulp-wars-poc-7r22`, after this
@@ -2997,3 +3005,126 @@ parallel helper ([sections 7.1](#71-mountain-born) and
 16. **The line model is crude.** It has no map, no movement, and no sluggish
     turn, so it cannot see the first strike, which is half of what frost is
     for. It ranks designs; it cannot stand in for the matrix.
+
+## 19. Implementation notes (`pulp_wars-7g3.3`)
+
+### 19.1 The re-run before coding (section 15, first step)
+
+The scratch analysis of [section 9](#9-per-unit-battle-analysis) was re-run
+twice: against the registry of commit `643c618` (the Martian engine of
+`d88503c` in force, identity 7r22) before any Ice Folk number was coded, and
+against `d65079c` (revision 20's sturdiness numbers of `pulp_wars-0hi.3`,
+identity 7r23) after the work was rebased onto it.
+
+- **Martian units from the engine.** The 24 existing units the analysis
+  uses are unchanged, and the engine's Martian roster equals the paper
+  values the tables used. Every regenerated output (per-unit tables, the
+  document tables, the Shatter counts, the line model, the variants, the
+  waves, and the worked examples) is byte-identical: **no verdict, counter
+  count, Shatter figure, or pressure result flips, and no Ice Folk number
+  was changed.**
+- **Formula check.** 14,208 exchanges between units of all five existing
+  factions (Martians with full Shields and full-power rays) against
+  `calculateCombatPreviewV7`: 0 mismatches, at 7r22 and again at 7r23.
+- **Martian units the tables left out** (Saucer, Brain, Mothership,
+  Colossus, and half-power rays). A full-power Tripod or Colossus shot kills
+  a Yeti, Sled, Snow Hunter, Witch, or Boulder Yeti in one hit (two beside a
+  Witch, whose Blizzard halves it). A Mammoth shatters a Chilled Saucer, Ray
+  Gunner, or Brain at full HP; a charging Sled or a Sabretooth shatters a
+  Chilled Grunt at full HP.
+- **Revision 20's sturdiness numbers (7r23) move the Human rows.** The
+  model sees only HP, Attack, and Defense, so the rows of the 12-HP Human
+  Fighter now read as the 12-HP Caveman's did, and the 10-HP Caveman's as
+  the old Fighter's. Five Yetis on Snow no longer beat five Fighters
+  either way (10 / 8 when the Yetis strike first, 8 / 10 when they are
+  attacked; [section 9.11](#911-skirmishes)). Two Yetis on home Snow now
+  fall to three Fighters every second round (round 5), as a two-Fighter
+  opening does; they still hold two Fighters every second round, and now
+  also hold three Cavemen every second round
+  ([section 9.12](#912-early-pressure); a Raptor with two Cavemen still
+  breaks them in round 3). Shatter at full HP of a Chilled target changes
+  too: a Yeti with Brittle no longer shatters a Marksman; a Mammoth
+  (threshold 3) no longer shatters a Marksman, and with Brittle it
+  shatters a Caveman and no longer a Fighter; a charging Sled or a
+  Sabretooth (threshold 3) shatters a Marksman, a Caveman, a Raptor, or a
+  Grunt, and no longer a Fighter (in the open or on Field Defense); a Frost
+  Giant also shatters a Fighter on Field Defense. **No Ice Folk number
+  was changed for this:** the Human numbers are a separate revision, and
+  the matrix of `pulp_wars-7g3.7` decides. [Concern 3](#18-concerns)
+  (the Human matchup) is weaker than written.
+
+The scripts and outputs are in the same session scratch space as the
+directory named in [section 9.1](#91-method), under `7g33/step0/` (`eng/out`
+at 7r23, `eng/out-7r22` at 7r22).
+
+### 19.2 Order of the work
+
+The two engine-wide refactors landed first and alone
+([section 15](#15-implementation-split-and-test-expectations)):
+`unitMayActAfterMoveV7` (with `primaryActionBlockedAfterMoveV7` and
+`sluggishUnitMovedV7`) replaces every read of the role flag for a concrete
+unit in the reducer, the queries, and the Normal AI; and Mountain-born is
+an input of `canEnterTerrainV7` and of the new `terrainStopsMoveV7`, with
+`unitMayEnterMountainV7` for the remaining unit-entry tests. Before any Ice
+Folk rule, 44 matches (every faction, including Martian Showcase and mirror
+matches) were compared step by step against `643c618`: 29,429 steps with
+identical commands, events, states, views, and offered commands. Source
+audits in `tests/unit/ruleset-v7-ice-folk-helpers.test.ts` pin the
+remaining reads.
+
+### 19.3 Deviations and precise readings
+
+1. **Tile flags in the type.** `snow` and `blizzard` are optional in
+   `PlayerTileViewV7` so that hand-built art-review scenes need not spell
+   them out. `viewForV7` always sets both on an explored tile, and readers
+   test `=== true`.
+2. **Interruption reason.** When a Move steps into a Blizzard the viewer did
+   not know of and the step is also a zone-of-control stop, the
+   interruption reports `SNOW`.
+3. **`inBlizzard`** in the `iceFolk` stat block is the Blizzard the reader
+   knows of (the view's flag), like the other position-dependent stats.
+4. **Attack modifier rows.** `PLANTED` is an Attack modifier source.
+   Rockfall and Cold Blood depend on the target (its distance, its Chill),
+   so they are not stat rows: they are the combat-preview flags
+   `rockfallApplied` and `coldBloodApplied`. The source literals `ROCKFALL`
+   and `COLD_BLOOD` are declared but not emitted.
+5. **Snow cover as a source.** On a snowy Forest or Mountain the cover row
+   reads `SNOW` (the multiplier is the same and not cumulative).
+6. **A public Wail preview** reads Snow cover from the view's flags; a
+   hidden Witch's Blizzard can make it inexact, and it carries no flag.
+7. **Sluggish units.** Besides the [section 5.3](#53-sluggish-move-or-act-not-both)
+   table, a sluggish Goblin that moved cannot Kaboom and a sluggish Raider
+   that moved cannot Pillage (both are primary actions).
+8. **The Sabretooth's foreign centers** are also refused when a city reward
+   displaces it, not only for `MOVE`, `DISEMBARK`, and the advance.
+9. **Headless telemetry** recomputes Snow cover and Blizzard savings with
+   internal combat options that leave out one rule (`ignoreSnowCover`,
+   `ignoreBlizzard`, `ignoreShatter`); the public option is only
+   `assumeTargetChilled`.
+10. **Worked examples at 7r23 HP.** The tests of
+    [section 5.6](#56-worked-examples) keep each example's numbers by
+    substituting a unit with the HP the example assumed: the 12-HP Human
+    Fighter for the 12-HP Caveman, the 10-HP Caveman for the 10-HP Fighter,
+    the 10-HP Spitter for the Marksman, and a 17-HP Guard at 15 HP for the
+    15-HP Guard; a Fighter on Field Defense now has 12 HP and is shattered
+    by the second Yeti hit from 8 HP (would leave 3).
+11. **Rift.** There is no Rift terrain yet; "no Snow on a Rift" has no
+    test and goes to the Rift bead.
+
+### 19.4 Left to the following beads
+
+- **`pulp_wars-7g3.4` (AI).** The generic policy plays an Ice Folk seat
+  without errors or stalls on Dry Land, Pangea, Continents, Lakes, and
+  Archipelago against every faction and in the mirror, and never issues
+  `THROW_BOLAS` or `COLD_SNAP` (so Chill comes only from the Frost Giant).
+  Its threat and route estimates know Mountain-born (through the shared
+  terrain rules) but not Glide, deep snow, or Prowl, and it infers another
+  seat's Engineering from units standing on Mountains, which a
+  Mountain-born Yeti makes wrong.
+- **`pulp_wars-7g3.6` (UI).** Nothing Ice Folk is drawn or offered; the art
+  of `pulp_wars-7g3.5` is checked in but not wired.
+- **`pulp_wars-7g3.7` (balance).** The balance matrix has no Ice Folk
+  pairing yet; the headless result carries the `iceFolk` telemetry block
+  ([headless simulation](../architecture/HEADLESS_SIMULATION.md#ice-folk-seats-pulp_wars-7g33)).
+- **Release corpus.** The identity change invalidates the checked release
+  corpus; its reviewed refresh is the root's gate.

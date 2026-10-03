@@ -248,6 +248,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "to",
   ],
   UNITS_RALLIED: ["kind", "captainId", "unitIds"],
+  UNITS_CHILLED: ["kind", "playerId", "sourceUnitId", "source", "results"],
   WOUNDED_TENDED: ["kind", "captainId", "results"],
   DEAD_RAISED: ["kind", "playerId", "unitId", "results"],
   GRAVE_DEVOURED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
@@ -455,6 +456,11 @@ export function parsePlayerEventEnvelopeV7(
     const projectedRaise = parseProjectedDeadRaised(candidate);
     if (projectedRaise !== null) {
       events.push(projectedRaise);
+      continue;
+    }
+    const projectedChill = parseProjectedUnitsChilled(candidate);
+    if (projectedChill !== null) {
+      events.push(projectedChill);
       continue;
     }
     const presentation = parsePresentationEvent(candidate);
@@ -758,6 +764,7 @@ function validPayload(
           "EXPLOSIVES",
           "OCCUPATION",
           "EXPLOSION",
+          "TRAMPLE",
         ].includes(e.reason as string)
       );
     case "LAND_GRANTED":
@@ -919,6 +926,15 @@ function validPayload(
       );
     case "UNITS_RALLIED":
       return id(e.captainId) && orderedIds(e.unitIds);
+    case "UNITS_CHILLED":
+      // The Ice Folk revision (section 11): the source is never a target and
+      // every result is an applied Chill (`turnsLeft` 2).
+      return (
+        id(e.playerId) &&
+        id(e.sourceUnitId) &&
+        chillSource(e.source) &&
+        chillResults(e.results, e.sourceUnitId)
+      );
     case "WOUNDED_TENDED":
       return id(e.captainId) && tendResults(e.results);
     case "DEAD_RAISED":
@@ -956,6 +972,7 @@ function validPayload(
           "ENGINEERING_REQUIRED",
           "ZOC",
           "SETTLEMENT_FORBIDDEN",
+          "SNOW",
         ].includes(e.reason as string)
       );
     case "TILES_REVEALED":
@@ -1054,6 +1071,7 @@ function validPayload(
           "EXPLOSION",
           "CITY_CAPTURED",
           "BRAIN_LOST",
+          "SHATTER",
         ].includes(e.cause as string)
       );
     case "UNIT_MIND_CONTROLLED":
@@ -1153,6 +1171,14 @@ function combat(input: unknown): boolean {
       "coolingApplied",
       "defenderShieldDamage",
       "attackerShieldDamage",
+      "shatters",
+      "coldBloodApplied",
+      "rockfallApplied",
+      "plantedApplied",
+      "blizzardHalved",
+      "snowCover",
+      "sweep",
+      "hiddenBlizzardPossible",
     ])
   )
     return false;
@@ -1201,6 +1227,26 @@ function combat(input: unknown): boolean {
       (item) => nn(item) && Number(item) <= SHIELD_CAP_V7,
     ) &&
     (input.attackerShieldDamage === 0 || input.retaliation === true) &&
+    // The Ice Folk revision (section 11): a Shatter kills the defender with
+    // no retaliation; a Rockfall is a ranged attack; Snow cover is a cover.
+    [
+      input.shatters,
+      input.coldBloodApplied,
+      input.rockfallApplied,
+      input.plantedApplied,
+      input.blizzardHalved,
+      input.snowCover,
+      input.sweep,
+      input.hiddenBlizzardPossible,
+    ].every((item) => typeof item === "boolean") &&
+    (input.shatters !== true ||
+      (input.defenderDies === true &&
+        input.retaliation === false &&
+        input.attackerDies === false)) &&
+    (input.snowCover !== true ||
+      (input.defenseBonusNumerator === 3 &&
+        input.defenseBonusDenominator === 2 &&
+        input.fortificationLevel === 0)) &&
     (input.attacksRemaining === 0 || input.attacksRemaining === 1) &&
     input.overrunContinues === (input.attacksRemaining === 1) &&
     (!input.overrunContinues ||
@@ -1429,9 +1475,49 @@ function orderedIds(input: unknown): boolean {
       id(value) && (index === 0 || Number(input[index - 1]) < Number(value)),
   );
 }
+/** The Ice Folk revision: the source of a `UNITS_CHILLED`. */
+function chillSource(input: unknown): boolean {
+  return input === "BOLAS" || input === "COLD_SNAP" || input === "COLD_AURA";
+}
+/**
+ * The Ice Folk revision `UNITS_CHILLED` results: non-empty, in strictly
+ * increasing unit-ID order, never the source, each an applied Chill entry
+ * (`turnsLeft` 2, `sluggish` a boolean).
+ */
+function chillResults(input: unknown, sourceUnitId: unknown): boolean {
+  if (!isDenseArrayV7(input) || input.length === 0) return false;
+  let prior = 0;
+  for (const result of input) {
+    if (
+      !hasExactKeysV7(result, ["sluggish", "turnsLeft", "unitId"]) ||
+      !id(result.unitId) ||
+      result.unitId === sourceUnitId ||
+      typeof result.sluggish !== "boolean" ||
+      result.turnsLeft !== 2 ||
+      Number(result.unitId) <= prior
+    )
+      return false;
+    prior = Number(result.unitId);
+  }
+  return true;
+}
+/**
+ * The Ice Folk revision (section 6.5): `UNITS_CHILLED` projected to a viewer
+ * that owns a target but cannot see the source (`sourceUnitId` null).
+ */
+function parseProjectedUnitsChilled(input: unknown): PlayerEventV7 | null {
+  return hasExactKeysV7(input, FIELDS.UNITS_CHILLED) &&
+    input.kind === "UNITS_CHILLED" &&
+    input.sourceUnitId === null &&
+    id(input.playerId) &&
+    chillSource(input.source) &&
+    chillResults(input.results, null)
+    ? (input as unknown as PlayerEventV7)
+    : null;
+}
 /**
  * Tend results: revision 14 may tend a full-HP unit (amount 0) only when it
- * cures Plague or Bitten.
+ * cures Plague or Bitten (and the Ice Folk revision: Chill).
  */
 function tendResults(input: unknown): boolean {
   if (!isDenseArrayV7(input) || input.length === 0) return false;
@@ -1441,6 +1527,7 @@ function tendResults(input: unknown): boolean {
       !hasExactKeysV7(result, [
         "amount",
         "curedBitten",
+        "curedChill",
         "curedPlague",
         "hpAfter",
         "unitId",
@@ -1450,7 +1537,12 @@ function tendResults(input: unknown): boolean {
       Number(result.amount) > 2 ||
       typeof result.curedPlague !== "boolean" ||
       typeof result.curedBitten !== "boolean" ||
-      (result.amount === 0 && !result.curedPlague && !result.curedBitten) ||
+      // The Ice Folk revision section 10.5: Tend Wounded cures Chill.
+      typeof result.curedChill !== "boolean" ||
+      (result.amount === 0 &&
+        !result.curedPlague &&
+        !result.curedBitten &&
+        !result.curedChill) ||
       !pos(result.hpAfter) ||
       Number(result.unitId) <= prior
     )

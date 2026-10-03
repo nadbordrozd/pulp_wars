@@ -24,8 +24,14 @@ import {
   flyerMayStandOnSiteV7,
   isEggLaidRoleV7,
   unitCapacitySlotsV7,
+  CHILL_TURNS_V7,
   unitFliesV7,
   unitGrowsV7,
+  unitIsMountainBornV7,
+  unitIsSluggishV7,
+  unitMayEnterMountainV7,
+  primaryActionBlockedAfterMoveV7,
+  sluggishUnitMovedV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
@@ -64,15 +70,34 @@ import {
 } from "./explosions";
 import { INFECT_RISING_HP_V7 } from "./infect";
 import {
+  advanceSiteAllowedV7,
   attackFortificationV7,
   attackHasAcidV7,
   attackHasPierceV7,
   calculateCombatPreviewV7,
   collateralEntryV7,
   gangUpBonusV7,
+  sweepEntryV7,
   tractorBeamTargetTechnologyV7,
   undeadCombatEffectsV7,
+  type CombatOptionsV7,
 } from "./combat";
+import {
+  attackMaximumRangeV7,
+  attackShattersV7,
+  unitAvoidsForeignSitesV7,
+  blizzardHalvedDamageV7,
+  blizzardProtectsV7,
+  canBeChilledV7,
+  chillOfV7,
+  coldSnapTargetsV7,
+  isChilledV7,
+  isIceFolkLandUnitV7,
+  matchHasIceFolkV7,
+  sweepFlankTilesV7,
+  unitOwnerIsIceFolkV7,
+  withinBolasRangeV7,
+} from "./ice-folk";
 import {
   absorbHitV7,
   isThrallV7,
@@ -88,6 +113,7 @@ import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
   spatialContributionAtV7,
   spatialPlacementCountV7,
+  tileAtV7,
   type EconomyGraphV7,
   type EconomicFamilyV7,
   type OppositePairAxisV7,
@@ -533,8 +559,17 @@ function publicLandingTilesV7(
         afloat: false,
         engineering: player.researchedTechs.includes("ENGINEERING"),
         navigation: player.researchedTechs.includes("NAVIGATION"),
+        // The Ice Folk revision section 7.1: the unit lands in land form.
+        mountainBorn: unitIsMountainBornV7(view, {
+          ownerId: unit.ownerId,
+          role: unit.role,
+        }),
       }) &&
-      (movementMode !== "FLY" ||
+      // The Ice Folk revision section 7.7: nor does a Sabretooth.
+      (!unitAvoidsForeignSitesV7(view, {
+        ownerId: unit.ownerId,
+        role: unit.role,
+      }) ||
         flyerMayStandOnSiteV7(
           tile.site,
           view.cities.find((city) => same(city.at, tile.at))?.ownerId ?? null,
@@ -663,10 +698,11 @@ function appendPublicUnitCommandsV7(
       candidates.push({ kind: "MOVE", unitId: unit.id, path: reachable.path });
   const rule = unitRoleRuleV7(view, unit);
   const primaryReady =
-    !primaryUsedForQuery(unit) &&
-    (!unit.activation.moved || rule.mayUsePrimaryActionAfterMove);
+    !primaryUsedForQuery(unit) && !primaryActionBlockedAfterMoveV7(view, unit);
   const attackReady =
     unit.form !== "EMBARKED" && (primaryReady || unit.activation.overrunActive);
+  // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2.
+  const attackRange = publicAttackMaximumRangeV7(view, unit);
   for (const target of view.units) {
     const distance = chebyshev(unit.at, target.at);
     if (
@@ -674,7 +710,7 @@ function appendPublicUnitCommandsV7(
       rule.abilities.includes("ATTACK") &&
       publicHostile(view, player.id, target.ownerId) &&
       distance >= rule.minimumRange &&
-      distance <= rule.range
+      distance <= attackRange
     )
       candidates.push({
         kind: "ATTACK",
@@ -684,7 +720,12 @@ function appendPublicUnitCommandsV7(
   }
   // The Martian revision: Beam Down (an unmoved Saucer), Mind Control, and
   // the Tractor Beam, each offered exactly for its legal targets.
-  if (!overrun && unit.form === "LAND" && !primaryUsedForQuery(unit)) {
+  if (
+    !overrun &&
+    unit.form === "LAND" &&
+    !primaryUsedForQuery(unit) &&
+    !primaryActionBlockedAfterMoveV7(view, unit)
+  ) {
     if (rule.abilities.includes("BEAM_DOWN") && !unit.activation.moved)
       for (const passenger of publicBeamDownPassengersV7(view, unit))
         for (const to of publicBeamDownDestinationsV7(view, unit, passenger))
@@ -709,6 +750,22 @@ function appendPublicUnitCommandsV7(
           targetUnitId: target.id,
         });
   }
+  // The Ice Folk revision: the Sled's Bolas (every legal target, in
+  // target-ID order) and the Ice Witch's Cold Snap (with a target).
+  if (!overrun && primaryReady && unit.form === "LAND") {
+    if (rule.abilities.includes("BOLAS"))
+      for (const target of publicBolasTargetsV7(view, unit))
+        candidates.push({
+          kind: "THROW_BOLAS",
+          unitId: unit.id,
+          targetUnitId: target.id,
+        });
+    if (
+      rule.abilities.includes("COLD_SNAP") &&
+      coldSnapTargetsV7(view, unit, view.units).length > 0
+    )
+      candidates.push({ kind: "COLD_SNAP", unitId: unit.id });
+  }
   // Revision 19 Hatch: every adjacent own Egg laid on an earlier turn.
   if (
     !overrun &&
@@ -732,6 +789,7 @@ function appendPublicUnitCommandsV7(
   if (
     !overrun &&
     !primaryUsedForQuery(unit) &&
+    !sluggishUnitMovedV7(view, unit) &&
     unit.form === "LAND" &&
     rule.abilities.includes("KABOOM")
   )
@@ -810,6 +868,7 @@ function appendPublicUnitCommandsV7(
     unit.role !== "JUGGERNAUT" &&
     !unitFliesV7(view, unit) &&
     !primaryUsedForQuery(unit) &&
+    !sluggishUnitMovedV7(view, unit) &&
     tile?.explored === true &&
     tile.improvement !== null &&
     tile.territoryOwnerId !== null &&
@@ -917,6 +976,7 @@ function publicBeamDownDestinationsV7(
           afloat: false,
           engineering: player.researchedTechs.includes("ENGINEERING"),
           navigation: player.researchedTechs.includes("NAVIGATION"),
+          mountainBorn: unitIsMountainBornV7(view, passenger),
         }) &&
         !view.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at)) &&
         !view.treasureChests.some((chest) => same(chest, tile.at)) &&
@@ -1002,6 +1062,7 @@ function publicTractorBeamDestinationV7(
     movementMode: unitMovementModeV7(view, target),
     afloat: isAfloatFormV7(target.form),
     ...technology,
+    mountainBorn: unitIsMountainBornV7(view, target),
   }) &&
     !view.units.some(
       (unit) => unit.id !== target.id && unit.hp > 0 && same(unit.at, to),
@@ -1205,7 +1266,9 @@ function publicTendTargetsV7(
         target.id !== captain.id &&
         (target.hp < target.maxHp ||
           plagued.has(target.id) ||
-          bitten.has(target.id)) &&
+          bitten.has(target.id) ||
+          // The Ice Folk revision section 10.5: Tend Wounded cures Chill.
+          isChilledV7(view.chilled, target.id)) &&
         !target.activation.tendedThisTurn &&
         chebyshev(captain.at, target.at) === 1,
     )
@@ -1220,6 +1283,8 @@ export interface TendWoundedPreviewV7 {
     readonly hpAfter: number;
     readonly curedPlague: boolean;
     readonly curedBitten: boolean;
+    /** The Ice Folk revision: the target was Chilled and becomes thawing. */
+    readonly curedChill: boolean;
   }[];
 }
 
@@ -1265,8 +1330,110 @@ export function previewTendWoundedV7(
         hpAfter: target.hp + amount,
         curedPlague: plagued.has(target.id),
         curedBitten: bitten.has(target.id),
+        curedChill: isChilledV7(view.chilled, target.id),
       };
     }),
+  };
+}
+
+/**
+ * The Ice Folk revision section 7.3: the legal Bolas targets of an own Sled
+ * (land form, primary action ready): every visible hostile unit that can be
+ * Chilled within Chebyshev 1 to 2, in unit-ID order.
+ */
+function publicBolasTargetsV7(
+  view: PlayerViewV7,
+  sled: PlayerViewV7["units"][number],
+): readonly PlayerViewV7["units"][number][] {
+  return view.units
+    .filter(
+      (target) =>
+        target.id !== sled.id &&
+        canBeChilledV7(view, sled.ownerId, target) &&
+        withinBolasRangeV7(sled.at, target.at),
+    )
+    .sort((left, right) => left.id - right.id);
+}
+
+/** The Ice Folk revision section 11: the preview of an offered Bolas. */
+export interface BolasPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+  /** The target has no Chill entry, so the Bolas is a new freeze. */
+  readonly becomesSluggish: boolean;
+  readonly turnsLeft: number;
+  /**
+   * The viewer's own units whose currently offered attack on the target
+   * would shatter it once it is Chilled, in unit-ID order.
+   */
+  readonly shatterSetups: readonly UnitId[];
+}
+
+/** Null unless that `THROW_BOLAS` is offered; otherwise exact. */
+export function previewBolasV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): BolasPreviewV7 | null {
+  const commands = queryPlayerCommandsV7(view);
+  if (
+    !commands.some(
+      (command) =>
+        command.kind === "THROW_BOLAS" &&
+        command.unitId === unitId &&
+        command.targetUnitId === targetUnitId,
+    )
+  )
+    return null;
+  const shatterSetups = commands
+    .flatMap((command) =>
+      command.kind === "ATTACK" &&
+      command.targetUnitId === targetUnitId &&
+      command.unitId !== unitId &&
+      queryCombatPreviewV7(view, command.unitId, targetUnitId, {
+        assumeTargetChilled: true,
+      })?.shatters === true
+        ? [command.unitId]
+        : [],
+    )
+    .sort((left, right) => left - right);
+  return {
+    unitId,
+    targetUnitId,
+    becomesSluggish: chillOfV7(view.chilled, targetUnitId) === undefined,
+    turnsLeft: CHILL_TURNS_V7,
+    shatterSetups: [...new Set(shatterSetups)],
+  };
+}
+
+/** The Ice Folk revision section 11: the preview of an offered Cold Snap. */
+export interface ColdSnapPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targets: readonly {
+    readonly unitId: UnitId;
+    readonly becomesSluggish: boolean;
+  }[];
+}
+
+/** Null unless that `COLD_SNAP` is offered; otherwise exact (visible targets). */
+export function previewColdSnapV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): ColdSnapPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "COLD_SNAP" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const witch = view.units.find((unit) => unit.id === unitId);
+  if (witch === undefined) return null;
+  return {
+    unitId,
+    targets: coldSnapTargetsV7(view, witch, view.units).map((target) => ({
+      unitId: target.id,
+      becomesSluggish: chillOfV7(view.chilled, target.id) === undefined,
+    })),
   };
 }
 
@@ -1448,33 +1615,44 @@ export function previewWailV7(
   };
 }
 
-/** Observation-safe exact preview for an offered attack. */
+/**
+ * Observation-safe exact preview for an offered attack. The Ice Folk
+ * revision: `options.assumeTargetChilled` evaluates the attack as if the
+ * target had a Chill entry (section 11).
+ */
 export function queryCombatPreviewV7(
   view: PlayerViewV7,
   attackerId: UnitId,
   targetUnitId: UnitId,
+  options?: CombatOptionsV7,
 ): CombatPreviewV7 | null;
 export function queryCombatPreviewV7(
   state: GameStateV7,
   viewerId: PlayerId,
   attackerId: UnitId,
   targetUnitId: UnitId,
+  options?: CombatOptionsV7,
 ): CombatPreviewV7 | null;
 export function queryCombatPreviewV7(
   input: GameStateV7 | PlayerViewV7,
   viewerOrAttacker: PlayerId | UnitId,
   attackerOrTarget: UnitId,
-  maybeTarget?: UnitId,
+  maybeTarget?: UnitId | CombatOptionsV7,
+  maybeOptions?: CombatOptionsV7,
 ): CombatPreviewV7 | null {
-  const view =
-    maybeTarget === undefined
-      ? (input as PlayerViewV7)
-      : asView(input, viewerOrAttacker as PlayerId);
-  const attackerId =
-    maybeTarget === undefined ? (viewerOrAttacker as UnitId) : attackerOrTarget;
-  const targetUnitId = maybeTarget ?? attackerOrTarget;
+  const stateForm = typeof maybeTarget === "number";
+  const view = stateForm
+    ? asView(input, viewerOrAttacker as PlayerId)
+    : (input as PlayerViewV7);
+  const attackerId = stateForm
+    ? attackerOrTarget
+    : (viewerOrAttacker as UnitId);
+  const targetUnitId = stateForm ? (maybeTarget as UnitId) : attackerOrTarget;
+  const options = stateForm
+    ? (maybeOptions ?? {})
+    : ((maybeTarget as CombatOptionsV7 | undefined) ?? {});
   if (!publicCommandOfferingAllowedV7(view)) return null;
-  return publicCombatPreview(view, attackerId, targetUnitId);
+  return publicCombatPreview(view, attackerId, targetUnitId, options);
 }
 
 /**
@@ -1860,6 +2038,7 @@ export function estimateCombatV7(
   attackerId: UnitId,
   targetUnitId: UnitId,
   plannedPathLength?: number,
+  options: CombatOptionsV7 = {},
 ): CombatPreviewV7 | null {
   const attacker = state.units.find(
     (unit) => unit.id === attackerId && unit.hp > 0,
@@ -1879,7 +2058,12 @@ export function estimateCombatV7(
     attacker.form === "EGG" ||
     !rule.abilities.includes("ATTACK") ||
     distance < rule.minimumRange ||
-    distance > rule.range
+    distance >
+      attackMaximumRangeV7(
+        state,
+        attacker,
+        tileAtV7(state.board, attacker.at)?.terrain,
+      )
   )
     return null;
   return calculateCombatPreviewV7(
@@ -1887,6 +2071,7 @@ export function estimateCombatV7(
     attackerId,
     targetUnitId,
     plannedPathLength,
+    options,
   );
 }
 
@@ -2032,16 +2217,31 @@ export function queryThreatenedTilesV7(
   // are not attack origins.
   const machine =
     unit.form === "LAND" && unitMovementModeV7(view, unit) !== "GROUND";
+  // The Ice Folk revision section 11: a sluggish unit threatens only from
+  // where it stands (it cannot act after a Move); the reach includes Glide
+  // on known Snow, Mountain-born paths, and Prowl (the public movement
+  // query), and a Yeti reaches 2 from every Mountain origin (Rockfall).
   const origins = [
     unit.at,
-    ...reachablePlayerMovementPathsV7(view, unit)
-      .map((path) => path.destination)
-      .filter((at) => {
-        if (!machine) return true;
-        const tile = tileAtView(view, at);
-        return tile?.explored !== true || tile.biome !== null;
-      }),
+    ...(unitIsSluggishV7(view, unit)
+      ? []
+      : reachablePlayerMovementPathsV7(view, unit)
+          .map((path) => path.destination)
+          .filter((at) => {
+            if (!machine) return true;
+            const tile = tileAtView(view, at);
+            return tile?.explored !== true || tile.biome !== null;
+          })),
   ];
+  const rangeFrom = (origin: CoordV7): number => {
+    if (wail) return maximumRange;
+    const tile = tileAtView(view, origin);
+    return attackMaximumRangeV7(
+      view,
+      unit,
+      tile?.explored === true ? tile.terrain : undefined,
+    );
+  };
   const direct = view.board.tiles
     .map((tile) => tile.at)
     .filter((at) =>
@@ -2050,7 +2250,7 @@ export function queryThreatenedTilesV7(
           Math.abs(origin.x - at.x),
           Math.abs(origin.y - at.y),
         );
-        return distance >= minimumRange && distance <= maximumRange;
+        return distance >= minimumRange && distance <= rangeFrom(origin);
       }),
     );
   return [
@@ -5181,6 +5381,7 @@ function publicCombatPreviewCore(
   view: PlayerViewV7,
   attackerId: UnitId,
   targetUnitId: UnitId,
+  options: CombatOptionsV7 = {},
 ): CombatPreviewV7 | null {
   const attacker = view.units.find(
     (unit) => unit.id === attackerId && unit.ownerId === view.viewer.id,
@@ -5205,9 +5406,9 @@ function publicCombatPreviewCore(
     !attackReady ||
     (!attacker.activation.overrunActive &&
       attacker.activation.attacksUsed >= 1) ||
-    (attacker.activation.moved && !attackerRule.mayUsePrimaryActionAfterMove) ||
+    primaryActionBlockedAfterMoveV7(view, attacker) ||
     distance < attackerRule.minimumRange ||
-    distance > attackerRule.range
+    distance > publicAttackMaximumRangeV7(view, attacker)
   )
     return null;
   const attackStats = view.unitStats.find(
@@ -5227,7 +5428,29 @@ function publicCombatPreviewCore(
   // (the `RUN_UP` modifier); it is reported separately as `runUp`.
   const charge = attackIsChargeV7(view, attacker);
   const runUpAttack2 = chargeRunUpAttack2V7(view, attacker);
-  const attack2 = rationalToHalfUnits(attack.total) + gangUp * 2;
+  // The Ice Folk revision (section 8, step 1): Planted is already in the
+  // public Attack total (the `PLANTED` modifier); a Rockfall replaces the
+  // role Attack, and Cold Blood is added against a Chilled target.
+  const attackerMechanics0 = unitRoleMechanicsV7(view, attacker);
+  const attackerLand = attacker.form === "LAND";
+  const targetChilled =
+    target.form === "LAND" &&
+    (options.assumeTargetChilled === true ||
+      isChilledV7(view.chilled, target.id));
+  const rockfallApplied =
+    attackerLand && attackerMechanics0.rockfallAttack2 > 0 && distance === 2;
+  const coldBloodApplied =
+    attackerLand && attackerMechanics0.coldBloodBonus2 > 0 && targetChilled;
+  const plantedApplied = attack.modifiers.some(
+    (modifier) => modifier.source === "PLANTED",
+  );
+  const attack2 =
+    rationalToHalfUnits(attack.total) +
+    gangUp * 2 +
+    (rockfallApplied
+      ? attackerMechanics0.rockfallAttack2 - attackerRule.attack2
+      : 0) +
+    (coldBloodApplied ? attackerMechanics0.coldBloodBonus2 : 0);
   // The Martian revision section 6.1: the halving of a half-power ray is
   // already in the public Attack total (the `HALF_POWER` modifier).
   const rayPower = rayPowerV7(
@@ -5273,6 +5496,8 @@ function publicCombatPreviewCore(
           view.viewer.researchedTechs,
           view.viewer.faction,
         ).raysIgnoreFortification,
+      // The Ice Folk revision section 7.6: Boulders.
+      boulders: attackerLand && attackerMechanics0.ignoresFortification,
     },
   );
   // Revision 19 section 6.2: an Egg defends with a fixed 1.
@@ -5282,10 +5507,20 @@ function publicCombatPreviewCore(
       : target.form === "EGG"
         ? EGG_DEFENSE2_V7
         : defenderRule.defense2 + fortificationLevel * 2;
+  // The Ice Folk revision section 6.2: Snow cover from the public Snow flag
+  // (a hidden Witch's Blizzard is not known; `hiddenBlizzardPossible`).
+  const snowCover =
+    !acid &&
+    targetTakesCover &&
+    targetTile.snow === true &&
+    tileFortification === 0 &&
+    unitOwnerIsIceFolkV7(view, target);
   const bonus =
     !acid &&
     targetTakesCover &&
-    (targetTile.terrain === "FOREST" || targetTile.terrain === "MOUNTAIN")
+    (targetTile.terrain === "FOREST" ||
+      targetTile.terrain === "MOUNTAIN" ||
+      snowCover)
       ? { numerator: 3, denominator: 2 }
       : { numerator: 1, denominator: 1 };
   const breachApplied = false;
@@ -5305,18 +5540,37 @@ function publicCombatPreviewCore(
     attackOnCommon * BigInt(attack2) * 9n,
     total * 4n,
   );
+  // The Ice Folk revision section 6.3: the halving of a visible Witch's
+  // Blizzard (her seat's units only).
+  const blizzardHalved =
+    distance >= 2 && blizzardProtectsV7(view, publicWitchesV7(view), target);
+  const formulaDefenderDamage = blizzardHalved
+    ? blizzardHalvedDamageV7(rawDefenderDamage)
+    : rawDefenderDamage;
   // The Martian revision section 5.3: the Shield absorbs the hit first.
   const defenderShield = shieldOfV7(view.shields, target.id);
   const defenderHit = absorbHitV7(
     defenderShield,
     target.hp,
-    armouredDamageV7(view, target, rawDefenderDamage),
+    armouredDamageV7(view, target, formulaDefenderDamage),
   );
-  const damageToDefender = defenderHit.hpDamage;
+  // The Ice Folk revision section 5.5: the viewer's own threshold.
+  const shatters = attackShattersV7({
+    attackerIceFolk: isIceFolkLandUnitV7(view, attacker),
+    distance,
+    defenderChilled: targetChilled,
+    defender: target,
+    hpAfterHit: target.hp - defenderHit.hpDamage,
+    threshold: technologyCapabilitiesV7(
+      view.viewer.researchedTechs,
+      view.viewer.faction,
+    ).shatterThreshold,
+  });
+  const damageToDefender = shatters ? target.hp : defenderHit.hpDamage;
   const defenderShieldDamage = defenderHit.shieldDamage;
-  const hitOnDefender = damageToDefender + defenderShieldDamage;
+  const hitOnDefender = defenderHit.hpDamage + defenderShieldDamage;
   const defenderArmoured =
-    hitOnDefender < Math.min(target.hp + defenderShield, rawDefenderDamage);
+    hitOnDefender < Math.min(target.hp + defenderShield, formulaDefenderDamage);
   const defenderDies = damageToDefender >= target.hp;
   // Revision 14 (V1): an UNANSWERED attacker draws no retaliation.
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
@@ -5378,19 +5632,46 @@ function publicCombatPreviewCore(
             same(unit.at, pierceAt) &&
             !splashVictims.some((victim) => victim.id === unit.id),
         );
-  const splash = [...splashVictims, ...(pierced === undefined ? [] : [pierced])]
-    .sort(
+  // The Ice Folk revision section 7.5 Sweep: the Mammoth's neighbours are
+  // always explored by its owner, so the flank victims are exact.
+  const sweep = attackerLand && attackerMechanics0.sweepDamage > 0;
+  const sweepTiles = sweep ? sweepFlankTilesV7(attacker.at, target.at) : [];
+  const byPosition = <U extends { readonly id: number; readonly at: CoordV7 }>(
+    units: readonly U[],
+  ): U[] =>
+    [...units].sort(
       (left, right) =>
         left.at.y - right.at.y || left.at.x - right.at.x || left.id - right.id,
-    )
-    .map((unit) =>
-      collateralEntryV7(
-        view,
-        unit,
-        shieldOfV7(view.shields, unit.id),
-        hitOnDefender,
-      ),
     );
+  const splash = sweep
+    ? byPosition(
+        view.units.filter(
+          (unit) =>
+            unit.hp > 0 &&
+            unit.id !== target.id &&
+            unit.id !== attacker.id &&
+            sweepTiles.some((at) => same(at, unit.at)) &&
+            publicHostile(view, attacker.ownerId, unit.ownerId),
+        ),
+      ).map((unit) =>
+        sweepEntryV7(
+          view,
+          unit,
+          shieldOfV7(view.shields, unit.id),
+          attackerMechanics0.sweepDamage,
+        ),
+      )
+    : byPosition([
+        ...splashVictims,
+        ...(pierced === undefined ? [] : [pierced]),
+      ]).map((unit) =>
+        collateralEntryV7(
+          view,
+          unit,
+          shieldOfV7(view.shields, unit.id),
+          hitOnDefender,
+        ),
+      );
   // Revision 14 Plague and Bitten from the public statuses of visible units.
   const afflictions = afflictionCombatEffectsV7({
     roster: view,
@@ -5429,7 +5710,14 @@ function publicCombatPreviewCore(
     attackerMechanics.advancesAfterKill &&
     attacker.form === "LAND" &&
     (target.form === "LAND" || target.form === "EGG") &&
-    publicAdvanceDestinationLegal(view, attacker, target.at);
+    publicAdvanceDestinationLegal(view, attacker, target.at) &&
+    // The Ice Folk revision section 7.7: never onto a foreign center.
+    advanceSiteAllowedV7(
+      view,
+      attacker,
+      targetTile.site,
+      view.cities.find((city) => same(city.at, target.at))?.ownerId ?? null,
+    );
   const nextAttacks = attacker.activation.attacksUsed + 1;
   const overrunContinues =
     attackerRule.abilities.includes("OVERRUN") &&
@@ -5448,7 +5736,7 @@ function publicCombatPreviewCore(
     attack2,
     defense2,
     minimumRange: attackerRule.minimumRange,
-    maximumRange: attackerRule.range,
+    maximumRange: publicAttackMaximumRangeV7(view, attacker),
     chargeApplied:
       attackerRule.abilities.includes("CHARGE") &&
       view.viewer.researchedTechs.includes("RAIDING") &&
@@ -5484,7 +5772,8 @@ function publicCombatPreviewCore(
     escapeAvailable:
       attacker.form === "LAND" &&
       attackerRule.abilities.includes("ESCAPE") &&
-      !attackerDies,
+      !attackerDies &&
+      !unitIsSluggishV7(view, attacker),
     splash,
     // Revision 13 Lifesteal and Infect from the visible attacker and target.
     ...undeadCombatEffectsV7({
@@ -5507,7 +5796,48 @@ function publicCombatPreviewCore(
     coolingApplied: rayPower === "FULL",
     defenderShieldDamage,
     attackerShieldDamage,
+    shatters,
+    coldBloodApplied,
+    rockfallApplied,
+    plantedApplied,
+    blizzardHalved,
+    snowCover,
+    sweep,
+    // Section 10.10: a hidden Witch next to an Ice Folk defender may change
+    // its cover and halve a ranged hit.
+    hiddenBlizzardPossible:
+      isIceFolkLandUnitV7(view, target) &&
+      adjacentPublicTiles(view, target.at).some((tile) => !tile.explored),
   };
+}
+
+/** The land-form Ice Witches a view can see (section 6.5). */
+function publicWitchesV7(
+  view: PlayerViewV7,
+): readonly PlayerViewV7["units"][number][] {
+  if (!matchHasIceFolkV7(view)) return [];
+  return view.units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.form === "LAND" &&
+      unitRoleRuleV7(view, unit).abilities.includes("BLIZZARD"),
+  );
+}
+
+/**
+ * Section 7.2: a unit's attack range from the public view (Rockfall: 2 for
+ * a land-form Yeti on an explored Mountain).
+ */
+function publicAttackMaximumRangeV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): number {
+  const tile = tileAtView(view, unit.at);
+  return attackMaximumRangeV7(
+    view,
+    unit,
+    tile?.explored === true ? tile.terrain : undefined,
+  );
 }
 
 /**
@@ -5518,8 +5848,14 @@ function publicCombatPreview(
   view: PlayerViewV7,
   attackerId: UnitId,
   targetUnitId: UnitId,
+  options: CombatOptionsV7 = {},
 ): CombatPreviewV7 | null {
-  const preview = publicCombatPreviewCore(view, attackerId, targetUnitId);
+  const preview = publicCombatPreviewCore(
+    view,
+    attackerId,
+    targetUnitId,
+    options,
+  );
   if (preview === null || !preview.overrunAdvance) return preview;
   const chain = publicAttackChainV7(view, preview);
   if (chain.preview.explosions.length === 0) return preview;
@@ -5778,7 +6114,8 @@ function publicAttackChainV7(
       ? sim.infect(target, attacker.ownerId)
       : sim.rise(target);
     if (rising !== null) risings.push(rising);
-    if (isExplodingUnitV7(view, target))
+    // The Ice Folk revision section 5.5: a shattered unit never explodes.
+    if (isExplodingUnitV7(view, target) && !preview.shatters)
       initial.push({ unit: target, cause: "DEATH" });
   }
   for (const unit of view.units) {
@@ -5872,6 +6209,8 @@ function publicAttackChainV7(
     targetTile?.explored === true &&
     targetTile.fieldDefense &&
     (attackerUnit.role === "CATAPULT" ||
+      // The Ice Folk revision section 7.5: Trample.
+      preview.sweep ||
       (preview.inspiredApplied && distance === 1 && !preview.attackerDies) ||
       (distance === 1 &&
         !preview.attackerDies &&
@@ -5914,6 +6253,7 @@ function publicAdvanceDestinationLegal(
         afloat: false,
         engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
         navigation: false,
+        mountainBorn: unitIsMountainBornV7(view, attacker),
       }))
   );
 }
@@ -5961,8 +6301,9 @@ function publicPushState(
   )
     return "BLOCKED";
   // The Martian revision: a walker or flyer is pushed onto a Mountain
-  // whatever its owner has researched (the shared `canEnterTerrainV7`).
-  const strides = unitMovementModeV7(view, defender) !== "GROUND";
+  // whatever its owner has researched (the shared `canEnterTerrainV7`); the
+  // Ice Folk revision section 7.1: so is a Mountain-born unit.
+  const strides = unitMayEnterMountainV7(view, defender, false);
   if (
     tile.terrain === "MOUNTAIN" &&
     !strides &&
@@ -5971,8 +6312,11 @@ function publicPushState(
     return "UNKNOWN_BEHIND_FOG";
   if (
     tile.terrain === "MOUNTAIN" &&
-    !strides &&
-    !view.viewer.researchedTechs.includes("ENGINEERING")
+    !unitMayEnterMountainV7(
+      view,
+      defender,
+      view.viewer.researchedTechs.includes("ENGINEERING"),
+    )
   )
     return "BLOCKED";
   if (tile.terrain === "DEEP_WATER") {

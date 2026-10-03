@@ -75,10 +75,12 @@ describe("ruleset-7 late public query performance", () => {
     // removes STAMPEDE, moving every kind after KABOOM back by one (was
     // 879cad…92fc). The Martian revision (`pulp_wars-t6s.2`) inserts
     // BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM after HATCH, moving every
-    // later kind forward by three (was 5097a1…935b); the revision-12-ordinal
-    // value below is unchanged.
+    // later kind forward by three (was 5097a1…935b). The Ice Folk revision
+    // (`pulp_wars-7g3.3`) inserts THROW_BOLAS and COLD_SNAP after
+    // TRACTOR_BEAM, moving every later kind forward by two (was
+    // 187249…93ea); the revision-12-ordinal value below is unchanged.
     expect(canonicalHash(ready)).toBe(
-      "1872493ff10097dff7d04d160d1186630d47417fc73b67f6fd4066ec6a2493ea",
+      "cf39a378853cc9863b8d22e06fb0729e9175caf77d0bb94dfc297ab7ac3b918b",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

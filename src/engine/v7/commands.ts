@@ -113,6 +113,23 @@ export type CommandV7 =
       readonly targetUnitId: UnitId;
     }
   | {
+      /**
+       * The Ice Folk revision (section 7.3): a Sled chills a hostile unit
+       * within 2 tiles.
+       */
+      readonly kind: "THROW_BOLAS";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
+      /**
+       * The Ice Folk revision (section 6.4): an Ice Witch chills every
+       * hostile unit within 2 tiles.
+       */
+      readonly kind: "COLD_SNAP";
+      readonly unitId: UnitId;
+    }
+  | {
       /** Revision 19: a Dinosaur city lays an Egg of `role` on `at`. */
       readonly kind: "LAY_EGG";
       readonly cityId: CityId;
@@ -275,7 +292,12 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: id, path } };
   }
-  if (kind === "ATTACK" || kind === "MIND_CONTROL" || kind === "TRACTOR_BEAM") {
+  if (
+    kind === "ATTACK" ||
+    kind === "MIND_CONTROL" ||
+    kind === "TRACTOR_BEAM" ||
+    kind === "THROW_BOLAS"
+  ) {
     if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
       return invalid(kind);
     const unit = parseUnitIdV7(candidate.unitId);
@@ -325,7 +347,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
           },
         };
   }
-  if (kind === "RALLY" || kind === "TEND_WOUNDED") {
+  if (kind === "RALLY" || kind === "TEND_WOUNDED" || kind === "COLD_SNAP") {
     const unit = hasExactKeysV7(input, ["kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
       : null;
@@ -491,7 +513,8 @@ function referencedOrdinal(command: CommandV7): number {
   if (
     command.kind === "ATTACK" ||
     command.kind === "MIND_CONTROL" ||
-    command.kind === "TRACTOR_BEAM"
+    command.kind === "TRACTOR_BEAM" ||
+    command.kind === "THROW_BOLAS"
   )
     return command.targetUnitId;
   if (command.kind === "HATCH") return command.eggUnitId;

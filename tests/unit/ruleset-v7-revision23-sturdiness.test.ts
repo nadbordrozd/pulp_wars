@@ -53,36 +53,36 @@ class MemoryStorage {
 const read = (file: string): string =>
   readFileSync(join(import.meta.dirname, "..", "..", file), "utf8");
 
+// The Ice Folk revision (`pulp_wars-7g3.3`) bumped the identity to 7r24; the
+// current identity is pinned in ruleset-v7-ice-folk-identity.test.ts. These
+// tests keep the revision-23 facts that still hold: 7r22 and 7r23 are prior
+// identities, their save keys are obsolete, and the release contract runs
+// this suite.
 describe("ruleset-7 revision-23 identity", () => {
-  it("pins the 7r23 identity, a gap-free prior list ending at 7r22, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r23");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r23");
+  it("keeps 7r22 and 7r23 as prior identities after the later bumps", () => {
+    expect(RULESET_7.id).toBe(RULESET_7_ID);
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r23.current");
-    expect([...PRIOR_RULESET_7_IDS]).toEqual([
-      "pulp-wars-poc-7",
-      ...Array.from(
-        { length: 21 },
-        (_, index) => `pulp-wars-poc-7r${index + 2}`,
-      ),
+    const prior: readonly string[] = PRIOR_RULESET_7_IDS;
+    const at = prior.indexOf("pulp-wars-poc-7r22");
+    expect(prior.slice(at, at + 2)).toEqual([
+      "pulp-wars-poc-7r22",
+      "pulp-wars-poc-7r23",
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r22");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
-      "pulpWars.save.v7.current",
-      ...Array.from(
-        { length: 21 },
-        (_, index) => `pulpWars.save.v7r${index + 2}.current`,
-      ),
+    const obsolete: readonly string[] = OBSOLETE_SAVE_STORAGE_KEYS_V7;
+    const key = obsolete.indexOf("pulpWars.save.v7r22.current");
+    expect(obsolete.slice(key, key + 2)).toEqual([
+      "pulpWars.save.v7r22.current",
+      "pulpWars.save.v7r23.current",
     ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
   });
 
-  it("cleans the obsolete keys through v7r22 and preserves everything else", () => {
+  it("cleans the obsolete keys through v7r23 and preserves everything else", () => {
     const storage = new MemoryStorage([
-      ["pulpWars.save.v7r21.current", "r21"],
       ["pulpWars.save.v7r22.current", "r22"],
-      [SAVE_STORAGE_KEY_V7, "r23"],
+      ["pulpWars.save.v7r23.current", "r23"],
+      [SAVE_STORAGE_KEY_V7, "current"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
       ["pulpWars.artSet.v1", "art"],
@@ -90,8 +90,8 @@ describe("ruleset-7 revision-23 identity", () => {
     ]);
     expect(cleanupObsoleteRuleset7Saves(storage)).toEqual({
       removedKeys: [
-        "pulpWars.save.v7r21.current",
         "pulpWars.save.v7r22.current",
+        "pulpWars.save.v7r23.current",
       ],
       removedCount: 2,
       warning: null,
@@ -105,61 +105,71 @@ describe("ruleset-7 revision-23 identity", () => {
     ]);
   });
 
-  it("rejects 7r22 setups, states, replays, and saves without migration", () => {
-    const oldId = "pulp-wars-poc-7r22";
-    const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
-    const created = createPlayableGameV7(setup);
-    if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r23");
-    const oldSetup = { ...setup, rulesetId: oldId };
-    expect(parseMatchSetupV7(setup)).not.toBeNull();
-    expect(parseMatchSetupV7(oldSetup)).toBeNull();
-    expect(
-      parseGameStateV7({ ...created.state, rulesetId: oldId, setup: oldSetup }),
-    ).toBeNull();
-    const oldReplay = {
-      format: "pulp-wars-replay",
-      version: 7,
-      setup: oldSetup,
-      commands: [],
-      checkpoints: [],
-    };
-    expect(parseReplayFileV7(oldReplay)).toEqual({
-      kind: "INCOMPATIBLE_REPLAY",
-    });
-    expect(() => runReplayV7(oldReplay)).toThrow(
-      expect.objectContaining({ code: "INCOMPATIBLE_REPLAY" }),
-    );
-    const save = createSaveEnvelopeV7(
-      { state: created.state, replay: createReplayV7(setup) },
-      "2026-10-02T12:00:00.000Z",
-    );
-    expect(parseSaveV7(JSON.stringify(save))).toMatchObject({ kind: "VALID" });
-    expect(
-      parseSaveV7(
-        JSON.stringify({
-          ...save,
+  it.each(["pulp-wars-poc-7r22", "pulp-wars-poc-7r23"])(
+    "rejects %s setups, states, replays, and saves without migration",
+    (oldId) => {
+      const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
+      const created = createPlayableGameV7(setup);
+      if (!created.ok) throw new Error(created.error.code);
+      expect(created.state.rulesetId).toBe(RULESET_7_ID);
+      const oldSetup = { ...setup, rulesetId: oldId };
+      expect(parseMatchSetupV7(setup)).not.toBeNull();
+      expect(parseMatchSetupV7(oldSetup)).toBeNull();
+      expect(
+        parseGameStateV7({
+          ...created.state,
           rulesetId: oldId,
           setup: oldSetup,
-          state: { ...save.state, rulesetId: oldId },
         }),
-      ),
-    ).toMatchObject({ kind: "INCOMPATIBLE" });
-  });
+      ).toBeNull();
+      const oldReplay = {
+        format: "pulp-wars-replay",
+        version: 7,
+        setup: oldSetup,
+        commands: [],
+        checkpoints: [],
+      };
+      expect(parseReplayFileV7(oldReplay)).toEqual({
+        kind: "INCOMPATIBLE_REPLAY",
+      });
+      expect(() => runReplayV7(oldReplay)).toThrow(
+        expect.objectContaining({ code: "INCOMPATIBLE_REPLAY" }),
+      );
+      const save = createSaveEnvelopeV7(
+        { state: created.state, replay: createReplayV7(setup) },
+        "2026-10-02T12:00:00.000Z",
+      );
+      expect(parseSaveV7(JSON.stringify(save))).toMatchObject({
+        kind: "VALID",
+      });
+      expect(
+        parseSaveV7(
+          JSON.stringify({
+            ...save,
+            rulesetId: oldId,
+            setup: oldSetup,
+            state: { ...save.state, rulesetId: oldId },
+          }),
+        ),
+      ).toMatchObject({ kind: "INCOMPATIBLE" });
+    },
+  );
 
-  it("names the 7r23 identity in the release contract and the smoke scripts", () => {
+  it("keeps the revision-23 suite in the release contract, and the scripts name no prior identity", () => {
     const release = read("scripts/validate-ruleset7-current-release.ts");
-    expect(release).toContain('RULESET_7_ID !== "pulp-wars-poc-7r23"');
-    expect(release).toContain("pulpWars.save.v7r23.current");
+    expect(release).toContain(`RULESET_7_ID !== "${RULESET_7_ID}"`);
+    expect(release).toContain(SAVE_STORAGE_KEY_V7);
     expect(release).toContain(
       "tests/unit/ruleset-v7-revision23-sturdiness.test.ts",
     );
     const smoke = read("scripts/browser-smoke-v7.ts");
-    expect(smoke).toContain("pulpWars.save.v7r23.current");
+    expect(smoke).toContain(SAVE_STORAGE_KEY_V7);
     expect(smoke).toContain("'pulpWars.save.v7r22.current', 'old-v7r22-bytes'");
     expect(smoke).toContain("keys.oldV7r22 !== null");
+    expect(smoke).toContain("'pulpWars.save.v7r23.current', 'old-v7r23-bytes'");
+    expect(smoke).toContain("keys.oldV7r23 !== null");
     expect(read("scripts/browser-smoke-v7-contract.ts")).toContain(
-      "pulp-wars-poc-7r23",
+      RULESET_7_ID,
     );
     for (const file of [
       "scripts/browser-smoke-v7.ts",
@@ -171,8 +181,10 @@ describe("ruleset-7 revision-23 identity", () => {
       "scripts/ruleset7-undead-balance-matrix.ts",
       "src/headless/cli.ts",
       "src/headless/v7.ts",
-    ])
+    ]) {
       expect(read(file), file).not.toContain("pulp-wars-poc-7r22");
+      expect(read(file), file).not.toContain("pulp-wars-poc-7r23");
+    }
   });
 });
 
@@ -196,7 +208,10 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     expect(hp("UNDEAD")).toEqual([10, 10, 8, 18, 10, 10, 10, 40]);
     expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40]);
     expect(hp("DINOSAUR")).toEqual([10, 12, 10, 20, 10, 20, 28, 45]);
-    expect(FACTION_IDS_V7).toHaveLength(5);
+    // The Ice Folk revision (`pulp_wars-7g3.3`) adds a sixth faction with its
+    // own numbers (docs/product/RULESET_7_ICE_FOLK.md section 3).
+    expect(hp("ICE_FOLK")).toEqual([10, 10, 8, 20, 12, 12, 14, 40]);
+    expect(FACTION_IDS_V7).toHaveLength(6);
   });
 
   it("changes only maximum HP: the Human core roles keep every other value", () => {

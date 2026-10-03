@@ -289,9 +289,12 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // The Martian revision (`pulp_wars-t6s.2`) inserts BEAM_DOWN,
     // MIND_CONTROL, and TRACTOR_BEAM after HATCH, moving every later kind
     // forward by three (was 1a5ed7…d668); the revision-12-ordinal value
-    // below is unchanged.
+    // below is unchanged. The Ice Folk revision (`pulp_wars-7g3.3`) inserts
+    // THROW_BOLAS and COLD_SNAP after TRACTOR_BEAM, moving every later kind
+    // forward by two (was 4bb1e3…d3fc); the revision-12-ordinal value below
+    // is unchanged.
     expect(canonicalHash(basicChoice)).toBe(
-      "4bb1e3ce64aa72e534a03ffaa38576c77a1a2de1156a37dc42b7ea499457d3fc",
+      "fcdf9abcaefef1539db4f7fc2a73e0d9af729873381d12027b54c7a710dcfdae",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -815,8 +818,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // ordinals once more, and revision 19 inserts STAMPEDE and HATCH after
     // KABOOM and LAY_EGG after TRAIN_NAVAL, shifting them again. Revision 20
     // removes STAMPEDE, moving every kind after KABOOM back by one; the
-    // Martian revision inserts three kinds after HATCH; the
-    // revision-12-ordinal value below is unchanged.
+    // Martian revision inserts three kinds after HATCH, and the Ice Folk
+    // revision two after TRACTOR_BEAM; the revision-12-ordinal value below
+    // is unchanged.
     expect(canonicalHash(sliced)).toBe(
       RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION.policyDecisionHash,
     );
@@ -863,8 +867,11 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // ordinals): Research Scouting is the missing-role plan (priority 1060
     // and value 6, was 1040 and 0) because the Raider has 12 HP (revision 20
     // section 6.3); every other candidate of this subset is unchanged.
+    // The Ice Folk revision (`pulp_wars-7g3.3`) inserts THROW_BOLAS and
+    // COLD_SNAP after TRACTOR_BEAM, moving every later command-kind ordinal
+    // forward by two (was 1fc167…6276).
     expect(canonicalHash(revision4Candidates)).toBe(
-      "1fc167ea5fabacd6664e9d316e8224d03fdd0aea53ea7027c6bbc2b0561b6276",
+      "b1425a75a1a3782ea2c86155e5eba907908ba8aa42701ee351a6fa1e9ef3a491",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -881,7 +888,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r23");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r24");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

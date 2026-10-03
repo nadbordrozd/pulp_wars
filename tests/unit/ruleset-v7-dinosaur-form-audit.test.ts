@@ -493,6 +493,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
   // of a Beam Down, the Brain and the target of a Mind Control, and the
   // Mothership of a Tractor Beam. The state schema gained the Thrall form
   // rule (a Thrall is land-form or embarked, never an Egg or a boat).
+  //
+  // The Ice Folk revision (`pulp_wars-7g3.3`) adds two land-form gates to
+  // the reducer that an Egg must fail: the Sled of a Throw Bolas and the
+  // Ice Witch of a Cold Snap. Its Chill targets are tested with
+  // `form === "LAND"` (an Egg, an embarked unit, and a boat are never
+  // Chilled).
   const AUDITED: Readonly<Record<string, number>> = {
     "src/engine/v7/combat.ts": 1,
     "src/engine/v7/explosions.ts": 1,
@@ -501,7 +507,7 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Revision 20 removed the Stampede resolution and preview (two tests
     // each in the reducer and the queries).
     "src/engine/v7/query.ts": 3,
-    "src/engine/v7/reducer.ts": 15,
+    "src/engine/v7/reducer.ts": 17,
     "src/engine/v7/state-schema.ts": 3,
     "src/engine/v7/wail.ts": 1,
     "src/engine/rules/ruleset-v7.ts": 1,

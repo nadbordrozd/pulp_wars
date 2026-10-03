@@ -18,7 +18,11 @@ import {
   unitMovementModeV7,
   unitTakesCoverV7,
   unitAlphaAttack2V7,
+  terrainStopsMoveV7,
   unitCapacitySlotsV7,
+  unitIsMountainBornV7,
+  unitMayActAfterMoveV7,
+  unitMayEnterMountainV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -2514,7 +2518,7 @@ function* publicThreatenedTilesWorkV7(
   const origins = new Map([[coordKey(unit.at), unit.at]]);
   if (
     unit.form !== "EMBARKED" &&
-    (rule.mayUsePrimaryActionAfterMove || kaboom)
+    (unitMayActAfterMoveV7(view, unit) || kaboom)
   ) {
     const queue = [{ at: unit.at, spent2: 0 }];
     const best = new Map([[coordKey(unit.at), 0]]);
@@ -2565,12 +2569,20 @@ function* publicThreatenedTilesWorkV7(
         if (spent2 > facts.move * 2) continue;
         const key = coordKey(tile.at);
         if ((best.get(key) ?? Number.POSITIVE_INFINITY) <= spent2) continue;
+        // The shared terrain-stop rule for a ground unit, with the policy's
+        // historical assumption of no Forest freedom; the Ice Folk revision:
+        // a Mountain-born unit is not stopped by a Mountain.
         const terrainStop =
           unit.form === "LAND" &&
           mode === "GROUND" &&
           tile.explored &&
-          !roadEdge &&
-          (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
+          terrainStopsMoveV7({
+            terrain: tile.terrain,
+            movementMode: "GROUND",
+            mountainBorn: unitIsMountainBornV7(view, unit),
+            ignoresForest: false,
+            roadEdge,
+          });
         const hostileZoc =
           mode !== "FLY" &&
           neighbors8V7(view, tile.at).some((adjacent) =>
@@ -2597,7 +2609,7 @@ function* publicThreatenedTilesWorkV7(
   }
   const direct: CoordV7[] = [];
   for (const origin of origins.values()) {
-    const attacks = rule.mayUsePrimaryActionAfterMove || same(origin, unit.at);
+    const attacks = unitMayActAfterMoveV7(view, unit) || same(origin, unit.at);
     for (let y = origin.y - maximumRange; y <= origin.y + maximumRange; y += 1)
       for (
         let x = origin.x - maximumRange;
@@ -2690,10 +2702,17 @@ function publicMovementTilePossible(
     // private Navigation, so the estimate leaves it out).
     if (unitMovementModeV7(view, unit) !== "GROUND")
       return tile.biome !== null || tile.terrain === "SHALLOW_WATER";
+    // The shared terrain-entry rule for a ground unit; the Ice Folk
+    // revision: a Mountain-born unit enters a Mountain without Engineering.
     return (
       tile.biome !== null &&
       (tile.terrain !== "MOUNTAIN" ||
-        lookup.engineeringOwnerIds.has(unit.ownerId))
+        unitMayEnterMountainV7(
+          view,
+          unit,
+          lookup.engineeringOwnerIds.has(unit.ownerId),
+          "GROUND",
+        ))
     );
   }
   return tile.biome === null;
@@ -4898,7 +4917,7 @@ function undeadFrenzyValueV7(
     eligible += 1;
     const reach =
       rule.range +
-      (!unit.activation.moved && rule.mayUsePrimaryActionAfterMove
+      (!unit.activation.moved && unitMayActAfterMoveV7(view, unit)
         ? rule.move
         : 0);
     if (
@@ -6343,7 +6362,7 @@ function gangUpStrikeValueV7(
   const view = context.view;
   const rule = unitRoleRuleV7(view, mover);
   if (
-    !rule.mayUsePrimaryActionAfterMove ||
+    !unitMayActAfterMoveV7(view, mover) ||
     !rule.abilities.includes("ATTACK") ||
     !primaryReadyForPolicyV7(mover)
   )
@@ -6516,7 +6535,7 @@ function cleanBombStrikeValueV7(
   const view = context.view;
   if (!friendlyFireBomberV7(view, mover)) return 0;
   const rule = unitRoleRuleV7(view, mover);
-  if (!rule.mayUsePrimaryActionAfterMove || !primaryReadyForPolicyV7(mover))
+  if (!unitMayActAfterMoveV7(view, mover) || !primaryReadyForPolicyV7(mover))
     return 0;
   let fouledKill = false;
   for (const command of context.commands) {
@@ -6724,7 +6743,7 @@ function waaaghValueV7(
     const rule = unitRoleRuleV7(view, unit);
     const reach =
       rule.range +
-      (!unit.activation.moved && rule.mayUsePrimaryActionAfterMove
+      (!unit.activation.moved && unitMayActAfterMoveV7(view, unit)
         ? rule.move
         : 0);
     if (
@@ -7580,7 +7599,7 @@ function dinosaurMoveValueV7(
 
   if (
     attacker &&
-    rule.mayUsePrimaryActionAfterMove &&
+    unitMayActAfterMoveV7(view, actor) &&
     primaryReadyForPolicyV7(actor)
   ) {
     const inRange = (from: CoordV7, at: CoordV7): boolean =>

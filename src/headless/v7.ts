@@ -18,6 +18,13 @@ import { attackHasPierceV7 } from "../engine/v7/combat";
 import type { CommandV7 } from "../engine/v7/commands";
 import { pierceTileV7 } from "../engine/v7/martian";
 import {
+  createIceFolkMetricsV7,
+  createIceFolkTelemetryStateV7,
+  recordIceFolkV7,
+  type IceFolkMetricsV7,
+  type IceFolkTelemetryStateV7,
+} from "./ice-folk-telemetry-v7";
+import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
   assignedUnitCountV7,
@@ -93,7 +100,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r23";
+  readonly rulesetId: "pulp-wars-poc-7r24";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -178,6 +185,8 @@ export interface HeadlessMetricsV7 {
   readonly undead: UndeadMetricsV7;
   /** The Martian revision: Shield, ray, and ability telemetry. */
   readonly martian: MartianMetricsV7;
+  /** The Ice Folk revision: Chill, Shatter, Snow, and ability telemetry. */
+  readonly iceFolk: IceFolkMetricsV7;
   readonly knightOverrun: {
     chainsStarted: number;
     attacks: number;
@@ -828,7 +837,7 @@ export async function runAiBatchV7(
             Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r23",
+              rulesetId: "pulp-wars-poc-7r24",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -909,6 +918,8 @@ interface TelemetryStateV7 {
   readonly centerRisings: Set<UnitId>;
   /** Revision 15: Start Turn Plague damage steps of each current infection. */
   readonly plagueTurns: Map<UnitId, number>;
+  /** The Ice Folk revision telemetry state. */
+  readonly iceFolk: IceFolkTelemetryStateV7;
 }
 
 function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
@@ -924,6 +935,7 @@ function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
     risings: new Set(),
     centerRisings: new Set(),
     plagueTurns: new Map(),
+    iceFolk: createIceFolkTelemetryStateV7(),
   };
 }
 
@@ -932,7 +944,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r23",
+    rulesetId: "pulp-wars-poc-7r24",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1116,6 +1128,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       selfLaunches: 0,
       flyoverMoves: 0,
     },
+    iceFolk: createIceFolkMetricsV7(),
     knightOverrun: {
       chainsStarted: 0,
       attacks: 0,
@@ -1214,6 +1227,15 @@ function recordCommandAndEventsV7(
   }
   recordEventsV7(before, after, events, metrics, telemetry);
   recordMartianV7(before, after, actorId, command, events, metrics);
+  recordIceFolkV7(
+    before,
+    after,
+    actorId,
+    command,
+    events,
+    metrics.iceFolk,
+    telemetry.iceFolk,
+  );
   if (command.kind === "END_TURN") {
     for (const [unitId, chain] of telemetry.knightOverrunChains) {
       const unit = before.units.find((candidate) => candidate.id === unitId);

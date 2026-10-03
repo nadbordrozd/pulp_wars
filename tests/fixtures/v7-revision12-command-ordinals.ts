@@ -18,7 +18,8 @@ import {
  * every kind after KABOOM moves back by one; kinds are mapped by name, so
  * the revision-12-ordinal proofs are unaffected. The Martian revision
  * inserts BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM after HATCH (its section
- * 11).
+ * 11), and the Ice Folk revision THROW_BOLAS and COLD_SNAP after
+ * TRACTOR_BEAM (its section 11).
  */
 const LATER_COMMAND_KINDS: readonly string[] = [
   "RAISE_DEAD",
@@ -29,6 +30,8 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "BEAM_DOWN",
   "MIND_CONTROL",
   "TRACTOR_BEAM",
+  "THROW_BOLAS",
+  "COLD_SNAP",
   "LAY_EGG",
 ];
 const REVISION_12_COMMAND_KIND_ORDER = COMMAND_KIND_ORDER_V7.filter(

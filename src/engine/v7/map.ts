@@ -1962,6 +1962,7 @@ function initialMapStateFromV7(
     cooling: [],
     thralls: [],
     mindControlCooldowns: [],
+    chilled: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -2012,6 +2013,7 @@ function showcaseInitialStateV7(
     cooling: [],
     thralls: [],
     mindControlCooldowns: [],
+    chilled: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -2049,14 +2051,28 @@ function createPlayers(setup: MatchSetupV7): readonly PlayerStateV7[] {
  * second Goblin is placed by `startingCompanionCellV7`.
  */
 export const STARTING_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
-  deepFreeze({ ORIGINAL: 1, UNDEAD: 1, GOBLIN: 1, DINOSAUR: 1, MARTIAN: 1 });
+  deepFreeze({
+    ORIGINAL: 1,
+    UNDEAD: 1,
+    GOBLIN: 1,
+    DINOSAUR: 1,
+    MARTIAN: 1,
+    ICE_FOLK: 1,
+  });
 
 /**
  * Revision 17 section 8.9: the `FIGHTER` units of a level-3 Militia reward.
  * A Goblin Militia is two Goblins; every other faction's is one unit.
  */
 export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
-  deepFreeze({ ORIGINAL: 1, UNDEAD: 1, GOBLIN: 2, DINOSAUR: 1, MARTIAN: 1 });
+  deepFreeze({
+    ORIGINAL: 1,
+    UNDEAD: 1,
+    GOBLIN: 2,
+    DINOSAUR: 1,
+    MARTIAN: 1,
+    ICE_FOLK: 1,
+  });
 
 /**
  * Revision 17 section 2.2: the cell of a Goblin seat's second starting

@@ -1,6 +1,7 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   EGG_HP_V7,
+  canEnterTerrainV7,
   effectiveRoleRuleV7,
   playerFactionV7,
   roleMechanicsV7,
@@ -142,8 +143,15 @@ export function isNestTileV7(
     tile.biome !== null &&
     tile.territoryCityId === city.id &&
     tile.site === null &&
-    (tile.terrain !== "MOUNTAIN" ||
-      owner.researchedTechs.includes("ENGINEERING")) &&
+    canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: "GROUND",
+      afloat: false,
+      engineering: owner.researchedTechs.includes("ENGINEERING"),
+      navigation: false,
+      // An Egg is never Mountain-born (only the Ice Folk have the rule).
+      mountainBorn: false,
+    }) &&
     !state.units.some((unit) => unit.hp > 0 && same(unit.at, at)) &&
     !state.treasureChests.some((chest) => same(chest, at))
   );
@@ -179,8 +187,14 @@ export function publicNestTilesV7(
       tile.biome !== null &&
       tile.territoryCityId === city.id &&
       tile.site === null &&
-      (tile.terrain !== "MOUNTAIN" ||
-        view.viewer.researchedTechs.includes("ENGINEERING")) &&
+      canEnterTerrainV7({
+        terrain: tile.terrain,
+        movementMode: "GROUND",
+        afloat: false,
+        engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
+        navigation: false,
+        mountainBorn: false,
+      }) &&
       !view.units.some((unit) => unit.hp > 0 && same(unit.at, at)) &&
       !view.treasureChests.some((chest) => same(chest, at))
     );

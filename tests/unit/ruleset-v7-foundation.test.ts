@@ -37,13 +37,14 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r23");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r24");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
       "GOBLIN",
       "DINOSAUR",
       "MARTIAN",
+      "ICE_FOLK",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -51,6 +52,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "GOBLIN_BASELINE_V1",
       "DINOSAUR_BASELINE_V1",
       "MARTIAN_BASELINE_V1",
+      "ICE_FOLK_BASELINE_V1",
     ]);
     expect(RESOURCE_IDS_V7).toEqual([
       "FRUIT",
@@ -98,10 +100,11 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
     // Revision 20 removes STAMPEDE (46 -> 45 command kinds). The Martian
     // revision adds BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM (48) and four
-    // event kinds (72 -> 76).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(48);
+    // event kinds (72 -> 76); the Ice Folk revision THROW_BOLAS and
+    // COLD_SNAP (50) and UNITS_CHILLED (77).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(50);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(76);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(77);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after
@@ -109,7 +112,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     expect(
       COMMAND_KIND_ORDER_V7.slice(
         COMMAND_KIND_ORDER_V7.indexOf("KABOOM"),
-        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 6,
+        COMMAND_KIND_ORDER_V7.indexOf("KABOOM") + 8,
       ),
     ).toEqual([
       "KABOOM",
@@ -118,6 +121,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "BEAM_DOWN",
       "MIND_CONTROL",
       "TRACTOR_BEAM",
+      // The Ice Folk revision inserts its two right after TRACTOR_BEAM.
+      "THROW_BOLAS",
+      "COLD_SNAP",
       "RECOVER",
     ]);
     expect(

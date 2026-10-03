@@ -17,7 +17,19 @@ import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../rules/ruleset-v7";
-import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
+import {
+  defenseBonusForUnitV7,
+  fortificationLevelForUnitV7,
+  snowCoverAppliesV7,
+} from "./combat";
+import {
+  chillOfV7,
+  isBlizzardV7,
+  isSnowV7,
+  shatterThresholdV7,
+  unitGlidesV7,
+  unitOwnerIsIceFolkV7,
+} from "./ice-folk";
 import {
   isCoolingV7,
   isThrallV7,
@@ -57,7 +69,14 @@ export type UnitStatModifierSourceV7 =
   | "FIELD_DEFENSE"
   | "MOUNTAIN"
   | "FOREST"
-  | "HIGH_GROUND";
+  | "HIGH_GROUND"
+  // The Ice Folk revision: Snow cover (Defense), and the Attack sources
+  // Planted (a stat modifier), Rockfall, and Cold Blood (the latter two
+  // depend on the target and are applied by the combat preview).
+  | "SNOW"
+  | "PLANTED"
+  | "ROCKFALL"
+  | "COLD_BLOOD";
 export interface PublicUnitStatValueV7 {
   readonly numerator: number;
   readonly denominator: number;
@@ -138,6 +157,31 @@ export interface PublicMartianMechanicsV7 {
     readonly thrallLimit: number;
   } | null;
 }
+/**
+ * The Ice Folk revision (section 11): the Ice Folk mechanics of a unit owned
+ * by an Ice Folk seat, from the Snow the viewer knows.
+ */
+export interface PublicIceFolkMechanicsV7 {
+  readonly onSnow: boolean;
+  /** The unit's tile is in a Blizzard the viewer knows of. */
+  readonly inBlizzard: boolean;
+  /** Snow cover applies to the unit now (Snow and fortification 0). */
+  readonly snowCover: boolean;
+  readonly glides: boolean;
+  readonly mountainBorn: boolean;
+  /** The owner's Shatter threshold (public: it tells Brittle). */
+  readonly shatterThreshold: number;
+  /** A Yeti in land form standing on a Mountain (Rockfall reach). */
+  readonly rockfall: boolean;
+  /**
+   * A Boulder Yeti's attack made now: true when Planted, false after a Move;
+   * null for every other role and afloat.
+   */
+  readonly planted: boolean | null;
+  readonly sweepDamage: number;
+  /** A land-form Ice Witch (her Blizzard). */
+  readonly blizzard: boolean;
+}
 export interface PublicUnitStatsV7 {
   readonly unitId: UnitStateV7["id"];
   readonly minimumRange: number;
@@ -151,16 +195,50 @@ export interface PublicUnitStatsV7 {
   readonly dinosaur?: PublicDinosaurMechanicsV7;
   /** The Martian revision: present exactly for units of a Martian seat. */
   readonly martian?: PublicMartianMechanicsV7;
+  /**
+   * The Ice Folk revision: the unit's Chill entry (`null` without one);
+   * present for every unit.
+   */
+  readonly chill: {
+    readonly sluggish: boolean;
+    readonly turnsLeft: number;
+  } | null;
+  /** The Ice Folk revision: present exactly for units of an Ice Folk seat. */
+  readonly iceFolk?: PublicIceFolkMechanicsV7;
 }
 
+/** The Snow and Blizzard a stats reader may know of (section 6.5). */
+export interface WinterLookupV7 {
+  readonly snowAt: (at: { readonly x: number; readonly y: number }) => boolean;
+  readonly blizzardAt: (at: {
+    readonly x: number;
+    readonly y: number;
+  }) => boolean;
+}
+
+/**
+ * Public unit stats. `winter` is the Snow and Blizzard the caller may read:
+ * the canonical ones by default, or (in a view) the ones the viewer knows
+ * of, so that a hidden Witch's Blizzard never leaks through the stats.
+ */
 export function publicUnitStatsV7(
   state: GameStateV7,
   unit: UnitStateV7,
+  winter: WinterLookupV7 = {
+    snowAt: (at) => isSnowV7(state, at),
+    blizzardAt: (at) => isBlizzardV7(state, at),
+  },
 ): PublicUnitStatsV7 {
+  const snowAt = winter.snowAt;
   const role = unitRoleRuleV7(state, unit);
   const embarked = unit.form === "EMBARKED";
   const owner = state.players.find((player) => player.id === unit.ownerId);
   if (owner === undefined) throw new RangeError("INVALID_STATE");
+  const chillEntry = chillOfV7(state.chilled, unit.id);
+  const chill =
+    chillEntry === undefined
+      ? null
+      : { sluggish: chillEntry.sluggish, turnsLeft: chillEntry.turnsLeft };
   if (unit.form === "EGG") return eggStats(state, unit, role.label);
   const capabilities = technologyCapabilitiesV7(
     owner.researchedTechs,
@@ -218,7 +296,21 @@ export function publicUnitStatsV7(
       ? chargeRunUpAttack2V7(state, unit)
       : 0;
   const linebreaker = attackIsChargeV7(state, unit);
-  const defense = defenseBonusForUnitV7(state, unit);
+  const defense = defenseBonusForUnitV7(state, unit, snowAt);
+  // The Ice Folk revision section 6.2: the cover comes from Snow (the
+  // Forest and Mountain cover are the same multiplier, never added).
+  const snowCover = snowCoverAppliesV7(state, unit, snowAt);
+  // Section 7.6 Planted: what an attack made now (or on the owner's next
+  // turn, before any Move) would have.
+  const iceFolk = unitOwnerIsIceFolkV7(state, unit);
+  const planted =
+    !embarked &&
+    unit.form === "LAND" &&
+    mechanics.plantedBonus2 > 0 &&
+    !(
+      state.turnOrder[state.activeSeatIndex] === unit.ownerId &&
+      unit.activation.moved
+    );
   const fortificationModifiers = fortificationTerms(state, unit);
   const fortifiedDefense2 =
     (embarked ? 2 : role.defense2) +
@@ -226,7 +318,12 @@ export function publicUnitStatsV7(
       (sum, term) => sum + term.value.numerator * 2,
       0,
     );
-  const terrainSource = defenseSourceAt(state, unit, defense.numerator);
+  const terrainSource = defenseSourceAt(
+    state,
+    unit,
+    defense.numerator,
+    snowCover,
+  );
   const defenseDelta = rational(
     fortifiedDefense2 * (defense.numerator - defense.denominator),
     2 * defense.denominator,
@@ -323,6 +420,17 @@ export function publicUnitStatsV7(
                 ),
               ]
             : []),
+          ...(planted
+            ? [
+                modifier(
+                  mechanics.plantedBonus2,
+                  "PLANTED",
+                  "Planted",
+                  "A Boulder Yeti that has not moved this turn has +1 Attack.",
+                  2,
+                ),
+              ]
+            : []),
           ...(runUp > 0
             ? [
                 modifier(
@@ -391,8 +499,12 @@ export function publicUnitStatsV7(
                 modifier(
                   defenseDelta.numerator,
                   terrainSource,
-                  label(terrainSource),
-                  `${label(terrainSource)} multiplies Defense by 1.5.`,
+                  terrainSource === "SNOW"
+                    ? "Snow cover"
+                    : label(terrainSource),
+                  terrainSource === "SNOW"
+                    ? "Snow cover multiplies an unfortified Ice Folk unit's Defense by 1.5."
+                    : `${label(terrainSource)} multiplies Defense by 1.5.`,
                   defenseDelta.denominator,
                 ),
               ]),
@@ -457,6 +569,7 @@ export function publicUnitStatsV7(
         : []),
       ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
     ],
+    chill,
     ...(goblin
       ? {
           goblin: {
@@ -519,6 +632,29 @@ export function publicUnitStatsV7(
           },
         }
       : {}),
+    ...(iceFolk
+      ? {
+          iceFolk: {
+            onSnow: snowAt(unit.at),
+            inBlizzard: winter.blizzardAt(unit.at),
+            snowCover,
+            glides: unitGlidesV7(state, unit),
+            mountainBorn: unit.form === "LAND" && mechanics.mountainBorn,
+            shatterThreshold: shatterThresholdV7(state.players, unit.ownerId),
+            rockfall:
+              unit.form === "LAND" &&
+              mechanics.rockfallAttack2 > 0 &&
+              tileAtV7(state.board, unit.at)?.terrain === "MOUNTAIN",
+            planted:
+              mechanics.plantedBonus2 > 0 && unit.form === "LAND"
+                ? planted
+                : null,
+            sweepDamage: unit.form === "LAND" ? mechanics.sweepDamage : 0,
+            blizzard:
+              unit.form === "LAND" && role.abilities.includes("BLIZZARD"),
+          },
+        }
+      : {}),
   };
 }
 
@@ -554,6 +690,7 @@ function eggStats(
     ],
     abilities: [],
     statuses: [],
+    chill: null,
     dinosaur: {
       capacitySlots: mechanics.capacitySlots,
       growthStage: null,
@@ -583,8 +720,12 @@ function defenseSourceAt(
   state: GameStateV7,
   unit: UnitStateV7,
   numerator: number,
+  snowCover: boolean,
 ): UnitStatModifierSourceV7 | null {
   if (numerator === 1) return null;
+  // The Ice Folk revision: Snow cover is reported as the source whenever it
+  // applies (on a Snowy Forest or Mountain too: the same multiplier).
+  if (snowCover) return "SNOW";
   const terrain = tileAtV7(state.board, unit.at)?.terrain;
   return terrain === "MOUNTAIN"
     ? "MOUNTAIN"

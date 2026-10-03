@@ -41,6 +41,12 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * (was 15), and Research Scouting is now the missing-role plan (priority
  * 1060 and value 6, was 1040 and 0), because the Raider's value rose from
  * 16 to 18.
+ *
+ * The Ice Folk revision (`pulp_wars-7g3.3`): `policyDecisionHash` was
+ * 5f5406…2618. `THROW_BOLAS` and `COLD_SNAP` are inserted after
+ * `TRACTOR_BEAM`, so the `-ordinal` tie-break of every candidate whose kind
+ * follows `TRACTOR_BEAM` moves by two. The command, the candidate count,
+ * and the hash with revision-12 ordinals are unchanged.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -48,7 +54,7 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b",
   /** `canonicalHash` of the whole decision (command and candidates). */
   policyDecisionHash:
-    "5f54062511f9ac7d8876a135f9c0c6ebaaf89a5a824c4c005a8c7db820432618",
+    "9aa14a1651ce68f25dc5b38f238d13078bf305e826f43cf371a8b7b96b21171f",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -126,10 +132,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r23",
+    rulesetId: "pulp-wars-poc-7r24",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r23",
+      rulesetId: "pulp-wars-poc-7r24",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     },
@@ -223,6 +229,8 @@ export function upgradeRetainedPublicViewV7(
     cooling: [],
     thralls: [],
     mindControlCooldowns: [],
+    // The Ice Folk revision: nor any Chill.
+    chilled: [],
   };
 }
 import {

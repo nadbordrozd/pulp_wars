@@ -968,9 +968,12 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // unchanged. pulp_wars-0hi.3 (was e42f37…e43d): the command is the
         // same Capture and the same one candidate's score differs, Train
         // Guard with strategic value 17 (was 15): the Guard's maximum HP
-        // (revision 20 section 6.3).
+        // (revision 20 section 6.3). The Ice Folk revision
+        // (`pulp_wars-7g3.3`) inserts THROW_BOLAS and COLD_SNAP after
+        // TRACTOR_BEAM, moving every later kind forward by two (was
+        // 45d48c…e816); the revision-12-ordinal value below is unchanged.
         expect(canonicalHash(beforeDecision)).toBe(
-          "45d48c809fac99dd1e794d008f0ee5d279aa1ad09e9d1839f4eb9c05711ce816",
+          "6181903db4063c5f66237694dd5eec1cb5165ad3b8be50f9eccecf2ed9c7e242",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1035,8 +1038,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // command-kind ordinal forward by three (was 548fac…c17a).
         // pulp_wars-0hi.3 (was caaa28…c38a): the same command, and the
         // same candidate's strategic value is 17 (was 15), the Guard's HP.
+        // The Ice Folk revision (`pulp_wars-7g3.3`) inserts THROW_BOLAS and
+        // COLD_SNAP after TRACTOR_BEAM, moving every later command-kind
+        // ordinal forward by two (was 2d3708…8e6e).
         expect(canonicalHash(capturedDecision)).toBe(
-          "2d37084ba558b723f362586edf1e316d712c1593a73f5802d3c4248d48e18e6e",
+          "6f8cb1168a4730a5b6eb34e0ac684debf5be58d3269bb1586c02db23c77c6174",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

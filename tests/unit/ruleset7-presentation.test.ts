@@ -256,6 +256,7 @@ describe("Ruleset 7 public presentation", () => {
               hpAfter: recipient.hp,
               curedPlague: false,
               curedBitten: false,
+              curedChill: false,
             },
             {
               unitId: 9_998 as typeof recipient.id,
@@ -263,6 +264,7 @@ describe("Ruleset 7 public presentation", () => {
               hpAfter: 4,
               curedPlague: false,
               curedBitten: false,
+              curedChill: false,
             },
           ],
         },

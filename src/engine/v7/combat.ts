@@ -7,10 +7,13 @@ import {
   canEnterTerrainV7,
   chargeRunUpAttack2V7,
   factionRulesV7,
+  flyerMayStandOnSiteV7,
   halfPowerAttack2V7,
   playerFactionV7,
   technologyCapabilitiesV7,
   unitAlphaAttack2V7,
+  unitIsMountainBornV7,
+  unitIsSluggishV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
@@ -21,6 +24,20 @@ import {
 import { afflictionCombatEffectsV7 } from "./afflictions";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
 import type { CombatPreviewV7, CombatSplashEntryV7 } from "./events";
+import {
+  attackMaximumRangeV7,
+  attackShattersV7,
+  blizzardHalvedDamageV7,
+  blizzardProtectsV7,
+  isChilledV7,
+  isIceFolkLandUnitV7,
+  isSnowV7,
+  shatterThresholdV7,
+  sweepFlankTilesV7,
+  unitAvoidsForeignSitesV7,
+  unitOwnerIsIceFolkV7,
+  winterV7,
+} from "./ice-folk";
 import { absorbHitV7, pierceTileV7, rayPowerV7, shieldOfV7 } from "./martian";
 import { tileAtV7 } from "./spatial-economy";
 import {
@@ -39,13 +56,35 @@ const NO_BONUS: DefenseBonusV7 = { numerator: 1, denominator: 1 };
 export function defenseBonusForUnitV7(
   state: GameStateV7,
   unit: UnitStateV7,
+  snowAt: (at: CoordV7) => boolean = (at) => isSnowV7(state, at),
 ): DefenseBonusV7 {
   // The Martian revision section 7.1: a walker or flyer never gets cover.
   if (!unitTakesCoverV7(state, unit)) return NO_BONUS;
   const terrain = tileAtV7(state.board, unit.at)?.terrain;
-  return terrain === "FOREST" || terrain === "MOUNTAIN"
+  return terrain === "FOREST" ||
+    terrain === "MOUNTAIN" ||
+    snowCoverAppliesV7(state, unit, snowAt)
     ? { numerator: 3, denominator: 2 }
     : NO_BONUS;
+}
+
+/**
+ * The Ice Folk revision (section 6.2, 2): Snow cover. A land-form unit of an
+ * Ice Folk seat standing on Snow whose OWN fortification level is 0 has
+ * cover `× 1.5` (the Forest and Mountain cover, never added to it).
+ * `snowAt` is the Snow the caller may read (canonical, or a viewer's).
+ */
+export function snowCoverAppliesV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+  snowAt: (at: CoordV7) => boolean = (at) => isSnowV7(state, at),
+): boolean {
+  return (
+    unitTakesCoverV7(state, unit) &&
+    unitOwnerIsIceFolkV7(state, unit) &&
+    snowAt(unit.at) &&
+    fortificationLevelForUnitV7(state, unit) === 0
+  );
 }
 
 /** The fortification levels City Walls add to a unit on a Walled center. */
@@ -107,6 +146,8 @@ export function attackFortificationV7(
     readonly charge: boolean;
     readonly ignoresCityWalls: boolean;
     readonly disintegrator?: boolean;
+    /** The Ice Folk revision section 7.6: a Boulder Yeti's Boulders. */
+    readonly boulders?: boolean;
   },
 ): {
   readonly fortificationLevel: number;
@@ -114,7 +155,7 @@ export function attackFortificationV7(
 } {
   if (attack.acid) return { fortificationLevel: 0, fortificationIgnored: 0 };
   const ignored =
-    attack.charge || attack.disintegrator === true
+    attack.charge || attack.disintegrator === true || attack.boulders === true
       ? parts.walls + parts.fieldDefense
       : attack.ignoresCityWalls
         ? parts.walls
@@ -168,6 +209,7 @@ export function calculateCombatPreviewV7(
   attackerId: UnitId,
   targetUnitId: UnitId,
   plannedPathLength?: number,
+  options: CombatOptionsV7 = {},
 ): CombatPreviewV7 {
   const attacker = requireUnit(state, attackerId);
   const defender = requireUnit(state, targetUnitId);
@@ -175,6 +217,22 @@ export function calculateCombatPreviewV7(
   const defenderRule = unitRoleRuleV7(state, defender);
   const attackerMechanics = unitRoleMechanicsV7(state, attacker);
   const distance = chebyshev(attacker.at, defender.at);
+  // The Ice Folk revision (section 8, step 1): Rockfall, Planted, and Cold
+  // Blood. A Chill entry has no effect on an embarked unit (section 10.8).
+  const attackerLand = attacker.form === "LAND";
+  const defenderChilled =
+    defender.form === "LAND" &&
+    (options.assumeTargetChilled === true ||
+      isChilledV7(state.chilled, defender.id));
+  const rockfallApplied =
+    attackerLand && attackerMechanics.rockfallAttack2 > 0 && distance === 2;
+  const plantedApplied =
+    attackerLand &&
+    attackerMechanics.plantedBonus2 > 0 &&
+    !attacker.activation.moved &&
+    (plannedPathLength ?? 0) === 0;
+  const coldBloodApplied =
+    attackerLand && attackerMechanics.coldBloodBonus2 > 0 && defenderChilled;
   const chargeApplied =
     requirePlayer(state, attacker.ownerId).researchedTechs.includes(
       "RAIDING",
@@ -204,7 +262,9 @@ export function calculateCombatPreviewV7(
   const baseAttack2 =
     rayPower === "HALF"
       ? halfPowerAttack2V7(attackerRule.attack2)
-      : attackerRule.attack2;
+      : rockfallApplied
+        ? attackerMechanics.rockfallAttack2
+        : attackerRule.attack2;
   // Revision 19: an Alpha adds 1 Attack to every attack it makes.
   const attack2 =
     attacker.form === "EMBARKED"
@@ -214,7 +274,9 @@ export function calculateCombatPreviewV7(
         (inspiredApplied ? 2 : 0) +
         gangUp * 2 +
         unitAlphaAttack2V7(state, attacker) +
-        runUpAttack2;
+        runUpAttack2 +
+        (plantedApplied ? attackerMechanics.plantedBonus2 : 0) +
+        (coldBloodApplied ? attackerMechanics.coldBloodBonus2 : 0);
   // Revision 19 Acid (section 8.1): a land-form Spitter's attack removes the
   // defender's cover and fortification from the whole exchange.
   const acid = attackHasAcidV7(attackerRule, attacker);
@@ -237,6 +299,8 @@ export function calculateCombatPreviewV7(
           requirePlayer(state, attacker.ownerId).researchedTechs,
           playerFactionV7(state, attacker.ownerId),
         ).raysIgnoreFortification,
+      // The Ice Folk revision section 7.6: Boulders.
+      boulders: attackerLand && attackerMechanics.ignoresFortification,
     },
   );
   // Revision 19 section 6.2: an Egg defends with a fixed 1, like an embarked
@@ -248,7 +312,16 @@ export function calculateCombatPreviewV7(
         ? EGG_DEFENSE2_V7
         : defenderRule.defense2 + fortificationLevel * 2;
   const breachApplied = false;
-  const bonus = acid ? NO_BONUS : defenseBonusForUnitV7(state, defender);
+  // The Ice Folk revision section 6.2: Snow cover (a telemetry option can
+  // evaluate the exchange without it).
+  const snowAt =
+    options.ignoreSnowCover === true
+      ? () => false
+      : (at: CoordV7) => isSnowV7(state, at);
+  const bonus = acid
+    ? NO_BONUS
+    : defenseBonusForUnitV7(state, defender, snowAt);
+  const snowCover = !acid && snowCoverAppliesV7(state, defender, snowAt);
 
   const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
@@ -272,18 +345,40 @@ export function calculateCombatPreviewV7(
   // at current HP, and everything derived from damage uses the reduced value.
   // The Martian revision section 5.3: the hit is then taken from the
   // defender's Shield first; `damageToDefender` stays HP damage.
+  // The Ice Folk revision section 6.3: a hit from distance 2 or more on a
+  // land-form Ice Folk unit in a Blizzard of its own seat is halved (rounded
+  // up) before Armoured and the Shield.
+  const blizzardHalved =
+    options.ignoreBlizzard !== true &&
+    distance >= 2 &&
+    blizzardProtectsV7(state, winterV7(state).witches, defender);
+  const formulaDefenderDamage = blizzardHalved
+    ? blizzardHalvedDamageV7(rawDefenderDamage)
+    : rawDefenderDamage;
   const defenderShield = shieldOfV7(state.shields, defender.id);
   const defenderHit = absorbHitV7(
     defenderShield,
     defender.hp,
-    armouredDamageV7(state, defender, rawDefenderDamage),
+    armouredDamageV7(state, defender, formulaDefenderDamage),
   );
-  const damageToDefender = defenderHit.hpDamage;
+  // The Ice Folk revision section 5.5: Shatter reads the HP the hit leaves.
+  const shatters =
+    options.ignoreShatter !== true &&
+    attackShattersV7({
+      attackerIceFolk: isIceFolkLandUnitV7(state, attacker),
+      distance,
+      defenderChilled,
+      defender,
+      hpAfterHit: defender.hp - defenderHit.hpDamage,
+      threshold: shatterThresholdV7(state.players, attacker.ownerId),
+    });
+  const damageToDefender = shatters ? defender.hp : defenderHit.hpDamage;
   const defenderShieldDamage = defenderHit.shieldDamage;
   /** The whole hit on the primary target: splash and Pierce derive from it. */
-  const hitOnDefender = damageToDefender + defenderShieldDamage;
+  const hitOnDefender = defenderHit.hpDamage + defenderShieldDamage;
   const defenderArmoured =
-    hitOnDefender < Math.min(defender.hp + defenderShield, rawDefenderDamage);
+    hitOnDefender <
+    Math.min(defender.hp + defenderShield, formulaDefenderDamage);
   const defenderDies = damageToDefender >= defender.hp;
   // Revision 14 (V1): an UNANSWERED attacker (the Vampire) draws no
   // retaliation.
@@ -352,12 +447,33 @@ export function calculateCombatPreviewV7(
             same(unit.at, pierceAt) &&
             !splashVictims.some((victim) => victim.id === unit.id),
         );
-  const splash = [...splashVictims, ...(pierced === undefined ? [] : [pierced])]
-    .sort(
-      (left, right) =>
-        left.at.y - right.at.y || left.at.x - right.at.x || left.id - right.id,
-    )
-    .map(collateral);
+  // The Ice Folk revision section 7.5 Sweep: every hostile unit on the two
+  // flank tiles takes the fixed Sweep damage (Armoured and Shields apply).
+  const sweep = attackerLand && attackerMechanics.sweepDamage > 0;
+  const sweepTiles = sweep ? sweepFlankTilesV7(attacker.at, defender.at) : [];
+  const sweepVictims = sweep
+    ? state.units.filter(
+        (unit) =>
+          unit.hp > 0 &&
+          unit.id !== defender.id &&
+          unit.id !== attacker.id &&
+          sweepTiles.some((at) => same(at, unit.at)) &&
+          arePlayersHostileV7(state, attacker.ownerId, unit.ownerId),
+      )
+    : [];
+  const splash = sweep
+    ? sortedByPosition(sweepVictims).map((unit) =>
+        sweepEntryV7(
+          state,
+          unit,
+          shieldOfV7(state.shields, unit.id),
+          attackerMechanics.sweepDamage,
+        ),
+      )
+    : sortedByPosition([
+        ...splashVictims,
+        ...(pierced === undefined ? [] : [pierced]),
+      ]).map(collateral);
   // Revision 14 Plague and Bitten (sections 3.1, 4.1, and 4.2).
   const afflictions = afflictionCombatEffectsV7({
     roster: state,
@@ -395,7 +511,15 @@ export function calculateCombatPreviewV7(
     distance === 1 &&
     attackerMechanics.advancesAfterKill &&
     attacker.form === "LAND" &&
-    (defender.form === "LAND" || defender.form === "EGG");
+    (defender.form === "LAND" || defender.form === "EGG") &&
+    // The Ice Folk revision section 7.7: a Sabretooth never advances onto a
+    // settlement center it does not own.
+    advanceSiteAllowedV7(
+      state,
+      attacker,
+      tileAtV7(state.board, defender.at)?.site ?? null,
+      state.cities.find((city) => same(city.at, defender.at))?.ownerId ?? null,
+    );
   const nextAttacks = attacker.activation.attacksUsed + 1;
   const undead = undeadCombatEffectsV7({
     attacker,
@@ -413,7 +537,14 @@ export function calculateCombatPreviewV7(
     attack2,
     defense2,
     minimumRange: attacker.form === "EMBARKED" ? 0 : attackerRule.minimumRange,
-    maximumRange: attacker.form === "EMBARKED" ? 0 : attackerRule.range,
+    maximumRange:
+      attacker.form === "EMBARKED"
+        ? 0
+        : attackMaximumRangeV7(
+            state,
+            attacker,
+            tileAtV7(state.board, attacker.at)?.terrain,
+          ),
     chargeApplied,
     inspiredApplied,
     inspiredConsumed,
@@ -440,10 +571,13 @@ export function calculateCombatPreviewV7(
     attacksRemaining: 0,
     overrunAdvance: attackerRule.abilities.includes("OVERRUN") && advances,
     overrunContinues: false,
+    // The Ice Folk revision section 5.3: a sluggish unit is never granted
+    // Escape.
     escapeAvailable:
       attacker.form === "LAND" &&
       attackerRule.abilities.includes("ESCAPE") &&
-      !attackerDies,
+      !attackerDies &&
+      !unitIsSluggishV7(state, attacker),
     splash,
     ...undead,
     ...afflictions,
@@ -456,7 +590,81 @@ export function calculateCombatPreviewV7(
     coolingApplied: rayPower === "FULL",
     defenderShieldDamage,
     attackerShieldDamage,
+    shatters,
+    coldBloodApplied,
+    rockfallApplied,
+    plantedApplied,
+    blizzardHalved,
+    snowCover,
+    sweep,
+    hiddenBlizzardPossible: false,
   };
+}
+
+/** Options of a combat preview or estimate (the Ice Folk revision). */
+export interface CombatOptionsV7 {
+  /**
+   * Evaluates the attack as if the target had a Chill entry (section 11;
+   * the Normal AI's Bolas rule).
+   */
+  readonly assumeTargetChilled?: boolean;
+  /**
+   * Telemetry only (section 16.2): the same exchange without the Blizzard's
+   * halving, without Snow cover, or without Shatter, to measure what each
+   * prevented. Never used by a rule or a public query.
+   */
+  readonly ignoreBlizzard?: boolean;
+  readonly ignoreSnowCover?: boolean;
+  readonly ignoreShatter?: boolean;
+}
+
+/**
+ * The Ice Folk revision section 7.7: whether `attacker` may advance onto
+ * `at` (a unit that avoids foreign sites never ends on a settlement center
+ * it does not own).
+ */
+export function advanceSiteAllowedV7(
+  roster: FactionRosterV7,
+  attacker: Pick<UnitStateV7, "ownerId" | "role" | "form">,
+  site: "CAPITAL" | "VILLAGE" | "CITY" | null,
+  cityOwnerId: PlayerId | null,
+): boolean {
+  if (!unitAvoidsForeignSitesV7(roster, attacker)) return true;
+  return flyerMayStandOnSiteV7(site, cityOwnerId, attacker.ownerId);
+}
+
+/**
+ * The Ice Folk revision section 7.5: one Sweep flank entry: the fixed Sweep
+ * damage, reduced by Armoured, taken from the victim's Shield first, capped
+ * at its HP. `damage` is HP damage.
+ */
+export function sweepEntryV7(
+  roster: FactionRosterV7,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form" | "at" | "hp">,
+  shield: number,
+  sweepDamage: number,
+): CombatSplashEntryV7 {
+  const hit = absorbHitV7(
+    shield,
+    unit.hp,
+    armouredDamageV7(roster, unit, sweepDamage),
+  );
+  return {
+    unitId: unit.id,
+    at: unit.at,
+    damage: hit.hpDamage,
+    dies: hit.hpDamage >= unit.hp,
+    shieldDamage: hit.shieldDamage,
+  };
+}
+
+function sortedByPosition<
+  U extends { readonly id: number; readonly at: CoordV7 },
+>(units: readonly U[]): U[] {
+  return [...units].sort(
+    (left, right) =>
+      left.at.y - right.at.y || left.at.x - right.at.x || left.id - right.id,
+  );
 }
 
 /**
@@ -647,6 +855,9 @@ export function displacementDestinationLegalV7(
         owner.researchedTechs.includes("ENGINEERING"),
       navigation:
         technology?.navigation ?? owner.researchedTechs.includes("NAVIGATION"),
+      // The Ice Folk revision section 7.1: a Mountain-born unit may be
+      // pushed or pulled onto a Mountain.
+      mountainBorn: unitIsMountainBornV7(state, moved),
     }) ||
     state.units.some(
       (unit) =>

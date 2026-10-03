@@ -791,6 +791,7 @@ describe("ruleset-7 revision-13 Restless recovery", () => {
       GOBLIN: false,
       DINOSAUR: false,
       MARTIAN: false,
+      ICE_FOLK: false,
     });
   });
 

@@ -28,7 +28,7 @@
  * files and summarises the cells the other parameters select.
  *
  * A pairing is one letter per seat: `H` Human, `U` Undead, `G` Goblin, `D`
- * Dinosaur, `M` Martian. Two-letter pairings run on every `--sizes` value, longer ones on
+ * Dinosaur, `M` Martian, `I` Ice Folk. Two-letter pairings run on every `--sizes` value, longer ones on
  * `--multi-size`.
  */
 import { spawn } from "node:child_process";
@@ -69,6 +69,7 @@ const FACTION_BY_LETTER: Readonly<Record<string, FactionIdV7>> = {
   G: "GOBLIN",
   D: "DINOSAUR",
   M: "MARTIAN",
+  I: "ICE_FOLK",
 };
 const MAP_BY_NAME: Readonly<Record<string, MapTypeV7>> = {
   "dry-land": "DRY_LAND",

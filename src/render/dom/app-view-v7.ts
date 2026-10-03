@@ -302,6 +302,9 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   GOBLIN: "Goblin",
   DINOSAUR: "Dinosaur",
   MARTIAN: "Martian",
+  // The Ice Folk (`pulp_wars-7g3.3`) are registered in the engine but not
+  // offered in FACTIONS until their UI bead (`pulp_wars-7g3.6`).
+  ICE_FOLK: "Ice Folk",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
 type FactionBadgeV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | null;
@@ -5598,7 +5601,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r23",
+    rulesetId: "pulp-wars-poc-7r24",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -5754,6 +5757,14 @@ function effectDescription(
       return FORCE_FIELDS_UNLOCK_TEXT_V7;
     case "DISINTEGRATOR":
       return DISINTEGRATOR_UNLOCK_TEXT_V7;
+    // The Ice Folk revision (section 4): the engine bead's unlock texts; the
+    // Ice Folk UI (`pulp_wars-7g3.6`) owns the full presentation.
+    case "WITCH_SUPPORT":
+      return "Ice Witches cast Cold Snap on enemies within 2 tiles";
+    case "DEEP_WINTER":
+      return "Snow spreads two tiles from your city centers; Recover heals 6 in your territory";
+    case "BRITTLE":
+      return "Shatter at 4 HP or less";
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -5901,6 +5912,9 @@ function technologyEffectGroupIdV7(
     case "BRAIN_SUPPORT":
     case "FORCE_FIELDS":
     case "DISINTEGRATOR":
+    case "WITCH_SUPPORT":
+    case "DEEP_WINTER":
+    case "BRITTLE":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":
