@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r30 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r30");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r30");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r30.current");
+  it("keeps r18 among the gap-free prior identities after the r31 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r31");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r31");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r31.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 28 },
+        { length: 29 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-12)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-13)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 28 },
+        { length: 29 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r30");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r31");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();

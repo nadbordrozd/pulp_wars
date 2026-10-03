@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r30`, for six playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r31`, for six playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), and Ice Folk (`ICE_FOLK`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
@@ -63,15 +63,16 @@ every interaction is the [Rift overlay](RULESET_7_RIFT.md),
 different faction, folded in directly in [section 2.1](#21-match-setup)
 from the [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md), and
 `pulp-wars-poc-7r30` (`pulp_wars-78i.3`) registers the Dwarf overlay and
-changes no rule of the six factions.
+changes no rule of the six factions, nor does `pulp-wars-poc-7r31`
+(`pulp_wars-78i.7`, the Dwarf coarse balance: the Gyrocopter's bomb and Dive).
 
-**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r30` also
+**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r31` also
 registers a seventh faction, `DWARF`, whose rules are in the
 [Dwarf overlay](RULESET_7_DWARVES.md): its engine (`pulp_wars-78i.3`), its
 Normal AI (`pulp_wars-78i.4`), and its UI (`pulp_wars-78i.6`, with the
 production art of `pulp_wars-78i.5`) are live at `pulp-wars-poc-7r30`, so
-the browser setup offers it, while its coarse balance and its fold into
-this document are in progress. This document does not describe it:
+the browser setup offers it; its coarse balance (`pulp_wars-78i.7`) is live
+at `pulp-wars-poc-7r31`, and its fold into this document is in progress. This document does not describe it:
 wherever it lists "every faction", it means the six factions above; the
 Dwarf additions (the `burrowed`, `surfacedThisTurn`, and `bombedThisTurn`
 lists, the two per-unit flags and the `dwarf` block of the unit stats, and
@@ -185,10 +186,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                   |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r30`                                                                                                                                                                                                                                                                                                            |
+| Ruleset                                    | `pulp-wars-poc-7r31`                                                                                                                                                                                                                                                                                                            |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                             |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                             |
-| Browser autosave                           | `pulpWars.save.v7r30.current`                                                                                                                                                                                                                                                                                                   |
+| Browser autosave                           | `pulpWars.save.v7r31.current`                                                                                                                                                                                                                                                                                                   |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                                                                                      |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF` (the last is the pending Dwarf overlay)                                                                                                                                                                                                              |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`                                                                                                                                                                  |
@@ -197,7 +198,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 | Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                   |
 | Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, described here; the browser setup, the engine, and the headless tools also offer `DWARF` ([Dwarf overlay](RULESET_7_DWARVES.md)), not folded here                                                                                                            |
 | Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
-| Pending overlay                            | Dwarf (`7r30`): engine, Normal AI, and UI live; coarse balance and fold in progress                                                                                                                                                                                                                                             |
+| Pending overlay                            | Dwarf (`7r30`): engine, Normal AI, UI, and coarse balance (`7r31`) live; fold in progress                                                                                                                                                                                                                                       |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through

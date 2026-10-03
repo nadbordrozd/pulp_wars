@@ -2,9 +2,9 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r30` (autosave
-`pulpWars.save.v7r30.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r29.current`), whose rules for six of the seven
+The current client runs `pulp-wars-poc-7r31` (autosave
+`pulpWars.save.v7r31.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r30.current`), whose rules for six of the seven
 factions the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian,
 and Ice Folk, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)

@@ -2984,9 +2984,9 @@ export const BLASTING_ERUPTION_DAMAGE_V7 = 3;
 /** The Dwarf revision (section 6.2): the bombing-run reach (Chebyshev). */
 export const BOMB_RANGE_V7 = 2;
 /** The Dwarf revision (section 6.3): the fixed bomb. */
-export const BOMB_DAMAGE_V7 = 4;
+export const BOMB_DAMAGE_V7 = 5;
 /** The Dwarf revision (section 6.3): the bomb with Dive. */
-export const DIVE_BOMB_DAMAGE_V7 = 5;
+export const DIVE_BOMB_DAMAGE_V7 = 6;
 /** The Dwarf revision (section 8): Dig In reach from an own city center. */
 export const DIG_IN_RADIUS_V7 = 1;
 /** The Dwarf revision (section 9.2): the Coins an Assemble costs. */

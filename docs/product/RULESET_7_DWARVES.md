@@ -8,7 +8,10 @@ art wired in). What the engine implementation changed or made precise is
 in [section 22](#22-implementation-notes-pulp_wars-78i3), the UI's in
 [section 23](#23-ui-implementation-notes-pulp_wars-78i6). **The Normal AI is
 implemented** (`pulp_wars-78i.4`,
-[section 15.1](#151-implementation-status-pulp_wars-78i4)). The
+[section 15.1](#151-implementation-status-pulp_wars-78i4)). **Coarse
+balance is done** (`pulp_wars-78i.7`, identity `pulp-wars-poc-7r31`: the
+bomb deals 5, 6 with Dive; [section 19.5](#195-tuning-record) and the
+[Dwarf balance report](../validation/RULESET_7_DWARF_BALANCE.md)). The
 engine (`pulp_wars-78i.3`), the Normal AI (`pulp_wars-78i.4`), the art
 (`pulp_wars-78i.5`), the UI (`pulp_wars-78i.6`), and the coarse balance
 (`pulp_wars-78i.7`) follow it; `pulp_wars-78i.8` folds it into
@@ -26,7 +29,9 @@ starts (after `7r29`, the one-faction-per-player identity). Other beads may
 take identities first, so this document names no number: **`7rNN` and `v7rNN` stand
 for that identity everywhere below, and "the previous identity" for the one
 current just before it.** The engine bead took `pulp-wars-poc-7r30`
-(autosave `pulpWars.save.v7r30.current`; the previous identity is `7r29`).
+(autosave `pulpWars.save.v7r30.current`; the previous identity is `7r29`);
+the coarse balance (`pulp_wars-78i.7`) took `pulp-wars-poc-7r31` (autosave
+`pulpWars.save.v7r31.current`).
 
 **Map-generation revision:** unchanged by this revision. Faction choice never
 affects generation.
@@ -235,7 +240,7 @@ unit tiles, forms, homes, and entity IDs as any other faction.
   kills and the fresh setup activation. Nothing is burrowed;
   `surfacedThisTurn` and `bombedThisTurn` are empty.
 - All 23 technologies are researched, so Dig In, Blasting Charges (eruption
-  3, the Cannon ignores fortification), Dive (bomb 5), and Assemble apply
+  3, the Cannon ignores fortification), Dive (bomb 6), and Assemble apply
   from the first turn.
 - Capacity is unchanged: every Dwarf role uses one slot (Capital 5 of 7,
   North 3 of 6, Coast 2 of 5), so the Engineer, homed to the Capital, can
@@ -266,7 +271,7 @@ Every Dwarf role uses one slot.
 | Unit             | Role          | Tech              | Cost | Slots |  HP | Attack (`attack2`) | Defense (`defense2`) | Move | Range | Sight | Attack after Move    | Capture | Its own thing                                                      |
 | ---------------- | ------------- | ----------------- | ---: | ----: | --: | ------------------ | -------------------: | ---: | ----: | ----: | -------------------- | ------- | ------------------------------------------------------------------ |
 | Hammerer         | `FIGHTER`     | start             |    2 |     1 |  12 | 2 (4)              |                2 (4) |    1 |     1 |     1 | yes                  | yes     | Rides the tunnel; Dig In; no Field Defense                         |
-| Gyrocopter       | `RAIDER`      | Scouting          |    4 |     1 |   8 | 1.5 (3)²           |                1 (2) |    3 |  bomb |     2 | the bomb is its Move | no      | flies; Bomb Run (4, Dive 5), once per target per turn              |
+| Gyrocopter       | `RAIDER`      | Scouting          |    4 |     1 |   8 | 1.5 (3)²           |                1 (2) |    3 |  bomb |     2 | the bomb is its Move | no      | flies; Bomb Run (5, Dive 6), once per target per turn              |
 | Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |     1 |  10 | 1.5 (3)            |                1 (2) |    1 |   1–2 |    1¹ | yes, one shot        | yes     | construct; two shots if it has not moved; never moves after firing |
 | Steam Mole       | `GUARD`       | Drill             |    5 |     1 |  16 | 2 (4)              |              2.5 (5) |    1 |     1 |     1 | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In                      |
 | Engineer         | `CAPTAIN`     | Administration    |    5 |     1 |  10 | 1 (2)              |                1 (2) |    1 |     1 |     1 | yes                  | no      | Repair; Assemble; no Rally                                         |
@@ -283,7 +288,13 @@ retaliates ([section 6.1](#61-flight-and-no-ordinary-attack)).
 These are the root's decided numbers, checked against the registry of commit
 `d8ed16d` (`pulp-wars-poc-7r28`); [section 12](#12-per-unit-battle-analysis)
 found no unit dead or dominant with them, so **no number is changed**
-([section 20.1](#201-deviations-from-the-root-decisions)).
+([section 20.1](#201-deviations-from-the-root-decisions)), except **the
+bomb: 5, and 6 with Dive** (decided 4 and 5): the coarse balance of
+`pulp_wars-78i.7` (`pulp-wars-poc-7r31`) moved it inside the bounds
+([section 19.5](#195-tuning-record)). The analysis of
+[section 12](#12-per-unit-battle-analysis) and the interaction tables of
+[section 13](#13-interactions-with-existing-rules) other than the bomb's
+own numbers were computed with the decided bomb and were not re-run.
 
 - **Hammerer** has Fighter parity (cost, HP, Attack, Defense, Move; capture,
   Pillage with Raiding, Disband, ordinary Promotion, the advance after a melee
@@ -350,7 +361,7 @@ The Dwarf registration differs in six unlock entries and two display names:
 - `ADMINISTRATION` grants `ENGINEER_SUPPORT` (Repair) instead of
   `CAPTAIN_SUPPORT` (no Rally).
 - `MARKSMANSHIP` also grants `ASSEMBLE` (the Engineer may Assemble Gunners).
-- `RAIDING` grants `DIVE` (the bomb deals 5) instead of `CHARGE_BONUS`; it
+- `RAIDING` grants `DIVE` (the bomb deals 6) instead of `CHARGE_BONUS`; it
   keeps Pillage.
 - `CHIVALRY` grants no `OVERRUN` (the Undead and Ice Folk precedent).
 - `FORTIFICATION` is displayed as **Dig In** and replaces
@@ -386,7 +397,7 @@ Human one.
 | Scouting          |    1 | **Gyrocopter**; Gyrocopter Sight 2                                                                                                        | —                                                           |
 | Roads             |    2 | same: Build Road; Road population; half-cost Road movement                                                                                | —                                                           |
 | Commerce          |    3 | same: land trade                                                                                                                          | —                                                           |
-| Raiding           |    2 | Pillage for every land unit that does not fly (not the Titan); **Dive:** a bomb deals 5                                                   | —                                                           |
+| Raiding           |    2 | Pillage for every land unit that does not fly (not the Titan); **Dive:** a bomb deals 6                                                   | —                                                           |
 | Chivalry          |    3 | **Steam Tank**; Cultivate Forest                                                                                                          | Overrun (not granted)                                       |
 | Drill             |    1 | reveal Ore; **Steam Mole**; first-hostile-capture Spoils                                                                                  | —                                                           |
 | Engineering       |    2 | Mountain entry for every ground unit (a Mole and a rider may tunnel to a Mountain); +1 Sight on a Mountain; Mine; Workshop; Redevelop     | Mountain entry for the Gyrocopter (it flies)                |
@@ -413,7 +424,7 @@ The tree, research offers, and Help render names and unlock text from the
 | Marksmanship   | same             | Clockwork Gunner (two shots standing still); Engineers Assemble Gunners                     |
 | Fieldcraft     | same             | Replant Forest; Gunners ignore Forest movement stops; Gunner Sight 2                        |
 | Scouting       | same             | Gyrocopter (Bomb Run); Gyrocopter Sight 2                                                   |
-| Raiding        | same             | Pillage; Dive: bombs deal 5                                                                 |
+| Raiding        | same             | Pillage; Dive: bombs deal 6                                                                 |
 | Chivalry       | same             | Steam Tank (Plated); Cultivate Forest                                                       |
 | Drill          | same             | reveal Ore; Steam Mole (Tunnel); first-hostile-capture Spoils (2 Coins)                     |
 | Fortification  | Dig In           | Hammerers and Moles that stand still on or next to your city centers are dug in             |
@@ -736,7 +747,7 @@ Mole loss next turn unless the Dwarf line follows up.
 ## 6. Gyrocopters and the bombing run
 
 **One sentence:** a Gyrocopter flies over an enemy and drops a bomb on it,
-4 damage (5 with Dive), landing beyond it; nothing can hit back at the bomb,
+5 damage (6 with Dive), landing beyond it; nothing can hit back at the bomb,
 and no unit is bombed twice in a turn.
 
 ### 6.1 Flight and no ordinary attack
@@ -792,8 +803,9 @@ Legality, in this order (all rejections are atomic):
    event carries `from` and `to` and no path; nothing about the way matters
    beyond step 10 of the table; it takes no chest; it reveals its sight from
    `to`.
-2. **The bomb** hits the target for `bombDamage`: **4** (`BOMB_DAMAGE_V7`),
-   **5** with Dive (`DIVE_BOMB_DAMAGE_V7`, Raiding). **Nothing else changes
+2. **The bomb** hits the target for `bombDamage`: **5** (`BOMB_DAMAGE_V7`),
+   **6** with Dive (`DIVE_BOMB_DAMAGE_V7`, Raiding; decided 4 and 5, tuned
+   by `pulp_wars-78i.7`). **Nothing else changes
    it**: no Inspired, Gang Up, Charge, cover, fortification, Walls, Field
    Defense, Dig In, Snow, Blizzard, Defense, or HP ratio. Armoured takes 1
    off, then Plated caps it, then a Shield absorbs first; it is capped at the
@@ -833,9 +845,10 @@ is not a Dwarf seat. The view lists the visible units' entries: who has been
 bombed this turn is public. The limit is **per target and per turn across
 all of the seat's Gyrocopters**.
 
-**Swarm arithmetic.** A unit loses at most 4 HP a turn to bombs (5 with
+**Swarm arithmetic.** A unit loses at most 5 HP a turn to bombs (6 with
 Dive), however many Gyrocopters there are, so no swarm of bombs kills a fresh
-unit with 6 HP or more: a Goblin or an Egg is left at 2 (1 with Dive).
+unit with 7 HP or more: a Goblin or an Egg (6 HP) is left at 1, and a Dive
+bomb kills it.
 
 **Distinct from the Saucer.** The Saucer is a shielded dropship: it Beams
 Down a passenger, strafes at range 1 with an ordinary attack, and takes the
@@ -850,29 +863,30 @@ visible, and the damage is fixed.
 
 HP left after one bomb, fresh target (Shield absorbed in brackets):
 
-| Target (HP)                                                                                                                          | Bomb 4 | Dive 5 |
+| Target (HP)                                                                                                                          | Bomb 5 | Dive 6 |
 | ------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
-| Fighter, Marksman, Raptor (12)                                                                                                       | 8      | 7      |
-| Guard (17)                                                                                                                           | 13     | 12     |
-| Captain, Catapult, Knight, Skeleton, Ghoul, Necromancer, Lich, Vampire, Wolf Rider, Scrap Buggy, Caveman, Spitter, Shaman, Sled (10) | 6      | 5      |
-| Banshee, Bomb Chucker, Rocket Cart, Snow Hunter (8)                                                                                  | 4      | 3      |
-| Goblin (6), Egg (6)                                                                                                                  | 2      | 1      |
-| Egg with Nesting (10)                                                                                                                | 6      | 5      |
-| Zombie (18)                                                                                                                          | 14     | 13     |
-| Orc Brute (15)                                                                                                                       | 11     | 10     |
-| Ankylosaurus (20, Armoured)                                                                                                          | 17     | 16     |
-| Grunt (10, Shield 2)                                                                                                                 | 8 (2)  | 7 (2)  |
-| Ray Gunner, Brain, Saucer (8, Shield 2)                                                                                              | 6 (2)  | 5 (2)  |
-| Shield Projector (12, Shield 3)                                                                                                      | 11 (3) | 10 (3) |
-| Grunt in a Force Field (10, Shield 4)                                                                                                | 10 (4) | 9 (4)  |
-| Yeti (9)                                                                                                                             | 5      | 4      |
-| Ice Witch (12)                                                                                                                       | 8      | 7      |
-| Mammoth (20)                                                                                                                         | 16     | 15     |
+| Fighter, Marksman, Raptor (12)                                                                                                       | 7      | 6      |
+| Guard (17)                                                                                                                           | 12     | 11     |
+| Captain, Catapult, Knight, Skeleton, Ghoul, Necromancer, Lich, Vampire, Wolf Rider, Scrap Buggy, Caveman, Spitter, Shaman, Sled (10) | 5      | 4      |
+| Banshee, Bomb Chucker, Rocket Cart, Snow Hunter (8)                                                                                  | 3      | 2      |
+| Goblin (6), Egg (6)                                                                                                                  | 1      | killed |
+| Egg with Nesting (10)                                                                                                                | 5      | 4      |
+| Zombie (18)                                                                                                                          | 13     | 12     |
+| Orc Brute (15)                                                                                                                       | 10     | 9      |
+| Ankylosaurus (20, Armoured)                                                                                                          | 16     | 15     |
+| Grunt (10, Shield 2)                                                                                                                 | 7 (2)  | 6 (2)  |
+| Ray Gunner, Brain, Saucer (8, Shield 2)                                                                                              | 5 (2)  | 4 (2)  |
+| Shield Projector (12, Shield 3)                                                                                                      | 10 (3) | 9 (3)  |
+| Grunt in a Force Field (10, Shield 4)                                                                                                | 9 (4)  | 8 (4)  |
+| Yeti (9)                                                                                                                             | 4      | 3      |
+| Ice Witch (12)                                                                                                                       | 7      | 6      |
+| Mammoth (20)                                                                                                                         | 15     | 14     |
 
 **A bomb and one more hit kill every 10-HP back-liner.** After a bomb, a
 Hammerer kills a Catapult, Captain, Lich, Knight, or Caveman with no reply;
 after a Dive bomb, one moved Gunner shot kills a Catapult, Captain, Lich, or
-Knight. A fresh Fighter needs a bomb and two more hits.
+Knight. A fresh Fighter needs a bomb and two more hits. (The bomb was 4, 5
+with Dive, until `pulp_wars-78i.7`; this table is re-computed for 5 and 6.)
 
 ## 7. Clockwork
 
@@ -1165,7 +1179,9 @@ the same exchanges before any code exists, with the root's decided numbers.
 Where the arithmetic had shown a unit to be dead or dominant, this document
 would have changed the number within reason; it found no such case
 ([section 20.1](#201-deviations-from-the-root-decisions)) and names the units
-closest to either edge (the Gyrocopter, the Steam Tank).
+closest to either edge (the Gyrocopter, the Steam Tank). It uses the decided
+bomb of 4 (5 with Dive); the coarse balance later raised it to 5 (6)
+([section 19.5](#195-tuning-record)), and this analysis was not re-run.
 
 ### 12.1 Method
 
@@ -1626,30 +1642,30 @@ One ruling each. "Off the board" means burrowed
 
 ### 13.4 Dinosaur rules
 
-| Rule            | Interaction                                                                                                                                                                                                                                                   |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Eggs            | An Egg on the eight tiles around a surfacing Mole takes 2 (3); a 6-HP Egg survives at 4 (3), a 10-HP Egg with Nesting at 8 (7). A bomb on an Egg leaves 2 (1). No Egg is laid on a mound tile. A destroyed Egg counts as the Mole's or the Gyrocopter's kill. |
-| Growth          | A dinosaur grows from killing Dwarf units as from any kill; eruption and bomb kills of dinosaurs count for the Mole and the Gyrocopter, not for growth.                                                                                                       |
-| Charge!         | The Triceratops ignores the fortification of a dwarf, Dig In included; its push and follow never end on a mound.                                                                                                                                              |
-| Acid            | Ignores Dig In like all fortification.                                                                                                                                                                                                                        |
-| Armoured        | Takes 1 off an eruption and a bomb (an Ankylosaurus loses 1 and 3).                                                                                                                                                                                           |
-| Wallbreaker     | Removes the Walls levels; Dig In stays, like Field Defense.                                                                                                                                                                                                   |
-| Pounce, Rampage | Ordinary; a T-Rex's Rampage never ends on a mound.                                                                                                                                                                                                            |
-| Two-slot units  | Never knocked back by the Steam Cannon (the Push rule).                                                                                                                                                                                                       |
+| Rule            | Interaction                                                                                                                                                                                                                                                                         |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Eggs            | An Egg on the eight tiles around a surfacing Mole takes 2 (3); a 6-HP Egg survives at 4 (3), a 10-HP Egg with Nesting at 8 (7). A bomb on an Egg leaves 1 (a Dive bomb destroys it). No Egg is laid on a mound tile. A destroyed Egg counts as the Mole's or the Gyrocopter's kill. |
+| Growth          | A dinosaur grows from killing Dwarf units as from any kill; eruption and bomb kills of dinosaurs count for the Mole and the Gyrocopter, not for growth.                                                                                                                             |
+| Charge!         | The Triceratops ignores the fortification of a dwarf, Dig In included; its push and follow never end on a mound.                                                                                                                                                                    |
+| Acid            | Ignores Dig In like all fortification.                                                                                                                                                                                                                                              |
+| Armoured        | Takes 1 off an eruption and a bomb (an Ankylosaurus loses 1 and 4).                                                                                                                                                                                                                 |
+| Wallbreaker     | Removes the Walls levels; Dig In stays, like Field Defense.                                                                                                                                                                                                                         |
+| Pounce, Rampage | Ordinary; a T-Rex's Rampage never ends on a mound.                                                                                                                                                                                                                                  |
+| Two-slot units  | Never knocked back by the Steam Cannon (the Push rule).                                                                                                                                                                                                                             |
 
 ### 13.5 Martian rules
 
-| Rule               | Interaction                                                                                                                                                                                                                                                                                         |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Shields            | A Shield absorbs an eruption and a bomb first: an eruption of 2 does nothing to a full Shield of 2 (3 puts 1 through); a bomb puts 2 through (Dive 3); a Force Field's 4 absorbs a whole bomb. An eruption at Start Turn strips the Shield for the rest of the Dwarf turn, so a later bomb deals 4. |
-| Mind Control       | Constructs are immune (`TARGET_IMMUNE`); the Hammerer, Gyrocopter, Mole, Engineer, Cannon, and Tank are targets under the ordinary conditions. A mound is never a target. A Gyrocopter on a Rift is immune (the Rift rule).                                                                         |
-| Thralls            | A Thrall made from a Dwarf unit is a Martian Grunt-statted unit: no Dwarf rule applies to it.                                                                                                                                                                                                       |
-| Tractor Beam       | Pulls Dwarf units under its rules (a dug-in unit keeps its `moved` flag; Dig In is read on its new tile); never targets a mound, never pulls onto one.                                                                                                                                              |
-| Beam Down          | Never onto a mound tile.                                                                                                                                                                                                                                                                            |
-| Pierce             | Hits the unit directly behind the target; a mound there is not a unit and is not hit.                                                                                                                                                                                                               |
-| Flyers and walkers | **Eruptions never hit flyers** (Saucer, Mothership); they hit walkers (Tripod, Colossus), which stand on the ground. Bombs hit any form, flyers included.                                                                                                                                           |
-| Disintegrator      | Ignores Dig In like all fortification.                                                                                                                                                                                                                                                              |
-| Saucer             | Same flight rule as the Gyrocopter; a Saucer with Strafe kills a landed Gyrocopter (8 of 8).                                                                                                                                                                                                        |
+| Rule               | Interaction                                                                                                                                                                                                                                                                                                           |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shields            | A Shield absorbs an eruption and a bomb first: an eruption of 2 does nothing to a full Shield of 2 (3 puts 1 through); a bomb puts 3 through (Dive 4); a Force Field's 4 lets 1 of a bomb through (2 with Dive). An eruption at Start Turn strips the Shield for the rest of the Dwarf turn, so a later bomb deals 5. |
+| Mind Control       | Constructs are immune (`TARGET_IMMUNE`); the Hammerer, Gyrocopter, Mole, Engineer, Cannon, and Tank are targets under the ordinary conditions. A mound is never a target. A Gyrocopter on a Rift is immune (the Rift rule).                                                                                           |
+| Thralls            | A Thrall made from a Dwarf unit is a Martian Grunt-statted unit: no Dwarf rule applies to it.                                                                                                                                                                                                                         |
+| Tractor Beam       | Pulls Dwarf units under its rules (a dug-in unit keeps its `moved` flag; Dig In is read on its new tile); never targets a mound, never pulls onto one.                                                                                                                                                                |
+| Beam Down          | Never onto a mound tile.                                                                                                                                                                                                                                                                                              |
+| Pierce             | Hits the unit directly behind the target; a mound there is not a unit and is not hit.                                                                                                                                                                                                                                 |
+| Flyers and walkers | **Eruptions never hit flyers** (Saucer, Mothership); they hit walkers (Tripod, Colossus), which stand on the ground. Bombs hit any form, flyers included.                                                                                                                                                             |
+| Disintegrator      | Ignores Dig In like all fortification.                                                                                                                                                                                                                                                                                |
+| Saucer             | Same flight rule as the Gyrocopter; a Saucer with Strafe kills a landed Gyrocopter (8 of 8).                                                                                                                                                                                                                          |
 
 ### 13.6 Ice Folk rules
 
@@ -1882,7 +1898,7 @@ Engineer), `digsIn`, `tunnelRange`, `ridesTunnel`, `bombs`, `unmovedShots`,
 `advancesAfterKill` false for the Gyrocopter, the Gunner, and the Cannon;
 faction rule `treasureUnitRole` `RAIDER`; and the constants
 `TUNNEL_RANGE_V7` 3, `ERUPTION_DAMAGE_V7` 2, `BLASTING_ERUPTION_DAMAGE_V7` 3,
-`BOMB_RANGE_V7` 2, `BOMB_DAMAGE_V7` 4, `DIVE_BOMB_DAMAGE_V7` 5,
+`BOMB_RANGE_V7` 2, `BOMB_DAMAGE_V7` 5, `DIVE_BOMB_DAMAGE_V7` 6,
 `GUNNER_UNMOVED_SHOTS_V7` 2, `DIG_IN_RADIUS_V7` 1, `REPAIR_MACHINE_V7` 4,
 `ASSEMBLE_COST_V7` 4, and `PLATED_CAP_V7` 4. Internal field names are the
 implementer's choice; the serialized literals of this section are normative.
@@ -2117,7 +2133,10 @@ deviations:
   (mirrored seats, the same seeds, Dry Land) the Dwarf policy won 50 of 90
   decided games (35 of 60 on 11 x 11, 15 of 30 on 14 x 14). Against each
   faction the Dwarves win 10 to 14 of 24 (Humans 13, Undead 14, Goblins 10,
-  Dinosaurs 14, Martians 11, Ice Folk 10): nothing beyond 70/30.
+  Dinosaurs 14, Martians 11, Ice Folk 10): nothing beyond 70/30. The
+  coarse balance (`pulp_wars-78i.7`, 40 games per faction) measured 45% to
+  60% against every faction, before and after its bomb change
+  ([section 19.5](#195-tuning-record)).
 - **Not implemented:** a Brass Titan or Steam Tank play of their own (the
   generic Juggernaut and Knight play). The tactical benchmark is unchanged;
   the section 15 scenarios are unit tests in
@@ -2590,7 +2609,7 @@ of another faction, and any mechanic change needs root approval.
 | ----------------------------------------------- | ------------------ | --------------------------- |
 | Hammerer HP / Defense / cost                    | 12 / 2 / 2         | 11–13 / 1.5–2 / fixed       |
 | Gyrocopter HP / cost                            | 8 / 4              | 7–10 / 3–5                  |
-| Bomb / with Dive                                | 4 / 5              | 3–5 / bomb + 1              |
+| Bomb / with Dive (tuned: 5 / 6)                 | 4 / 5              | 3–5 / bomb + 1              |
 | Clockwork Gunner HP / cost                      | 10 / 3             | 9–12 / 3–4                  |
 | Steam Mole HP / Attack / Defense / cost         | 16 / 2 / 2.5 / 5   | 14–18 / 2–2.5 / 2–2.5 / 4–6 |
 | Eruption / with Blasting Charges                | 2 / 3              | 1–2 / eruption + 1          |
@@ -2676,11 +2695,30 @@ If the gameplay fails these, `pulp_wars-78i.7` iterates within
 root before going outside the bounds. Fine tuning, the other map types, and
 the water layer wait for the user.
 
+### 19.5 Tuning record
+
+`pulp_wars-78i.7` (identity `pulp-wars-poc-7r31`; a coarse Dry Land pass by
+the balance-testing policy, 40 games per opponent, 20 per seat order; fine
+tuning is deferred by the user). Evidence:
+[Dwarf balance report](../validation/RULESET_7_DWARF_BALANCE.md).
+
+| Parameter      | Contract | Chosen    | Why                                                                                                                                                                                                                                                                                              |
+| -------------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Bomb           | 4        | **5**     | No pairing was grossly off (the Dwarves won 45-57% against every faction), but the Gyrocopter was below the "dead" watch band: 23 kills for 94 losses (0.24 kills per loss, band 0.3), 1% of the Dwarf kills. At 5 it scores 0.32 (31 kills, 39 lost after a bomb); win rates do not move (52%). |
+| Bomb with Dive | 5        | **6**     | The bounds' constraint: the Dive bomb is the bomb plus 1.                                                                                                                                                                                                                                        |
+| Every other    | —        | unchanged | Screened without a reason to change: Gyrocopter HP 10 (more Gyrocopters, 0.27 kills per loss, 52%). The eruption is already at its upper bound (2, 3 with Blasting Charges).                                                                                                                     |
+
+The eruption that almost never kills, the Engineers that are killed in fewer
+than half of the seat-games, and the Mind Control query defect found on the
+way are proposals to the root in section 7 of the report (a rule, an AI, and
+an engine change: none is a number inside the bounds).
+
 ## 20. Decisions made in this spec
 
 ### 20.1 Deviations from the root decisions
 
-**No decided number is changed.** Every roster value, the bomb of 4 and 5,
+**No decided number is changed** by this contract (the coarse balance later
+raised the bomb to 5 and 6: [section 19.5](#195-tuning-record)). Every roster value, the bomb of 4 and 5,
 the eruption of 2 and 3, the tunnel range of 3, the Gunner at 3 Coins with
 its shots, Repair 4 and 2, Assemble at 4 Coins, Plated 4, and the Titan's 36,
 4, and 3 are the root's. The engine formula, re-validated on `main` at

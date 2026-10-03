@@ -11,7 +11,7 @@ factions (Human, Undead, Goblin, Dinosaur, Martian, and Ice Folk;
 the [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md) into it); the Dwarf
 seats below follow the pending
 [Dwarf overlay](../product/RULESET_7_DWARVES.md). The headless CLI
-accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r30`
+accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r31`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
 [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md) the
 `achievements` metrics carry all seven achievements: `progressMaximum` and
@@ -77,14 +77,14 @@ affect map generation), and `benchmark-ruleset-v7-command-processing`
 launches the browser controller, so it uses distinct factions too.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --factions undead,undead --allow-duplicate-factions --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --factions undead,undead --allow-duplicate-factions --seed 3 --max-rounds 150
 ```
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
-npm run headless -- batch --ruleset pulp-wars-poc-7r30 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
+npm run headless -- batch --ruleset pulp-wars-poc-7r31 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
 ```
 
 A Dinosaur seat
@@ -165,8 +165,8 @@ credited to no role or faction. Faction-keyed fields (`factionRoles`,
 including `showcase`:
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type pangea --factions martian,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type showcase --ai-count 3 --factions martian,human,undead,goblin --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type pangea --factions martian,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type showcase --ai-count 3 --factions martian,human,undead,goblin --max-rounds 50
 ```
 
 The engine bead added no Martian policy: a Martian seat played with the
@@ -208,8 +208,8 @@ has had its Martian pairings and summary since the balance bead
 including `showcase`:
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type dry-land --factions ice,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type showcase --ai-count 3 --factions ice,human,undead,goblin --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type dry-land --factions ice,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type showcase --ai-count 3 --factions ice,human,undead,goblin --max-rounds 50
 ```
 
 The engine bead adds no Ice Folk policy. An Ice Folk seat plays with the
@@ -267,8 +267,8 @@ map type including `showcase`; the browser setup does not offer the faction
 until its UI bead (`pulp_wars-78i.6`):
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type dry-land --factions dwarf,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type showcase --ai-count 3 --factions dwarf,human,undead,goblin --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type dry-land --factions dwarf,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type showcase --ai-count 3 --factions dwarf,human,undead,goblin --max-rounds 50
 ```
 
 The engine bead adds no Dwarf policy. A Dwarf seat plays with the generic
@@ -302,10 +302,18 @@ owned unit (burrowed ones included).
 
 `commandsByKind` counts the three new commands and the event counters the
 four new events like any other kind. Faction-keyed fields include a `DWARF`
-entry. The balance matrix has the Dwarf pairings `WH`, `HW`, `WU`, `UW`,
-`WG`, `GW`, `WD`, `DW`, `WM`, `MW`, `WI`, and `IW` (`W`: Dwarf; `D` is the
-Dinosaur's) and no `WW` mirror; its per-seat Dwarf telemetry is
-`pulp_wars-78i.7`'s.
+entry. The balance matrix (`npm run balance:ruleset7-undead`) has the Dwarf
+pairings `WH`, `HW`, `WU`, `UW`, `WG`, `GW`, `WD`, `DW`, `WM`, `MW`, `WI`,
+and `IW` (`W`: Dwarf; `D` is the Dinosaur's; no `WW` mirror) and the
+four-seat smoke mixes `WHUG` and `DMIW`, and writes a compact per-seat Dwarf
+telemetry (`MatrixEntry.dwarf`: units trained and assembled, kills and
+losses by role and cause, the killer of every loss, tunnels with and without
+a rider, eruption and bomb hits, kills, victims, and same-turn follow-up
+kills, Assembles, Repairs, dug-in unit-turns, and the Engineers' and
+Gyrocopters' killers) and `summary.dwarf` (`pulp_wars-78i.7`; the
+[Dwarf balance report](../validation/RULESET_7_DWARF_BALANCE.md)). The
+scripted rider probe of the Dwarf overlay's section 19.2 is
+`npx tsx scripts/ruleset7-dwarf-rider-probe.ts`.
 
 ## Normal AI pressure telemetry (`pulp_wars-9s0.1`)
 
@@ -404,7 +412,7 @@ change the board): its size defaults to 16 for every seat count, any other
 types at 16. No validation or balance matrix includes it by default.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r30 --map-type showcase --ai-count 3 --factions human,undead,goblin,dinosaur --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type showcase --ai-count 3 --factions human,undead,goblin,dinosaur --max-rounds 50
 ```
 
 The naval

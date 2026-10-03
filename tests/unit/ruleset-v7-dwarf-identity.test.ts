@@ -21,15 +21,16 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // The Dwarf revision (`pulp_wars-78i.3`): identity
 // (docs/product/RULESET_7_DWARVES.md section 2.1). It took 7r30 after the
 // unique-factions rule (7r29); later beads that bump the identity re-pin
-// REVISION here.
+// REVISION here: the Dwarf coarse balance (`pulp_wars-78i.7`, bomb 5 and
+// Dive 6) took 7r31.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 30;
+const REVISION = 31;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
 describe("the Dwarf revision identity", () => {
-  it("is 7r30 with 7r29 last in the gap-free prior list and its save key obsolete", () => {
+  it("is the current identity with the previous one last in the gap-free prior list and its save key obsolete", () => {
     expect(RULESET_7_ID).toBe(ID);
     expect(PRIOR_RULESET_7_IDS.at(-1)).toBe(PREVIOUS_ID);
     expect(PRIOR_RULESET_7_IDS).toHaveLength(REVISION - 1);

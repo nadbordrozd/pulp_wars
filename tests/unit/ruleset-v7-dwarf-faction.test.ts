@@ -144,7 +144,8 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       REPAIR_MACHINE_V7,
       ASSEMBLE_COST_V7,
       PLATED_CAP_V7,
-    ]).toEqual([3, 2, 3, 2, 4, 5, 2, 1, 4, 4, 4]);
+      // The coarse balance (`pulp_wars-78i.7`): the bomb 5, Dive 6.
+    ]).toEqual([3, 2, 3, 2, 5, 6, 2, 1, 4, 4, 4]);
   });
 
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
@@ -956,20 +957,20 @@ describe("Dwarf technology (section 4)", () => {
         ];
       }),
     ).toEqual([
-      ["ORIGINAL", false, false, 4, 2, false],
-      ["UNDEAD", false, false, 4, 2, false],
-      ["GOBLIN", false, false, 4, 2, false],
-      ["DINOSAUR", false, false, 4, 2, false],
-      ["MARTIAN", false, false, 4, 2, false],
-      ["ICE_FOLK", false, false, 4, 2, false],
-      ["DWARF", true, true, 5, 3, true],
+      ["ORIGINAL", false, false, 5, 2, false],
+      ["UNDEAD", false, false, 5, 2, false],
+      ["GOBLIN", false, false, 5, 2, false],
+      ["DINOSAUR", false, false, 5, 2, false],
+      ["MARTIAN", false, false, 5, 2, false],
+      ["ICE_FOLK", false, false, 5, 2, false],
+      ["DWARF", true, true, 6, 3, true],
     ]);
     const some = (...techs: (typeof TECHNOLOGY_IDS_V7)[number][]) =>
       technologyCapabilitiesV7(techs, "DWARF");
     expect(some()).toMatchObject({
       digIn: false,
       assemble: false,
-      bombDamage: 4,
+      bombDamage: 5,
       eruptionDamage: 2,
       cannonIgnoresFortification: false,
     });
@@ -982,7 +983,7 @@ describe("Dwarf technology (section 4)", () => {
       cannonIgnoresFortification: true,
     });
     expect(some("HUNTING", "MARKSMANSHIP")).toMatchObject({ assemble: true });
-    expect(some("SCOUTING", "RAIDING")).toMatchObject({ bombDamage: 5 });
+    expect(some("SCOUTING", "RAIDING")).toMatchObject({ bombDamage: 6 });
     const dwarf = technologyCapabilitiesV7(all, "DWARF");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
     expect(dwarf.trainableRoles).toEqual(human.trainableRoles);
@@ -1261,7 +1262,7 @@ describe("Dwarf Showcase (section 2.4)", () => {
       eruptionDamage: 3,
     });
     expect(publicUnitStatsV7(state, own("RAIDER")).dwarf).toMatchObject({
-      bombDamage: 5,
+      bombDamage: 6,
       machine: true,
       construct: false,
     });
@@ -1298,7 +1299,7 @@ describe("Dwarf public unit stats (section 14)", () => {
       plated: null,
       tunnelRange: 0,
       eruptionDamage: 3,
-      bombDamage: 5,
+      bombDamage: 6,
       burrowed: false,
     });
     expect(stats(at(4, 3)).dwarf).toMatchObject({

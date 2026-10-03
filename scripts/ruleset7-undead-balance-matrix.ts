@@ -36,12 +36,18 @@
  * `summary.iceFolk`). The other summaries leave the Ice Folk pairings out of
  * their references.
  *
+ * The Dwarf balance (`pulp_wars-78i.7`) adds the Dwarf pairings `WH`, `HW`,
+ * `WU`, `UW`, `WG`, `GW`, `WD`, `DW`, `WM`, `MW`, `WI`, and `IW` (no `WW`
+ * mirror), the four-seat smoke mixes `WHUG` and `DMIW`, and a compact Dwarf
+ * section 19.2 telemetry (`MatrixEntry.dwarf`, `summary.dwarf`). The other
+ * summaries leave the Dwarf pairings out of their references.
+ *
  * Usage:
  *   npm run balance:ruleset7-undead -- [--seeds 30] [--multi-seeds 4]
  *     [--sizes 11,14] [--maps dry-land,pangea,continents,archipelago,lakes]
  *     [--pairings HU,UH,UU,HH,GH,HG,GU,UG,GG,DH,HD,DU,UD,DG,GD,DD,
  *       MH,HM,MU,UM,MG,GM,MD,DM,MM,IH,HI,IU,UI,IG,GI,ID,DI,IM,MI,II,HUHU,UHUH,GHUG,HUGH,UGHU,HUGD,DHUG,GDHU,UGDH,
- *       MHUG,DMHU,GDMH,UGDM]
+ *       MHUG,DMHU,GDMH,UGDM,WH,HW,WU,UW,WG,GW,WD,DW,WM,MW,WI,IW,WHUG,DMIW]
  *     [--max-rounds 150]
  *     [--multi-max-rounds 120] [--jobs N] [--output file.json]
  *     [--detail-output file.json] [--markdown] [--strict]
@@ -67,6 +73,9 @@ import {
   type UndeadMetricsV7,
 } from "../src/headless/v7";
 import type { IceFolkMetricsV7 } from "../src/headless/ice-folk-telemetry-v7";
+import type { DwarfMetricsV7 } from "../src/headless/dwarf-telemetry-v7";
+import { unitIsDugInV7 } from "../src/engine/v7/dwarf";
+import { allOwnedUnitsV7 } from "../src/engine/v7/units";
 import { duplicateFactionV7 } from "../src/engine/v7/setup";
 import {
   FACTION_IDS_V7,
@@ -182,6 +191,9 @@ const PAIRINGS = {
   DMHU: ["DINOSAUR", "MARTIAN", "ORIGINAL", "UNDEAD"],
   GDMH: ["GOBLIN", "DINOSAUR", "MARTIAN", "ORIGINAL"],
   UGDM: ["UNDEAD", "GOBLIN", "DINOSAUR", "MARTIAN"],
+  // The Dwarf balance (`pulp_wars-78i.7`): four-seat smoke mixes.
+  WHUG: ["DWARF", "ORIGINAL", "UNDEAD", "GOBLIN"],
+  DMIW: ["DINOSAUR", "MARTIAN", "ICE_FOLK", "DWARF"],
 } as const satisfies Record<string, readonly FactionIdV7[]>;
 type PairingId = keyof typeof PAIRINGS;
 const ONE_VS_ONE: readonly PairingId[] = [
@@ -221,6 +233,18 @@ const ONE_VS_ONE: readonly PairingId[] = [
   "IM",
   "MI",
   "II",
+  "WH",
+  "HW",
+  "WU",
+  "UW",
+  "WG",
+  "GW",
+  "WD",
+  "DW",
+  "WM",
+  "MW",
+  "WI",
+  "IW",
 ];
 const MULTI: readonly PairingId[] = [
   "HUHU",
@@ -236,6 +260,8 @@ const MULTI: readonly PairingId[] = [
   "DMHU",
   "GDMH",
   "UGDM",
+  "WHUG",
+  "DMIW",
 ];
 /** 1v1 pairings without a Goblin seat (the cap-rate reference). */
 const NON_GOBLIN_ONE_VS_ONE: readonly PairingId[] = ["HU", "UH", "UU", "HH"];
@@ -279,6 +305,21 @@ const ICE_FOLK_ONE_VS_ONE: readonly PairingId[] = [
   "IM",
   "MI",
   "II",
+];
+/** The Dwarf 1v1 pairings (Dwarf section 19.2; no `WW` mirror). */
+const DWARF_ONE_VS_ONE: readonly PairingId[] = [
+  "WH",
+  "HW",
+  "WU",
+  "UW",
+  "WG",
+  "GW",
+  "WD",
+  "DW",
+  "WM",
+  "MW",
+  "WI",
+  "IW",
 ];
 
 export interface MatrixCell {
@@ -355,6 +396,11 @@ export interface MatrixEntry extends MatrixCell {
    * and absent in detail files written before it was added.
    */
   readonly iceFolk?: IceFolkMatchStats | null;
+  /**
+   * `pulp_wars-78i.7` Dwarf telemetry; null without a Dwarf seat, and
+   * absent in detail files written before it was added.
+   */
+  readonly dwarf?: DwarfMatchStats | null;
   /**
    * `pulp_wars-0hi.3` Promotions per faction (revision 20 section 8.2);
    * absent in detail files written before it was added.
@@ -2319,6 +2365,426 @@ function iceFolkTelemetry(
 }
 
 /**
+ * Compact Dwarf section 19.2 telemetry for one Dwarf seat of one match
+ * (`pulp_wars-78i.7`): units trained and assembled, kills and losses by
+ * role, the killer of every loss, eruption and bomb hits, kills, and
+ * victims, eruption and bomb "assists" (a hit unit killed later in the same
+ * Dwarf turn), Assembles, Repairs, dug-in unit-turns, and the Engineers'
+ * fate. The other ability counters are the headless match totals
+ * (`DwarfMetricsV7`), which equal the seat's own in a match with one Dwarf
+ * seat.
+ */
+interface DwarfSeatStats {
+  seat: number;
+  /** Role, `ASSEMBLED:MARKSMAN`, or `REWARD:<role>`. */
+  trained: Counts;
+  firstRoleRound: Counts;
+  researchRound: Counts;
+  /** Hostile kills by the credited unit (attack, retaliation, splash, eruption, bomb). */
+  killsByRole: Counts;
+  /** Those kills by cause: `ATTACK`, `RETALIATION`, `SPLASH`, `ERUPTION`, `BOMB`. */
+  killsByCause: Counts;
+  /** Units lost other than by elimination, by role. */
+  lossesByRole: Counts;
+  /** Those losses by killer: `<initial>:<role>` with `:RET`, `:SPLASH`, `:BLAST`. */
+  killedBy: Counts;
+  tunnels: number;
+  tunnelsWithRider: number;
+  /** Tunnels whose destination is within 2 of an own city center. */
+  tunnelsHome: number;
+  eruptions: number;
+  eruptionsWithHits: number;
+  eruptionVictims: number;
+  eruptionDamage: number;
+  eruptionKills: number;
+  /** Eruption-hit hostile units killed later in the same Dwarf turn. */
+  eruptionAssists: number;
+  /** Eruption victims by `<initial>:<role>`, and the killed ones. */
+  eruptionVictimRoles: Counts;
+  eruptionKillVictims: Counts;
+  bombRuns: number;
+  bombDamage: number;
+  bombKills: number;
+  bombAssists: number;
+  bombVictimRoles: Counts;
+  bombKillVictims: Counts;
+  assembles: number;
+  repairs: number;
+  repairHp: number;
+  /** Own dug-in units at each of the seat's End Turns (summed). */
+  dugInUnitTurns: number;
+  engineersFielded: number;
+  engineerDeaths: number;
+  engineerKilledBy: Counts;
+  /**
+   * Engineers lost within two rounds of their own Assemble (absent, like
+   * `gyrocopterKilledBy`, in the earliest Dwarf detail files).
+   */
+  engineersLostAfterAssemble?: number;
+  firstEngineerRound: number | null;
+  /** Gyrocopter losses by killer, keyed as `killedBy`. */
+  gyrocopterKilledBy?: Counts;
+  /** Cities this seat lost to another player. */
+  citiesLost: number;
+}
+
+/** Dwarf telemetry for one match: one entry per Dwarf seat. */
+interface DwarfMatchStats {
+  readonly seats: DwarfSeatStats[];
+  /** Headless match totals that the per-seat replay does not split. */
+  readonly match: Pick<
+    DwarfMetricsV7,
+    | "surfacedLostNextEnemyTurn"
+    | "gyrocoptersLostAfterBomb"
+    | "bombShieldAbsorbed"
+    | "eruptionShieldAbsorbed"
+    | "eruptionEggDamage"
+    | "eruptionEggsDestroyed"
+    | "underminedFieldDefense"
+    | "gunnerShotsUnmoved"
+    | "gunnerShotsMoved"
+    | "gunnerSecondShots"
+    | "repairOnConstructs"
+    | "repairOnOtherMachines"
+    | "repairOnOthers"
+    | "digInAttacks"
+    | "digInDamagePrevented"
+    | "dugInKilled"
+    | "knockbacks"
+    | "knockbacksBlocked"
+    | "knockbackCentersEmptied"
+    | "platedHits"
+    | "platedDamagePrevented"
+  >;
+}
+
+/**
+ * Replays the accepted command log and attributes the Dwarf events to their
+ * Dwarf seat. Burrowed units are off the board, so every unit lookup reads
+ * all owned units. Only called for matches with a Dwarf seat.
+ */
+function dwarfTelemetry(
+  setup: MatchSetupV7,
+  log: ReturnType<typeof runAiMatchV7>["commandLog"],
+  metrics: DwarfMetricsV7,
+): DwarfMatchStats {
+  const created = createPlayableGameV7(setup);
+  if (!created.ok) throw new Error(`CREATE_REJECTED:${created.error.code}`);
+  let state = created.state;
+  const seats = new Map<number, DwarfSeatStats>();
+  const factionOf = new Map<number, FactionIdV7>();
+  for (const player of state.players) {
+    factionOf.set(player.id, player.faction);
+    if (player.faction !== "DWARF") continue;
+    seats.set(player.id, {
+      seat: player.seat,
+      trained: {},
+      firstRoleRound: {},
+      researchRound: {},
+      killsByRole: {},
+      killsByCause: {},
+      lossesByRole: {},
+      killedBy: {},
+      tunnels: 0,
+      tunnelsWithRider: 0,
+      tunnelsHome: 0,
+      eruptions: 0,
+      eruptionsWithHits: 0,
+      eruptionVictims: 0,
+      eruptionDamage: 0,
+      eruptionKills: 0,
+      eruptionAssists: 0,
+      eruptionVictimRoles: {},
+      eruptionKillVictims: {},
+      bombRuns: 0,
+      bombDamage: 0,
+      bombKills: 0,
+      bombAssists: 0,
+      bombVictimRoles: {},
+      bombKillVictims: {},
+      assembles: 0,
+      repairs: 0,
+      repairHp: 0,
+      dugInUnitTurns: 0,
+      engineersFielded: 0,
+      engineerDeaths: 0,
+      engineerKilledBy: {},
+      engineersLostAfterAssemble: 0,
+      firstEngineerRound: null,
+      gyrocopterKilledBy: {},
+      citiesLost: 0,
+    });
+  }
+  const initial = (playerId: number) => {
+    const faction = factionOf.get(playerId);
+    return faction === undefined
+      ? "?"
+      : (FACTION_INITIAL[faction] ?? faction.slice(0, 1));
+  };
+  const first = state.turnOrder[0];
+  let round = 1;
+  // Hostile units hit by an eruption or a bomb in the current Dwarf turn.
+  const erupted = new Map<number, number>();
+  const bombed = new Map<number, number>();
+  // The round of each Engineer's latest Assemble.
+  const assembledRound = new Map<number, number>();
+  const fielded = (seat: DwarfSeatStats, role: string) => {
+    bump(seat.trained, role);
+    const base = role.replace(/^(ASSEMBLED|REWARD):/, "");
+    seat.firstRoleRound[base] ??= round;
+    if (base === "CAPTAIN") {
+      seat.engineersFielded += 1;
+      seat.firstEngineerRound ??= round;
+    }
+  };
+  for (const record of log) {
+    const before = state;
+    const units = new Map(
+      allOwnedUnitsV7(before).map((unit) => [unit.id as number, unit]),
+    );
+    const command = record.command;
+    const actor = seats.get(record.playerId);
+    if (actor !== undefined && command.kind === "TUNNEL") {
+      actor.tunnels += 1;
+      if (command.rider !== null) actor.tunnelsWithRider += 1;
+      if (
+        before.cities.some(
+          (city) =>
+            city.ownerId === record.playerId &&
+            Math.max(
+              Math.abs(city.at.x - command.to.x),
+              Math.abs(city.at.y - command.to.y),
+            ) <= 2,
+        )
+      )
+        actor.tunnelsHome += 1;
+    }
+    if (actor !== undefined && command.kind === "END_TURN")
+      actor.dugInUnitTurns += allOwnedUnitsV7(before).filter(
+        (unit) =>
+          unit.ownerId === record.playerId &&
+          unit.hp > 0 &&
+          unitIsDugInV7(before, unit),
+      ).length;
+    const result = applyCommandV7(state, record.playerId, command);
+    if (!result.accepted) throw new Error("Dwarf telemetry replay rejected");
+    state = result.state;
+    const after = new Map(
+      allOwnedUnitsV7(state).map((unit) => [unit.id as number, unit]),
+    );
+    const unitOf = (unitId: number) => units.get(unitId) ?? after.get(unitId);
+    const hostile = (left: number, right: number | undefined) =>
+      right !== undefined &&
+      left !== right &&
+      !arePlayersAlliedV7(before, left as PlayerId, right as PlayerId);
+    const killedBy = new Map<number, string>();
+    const credit = (dealerId: number, victimId: number, cause: string) => {
+      const dealer = unitOf(dealerId);
+      const victim = unitOf(victimId);
+      const seat = dealer === undefined ? undefined : seats.get(dealer.ownerId);
+      if (
+        dealer === undefined ||
+        victim === undefined ||
+        seat === undefined ||
+        !hostile(dealer.ownerId, victim.ownerId)
+      )
+        return;
+      bump(seat.killsByRole, dealer.role);
+      bump(seat.killsByCause, cause);
+    };
+    for (const event of record.events) {
+      if (event.kind === "TURN_STARTED") {
+        if (event.playerId === first) round += 1;
+        if (seats.has(event.playerId)) {
+          erupted.clear();
+          bombed.clear();
+        }
+      }
+      if (event.kind === "TECH_RESEARCHED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) seat.researchRound[event.tech] = round;
+      }
+      if (
+        event.kind === "UNIT_TRAINED" ||
+        event.kind === "NAVAL_UNIT_TRAINED" ||
+        event.kind === "UNIT_REWARD_GRANTED"
+      ) {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined)
+          fielded(
+            seat,
+            event.kind === "UNIT_REWARD_GRANTED"
+              ? `REWARD:${event.role}`
+              : event.role,
+          );
+      }
+      if (event.kind === "UNIT_ASSEMBLED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) {
+          seat.assembles += 1;
+          assembledRound.set(event.unitId, round);
+          fielded(seat, "ASSEMBLED:MARKSMAN");
+        }
+      }
+      if (event.kind === "UNIT_SURFACED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) {
+          seat.eruptions += 1;
+          if (event.results.length > 0) seat.eruptionsWithHits += 1;
+          for (const entry of event.results) {
+            const victim = unitOf(entry.unitId);
+            const key =
+              victim === undefined
+                ? "?"
+                : `${initial(victim.ownerId)}:${victim.role}`;
+            seat.eruptionVictims += 1;
+            seat.eruptionDamage += entry.damage;
+            bump(seat.eruptionVictimRoles, key);
+            if (entry.dies) {
+              seat.eruptionKills += 1;
+              bump(seat.eruptionKillVictims, key);
+              credit(event.unitId, entry.unitId, "ERUPTION");
+              killedBy.set(entry.unitId, "W:GUARD:ERUPTION");
+            } else erupted.set(entry.unitId, event.playerId);
+          }
+        }
+      }
+      if (event.kind === "UNIT_BOMBED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) {
+          const victim = unitOf(event.targetUnitId);
+          const key =
+            victim === undefined
+              ? "?"
+              : `${initial(victim.ownerId)}:${victim.role}`;
+          seat.bombRuns += 1;
+          seat.bombDamage += event.damage;
+          bump(seat.bombVictimRoles, key);
+          if (event.killed) {
+            seat.bombKills += 1;
+            bump(seat.bombKillVictims, key);
+            credit(event.unitId, event.targetUnitId, "BOMB");
+            killedBy.set(event.targetUnitId, "W:RAIDER:BOMB");
+          } else bombed.set(event.targetUnitId, event.playerId);
+        }
+      }
+      if (event.kind === "WOUNDED_TENDED") {
+        const healer = unitOf(event.captainId);
+        const seat =
+          healer === undefined ? undefined : seats.get(healer.ownerId);
+        if (seat !== undefined && healer?.role === "CAPTAIN") {
+          seat.repairs += 1;
+          seat.repairHp += sum(event.results.map((entry) => entry.amount));
+        }
+      }
+      if (event.kind === "COMBAT_RESOLVED") {
+        const preview = event.preview;
+        const attacker = unitOf(preview.attackerId);
+        const defender = unitOf(preview.targetUnitId);
+        if (preview.defenderDies) {
+          credit(preview.attackerId, preview.targetUnitId, "ATTACK");
+          if (attacker !== undefined)
+            killedBy.set(
+              preview.targetUnitId,
+              `${initial(attacker.ownerId)}:${attacker.role}`,
+            );
+        }
+        if (preview.attackerDies) {
+          credit(preview.targetUnitId, preview.attackerId, "RETALIATION");
+          if (defender !== undefined)
+            killedBy.set(
+              preview.attackerId,
+              `${initial(defender.ownerId)}:${defender.role}:RET`,
+            );
+        }
+        for (const entry of preview.splash)
+          if (entry.dies) {
+            credit(preview.attackerId, entry.unitId, "SPLASH");
+            if (attacker !== undefined)
+              killedBy.set(
+                entry.unitId,
+                `${initial(attacker.ownerId)}:${attacker.role}:SPLASH`,
+              );
+          }
+      }
+      if (event.kind === "WAIL_RESOLVED")
+        for (const entry of event.results)
+          if (entry.dies)
+            killedBy.set(entry.unitId, `${initial(event.playerId)}:WAIL`);
+      if (event.kind === "EXPLOSION_RESOLVED")
+        for (const entry of event.results)
+          if (entry.dies)
+            killedBy.set(
+              entry.unitId,
+              `${initial(event.playerId)}:${event.role}:BLAST`,
+            );
+      if (event.kind === "PLAGUE_DAMAGED")
+        for (const entry of event.results)
+          if (entry.dies) killedBy.set(entry.unitId, "PLAGUE");
+      if (event.kind === "CITY_CAPTURED" && event.from !== null) {
+        const seat = seats.get(event.from);
+        if (seat !== undefined && event.to !== event.from) seat.citiesLost += 1;
+      }
+      if (event.kind === "UNIT_DIED" && event.cause !== "ELIMINATION") {
+        const eruptedBy = erupted.get(event.unitId);
+        if (eruptedBy !== undefined) {
+          const seat = seats.get(eruptedBy);
+          if (seat !== undefined) seat.eruptionAssists += 1;
+          erupted.delete(event.unitId);
+        }
+        const bombedBy = bombed.get(event.unitId);
+        if (bombedBy !== undefined) {
+          const seat = seats.get(bombedBy);
+          if (seat !== undefined) seat.bombAssists += 1;
+          bombed.delete(event.unitId);
+        }
+        const unit = unitOf(event.unitId);
+        const seat = unit === undefined ? undefined : seats.get(unit.ownerId);
+        if (unit === undefined || seat === undefined) continue;
+        bump(seat.lossesByRole, unit.role);
+        const by = killedBy.get(event.unitId) ?? event.cause;
+        bump(seat.killedBy, by);
+        if (unit.role === "CAPTAIN") {
+          seat.engineerDeaths += 1;
+          bump(seat.engineerKilledBy, by);
+          const assembled = assembledRound.get(event.unitId);
+          if (assembled !== undefined && round - assembled <= 2)
+            seat.engineersLostAfterAssemble =
+              (seat.engineersLostAfterAssemble ?? 0) + 1;
+        }
+        if (unit.role === "RAIDER") bump((seat.gyrocopterKilledBy ??= {}), by);
+      }
+    }
+  }
+  return {
+    seats: [...seats.values()],
+    match: {
+      surfacedLostNextEnemyTurn: metrics.surfacedLostNextEnemyTurn,
+      gyrocoptersLostAfterBomb: metrics.gyrocoptersLostAfterBomb,
+      bombShieldAbsorbed: metrics.bombShieldAbsorbed,
+      eruptionShieldAbsorbed: metrics.eruptionShieldAbsorbed,
+      eruptionEggDamage: metrics.eruptionEggDamage,
+      eruptionEggsDestroyed: metrics.eruptionEggsDestroyed,
+      underminedFieldDefense: metrics.underminedFieldDefense,
+      gunnerShotsUnmoved: metrics.gunnerShotsUnmoved,
+      gunnerShotsMoved: metrics.gunnerShotsMoved,
+      gunnerSecondShots: metrics.gunnerSecondShots,
+      repairOnConstructs: metrics.repairOnConstructs,
+      repairOnOtherMachines: metrics.repairOnOtherMachines,
+      repairOnOthers: metrics.repairOnOthers,
+      digInAttacks: metrics.digInAttacks,
+      digInDamagePrevented: metrics.digInDamagePrevented,
+      dugInKilled: metrics.dugInKilled,
+      knockbacks: metrics.knockbacks,
+      knockbacksBlocked: metrics.knockbacksBlocked,
+      knockbackCentersEmptied: metrics.knockbackCentersEmptied,
+      platedHits: metrics.platedHits,
+      platedDamagePrevented: metrics.platedDamagePrevented,
+    },
+  };
+}
+
+/**
  * Lich lifecycle statistics for one match (`pulp_wars-vkq.21`), summed over
  * every Undead seat.
  */
@@ -2503,7 +2969,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r30",
+    rulesetId: "pulp-wars-poc-7r31",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -2592,6 +3058,9 @@ export function runCell(cell: MatrixCell): MatrixEntry {
       : null,
     iceFolk: (factions as readonly FactionIdV7[]).includes("ICE_FOLK")
       ? iceFolkTelemetry(setup, result.commandLog, metrics.iceFolk)
+      : null,
+    dwarf: (factions as readonly FactionIdV7[]).includes("DWARF")
+      ? dwarfTelemetry(setup, result.commandLog, metrics.dwarf)
       : null,
     promotions: promotionTelemetry(setup, result.commandLog),
   };
@@ -3173,7 +3642,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r30",
+          rulesetId: "pulp-wars-poc-7r31",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -3644,6 +4113,7 @@ export function summarize(entries: readonly MatrixEntry[]) {
     dinosaur: dinosaurSummary(entries),
     martian: martianSummary(entries),
     iceFolk: iceFolkSummary(entries),
+    dwarf: dwarfSummary(entries),
     duel: {
       perPairing,
       undeadWinMixed: rateFor(mixed, undeadWon),
@@ -4355,7 +4825,8 @@ function dinosaurSummary(entries: readonly MatrixEntry[]) {
       (entry) =>
         !DINOSAUR_ONE_VS_ONE.includes(entry.pairing) &&
         !MARTIAN_ONE_VS_ONE.includes(entry.pairing) &&
-        !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing),
+        !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing) &&
+        !DWARF_ONE_VS_ONE.includes(entry.pairing),
     ),
   );
   const pairingCaps: Record<string, number | null> = Object.fromEntries(
@@ -4769,7 +5240,8 @@ function martianSummary(entries: readonly MatrixEntry[]) {
     duel.filter(
       (entry) =>
         !MARTIAN_ONE_VS_ONE.includes(entry.pairing) &&
-        !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing),
+        !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing) &&
+        !DWARF_ONE_VS_ONE.includes(entry.pairing),
     ),
   );
   const pairingCaps: Record<string, number | null> = Object.fromEntries(
@@ -5008,7 +5480,11 @@ function iceFolkSummary(entries: readonly MatrixEntry[]) {
     };
   };
   const reference = capRateOf(
-    duel.filter((entry) => !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing)),
+    duel.filter(
+      (entry) =>
+        !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing) &&
+        !DWARF_ONE_VS_ONE.includes(entry.pairing),
+    ),
   );
   const mixed = iceDuel.filter((entry) => entry.pairing !== "II");
   return {
@@ -5034,6 +5510,246 @@ function iceFolkSummary(entries: readonly MatrixEntry[]) {
     telemetry: {
       allMixed: iceFolkAggregate(mixed),
       mirror: iceFolkAggregate(duel.filter((entry) => entry.pairing === "II")),
+    },
+  };
+}
+
+const dwarfWon = (entry: MatrixEntry) => entry.winnerFaction === "DWARF";
+
+/**
+ * Compact Dwarf section 19.2 telemetry summed over every Dwarf seat of
+ * `group` (`pulp_wars-78i.7`), with the section 19.4 thresholds and watch
+ * bands it can answer.
+ */
+function dwarfAggregate(group: readonly MatrixEntry[]) {
+  const seats = group.flatMap((entry) =>
+    (entry.dwarf?.seats ?? []).map((seat) => ({ entry, seat })),
+  );
+  const all = seats.map((item) => item.seat);
+  const matches = group.flatMap((entry) =>
+    entry.dwarf === null || entry.dwarf === undefined
+      ? []
+      : [entry.dwarf.match],
+  );
+  const total = (pick: (seat: DwarfSeatStats) => number) => sum(all.map(pick));
+  const matchTotal = (pick: (match: DwarfMatchStats["match"]) => number) =>
+    sum(matches.map(pick));
+  const seatGames = (predicate: (seat: DwarfSeatStats) => boolean) =>
+    all.filter(predicate).length;
+  const fielded = (seat: DwarfSeatStats, role: string) =>
+    Object.entries(seat.trained).some(
+      ([key, value]) =>
+        value > 0 && key.replace(/^(ASSEMBLED|REWARD):/, "") === role,
+    );
+  const kills = sumCounts(all.map((seat) => seat.killsByRole));
+  const losses = sumCounts(all.map((seat) => seat.lossesByRole));
+  const totalKills = sum(Object.values(kills));
+  // Decided 1v1 seat-games with one Dwarf seat.
+  const decided = seats.filter(
+    ({ entry }) => entry.aiCount === 1 && entry.winnerSeat !== null,
+  );
+  const winWhere = (predicate: (seat: DwarfSeatStats) => boolean) => {
+    const items = decided.filter(({ seat }) => predicate(seat));
+    return wilson(
+      items.filter(({ entry }) => dwarfWon(entry)).length,
+      items.length,
+      0,
+    );
+  };
+  const cities15 = (own: boolean) =>
+    stats(
+      seats.flatMap(({ entry, seat }) =>
+        entry.seats
+          .filter((item) => (item.seat === seat.seat) === own)
+          .flatMap((item) =>
+            item.citiesRound15 === null ? [] : [item.citiesRound15],
+          ),
+      ),
+    ).mean;
+  const withMole = seatGames((seat) => fielded(seat, "GUARD"));
+  const withTunnel = seatGames(
+    (seat) => fielded(seat, "GUARD") && seat.tunnels > 0,
+  );
+  const withGyro = seatGames((seat) => fielded(seat, "RAIDER"));
+  const withEngineer = seatGames((seat) => seat.engineersFielded > 0);
+  return {
+    seatGames: all.length,
+    trained: sumCounts(all.map((seat) => seat.trained)),
+    trainedSeatGames: sumCounts(
+      all.map((seat) =>
+        Object.fromEntries(Object.keys(seat.trained).map((role) => [role, 1])),
+      ),
+    ),
+    killsByRole: kills,
+    lossesByRole: losses,
+    killsPerLoss: killsPerLoss(kills, losses),
+    killShare: Object.fromEntries(
+      Object.entries(kills).map(([role, value]) => [
+        role,
+        share(value, totalKills),
+      ]),
+    ),
+    killsByCause: sumCounts(all.map((seat) => seat.killsByCause)),
+    killedBy: sumCounts(all.map((seat) => seat.killedBy)),
+    citiesRound15: { dwarf: cities15(true), opponent: cities15(false) },
+    tunnel: {
+      tunnels: total((seat) => seat.tunnels),
+      withRider: total((seat) => seat.tunnelsWithRider),
+      home: total((seat) => seat.tunnelsHome),
+      seatGamesWithMole: withMole,
+      seatGamesWithTunnel: withTunnel,
+      seatGamesWithRider: seatGames((seat) => seat.tunnelsWithRider > 0),
+      seatGamesWithEruptionHit: seatGames((seat) => seat.eruptionsWithHits > 0),
+      surfacedLostNextEnemyTurn: matchTotal(
+        (match) => match.surfacedLostNextEnemyTurn,
+      ),
+    },
+    eruption: {
+      eruptions: total((seat) => seat.eruptions),
+      withHits: total((seat) => seat.eruptionsWithHits),
+      victims: total((seat) => seat.eruptionVictims),
+      damage: total((seat) => seat.eruptionDamage),
+      kills: total((seat) => seat.eruptionKills),
+      assists: total((seat) => seat.eruptionAssists),
+      victimRoles: sumCounts(all.map((seat) => seat.eruptionVictimRoles)),
+      killVictims: sumCounts(all.map((seat) => seat.eruptionKillVictims)),
+      shieldAbsorbed: matchTotal((match) => match.eruptionShieldAbsorbed),
+      eggDamage: matchTotal((match) => match.eruptionEggDamage),
+      eggsDestroyed: matchTotal((match) => match.eruptionEggsDestroyed),
+      underminedFieldDefense: matchTotal(
+        (match) => match.underminedFieldDefense,
+      ),
+    },
+    bomb: {
+      seatGamesWithGyrocopter: withGyro,
+      seatGamesWithBomb: seatGames(
+        (seat) => fielded(seat, "RAIDER") && seat.bombRuns > 0,
+      ),
+      runs: total((seat) => seat.bombRuns),
+      damage: total((seat) => seat.bombDamage),
+      kills: total((seat) => seat.bombKills),
+      assists: total((seat) => seat.bombAssists),
+      victimRoles: sumCounts(all.map((seat) => seat.bombVictimRoles)),
+      killVictims: sumCounts(all.map((seat) => seat.bombKillVictims)),
+      shieldAbsorbed: matchTotal((match) => match.bombShieldAbsorbed),
+      gyrocoptersLostAfterBomb: matchTotal(
+        (match) => match.gyrocoptersLostAfterBomb,
+      ),
+      gyrocopterKilledBy: sumCounts(
+        all.map((seat) => seat.gyrocopterKilledBy ?? {}),
+      ),
+    },
+    gunner: {
+      shotsUnmoved: matchTotal((match) => match.gunnerShotsUnmoved),
+      shotsMoved: matchTotal((match) => match.gunnerShotsMoved),
+      secondShots: matchTotal((match) => match.gunnerSecondShots),
+    },
+    engineer: {
+      seatGames: withEngineer,
+      fielded: total((seat) => seat.engineersFielded),
+      deaths: total((seat) => seat.engineerDeaths),
+      seatGamesEngineerKilled: seatGames((seat) => seat.engineerDeaths > 0),
+      killedBy: sumCounts(all.map((seat) => seat.engineerKilledBy)),
+      lostAfterAssemble: total((seat) => seat.engineersLostAfterAssemble ?? 0),
+      firstRound: stats(
+        all.flatMap((seat) =>
+          seat.firstEngineerRound === null ? [] : [seat.firstEngineerRound],
+        ),
+      ),
+      assembles: total((seat) => seat.assembles),
+      repairs: total((seat) => seat.repairs),
+      repairHp: total((seat) => seat.repairHp),
+      seatGamesWithWork: seatGames(
+        (seat) =>
+          seat.engineersFielded > 0 && seat.assembles + seat.repairs > 0,
+      ),
+      repairOnConstructs: matchTotal((match) => match.repairOnConstructs),
+      repairOnOtherMachines: matchTotal((match) => match.repairOnOtherMachines),
+      repairOnOthers: matchTotal((match) => match.repairOnOthers),
+    },
+    digIn: {
+      dugInUnitTurns: total((seat) => seat.dugInUnitTurns),
+      attacks: matchTotal((match) => match.digInAttacks),
+      damagePrevented: matchTotal((match) => match.digInDamagePrevented),
+      dugInKilled: matchTotal((match) => match.dugInKilled),
+    },
+    cannonAndTank: {
+      knockbacks: matchTotal((match) => match.knockbacks),
+      knockbacksBlocked: matchTotal((match) => match.knockbacksBlocked),
+      centersEmptied: matchTotal((match) => match.knockbackCentersEmptied),
+      platedHits: matchTotal((match) => match.platedHits),
+      platedDamagePrevented: matchTotal((match) => match.platedDamagePrevented),
+    },
+    citiesLost: total((seat) => seat.citiesLost),
+    seatGamesWithCityLost: seatGames((seat) => seat.citiesLost > 0),
+    watch: {
+      winWithTank: winWhere((seat) => fielded(seat, "KNIGHT")),
+      winWithoutTank: winWhere((seat) => !fielded(seat, "KNIGHT")),
+      winWithTunnel: winWhere((seat) => seat.tunnels > 0),
+      winWithoutTunnel: winWhere((seat) => seat.tunnels === 0),
+      winWithBomb: winWhere((seat) => seat.bombRuns > 0),
+      winWithoutBomb: winWhere((seat) => seat.bombRuns === 0),
+    },
+  };
+}
+
+/** Dwarf section 19.4 win rates and compact section 19.2 telemetry. */
+function dwarfSummary(entries: readonly MatrixEntry[]) {
+  const duel = entries.filter((entry) => entry.aiCount === 1);
+  const dwarfDuel = duel.filter((entry) =>
+    DWARF_ONE_VS_ONE.includes(entry.pairing),
+  );
+  const byKey = (
+    group: readonly MatrixEntry[],
+    key: (entry: MatrixEntry) => string,
+  ) =>
+    Object.fromEntries(
+      Object.entries(groupBy(group, key)).map(([name, items]) => [
+        name,
+        rateFor(items, dwarfWon),
+      ]),
+    );
+  const against = (opponent: FactionIdV7) => {
+    const group = dwarfDuel.filter((entry) =>
+      entry.factions.includes(opponent),
+    );
+    return {
+      win: rateFor(group, dwarfWon),
+      bySeat: byKey(group, (entry) => entry.pairing),
+      bySize: byKey(group, (entry) => String(entry.size)),
+      rounds: stats(group.map((entry) => entry.rounds)),
+      telemetry: dwarfAggregate(group),
+      opponent: opponentAggregate(group, opponent),
+    };
+  };
+  const reference = capRateOf(
+    duel.filter((entry) => !DWARF_ONE_VS_ONE.includes(entry.pairing)),
+  );
+  return {
+    versusHuman: against("ORIGINAL"),
+    versusUndead: against("UNDEAD"),
+    versusGoblin: against("GOBLIN"),
+    versusDinosaur: against("DINOSAUR"),
+    versusMartian: against("MARTIAN"),
+    versusIceFolk: against("ICE_FOLK"),
+    allMixed: rateFor(dwarfDuel, dwarfWon),
+    capRates: {
+      nonDwarfReference: reference,
+      allDwarf: capRateOf(dwarfDuel),
+      byPairing: Object.fromEntries(
+        DWARF_ONE_VS_ONE.flatMap((pairing) => {
+          const group = duel.filter((entry) => entry.pairing === pairing);
+          return group.length === 0 ? [] : [[pairing, capRateOf(group)]];
+        }),
+      ) as Record<string, number | null>,
+    },
+    telemetry: {
+      allMixed: dwarfAggregate(dwarfDuel),
+      multi: dwarfAggregate(
+        entries.filter(
+          (entry) => entry.aiCount > 1 && entry.factions.includes("DWARF"),
+        ),
+      ),
     },
   };
 }
@@ -5067,6 +5783,7 @@ function markdown(summary: ReturnType<typeof summarize>): string {
     ...dinosaurMarkdown(summary.dinosaur, pct),
     ...martianMarkdown(summary.martian, pct),
     ...iceFolkMarkdown(summary.iceFolk, pct),
+    ...dwarfMarkdown(summary.dwarf, pct),
     "| Pairing | Games | Undead win | Seat-0 win | First mover win | Rounds mean/median/p90 | Cap rate |",
     "| --- | ---: | --- | --- | --- | --- | ---: |",
     ...Object.entries(summary.duel.perPairing).map(
@@ -5218,6 +5935,48 @@ function iceFolkMarkdown(
     `Chill: ${flat(all.chill.bySource)}; Cold Snap ${all.chill.coldSnapCasts} casts; Bolas ${all.chill.bolasThrows}; sluggish turns ${all.chill.sluggishTurns} (${all.chill.sluggishTurnsWithoutAction} without action)`,
     `Sweep ${all.sweep.attacks} attacks, ${all.sweep.flankHits} flank hits, ${all.sweep.flankKills} flank kills; Rockfall ${all.rockfall.shots} shots, ${all.rockfall.kills} kills`,
     `Witch: in ${all.witch.seatGames}/${all.seatGames} seat-games, ${all.witch.trained} trained, ${all.witch.deaths} killed (${flat(all.witch.killedBy)}), ${all.witch.aliveAtEnd} alive at the end; win with/without ${pct(all.watch.winWithWitch)} / ${pct(all.watch.winWithoutWitch)}`,
+    "",
+  ];
+}
+
+/** Dwarf section 19.4 lines (empty without Dwarf games). */
+function dwarfMarkdown(
+  dwarf: ReturnType<typeof dwarfSummary>,
+  pct: (rate: Rate) => string,
+): string[] {
+  const all = dwarf.telemetry.allMixed;
+  if (all.seatGames === 0) return [];
+  const flat = (record: Record<string, number | null>) =>
+    Object.entries(record)
+      .map(([key, value]) => `${key} ${value}`)
+      .join(", ");
+  const versus = [
+    ["Human", dwarf.versusHuman],
+    ["Undead", dwarf.versusUndead],
+    ["Goblin", dwarf.versusGoblin],
+    ["Dinosaur", dwarf.versusDinosaur],
+    ["Martian", dwarf.versusMartian],
+    ["Ice Folk", dwarf.versusIceFolk],
+  ] as const;
+  return [
+    ...versus.map(
+      ([name, item]) =>
+        `Dwarf win vs ${name}: ${pct(item.win)}; ${flat(
+          Object.fromEntries(
+            Object.entries(item.bySeat).map(([key, rate]) => [key, rate.rate]),
+          ),
+        )}; eruption kills ${item.telemetry.eruption.kills}, bomb kills ${item.telemetry.bomb.kills}; Engineer killed in ${item.telemetry.engineer.seatGamesEngineerKilled}/${item.telemetry.engineer.seatGames}; Dwarf city lost in ${item.telemetry.seatGamesWithCityLost}/${item.telemetry.seatGames}; cities r15 ${item.telemetry.citiesRound15.dwarf}/${item.telemetry.citiesRound15.opponent}`,
+    ),
+    `Dwarf all mixed ${pct(dwarf.allMixed)}`,
+    `Cap rates: non-Dwarf reference ${dwarf.capRates.nonDwarfReference}; all Dwarf ${dwarf.capRates.allDwarf}; ${flat(dwarf.capRates.byPairing)}`,
+    `Dwarf (1v1) trained: ${flat(all.trained)}; seat-games ${all.seatGames}`,
+    `Dwarf kills per loss: ${flat(all.killsPerLoss)}; kill share ${flat(all.killShare)}; kills by cause ${flat(all.killsByCause)}`,
+    `Tunnels ${all.tunnel.tunnels} (${all.tunnel.withRider} with a rider, ${all.tunnel.home} home); Mole in ${all.tunnel.seatGamesWithMole}, a tunnel in ${all.tunnel.seatGamesWithTunnel}, a rider in ${all.tunnel.seatGamesWithRider}, an eruption hit in ${all.tunnel.seatGamesWithEruptionHit} seat-games; surfaced lost ${all.tunnel.surfacedLostNextEnemyTurn}`,
+    `Eruptions ${all.eruption.eruptions} (${all.eruption.withHits} hitting), ${all.eruption.victims} victims, ${all.eruption.damage} damage, ${all.eruption.kills} kills, ${all.eruption.assists} assists; Shield absorbed ${all.eruption.shieldAbsorbed}; Egg damage ${all.eruption.eggDamage}, Eggs destroyed ${all.eruption.eggsDestroyed}`,
+    `Bombs: Gyrocopter in ${all.bomb.seatGamesWithGyrocopter}, a bomb in ${all.bomb.seatGamesWithBomb} seat-games; ${all.bomb.runs} runs, ${all.bomb.damage} damage, ${all.bomb.kills} kills, ${all.bomb.assists} assists; Shield absorbed ${all.bomb.shieldAbsorbed}; Gyrocopters lost after a bomb ${all.bomb.gyrocoptersLostAfterBomb}`,
+    `Engineer: in ${all.engineer.seatGames} seat-games (work in ${all.engineer.seatGamesWithWork}), ${all.engineer.fielded} fielded, killed in ${all.engineer.seatGamesEngineerKilled} (${flat(all.engineer.killedBy)}), ${all.engineer.lostAfterAssemble} lost within two rounds of an Assemble; Assembles ${all.engineer.assembles}, Repairs ${all.engineer.repairs} (${all.engineer.repairHp} HP)`,
+    `Dig In: ${all.digIn.dugInUnitTurns} dug-in unit-turns, ${all.digIn.attacks} attacks, ${all.digIn.damagePrevented} HP prevented, ${all.digIn.dugInKilled} killed; Gunner shots ${all.gunner.shotsUnmoved} unmoved, ${all.gunner.secondShots} second`,
+    `Win with/without Steam Tank ${pct(all.watch.winWithTank)} / ${pct(all.watch.winWithoutTank)}; tunnel ${pct(all.watch.winWithTunnel)} / ${pct(all.watch.winWithoutTunnel)}; bomb ${pct(all.watch.winWithBomb)} / ${pct(all.watch.winWithoutBomb)}`,
     "",
   ];
 }

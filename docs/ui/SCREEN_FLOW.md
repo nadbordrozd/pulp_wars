@@ -837,7 +837,7 @@ apart from the extra faction option.
   still)", "Train Steam Mole (Tunnel)", "Train Gyrocopter (Bomb Run)",
   "Train Steam Tank (Plated)", "Train Engineer (Repair)", and the effects
   "Engineers Repair adjacent units: +4 machines, +2 others", "Engineers
-  Assemble Clockwork Gunners", "Dive: bombs deal 5", "Hammerers and Moles
+  Assemble Clockwork Gunners", "Dive: bombs deal 6", "Hammerers and Moles
   that stand still on or next to your city centers are dug in", "Eruptions
   deal 3; Steam Cannons ignore Walls and Field Defense", all from the
   registry and the constants. Rewards read "A free Hammerer" and "Brass

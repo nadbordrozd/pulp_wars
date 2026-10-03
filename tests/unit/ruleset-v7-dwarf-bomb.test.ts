@@ -31,8 +31,9 @@ import {
 
 // The Dwarf revision (`pulp_wars-78i.3`): the Gyrocopter and its bombing
 // run (docs/product/RULESET_7_DWARVES.md section 6). The field is the one of
-// ruleset-v7-dwarf-tunnel.test.ts; every technology (Dive: a bomb deals 5)
-// unless a test removes Raiding.
+// ruleset-v7-dwarf-tunnel.test.ts; every technology (Dive: a bomb deals 6)
+// unless a test removes Raiding. The coarse balance (`pulp_wars-78i.7`)
+// raised the bomb from 4 to 5 and the Dive bomb from 5 to 6.
 
 const ENEMY: IcePieceV7 = { seat: 1, role: "FIGHTER", at: at(1, 1) };
 const NO_DIVE = TECHNOLOGY_IDS_V7.filter(
@@ -102,11 +103,11 @@ describe("the Bomb Run command (section 6.2)", () => {
       to: at(4, 5),
       targetUnitId: target.id,
       at: at(5, 4),
-      damage: 4,
+      damage: 5,
       shieldDamage: 0,
       killed: false,
     });
-    expect(unitAtV7(result.state, at(5, 4)).hp).toBe(target.hp - 4);
+    expect(unitAtV7(result.state, at(5, 4)).hp).toBe(target.hp - 5);
     expect(unitAtV7(result.state, at(4, 5))).toMatchObject({
       id: gyro.id,
       hp: gyro.hp,
@@ -119,11 +120,11 @@ describe("the Bomb Run command (section 6.2)", () => {
     const close = bombRun(state, bombV7(state, at(5, 2), at(6, 3), at(7, 4)));
     expect(bombed(close.events)).toMatchObject({
       targetUnitId: near.id,
-      damage: 4,
+      damage: 5,
     });
   });
 
-  it("deals 5 with Dive; Armoured takes 1 off; a Shield absorbs first", () => {
+  it("deals 6 with Dive; Armoured takes 1 off; a Shield absorbs first", () => {
     const dive = dwarfFieldV7([
       { seat: 0, role: "RAIDER", at: at(5, 2) },
       { seat: 1, role: "FIGHTER", at: at(5, 3) },
@@ -132,7 +133,7 @@ describe("the Bomb Run command (section 6.2)", () => {
     expect(
       bombed(bombRun(dive, bombV7(dive, at(5, 2), at(5, 3), at(5, 4))).events)
         .damage,
-    ).toBe(5);
+    ).toBe(6);
     const anky = dwarfFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(5, 2) },
@@ -144,7 +145,7 @@ describe("the Bomb Run command (section 6.2)", () => {
     expect(
       bombed(bombRun(anky, bombV7(anky, at(5, 2), at(5, 3), at(5, 4))).events)
         .damage,
-    ).toBe(4);
+    ).toBe(5);
     const grunt = dwarfFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(5, 2) },
@@ -157,7 +158,7 @@ describe("the Bomb Run command (section 6.2)", () => {
       bombed(
         bombRun(grunt, bombV7(grunt, at(5, 2), at(5, 3), at(5, 4))).events,
       ),
-    ).toMatchObject({ damage: 3, shieldDamage: 2, killed: false });
+    ).toMatchObject({ damage: 4, shieldDamage: 2, killed: false });
   });
 
   it("ignores Field Defense and destroys none; kills with cause BOMB and credit to the Gyrocopter", () => {
