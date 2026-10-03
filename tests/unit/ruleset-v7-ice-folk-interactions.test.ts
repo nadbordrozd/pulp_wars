@@ -109,7 +109,7 @@ describe("Martians (section 10.4)", () => {
     });
   });
 
-  it("the Tractor Beam pulls a Chilled unit, which keeps its Chill; Mind Control of a Witch ends her Blizzard", () => {
+  it("the Tractor Beam pulls a Chilled unit, which keeps its Chill; a mind-controlled Witch keeps her Blizzard", () => {
     const pull = iceFieldV7(
       [
         { seat: 1, role: "KNIGHT", at: at(4, 3) },
@@ -141,7 +141,12 @@ describe("Martians (section 10.4)", () => {
       unitId: unitAtV7(control, at(4, 3)).id,
       targetUnitId: unitAtV7(control, at(5, 3)).id,
     });
-    expect(isSnowV7(mind.state, at(6, 4))).toBe(false);
+    // The Mind Control revision (section 5.3): her Blizzard is a body rule;
+    // she keeps it under her controller.
+    expect(isSnowV7(mind.state, at(6, 4))).toBe(true);
+    expect(unitAtV7(mind.state, at(5, 3)).ownerId).toBe(
+      unitAtV7(control, at(4, 3)).ownerId,
+    );
   });
 
   it("the Disintegrator removes a Yeti's Walls, which still leaves it without Snow cover", () => {

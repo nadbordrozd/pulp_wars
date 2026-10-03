@@ -6,7 +6,7 @@ import {
   BASIC_ECONOMIC_ACTIONS_V7,
   DEEP_WINTER_RECOVER_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_THRALL_LIMIT_V7,
+  MIND_CONTROL_LIMIT_V7,
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TRACTOR_BEAM_RANGE_V7,
@@ -20,10 +20,13 @@ import {
   embarkedMovementSpentV7,
   factionRulesV7,
   isEggLaidRoleV7,
+  isMindControlledV7,
   isRallyTargetV7,
-  playerFactionV7,
   technologyCapabilitiesV7,
+  seatRoleMechanicsV7,
+  unitCapabilitiesV7,
   unitCapacitySlotsV7,
+  unitFactionV7,
   unitGrowsV7,
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
@@ -129,15 +132,14 @@ import {
   type CreateInitialMapStateResultV7,
 } from "./map";
 import {
-  collapseThrallsV7,
+  controlledByBrainV7,
   coolingStepV7,
-  isThrallV7,
   mindControlCooldownStepV7,
   mindControlTargetBlockV7,
   prunedMartianV7,
   rechargeShieldsAtEndTurnV7,
   rechargeShieldsV7,
-  thrallsOfBrainV7,
+  releaseControlledV7,
   tractorBeamDestinationV7,
   withFiredRayV7,
   withFullShieldsV7,
@@ -237,7 +239,7 @@ export type RuleErrorCodeV7 =
   | "HATCH_NOT_LEGAL"
   | "UNIT_IS_EGG"
   // The Martian revision: an illegal Beam Down (`EMBARKED`, `MOVED`,
-  // `NO_PASSENGER`), Mind Control (`EMBARKED`, `COOLDOWN`, `THRALL_LIMIT`,
+  // `NO_PASSENGER`), Mind Control (`EMBARKED`, `COOLDOWN`, `CONTROL_LIMIT`,
   // `TARGET_IMMUNE`, `OUT_OF_RANGE`, `TARGET_HEALTHY`), or Tractor Beam
   // (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `BLOCKED`).
   | "BEAM_DOWN_NOT_LEGAL"
@@ -360,9 +362,13 @@ export function applyCommandV7(
   actor: PlayerId,
   input: CommandV7,
 ): ApplyCommandResultV7 {
-  const result = applyCommandCoreV7(stateInput, actor, input);
-  if (!result.accepted) return result;
-  const navalMayChange = navalFactsMayChangeV7(stateInput, input);
+  const core = applyCommandCoreV7(stateInput, actor, input);
+  if (!core.accepted) return core;
+  const result = revealReleasedUnitsV7(core);
+  // The Mind Control revision section 5.4: every command that releases a
+  // unit joins the blockade and sea-network recompute list.
+  const navalMayChange =
+    navalFactsMayChangeV7(stateInput, input) || result !== core;
   const naval = navalMayChange
     ? navalTransitionEventsV7(stateInput, result.state)
     : [];
@@ -375,20 +381,70 @@ export function applyCommandV7(
   };
 }
 
+/**
+ * The Mind Control revision (section 4.2): each released unit reveals its
+ * sight for its (original) owner where it stands at the end of the command;
+ * the `TILES_REVEALED` follows its `UNIT_RELEASED`. A unit that left the
+ * board or burrowed later in the command reveals nothing. Returns `result`
+ * itself when the command released no unit.
+ */
+function revealReleasedUnitsV7(
+  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
+): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
+  if (!result.events.some((event) => event.kind === "UNIT_RELEASED"))
+    return result;
+  let state = result.state;
+  const events: DomainEventV7[] = [];
+  for (const event of result.events) {
+    events.push(event);
+    if (event.kind !== "UNIT_RELEASED") continue;
+    const unit = state.units.find(
+      (candidate) =>
+        candidate.id === event.unitId &&
+        candidate.hp > 0 &&
+        candidate.ownerId === event.toPlayerId,
+    );
+    if (unit === undefined) continue;
+    const reveal = revealRadius(
+      state,
+      event.toPlayerId,
+      unit.at,
+      unitSightRadiusAtV7(state, unit),
+    );
+    if (reveal.revealed.length === 0) continue;
+    state = {
+      ...state,
+      players: setExplored(state.players, event.toPlayerId, reveal.explored),
+    };
+    events.push({
+      kind: "TILES_REVEALED",
+      playerId: event.toPlayerId,
+      tiles: reveal.revealed,
+    });
+  }
+  if (state === result.state) return { ...result, events };
+  const next = accepted(checked(state), events);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
+}
+
 function navalFactsMayChangeV7(
   state: GameStateV7,
   command: CommandV7,
 ): boolean {
   // The Martian revision section 10.7: a Mind Control or a Tractor Beam can
-  // lift a blockade, and so can a Disband of a Brain whose embarked Thrall
-  // was a blockader (only a state with Thralls can be affected).
+  // lift a blockade, and so can a Disband of a Brain whose embarked
+  // controlled unit was a blockader and is released (the Mind Control
+  // revision section 5.4; only a state with controlled units).
   if (command.kind === "MIND_CONTROL" || command.kind === "TRACTOR_BEAM")
     return true;
   // The Dwarf revision section 6.3: a bomb can kill an embarked blockader,
   // and a self-launch can start a blockade.
   if (command.kind === "BOMB_RUN") return true;
   if (command.kind === "DISBAND")
-    return Array.isArray(state.thralls) && state.thralls.length > 0;
+    return (
+      Array.isArray(state.mindControlled) && state.mindControlled.length > 0
+    );
   if (command.kind === "RESEARCH")
     return (
       command.tech === "ROADS" ||
@@ -1534,7 +1590,7 @@ function applyTrainNaval(
   // Revision 19 section 5.1: used slots plus the role's slots must fit.
   if (
     assignedUnitCountV7(state, city.id) +
-      unitCapacitySlotsV7(state, { ownerId: actor, role: command.role }) >
+      seatRoleMechanicsV7(state, actor, command.role).capacitySlots >
     cityUnitCapacityV7(state, city)
   )
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
@@ -1625,6 +1681,7 @@ function applyDisembark(
       navigation: player.researchedTechs.includes("NAVIGATION"),
       // The Ice Folk revision section 7.1: the unit lands in land form.
       mountainBorn: unitIsMountainBornV7(state, {
+        id: unit.id,
         ownerId: unit.ownerId,
         role: unit.role,
       }),
@@ -1641,6 +1698,7 @@ function applyDisembark(
   // revision section 7.7: nor can a Sabretooth).
   if (
     unitAvoidsForeignSitesV7(state, {
+      id: unit.id,
       ownerId: unit.ownerId,
       role: unit.role,
     }) &&
@@ -1808,7 +1866,7 @@ function applyTrain(
   // 2-slot Dinosaur role needs two free slots).
   if (
     assignedUnitCountV7(state, city.id) +
-      unitCapacitySlotsV7(state, { ownerId: actor, role: command.role }) >
+      seatRoleMechanicsV7(state, actor, command.role).capacitySlots >
     cityUnitCapacityV7(state, city)
   )
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
@@ -1854,6 +1912,7 @@ function applyTrain(
           : candidate,
       ),
       units: spawn.units,
+      burrowed: spawn.burrowed,
       // The Martian revision: a trained unit starts with its full Shield.
       shields: withFullShieldsV7(state, state.shields, [trained]),
     };
@@ -1916,7 +1975,7 @@ function applyLayEgg(
     return rejected(original, "INVALID_TILE", { action: "LAY_EGG" });
   if (
     assignedUnitCountV7(state, city.id) +
-      unitCapacitySlotsV7(state, { ownerId: actor, role: command.role }) >
+      seatRoleMechanicsV7(state, actor, command.role).capacitySlots >
     cityUnitCapacityV7(state, city)
   )
     return rejected(original, "CITY_CAPACITY_FULL", { cityId: city.id });
@@ -2226,11 +2285,15 @@ function applyBeamDown(
 }
 
 /**
- * The Martian revision `MIND_CONTROL` (section 8.2): a primary action of a
- * Brain. A visible hostile land-form one-slot unit with at most
- * `MIND_CONTROL_HP_V7` HP within `MIND_CONTROL_RANGE_V7`, not on a
- * settlement site, leaves the board as a removal (not a death), and a
- * Thrall with its HP appears on its tile under a new entity ID.
+ * The Mind Control revision `MIND_CONTROL` (docs/product/RULESET_7_MIND_CONTROL.md
+ * section 3): a primary action of a Brain that is not itself controlled and
+ * controls fewer than `MIND_CONTROL_LIMIT_V7` units. A visible, hostile,
+ * wounded land-form one-slot unit with at most `MIND_CONTROL_HP_V7` HP
+ * within `MIND_CONTROL_RANGE_V7`, not on a settlement site or a Rift, not a
+ * construct, and not already controlled, comes under the actor's control:
+ * it keeps its ID, role, kind, HP, kills, statuses, form, and tile; its
+ * home is cleared (its old city's slot frees), it is not capture-eligible,
+ * and it is exhausted. A controlled Brain's own units are released.
  */
 function applyMindControl(
   original: GameStateV7,
@@ -2238,15 +2301,14 @@ function applyMindControl(
   actor: PlayerId,
   command: Extract<CommandV7, { kind: "MIND_CONTROL" }>,
 ): ApplyCommandResultV7 {
-  if (
-    state.commandIndex === Number.MAX_SAFE_INTEGER ||
-    state.nextEntityId >= Number.MAX_SAFE_INTEGER
-  )
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
     return rejected(original, "INTEGER_OVERFLOW");
   const actorCheck = validateUnitActor(state, actor, command.unitId);
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
   const brain = actorCheck.unit;
+  // Row 1: a controlled Brain has no Mind Control (its role rule drops it,
+  // `MIND_CONTROLLED_LOST_ABILITIES_V7`), so it is `UNIT_ROLE_INVALID`.
   if (!unitRoleRuleV7(state, brain).abilities.includes("MIND_CONTROL"))
     return rejected(original, "UNIT_ROLE_INVALID", { role: brain.role });
   if (
@@ -2260,11 +2322,11 @@ function applyMindControl(
   if (state.mindControlCooldowns.some((entry) => entry.unitId === brain.id))
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: "COOLDOWN" });
   if (
-    thrallsOfBrainV7(state.thralls, brain.id).length >=
-    MIND_CONTROL_THRALL_LIMIT_V7
+    controlledByBrainV7(state.mindControlled, brain.id).length >=
+    MIND_CONTROL_LIMIT_V7
   )
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
-      reason: "THRALL_LIMIT",
+      reason: "CONTROL_LIMIT",
     });
   const target = state.units.find(
     (unit) => unit.id === command.targetUnitId && unit.hp > 0,
@@ -2275,8 +2337,9 @@ function applyMindControl(
     });
   if (!arePlayersHostileV7(state, actor, target.ownerId))
     return rejected(original, "TARGET_ALLIED");
-  // The per-target conditions (immunity, range, HP) are shared with the
-  // public command query (`mindControlTargetBlockV7`).
+  // The per-target conditions (immunity, already controlled, range, HP,
+  // wounded) are shared with the public command query
+  // (`mindControlTargetBlockV7`).
   const block = mindControlTargetBlockV7(
     state,
     brain,
@@ -2286,22 +2349,10 @@ function applyMindControl(
   if (block !== null)
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: block });
   try {
-    const allocation = allocateUnitId(state.nextEntityId);
-    const rule = effectiveRoleRuleV7(
-      "FIGHTER",
-      requirePlayer(state, actor).faction,
-    );
-    const thrall: UnitStateV7 = {
-      id: allocation.id,
+    const controlled: UnitStateV7 = {
+      ...target,
       ownerId: actor,
       homeCityId: null,
-      role: "FIGHTER",
-      form: "LAND",
-      at: { x: target.at.x, y: target.at.y },
-      hp: Math.min(target.hp, rule.maxHp),
-      maxHp: rule.maxHp,
-      kills: 0,
-      veteran: false,
       captureEligible: false,
       activation: exhaustedActivation(),
     };
@@ -2313,46 +2364,51 @@ function applyMindControl(
         targetUnitId: target.id,
         targetOwnerId: target.ownerId,
         targetRole: target.role,
-        thrallUnitId: thrall.id,
-        at: thrall.at,
-        hp: thrall.hp,
+        at: { x: target.at.x, y: target.at.y },
+        hp: target.hp,
       },
     ];
-    const thralls = [
-      ...state.thralls.filter((entry) => entry.unitId !== target.id),
-      { unitId: thrall.id, brainUnitId: brain.id },
+    // The target is not removed: no UNIT_DIED, Grave, rising, blast,
+    // credit, growth, or Plunder; every status entry stays on its ID.
+    const entries = [
+      ...state.mindControlled,
+      {
+        unitId: target.id,
+        brainUnitId: brain.id,
+        originalOwnerId: target.ownerId,
+      },
     ].sort((left, right) => left.unitId - right.unitId);
-    // The target is removed, not killed: no UNIT_DIED, Grave, rising, blast,
-    // credit, growth, or Plunder. When it was a Brain, its Thralls collapse.
-    const units = [
-      ...collapseThrallsV7(
-        [
-          ...state.units
-            .filter((unit) => unit.id !== target.id)
-            .map((unit) =>
-              unit.id === brain.id
-                ? {
-                    ...unit,
-                    activation: {
-                      ...unit.activation,
-                      specialActed: true,
-                      handled: true,
-                    },
-                  }
-                : unit,
-            ),
-          thrall,
-        ],
-        thralls,
-        events,
-      ).units,
-    ].sort((left, right) => left.id - right.id);
-    const sightState = { ...state, units } as GameStateV7;
+    const changed = state.units.map((unit) =>
+      unit.id === brain.id
+        ? {
+            ...unit,
+            activation: {
+              ...unit.activation,
+              specialActed: true,
+              handled: true,
+            },
+          }
+        : unit.id === target.id
+          ? controlled
+          : unit,
+    );
+    // Section 3 step 3: when the target is a Brain (duplicate Martian
+    // seats only), the units it controlled are released.
+    const release = releaseControlledV7(
+      changed,
+      state.burrowed,
+      entries,
+      state.players,
+      events,
+    );
+    const units = [...release.units].sort((left, right) => left.id - right.id);
+    const mindControlled = release.mindControlled;
+    const sightState = { ...state, units, mindControlled } as GameStateV7;
     const reveal = revealRadius(
       sightState,
       actor,
-      thrall.at,
-      unitSightRadiusAtV7(sightState, thrall),
+      controlled.at,
+      unitSightRadiusAtV7(sightState, controlled),
     );
     if (reveal.revealed.length > 0)
       events.push({
@@ -2363,11 +2419,11 @@ function applyMindControl(
     const staged = graveActionTail(
       {
         ...state,
-        nextEntityId: allocation.nextEntityId,
         commandIndex: nextSafe(state.commandIndex),
         players: setExplored(state.players, actor, reveal.explored),
         units,
-        thralls,
+        burrowed: release.burrowed,
+        mindControlled,
         mindControlCooldowns: [
           ...state.mindControlCooldowns,
           { unitId: brain.id, turnsRemaining: MIND_CONTROL_COOLDOWN_TURNS_V7 },
@@ -2771,6 +2827,7 @@ function applyReward(
     const board = state.board;
     let cities: readonly CityStateV7[] = state.cities;
     let units = state.units;
+    let burrowed = state.burrowed;
     let shields = state.shields;
     let contributions = state.populationContributions;
     const choices: readonly PendingChoiceV7[] = state.pendingChoices.slice(1);
@@ -2881,6 +2938,7 @@ function applyReward(
       );
       players = spawn.players;
       units = spawn.units;
+      burrowed = spawn.burrowed;
       // The Martian revision: a reward unit arrives at its full Shield.
       shields = withFullShieldsV7(state, shields, [created]);
       events.push({
@@ -2949,6 +3007,7 @@ function applyReward(
         board,
         cities,
         units,
+        burrowed,
         shields,
         populationContributions: contributions,
         pendingChoices: choices,
@@ -3268,7 +3327,9 @@ function treasureKnightPlacement(
   role: UnitStateV7["role"],
 ): { readonly at: CoordV7; readonly homeCityId: CityStateV7["id"] } | null {
   // Revision 19 section 5.1: the home city needs the treasure unit's slots.
-  const slots = unitCapacitySlotsV7(state, { ownerId: actor, role });
+  // The treasure unit is not created yet: role-level reads of the seat.
+  const mechanics = seatRoleMechanicsV7(state, actor, role);
+  const slots = mechanics.capacitySlots;
   const cities = state.cities
     .filter(
       (city) =>
@@ -3284,7 +3345,7 @@ function treasureKnightPlacement(
   const player = requirePlayer(state, actor);
   // The Martian revision: the treasure unit's own movement mode decides
   // (a Saucer may be placed on a Mountain), through `canEnterTerrainV7`.
-  const movementMode = unitMovementModeV7(state, { ownerId: actor, role });
+  const movementMode = mechanics.movementMode;
   for (const city of cities)
     for (const candidate of adjacentCoords(state, at)) {
       const tile = tileAtV7(state.board, candidate);
@@ -3297,7 +3358,7 @@ function treasureKnightPlacement(
           afloat: false,
           engineering: player.researchedTechs.includes("ENGINEERING"),
           navigation: player.researchedTechs.includes("NAVIGATION"),
-          mountainBorn: unitIsMountainBornV7(state, { ownerId: actor, role }),
+          mountainBorn: mechanics.mountainBorn,
         }) ||
         // The Dwarf revision section 5.3: the occupancy predicate.
         tileOccupiedV7(state, candidate) ||
@@ -3625,10 +3686,17 @@ function applyAttack(
         );
     if (preview.attackerInfected) infect(defender, attacker, "RETALIATION");
     else if (preview.attackerDies) died(attacker, "RETALIATION");
-    // The Martian revision section 8.3: the Thralls of a Brain that just
-    // left the board collapse right after its death events and before the
-    // advance, the Push, and any chain.
-    units = [...collapseThrallsV7(units, state.thralls, events).units];
+    // The Mind Control revision section 4.2: the controlled units of a Brain
+    // that just left the board are released right after its death events
+    // and before the advance, the Push, and any chain.
+    const release = releaseControlledV7(
+      units,
+      state.burrowed,
+      state.mindControlled,
+      state.players,
+      events,
+    );
+    units = [...release.units];
     // Sections 5.3 and 6.2: the Shields the exchange spent, and the Cooling
     // a full-power ray starts.
     const shields = withShieldDamageV7(
@@ -3712,7 +3780,8 @@ function applyAttack(
         nextEntityId,
         bitten,
         shields,
-        thralls: state.thralls,
+        mindControlled: release.mindControlled,
+        burrowed: release.burrowed,
       },
       initialExplosions,
       events,
@@ -3733,6 +3802,9 @@ function applyAttack(
       preview.advances &&
       !preview.attackerDies &&
       survivor !== undefined &&
+      // The Mind Control revision: a controlled attacker released by the
+      // chain is no longer the actor's.
+      survivor.ownerId === actor &&
       units.some(
         (candidate) =>
           candidate.id !== attacker.id &&
@@ -3847,6 +3919,8 @@ function applyAttack(
         players,
         cities: economy.cities,
         units,
+        burrowed: chain.burrowed,
+        mindControlled: chain.mindControlled,
         graves,
         plagued,
         bitten,
@@ -4313,13 +4387,13 @@ function applyPromote(
   if (unit.activation.overrunActive)
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   // Revision 19: a Dinosaur unit grows instead and is never promoted. The
-  // Martian revision section 8.3: a Thrall is never promoted.
+  // Mind Control revision section 4.1: a controlled unit is promoted by its
+  // kind's rules like any own unit.
   if (
     unit.form === "EMBARKED" ||
     unit.veteran ||
     unit.kills < PROMOTION_KILLS_V7 ||
-    unitGrowsV7(state, unit) ||
-    isThrallV7(state.thralls, unit.id)
+    unitGrowsV7(state, unit)
   )
     return rejected(original, "PROMOTION_NOT_ELIGIBLE", { unitId });
   // Revision 20 section 5: a promotion fully heals (`hp` is the new maximum).
@@ -4576,9 +4650,12 @@ function applyDisband(
     return rejected(original, "UNIT_ROLE_INVALID", {
       role: actorCheck.unit.role,
     });
-  // The Martian revision section 8.3: a Thrall cannot Disband.
-  if (isThrallV7(state.thralls, unitId))
-    return rejected(original, "DISBAND_NOT_LEGAL", { reason: "THRALL" });
+  // The Mind Control revision section 4.1: a controlled unit never
+  // Disbands (no Coins from enslaving).
+  if (isMindControlledV7(state, unitId))
+    return rejected(original, "DISBAND_NOT_LEGAL", {
+      reason: "MIND_CONTROLLED",
+    });
   if (!egg && primaryUsed(actorCheck.unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   // Revision 14 sections 3.6 and 4.5: afflicted units cannot Disband.
@@ -4599,16 +4676,20 @@ function applyDisband(
         coinDelta: refund,
       },
     ];
-    // The Martian revision section 8.3: disbanding a Brain collapses its
-    // Thralls.
-    const units = collapseThrallsV7(
+    // The Mind Control revision section 4.2: disbanding a Brain releases
+    // its controlled unit.
+    const release = releaseControlledV7(
       state.units.filter((item) => item.id !== unitId),
-      state.thralls,
+      state.burrowed,
+      state.mindControlled,
+      state.players,
       events,
-    ).units;
+    );
     const afterRemoval = {
       ...state,
-      units,
+      units: release.units,
+      burrowed: release.burrowed,
+      mindControlled: release.mindControlled,
     };
     const next = checked({
       ...afterRemoval,
@@ -4730,8 +4811,9 @@ function applyCapture(
         item.id === unit.id
           ? {
               ...item,
-              // The Martian revision section 8.3: a Thrall stays homeless.
-              homeCityId: isThrallV7(state.thralls, item.id)
+              // The Mind Control revision section 4.1: a controlled unit
+              // stays homeless, even after a capture it makes.
+              homeCityId: isMindControlledV7(state, item.id)
                 ? null
                 : captured.id,
               captureEligible: false,
@@ -4760,11 +4842,41 @@ function applyCapture(
       !cities.some((item) => item.ownerId === formerOwner);
     // The Dwarf revision section 5.5: a burrowed unit homed to the captured
     // city is orphaned like any unit.
-    let burrowed = state.burrowed.map((entry) =>
+    let burrowed: GameStateV7["burrowed"] = state.burrowed.map((entry) =>
       formerOwner !== null && entry.unit.homeCityId === captured.id
         ? { ...entry, unit: { ...entry.unit, homeCityId: null } }
         : entry,
     );
+    // The Mind Control revision section 4.3: before an eliminated seat's
+    // units are removed, its controlled units are released (to a living
+    // original owner, else removed with `BRAIN_LOST`).
+    const releaseEvents: DomainEventV7[] = [];
+    let mindControlled = state.mindControlled;
+    if (eliminatesFormerOwner && mindControlled.length > 0) {
+      // Its Brains leave first: every unit of the seat except the ones it
+      // controls is taken out for the release test.
+      const controlledIds = new Set(
+        mindControlled.map((entry) => entry.unitId),
+      );
+      const release = releaseControlledV7(
+        units.filter(
+          (item) => item.ownerId !== formerOwner || controlledIds.has(item.id),
+        ),
+        burrowed,
+        mindControlled,
+        players,
+        releaseEvents,
+      );
+      const releasedById = new Map(
+        release.released.map((item) => [item.id, item] as const),
+      );
+      const removedIds = new Set(release.removed.map((item) => item.id));
+      units = units
+        .filter((item) => !removedIds.has(item.id))
+        .map((item) => releasedById.get(item.id) ?? item);
+      burrowed = release.burrowed;
+      mindControlled = release.mindControlled;
+    }
     // The Dwarf revision section 5.2: every unit of an eliminated seat dies
     // with it, burrowed units included (an all-units read).
     const eliminatedUnits = eliminatesFormerOwner
@@ -4858,6 +4970,7 @@ function applyCapture(
         cities.some((item) => item.id === choice.cityId),
       );
       events.push(
+        ...releaseEvents,
         ...eliminatedUnits.map((item): DomainEventV7 => ({
           kind: "UNIT_DIED",
           unitId: item.id,
@@ -4890,6 +5003,7 @@ function applyCapture(
         cities,
         units,
         burrowed,
+        mindControlled,
         populationContributions: contributions,
         pendingChoices: choices,
         outcome,
@@ -5145,9 +5259,17 @@ function applyWail(
       risings.push(rising);
       units = [...units, rising];
     }
-    // The Martian revision: a Brain killed by the Wail takes its Thralls
-    // with it, and the Wail strips the Shields it hit (section 5.3).
-    units = [...collapseThrallsV7(units, state.thralls, events).units];
+    // The Mind Control revision section 4.2: a Brain killed by the Wail
+    // releases its controlled unit; the Martian revision: the Wail strips
+    // the Shields it hit (section 5.3).
+    const release = releaseControlledV7(
+      units,
+      state.burrowed,
+      state.mindControlled,
+      state.players,
+      events,
+    );
+    units = [...release.units];
     // Revision 17 section 6.7: Wail kills of exploding units set off a chain,
     // then its Plunder (never for the Undead Banshee's owner).
     const chain = resolveStateExplosionChainV7(
@@ -5164,7 +5286,8 @@ function applyWail(
             targets.map((entry) => [entry.unitId, entry.shieldDamage] as const),
           ),
         ),
-        thralls: state.thralls,
+        mindControlled: release.mindControlled,
+        burrowed: release.burrowed,
       },
       targets.flatMap((entry) => {
         const victim = requireValue(
@@ -5298,7 +5421,8 @@ function applyKaboom(
         nextEntityId,
         bitten: state.bitten,
         shields: state.shields,
-        thralls: state.thralls,
+        mindControlled: state.mindControlled,
+        burrowed: state.burrowed,
       },
       [{ unit: exploder, cause: "KABOOM" }],
       events,
@@ -5393,7 +5517,8 @@ function resolveStartTurnPlagueAndChainV7(
       nextEntityId: after.nextEntityId,
       bitten: after.bitten,
       shields: after.shields,
-      thralls: after.thralls,
+      mindControlled: after.mindControlled,
+      burrowed: after.burrowed,
     },
     initial,
     events,
@@ -5571,12 +5696,14 @@ function recoveryAmount(state: GameStateV7, unit: UnitStateV7): number {
       : 0;
   if (unit.form === "EMBARKED") return 0;
   // The Ice Folk revision section 6.6: Deep Winter heals an Ice Folk land
-  // unit 6 in its owner's territory.
+  // unit 6 in its owner's territory (the Mind Control revision: a
+  // unit-level unlock, the controller's research through the kind's tree).
   if (inOwnTerritory(state, unit))
     return isIceFolkLandUnitV7(state, unit) &&
-      technologyCapabilitiesV7(
+      unitCapabilitiesV7(
+        state,
+        unit,
         requirePlayer(state, unit.ownerId).researchedTechs,
-        playerFactionV7(state, unit.ownerId),
       ).deepWinter
       ? DEEP_WINTER_RECOVER_V7
       : 4;
@@ -5590,8 +5717,8 @@ function inOwnTerritory(state: GameStateV7, unit: UnitStateV7): boolean {
 }
 
 /**
- * Revision 13 Restless: a land-form unit of a Restless faction (Undead)
- * recovers only in its owner's territory.
+ * Revision 13 Restless: a land-form unit of a Restless kind (Undead)
+ * recovers only in its owner's (its controller's) territory.
  */
 function restlessOutsideOwnTerritory(
   state: GameStateV7,
@@ -5599,7 +5726,7 @@ function restlessOutsideOwnTerritory(
 ): boolean {
   return (
     unit.form === "LAND" &&
-    factionRulesV7(playerFactionV7(state, unit.ownerId)).restless &&
+    factionRulesV7(unitFactionV7(state, unit)).restless &&
     !inOwnTerritory(state, unit)
   );
 }
@@ -5742,7 +5869,7 @@ function settleCityRewardsV7(
  */
 function rewardDisplacementCellV7(
   state: GameStateV7,
-  unit: Pick<UnitStateV7, "ownerId" | "role">,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "role">,
   center: CoordV7,
 ): CoordV7 | null {
   const ownerId = unit.ownerId;
@@ -5796,6 +5923,7 @@ function resolveCityCenterSpawnV7(
 ): {
   readonly players: readonly PlayerStateV7[];
   readonly units: readonly UnitStateV7[];
+  readonly burrowed: GameStateV7["burrowed"];
   readonly events: readonly DomainEventV7[];
 } {
   const occupant = state.units.find(
@@ -5825,10 +5953,20 @@ function resolveCityCenterSpawnV7(
       from: city.at,
       to: destination,
     });
-  // The Martian revision section 8.3: a Brain removed by displacement takes
-  // its Thralls with it.
-  if (occupant !== undefined && displaced === null)
-    units = [...collapseThrallsV7(units, state.thralls, events).units];
+  // The Mind Control revision section 4.2: a Brain removed by displacement
+  // releases its controlled unit.
+  let burrowed = state.burrowed;
+  if (occupant !== undefined && displaced === null) {
+    const release = releaseControlledV7(
+      units,
+      burrowed,
+      state.mindControlled,
+      state.players,
+      events,
+    );
+    units = [...release.units];
+    burrowed = release.burrowed;
+  }
   const revealedByPlayer = new Map<PlayerId, CoordV7[]>();
   for (const unit of [spawned, ...(displaced === null ? [] : [displaced])]) {
     const visibleState = { ...state, players, units } as GameStateV7;
@@ -5853,7 +5991,7 @@ function resolveCityCenterSpawnV7(
       playerId,
       tiles: uniqueCoords(revealed),
     });
-  return { players, units, events };
+  return { players, units, burrowed, events };
 }
 function evaluateAchievementsV7(
   state: GameStateV7,
@@ -5939,13 +6077,12 @@ function unitSightRadius(
   ownerId: PlayerId,
   unit: UnitStateV7,
 ): number {
+  // The Mind Control revision: the unit's own Sight under its kind, with
+  // the Fieldcraft and high-ground unlocks read through the kind's tree.
   const owner = requirePlayer(state, ownerId);
-  const capabilities = technologyCapabilitiesV7(
-    owner.researchedTechs,
-    owner.faction,
-  );
+  const capabilities = unitCapabilitiesV7(state, unit, owner.researchedTechs);
   const base = Math.max(
-    effectiveRoleRuleV7(unit.role, owner.faction).sightRadius,
+    unitRoleRuleV7(state, unit).sightRadius,
     capabilities.roleSightRadius[unit.role] ?? 0,
   );
   const tile = tileAtV7(state.board, unit.at);
@@ -6106,7 +6243,7 @@ function checked(state: GameStateV7): GameStateV7 {
   checkedOutputValidationCountV7 += 1;
   // Revision 14: drop afflictions of departed units, sources, and biters.
   // Revision 19: drop the countdowns of Eggs that left the board. The
-  // Martian revision: drop the Shield, Cooling, Thrall, and cooldown entries
+  // Martian revision: drop the Shield, Cooling, controlled, and cooldown entries
   // of units that left the board.
   // The Ice Folk revision: drop the Chill entries of units that left it.
   // The Dwarf revision: drop the per-turn entries of units that left the

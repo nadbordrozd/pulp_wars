@@ -1402,7 +1402,8 @@ const emptyTally = (): MartianTally => ({ hits: 0, damage: 0, kills: 0 });
 /**
  * Martian section 16.2 telemetry for one Martian seat of one match
  * (`pulp_wars-t6s.5`). Kills, losses, rays, and Shield absorption are keyed
- * by role, with a Thrall keyed `THRALL` (it has the `FIGHTER` role).
+ * by role, with a mind-controlled unit keyed `CONTROLLED` (the Mind
+ * Control revision; it keeps its own role).
  * "Hostile" units belong to another, non-allied player. The `against*`
  * counters measure the opposing seats' play against this seat's units.
  */
@@ -1637,12 +1638,12 @@ function martianTelemetry(
       before.units.map((unit) => [unit.id as number, unit]),
     );
     const thrallIds = new Set(
-      before.thralls.map((entry) => entry.unitId as number),
+      before.mindControlled.map((entry) => entry.unitId as number),
     );
     const command = record.command;
     const actor = seats.get(record.playerId);
     const key = (unit: { readonly id: number; readonly role: string }) =>
-      thrallIds.has(unit.id) ? "THRALL" : unit.role;
+      thrallIds.has(unit.id) ? "CONTROLLED" : unit.role;
     turnCommands += 1;
     if (command.kind === "END_TURN") {
       if (actor !== undefined) {
@@ -2969,7 +2970,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r32",
+    rulesetId: "pulp-wars-poc-7r33",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -3642,7 +3643,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r32",
+          rulesetId: "pulp-wars-poc-7r33",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -5074,7 +5075,7 @@ function martianAggregate(group: readonly MatrixEntry[]) {
       killed: sum(all.map((seat) => seat.thrallsKilled)),
       collapsed: sum(all.map((seat) => seat.thrallsCollapsed)),
       captures: sum(all.map((seat) => seat.thrallCaptures)),
-      kills: kills.THRALL ?? 0,
+      kills: kills.CONTROLLED ?? 0,
     },
     tractorBeam: {
       own: sum(all.map((seat) => seat.tractorBeamsOwn)),

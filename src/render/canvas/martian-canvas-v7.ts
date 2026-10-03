@@ -34,8 +34,11 @@ export interface MartianUnitMarkersV7 {
   readonly shieldMaximum: number;
   /** A ray unit that is Cooling (its next ray fires at half power). */
   readonly cooling: boolean;
-  /** A Thrall (a unit controlled by a Brain). */
-  readonly thrall: boolean;
+  /**
+   * The Mind Control revision: a mind-controlled unit (of any kind). Drawn
+   * with the placeholder control marker until the UI pass.
+   */
+  readonly controlled: boolean;
   /** A flyer: the shadow and lift are drawn (land form or afloat). */
   readonly flyer: boolean;
   /** A machine afloat (self-launched): drawn as itself over the water. */

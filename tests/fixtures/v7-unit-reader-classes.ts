@@ -247,6 +247,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::resetTurnUnits": "BOARD",
     "src/engine/v7/reducer.ts::resolveCityCenterSpawnV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveStartTurnPlagueAndChainV7": "BOARD",
+    // The Mind Control revision: a released unit reveals its sight where it
+    // stands on the board (a burrowed one reveals nothing).
+    "src/engine/v7/reducer.ts::revealReleasedUnitsV7": "BOARD",
     "src/engine/v7/reducer.ts::validateUnitActor": "BOARD",
     "src/engine/v7/state-schema.ts::parseGameStateV7": "ALL",
     "src/engine/v7/state-schema.ts::validateCrossReferences": "ALL",
@@ -332,7 +335,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/martian-presentation-v7.ts::martianCombatLinesV7": "BOARD",
     "src/render/martian-presentation-v7.ts::martianFieldDefenseBlockedV7":
       "BOARD",
-    "src/render/martian-presentation-v7.ts::mindControlPreviewLinesV7": "BOARD",
     "src/render/tactical-presentation-v7.ts::tacticalAttachmentsV7": "BOARD",
     "src/render/undead-presentation-v7.ts::combatPreviewSemanticNoteV7":
       "BOARD",

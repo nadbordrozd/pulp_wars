@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r32");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r32.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r33");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r33.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -136,11 +136,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r31 and preserves the r32 save", () => {
+  it("cleans obsolete keys through v7r32 and preserves the r33 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r31.current",
+      "pulpWars.save.v7r32.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(31);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(32);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -163,7 +163,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r29.current", "r29"],
       ["pulpWars.save.v7r30.current", "r30"],
       ["pulpWars.save.v7r31.current", "r31"],
-      [SAVE_STORAGE_KEY_V7, "r32"],
+      ["pulpWars.save.v7r32.current", "r32"],
+      [SAVE_STORAGE_KEY_V7, "r33"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -189,8 +190,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r29.current",
         "pulpWars.save.v7r30.current",
         "pulpWars.save.v7r31.current",
+        "pulpWars.save.v7r32.current",
       ],
-      removedCount: 20,
+      removedCount: 21,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1568,7 +1570,7 @@ describe("ruleset-7 all-Human parity digests", () => {
   // has 381 commands (was 357).
   // The Martian revision (`pulp_wars-t6s.2`) reproduces every digest below
   // unchanged: its only all-Human differences are the four empty side lists
-  // of the state and the view (`shields`, `cooling`, `thralls`,
+  // of the state and the view (`shields`, `cooling`, `mindControlled`,
   // `mindControlCooldowns`), the neutral combat-preview fields
   // `rayPower: "NONE"`, `coolingApplied: false`, `defenderShieldDamage: 0`,
   // and `attackerShieldDamage: 0`, and the neutral `shieldDamage: 0` of
@@ -1827,7 +1829,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           eggs,
           shields,
           cooling,
-          thralls,
+          mindControlled,
           mindControlCooldowns,
           chilled,
           burrowed,
@@ -1841,7 +1843,7 @@ describe("ruleset-7 all-Human parity digests", () => {
           eggs: unknown;
           shields: unknown;
           cooling: unknown;
-          thralls: unknown;
+          mindControlled: unknown;
           mindControlCooldowns: unknown;
           chilled: unknown;
           burrowed: unknown;
@@ -1853,10 +1855,15 @@ describe("ruleset-7 all-Human parity digests", () => {
         void _bitten;
         expect(eggs).toEqual([]);
         // The Martian revision: four empty side lists in state and view.
-        expect({ shields, cooling, thralls, mindControlCooldowns }).toEqual({
+        expect({
+          shields,
+          cooling,
+          mindControlled,
+          mindControlCooldowns,
+        }).toEqual({
           shields: [],
           cooling: [],
-          thralls: [],
+          mindControlled: [],
           mindControlCooldowns: [],
         });
         // The Ice Folk revision: the empty Chill list, and the neutral tile

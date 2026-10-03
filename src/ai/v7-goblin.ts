@@ -1,7 +1,7 @@
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
   factionRulesV7,
-  playerFactionV7,
+  unitFactionV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -143,9 +143,8 @@ export function gangUpForPolicyV7(
   targetAt: CoordV7,
   ignore: ReadonlySet<UnitId> = new Set(),
 ): number {
-  const maximum = factionRulesV7(
-    playerFactionV7(view, attacker.ownerId),
-  ).gangUpMaximum;
+  // The Mind Control revision: Gang Up is a body rule of the attacker's kind.
+  const maximum = factionRulesV7(unitFactionV7(view, attacker)).gangUpMaximum;
   if (maximum === 0) return 0;
   let helpers = 0;
   for (const unit of view.units)

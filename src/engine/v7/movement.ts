@@ -4,7 +4,9 @@ import {
   canCrossWaterV7,
   canEnterTerrainV7,
   flyerMayStandOnSiteV7,
+  isMindControlledV7,
   technologyCapabilitiesV7,
+  unitCapabilitiesV7,
   terrainStopsMoveV7,
   unitFliesV7,
   unitIsMountainBornV7,
@@ -128,10 +130,9 @@ function validateMovementPathWithOptionsV7(
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const player = requirePlayer(state, unit.ownerId);
   const rule = unitRoleRuleV7(state, unit);
-  const capabilities = technologyCapabilitiesV7(
-    player.researchedTechs,
-    player.faction,
-  );
+  // The Mind Control revision section 5.2: movement unlocks are unit-level
+  // (the controller's research through the unit's kind's tree).
+  const capabilities = unitCapabilitiesV7(state, unit, player.researchedTechs);
   const budget2 = (unit.form === "EMBARKED" ? EMBARKED_MOVE_V7 : rule.move) * 2;
   // An embarked machine is an ordinary embarked unit (section 7.3).
   const mode: MovementModeV7 =
@@ -680,7 +681,11 @@ function validatePlayerMovementPathWithContextV7(
 ): MovementPathResultV7 {
   if (path.length === 0) return { legal: false, reason: "EMPTY_PATH" };
   const role = unitRoleRuleV7(view, unit);
-  const capabilities = context.capabilities;
+  // The Mind Control revision section 5.2: a controlled unit's movement
+  // unlocks read the viewer's research through its kind's tree.
+  const capabilities = isMindControlledV7(view, unit.id)
+    ? unitCapabilitiesV7(view, unit, view.viewer.researchedTechs)
+    : context.capabilities;
   const budget2 = (unit.form === "EMBARKED" ? EMBARKED_MOVE_V7 : role.move) * 2;
   // The Martian revision section 7: the unit's own movement mode. The
   // technologies are the viewer's (exact for the viewer's own units).
@@ -904,11 +909,10 @@ export function unitSightRadiusAtV7(
   if (unit.form === "EMBARKED") return 1;
   // Revision 19 section 6.2: an Egg has Sight 0 and reveals nothing.
   if (unit.form === "EGG") return 0;
+  // The Mind Control revision section 5.2: Fieldcraft Sight and high-ground
+  // vision are unit-level unlocks.
   const player = requirePlayer(state, unit.ownerId);
-  const capabilities = technologyCapabilitiesV7(
-    player.researchedTechs,
-    player.faction,
-  );
+  const capabilities = unitCapabilitiesV7(state, unit, player.researchedTechs);
   const base = Math.max(
     unitRoleRuleV7(state, unit).sightRadius,
     capabilities.roleSightRadius[unit.role] ?? 0,

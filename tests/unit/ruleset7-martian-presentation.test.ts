@@ -3,7 +3,7 @@ import {
   FORCE_FIELD_SHIELD_V7,
   MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
-  MIND_CONTROL_THRALL_LIMIT_V7,
+  MIND_CONTROL_LIMIT_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
   previewBeamDownV7,
@@ -22,7 +22,7 @@ import {
   BEAM_DOWN_NO_PASSENGER_V7,
   MARTIAN_HELP_RULES_V7,
   beamDownUnavailableTextV7,
-  brainThrallsTextV7,
+  brainControlTextV7,
   martianAbilityNameV7,
   martianBoundaryNoticeV7,
   martianCombatLinesV7,
@@ -105,8 +105,8 @@ describe("Martian texts (section 13.2)", () => {
     const view = humanView(martianUiFixtureV7());
     const brain = statsAt(view, AT.brain).mindControl;
     if (brain === null) throw new Error("no Mind Control block");
-    expect(brainThrallsTextV7(brain)).toBe(
-      `Thralls 1 / ${MIND_CONTROL_THRALL_LIMIT_V7}`,
+    expect(brainControlTextV7(brain)).toBe(
+      `Controls 0 / ${MIND_CONTROL_LIMIT_V7}`,
     );
     expect(mindControlUnavailableTextV7(brain)).toBeNull();
     expect(mindControlUnavailableTextV7({ ...brain, cooldown: 1 })).toBe(
@@ -115,23 +115,31 @@ describe("Martian texts (section 13.2)", () => {
     expect(mindControlUnavailableTextV7({ ...brain, cooldown: 0 })).toBe(
       "Recovering: ready in 1 turn",
     );
-    expect(
-      mindControlUnavailableTextV7({
-        ...brain,
-        thralls: MIND_CONTROL_THRALL_LIMIT_V7,
-      }),
-    ).toBe("Controls two Thralls already");
+    const controller = statsAt(view, AT.controller).mindControl;
+    if (controller === null) throw new Error("no Mind Control block");
+    expect(brainControlTextV7(controller)).toBe("Controls 1 / 1");
+    expect(mindControlUnavailableTextV7(controller)).toBe(
+      "Controls a unit already",
+    );
   });
 
-  it("explains a Thrall, a Brain, the Shield and a machine afloat in unit info", () => {
+  it("explains a Brain, the Shield and a machine afloat in unit info", () => {
     const view = humanView(martianUiFixtureV7());
-    const thrall = unitAt(view, AT.thrall);
-    const thrallLines = martianUnitInfoLinesV7(
-      thrall,
-      statsAt(view, AT.thrall),
+    // A controlled Human unit has no Martian block (the Mind Control
+    // revision: its control is in the top-level `mindControl` stats).
+    expect(
+      view.unitStats.find(
+        (entry) => entry.unitId === unitAt(view, AT.controlled).id,
+      )?.martian,
+    ).toBeUndefined();
+    const brainLines = martianUnitInfoLinesV7(
+      unitAt(view, AT.controller),
+      statsAt(view, AT.controller),
     );
-    expect(thrallLines.map((line) => line.id)).toEqual(["thrall"]);
-    expect(thrallLines[0]?.description).toContain("Thralls use no slot");
+    expect(brainLines.find((line) => line.id === "brain")).toMatchObject({
+      name: "Controls 1 / 1",
+      description: "Controls a unit already",
+    });
     const projector = martianUnitInfoLinesV7(
       unitAt(view, AT.projector),
       statsAt(view, AT.projector),
@@ -195,7 +203,6 @@ describe("Martian texts (section 13.2)", () => {
       "Launch",
       "Beam Down",
       "Mind Control",
-      "Thralls",
       "Tractor Beam",
       "Psychic Command, Strafe",
     ]);
@@ -204,6 +211,10 @@ describe("Martian texts (section 13.2)", () => {
     );
     expect(rules.get("Mind Control")).toContain(
       `with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles`,
+    );
+    // The Mind Control revision: the unit keeps its type and goes home.
+    expect(rules.get("Mind Control")).toContain(
+      "keeps its type and abilities but cannot be disbanded or create units",
     );
     // `pulp_wars-b5f.2`: the Grunt's ray pistol and the Tripod's range.
     expect(rules.get("Ranges")).toBe(
@@ -255,9 +266,9 @@ describe("Martian previews (section 13.1)", () => {
     const mind = previewMindControlV7(view, brain.id, weak.id);
     if (mind === null) throw new Error("no Mind Control preview");
     expect(mindControlPreviewLinesV7(view, mind)).toEqual([
-      `Becomes a Thrall with ${mind.thrallHp} / ${mind.thrallMaxHp} HP`,
-      `Thralls ${mind.thrallsAfter} / ${mind.thrallLimit} after`,
+      `Becomes yours: ${effectiveRoleRuleV7("MARKSMAN", "ORIGINAL").label} (${mind.hp} / ${mind.maxHp} HP)`,
       `Mind Control recovers for ${mind.cooldownTurns} turns`,
+      "Returns if this Brain is lost",
     ]);
     const mothership = unitAt(view, AT.mothership);
     const raider = unitAt(view, AT.pullTarget);
@@ -334,7 +345,7 @@ describe("Martian log lines (section 13.2)", () => {
         targetUnitId: unitAt(view, AT.weakTarget).id,
       })?.text,
     ).toBe(
-      `Your ${label("CAPTAIN")} took control of a ${effectiveRoleRuleV7("MARKSMAN", "ORIGINAL").label}`,
+      `Your ${label("CAPTAIN")} took control of Player 2's ${effectiveRoleRuleV7("MARKSMAN", "ORIGINAL").label}`,
     );
     expect(
       notice({

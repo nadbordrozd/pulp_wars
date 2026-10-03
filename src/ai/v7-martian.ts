@@ -3,12 +3,13 @@ import {
   FORCE_FIELD_SHIELD_V7,
   MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
-  MIND_CONTROL_THRALL_LIMIT_V7,
+  MIND_CONTROL_LIMIT_V7,
   effectiveRoleRuleV7,
   factionTreeV7,
   technologyCapabilitiesV7,
   unitCapacitySlotsV7,
   unitMovementModeV7,
+  seatRoleMechanicsV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -28,7 +29,7 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  * policy calls these helpers only in a match with a Martian seat
  * (`martianMatchForPolicyV7`), or through facts only a Martian unit has (a
  * Shield, a heat ray, Pierce, the Force Field, flying or striding, Beam
- * Down, Mind Control, a Thrall, the Tractor Beam), so decisions in every
+ * Down, Mind Control, a controlled unit, the Tractor Beam), so decisions in every
  * other match stay byte-identical.
  *
  * Values are in the policy's usual units: a unit is worth its cost x 4 plus
@@ -115,8 +116,8 @@ export const RAY_KITE_PRIORITY_V7 = 905;
 export const RANGED_STEP_BACK_PRIORITY_V7 = 904;
 /** A full-power kill that a half-power shot would also make waits. */
 export const RAY_WASTED_KILL_PRIORITY_V7 = 1176;
-/** A Thrall's chip goes before other chips (900): it is the front row. */
-export const THRALL_CHIP_PRIORITY_V7 = 901;
+/** A controlled unit's chip goes before other chips (900): the front row. */
+export const CONTROLLED_CHIP_PRIORITY_V7 = 901;
 /** A wounded unit without a Shield leaves visible reach to recover. */
 export const SHIELDLESS_RETREAT_PRIORITY_V7 = 935;
 /** Against Martians: hits that this turn's attacks turn into a kill. */
@@ -194,8 +195,8 @@ export const PROJECTOR_COVER_VALUE_V7 = 4;
 export const SAUCER_TARGET_BONUS_V7 = 8;
 /** Against Martians: per covered unit around a hostile Projector. */
 export const PROJECTOR_TARGET_BONUS_V7 = 4;
-/** Against Martians: per Thrall of a hostile Brain (they collapse). */
-export const THRALL_TARGET_BONUS_V7 = 8;
+/** Against Martians: per controlled unit of a hostile Brain (released). */
+export const CONTROLLED_TARGET_BONUS_V7 = 8;
 /** Against Martians: a hostile ray unit ready to fire at full power. */
 export const READY_RAY_TARGET_BONUS_V7 = 4;
 /** Against Martians: a Cooling ray unit (weak now and next turn). */
@@ -221,8 +222,9 @@ export interface MartianFactsV7 {
   readonly coolingNow: ReadonlySet<UnitId>;
   /** Own units that fired a full ray this turn (Cooling next turn). */
   readonly firedThisTurn: ReadonlySet<UnitId>;
-  readonly brainOfThrall: ReadonlyMap<UnitId, UnitId | null>;
-  readonly thrallsOfBrain: ReadonlyMap<UnitId, readonly UnitId[]>;
+  /** The Mind Control revision: each visible controlled unit's Brain. */
+  readonly brainOfControlled: ReadonlyMap<UnitId, UnitId | null>;
+  readonly controlledOfBrain: ReadonlyMap<UnitId, readonly UnitId[]>;
   readonly cooldownBrains: ReadonlySet<UnitId>;
   /** Own land-form Shield Projectors. */
   readonly ownProjectors: readonly PublicUnitV7[];
@@ -236,14 +238,14 @@ export function martianFactsV7(view: PlayerViewV7): MartianFactsV7 {
   const firedThisTurn = new Set<UnitId>();
   for (const entry of view.cooling)
     (entry.firedThisTurn ? firedThisTurn : coolingNow).add(entry.unitId);
-  const brainOfThrall = new Map<UnitId, UnitId | null>();
-  const thrallsOfBrain = new Map<UnitId, UnitId[]>();
-  for (const entry of view.thralls) {
-    brainOfThrall.set(entry.unitId, entry.brainUnitId);
+  const brainOfControlled = new Map<UnitId, UnitId | null>();
+  const controlledOfBrain = new Map<UnitId, UnitId[]>();
+  for (const entry of view.mindControlled) {
+    brainOfControlled.set(entry.unitId, entry.brainUnitId);
     if (entry.brainUnitId !== null) {
-      const list = thrallsOfBrain.get(entry.brainUnitId) ?? [];
+      const list = controlledOfBrain.get(entry.brainUnitId) ?? [];
       list.push(entry.unitId);
-      thrallsOfBrain.set(entry.brainUnitId, list);
+      controlledOfBrain.set(entry.brainUnitId, list);
     }
   }
   return {
@@ -255,8 +257,8 @@ export function martianFactsV7(view: PlayerViewV7): MartianFactsV7 {
     shieldByUnit,
     coolingNow,
     firedThisTurn,
-    brainOfThrall,
-    thrallsOfBrain,
+    brainOfControlled,
+    controlledOfBrain,
     cooldownBrains: new Set(
       view.mindControlCooldowns.map((entry) => entry.unitId),
     ),
@@ -278,13 +280,16 @@ export function hasAbilityV7(
   return unitRoleRuleV7(view, unit).abilities.includes(ability as never);
 }
 
-/** The Shield maximum of a unit (0 for a Thrall and every non-Martian). */
+/**
+ * The Shield maximum of a unit under its kind (0 for every non-Martian
+ * kind; the Mind Control revision: a controlled Martian unit keeps its
+ * Shield).
+ */
 export function shieldMaximumForPolicyV7(
   view: PlayerViewV7,
-  facts: MartianFactsV7,
+  _facts: MartianFactsV7,
   unit: PublicUnitV7,
 ): number {
-  if (facts.brainOfThrall.has(unit.id)) return 0;
   return unitRoleMechanicsV7(view, unit).shield;
 }
 
@@ -341,7 +346,7 @@ export function hostileRayAttack2V7(
     : attack2;
 }
 
-/** A ready hostile Brain: no cooldown and fewer Thralls than the limit. */
+/** A ready hostile Brain: no cooldown and below the control limit. */
 export function readyHostileBrainsV7(
   view: PlayerViewV7,
   facts: MartianFactsV7,
@@ -354,8 +359,8 @@ export function readyHostileBrainsV7(
       isHostile(unit.ownerId) &&
       hasAbilityV7(view, unit, "MIND_CONTROL") &&
       !facts.cooldownBrains.has(unit.id) &&
-      (facts.thrallsOfBrain.get(unit.id)?.length ?? 0) <
-        MIND_CONTROL_THRALL_LIMIT_V7,
+      (facts.controlledOfBrain.get(unit.id)?.length ?? 0) <
+        MIND_CONTROL_LIMIT_V7,
   );
 }
 
@@ -387,7 +392,9 @@ export function mindControlExposedV7(
 /**
  * Extra target value of a visible hostile Martian unit (section 12, "kill
  * the enablers"): a Projector by the units it covers, a Saucer while its
- * owner holds a city, a Brain by its Thralls (they collapse with it), and a
+ * owner holds a city, a Brain by its controlled units (released with it;
+ * the value-aware bonus of the Mind Control revision section 8 is a later
+ * AI pass), and a
  * ray unit ready to fire at full power. 0 for every other unit.
  */
 export function martianTargetBonusV7(
@@ -414,9 +421,9 @@ export function martianTargetBonusV7(
   )
     bonus += SAUCER_TARGET_BONUS_V7;
   if (abilities.includes("MIND_CONTROL"))
-    for (const thrallId of facts.thrallsOfBrain.get(unit.id) ?? []) {
-      const thrall = view.units.find((other) => other.id === thrallId);
-      bonus += THRALL_TARGET_BONUS_V7 + (thrall?.hp ?? 0);
+    for (const controlledId of facts.controlledOfBrain.get(unit.id) ?? []) {
+      const controlled = view.units.find((other) => other.id === controlledId);
+      bonus += CONTROLLED_TARGET_BONUS_V7 + (controlled?.hp ?? 0);
     }
   if (abilities.includes("HEAT_RAY") && !facts.coolingNow.has(unit.id))
     bonus += READY_RAY_TARGET_BONUS_V7;
@@ -424,8 +431,10 @@ export function martianTargetBonusV7(
 }
 
 /**
- * Retained value of an own Martian unit: a Thrall cost nothing and is the
- * front row (its HP only); a Brain carries its Thralls.
+ * Retained value of an own Martian unit: a controlled unit cost nothing
+ * and is the front row (its HP only; the kind-cost value of the Mind
+ * Control revision section 8 is a later AI pass); a Brain carries its
+ * controlled units.
  */
 export function martianRetainedValueV7(
   view: PlayerViewV7,
@@ -433,12 +442,12 @@ export function martianRetainedValueV7(
   unit: PublicUnitV7,
   base: number,
 ): number {
-  if (facts.brainOfThrall.has(unit.id)) return unit.hp + unit.kills * 2;
+  if (facts.brainOfControlled.has(unit.id)) return unit.hp + unit.kills * 2;
   if (hasAbilityV7(view, unit, "MIND_CONTROL")) {
     let value = base;
-    for (const thrallId of facts.thrallsOfBrain.get(unit.id) ?? []) {
-      const thrall = view.units.find((other) => other.id === thrallId);
-      value += thrall?.hp ?? 0;
+    for (const controlledId of facts.controlledOfBrain.get(unit.id) ?? []) {
+      const controlled = view.units.find((other) => other.id === controlledId);
+      value += controlled?.hp ?? 0;
     }
     return value;
   }
@@ -449,7 +458,7 @@ export function martianRetainedValueV7(
 
 export interface MartianArmyCountsV7 {
   readonly byRole: ReadonlyMap<UnitRoleIdV7, number>;
-  /** Grunts, Thralls, Ray Gunners, Tripods, and the Colossus. */
+  /** Grunts, Ray Gunners, Tripods, and the Colossus. */
   readonly front: number;
 }
 
@@ -551,10 +560,8 @@ export function martianProductionAdjustmentV7(
 }
 
 function factionShieldV7(view: PlayerViewV7, role: UnitRoleIdV7): number {
-  return unitRoleMechanicsV7(view, {
-    ownerId: view.viewer.id,
-    role,
-  }).shield;
+  // A role-level read: the role to train is the viewer seat's own.
+  return seatRoleMechanicsV7(view, view.viewer.id, role).shield;
 }
 
 // --- Research -------------------------------------------------------------

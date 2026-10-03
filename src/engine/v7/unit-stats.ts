@@ -4,14 +4,16 @@ import {
   EMBARKED_MOVE_V7,
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
-  MIND_CONTROL_THRALL_LIMIT_V7,
+  MIND_CONTROL_LIMIT_V7,
   PROMOTION_HP_V7,
   RUN_UP_MAXIMUM_TILES_V7,
   attackIsChargeV7,
   attackIsRayV7,
   chargeRunUpAttack2V7,
   halfPowerAttack2V7,
-  technologyCapabilitiesV7,
+  isMindControlledV7,
+  unitCapabilitiesV7,
+  unitFactionV7,
   unitAlphaAttack2V7,
   unitGrowthStageV7,
   unitRoleMechanicsV7,
@@ -32,10 +34,9 @@ import {
   unitOwnerIsIceFolkV7,
 } from "./ice-folk";
 import {
+  controlledByBrainV7,
   isCoolingV7,
-  isThrallV7,
   shieldOfV7,
-  thrallsOfBrainV7,
   unitShieldMaximumV7,
 } from "./martian";
 import { tileAtV7 } from "./spatial-economy";
@@ -137,13 +138,14 @@ export interface PublicDinosaurMechanicsV7 {
   } | null;
 }
 /**
- * The Martian revision (section 11): the Martian mechanics of a unit owned
- * by a Martian seat. `rayPower` is what an `ATTACK` made now would be (null
- * for a unit without a heat ray or afloat); `cooling` is whether its next
- * ray is halved by Cooling; `thrall` names the Brain of a Thrall (null in a
- * view that cannot see it); `mindControl` is a Brain's cooldown entry
+ * The Martian revision (section 11): the Martian mechanics of a unit of the
+ * Martian kind. `rayPower` is what an `ATTACK` made now would be (null for
+ * a unit without a heat ray or afloat); `cooling` is whether its next ray
+ * is halved by Cooling; `mindControl` is a Brain's cooldown entry
  * (`cooldown`: the remaining `turnsRemaining`, or null when ready), the
- * Thralls it controls, and the limit.
+ * units it controls (the Mind Control revision: `controlled`), and the
+ * limit (`controlLimit`). `capacitySlots` is 0 for a mind-controlled unit
+ * (it has no home).
  */
 export interface PublicMartianMechanicsV7 {
   readonly shield: number;
@@ -154,12 +156,21 @@ export interface PublicMartianMechanicsV7 {
   readonly cooling: boolean;
   readonly pierce: boolean;
   readonly forceField: boolean;
-  readonly thrall: { readonly brainUnitId: UnitStateV7["id"] | null } | null;
   readonly mindControl: {
     readonly cooldown: number | null;
-    readonly thralls: number;
-    readonly thrallLimit: number;
+    readonly controlled: number;
+    readonly controlLimit: number;
   } | null;
+}
+
+/**
+ * The Mind Control revision (section 6): the control of a mind-controlled
+ * unit: its Brain (null in a view that cannot see it) and its original
+ * owner (public).
+ */
+export interface PublicMindControlV7 {
+  readonly brainUnitId: UnitStateV7["id"] | null;
+  readonly originalOwnerId: UnitStateV7["ownerId"];
 }
 /**
  * The Ice Folk revision (section 11): the Ice Folk mechanics of a unit owned
@@ -214,12 +225,20 @@ export interface PublicUnitStatsV7 {
   readonly stats: readonly PublicUnitStatBreakdownV7[];
   readonly abilities: readonly string[];
   readonly statuses: readonly string[];
-  /** Revision 17: present exactly for units owned by a Goblin seat. */
+  /**
+   * Revision 17: present exactly for units of the Goblin kind (the Mind
+   * Control revision: every faction block follows the unit's kind).
+   */
   readonly goblin?: PublicGoblinMechanicsV7;
-  /** Revision 19: present exactly for units owned by a Dinosaur seat. */
+  /** Revision 19: present exactly for units of the Dinosaur kind. */
   readonly dinosaur?: PublicDinosaurMechanicsV7;
-  /** The Martian revision: present exactly for units of a Martian seat. */
+  /** The Martian revision: present exactly for units of the Martian kind. */
   readonly martian?: PublicMartianMechanicsV7;
+  /**
+   * The Mind Control revision: present for every unit exactly when the
+   * match has a Martian seat; null unless the unit is mind-controlled.
+   */
+  readonly mindControl?: PublicMindControlV7 | null;
   /**
    * The Ice Folk revision: the unit's Chill entry (`null` without one);
    * present for every unit.
@@ -228,7 +247,7 @@ export interface PublicUnitStatsV7 {
     readonly sluggish: boolean;
     readonly turnsLeft: number;
   } | null;
-  /** The Ice Folk revision: present exactly for units of an Ice Folk seat. */
+  /** The Ice Folk revision: present exactly for units of the Ice Folk kind. */
   readonly iceFolk?: PublicIceFolkMechanicsV7;
   /**
    * The Dwarf revision: present for every unit exactly when the match has a
@@ -236,7 +255,7 @@ export interface PublicUnitStatsV7 {
    */
   readonly bombedThisTurn?: boolean;
   readonly surfacedThisTurn?: boolean;
-  /** The Dwarf revision: present exactly for units of a Dwarf seat. */
+  /** The Dwarf revision: present exactly for units of the Dwarf kind. */
   readonly dwarf?: PublicDwarfMechanicsV7;
 }
 
@@ -273,21 +292,26 @@ export function publicUnitStatsV7(
       ? null
       : { sluggish: chillEntry.sluggish, turnsLeft: chillEntry.turnsLeft };
   if (unit.form === "EGG") return eggStats(state, unit, role.label);
-  const capabilities = technologyCapabilitiesV7(
-    owner.researchedTechs,
-    owner.faction,
-  );
+  // The Mind Control revision (section 2): the labels, stats, and faction
+  // blocks follow the unit's kind; unit-level technology is the
+  // controller's research through the kind's tree.
+  const kind = unitFactionV7(state, unit);
+  const capabilities = unitCapabilitiesV7(state, unit, owner.researchedTechs);
   // Revision 13: Undead support labels Rally as Frenzy and Inspired as Frenzied.
-  const frenzied = owner.faction === "UNDEAD";
+  const frenzied = kind === "UNDEAD";
   // Revision 17: Goblins label Rally as WAAAGH! and Overrun as Ram.
-  const goblin = owner.faction === "GOBLIN";
+  const goblin = kind === "GOBLIN";
   // Revision 19: Dinosaurs label Rally as War Drums, Overrun as Rampage, and
   // Charge as Pounce.
-  const dinosaur = owner.faction === "DINOSAUR";
+  const dinosaur = kind === "DINOSAUR";
   // The Martian revision: Martians label Rally as Psychic Command and Charge
-  // as Strafe; a Thrall is a `FIGHTER`-role unit labelled "Thrall".
-  const martian = owner.faction === "MARTIAN";
-  const thrall = isThrallV7(state.thralls, unit.id);
+  // as Strafe.
+  const martian = kind === "MARTIAN";
+  const controlEntry =
+    state.mindControlled.length === 0
+      ? undefined
+      : state.mindControlled.find((entry) => entry.unitId === unit.id);
+  const controlled = isMindControlledV7(state, unit.id);
   const shieldMaximum = unitShieldMaximumV7(state, unit);
   const shield = shieldOfV7(state.shields, unit.id);
   const cooling = isCoolingV7(state.cooling, unit.id);
@@ -367,11 +391,7 @@ export function publicUnitStatsV7(
   const sight = embarked
     ? 1
     : Math.max(role.sightRadius, capabilities.roleSightRadius[unit.role] ?? 0);
-  const labelText = embarked
-    ? "Embarked transport"
-    : thrall
-      ? "Thrall"
-      : role.label;
+  const labelText = embarked ? "Embarked transport" : role.label;
   const halfPower2 =
     rayPower === "HALF" ? role.attack2 - halfPowerAttack2V7(role.attack2) : 0;
   return {
@@ -638,31 +658,38 @@ export function publicUnitStatsV7(
           martian: {
             shield,
             shieldMaximum,
-            // A Thrall has no home and uses no slot.
-            capacitySlots: thrall ? 0 : mechanics.capacitySlots,
+            // A mind-controlled unit has no home and uses no slot.
+            capacitySlots: controlled ? 0 : mechanics.capacitySlots,
             movementMode: mechanics.movementMode,
             rayPower,
             cooling,
             pierce: !embarked && role.abilities.includes("PIERCE"),
             forceField: !embarked && role.abilities.includes("FORCE_FIELD"),
-            thrall: thrall
-              ? {
-                  brainUnitId:
-                    state.thralls.find((entry) => entry.unitId === unit.id)
-                      ?.brainUnitId ?? null,
-                }
-              : null,
             mindControl: role.abilities.includes("MIND_CONTROL")
               ? {
                   cooldown:
                     state.mindControlCooldowns.find(
                       (entry) => entry.unitId === unit.id,
                     )?.turnsRemaining ?? null,
-                  thralls: thrallsOfBrainV7(state.thralls, unit.id).length,
-                  thrallLimit: MIND_CONTROL_THRALL_LIMIT_V7,
+                  controlled: controlledByBrainV7(state.mindControlled, unit.id)
+                    .length,
+                  controlLimit: MIND_CONTROL_LIMIT_V7,
                 }
               : null,
           },
+        }
+      : {}),
+    // The Mind Control revision (section 6): the control of every unit in a
+    // match with a Martian seat (null when not controlled).
+    ...(state.setup.factions.includes("MARTIAN")
+      ? {
+          mindControl:
+            controlEntry === undefined
+              ? null
+              : {
+                  brainUnitId: controlEntry.brainUnitId,
+                  originalOwnerId: controlEntry.originalOwnerId,
+                },
         }
       : {}),
     // The Dwarf revision (section 14): the public per-turn lists, and the
@@ -673,7 +700,7 @@ export function publicUnitStatsV7(
           surfacedThisTurn: state.surfacedThisTurn.includes(unit.id),
         }
       : {}),
-    ...(owner.faction === "DWARF"
+    ...(kind === "DWARF"
       ? {
           dwarf: {
             construct: mechanics.construct,
@@ -710,7 +737,7 @@ export function publicUnitStatsV7(
             snowCover,
             glides: unitGlidesV7(state, unit),
             mountainBorn: unit.form === "LAND" && mechanics.mountainBorn,
-            shatterThreshold: shatterThresholdV7(state.players, unit.ownerId),
+            shatterThreshold: shatterThresholdV7(state, unit),
             rockfall:
               unit.form === "LAND" &&
               mechanics.rockfallAttack2 > 0 &&

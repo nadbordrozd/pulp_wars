@@ -1,4 +1,4 @@
-import type { PlayerViewV7 } from "../engine/index";
+import { unitFactionV7, type PlayerViewV7 } from "../engine/index";
 import type { Ruleset7TacticalUiSymbolId } from "../assets/ruleset7-tactical-ui-symbols";
 import type { CoordV7 } from "../engine/v7/types";
 
@@ -43,10 +43,8 @@ export function tacticalAttachmentsV7(
             key: `inspired:${unit.id}`,
             at: unit.at,
             symbolId: "ui-status-inspired",
-            label: inspiredLabelV7(
-              view.players.find((player) => player.id === unit.ownerId)
-                ?.faction,
-            ),
+            // The Mind Control revision: the unit's kind names it.
+            label: inspiredLabelV7(unitFactionV7(view, unit)),
             pulse: false,
           },
         ]

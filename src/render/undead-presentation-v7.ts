@@ -5,6 +5,7 @@ import {
   factionTreeV7,
   gravesEnabledV7,
   playerFactionV7,
+  unitFactionV7,
   queryPlayerCommandsV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
@@ -70,11 +71,12 @@ export function unitLabelV7(view: PlayerViewV7, unit: PublicUnitV7): string {
   return unitRoleRuleV7(view, unit).label;
 }
 
+/** Whether a visible unit is of the Undead kind (`unitFactionV7`). */
 export function unitIsUndeadV7(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId">,
 ): boolean {
-  return playerFactionV7(view, unit.ownerId) === "UNDEAD";
+  return unitFactionV7(view, unit) === "UNDEAD";
 }
 
 /**
@@ -86,7 +88,8 @@ export function restlessOutsideTerritoryV7(
   unit: PublicUnitV7,
 ): boolean {
   if (unit.ownerId !== view.viewer.id || unit.form !== "LAND") return false;
-  if (!factionRulesV7(view.viewer.faction).restless) return false;
+  // The Mind Control revision: Restless is a body rule of the unit's kind.
+  if (!factionRulesV7(unitFactionV7(view, unit)).restless) return false;
   const tile = view.board.tiles.find(
     (candidate) => candidate.at.x === unit.at.x && candidate.at.y === unit.at.y,
   );

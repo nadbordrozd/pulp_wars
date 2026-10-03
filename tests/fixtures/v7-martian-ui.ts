@@ -27,8 +27,11 @@ export interface MartianUiPieceV7 extends GoblinPieceV7 {
   readonly shield?: number;
   /** COOLING: fired on its owner's last turn; FIRED: this turn. */
   readonly cooling?: "COOLING" | "FIRED";
-  /** Makes the unit a Thrall of the Brain on this tile. */
-  readonly thrallOf?: CoordV7;
+  /**
+   * The Mind Control revision: the unit (built for its `seat`, its original
+   * owner) is controlled by the Brain on this tile.
+   */
+  readonly controlledBy?: CoordV7;
   /** A Mind Control cooldown entry with this `turnsRemaining`. */
   readonly cooldown?: number;
 }
@@ -102,16 +105,39 @@ export function martianUiFieldV7(
   });
   const unitOf = (piece: MartianUiPieceV7): UnitStateV7 =>
     unitAtV7(state, piece.at);
-  const thralls = pieces
-    .filter((piece) => piece.thrallOf !== undefined)
-    .map((piece) => ({
-      unitId: unitOf(piece).id,
-      brainUnitId: unitAtV7(state, piece.thrallOf as CoordV7).id,
-    }))
+  const mindControlled = pieces
+    .filter((piece) => piece.controlledBy !== undefined)
+    .map((piece) => {
+      const unit = unitOf(piece);
+      return {
+        unitId: unit.id,
+        brainUnitId: unitAtV7(state, piece.controlledBy as CoordV7).id,
+        originalOwnerId: unit.ownerId,
+      };
+    })
     .sort((left, right) => left.unitId - right.unitId);
-  const lookup = { players: state.players, thralls };
+  const controllerOf = new Map(
+    pieces
+      .filter((piece) => piece.controlledBy !== undefined)
+      .map((piece) => [
+        unitOf(piece).id,
+        unitAtV7(state, piece.controlledBy as CoordV7).ownerId,
+      ]),
+  );
+  const lookup = { players: state.players, mindControlled };
   return checkedV7({
     ...state,
+    units: state.units.map((unit) => {
+      const controller = controllerOf.get(unit.id);
+      return controller === undefined
+        ? unit
+        : {
+            ...unit,
+            ownerId: controller,
+            homeCityId: null,
+            captureEligible: false,
+          };
+    }),
     shields: pieces
       .flatMap((piece) => {
         const unit = unitOf(piece);
@@ -126,7 +152,7 @@ export function martianUiFieldV7(
         firedThisTurn: piece.cooling === "FIRED",
       }))
       .sort((left, right) => left.unitId - right.unitId),
-    thralls,
+    mindControlled,
     mindControlCooldowns: pieces
       .filter((piece) => piece.cooldown !== undefined)
       .map((piece) => ({
@@ -164,8 +190,12 @@ export const MARTIAN_UI_V7 = {
   weakTarget: { x: 3, y: 6 },
   healthyTarget: { x: 4, y: 5 },
   protectedTarget: { x: 5, y: 8 },
-  /** The Brain's Thrall. */
-  thrall: { x: 6, y: 5 },
+  /**
+   * The Mind Control revision: a second Brain and the unit it controls (a
+   * wounded Human Fighter); the first Brain is free to take a target.
+   */
+  controller: { x: 7, y: 5 },
+  controlled: { x: 6, y: 5 },
   /** Mothership two tiles from an enemy Raider (pulled to `pullTo`). */
   mothership: { x: 9, y: 2 },
   pullTarget: { x: 9, y: 4 },
@@ -199,7 +229,14 @@ export function martianUiFixtureV7(
       { seat: 0, role: "CATAPULT", at: at.tripod },
       { seat: 0, role: "FIGHTER", at: at.friendlyVictim },
       { seat: 0, role: "CAPTAIN", at: at.brain },
-      { seat: 0, role: "FIGHTER", at: at.thrall, hp: 4, thrallOf: at.brain },
+      { seat: 0, role: "CAPTAIN", at: at.controller },
+      {
+        seat: 1,
+        role: "FIGHTER",
+        at: at.controlled,
+        hp: 4,
+        controlledBy: at.controller,
+      },
       { seat: 0, role: "KNIGHT", at: at.mothership },
       { seat: 0, role: "GUARD", at: at.projector },
       { seat: 0, role: "FIGHTER", at: at.dentedGrunt, shield: 1 },

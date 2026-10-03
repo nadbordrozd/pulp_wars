@@ -12,8 +12,9 @@ import {
   effectiveRoleRuleV7,
   factionTreeV7,
   isEggLaidRoleV7,
-  playerFactionV7,
+  unitFactionV7,
   roleMechanicsV7,
+  seatRoleRuleV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type FactionIdV7,
@@ -43,11 +44,12 @@ export function matchHasDinosaurV7(
   return view.players.some((player) => player.faction === "DINOSAUR");
 }
 
+/** Whether a visible unit is of the Dinosaur kind (`unitFactionV7`). */
 export function unitIsDinosaurV7(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId">,
 ): boolean {
-  return playerFactionV7(view, unit.ownerId) === "DINOSAUR";
+  return unitFactionV7(view, unit) === "DINOSAUR";
 }
 
 /** Section 12.2 texts. */
@@ -339,10 +341,10 @@ export function cityCapacityTextV7(used: number, capacity: number): string {
   return `${used} of ${capacity} slots`;
 }
 
-/** A unit's name under its owner's registration; an Egg is "{Unit} Egg". */
+/** A unit's name under its kind's registration; an Egg is "{Unit} Egg". */
 export function unitDisplayNameV7(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId" | "role" | "form">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId" | "role" | "form">,
 ): string {
   const label = unitRoleRuleV7(view, unit).label;
   return unit.form === "EGG" ? `${label} Egg` : label;
@@ -788,7 +790,7 @@ export function dinosaurBoundaryNoticeV7(
   const roleLabel = (
     ownerId: PublicUnitV7["ownerId"],
     role: UnitRoleIdV7,
-  ): string => unitRoleRuleV7(after, { ownerId, role }).label;
+  ): string => seatRoleRuleV7(after, ownerId, role).label;
   const owned = (ownerId: number, label: string): string =>
     `${capitalized(possessive(after, ownerId))} ${label}`;
   const eggsLostByCity = new Map<number | null, PublicUnitV7[]>();

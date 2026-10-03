@@ -1,8 +1,9 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   playerFactionV7,
+  seatRoleRuleV7,
+  unitFactionV7,
   unitRoleMechanicsV7,
-  unitRoleRuleV7,
   type EffectiveRoleRuleV7,
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
@@ -39,11 +40,12 @@ export const PLAGUE_DURATION_TURNS_V7 = 3;
 export const BITTEN_RISING_HP_V7 = 10;
 
 /**
- * "Living" in the revision-13 sense: the unit's owner's faction is not
- * UNDEAD. Plague and Bitten affect only living units.
+ * "Living" in the revision-13 sense: the seat's faction is not UNDEAD. A
+ * seat-level read (what the seat's own trained units are); a concrete unit
+ * reads {@link isLivingUnitV7}, which follows the unit's kind.
  */
 export function isLivingOwnerV7(
-  roster: FactionRosterV7,
+  roster: Pick<FactionRosterV7, "players">,
   ownerId: PlayerId,
 ): boolean {
   return playerFactionV7(roster, ownerId) !== "UNDEAD";
@@ -51,18 +53,23 @@ export function isLivingOwnerV7(
 
 /**
  * The Dwarf revision (docs/product/RULESET_7_DWARVES.md section 2.3): the
- * per-unit "living" test. A unit is living when its owner's faction is not
- * UNDEAD (the revision-13 per-owner test) and its role is not a construct
- * under its owner's registration (the Clockwork Gunner, the Brass Titan).
- * Plague, Bitten, the Wail, and their previews read this test; with no
- * Dwarf seat it returns exactly what {@link isLivingOwnerV7} returns.
+ * per-unit "living" test. A unit is living when its kind is not UNDEAD
+ * (the Mind Control revision: a controlled Zombie stays undead) and its role
+ * is not a construct under its kind (the Clockwork Gunner, the Brass
+ * Titan). Plague, Bitten, the Wail, and their previews read this test; with
+ * no Dwarf seat and no controlled unit it returns exactly what
+ * {@link isLivingOwnerV7} returns.
  */
 export function isLivingUnitV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitStateV7["role"] },
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitStateV7["role"];
+  },
 ): boolean {
   return (
-    isLivingOwnerV7(roster, unit.ownerId) &&
+    unitFactionV7(roster, unit) !== "UNDEAD" &&
     !unitRoleMechanicsV7(roster, unit).construct
   );
 }
@@ -70,7 +77,11 @@ export function isLivingUnitV7(
 /** The Dwarf revision (section 7): whether the unit's role is a construct. */
 export function unitIsConstructV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitStateV7["role"] },
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitStateV7["role"];
+  },
 ): boolean {
   return unitRoleMechanicsV7(roster, unit).construct;
 }
@@ -115,10 +126,12 @@ export function afflictionCombatEffectsV7(input: {
    * The owner and role of a splash victim (the Dwarf revision: the living
    * test is per unit).
    */
-  readonly splashUnit: (
-    unitId: UnitId,
-  ) =>
-    | { readonly ownerId: PlayerId; readonly role: UnitStateV7["role"] }
+  readonly splashUnit: (unitId: UnitId) =>
+    | {
+        readonly id: UnitId;
+        readonly ownerId: PlayerId;
+        readonly role: UnitStateV7["role"];
+      }
     | undefined;
   readonly plaguedUnitIds: ReadonlySet<UnitId>;
   readonly bittenUnitIds: ReadonlySet<UnitId>;
@@ -139,7 +152,11 @@ export function afflictionCombatEffectsV7(input: {
   // is never plagued or bitten).
   const living = (
     unit:
-      | { readonly ownerId: PlayerId; readonly role: UnitStateV7["role"] }
+      | {
+          readonly id: UnitId;
+          readonly ownerId: PlayerId;
+          readonly role: UnitStateV7["role"];
+        }
       | undefined,
   ): boolean => unit !== undefined && isLivingUnitV7(input.roster, unit);
   const plagued: UnitId[] = [];
@@ -316,10 +333,8 @@ export function recordBittenRisingV7(
   activation: UnitStateV7["activation"],
   events: DomainEventV7[],
 ): UnitStateV7 {
-  const rule = unitRoleRuleV7(lookup, {
-    ownerId: bite.biterPlayerId,
-    role: "GUARD",
-  });
+  // The rising is the biter seat's own `GUARD` (a role-level read).
+  const rule = seatRoleRuleV7(lookup, bite.biterPlayerId, "GUARD");
   const biter = lookup.units.find(
     (unit) =>
       unit.id === bite.biterUnitId &&

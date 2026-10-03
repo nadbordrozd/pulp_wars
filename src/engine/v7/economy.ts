@@ -98,7 +98,7 @@ export function cityUnitCapacityV7(
  * (section 5.5): a burrowed unit keeps its slot (an all-units reader).
  */
 export function assignedUnitCountV7(
-  state: Pick<GameStateV7, "units" | "players"> &
+  state: Pick<GameStateV7, "units" | "players" | "mindControlled"> &
     Partial<Pick<UnitListsV7<GameStateV7["units"][number]>, "burrowed">>,
   cityId: CityId,
 ): number {

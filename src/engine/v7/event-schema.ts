@@ -349,9 +349,16 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "targetUnitId",
     "targetOwnerId",
     "targetRole",
-    "thrallUnitId",
     "at",
     "hp",
+  ],
+  UNIT_RELEASED: [
+    "kind",
+    "unitId",
+    "brainUnitId",
+    "fromPlayerId",
+    "toPlayerId",
+    "at",
   ],
   BITTEN_UNIT_RISEN: [
     "kind",
@@ -1172,7 +1179,8 @@ function validPayload(
         ].includes(e.cause as string)
       );
     case "UNIT_MIND_CONTROLLED":
-      // The Martian revision: the Thrall has 1 to `MIND_CONTROL_HP_V7` HP.
+      // The Mind Control revision (section 3): the target keeps its ID and
+      // has 1 to `MIND_CONTROL_HP_V7` HP.
       return (
         id(e.playerId) &&
         id(e.unitId) &&
@@ -1181,11 +1189,21 @@ function validPayload(
         e.targetOwnerId !== e.playerId &&
         UNIT_ROLE_IDS_V7.includes(e.targetRole as never) &&
         e.targetRole !== "JUGGERNAUT" &&
-        id(e.thrallUnitId) &&
-        new Set([e.unitId, e.targetUnitId, e.thrallUnitId]).size === 3 &&
+        e.unitId !== e.targetUnitId &&
         parseCoordV7(e.at) !== null &&
         pos(e.hp) &&
         (e.hp as number) <= MIND_CONTROL_HP_V7
+      );
+    case "UNIT_RELEASED":
+      // The Mind Control revision (section 4.2).
+      return (
+        id(e.unitId) &&
+        id(e.brainUnitId) &&
+        e.unitId !== e.brainUnitId &&
+        id(e.fromPlayerId) &&
+        id(e.toPlayerId) &&
+        e.fromPlayerId !== e.toPlayerId &&
+        parseCoordV7(e.at) !== null
       );
     case "UNIT_INFECTED":
       return (

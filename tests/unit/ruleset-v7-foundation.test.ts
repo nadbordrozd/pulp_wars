@@ -38,7 +38,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r32");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r33");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -109,7 +109,8 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // BOMB_RUN, and ASSEMBLE (53) and four event kinds (81).
     expect(COMMAND_KIND_ORDER_V7).toHaveLength(53);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(81);
+    // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(82);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

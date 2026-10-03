@@ -697,11 +697,17 @@ describe("Martian Shields: recharge (sections 5.2, 5.4, and 5.5)", () => {
     ]);
   });
 
-  it("a Thrall and a boat have no Shield and gain nothing from a Force Field", () => {
+  it("a controlled Human unit and a boat have no Shield and gain nothing from a Force Field", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(4, 2) },
-        { seat: 0, role: "FIGHTER", at: at(5, 2), thrallOf: at(4, 2), hp: 5 },
+        {
+          seat: 1,
+          role: "FIGHTER",
+          at: at(5, 2),
+          controlledBy: at(4, 2),
+          hp: 5,
+        },
         { seat: 0, role: "GUARD", at: at(5, 3) },
         { seat: 0, role: "PATROL_BOAT", at: at(6, 3), form: "NAVAL" },
         { seat: 1, role: "FIGHTER", at: at(1, 1) },
@@ -825,7 +831,13 @@ describe("Martian Shields: creation, view, projection, and parsing (sections 5.1
         { seat: 0, role: "FIGHTER", at: at(5, 2) },
         { seat: 0, role: "GUARD", at: at(7, 2) },
         { seat: 0, role: "CAPTAIN", at: at(4, 4) },
-        { seat: 0, role: "FIGHTER", at: at(4, 5), thrallOf: at(4, 4), hp: 4 },
+        {
+          seat: 1,
+          role: "FIGHTER",
+          at: at(4, 5),
+          controlledBy: at(4, 4),
+          hp: 4,
+        },
         { seat: 0, role: "PATROL_BOAT", at: at(9, 2), form: "NAVAL" },
         { seat: 1, role: "FIGHTER", at: at(1, 1) },
       ],
@@ -852,7 +864,8 @@ describe("Martian Shields: creation, view, projection, and parsing (sections 5.1
       [{ unitId: grunt, shield: 1.5 }],
       [{ unitId: grunt, shield: 5 }],
       [{ unitId: projector, shield: 5 }],
-      // A unit whose Shield maximum is 0: a Human unit, a Thrall, a boat.
+      // A unit whose Shield maximum is 0: a Human unit, a controlled Human
+      // unit, a boat.
       [{ unitId: unitAtV7(state, at(1, 1)).id, shield: 1 }],
       [{ unitId: unitAtV7(state, at(4, 5)).id, shield: 1 }],
       [{ unitId: unitAtV7(state, at(9, 2)).id, shield: 1 }],

@@ -85,7 +85,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__MARTIAN_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r32.current";
+const SAVE_KEY = "pulpWars.save.v7r33.current";
 const only = process.argv
   .slice(2)
   .find((argument) => argument.startsWith("--only="))
@@ -351,9 +351,9 @@ async function fixtureTour(
   );
   await capture(connection, `mind-control-after-${suffix}.png`);
   await deselect(connection);
-  await activate(connection, at.thrall as Coord);
-  evidence[`${suffix}ThrallDock`] = await dockText(connection);
-  await capture(connection, `thrall-dock-${suffix}.png`);
+  await activate(connection, at.controlled as Coord);
+  evidence[`${suffix}ControlledDock`] = await dockText(connection);
+  await capture(connection, `controlled-dock-${suffix}.png`);
   // Tractor Beam: the pull destination of the focused target.
   await deselect(connection);
   await activate(connection, at.mothership as Coord);
@@ -407,7 +407,7 @@ async function fixtureTour(
       { effect: 'BEAM_DOWN', from: ${JSON.stringify(at.saucer)}, cells: [${JSON.stringify({ x: 9, y: 6 })}], progress: 0.5 },
       { effect: 'TRACTOR_BEAM', from: ${JSON.stringify(at.mothership)}, cells: [${JSON.stringify({ x: 9, y: 4 })}], progress: 0.5 },
       { effect: 'MIND_CONTROL', from: ${JSON.stringify(at.brain)}, cells: [${JSON.stringify(at.weakTarget)}], progress: 0.5 },
-      { effect: 'THRALL_COLLAPSE', cells: [${JSON.stringify(at.thrall)}], progress: 0.4 },
+      { effect: 'THRALL_COLLAPSE', cells: [${JSON.stringify(at.controlled)}], progress: 0.4 },
     ])`,
   );
   await delay(300);

@@ -1,9 +1,10 @@
 import {
-  playerFactionV7,
+  isMindControlledV7,
   previewBeamDownV7,
   previewMindControlV7,
   previewTractorBeamV7,
   roleMechanicsV7,
+  unitFactionV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CommandV7,
@@ -28,7 +29,6 @@ import {
   shieldBarMaximumV7,
   tractorBeamPreviewLinesV7,
   tractorBeamTargetLabelV7,
-  unitIsThrallV7,
 } from "../martian-presentation-v7";
 import type {
   BoardRenderPlanEntryV7,
@@ -39,7 +39,7 @@ import type { MartianUnitMarkersV7 } from "./martian-canvas-v7";
 /**
  * The Martian part of the board plan (bead pulp_wars-t6s.4): unit markers,
  * the three picking modes (Beam Down, Mind Control, Tractor Beam), the
- * Force Field and Thrall-link previews of a selection, and the Martian lines
+ * Force Field and control-link previews of a selection, and the Martian lines
  * of an attack preview. Everything is read from the public view, the
  * offered commands and the public previews; nothing is recomputed.
  */
@@ -58,31 +58,48 @@ export type MartianPickV7 =
   | { readonly kind: "MIND_CONTROL"; readonly unitId: UnitId }
   | { readonly kind: "TRACTOR_BEAM"; readonly unitId: UnitId };
 
-/** The board markers of a visible Martian unit, or undefined. */
+/**
+ * The board markers of a visible unit of the Martian kind, or of a
+ * mind-controlled unit of any kind (the Mind Control revision: `controlled`
+ * draws the placeholder control marker; the UI pass draws the halo and the
+ * brain chip in the Martian faction colour), or undefined.
+ */
 export function martianUnitMarkersV7(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
 ): MartianUnitMarkersV7 | undefined {
   const mechanics = martianStatsV7(view, unit.id);
-  if (mechanics === undefined) return undefined;
+  const controlled = isMindControlledV7(view, unit.id);
+  if (mechanics === undefined)
+    return controlled
+      ? {
+          shield: 0,
+          shieldSegments: 0,
+          shieldMaximum: 0,
+          cooling: false,
+          controlled,
+          flyer: false,
+          afloat: false,
+        }
+      : undefined;
   const machine = mechanics.movementMode !== "GROUND";
   return {
     shield: mechanics.shield,
     shieldSegments: shieldBarMaximumV7(mechanics),
     shieldMaximum: mechanics.shieldMaximum,
     cooling: mechanics.cooling,
-    thrall: mechanics.thrall !== null || unitIsThrallV7(view, unit.id),
+    controlled,
     flyer: mechanics.movementMode === "FLY" && unit.form !== "NAVAL",
     afloat: machine && unit.form === "EMBARKED",
   };
 }
 
-/** Whether a Martian unit is a machine (its role walks or flies). */
+/** Whether a unit of the Martian kind is a machine (it walks or flies). */
 export function martianMachineV7(
   view: PlayerViewV7,
-  unit: Pick<PlayerViewV7["units"][number], "ownerId" | "role">,
+  unit: Pick<PlayerViewV7["units"][number], "id" | "ownerId" | "role">,
 ): boolean {
-  const faction = playerFactionV7(view, unit.ownerId);
+  const faction = unitFactionV7(view, unit);
   return (
     faction === "MARTIAN" &&
     roleMechanicsV7(unit.role, faction).movementMode !== "GROUND"
@@ -253,8 +270,8 @@ export function addMartianPickEntriesV7(
 
 /**
  * Selection previews (section 13.1): the Force Field tiles of a selected
- * land-form Shield Projector, and the link from a selected Thrall to its
- * Brain or from a selected Brain to its Thralls.
+ * land-form Shield Projector, and the link from a selected controlled unit
+ * to its Brain or from a selected Brain to its controlled units.
  */
 export function addMartianSelectionEntriesV7(
   entries: BoardRenderPlanEntryV7[],
@@ -264,8 +281,9 @@ export function addMartianSelectionEntriesV7(
   const unit = view.units.find((candidate) => candidate.id === selectedUnitId);
   if (unit === undefined) return;
   const mechanics = martianStatsV7(view, unit.id);
-  if (mechanics === undefined) return;
-  if (mechanics.forceField && unit.form === "LAND") {
+  const control = view.mindControlled.find((entry) => entry.unitId === unit.id);
+  if (mechanics === undefined && control === undefined) return;
+  if (mechanics?.forceField === true && unit.form === "LAND") {
     const explored = new Set(
       view.board.tiles
         .filter((tile) => tile.explored)
@@ -297,12 +315,12 @@ export function addMartianSelectionEntriesV7(
       });
   }
   const links =
-    mechanics.thrall !== null
-      ? mechanics.thrall.brainUnitId === null
+    control !== undefined
+      ? control.brainUnitId === null
         ? []
-        : [mechanics.thrall.brainUnitId]
-      : mechanics.mindControl !== null
-        ? view.thralls
+        : [control.brainUnitId]
+      : mechanics?.mindControl != null
+        ? view.mindControlled
             .filter((entry) => entry.brainUnitId === unit.id)
             .map((entry) => entry.unitId)
         : [];
@@ -310,12 +328,12 @@ export function addMartianSelectionEntriesV7(
     const other = view.units.find((candidate) => candidate.id === id);
     if (other === undefined) continue;
     entries.push({
-      key: `thrall-link:${unit.id}:${other.id}`,
+      key: `control-link:${unit.id}:${other.id}`,
       kind: "LINK",
       layer: 6,
       at: unit.at,
       linkTo: other.at,
-      label: "THRALL_LINK",
+      label: "CONTROL_LINK",
     });
   }
 }

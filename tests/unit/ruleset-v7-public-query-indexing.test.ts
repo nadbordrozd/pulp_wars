@@ -37,7 +37,7 @@ const captured300: PlayerViewV7 = {
         | "bitten"
         | "shields"
         | "cooling"
-        | "thralls"
+        | "mindControlled"
         | "mindControlCooldowns"
       >;
     }
@@ -48,7 +48,7 @@ const captured300: PlayerViewV7 = {
   // The Martian revision's neutral side lists.
   shields: [],
   cooling: [],
-  thralls: [],
+  mindControlled: [],
   mindControlCooldowns: [],
 };
 
@@ -66,9 +66,11 @@ describe("ruleset-7 exact public query indexing", () => {
     // The view hash includes the neutral `graves`, `plagued`, and `bitten`
     // fields added to the captured revision-11 view above, and since the
     // Martian revision (`pulp_wars-t6s.2`) the four empty lists `shields`,
-    // `cooling`, `thralls`, and `mindControlCooldowns` (was 219eb2…5d03).
+    // `cooling`, `thralls`, and `mindControlCooldowns` (was 219eb2…5d03),
+    // with `thralls` renamed `mindControlled` by the Mind Control revision
+    // (`pulp_wars-b5f.3`; was d8f602…f19a).
     expect(canonicalHash(measured.view)).toBe(
-      "d8f602f702c46762f9005deabd4735b53d5eefe26a5cf679397c5e3ddfb6f19a",
+      "2fe0de41ab502fc3e33859ee2d1d67f5a66b1dfebea87bddd0f7209687707670",
     );
 
     const planned = drain(measured.view, commands, 113);

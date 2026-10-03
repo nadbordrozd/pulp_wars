@@ -61,19 +61,6 @@ export function projectEventsV7(
       if (event.riderUnitId !== null)
         visiblyCreatedUnitIds.add(event.riderUnitId);
     } else if (
-      // The Martian revision: the Thrall of a projected Mind Control.
-      event.kind === "UNIT_MIND_CONTROLLED" &&
-      eventVisible(
-        beforeState,
-        afterState,
-        viewerId,
-        event,
-        beforeVisible,
-        afterVisible,
-      )
-    )
-      visiblyCreatedUnitIds.add(event.thrallUnitId);
-    else if (
       event.kind === "DEAD_RAISED" &&
       eventVisible(
         beforeState,
@@ -380,6 +367,7 @@ function eventVisible(
   if (
     event.kind === "UNIT_BEAMED" ||
     event.kind === "UNIT_MIND_CONTROLLED" ||
+    event.kind === "UNIT_RELEASED" ||
     event.kind === "UNIT_PULLED"
   ) {
     const seen = (id: UnitId): boolean =>
@@ -400,7 +388,15 @@ function eventVisible(
         event.targetOwnerId === viewerId ||
         seen(event.unitId) ||
         seen(event.targetUnitId) ||
-        seen(event.thrallUnitId) ||
+        tile(event.at)
+      );
+    // The Mind Control revision (section 6): a release is shown to both
+    // seats and to every player who sees the unit or its tile.
+    if (event.kind === "UNIT_RELEASED")
+      return (
+        event.fromPlayerId === viewerId ||
+        event.toPlayerId === viewerId ||
+        seen(event.unitId) ||
         tile(event.at)
       );
     return (
@@ -526,12 +522,12 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
     case "UNIT_PUSHED":
     case "UNIT_PULLED":
       return [event.sourceUnitId, event.targetUnitId];
-    // The Martian revision: the Saucer and its passenger; the Brain and the
-    // new Thrall (the target has left the board).
+    // The Martian revision: the Saucer and its passenger; the Brain and its
+    // target (the Mind Control revision: the target keeps its ID).
     case "UNIT_BEAMED":
       return [event.unitId, event.passengerUnitId];
     case "UNIT_MIND_CONTROLLED":
-      return [event.unitId, event.thrallUnitId];
+      return [event.unitId, event.targetUnitId];
     case "UNIT_SPAWN_DISPLACED":
       return [event.spawnedUnitId, event.displacedUnitId];
     case "UNIT_INFECTED":

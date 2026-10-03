@@ -4,6 +4,7 @@ import {
   type CoordV7,
   type PlayerEventEnvelopeV7,
   type PlayerViewV7,
+  unitFactionV7,
 } from "../../engine/index";
 import type { Ruleset7TacticalUiSymbolId } from "../../assets/ruleset7-tactical-ui-symbols";
 import type { ExplosionBlastV7 } from "./goblin-explosion-v7";
@@ -670,7 +671,8 @@ export function corePresentationPlanV7(
         (unit) => unit.id === event.preview.targetUnitId,
       );
       if (attacker === undefined || defender === undefined) continue;
-      const attackerFaction = factionOf(before, attacker.ownerId);
+      // The Mind Control revision: an attack looks like its kind's.
+      const attackerFaction = kindOf(before, attacker);
       // Revision 19: the Triceratops (a Dinosaur CATAPULT role) is a melee
       // unit; it charges instead of throwing a rock.
       const triceratops =
@@ -800,10 +802,7 @@ export function corePresentationPlanV7(
           durationMs: 360,
         });
       // The Lich (an Undead Catapult) bursts on its target and splash cells.
-      if (
-        attacker.role === "CATAPULT" &&
-        factionOf(before, attacker.ownerId) === "UNDEAD"
-      )
+      if (attacker.role === "CATAPULT" && kindOf(before, attacker) === "UNDEAD")
         steps.push({
           kind: "SUPPORT",
           effect: "SPLASH",
@@ -915,7 +914,7 @@ export function corePresentationPlanV7(
       if (
         event.kind === "WOUNDED_TENDED" &&
         recipients.length > 0 &&
-        factionOf(before, actor.ownerId) === "DWARF"
+        kindOf(before, actor) === "DWARF"
       )
         pushDwarf({
           effect: "REPAIR",
@@ -1098,11 +1097,14 @@ export function corePresentationPlanV7(
   return steps;
 }
 
-function factionOf(
+/** A visible unit's kind (`unitFactionV7`), or undefined for no owner. */
+function kindOf(
   view: PlayerViewV7,
-  playerId: PlayerViewV7["players"][number]["id"],
+  unit: Pick<PlayerViewV7["units"][number], "id" | "ownerId">,
 ): PlayerViewV7["players"][number]["faction"] | undefined {
-  return view.players.find((player) => player.id === playerId)?.faction;
+  return view.players.some((player) => player.id === unit.ownerId)
+    ? unitFactionV7(view, unit)
+    : undefined;
 }
 
 /** The Dwarf revision: an attacker whose role knocks back (Steam Cannon). */

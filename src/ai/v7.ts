@@ -9,7 +9,7 @@ import {
   GROWTH_KILLS_V7,
   COLD_SNAP_RANGE_V7,
   MIND_CONTROL_RANGE_V7,
-  MIND_CONTROL_THRALL_LIMIT_V7,
+  MIND_CONTROL_LIMIT_V7,
   armouredDamageV7,
   chargeRunUpAttack2V7,
   effectiveRoleRuleV7,
@@ -191,7 +191,7 @@ import {
   SHIELD_BREAK_RANGED_PRIORITY_V7,
   SHIELD_BREAK_VALUE_V7,
   STRIPPED_SHIELD_VALUE_V7,
-  THRALL_CHIP_PRIORITY_V7,
+  CONTROLLED_CHIP_PRIORITY_V7,
   MIND_CONTROL_SETUP_PRIORITY_V7,
   RAY_SIEGE_PRIORITY_V7,
   MOTHERSHIP_GUARD_PRIORITY_V7,
@@ -8639,7 +8639,7 @@ interface MartianContextCacheV7 {
   readonly movers: ReadonlySet<UnitId>;
   /** Own Brains with an offered `MIND_CONTROL`. */
   readonly mindControllers: ReadonlySet<UnitId>;
-  /** Ready hostile Brains (no cooldown, below the Thrall limit). */
+  /** Ready hostile Brains (no cooldown, below the control limit). */
   readonly hostileBrains: readonly PublicUnitV7[];
   /** Own Saucers with a `BEAM_DOWN` worth taking now. */
   readonly beamers: Map<UnitId, boolean>;
@@ -8832,9 +8832,9 @@ function martianAttackAdjustmentV7(
   let strategic = 0;
   let next = priority;
   if (actor.ownerId === view.viewer.id && facts.viewerMartian) {
-    // Thralls are the front row: their chips go before shielded units'.
-    if (priority === 900 && facts.brainOfThrall.has(actor.id))
-      next = THRALL_CHIP_PRIORITY_V7;
+    // Controlled units are the front row: their chips go before shielded units'.
+    if (priority === 900 && facts.brainOfControlled.has(actor.id))
+      next = CONTROLLED_CHIP_PRIORITY_V7;
     if (preview.attackerShieldDamage > 0 && !facts.forceFields)
       strategic -= RETALIATION_SHIELD_COST_V7 * preview.attackerShieldDamage;
     if (
@@ -8949,7 +8949,7 @@ function martianShieldBreakExceptionV7(
 /**
  * As Martians: whether a hostile unit left with `hp` is a Mind Control target
  * of an own Brain that can still act this turn (no cooldown, below the
- * Thrall limit, primary action unused) and stands within its range, or can
+ * control limit, primary action unused) and stands within its range, or can
  * step there (one tile) this turn.
  */
 function martianConvertibleAfterV7(
@@ -8968,8 +8968,8 @@ function martianConvertibleAfterV7(
       !unit.activation.attacked &&
       hasAbilityV7(view, unit, "MIND_CONTROL") &&
       !facts.cooldownBrains.has(unit.id) &&
-      (facts.thrallsOfBrain.get(unit.id)?.length ?? 0) <
-        MIND_CONTROL_THRALL_LIMIT_V7 &&
+      (facts.controlledOfBrain.get(unit.id)?.length ?? 0) <
+        MIND_CONTROL_LIMIT_V7 &&
       distance(unit.at, target.at) <=
         MIND_CONTROL_RANGE_V7 + (unit.activation.moved ? 0 : 1),
   );
@@ -9395,8 +9395,8 @@ function martianMoveValueV7(
   if (abilities.includes("MIND_CONTROL")) {
     const ready =
       !facts.cooldownBrains.has(actor.id) &&
-      (facts.thrallsOfBrain.get(actor.id)?.length ?? 0) <
-        MIND_CONTROL_THRALL_LIMIT_V7 &&
+      (facts.controlledOfBrain.get(actor.id)?.length ?? 0) <
+        MIND_CONTROL_LIMIT_V7 &&
       !actor.activation.handled &&
       !cache.mindControllers.has(actor.id);
     if (ready) {
@@ -12020,9 +12020,9 @@ function retainedUnitValue(view: PlayerViewV7, unit: PublicUnitV7): number {
         unit.kills * 2 +
         // Revision 19: a grown unit costs more to replace (0 otherwise).
         grownUnitPremiumV7(view, unit);
-  // The Martian revision: a Thrall is worth its HP, a Brain carries its
-  // Thralls (unchanged without a Martian seat).
-  return view.thralls.length > 0
+  // The Martian revision: a controlled unit is worth its HP, a Brain carries
+  // its controlled units (unchanged without a Martian seat).
+  return view.mindControlled.length > 0
     ? martianRetainedValueV7(view, martianFactsForViewV7(view), unit, base)
     : base;
 }

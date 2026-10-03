@@ -309,11 +309,18 @@ describe("Dinosaur rules (section 10.3)", () => {
     expect(run.combat.defenderShieldDamage).toBe(3);
   });
 
-  it("Rampage: a T-Rex that kills a Brain keeps rampaging; the Thralls are already gone", () => {
+  it("Rampage: a T-Rex that kills a Brain keeps rampaging; the unit it controlled is already back", () => {
     const base = martianFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(4, 3), hp: 1, shield: 0 },
-        { seat: 0, role: "FIGHTER", at: at(4, 4), thrallOf: at(4, 3), hp: 5 },
+        // A Caveman of the Dinosaur seat that the Brain controls.
+        {
+          seat: 1,
+          role: "FIGHTER",
+          at: at(4, 4),
+          controlledBy: at(4, 3),
+          hp: 5,
+        },
         { seat: 0, role: "FIGHTER", at: at(3, 3) },
         { seat: 1, role: "KNIGHT", at: at(5, 3) },
       ],
@@ -325,7 +332,8 @@ describe("Dinosaur rules (section 10.3)", () => {
       overrunAdvance: true,
       overrunContinues: true,
     });
-    expect(hasUnitAtV7(run.state, at(4, 4))).toBe(false);
+    // Released to its owner before the advance (the Mind Control revision).
+    expect(unitAtV7(run.state, at(4, 4)).ownerId).toBe(run.attacker?.ownerId);
     expect(run.attacker?.at).toEqual(at(4, 3));
     // It may attack the Grunt next to its new tile.
     expect(

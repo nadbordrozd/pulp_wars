@@ -31,11 +31,14 @@ export type GraveContextV7 = Pick<
   GameStateV7,
   "setup" | "board" | "treasureChests"
 > &
-  Partial<Pick<GameStateV7, "players">>;
+  Partial<Pick<GameStateV7, "players" | "mindControlled">>;
 
-/** The facts of a dead unit a Grave decision reads. */
+/**
+ * The facts of a dead unit a Grave decision reads (the Mind Control
+ * revision: its ID resolves its kind).
+ */
 export type GraveUnitV7 = Pick<UnitStateV7, "form" | "at"> &
-  Partial<Pick<UnitStateV7, "ownerId" | "role">>;
+  Partial<Pick<UnitStateV7, "id" | "ownerId" | "role">>;
 
 /**
  * Whether the death of `unit` on its tile creates a Grave, given the Graves
@@ -51,11 +54,15 @@ export function deathCreatesGraveV7(
   // The Dwarf revision section 7.2: a construct leaves no Grave.
   if (
     context.players !== undefined &&
+    unit.id !== undefined &&
     unit.ownerId !== undefined &&
     unit.role !== undefined &&
     unitIsConstructV7(
-      { players: context.players },
-      { ownerId: unit.ownerId, role: unit.role },
+      {
+        players: context.players,
+        mindControlled: context.mindControlled ?? [],
+      },
+      { id: unit.id, ownerId: unit.ownerId, role: unit.role },
     )
   )
     return false;

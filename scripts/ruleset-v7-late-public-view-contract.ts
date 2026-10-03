@@ -138,10 +138,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r32",
+    rulesetId: "pulp-wars-poc-7r33",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r32",
+      rulesetId: "pulp-wars-poc-7r33",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     },
@@ -230,10 +230,10 @@ export function upgradeRetainedPublicViewV7(
     // Revision 14: nor any Plague or Bitten status.
     plagued: [],
     bitten: [],
-    // The Martian revision: nor any Shield, Cooling, Thrall, or cooldown.
+    // The Martian revision: nor any Shield, Cooling, control, or cooldown.
     shields: [],
     cooling: [],
-    thralls: [],
+    mindControlled: [],
     mindControlCooldowns: [],
     // The Ice Folk revision: nor any Chill.
     chilled: [],

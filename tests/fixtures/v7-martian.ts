@@ -44,8 +44,13 @@ export interface MartianPieceV7 extends GoblinPieceV7 {
    * `"FIRED"` (fired at full power this turn).
    */
   readonly cooling?: "COOLING" | "FIRED";
-  /** Makes the unit a Thrall of the Brain standing on this tile. */
-  readonly thrallOf?: CoordV7;
+  /**
+   * The Mind Control revision: the unit (built for its `seat`, its original
+   * owner, so it has that seat's kind) is controlled by the Brain standing
+   * on this tile: its owner becomes the Brain's owner and its home is
+   * cleared.
+   */
+  readonly controlledBy?: CoordV7;
   /** A Mind Control cooldown entry with this `turnsRemaining`. */
   readonly cooldown?: number;
   readonly kills?: number;
@@ -58,8 +63,9 @@ export interface MartianFieldOptionsV7 extends FieldOptionsV7 {
 
 /**
  * A field with the given pieces. Units of a Martian seat get their Shield
- * (the piece's `shield`, or the maximum), and the pieces' Cooling, Thrall,
- * and cooldown entries are added to the side lists.
+ * (the piece's `shield`, or the maximum), and the pieces' Cooling,
+ * control (`mindControlled`), and cooldown entries are added to the side
+ * lists.
  */
 export function martianFieldV7(
   pieces: readonly MartianPieceV7[],
@@ -78,15 +84,26 @@ export function martianFieldV7(
     state = patchTileV7(state, where, { terrain: "DEEP_WATER" });
   const unitOf = (piece: MartianPieceV7): UnitStateV7 =>
     unitAtV7(state, piece.at);
-  const thralls = pieces
-    .filter((piece) => piece.thrallOf !== undefined)
-    .map((piece) => ({
-      unitId: unitOf(piece).id,
-      brainUnitId: unitAtV7(state, piece.thrallOf as CoordV7).id,
-    }))
+  const mindControlled = pieces
+    .filter((piece) => piece.controlledBy !== undefined)
+    .map((piece) => {
+      const unit = unitOf(piece);
+      return {
+        unitId: unit.id,
+        brainUnitId: unitAtV7(state, piece.controlledBy as CoordV7).id,
+        originalOwnerId: unit.ownerId,
+      };
+    })
     .sort((left, right) => left.unitId - right.unitId);
-  const thrallIds = new Set(thralls.map((entry) => entry.unitId));
-  const lookup = { players: state.players, thralls };
+  const controllerOf = new Map(
+    pieces
+      .filter((piece) => piece.controlledBy !== undefined)
+      .map((piece) => [
+        unitOf(piece).id,
+        unitAtV7(state, piece.controlledBy as CoordV7).ownerId,
+      ]),
+  );
+  const lookup = { players: state.players, mindControlled };
   const shields = pieces
     .flatMap((piece) => {
       const unit = unitOf(piece);
@@ -99,9 +116,12 @@ export function martianFieldV7(
     ...state,
     units: state.units.map((unit) => {
       const piece = pieces.find((candidate) => sameV7(candidate.at, unit.at));
+      const controller = controllerOf.get(unit.id);
       return {
         ...unit,
-        homeCityId: thrallIds.has(unit.id) ? null : unit.homeCityId,
+        ownerId: controller ?? unit.ownerId,
+        homeCityId: controller === undefined ? unit.homeCityId : null,
+        captureEligible: controller === undefined && unit.captureEligible,
         kills: piece?.kills ?? unit.kills,
       };
     }),
@@ -113,7 +133,7 @@ export function martianFieldV7(
         firedThisTurn: piece.cooling === "FIRED",
       }))
       .sort((left, right) => left.unitId - right.unitId),
-    thralls,
+    mindControlled,
     mindControlCooldowns: pieces
       .filter((piece) => piece.cooldown !== undefined)
       .map((piece) => ({

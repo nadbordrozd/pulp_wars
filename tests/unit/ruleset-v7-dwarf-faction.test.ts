@@ -157,7 +157,8 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       "BOMB_RUN",
       "ASSEMBLE",
     ]);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(81);
+    // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(82);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [

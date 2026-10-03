@@ -837,7 +837,10 @@ export type DomainEventV7 =
         | "EXPLOSION"
         /** Revision 19: an Egg destroyed because its home city was captured. */
         | "CITY_CAPTURED"
-        /** The Martian revision: a Thrall collapsed with its Brain. */
+        /**
+         * The Mind Control revision (section 4.2): a controlled unit lost
+         * with its Brain because its original owner was eliminated.
+         */
         | "BRAIN_LOST"
         /**
          * The Ice Folk revision (section 5.5): a shattered unit (no Grave,
@@ -873,9 +876,9 @@ export type DomainEventV7 =
     }
   | {
       /**
-       * The Martian revision (section 8.2): the Brain `unitId` of `playerId`
-       * took `targetUnitId` (removed, not killed); the Thrall
-       * `thrallUnitId` stands on `at` with `hp`.
+       * The Mind Control revision (section 3): the Brain `unitId` of
+       * `playerId` took control of `targetUnitId` of `targetOwnerId`, which
+       * keeps its ID, role, and kind and stands on `at` with `hp`.
        */
       readonly kind: "UNIT_MIND_CONTROLLED";
       readonly playerId: PlayerId;
@@ -883,9 +886,22 @@ export type DomainEventV7 =
       readonly targetUnitId: UnitId;
       readonly targetOwnerId: PlayerId;
       readonly targetRole: UnitRoleIdV7;
-      readonly thrallUnitId: UnitId;
       readonly at: CoordV7;
       readonly hp: number;
+    }
+  | {
+      /**
+       * The Mind Control revision (section 4.2): the Brain `brainUnitId`
+       * was lost, so the controlled unit `unitId` on `at` went back from
+       * `fromPlayerId` (the controller) to its original owner
+       * `toPlayerId`.
+       */
+      readonly kind: "UNIT_RELEASED";
+      readonly unitId: UnitId;
+      readonly brainUnitId: UnitId;
+      readonly fromPlayerId: PlayerId;
+      readonly toPlayerId: PlayerId;
+      readonly at: CoordV7;
     }
   | { readonly kind: "GRAVE_CREATED"; readonly at: CoordV7 }
   | {

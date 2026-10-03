@@ -1,5 +1,5 @@
 import type { UnitId } from "../model/ids";
-import { unitRoleRuleV7 } from "../rules/ruleset-v7";
+import { seatRoleRuleV7 } from "../rules/ruleset-v7";
 import type { DomainEventV7 } from "./events";
 import type { GameStateV7, UnitStateV7 } from "./types";
 
@@ -24,10 +24,9 @@ export function recordInfectionV7(
   activation: UnitStateV7["activation"],
   events: DomainEventV7[],
 ): UnitStateV7 {
-  const rule = unitRoleRuleV7(state, {
-    ownerId: source.ownerId,
-    role: "GUARD",
-  });
+  // The rising is the source seat's own `GUARD` (a role-level read; a
+  // mind-controlled Zombie never infects).
+  const rule = seatRoleRuleV7(state, source.ownerId, "GUARD");
   const rising: UnitStateV7 = {
     id: risingId,
     ownerId: source.ownerId,

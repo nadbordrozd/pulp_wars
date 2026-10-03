@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r32" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r33" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -43,8 +43,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r29",
   "pulp-wars-poc-7r30",
   "pulp-wars-poc-7r31",
+  "pulp-wars-poc-7r32",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r32.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r33.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
@@ -302,6 +303,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_DIED",
   "UNIT_INFECTED",
   "UNIT_MIND_CONTROLLED",
+  // The Mind Control revision (section 6).
+  "UNIT_RELEASED",
   "GRAVE_CREATED",
   "BITTEN_UNIT_RISEN",
   "PLAGUE_CLEARED",
@@ -581,10 +584,11 @@ export interface GameStateV7 {
    */
   readonly cooling: readonly CoolingStatusV7[];
   /**
-   * The Martian revision (section 8.3): one entry per Thrall, sorted by
-   * `unitId`. Always empty in a match whose setup has no MARTIAN seat.
+   * The Mind Control revision (docs/product/RULESET_7_MIND_CONTROL.md
+   * section 2.1): one entry per mind-controlled unit, sorted by `unitId`.
+   * Always empty in a match whose setup has no MARTIAN seat.
    */
-  readonly thralls: readonly ThrallStatusV7[];
+  readonly mindControlled: readonly MindControlledStatusV7[];
   /**
    * The Martian revision (section 8.2): Mind Control cooldowns of Brains,
    * sorted by `unitId`. Always empty in a match whose setup has no MARTIAN
@@ -657,10 +661,16 @@ export interface CoolingStatusV7 {
   readonly firedThisTurn: boolean;
 }
 
-/** The Martian revision: the Thrall `unitId` is controlled by `brainUnitId`. */
-export interface ThrallStatusV7 {
+/**
+ * The Mind Control revision (section 2.1): the unit `unitId` is controlled
+ * by the Brain `brainUnitId` (its owner is the Brain's owner) and goes back
+ * to `originalOwnerId` when it is released. Its kind is the faction of
+ * `originalOwnerId` (`unitFactionV7`).
+ */
+export interface MindControlledStatusV7 {
   readonly unitId: UnitId;
   readonly brainUnitId: UnitId;
+  readonly originalOwnerId: PlayerId;
 }
 
 /**

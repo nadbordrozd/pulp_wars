@@ -4,6 +4,7 @@ import {
   MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
   attackIsRayV7,
+  isMindControlledV7,
   technologyCapabilitiesV7,
   unitCapacitySlotsV7,
   unitRoleMechanicsV7,
@@ -14,13 +15,14 @@ import {
 import { unitIsConstructV7 } from "./afflictions";
 import type { DomainEventV7 } from "./events";
 import type {
+  BurrowedEntryV7,
   CoolingStatusV7,
   CoordV7,
   GameStateV7,
   MindControlCooldownV7,
+  MindControlledStatusV7,
   ShieldStatusV7,
   TerrainIdV7,
-  ThrallStatusV7,
   UnitRoleIdV7,
   UnitStateV7,
 } from "./types";
@@ -28,30 +30,24 @@ import { allOwnedUnitsV7 } from "./units";
 
 /**
  * The Martian revision (docs/product/RULESET_7_MARTIANS.md): Shields
- * (section 5), heat-ray Cooling (section 6.2), Thralls (section 8.3), and
- * the Mind Control cooldown (section 8.2). Each lives in a side list of the
+ * (section 5), heat-ray Cooling (section 6.2), the Mind Control cooldown
+ * (section 8.2), and the mind-controlled units
+ * (docs/product/RULESET_7_MIND_CONTROL.md). Each lives in a side list of the
  * canonical state sorted by unit ID, like `plagued`, `bitten`, and `eggs`,
  * and is empty in a match without a Martian seat. Every helper here reads
  * the canonical state and the public view alike.
  */
 
-/** The facts a Shield lookup reads: the roster and the Thrall list. */
-export interface ShieldLookupV7 extends FactionRosterV7 {
-  readonly thralls: readonly { readonly unitId: UnitId }[];
-}
-
-/** Whether `unitId` is a Thrall (it has a `thralls` entry). */
-export function isThrallV7(
-  thralls: readonly { readonly unitId: UnitId }[],
-  unitId: UnitId,
-): boolean {
-  return thralls.some((entry) => entry.unitId === unitId);
-}
+/**
+ * The facts a Shield lookup reads: the roster (with the mind-controlled
+ * list, through which a unit's kind resolves).
+ */
+export type ShieldLookupV7 = FactionRosterV7;
 
 /**
- * Section 5.1: a unit's Shield maximum: its role's under its owner's
- * registration, and 0 for a Thrall whatever its role says. It is 0 for every
- * role of every non-Martian faction and for boats.
+ * Section 5.1: a unit's Shield maximum: its role's under its kind (the
+ * Mind Control revision: a controlled Martian unit keeps its Shield). It is
+ * 0 for every role of every non-Martian kind and for boats.
  */
 export function unitShieldMaximumV7(
   lookup: ShieldLookupV7,
@@ -61,8 +57,7 @@ export function unitShieldMaximumV7(
     readonly role: UnitRoleIdV7;
   },
 ): number {
-  const maximum = unitRoleMechanicsV7(lookup, unit).shield;
-  return maximum === 0 || isThrallV7(lookup.thralls, unit.id) ? 0 : maximum;
+  return unitRoleMechanicsV7(lookup, unit).shield;
 }
 
 /** A unit's current Shield (0 without an entry). */
@@ -330,12 +325,19 @@ export function mindControlCooldownStepV7(
   return { ...state, mindControlCooldowns };
 }
 
-/** The Thralls a Brain controls, in unit-ID order. */
-export function thrallsOfBrainV7(
-  thralls: readonly ThrallStatusV7[],
+/**
+ * The Mind Control revision (section 6): the units a Brain controls, in
+ * unit-ID order. Reads the state's and the view's list alike.
+ */
+export function controlledByBrainV7(
+  mindControlled: readonly {
+    readonly unitId: UnitId;
+    readonly brainUnitId: UnitId | null;
+  }[],
   brainUnitId: UnitId,
 ): readonly UnitId[] {
-  return thralls
+  if (mindControlled.length === 0) return [];
+  return mindControlled
     .filter((entry) => entry.brainUnitId === brainUnitId)
     .map((entry) => entry.unitId);
 }
@@ -345,30 +347,36 @@ export type MindControlTargetBlockV7 =
   "TARGET_IMMUNE" | "OUT_OF_RANGE" | "TARGET_HEALTHY";
 
 /**
- * Section 8.2: the per-target Mind Control conditions, shared by the
- * reducer and the public command query so that every offered target is
- * accepted and every rejected one is not offered. `target` is a living
- * unit the Brain's owner sees and is hostile to (each caller checks that
- * against its own data); `targetTile` is the tile it stands on, undefined
- * when unknown. Returns null when the target is legal, otherwise the first
- * failing condition in the reducer's rejection order:
+ * The Mind Control revision (section 3): the per-target Mind Control
+ * conditions, shared by the reducer and the public command query so that
+ * every offered target is accepted and every rejected one is not offered.
+ * `roster` is the state or the viewer's view (its `mindControlled` list
+ * resolves the target's kind and tells an already-controlled target).
+ * `target` is a living unit the Brain's owner sees and is hostile to (each
+ * caller checks that against its own data); `targetTile` is the tile it
+ * stands on, undefined when unknown. Returns null when the target is legal,
+ * otherwise the first failing condition in the reducer's rejection order:
  *
- * - `TARGET_IMMUNE`: not in land form, a `JUGGERNAUT`-role or two-slot
- *   unit, on a settlement site (or an unknown tile), on a Rift
- *   (RULESET_7_RIFT.md section 4), or a construct (the Dwarf revision
- *   section 7.2);
- * - `OUT_OF_RANGE`: more than `MIND_CONTROL_RANGE_V7` from the Brain;
- * - `TARGET_HEALTHY`: more than `MIND_CONTROL_HP_V7` HP.
+ * - `TARGET_IMMUNE` (row 9): not in land form, a `JUGGERNAUT`-role or
+ *   two-slot unit under its kind, on a settlement site (or an unknown
+ *   tile), on a Rift (RULESET_7_RIFT.md section 4), a construct (the Dwarf
+ *   revision section 7.2), or already mind-controlled (by any Brain);
+ * - `OUT_OF_RANGE` (row 10): more than `MIND_CONTROL_RANGE_V7` from the
+ *   Brain;
+ * - `TARGET_HEALTHY` (rows 11 and 12): more than `MIND_CONTROL_HP_V7` HP,
+ *   or unwounded (`hp` equal to `maxHp`).
  */
 export function mindControlTargetBlockV7(
   roster: FactionRosterV7,
   brain: { readonly at: CoordV7 },
   target: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitStateV7["form"];
     readonly at: CoordV7;
     readonly hp: number;
+    readonly maxHp: number;
   },
   targetTile:
     | {
@@ -384,7 +392,8 @@ export function mindControlTargetBlockV7(
     targetTile === undefined ||
     targetTile.site !== null ||
     targetTile.terrain === "RIFT" ||
-    unitIsConstructV7(roster, target)
+    unitIsConstructV7(roster, target) ||
+    isMindControlledV7(roster, target.id)
   )
     return "TARGET_IMMUNE";
   if (
@@ -394,71 +403,148 @@ export function mindControlTargetBlockV7(
     ) > MIND_CONTROL_RANGE_V7
   )
     return "OUT_OF_RANGE";
-  if (target.hp > MIND_CONTROL_HP_V7) return "TARGET_HEALTHY";
+  if (target.hp > MIND_CONTROL_HP_V7 || target.hp >= target.maxHp)
+    return "TARGET_HEALTHY";
   return null;
 }
 
 /**
- * Section 8.3 collapse: every Thrall among `units` whose Brain is no longer
- * a living unit among `units` is removed at once, in unit-ID order, each
- * with `UNIT_DIED { cause: "BRAIN_LOST" }`. These are removals: no kill
- * credit, no Plunder, no Grave, no rising, no growth. Returns the units and
- * the Thrall list after the collapse, and the removed units.
+ * The Mind Control revision (section 3 row 1 and section 5.1 ruling 3):
+ * whether a unit may use an ability whose result is a new unit (or a
+ * controlled unit): Raise Dead, Infect, Bite, Hatch, Assemble, Mind
+ * Control, and tunnel riding are unavailable to a mind-controlled unit.
  */
-export function collapseThrallsV7<
-  U extends { readonly id: UnitId; readonly hp: number },
->(
+export function mayCreateUnitsV7(
+  roster: Pick<FactionRosterV7, "mindControlled">,
+  unitId: UnitId,
+): boolean {
+  return !isMindControlledV7(roster, unitId);
+}
+
+/** The players a release reads: who is still in the game. */
+export interface ReleasePlayerV7 {
+  readonly id: PlayerId;
+  readonly status: "ACTIVE" | "ELIMINATED";
+}
+
+/**
+ * The Mind Control revision (section 4.2) release: every controlled unit
+ * (on the board or burrowed) whose Brain is no longer a living unit on the
+ * board, or whose Brain changed owner, is released at once, in unit-ID
+ * order. To an original owner still in the game: `ownerId` becomes
+ * `originalOwnerId`, `homeCityId` stays null, `captureEligible` false, the
+ * exhausted activation; it keeps HP, kills, statuses, form, and tile; event
+ * `UNIT_RELEASED`. To an eliminated original owner: it is removed with
+ * `UNIT_DIED { cause: "BRAIN_LOST" }` (a removal: no kill credit, Plunder,
+ * Grave, rising, or growth). An entry whose unit is gone or was already
+ * released earlier in the same command is skipped; `prunedMartianV7` drops
+ * such entries. Returns the units, the burrowed list, the list after the
+ * release, and the released and removed units.
+ */
+export function releaseControlledV7<U extends UnitStateV7>(
   units: readonly U[],
-  thralls: readonly ThrallStatusV7[],
+  burrowed: readonly BurrowedEntryV7[],
+  mindControlled: readonly MindControlledStatusV7[],
+  players: readonly ReleasePlayerV7[],
   events: DomainEventV7[],
 ): {
   readonly units: readonly U[];
-  readonly thralls: readonly ThrallStatusV7[];
-  readonly collapsed: readonly U[];
+  readonly burrowed: readonly BurrowedEntryV7[];
+  readonly mindControlled: readonly MindControlledStatusV7[];
+  readonly released: readonly UnitStateV7[];
+  readonly removed: readonly UnitStateV7[];
 } {
-  if (thralls.length === 0) return { units, thralls, collapsed: [] };
-  const alive = new Set(
-    units.filter((unit) => unit.hp > 0).map((unit) => unit.id),
+  const unchanged = {
+    units,
+    burrowed,
+    mindControlled,
+    released: [],
+    removed: [],
+  };
+  if (mindControlled.length === 0) return unchanged;
+  const board = new Map(
+    units.filter((unit) => unit.hp > 0).map((unit) => [unit.id, unit]),
   );
-  const lost = thralls.filter(
-    (entry) => alive.has(entry.unitId) && !alive.has(entry.brainUnitId),
+  const underground = new Map(
+    burrowed
+      .filter((entry) => entry.unit.hp > 0)
+      .map((entry) => [entry.unit.id, entry.unit]),
   );
-  if (lost.length === 0) return { units, thralls, collapsed: [] };
-  const lostIds = new Set(lost.map((entry) => entry.unitId));
-  const collapsed = units
-    .filter((unit) => lostIds.has(unit.id))
-    .sort((left, right) => left.id - right.id);
-  for (const unit of collapsed)
-    events.push({ kind: "UNIT_DIED", unitId: unit.id, cause: "BRAIN_LOST" });
+  const releasedById = new Map<UnitId, UnitStateV7>();
+  const removedIds = new Set<UnitId>();
+  const removed: UnitStateV7[] = [];
+  const ended = new Set<UnitId>();
+  for (const entry of [...mindControlled].sort(
+    (left, right) => left.unitId - right.unitId,
+  )) {
+    const unit = board.get(entry.unitId) ?? underground.get(entry.unitId);
+    if (unit === undefined || unit.ownerId === entry.originalOwnerId) continue;
+    const brain = board.get(entry.brainUnitId);
+    if (brain !== undefined && brain.ownerId === unit.ownerId) continue;
+    ended.add(entry.unitId);
+    const original = players.find(
+      (player) => player.id === entry.originalOwnerId,
+    );
+    if (original?.status === "ACTIVE") {
+      releasedById.set(unit.id, {
+        ...unit,
+        ownerId: entry.originalOwnerId,
+        homeCityId: null,
+        captureEligible: false,
+        activation: exhaustedMartianActivationV7(),
+      });
+      events.push({
+        kind: "UNIT_RELEASED",
+        unitId: unit.id,
+        brainUnitId: entry.brainUnitId,
+        fromPlayerId: unit.ownerId,
+        toPlayerId: entry.originalOwnerId,
+        at: { x: unit.at.x, y: unit.at.y },
+      });
+    } else {
+      removedIds.add(unit.id);
+      removed.push(unit);
+      events.push({ kind: "UNIT_DIED", unitId: unit.id, cause: "BRAIN_LOST" });
+    }
+  }
+  if (ended.size === 0) return unchanged;
   return {
-    units: units.filter((unit) => !lostIds.has(unit.id)),
-    thralls: thralls.filter((entry) => !lostIds.has(entry.unitId)),
-    collapsed,
+    units: units
+      .filter((unit) => !removedIds.has(unit.id))
+      .map((unit) => (releasedById.get(unit.id) as U | undefined) ?? unit),
+    burrowed: burrowed
+      .filter((entry) => !removedIds.has(entry.unit.id))
+      .map((entry) => {
+        const released = releasedById.get(entry.unit.id);
+        return released === undefined ? entry : { ...entry, unit: released };
+      }),
+    mindControlled: mindControlled.filter((entry) => !ended.has(entry.unitId)),
+    released: [...releasedById.values()],
+    removed,
   };
 }
 
 /**
  * Drops Martian side-list entries of units that left the board (Shields,
- * Cooling, Mind Control cooldowns, and the entries of Thralls that are
- * gone). A Thrall whose Brain left the board is NOT pruned here: its
- * collapse is an event (`collapseThrallsV7`), and state parsing rejects a
- * Thrall without its Brain. Every reducer output runs through this before
- * validation.
+ * Cooling, Mind Control cooldowns), and the `mindControlled` entries of
+ * units that are gone or were released (their owner is the original owner
+ * again). A controlled unit whose Brain left the board is NOT pruned here:
+ * its release is an event (`releaseControlledV7`), and state parsing
+ * rejects a controlled unit without its Brain. Every reducer output runs
+ * through this before validation.
  */
 export function prunedMartianV7(state: GameStateV7): GameStateV7 {
   if (
     state.shields.length === 0 &&
     state.cooling.length === 0 &&
-    state.thralls.length === 0 &&
+    state.mindControlled.length === 0 &&
     state.mindControlCooldowns.length === 0
   )
     return state;
   // The Dwarf revision section 5.2: a burrowed unit keeps its entries.
-  const alive = new Set(
-    allOwnedUnitsV7(state)
-      .filter((unit) => unit.hp > 0)
-      .map((unit) => unit.id),
-  );
+  const living = allOwnedUnitsV7(state).filter((unit) => unit.hp > 0);
+  const alive = new Set(living.map((unit) => unit.id));
+  const ownerOf = new Map(living.map((unit) => [unit.id, unit.ownerId]));
   const keep = <T extends { readonly unitId: UnitId }>(
     entries: readonly T[],
   ): readonly T[] => {
@@ -467,14 +553,21 @@ export function prunedMartianV7(state: GameStateV7): GameStateV7 {
   };
   const shields = keep(state.shields);
   const cooling = keep(state.cooling);
-  const thralls = keep(state.thralls);
+  const controlled = state.mindControlled.filter((entry) => {
+    const owner = ownerOf.get(entry.unitId);
+    return owner !== undefined && owner !== entry.originalOwnerId;
+  });
+  const mindControlled =
+    controlled.length === state.mindControlled.length
+      ? state.mindControlled
+      : controlled;
   const mindControlCooldowns = keep(state.mindControlCooldowns);
   return shields === state.shields &&
     cooling === state.cooling &&
-    thralls === state.thralls &&
+    mindControlled === state.mindControlled &&
     mindControlCooldowns === state.mindControlCooldowns
     ? state
-    : { ...state, shields, cooling, thralls, mindControlCooldowns };
+    : { ...state, shields, cooling, mindControlled, mindControlCooldowns };
 }
 
 /**
@@ -513,7 +606,10 @@ export function tractorBeamDestinationV7(
   };
 }
 
-/** The exhausted activation of a Thrall, a beamed unit, or a rising. */
+/**
+ * The exhausted activation of a controlled or released unit, a beamed unit,
+ * or a rising.
+ */
 export function exhaustedMartianActivationV7(): UnitStateV7["activation"] {
   return {
     moved: true,

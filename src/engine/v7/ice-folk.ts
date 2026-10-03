@@ -6,8 +6,9 @@ import {
   COLD_SNAP_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
   factionRulesV7,
-  playerFactionV7,
   technologyCapabilitiesV7,
+  unitCapabilitiesV7,
+  unitFactionV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
@@ -43,21 +44,29 @@ export function matchHasIceFolkV7(state: {
   return state.setup.factions.includes("ICE_FOLK");
 }
 
-/** Whether the unit's owner is an Ice Folk seat (the `snow` faction rule). */
+/**
+ * Whether the unit is of the Ice Folk kind (the `snow` faction rule of its
+ * kind, `unitFactionV7`): a body rule, so a mind-controlled Ice Folk unit
+ * keeps Glide, Snow cover, and deep-snow freedom.
+ */
 export function unitOwnerIsIceFolkV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId },
+  unit: { readonly id: UnitId; readonly ownerId: PlayerId },
 ): boolean {
-  return factionRulesV7(playerFactionV7(roster, unit.ownerId)).snow;
+  return factionRulesV7(unitFactionV7(roster, unit)).snow;
 }
 
 /**
- * An Ice Folk unit in the sense of sections 5 to 8: a land-form unit of an
- * Ice Folk seat (never an embarked unit or a boat).
+ * An Ice Folk unit in the sense of sections 5 to 8: a land-form unit of the
+ * Ice Folk kind (never an embarked unit or a boat).
  */
 export function isIceFolkLandUnitV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly form: UnitFormV7 },
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly form: UnitFormV7;
+  },
 ): boolean {
   return unit.form === "LAND" && unitOwnerIsIceFolkV7(roster, unit);
 }
@@ -325,7 +334,7 @@ const WINTER_CACHE_V7 = new WeakMap<object, WinterV7>();
 /** The facts the derived Snow reads (a canonical state or a projection). */
 export type WinterFactsV7 = Pick<
   GameStateV7,
-  "setup" | "board" | "players" | "cities" | "units"
+  "setup" | "board" | "players" | "cities" | "units" | "mindControlled"
 >;
 
 /**
@@ -348,6 +357,7 @@ export function winterV7(state: WinterFactsV7): WinterV7 {
   const iceCityIds = new Set<number>();
   const deepWinterCenters: CoordV7[] = [];
   for (const city of state.cities) {
+    // Territory Snow and Deep Winter are seat rules (the city owner's).
     const owner = factionOf.get(city.ownerId);
     if (owner === undefined || !factionRulesV7(owner.faction).snow) continue;
     iceCityIds.add(city.id);
@@ -373,7 +383,8 @@ export function winterV7(state: WinterFactsV7): WinterV7 {
     )
       groundSnow.add(index);
   }
-  // Only the Ice Witch's role has `BLIZZARD` (under her owner's registration).
+  // Only the Ice Witch's role has `BLIZZARD` (under her kind; the Mind
+  // Control revision: a controlled Witch keeps her Blizzard).
   const witches = state.units.filter(
     (unit) =>
       unit.hp > 0 &&
@@ -513,7 +524,7 @@ export function knownWinterV7(
  */
 export function hiddenBlizzardPossibleV7(
   view: PlayerViewV7,
-  unit: Pick<UnitStateV7, "ownerId" | "form" | "at">,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "form" | "at">,
 ): boolean {
   if (!isIceFolkLandUnitV7(view, unit)) return false;
   for (
@@ -537,14 +548,16 @@ export function hiddenBlizzardPossibleV7(
 
 /**
  * Section 6.3 (root ruling 4): whether `unit` is protected by a Blizzard's
- * ranged-damage halving: a land-form Ice Folk unit within
- * `BLIZZARD_RADIUS_V7` of a land-form Ice Witch of its own seat. `witches`
- * are the Witches the caller knows of (canonical: all; public: visible).
+ * ranged-damage halving: a land-form unit of the Ice Folk kind within
+ * `BLIZZARD_RADIUS_V7` of a land-form Ice Witch of its own seat (the Mind
+ * Control revision: a controlled Witch protects only Ice Folk units of her
+ * controller). `witches` are the Witches the caller knows of (canonical:
+ * all; public: visible).
  */
 export function blizzardProtectsV7(
   roster: FactionRosterV7,
   witches: readonly Pick<UnitStateV7, "ownerId" | "at">[],
-  unit: Pick<UnitStateV7, "ownerId" | "form" | "at">,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "form" | "at">,
 ): boolean {
   if (witches.length === 0 || !isIceFolkLandUnitV7(roster, unit)) return false;
   return witches.some(
@@ -566,6 +579,7 @@ export function blizzardHalvedDamageV7(damage: number): number {
 export function unitGlidesV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -583,6 +597,7 @@ export function unitGlidesV7(
 export function deepSnowStopsUnitV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -605,7 +620,7 @@ export function deepSnowStopsUnitV7(
 export function unitAvoidsForeignSitesV7(
   roster: FactionRosterV7 & { readonly surfacedThisTurn?: readonly UnitId[] },
   unit: {
-    readonly id?: UnitId;
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form?: UnitFormV7;
@@ -626,6 +641,7 @@ export function unitAvoidsForeignSitesV7(
 export function unitIgnoresZocStopsV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -645,6 +661,7 @@ export function unitIgnoresZocStopsV7(
 export function attackMaximumRangeV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -659,23 +676,21 @@ export function attackMaximumRangeV7(
     : range;
 }
 
-/** The attacker's owner's Shatter threshold (section 5.5). */
+/**
+ * The attacker's Shatter threshold (section 5.5): Brittle is a unit-level
+ * unlock (the Mind Control revision section 5.2), so it reads the attacker's
+ * controller's research through the attacker's kind's tree.
+ */
 export function shatterThresholdV7(
-  players:
-    | GameStateV7["players"]
-    | readonly {
-        readonly id: PlayerId;
-        readonly faction: FactionIdV7;
-        readonly researchedTechs: readonly string[];
-      }[],
-  playerId: PlayerId,
+  state: Pick<GameStateV7, "players" | "mindControlled">,
+  unit: { readonly id: UnitId; readonly ownerId: PlayerId },
 ): number {
-  const player = players.find((candidate) => candidate.id === playerId);
+  const player = state.players.find(
+    (candidate) => candidate.id === unit.ownerId,
+  );
   if (player === undefined) throw new RangeError("INVALID_STATE");
-  return technologyCapabilitiesV7(
-    player.researchedTechs as GameStateV7["players"][number]["researchedTechs"],
-    player.faction,
-  ).shatterThreshold;
+  return unitCapabilitiesV7(state, unit, player.researchedTechs)
+    .shatterThreshold;
 }
 
 /**

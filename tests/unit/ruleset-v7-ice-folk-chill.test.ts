@@ -585,18 +585,25 @@ describe("Who can be Chilled (section 5.2)", () => {
         turnsLeft: 2,
       });
     }
-    // A Thrall.
-    const thrall = iceFieldV7(
+    // A Yeti of the Ice seat that a Martian Brain controls (the Mind
+    // Control revision).
+    const controlled = iceFieldV7(
       [
         { seat: 0, role: "RAIDER", at: at(4, 3) },
         { seat: 1, role: "CAPTAIN", at: at(6, 4) },
-        { seat: 1, role: "FIGHTER", at: at(5, 3), thrallOf: at(6, 4), hp: 4 },
+        {
+          seat: 0,
+          role: "FIGHTER",
+          at: at(5, 3),
+          controlledBy: at(6, 4),
+          hp: 4,
+        },
       ],
       { factions: ["ICE_FOLK", "MARTIAN"] },
     );
     expect(
       chillAtV7(
-        playV7(thrall, bolas(thrall, at(4, 3), at(5, 3))).state,
+        playV7(controlled, bolas(controlled, at(4, 3), at(5, 3))).state,
         at(5, 3),
       ),
     ).toMatchObject({ sluggish: true });
@@ -951,7 +958,7 @@ describe("Chill state and view (section 5.1)", () => {
     expect(owner.chilled).toHaveLength(2);
   });
 
-  it("removes the entry when the unit leaves the board (death, Disband, Mind Control)", () => {
+  it("removes the entry when the unit leaves the board (death, Disband) and keeps it through Mind Control", () => {
     // Death.
     const dying = iceFieldV7([
       { seat: 0, role: "FIGHTER", at: at(4, 3) },
@@ -965,7 +972,8 @@ describe("Chill state and view (section 5.1)", () => {
     ]);
     const killed = playV7(dying, offeredV7(dying, "ATTACK")[0] as CommandV7);
     expect(killed.state.chilled).toEqual([]);
-    // Mind Control: the victim's entry ends; the Thrall is not Chilled.
+    // Mind Control (the Mind Control revision): the unit stays on the board,
+    // so its Chill entry stays with it.
     const control = iceFieldV7(
       [
         { seat: 1, role: "CAPTAIN", at: at(4, 3) },
@@ -984,7 +992,8 @@ describe("Chill state and view (section 5.1)", () => {
       unitId: unitAtV7(control, at(4, 3)).id,
       targetUnitId: unitAtV7(control, at(5, 3)).id,
     });
-    expect(mind.state.chilled).toEqual([]);
+    expect(mind.state.chilled).toEqual(control.chilled);
+    expect(mind.state.chilled).toHaveLength(1);
   });
 
   it("projects UNITS_CHILLED to a target owner who cannot see the source with sourceUnitId null", () => {

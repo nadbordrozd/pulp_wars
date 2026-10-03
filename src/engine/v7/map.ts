@@ -2075,12 +2075,12 @@ function initialMapStateFromV7(
     eggs: [],
     // The Martian revision: a starting Grunt has its full Shield.
     shields: withFullShieldsV7(
-      { players: explored, thralls: [] },
+      { players: explored, mindControlled: [] },
       [],
       entities.units,
     ),
     cooling: [],
-    thralls: [],
+    mindControlled: [],
     mindControlCooldowns: [],
     chilled: [],
     burrowed: [],
@@ -2129,12 +2129,12 @@ function showcaseInitialStateV7(
     eggs: [],
     // The Martian revision: every Showcase unit starts at its full Shield.
     shields: withFullShieldsV7(
-      { players: entities.players, thralls: [] },
+      { players: entities.players, mindControlled: [] },
       [],
       entities.units,
     ),
     cooling: [],
-    thralls: [],
+    mindControlled: [],
     mindControlCooldowns: [],
     chilled: [],
     burrowed: [],

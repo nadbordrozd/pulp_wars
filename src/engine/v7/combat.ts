@@ -10,8 +10,8 @@ import {
   flyerMayStandOnSiteV7,
   halfPowerAttack2V7,
   platedCapAppliesV7,
-  playerFactionV7,
-  technologyCapabilitiesV7,
+  unitCapabilitiesV7,
+  unitFactionV7,
   unitAlphaAttack2V7,
   unitCapacitySlotsV7,
   unitIsMountainBornV7,
@@ -206,8 +206,9 @@ export function attackFortificationV7(
 }
 
 /**
- * Revision 17 Gang Up (section 5.2): a land-form attacker whose owner's
- * faction has Gang Up gains +1 Attack for each other unit its owner has on
+ * Revision 17 Gang Up (section 5.2): a land-form attacker whose kind (the
+ * Mind Control revision: a body rule) has Gang Up gains +1 Attack for each
+ * other unit its owner (its controller) has on
  * the eight cells around the target (any role and form; allies never count),
  * up to the faction maximum. Own units are always visible to their owner, so
  * the public preview passes its visible units and is exact.
@@ -219,9 +220,7 @@ export function gangUpBonusV7(
   target: Pick<UnitStateV7, "id" | "at">,
 ): 0 | 1 | 2 {
   if (attacker.form !== "LAND") return 0;
-  const maximum = factionRulesV7(
-    playerFactionV7(roster, attacker.ownerId),
-  ).gangUpMaximum;
+  const maximum = factionRulesV7(unitFactionV7(roster, attacker)).gangUpMaximum;
   if (maximum === 0) return 0;
   const helpers = units.filter(
     (unit) =>
@@ -346,9 +345,10 @@ export function calculateCombatPreviewV7(
       // The Martian revision section 6.5: the Disintegrator.
       disintegrator:
         rayPower !== "NONE" &&
-        technologyCapabilitiesV7(
+        unitCapabilitiesV7(
+          state,
+          attacker,
           requirePlayer(state, attacker.ownerId).researchedTechs,
-          playerFactionV7(state, attacker.ownerId),
         ).raysIgnoreFortification,
       // The Ice Folk revision section 7.6: Boulders.
       boulders: attackerLand && attackerMechanics.ignoresFortification,
@@ -429,7 +429,7 @@ export function calculateCombatPreviewV7(
       defenderChilled,
       defender,
       hpAfterHit: defender.hp - defenderHit.hpDamage,
-      threshold: shatterThresholdV7(state.players, attacker.ownerId),
+      threshold: shatterThresholdV7(state, attacker),
     });
   const damageToDefender = shatters ? defender.hp : defenderHit.hpDamage;
   const defenderShieldDamage = defenderHit.shieldDamage;
@@ -705,9 +705,7 @@ export interface CombatOptionsV7 {
  */
 export function advanceSiteAllowedV7(
   roster: FactionRosterV7 & { readonly surfacedThisTurn?: readonly UnitId[] },
-  attacker: Pick<UnitStateV7, "ownerId" | "role" | "form"> & {
-    readonly id?: UnitId;
-  },
+  attacker: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form">,
   site: "CAPITAL" | "VILLAGE" | "CITY" | null,
   cityOwnerId: PlayerId | null,
 ): boolean {

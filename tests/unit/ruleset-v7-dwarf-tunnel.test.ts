@@ -822,7 +822,7 @@ describe("surfacing and the eruption (section 5.4)", () => {
     expect(ended.state.surfacedThisTurn).toEqual([]);
   });
 
-  it("hits hostile ground units only: foot, walker, Thrall, and Egg take it; flyers, boats, embarked, own, and allied units never", () => {
+  it("hits hostile ground units only: foot, walker, mind-controlled, and Egg take it; flyers, boats, embarked, own, and allied units never", () => {
     const martian = withBurrowedV7(
       dwarfFieldV7(
         [
@@ -831,7 +831,8 @@ describe("surfacing and the eruption (section 5.4)", () => {
           { seat: 1, role: "CAPTAIN", at: at(9, 0) },
           { seat: 1, role: "FIGHTER", at: at(4, 2), shield: 0 },
           { seat: 1, role: "CATAPULT", at: at(5, 2), shield: 0 },
-          { seat: 1, role: "FIGHTER", at: at(6, 2), thrallOf: at(9, 0) },
+          // A Hammerer of the Dwarf seat the Martian Brain controls.
+          { seat: 0, role: "FIGHTER", at: at(6, 2), controlledBy: at(9, 0) },
           { seat: 1, role: "RAIDER", at: at(4, 4), shield: 0 },
           { seat: 1, role: "FIGHTER", at: at(6, 4), form: "EMBARKED" },
           { seat: 1, role: "PATROL_BOAT", at: at(5, 4), form: "NAVAL" },

@@ -2603,16 +2603,46 @@ export function roleMechanicsV7(
   return result;
 }
 
-/** Anything that lists players with their bound faction (state or view). */
+/**
+ * The Mind Control revision (docs/product/RULESET_7_MIND_CONTROL.md section
+ * 2.1): the part of a `mindControlled` entry the kind resolver reads. The
+ * state's and the view's entries both carry it.
+ */
+export interface MindControlKindEntryV7 {
+  readonly unitId: number;
+  readonly originalOwnerId: PlayerId;
+}
+
+/**
+ * Anything that lists players with their bound faction and the
+ * mind-controlled units (state or view). `mindControlled` is required so
+ * that every synthesized roster states explicitly which units it resolves
+ * (the compile-time half of the kind-reader audit, section 2.2).
+ */
 export interface FactionRosterV7 {
   readonly players: readonly {
     readonly id: PlayerId;
     readonly faction: FactionIdV7;
   }[];
+  readonly mindControlled: readonly MindControlKindEntryV7[];
 }
 
+/** The unit facts the kind resolver reads: its ID and its controller. */
+export interface UnitKindRefV7 {
+  readonly id: number;
+  readonly ownerId: PlayerId;
+}
+
+/** A roster with no mind-controlled unit (setup, role-level previews). */
+export function seatRosterV7(
+  players: FactionRosterV7["players"],
+): FactionRosterV7 {
+  return { players, mindControlled: [] };
+}
+
+/** The faction a seat is bound to (its research, production, and economy). */
 export function playerFactionV7(
-  roster: FactionRosterV7,
+  roster: Pick<FactionRosterV7, "players">,
   playerId: PlayerId,
 ): FactionIdV7 {
   const player = roster.players.find((candidate) => candidate.id === playerId);
@@ -2620,20 +2650,133 @@ export function playerFactionV7(
   return player.faction;
 }
 
-/** Resolves a unit's role rule through its owner's faction registration. */
-export function unitRoleRuleV7(
+/**
+ * The Mind Control revision (section 2): THE kind resolver. A unit's kind
+ * is the faction of its `mindControlled` entry's `originalOwnerId` while it
+ * is controlled, else its owner's (its controller's). It decides the
+ * label, art, cost, stats, abilities, role mechanics, and every body rule
+ * of the unit; the controller (`ownerId`) decides everything seat-level.
+ * With an empty list it equals `playerFactionV7(roster, unit.ownerId)`.
+ */
+export function unitFactionV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
-): EffectiveRoleRuleV7 {
-  return effectiveRoleRuleV7(unit.role, playerFactionV7(roster, unit.ownerId));
+  unit: UnitKindRefV7,
+): FactionIdV7 {
+  if (roster.mindControlled.length > 0) {
+    const entry = roster.mindControlled.find(
+      (candidate) => candidate.unitId === unit.id,
+    );
+    if (entry !== undefined)
+      return playerFactionV7(roster, entry.originalOwnerId);
+  }
+  return playerFactionV7(roster, unit.ownerId);
 }
 
-/** Resolves a unit's engine mechanics through its owner's faction. */
+/**
+ * The Mind Control revision (section 2.2): whether the unit is
+ * mind-controlled (it has a `mindControlled` entry).
+ */
+export function isMindControlledV7(
+  roster: Pick<FactionRosterV7, "mindControlled">,
+  unitId: number,
+): boolean {
+  return (
+    roster.mindControlled.length > 0 &&
+    roster.mindControlled.some((entry) => entry.unitId === unitId)
+  );
+}
+
+/**
+ * The Mind Control revision (section 5.2): the unit-level technology of a
+ * unit: its controller's research (`controllerResearchedTechs`) read
+ * through its kind's tree. Seat-level unlocks keep reading the controller's
+ * own capabilities.
+ */
+export function unitCapabilitiesV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7,
+  controllerResearchedTechs: readonly TechnologyIdV7[],
+): TechnologyCapabilitiesV7 {
+  return technologyCapabilitiesV7(
+    controllerResearchedTechs,
+    unitFactionV7(roster, unit),
+  );
+}
+
+/**
+ * The Mind Control revision (section 5.1 ruling 3): the abilities whose
+ * result is a new unit (or a controlled unit), which a mind-controlled unit
+ * never has: Raise Dead, Infect, Bite, Hatch, Assemble, Mind Control, and
+ * tunnel riding. The Steam Mole's `TUNNEL` stays (it tunnels alone).
+ */
+export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
+  deepFreeze([
+    "RAISE_DEAD",
+    "INFECT",
+    "BITE",
+    "HATCH",
+    "ASSEMBLE",
+    "MIND_CONTROL",
+    "RIDES_TUNNEL",
+  ]);
+
+const CONTROLLED_ROLE_RULES_V7 = new WeakMap<
+  EffectiveRoleRuleV7,
+  EffectiveRoleRuleV7
+>();
+
+/**
+ * Resolves a unit's role rule through its kind (`unitFactionV7`). A
+ * mind-controlled unit's rule is its kind's without
+ * {@link MIND_CONTROLLED_LOST_ABILITIES_V7}, so every "may it use this
+ * ability" read (commands, the public query, passive rules such as Infect
+ * and Bite) refuses them in one place.
+ */
+export function unitRoleRuleV7(
+  roster: FactionRosterV7,
+  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
+): EffectiveRoleRuleV7 {
+  const rule = effectiveRoleRuleV7(unit.role, unitFactionV7(roster, unit));
+  if (!isMindControlledV7(roster, unit.id)) return rule;
+  const cached = CONTROLLED_ROLE_RULES_V7.get(rule);
+  if (cached !== undefined) return cached;
+  const controlled: EffectiveRoleRuleV7 = deepFreeze({
+    ...rule,
+    abilities: rule.abilities.filter(
+      (ability) => !MIND_CONTROLLED_LOST_ABILITIES_V7.includes(ability),
+    ),
+  });
+  CONTROLLED_ROLE_RULES_V7.set(rule, controlled);
+  return controlled;
+}
+
+/** Resolves a unit's engine mechanics through its kind. */
 export function unitRoleMechanicsV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+  unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
 ): RoleMechanicsV7 {
-  return roleMechanicsV7(unit.role, playerFactionV7(roster, unit.ownerId));
+  return roleMechanicsV7(unit.role, unitFactionV7(roster, unit));
+}
+
+/**
+ * A role-level read with no unit (training, production rows, previews of a
+ * unit not yet built): the role rule under the seat's own faction.
+ */
+export function seatRoleRuleV7(
+  roster: Pick<FactionRosterV7, "players">,
+  ownerId: PlayerId,
+  role: UnitRoleIdV7,
+): EffectiveRoleRuleV7 {
+  return effectiveRoleRuleV7(role, playerFactionV7(roster, ownerId));
+}
+
+/** The role-level engine mechanics under the seat's own faction. */
+export function seatRoleMechanicsV7(
+  roster: Pick<FactionRosterV7, "players">,
+  ownerId: PlayerId,
+  role: UnitRoleIdV7,
+): RoleMechanicsV7 {
+  return roleMechanicsV7(role, playerFactionV7(roster, ownerId));
 }
 
 /**
@@ -2737,6 +2880,7 @@ export const RUN_UP_MAXIMUM_TILES_V7 = 2;
 
 /** The unit facts the revision-20 Charge! helpers read. */
 export interface LinebreakerUnitFactsV7 {
+  readonly id: number;
   readonly ownerId: PlayerId;
   readonly role: UnitRoleIdV7;
   readonly form: UnitFormV7;
@@ -2753,7 +2897,7 @@ export interface LinebreakerUnitFactsV7 {
  */
 export function attackIsChargeV7(
   roster: FactionRosterV7,
-  unit: Pick<LinebreakerUnitFactsV7, "ownerId" | "role" | "form">,
+  unit: Pick<LinebreakerUnitFactsV7, "id" | "ownerId" | "role" | "form">,
 ): boolean {
   return (
     unit.form === "LAND" &&
@@ -2800,16 +2944,13 @@ export function chargeRunUpAttack2V7(
  */
 export function attackIgnoresCityWallsV7(
   roster: FactionRosterV7,
-  unit: Pick<DinosaurUnitFactsV7, "ownerId" | "role" | "form">,
+  unit: Pick<DinosaurUnitFactsV7, "id" | "ownerId" | "role" | "form">,
   ownerResearchedTechs: readonly TechnologyIdV7[],
 ): boolean {
   return (
     unit.form === "LAND" &&
     unitGrowsV7(roster, unit) &&
-    technologyCapabilitiesV7(
-      ownerResearchedTechs,
-      playerFactionV7(roster, unit.ownerId),
-    ).ignoresCityWalls
+    unitCapabilitiesV7(roster, unit, ownerResearchedTechs).ignoresCityWalls
   );
 }
 
@@ -2820,6 +2961,7 @@ export function growthStageForKillsV7(kills: number): 0 | 1 | 2 {
 
 /** The unit facts the revision-19 Dinosaur helpers read. */
 export interface DinosaurUnitFactsV7 {
+  readonly id: number;
   readonly ownerId: PlayerId;
   readonly role: UnitRoleIdV7;
   readonly form: UnitFormV7;
@@ -2832,7 +2974,7 @@ export interface DinosaurUnitFactsV7 {
  */
 export function unitGrowsV7(
   roster: FactionRosterV7,
-  unit: Pick<DinosaurUnitFactsV7, "ownerId" | "role" | "form">,
+  unit: Pick<DinosaurUnitFactsV7, "id" | "ownerId" | "role" | "form">,
 ): boolean {
   return (
     unit.form !== "EGG" &&
@@ -2882,7 +3024,11 @@ export function eggMaxHpOptionsV7(faction: FactionIdV7): readonly number[] {
 /** The capacity slots a unit (or the unit inside an Egg) uses in its city. */
 export function unitCapacitySlotsV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+  unit: {
+    readonly id: number;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
 ): number {
   return unitRoleMechanicsV7(roster, unit).capacitySlots;
 }
@@ -2899,6 +3045,7 @@ export function unitCapacitySlotsV7(
 export function armouredDamageV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: number;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -2923,6 +3070,7 @@ export function armouredDamageV7(
 export function platedCapAppliesV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: number;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -2951,8 +3099,11 @@ export const MIND_CONTROL_HP_V7 = 6;
 export const MIND_CONTROL_RANGE_V7 = 2;
 /** The Martian revision (section 8.2): the cooldown a Mind Control starts. */
 export const MIND_CONTROL_COOLDOWN_TURNS_V7 = 2;
-/** The Martian revision (section 8.3): Thralls one Brain controls at most. */
-export const MIND_CONTROL_THRALL_LIMIT_V7 = 2;
+/**
+ * The Mind Control revision (section 4.4): the units one Brain controls at
+ * most.
+ */
+export const MIND_CONTROL_LIMIT_V7 = 1;
 /** The Martian revision (section 8.4): the exact Tractor Beam distance. */
 export const TRACTOR_BEAM_RANGE_V7 = 2;
 
@@ -2998,6 +3149,7 @@ export const ASSEMBLE_COST_V7 = 4;
 
 /** The unit facts the Martian registry helpers read. */
 export interface MartianUnitFactsV7 {
+  readonly id: number;
   readonly ownerId: PlayerId;
   readonly role: UnitRoleIdV7;
   readonly form: UnitFormV7;
@@ -3006,7 +3158,7 @@ export interface MartianUnitFactsV7 {
 /** The movement mode of a unit's role under its owner's registration. */
 export function unitMovementModeV7(
   roster: FactionRosterV7,
-  unit: Pick<MartianUnitFactsV7, "ownerId" | "role">,
+  unit: Pick<MartianUnitFactsV7, "id" | "ownerId" | "role">,
 ): MovementModeV7 {
   return unitRoleMechanicsV7(roster, unit).movementMode;
 }
@@ -3138,6 +3290,7 @@ export function terrainStopsMoveV7(input: {
 export function unitIsMountainBornV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: number;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form?: UnitFormV7;
@@ -3157,7 +3310,11 @@ export function unitIsMountainBornV7(
  */
 export function unitMayEnterMountainV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+  unit: {
+    readonly id: number;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
   engineering: boolean,
   movementMode: MovementModeV7 = unitMovementModeV7(roster, unit),
 ): boolean {

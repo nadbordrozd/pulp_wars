@@ -30,6 +30,7 @@ import {
 const OWNER = 1 as PlayerId;
 const rosterOf = (faction: FactionIdV7) => ({
   players: [{ id: OWNER, faction }],
+  mindControlled: [],
 });
 const unitOf = (role: UnitRoleIdV7, moved = false) => ({
   id: 7,

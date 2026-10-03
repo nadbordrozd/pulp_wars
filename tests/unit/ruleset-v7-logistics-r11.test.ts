@@ -1158,8 +1158,8 @@ describe("Ruleset 7 revision 11 city logistics", () => {
   });
 
   it("publishes the exact revision-11 identity", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r32");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r32.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r33");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r33.current");
   });
 });
 

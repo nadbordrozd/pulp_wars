@@ -12,7 +12,7 @@ import {
   SWEEP_DAMAGE_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
-  playerFactionV7,
+  unitFactionV7,
   roleMechanicsV7,
   sluggishUnitMovedV7,
   technologyCapabilitiesV7,
@@ -50,11 +50,12 @@ export function matchHasIceFolkSeatV7(
   return view.players.some((player) => player.faction === "ICE_FOLK");
 }
 
+/** Whether a visible unit is of the IceFolk kind (`unitFactionV7`). */
 export function unitIsIceFolkV7(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId">,
 ): boolean {
-  return playerFactionV7(view, unit.ownerId) === "ICE_FOLK";
+  return unitFactionV7(view, unit) === "ICE_FOLK";
 }
 
 /** An Ice Folk role's label under the Ice Folk registration. */
@@ -606,10 +607,10 @@ function possessive(view: PlayerViewV7, playerId: number): string {
   return player === undefined ? "an enemy" : `Player ${player.seat + 1}'s`;
 }
 
-/** A visible unit's name under its owner's registration. */
+/** A visible unit's name under its kind's registration. */
 function unitName(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId" | "role">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId" | "role">,
 ): string {
   return unitRoleRuleV7(view, unit).label;
 }

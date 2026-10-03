@@ -2,8 +2,7 @@ import type { PlayerId, UnitId } from "../model/ids";
 import {
   EGG_HP_V7,
   canEnterTerrainV7,
-  effectiveRoleRuleV7,
-  playerFactionV7,
+  unitRoleRuleV7,
   roleMechanicsV7,
   technologyCapabilitiesV7,
   type FactionRosterV7,
@@ -213,10 +212,8 @@ export function hatchedUnitV7(
   egg: UnitStateV7,
   activation: UnitActivationV7,
 ): UnitStateV7 {
-  const rule = effectiveRoleRuleV7(
-    egg.role,
-    playerFactionV7(roster, egg.ownerId),
-  );
+  // An Egg is never controlled, so its kind is its owner's.
+  const rule = unitRoleRuleV7(roster, egg);
   return {
     ...egg,
     form: "LAND",

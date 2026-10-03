@@ -4,7 +4,7 @@ import {
   FORCE_FIELD_SHIELD_V7,
   GROWTH_HP_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_THRALL_LIMIT_V7,
+  MIND_CONTROL_LIMIT_V7,
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
   effectiveRoleRuleV7,
@@ -55,7 +55,7 @@ import {
   type RewardIdV7,
   type ShieldStatusV7,
   type TechnologyIdV7,
-  type ThrallStatusV7,
+  type MindControlledStatusV7,
   type TileStateV7,
   type UnitActivationV7,
   type UnitRoleIdV7,
@@ -109,7 +109,7 @@ const STATE_KEYS = [
   "setup",
   "shields",
   "surfacedThisTurn",
-  "thralls",
+  "mindControlled",
   "treasureChests",
   "turnOrder",
   "units",
@@ -152,7 +152,13 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     setup === null ? null : parsePlayers(input.players, setup.factions);
   const cities = parseCities(input.cities);
   const contributions = parseContributions(input.populationContributions);
-  const units = players === null ? null : parseUnits(input.units, players);
+  // The Mind Control revision (section 2.1): a unit's role rule resolves
+  // through its kind, so the controlled list is read first.
+  const mindControlled = parseMindControlled(input.mindControlled);
+  const units =
+    players === null || mindControlled === null
+      ? null
+      : parseUnits(input.units, players, mindControlled);
   const treasureChests = parseSortedCoords(input.treasureChests);
   const graves = parseSortedCoords(input.graves);
   const plagued = parsePlagued(input.plagued);
@@ -160,7 +166,6 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const eggs = parseEggs(input.eggs);
   const shields = parseShields(input.shields);
   const cooling = parseCooling(input.cooling);
-  const thralls = parseThralls(input.thralls);
   const mindControlCooldowns = parseMindControlCooldowns(
     input.mindControlCooldowns,
   );
@@ -168,7 +173,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   // The Dwarf revision (section 5.2): the burrowed units and the two
   // per-turn lists; the cross references are checked below.
   const burrowed =
-    players === null ? null : parseBurrowed(input.burrowed, players);
+    players === null || mindControlled === null
+      ? null
+      : parseBurrowed(input.burrowed, players, mindControlled);
   const surfacedThisTurn = parseSortedUnitIds(input.surfacedThisTurn);
   const bombedThisTurn = parseSortedUnitIds(input.bombedThisTurn);
   const choices = parseChoices(input.pendingChoices);
@@ -190,7 +197,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     eggs === null ||
     shields === null ||
     cooling === null ||
-    thralls === null ||
+    mindControlled === null ||
     mindControlCooldowns === null ||
     chilled === null ||
     burrowed === null ||
@@ -229,7 +236,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       eggs,
       shields,
       cooling,
-      thralls,
+      mindControlled,
       mindControlCooldowns,
       chilled,
       burrowed,
@@ -268,7 +275,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     eggs,
     shields,
     cooling,
-    thralls,
+    mindControlled,
     mindControlCooldowns,
     chilled,
     burrowed,
@@ -730,11 +737,12 @@ function parseContributionSource(
 function parseUnits(
   input: unknown,
   players: readonly PlayerStateV7[],
+  mindControlled: readonly MindControlledStatusV7[],
 ): readonly UnitStateV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitStateV7[] = [];
   for (const candidate of input) {
-    const unit = parseUnit(candidate, players);
+    const unit = parseUnit(candidate, players, mindControlled);
     if (unit === null || (values.at(-1)?.id ?? 0) >= unit.id) return null;
     values.push(unit);
   }
@@ -744,6 +752,7 @@ function parseUnits(
 function parseUnit(
   input: unknown,
   players: readonly PlayerStateV7[],
+  mindControlled: readonly MindControlledStatusV7[],
 ): UnitStateV7 | null {
   if (
     !hasExactKeysV7(input, [
@@ -780,8 +789,14 @@ function parseUnit(
   const at = parseCoordV7(input.at);
   const activation = parseActivation(input.activation);
   const role = input.role as UnitRoleIdV7;
-  // Revision 13: every role rule resolves through the owner's faction.
-  const faction = players.find((player) => player.id === owner)?.faction;
+  // Revision 13: every role rule resolves through the owner's faction. The
+  // Mind Control revision (section 2): through the unit's kind, the faction
+  // of its original owner while it is controlled.
+  if (players.every((player) => player.id !== owner)) return null;
+  const kindOwner =
+    mindControlled.find((entry) => entry.unitId === id)?.originalOwnerId ??
+    owner;
+  const faction = players.find((player) => player.id === kindOwner)?.faction;
   if (faction === undefined) return null;
   const rule = effectiveRoleRuleV7(role, faction);
   const overrun = rule.abilities.includes("OVERRUN");
@@ -1096,22 +1111,33 @@ function parseCooling(input: unknown): readonly CoolingStatusV7[] | null {
   return values;
 }
 
-/** The Martian revision `thralls` entries, sorted by unit ID. */
-function parseThralls(input: unknown): readonly ThrallStatusV7[] | null {
+/**
+ * The Mind Control revision (section 2.1) `mindControlled` entries, sorted
+ * by unit ID without duplicates.
+ */
+function parseMindControlled(
+  input: unknown,
+): readonly MindControlledStatusV7[] | null {
   if (!isDenseArrayV7(input)) return null;
-  const values: ThrallStatusV7[] = [];
+  const values: MindControlledStatusV7[] = [];
   for (const candidate of input) {
-    if (!hasExactKeysV7(candidate, ["brainUnitId", "unitId"])) return null;
+    if (
+      !hasExactKeysV7(candidate, ["brainUnitId", "originalOwnerId", "unitId"])
+    )
+      return null;
     const unitId = parseUnitIdV7(candidate.unitId);
     const brainUnitId = parseUnitIdV7(candidate.brainUnitId);
+    const originalOwnerId = parsePlayerIdV7(candidate.originalOwnerId);
     if (
       unitId === null ||
       brainUnitId === null ||
+      originalOwnerId === null ||
       unitId === brainUnitId ||
-      (values.length > 0 && (values.at(-1) as ThrallStatusV7).unitId >= unitId)
+      (values.length > 0 &&
+        (values.at(-1) as MindControlledStatusV7).unitId >= unitId)
     )
       return null;
-    values.push({ unitId, brainUnitId });
+    values.push({ unitId, brainUnitId, originalOwnerId });
   }
   return values;
 }
@@ -1175,12 +1201,13 @@ function parseChilled(input: unknown): readonly ChillStatusV7[] | null {
 function parseBurrowed(
   input: unknown,
   players: readonly PlayerStateV7[],
+  mindControlled: readonly MindControlledStatusV7[],
 ): readonly BurrowedEntryV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: BurrowedEntryV7[] = [];
   for (const candidate of input) {
     if (!hasExactKeysV7(candidate, ["moleUnitId", "unit"])) return null;
-    const unit = parseUnit(candidate.unit, players);
+    const unit = parseUnit(candidate.unit, players, mindControlled);
     const moleUnitId =
       candidate.moleUnitId === null
         ? null
@@ -1251,7 +1278,7 @@ interface CrossInput {
   eggs: readonly EggStatusV7[];
   shields: readonly ShieldStatusV7[];
   cooling: readonly CoolingStatusV7[];
-  thralls: readonly ThrallStatusV7[];
+  mindControlled: readonly MindControlledStatusV7[];
   mindControlCooldowns: readonly MindControlCooldownV7[];
   chilled: readonly ChillStatusV7[];
   burrowed: readonly BurrowedEntryV7[];
@@ -1280,7 +1307,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     eggs,
     shields,
     cooling,
-    thralls,
+    mindControlled,
     mindControlCooldowns,
     chilled,
     burrowed,
@@ -1291,6 +1318,14 @@ function validateCrossReferences(value: CrossInput): boolean {
   } = value;
   const playerById = new Map(players.map((player) => [player.id, player]));
   const cityById = new Map(cities.map((city) => [city.id, city]));
+  // The Mind Control revision (section 2): a unit's kind is the faction of
+  // its original owner while it is controlled, else its owner's.
+  const controlledById = new Map(
+    mindControlled.map((entry) => [entry.unitId, entry]),
+  );
+  const kindOf = (unit: UnitStateV7): FactionIdV7 | undefined =>
+    playerById.get(controlledById.get(unit.id)?.originalOwnerId ?? unit.ownerId)
+      ?.faction;
   // The Dwarf revision section 5.2: unit IDs are unique across `units` and
   // `burrowed`, and the next entity ID is above all of them (all-units).
   const burrowedUnits = burrowed.map((entry) => entry.unit);
@@ -1352,9 +1387,11 @@ function validateCrossReferences(value: CrossInput): boolean {
   for (const unit of units) {
     const tile = tileAt(board, unit.at);
     const owner = playerById.get(unit.ownerId);
+    const kind = kindOf(unit);
     if (
       tile === undefined ||
       owner === undefined ||
+      kind === undefined ||
       // Revision 19: an Egg stands on land like a land-form unit; only naval
       // and embarked units are afloat.
       isAfloatFormV7(unit.form) !== (tile.biome === null) ||
@@ -1364,7 +1401,7 @@ function validateCrossReferences(value: CrossInput): boolean {
       // The Rift (RULESET_7_RIFT.md section 4): only a land-form flyer.
       (tile.terrain === "RIFT" &&
         (unit.form !== "LAND" ||
-          roleMechanicsV7(unit.role, owner.faction).movementMode !== "FLY"))
+          roleMechanicsV7(unit.role, kind).movementMode !== "FLY"))
     )
       return false;
   }
@@ -1503,17 +1540,19 @@ function validateCrossReferences(value: CrossInput): boolean {
     !burrowedValid(
       board,
       playerById,
+      kindOf,
       units,
       burrowed,
       treasureChests,
       value.setup,
     ) ||
     !turnListsValid(
-      playerById,
+      kindOf,
       units,
       surfacedThisTurn,
       bombedThisTurn,
       value.activePlayerId,
+      value.setup,
     )
   )
     return false;
@@ -1524,17 +1563,11 @@ function validateCrossReferences(value: CrossInput): boolean {
     unit !== undefined &&
     unit.hp > 0 &&
     unit.form !== "EGG" &&
-    playerById.get(unit.ownerId)?.faction !== "UNDEAD" &&
-    !roleMechanicsV7(
-      unit.role,
-      playerById.get(unit.ownerId)?.faction ?? "ORIGINAL",
-    ).construct;
+    kindOf(unit) !== "UNDEAD" &&
+    !roleMechanicsV7(unit.role, kindOf(unit) ?? "ORIGINAL").construct;
   for (const entry of plagued) {
     const source = unitById.get(entry.sourceUnitId);
-    const sourceFaction =
-      source === undefined
-        ? undefined
-        : playerById.get(source.ownerId)?.faction;
+    const sourceFaction = source === undefined ? undefined : kindOf(source);
     if (
       !living(unitById.get(entry.unitId)) ||
       source === undefined ||
@@ -1570,7 +1603,7 @@ function validateCrossReferences(value: CrossInput): boolean {
   for (const entry of eggs) {
     const egg = unitById.get(entry.unitId);
     if (egg === undefined || egg.form !== "EGG") return false;
-    const faction = playerById.get(egg.ownerId)?.faction;
+    const faction = kindOf(egg);
     const home =
       egg.homeCityId === null ? undefined : cityById.get(egg.homeCityId);
     const tile = tileAt(board, egg.at);
@@ -1590,49 +1623,55 @@ function validateCrossReferences(value: CrossInput): boolean {
     )
       return false;
   }
-  // The Martian revision side lists (sections 5.1, 6.2, 8.2, and 8.3).
-  // Every entry needs a role that only the Martian registration has, so all
-  // four lists are empty in a match without a Martian seat.
-  const thrallIds = new Set(thralls.map((entry) => entry.unitId));
-  const thrallsByBrain = new Map<number, number>();
-  for (const entry of thralls) {
-    const thrall = unitById.get(entry.unitId);
-    const brain = unitById.get(entry.brainUnitId);
-    const faction =
-      thrall === undefined
-        ? undefined
-        : playerById.get(thrall.ownerId)?.faction;
-    const controlled = (thrallsByBrain.get(entry.brainUnitId) ?? 0) + 1;
-    thrallsByBrain.set(entry.brainUnitId, controlled);
+  // The Martian revision side lists (sections 5.1, 6.2, and 8.2). Every
+  // entry needs a role that only the Martian registration has, so all of
+  // them are empty in a match without a Martian seat.
+  // The Mind Control revision (section 2.1): each controlled unit is a
+  // living one-slot land-form or embarked unit, on the board or burrowed,
+  // with no home, of a kind role that may be a target, owned by a Martian
+  // seat other than its original owner; its Brain is a living unit on the
+  // board of the same owner, not itself controlled, whose role under its
+  // kind has Mind Control, and no Brain holds more than the limit.
+  if (mindControlled.length > 0 && !value.setup.factions.includes("MARTIAN"))
+    return false;
+  const controlledByBrain = new Map<number, number>();
+  for (const entry of mindControlled) {
+    const unit = unitById.get(entry.unitId);
+    const brain = units.find((candidate) => candidate.id === entry.brainUnitId);
+    const kind = unit === undefined ? undefined : kindOf(unit);
+    const brainKind = brain === undefined ? undefined : kindOf(brain);
+    const controlled = (controlledByBrain.get(entry.brainUnitId) ?? 0) + 1;
+    controlledByBrain.set(entry.brainUnitId, controlled);
     if (
-      thrall === undefined ||
-      thrall.hp <= 0 ||
-      faction !== "MARTIAN" ||
-      thrall.role !== "FIGHTER" ||
-      (thrall.form !== "LAND" && thrall.form !== "EMBARKED") ||
-      thrall.homeCityId !== null ||
-      thrall.veteran ||
-      thrall.maxHp !== effectiveRoleRuleV7("FIGHTER", faction).maxHp ||
+      unit === undefined ||
+      kind === undefined ||
+      unit.hp <= 0 ||
+      (unit.form !== "LAND" && unit.form !== "EMBARKED") ||
+      unit.homeCityId !== null ||
+      entry.originalOwnerId === unit.ownerId ||
+      !playerById.has(entry.originalOwnerId) ||
+      playerById.get(unit.ownerId)?.faction !== "MARTIAN" ||
+      unit.role === "JUGGERNAUT" ||
+      roleMechanicsV7(unit.role, kind).capacitySlots !== 1 ||
+      roleMechanicsV7(unit.role, kind).construct ||
       brain === undefined ||
+      brainKind === undefined ||
       brain.hp <= 0 ||
-      brain.ownerId !== thrall.ownerId ||
-      !effectiveRoleRuleV7(brain.role, faction).abilities.includes(
+      brain.ownerId !== unit.ownerId ||
+      controlledById.has(brain.id) ||
+      !effectiveRoleRuleV7(brain.role, brainKind).abilities.includes(
         "MIND_CONTROL",
       ) ||
-      controlled > MIND_CONTROL_THRALL_LIMIT_V7
+      controlled > MIND_CONTROL_LIMIT_V7
     )
       return false;
   }
   for (const entry of shields) {
     const unit = unitById.get(entry.unitId);
-    const faction =
-      unit === undefined ? undefined : playerById.get(unit.ownerId)?.faction;
+    const faction = unit === undefined ? undefined : kindOf(unit);
     if (unit === undefined || unit.hp <= 0 || faction === undefined)
       return false;
-    // A Thrall has no Shield whatever its role says.
-    const maximum = thrallIds.has(unit.id)
-      ? 0
-      : roleMechanicsV7(unit.role, faction).shield;
+    const maximum = roleMechanicsV7(unit.role, faction).shield;
     if (
       maximum === 0 ||
       entry.shield > Math.max(maximum, FORCE_FIELD_SHIELD_V7)
@@ -1641,8 +1680,7 @@ function validateCrossReferences(value: CrossInput): boolean {
   }
   for (const entry of cooling) {
     const unit = unitById.get(entry.unitId);
-    const faction =
-      unit === undefined ? undefined : playerById.get(unit.ownerId)?.faction;
+    const faction = unit === undefined ? undefined : kindOf(unit);
     if (
       unit === undefined ||
       unit.hp <= 0 ||
@@ -1654,8 +1692,7 @@ function validateCrossReferences(value: CrossInput): boolean {
   }
   for (const entry of mindControlCooldowns) {
     const unit = unitById.get(entry.unitId);
-    const faction =
-      unit === undefined ? undefined : playerById.get(unit.ownerId)?.faction;
+    const faction = unit === undefined ? undefined : kindOf(unit);
     if (
       unit === undefined ||
       unit.hp <= 0 ||
@@ -1695,7 +1732,9 @@ function validateCrossReferences(value: CrossInput): boolean {
 
 /**
  * The Dwarf revision (section 5.2) state parsing of the burrowed list: only
- * in a match with a Dwarf seat; every owner a Dwarf seat; a Mole entry (role
+ * in a match with a Dwarf seat; every unit of the Dwarf kind (the Mind
+ * Control revision: a controlled Mole burrows for its controller); a Mole
+ * entry (role
  * with `TUNNEL`, no Mole ID) or a rider entry (role with `RIDES_TUNNEL`, the
  * ID of a burrowed Mole of the same owner on a tile next to its own, one
  * rider per Mole); land form; every mound tile on the board, land, not a
@@ -1705,6 +1744,7 @@ function validateCrossReferences(value: CrossInput): boolean {
 function burrowedValid(
   board: BoardStateV7,
   playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
+  kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
   units: readonly UnitStateV7[],
   burrowed: readonly BurrowedEntryV7[],
   treasureChests: readonly CoordV7[],
@@ -1721,7 +1761,7 @@ function burrowedValid(
     const tile = tileAt(board, unit.at);
     if (
       owner === undefined ||
-      owner.faction !== "DWARF" ||
+      kindOf(unit) !== "DWARF" ||
       unit.form !== "LAND" ||
       units.some((other) => other.id === unit.id) ||
       tile === undefined ||
@@ -1734,7 +1774,7 @@ function burrowedValid(
     )
       return false;
     tiles.add(key(unit.at));
-    const mechanics = roleMechanicsV7(unit.role, owner.faction);
+    const mechanics = roleMechanicsV7(unit.role, "DWARF");
     if (entry.moleUnitId === null) {
       if (mechanics.tunnelRange === 0) return false;
       continue;
@@ -1759,24 +1799,32 @@ function burrowedValid(
 
 /**
  * The Dwarf revision (sections 5.4 and 6.3): `surfacedThisTurn` lists only
- * units on the board owned by the active player, a Dwarf seat;
- * `bombedThisTurn` lists only units on the board, and only while the active
- * player is a Dwarf seat.
+ * units on the board of the Dwarf kind owned by the active player;
+ * `bombedThisTurn` lists only units on the board, and only in a match with
+ * a Dwarf seat. The Mind Control revision (section 5.3): a controlled Mole
+ * surfaces, and a controlled Gyrocopter bombs, for its controller, so the
+ * active player need not be a Dwarf seat.
  */
 function turnListsValid(
-  playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
+  kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
   units: readonly UnitStateV7[],
   surfacedThisTurn: readonly UnitId[],
   bombedThisTurn: readonly UnitId[],
   activePlayerId: PlayerStateV7["id"],
+  setup: MatchSetupV7,
 ): boolean {
   if (surfacedThisTurn.length === 0 && bombedThisTurn.length === 0) return true;
-  if (playerById.get(activePlayerId)?.faction !== "DWARF") return false;
+  if (!setup.factions.includes("DWARF")) return false;
   const unitById = new Map(units.map((unit) => [unit.id, unit]));
   return (
-    surfacedThisTurn.every(
-      (unitId) => unitById.get(unitId)?.ownerId === activePlayerId,
-    ) && bombedThisTurn.every((unitId) => unitById.has(unitId))
+    surfacedThisTurn.every((unitId) => {
+      const unit = unitById.get(unitId);
+      return (
+        unit !== undefined &&
+        unit.ownerId === activePlayerId &&
+        kindOf(unit) === "DWARF"
+      );
+    }) && bombedThisTurn.every((unitId) => unitById.has(unitId))
   );
 }
 

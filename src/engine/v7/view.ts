@@ -267,10 +267,11 @@ export interface PlayerViewV7 {
   /** The Martian revision: the Cooling entries of the units in `units`. */
   readonly cooling: readonly CoolingStatusV7[];
   /**
-   * The Martian revision: every Thrall in `units`; its Brain is named only
-   * when the viewer can see it.
+   * The Mind Control revision (section 6): every mind-controlled unit in
+   * `units` and `burrowed`, sorted by unit ID; its Brain is named only when
+   * the viewer can see it, and its original owner is public.
    */
-  readonly thralls: readonly PublicThrallStatusV7[];
+  readonly mindControlled: readonly PublicMindControlledStatusV7[];
   /** The Martian revision: the Mind Control cooldowns of visible Brains. */
   readonly mindControlCooldowns: readonly MindControlCooldownV7[];
   /**
@@ -299,10 +300,11 @@ export interface PublicBurrowedEntryV7 {
   readonly moleUnitId: UnitId | null;
 }
 
-/** The Martian revision: the public status of a visible Thrall. */
-export interface PublicThrallStatusV7 {
+/** The Mind Control revision: the public status of a controlled unit. */
+export interface PublicMindControlledStatusV7 {
   readonly unitId: UnitId;
   readonly brainUnitId: UnitId | null;
+  readonly originalOwnerId: PlayerId;
 }
 
 /**
@@ -487,6 +489,9 @@ export function viewForV7(
   const visibleBurrowed = state.burrowed.filter(
     (entry) =>
       entry.unit.ownerId === viewerId || explored.has(key(entry.unit.at)),
+  );
+  const visibleBurrowedIds = new Set(
+    visibleBurrowed.map((entry) => entry.unit.id),
   );
   const publicUnit = (unit: GameStateV7["units"][number]): PublicUnitV7 => {
     return {
@@ -749,8 +754,8 @@ export function viewForV7(
         turnsRemaining: entry.turnsRemaining,
         laidThisTurn: entry.laidThisTurn,
       })),
-    // The Martian revision: Shields, Cooling, Thrall status, and Mind
-    // Control cooldowns are public on every visible unit.
+    // The Martian revision: Shields, Cooling, and Mind Control cooldowns are
+    // public on every visible unit.
     shields: state.shields
       .filter((entry) => visibleUnitIds.has(entry.unitId))
       .map((entry) => ({ unitId: entry.unitId, shield: entry.shield })),
@@ -760,13 +765,20 @@ export function viewForV7(
         unitId: entry.unitId,
         firedThisTurn: entry.firedThisTurn,
       })),
-    thralls: state.thralls
-      .filter((entry) => visibleUnitIds.has(entry.unitId))
+    // The Mind Control revision (section 6): every visible controlled unit
+    // (on the board or a visible mound); the original owner is public.
+    mindControlled: state.mindControlled
+      .filter(
+        (entry) =>
+          visibleUnitIds.has(entry.unitId) ||
+          visibleBurrowedIds.has(entry.unitId),
+      )
       .map((entry) => ({
         unitId: entry.unitId,
         brainUnitId: visibleUnitIds.has(entry.brainUnitId)
           ? entry.brainUnitId
           : null,
+        originalOwnerId: entry.originalOwnerId,
       })),
     mindControlCooldowns: state.mindControlCooldowns
       .filter((entry) => visibleUnitIds.has(entry.unitId))
@@ -928,18 +940,15 @@ function publicUnitStatsForViewerV7(
   positionExplored: boolean,
   visibleUnitIds: ReadonlySet<UnitId>,
 ): PublicUnitStatsV7 {
-  // The Martian revision: a Thrall's Brain is named only when the viewer
-  // can see it (the Plague-source precedent).
-  const brainUnitId = input.martian?.thrall?.brainUnitId ?? null;
+  // The Mind Control revision: a controlled unit's Brain is named only when
+  // the viewer can see it (the Plague-source precedent).
+  const control = input.mindControl ?? null;
   const stats: PublicUnitStatsV7 =
-    input.martian === undefined ||
-    brainUnitId === null ||
-    visibleUnitIds.has(brainUnitId)
+    control === null ||
+    control.brainUnitId === null ||
+    visibleUnitIds.has(control.brainUnitId)
       ? input
-      : {
-          ...input,
-          martian: { ...input.martian, thrall: { brainUnitId: null } },
-        };
+      : { ...input, mindControl: { ...control, brainUnitId: null } };
   const statuses = isOwner
     ? stats.statuses
     : stats.statuses.filter((status) => status.startsWith("Inspired:"));

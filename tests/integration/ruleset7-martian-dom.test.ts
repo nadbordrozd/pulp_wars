@@ -37,8 +37,8 @@ import {
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
   MARTIAN_HELP_RULES_V7,
-  THRALL_INFO_V7,
-  brainThrallsTextV7,
+  MIND_CONTROLLED_INFO_V7,
+  brainControlTextV7,
   martianRoleUnlockTextV7,
   mindControlPreviewLinesV7,
   mindControlReadyInV7,
@@ -108,7 +108,7 @@ describe("Martian setup", () => {
 });
 
 describe("Martian unit dock", () => {
-  it("shows the Shield, the ray's power, Cooling, a Thrall and a Brain's Thralls", () => {
+  it("shows the Shield, the ray's power, Cooling, a controlled unit and a Brain's control", () => {
     const controller = new FixtureController(martianUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -136,27 +136,32 @@ describe("Martian unit dock", () => {
     selectUnitAt(controller, host, AT.coolingGunner);
     expect(chipText("cooling")).toBe("Cooling");
     expect(chipText("ray-power")).toBeNull();
-    selectUnitAt(controller, host, AT.thrall);
-    expect(requiredElement(".v7-selection-dock h2").textContent).toBe("Thrall");
-    expect(chipText("thrall")).toBe("Thrall");
+    // The Mind Control revision: a controlled Human Fighter keeps its name,
+    // with the placeholder control chip until the UI pass.
+    selectUnitAt(controller, host, AT.controlled);
+    expect(requiredElement(".v7-selection-dock h2").textContent).toBe(
+      "Fighter",
+    );
     expect(
       requiredElement<HTMLElement>(
-        '.v7-selection-dock [data-unit-status="thrall"]',
+        '.v7-selection-dock [data-unit-status="mind-controlled"]',
       ).title,
-    ).toContain(THRALL_INFO_V7);
+    ).toContain(MIND_CONTROLLED_INFO_V7);
     expect(chipText("shield")).toBeNull();
-    // A Thrall cannot be disbanded; its Brain's link is on the board.
+    // A controlled unit cannot be disbanded; its Brain's link is on the
+    // board.
     expect(document.querySelector('[data-action="command-disband"]')).toBe(
       null,
     );
     expect(
       boardPlan(host).entries.some(
-        (entry) => entry.kind === "LINK" && entry.label === "THRALL_LINK",
+        (entry) => entry.kind === "LINK" && entry.label === "CONTROL_LINK",
       ),
     ).toBe(true);
+    selectUnitAt(controller, host, AT.controller);
+    const brain = required(stats(AT.controller).mindControl);
+    expect(chipText("controlled")).toBe(brainControlTextV7(brain));
     selectUnitAt(controller, host, AT.brain);
-    const brain = required(stats(AT.brain).mindControl);
-    expect(chipText("thralls")).toBe(brainThrallsTextV7(brain));
     // Psychic Command is the Brain's Rally.
     expect(actionLabels()).toContain("Psychic Command");
     // A machine afloat says so, and is no transport.
@@ -340,9 +345,11 @@ describe("Martian abilities", () => {
       unitId: brain.id,
       targetUnitId: weak.id,
     });
-    // The Thrall stands where its victim stood.
+    // The controlled unit stays itself where it stood.
     selectUnitAt(controller, host, AT.weakTarget);
-    expect(requiredElement(".v7-selection-dock h2").textContent).toBe("Thrall");
+    expect(requiredElement(".v7-selection-dock h2").textContent).toBe(
+      "Marksman",
+    );
     // The Brain now recovers: its button is disabled with the reason.
     selectUnitAt(controller, host, AT.brain);
     const view = required(controller.snapshot().view);

@@ -35,7 +35,7 @@ const captured = (commandIndex: 300 | 425): PlayerViewV7 => ({
         | "bitten"
         | "shields"
         | "cooling"
-        | "thralls"
+        | "mindControlled"
         | "mindControlCooldowns"
       >;
     }
@@ -46,7 +46,7 @@ const captured = (commandIndex: 300 | 425): PlayerViewV7 => ({
   // The Martian revision's neutral side lists.
   shields: [],
   cooling: [],
-  thralls: [],
+  mindControlled: [],
   mindControlCooldowns: [],
 });
 

@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r32`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
+## Current release contract (`pulp-wars-poc-7r33`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
 
-The current runtime is `pulp-wars-poc-7r32` (autosave
-`pulpWars.save.v7r32.current`; saves and replays of `pulp-wars-poc-7r31`
+The current runtime is `pulp-wars-poc-7r33` (autosave
+`pulpWars.save.v7r33.current`; saves and replays of `pulp-wars-poc-7r32`
 and earlier are refused, and startup removes their autosave keys). Its seven
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -66,10 +66,15 @@ every player play a different faction
 browser smoke launches only distinct factions. `pulp_wars-78i.3` (`7r30`)
 registers the seventh faction, the Dwarves, `pulp_wars-78i.7` (`7r31`)
 changes only the Dwarf bomb
-([Dwarf balance report](RULESET_7_DWARF_BALANCE.md)), and `pulp_wars-b5f.2`
+([Dwarf balance report](RULESET_7_DWARF_BALANCE.md)), `pulp_wars-b5f.2`
 (`7r32`) gives the Martian Grunt a ray pistol (range 1–2, Attack 1.5, 3
 Coins) and the Tripod range 2 only with Sight 2
-([Martian tuning record](../product/RULESET_7_MARTIANS.md#165-tuning-record)).
+([Martian tuning record](../product/RULESET_7_MARTIANS.md#165-tuning-record)),
+and `pulp_wars-b5f.3` (`7r33`) makes a mind-controlled unit keep its type
+and abilities (one per Brain, a wounded target, released to its owner when
+the Brain is lost;
+[Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); matches
+without a Martian seat replay their command logs with identical outcomes.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, and the
 Dwarves are part of the default route: match setup always offers a
 Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf choice for the human and
@@ -86,7 +91,7 @@ rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r32` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r33` identity (ruleset ID, autosave key, the
   seven-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
@@ -223,7 +228,7 @@ rerun their matrices.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (`7r32`) captures. The revision-2 validator described below as
+  (`7r33`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 

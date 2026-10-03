@@ -3,8 +3,10 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r32`. Role facts resolve through the owner's
-faction registration; the revision-13 Undead tactics, the revision-14
+previews under `pulp-wars-poc-7r33`. Role facts resolve through the unit's
+kind (`unitFactionV7`: its owner's faction registration, or its original
+owner's while it is mind-controlled,
+[Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
 duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
 revision-17 Goblin play (`pulp_wars-0ao.6`), and the revision-18 movement

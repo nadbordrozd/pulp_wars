@@ -4,9 +4,9 @@
   "target": { "x": 10, "y": 5 },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r32",
+    "rulesetId": "pulp-wars-poc-7r33",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r32",
+      "rulesetId": "pulp-wars-poc-7r33",
       "seed": 9,
       "width": 14,
       "height": 14,
@@ -3553,7 +3553,7 @@
       { "unitId": 66, "shield": 3 }
     ],
     "cooling": [],
-    "thralls": [],
+    "mindControlled": [],
     "mindControlCooldowns": [],
     "chilled": [],
     "burrowed": [],

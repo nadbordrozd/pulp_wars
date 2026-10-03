@@ -611,9 +611,10 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
 
   it("orders GRAVE_CREATED right after UNIT_DIED and parses it strictly", () => {
     // Section 8: UNIT_INFECTED and then GRAVE_CREATED follow UNIT_DIED (the
-    // Martian revision puts UNIT_MIND_CONTROLLED between the two).
+    // Martian revision puts UNIT_MIND_CONTROLLED between the two, and the
+    // Mind Control revision UNIT_RELEASED after it).
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("GRAVE_CREATED")).toBe(
-      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_DIED") + 3,
+      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_DIED") + 4,
     );
     expect(parseEventV7({ kind: "GRAVE_CREATED", at: { x: 1, y: 2 } })).toEqual(
       { ok: true, value: { kind: "GRAVE_CREATED", at: { x: 1, y: 2 } } },

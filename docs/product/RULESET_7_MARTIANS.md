@@ -21,6 +21,13 @@ of section 13.4 (the setup screen offers the faction; see
 `pulp-wars-poc-7r25`: Colossus Defense 2.5; the
 [tuning record](#165-tuning-record) and the
 [Martian balance report](../validation/RULESET_7_MARTIAN_BALANCE.md)).
+**Mind Control and the Thrall (sections 8.2, 8.3, 9.6, 9.7) are superseded**
+by the [Mind Control overlay](RULESET_7_MIND_CONTROL.md): a mind-controlled
+unit keeps its type and abilities, one per Brain, and returns to its owner
+when the Brain is lost; its engine is implemented (`pulp_wars-b5f.3`,
+`pulp-wars-poc-7r33`, folded into
+[current rules sections 20.8 and 20.9](RULESET_7_CURRENT.md#208-mind-control)),
+and its Normal AI and UI steps are pending. The Thrall text below is history.
 What the implementation changed or made precise is in
 [section 19](#19-implementation-notes-pulp_wars-t6s2). It is an
 overlay over the rules in force when `pulp_wars-t6s.2` starts: today that is

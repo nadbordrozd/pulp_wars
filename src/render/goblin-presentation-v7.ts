@@ -3,7 +3,7 @@ import {
   arePlayersHostileV7,
   blastAreaV7,
   effectiveRoleRuleV7,
-  playerFactionV7,
+  unitFactionV7,
   roleMechanicsV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
@@ -32,11 +32,12 @@ export function matchHasGoblinV7(view: Pick<PlayerViewV7, "players">): boolean {
   return view.players.some((player) => player.faction === "GOBLIN");
 }
 
+/** Whether a visible unit is of the Goblin kind (`unitFactionV7`). */
 export function unitIsGoblinV7(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId">,
 ): boolean {
-  return playerFactionV7(view, unit.ownerId) === "GOBLIN";
+  return unitFactionV7(view, unit) === "GOBLIN";
 }
 
 /** Section 11.2 texts. */

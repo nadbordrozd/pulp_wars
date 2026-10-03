@@ -15,7 +15,7 @@ import {
 import { armouredDamageV7 } from "../rules/ruleset-v7";
 import type { DomainEventV7, PlagueDamageEntryV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
-import { collapseThrallsV7 } from "./martian";
+import { releaseControlledV7 } from "./martian";
 import { unitSightRadiusAtV7 } from "./movement";
 import { riftAtV7 } from "./rift";
 import type {
@@ -86,6 +86,7 @@ export function resolveStartTurnPlagueV7(
   let nextEntityId = state.nextEntityId;
   const risings: UnitStateV7[] = [];
   const collapsedIds = new Set<UnitId>();
+  let burrowed = state.burrowed;
   for (const entry of results) {
     if (!entry.dies) continue;
     const victim = state.units.find((unit) => unit.id === entry.unitId);
@@ -112,13 +113,18 @@ export function resolveStartTurnPlagueV7(
       units = [...units, rising];
     } else
       graves = recordCombatDeathV7(state, graves, victim, "PLAGUE", events);
-    // The Martian revision section 8.3: a Brain killed by Plague takes its
-    // Thralls with it, right after its own death events.
-    const collapse = collapseThrallsV7(units, state.thralls, events);
-    if (collapse.collapsed.length > 0) {
-      units = [...collapse.units];
-      for (const thrall of collapse.collapsed) collapsedIds.add(thrall.id);
-    }
+    // The Mind Control revision section 4.2: a Brain killed by Plague
+    // releases its controlled unit, right after its own death events.
+    const release = releaseControlledV7(
+      units,
+      burrowed,
+      state.mindControlled,
+      state.players,
+      events,
+    );
+    units = [...release.units];
+    burrowed = release.burrowed;
+    for (const removed of release.removed) collapsedIds.add(removed.id);
   }
   const dead = new Set([
     ...results.filter((entry) => entry.dies).map((entry) => entry.unitId),
@@ -216,6 +222,7 @@ export function resolveStartTurnPlagueV7(
     nextEntityId,
     players,
     units,
+    burrowed,
     graves,
     plagued: withPlaguedV7(counted, spread),
     bitten: state.bitten.filter((entry) => !dead.has(entry.unitId)),

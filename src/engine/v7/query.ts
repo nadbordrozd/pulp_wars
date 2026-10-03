@@ -13,7 +13,7 @@ import {
   technologyCapabilitiesV7,
   EGG_DEFENSE2_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_THRALL_LIMIT_V7,
+  MIND_CONTROL_LIMIT_V7,
   PROMOTION_KILLS_V7,
   TRACTOR_BEAM_RANGE_V7,
   armouredDamageV7,
@@ -23,7 +23,12 @@ import {
   chargeRunUpAttack2V7,
   flyerMayStandOnSiteV7,
   isEggLaidRoleV7,
+  isMindControlledV7,
+  seatRoleMechanicsV7,
+  seatRoleRuleV7,
+  unitCapabilitiesV7,
   unitCapacitySlotsV7,
+  unitFactionV7,
   CHILL_TURNS_V7,
   unitFliesV7,
   unitGrowsV7,
@@ -44,6 +49,7 @@ import {
   technologyResearchCostV7,
   type BasicEconomicCommandKindV7,
   type EffectiveRoleRuleV7,
+  type MovementModeV7,
   type SpatialEconomicCommandKindV7,
   type TechnologyBranchIdV7,
   type TechnologyCapabilitiesV7,
@@ -117,7 +123,7 @@ import {
 } from "./ice-folk";
 import {
   absorbHitV7,
-  isThrallV7,
+  controlledByBrainV7,
   mindControlTargetBlockV7,
   pierceTileV7,
   rayPowerV7,
@@ -475,8 +481,9 @@ function appendPublicCityCommandsV7(
   const assigned = allOwnedUnitsV7(view, player.id)
     .filter((unit) => unit.homeCityId === city.id)
     .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+  // A role-level read: the unit to train is the seat's own role.
   const fits = (role: UnitRoleIdV7): boolean =>
-    assigned + unitCapacitySlotsV7(view, { ownerId: player.id, role }) <=
+    assigned + seatRoleMechanicsV7(view, player.id, role).capacitySlots <=
     capacity;
   if (
     player.researchedTechs.includes("PLANNING") &&
@@ -592,12 +599,14 @@ function publicLandingTilesV7(
         navigation: player.researchedTechs.includes("NAVIGATION"),
         // The Ice Folk revision section 7.1: the unit lands in land form.
         mountainBorn: unitIsMountainBornV7(view, {
+          id: unit.id,
           ownerId: unit.ownerId,
           role: unit.role,
         }),
       }) &&
       // The Ice Folk revision section 7.7: nor does a Sabretooth.
       (!unitAvoidsForeignSitesV7(view, {
+        id: unit.id,
         ownerId: unit.ownerId,
         role: unit.role,
       }) ||
@@ -915,15 +924,14 @@ function appendPublicUnitCommandsV7(
   )
     candidates.push({ kind: "CAPTURE", unitId: unit.id });
   // Revision 19: a Dinosaur unit grows instead and is never promoted. The
-  // Martian revision: a Thrall is never promoted and cannot Disband, and a
-  // flyer cannot Pillage.
-  const thrall = isThrallV7(view.thralls, unit.id);
+  // Mind Control revision: a controlled unit is promoted like any own unit
+  // but never Disbands; the Martian revision: a flyer cannot Pillage.
+  const controlled = isMindControlledV7(view, unit.id);
   if (
     unit.form !== "EMBARKED" &&
     unit.kills >= PROMOTION_KILLS_V7 &&
     !unit.veteran &&
-    !unitGrowsV7(view, unit) &&
-    !thrall
+    !unitGrowsV7(view, unit)
   )
     candidates.push({ kind: "PROMOTE", unitId: unit.id });
   const tile = tileAtView(view, unit.at);
@@ -946,7 +954,7 @@ function appendPublicUnitCommandsV7(
     !primaryUsedForQuery(unit) &&
     unit.form === "LAND" &&
     unit.role !== "JUGGERNAUT" &&
-    !thrall &&
+    !controlled &&
     !view.plagued.some((entry) => entry.unitId === unit.id) &&
     !view.bitten.some((entry) => entry.unitId === unit.id)
   )
@@ -970,14 +978,30 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "WAIT", unitId: unit.id });
 }
 
+/** A unit's movement mode and Mountain-born, through its kind. */
+function unitMobilityV7(
+  view: PlayerViewV7,
+  unit: Pick<PublicUnitV7, "id" | "ownerId" | "role">,
+): { readonly movementMode: MovementModeV7; readonly mountainBorn: boolean } {
+  return {
+    movementMode: unitMovementModeV7(view, unit),
+    mountainBorn: unitIsMountainBornV7(view, unit),
+  };
+}
+
 /**
- * The Dwarf revision section 5.1: whether `at` is a tunnel tile for `unit`
- * in the viewer's view (exact: every unit and mound on an explored tile is
- * visible, and the unit is the viewer's own).
+ * The Dwarf revision section 5.1: whether `at` is a tunnel tile for a unit
+ * with `mobility` (its movement mode and Mountain-born, resolved by the
+ * caller: a unit's through its kind, a Gunner to assemble through the
+ * seat) in the viewer's view (exact: every unit and mound on an explored
+ * tile is visible, and the unit is the viewer's own).
  */
 function publicTunnelTileV7(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId" | "role">,
+  mobility: {
+    readonly movementMode: MovementModeV7;
+    readonly mountainBorn: boolean;
+  },
   at: CoordV7,
 ): boolean {
   const tile = tileAtView(view, at);
@@ -988,11 +1012,11 @@ function publicTunnelTileV7(
     tile.site === null &&
     canEnterTerrainV7({
       terrain: tile.terrain,
-      movementMode: unitMovementModeV7(view, unit),
+      movementMode: mobility.movementMode,
       afloat: false,
       engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
       navigation: false,
-      mountainBorn: unitIsMountainBornV7(view, unit),
+      mountainBorn: mobility.mountainBorn,
     }) &&
     !tileOccupiedV7(view, at) &&
     !view.treasureChests.some((chest) => same(chest, at)) &&
@@ -1022,10 +1046,13 @@ function publicTunnelCommandsV7(
     mole.at,
     range,
   );
+  // The Mind Control revision section 5.3: a controlled Mole tunnels alone
+  // (and a controlled unit never rides: its role rule drops RIDES_TUNNEL).
   const riders = view.units
     .filter(
       (rider) =>
         rider.id !== mole.id &&
+        !isMindControlledV7(view, mole.id) &&
         rider.ownerId === mole.ownerId &&
         rider.hp > 0 &&
         rider.form === "LAND" &&
@@ -1041,11 +1068,11 @@ function publicTunnelCommandsV7(
   for (const to of [...reach.values()].sort(
     (left, right) => left.y - right.y || left.x - right.x,
   )) {
-    if (!publicTunnelTileV7(view, mole, to)) continue;
+    if (!publicTunnelTileV7(view, unitMobilityV7(view, mole), to)) continue;
     commands.push({ kind: "TUNNEL", unitId: mole.id, to, rider: null });
     for (const rider of riders)
       for (const tile of adjacentPublicTiles(view, to))
-        if (publicTunnelTileV7(view, rider, tile.at))
+        if (publicTunnelTileV7(view, unitMobilityV7(view, rider), tile.at))
           commands.push({
             kind: "TUNNEL",
             unitId: mole.id,
@@ -1140,14 +1167,14 @@ function publicAssembleFactsV7(
   const home = view.cities.find(
     (city) => city.id === engineer.homeCityId && city.ownerId === player.id,
   );
+  // The Gunner is not built yet: a role-level read of the viewer's seat.
+  const gunner = seatRoleMechanicsV7(view, player.id, "MARKSMAN");
+  const gunnerMobility = {
+    movementMode: gunner.movementMode,
+    mountainBorn: gunner.mountainBorn,
+  };
   const tiles = adjacentPublicTiles(view, engineer.at)
-    .filter((tile) =>
-      publicTunnelTileV7(
-        view,
-        { ownerId: player.id, role: "MARKSMAN" },
-        tile.at,
-      ),
-    )
+    .filter((tile) => publicTunnelTileV7(view, gunnerMobility, tile.at))
     .map((tile) => tile.at)
     .sort((left, right) => left.y - right.y || left.x - right.x);
   const capacity =
@@ -1172,10 +1199,7 @@ function publicAssembleFactsV7(
       return tile?.explored === true && tile.territoryCityId === home.id;
     });
   const cost = Math.max(1, ASSEMBLE_COST_V7 - (forge ? 1 : 0));
-  const slots = unitCapacitySlotsV7(view, {
-    ownerId: player.id,
-    role: "MARKSMAN",
-  });
+  const slots = gunner.capacitySlots;
   return {
     cityId: home?.id ?? null,
     cost,
@@ -1233,9 +1257,14 @@ export function previewTunnelV7(
     )
   )
     return null;
-  const eruptionDamage = technologyCapabilitiesV7(
+  // The Mind Control revision section 5.2: the eruption damage is the
+  // Mole's unit-level unlock.
+  const mole = view.units.find((unit) => unit.id === command.unitId);
+  if (mole === undefined) return null;
+  const eruptionDamage = unitCapabilitiesV7(
+    view,
+    mole,
     view.viewer.researchedTechs,
-    view.viewer.faction,
   ).eruptionDamage;
   const undermines: CoordV7[] = [];
   for (let y = command.to.y - 1; y <= command.to.y + 1; y += 1)
@@ -1318,9 +1347,12 @@ export function previewBombRunV7(
   const gyro = view.units.find((unit) => unit.id === command.unitId);
   const target = view.units.find((unit) => unit.id === command.targetUnitId);
   if (gyro === undefined || target === undefined) return null;
-  const bombDamage = technologyCapabilitiesV7(
+  // The Mind Control revision section 5.2: the Gyrocopter's unit-level
+  // unlock.
+  const bombDamage = unitCapabilitiesV7(
+    view,
+    gyro,
     view.viewer.researchedTechs,
-    view.viewer.faction,
   ).bombDamage;
   const hit = absorbHitV7(
     shieldOfV7(view.shields, target.id),
@@ -1544,13 +1576,15 @@ function publicBeamDownDestinationsV7(
 }
 
 /**
- * Section 8.2: the legal Mind Control targets of an own Brain that is ready
- * (land form, no primary action used): none while it has a cooldown entry
- * or controls the limit of Thralls; otherwise every visible hostile unit
- * that `mindControlTargetBlockV7` (the reducer's own per-target check)
- * accepts: land-form, one-slot, non-`JUGGERNAUT`, not a construct, within
- * range, with at most `MIND_CONTROL_HP_V7` HP, and not on a settlement site
- * or a Rift.
+ * The Mind Control revision (section 3): the legal Mind Control targets of
+ * an own Brain that is ready (land form, no primary action used): none
+ * while it has a cooldown entry or controls `MIND_CONTROL_LIMIT_V7` units
+ * (its controlled units are its owner's, so the view lists them all);
+ * otherwise every visible hostile unit that `mindControlTargetBlockV7` (the
+ * reducer's own per-target check) accepts: land-form, one-slot under its
+ * kind, non-`JUGGERNAUT`, not a construct, not already controlled, within
+ * range, wounded with at most `MIND_CONTROL_HP_V7` HP, and not on a
+ * settlement site or a Rift.
  */
 function publicMindControlTargetsV7(
   view: PlayerViewV7,
@@ -1558,8 +1592,8 @@ function publicMindControlTargetsV7(
 ): readonly PlayerViewV7["units"][number][] {
   if (
     view.mindControlCooldowns.some((entry) => entry.unitId === brain.id) ||
-    view.thralls.filter((entry) => entry.brainUnitId === brain.id).length >=
-      MIND_CONTROL_THRALL_LIMIT_V7
+    controlledByBrainV7(view.mindControlled, brain.id).length >=
+      MIND_CONTROL_LIMIT_V7
   )
     return [];
   return view.units
@@ -1688,23 +1722,33 @@ export function previewBeamDownV7(
   };
 }
 
-/** The Martian revision section 11: the preview of an offered Mind Control. */
+/**
+ * The Mind Control revision (sections 3 and 6): the preview of an offered
+ * Mind Control. The target keeps its ID, kind, role, HP, and tile; it goes
+ * back to `originalOwnerId` if the Brain is lost.
+ */
 export interface MindControlPreviewV7 {
   readonly unitId: UnitId;
   readonly targetUnitId: UnitId;
-  /** The tile the Thrall appears on (the target's tile). */
+  /** The target's tile, where it stays. */
   readonly at: CoordV7;
-  readonly thrallHp: number;
-  readonly thrallMaxHp: number;
-  /** The Thralls the Brain controls afterwards. */
-  readonly thrallsAfter: number;
-  readonly thrallLimit: number;
+  /** The target's owner now: its owner again when it is released. */
+  readonly originalOwnerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  /** The target's kind (`unitFactionV7`), which it keeps. */
+  readonly faction: FactionIdV7;
+  readonly hp: number;
+  readonly maxHp: number;
+  /** The units the Brain controls afterwards, and the limit. */
+  readonly controlledAfter: number;
+  readonly controlLimit: number;
   /** The cooldown the Mind Control starts. */
   readonly cooldownTurns: number;
-  /** Visible Thralls that collapse because the target is their Brain. */
-  readonly collapsingUnitIds: readonly UnitId[];
-  /** Visible units whose Plague ends because the target is its source. */
-  readonly plagueCleared: readonly UnitId[];
+  /**
+   * Visible units released because the target is their Brain (duplicate
+   * Martian seats only).
+   */
+  readonly releasedUnitIds: readonly UnitId[];
 }
 
 /** Null unless that `MIND_CONTROL` is offered; otherwise exact. */
@@ -1724,23 +1768,20 @@ export function previewMindControlV7(
     return null;
   const target = view.units.find((unit) => unit.id === targetUnitId);
   if (target === undefined) return null;
-  const maxHp = effectiveRoleRuleV7("FIGHTER", view.viewer.faction).maxHp;
   return {
     unitId,
     targetUnitId,
     at: target.at,
-    thrallHp: Math.min(target.hp, maxHp),
-    thrallMaxHp: maxHp,
-    thrallsAfter:
-      view.thralls.filter((entry) => entry.brainUnitId === unitId).length + 1,
-    thrallLimit: MIND_CONTROL_THRALL_LIMIT_V7,
+    originalOwnerId: target.ownerId,
+    role: target.role,
+    faction: unitFactionV7(view, target),
+    hp: target.hp,
+    maxHp: target.maxHp,
+    controlledAfter:
+      controlledByBrainV7(view.mindControlled, unitId).length + 1,
+    controlLimit: MIND_CONTROL_LIMIT_V7,
     cooldownTurns: MIND_CONTROL_COOLDOWN_TURNS_V7,
-    collapsingUnitIds: view.thralls
-      .filter((entry) => entry.brainUnitId === targetUnitId)
-      .map((entry) => entry.unitId),
-    plagueCleared: view.plagued
-      .filter((entry) => entry.sourceUnitId === targetUnitId)
-      .map((entry) => entry.unitId),
+    releasedUnitIds: controlledByBrainV7(view.mindControlled, targetUnitId),
   };
 }
 
@@ -2511,7 +2552,7 @@ export function previewLayEggV7(
     return tile?.explored === true && tile.territoryCityId === city.id;
   });
   const cost = Math.max(1, rule.cost - (forgeDiscount ? 1 : 0));
-  const slots = unitCapacitySlotsV7(view, { ownerId: player.id, role });
+  const slots = seatRoleMechanicsV7(view, player.id, role).capacitySlots;
   const usedSlots = allOwnedUnitsV7(view, player.id)
     .filter((unit) => unit.homeCityId === city.id)
     .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
@@ -5572,11 +5613,10 @@ export function previewCityCapacityV7(
     available: Math.max(0, capacity - assigned),
     overCapacity: Math.max(0, assigned - capacity),
     roleSlots: UNIT_ROLE_IDS_V7.filter(
-      (role) =>
-        unitRoleRuleV7(state, { ownerId: city.ownerId, role }).cost !== null,
+      (role) => seatRoleRuleV7(state, city.ownerId, role).cost !== null,
     ).map((role) => ({
       role,
-      slots: unitCapacitySlotsV7(state, { ownerId: city.ownerId, role }),
+      slots: seatRoleMechanicsV7(state, city.ownerId, role).capacitySlots,
     })),
   };
 }
@@ -5700,15 +5740,19 @@ function asView(
 }
 
 /**
- * Revision 13 Restless: an own land-form unit of a Restless faction outside
- * its owner's territory cannot Recover. Own units stand on explored tiles, so
- * the public territory owner is exact.
+ * Revision 13 Restless: an own land-form unit of a Restless kind (the Mind
+ * Control revision: a body rule) outside its owner's territory cannot
+ * Recover. Own units stand on explored tiles, so the public territory owner
+ * is exact.
  */
 function publicRestlessOutsideOwnTerritory(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
 ): boolean {
-  if (unit.form !== "LAND" || !factionRulesV7(view.viewer.faction).restless)
+  if (
+    unit.form !== "LAND" ||
+    !factionRulesV7(unitFactionV7(view, unit)).restless
+  )
     return false;
   const tile = tileAtView(view, unit.at);
   return tile?.explored !== true || tile.territoryOwnerId !== unit.ownerId;
@@ -6178,10 +6222,8 @@ function publicCombatPreviewCore(
       // The Martian revision section 6.5: the Disintegrator.
       disintegrator:
         rayPower !== "NONE" &&
-        technologyCapabilitiesV7(
-          view.viewer.researchedTechs,
-          view.viewer.faction,
-        ).raysIgnoreFortification,
+        unitCapabilitiesV7(view, attacker, view.viewer.researchedTechs)
+          .raysIgnoreFortification,
       // The Ice Folk revision section 7.6: Boulders.
       boulders: attackerLand && attackerMechanics0.ignoresFortification,
       // The Dwarf revision section 10.1: a Blasting Steam Cannon.
@@ -6249,17 +6291,16 @@ function publicCombatPreviewCore(
     target.hp,
     armouredDamageV7(view, target, formulaDefenderDamage),
   );
-  // The Ice Folk revision section 5.5: the viewer's own threshold.
+  // The Ice Folk revision section 5.5: the viewer's own threshold (the
+  // Mind Control revision: through the attacker's kind's tree).
   const shatters = attackShattersV7({
     attackerIceFolk: isIceFolkLandUnitV7(view, attacker),
     distance,
     defenderChilled: targetChilled,
     defender: target,
     hpAfterHit: target.hp - defenderHit.hpDamage,
-    threshold: technologyCapabilitiesV7(
-      view.viewer.researchedTechs,
-      view.viewer.faction,
-    ).shatterThreshold,
+    threshold: unitCapabilitiesV7(view, attacker, view.viewer.researchedTechs)
+      .shatterThreshold,
   });
   const damageToDefender = shatters ? target.hp : defenderHit.hpDamage;
   const defenderShieldDamage = defenderHit.shieldDamage;
@@ -6613,8 +6654,9 @@ interface PublicChainSimulationV7 {
     shieldDamage?: ReadonlyMap<UnitId, number>,
   ) => ExplosionChainPreviewV7 & { readonly units: readonly BlastUnitV7[] };
   /**
-   * The Martian revision section 8.3: `units` without the visible Thralls
-   * whose (visible) Brain is no longer among them.
+   * The Mind Control revision section 4.2: `units` after the release of the
+   * visible controlled units whose (visible) Brain is no longer among them:
+   * back to a living original owner, or removed.
    */
   readonly collapse: (units: readonly BlastUnitV7[]) => BlastUnitV7[];
 }
@@ -6638,7 +6680,8 @@ function createPublicChainSimulationV7(
     provisional -= 1;
     const id = provisional as UnitId;
     owners.set(id, ownerId);
-    const rule = unitRoleRuleV7(view, { ownerId, role: "GUARD" });
+    // A rising is its seat's own `GUARD` (a role-level read).
+    const rule = seatRoleRuleV7(view, ownerId, "GUARD");
     return {
       id,
       ownerId,
@@ -6654,24 +6697,48 @@ function createPublicChainSimulationV7(
       ? null
       : rising(victim.at, biterId, BITTEN_RISING_HP_V7);
   };
-  // The Thralls the viewer sees with their Brain (a Thrall whose Brain is
-  // hidden cannot be seen to collapse).
-  const collapsing = (units: readonly BlastUnitV7[]): readonly UnitId[] => {
-    if (view.thralls.length === 0) return [];
-    const alive = new Set(units.map((unit) => unit.id));
-    return view.thralls
-      .filter(
-        (entry) =>
-          entry.brainUnitId !== null &&
-          alive.has(entry.unitId) &&
-          !alive.has(entry.brainUnitId),
+  // The controlled units the viewer sees with their Brain (one whose Brain
+  // is hidden cannot be seen to be released): each goes back to a living
+  // original owner, or is removed when that owner was eliminated.
+  const releasing = (
+    units: readonly BlastUnitV7[],
+  ): {
+    readonly removed: readonly UnitId[];
+    readonly released: readonly BlastUnitV7[];
+  } => {
+    if (view.mindControlled.length === 0) return { removed: [], released: [] };
+    const byId = new Map(units.map((unit) => [unit.id, unit] as const));
+    const removed: UnitId[] = [];
+    const released: BlastUnitV7[] = [];
+    for (const entry of view.mindControlled) {
+      const unit = byId.get(entry.unitId);
+      if (
+        entry.brainUnitId === null ||
+        unit === undefined ||
+        unit.ownerId === entry.originalOwnerId
       )
-      .map((entry) => entry.unitId);
+        continue;
+      const brain = byId.get(entry.brainUnitId);
+      if (brain !== undefined && brain.ownerId === unit.ownerId) continue;
+      const original = view.players.find(
+        (player) => player.id === entry.originalOwnerId,
+      );
+      if (original?.status === "ACTIVE") {
+        owners.set(unit.id, entry.originalOwnerId);
+        released.push({ ...unit, ownerId: entry.originalOwnerId });
+      } else removed.push(unit.id);
+    }
+    return { removed, released };
   };
   return {
     collapse: (units) => {
-      const gone = collapsing(units);
-      return units.filter((unit) => !gone.includes(unit.id));
+      const release = releasing(units);
+      const released = new Map(
+        release.released.map((unit) => [unit.id, unit] as const),
+      );
+      return units
+        .filter((unit) => !release.removed.includes(unit.id))
+        .map((unit) => released.get(unit.id) ?? unit);
     },
     blastUnit: (unit) => ({
       id: unit.id,
@@ -6712,7 +6779,7 @@ function createPublicChainSimulationV7(
                   ),
                 ]),
               ),
-        onCollapse: view.thralls.length === 0 ? undefined : collapsing,
+        onRelease: view.mindControlled.length === 0 ? undefined : releasing,
         fieldDefense: (at) => {
           if (clearedFieldDefense.some((cleared) => same(at, cleared)))
             return false;
@@ -6935,7 +7002,8 @@ function publicAttackChainV7(
         view.viewer.researchedTechs.includes("EXPLOSIVES")) ||
       preview.advances);
   const chain = sim.run(
-    // The Thralls of a Brain the attack removed collapse before the chain.
+    // The controlled units of a Brain the attack removed are released before
+    // the chain.
     sim.collapse(units),
     initial,
     splashRingUnexplored ||

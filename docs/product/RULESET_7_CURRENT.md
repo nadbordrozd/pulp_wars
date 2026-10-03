@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r32`, for all seven playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r33`, for all seven playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), and Dwarf (`DWARF`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
@@ -82,17 +82,26 @@ no rule of the other factions (the per-unit living test, the one occupancy
 predicate, and the board-or-all-units accessors it introduced return what
 the former rules returned in a match without a Dwarf seat), and
 `pulp-wars-poc-7r31` (`pulp_wars-78i.7`) changes only the Dwarf
-Gyrocopter's bomb (5, and 6 with Dive), and `pulp-wars-poc-7r32`
+Gyrocopter's bomb (5, and 6 with Dive), `pulp-wars-poc-7r32`
 (`pulp_wars-b5f.2`) gives the Martian Grunt a ray pistol (range 1–2, Attack
 1.5, 3 Coins) and the Tripod range 2 only with Sight 2
-([section 11](#11-unit-roster), [section 20](#20-martian-faction-rules)).
+([section 11](#11-unit-roster), [section 20](#20-martian-faction-rules)),
+and `pulp-wars-poc-7r33` (`pulp_wars-b5f.3`, the engine step of the
+[Mind Control overlay](RULESET_7_MIND_CONTROL.md)) makes a mind-controlled
+unit keep its type and abilities under the Brain's owner, one per Brain,
+released to its owner when the Brain is lost
+([section 20.8](#208-mind-control),
+[section 20.9](#209-mind-controlled-units)); matches without a Martian seat
+are unchanged.
 
 **No pending faction overlay.** Every faction the engine registers is
 described here. The [Dwarf overlay](RULESET_7_DWARVES.md) was the last
 pending one; `pulp_wars-78i.8` folded it in as
-[section 22](#22-dwarf-faction-rules). (The
-[Mind Control overlay](RULESET_7_MIND_CONTROL.md) is a contract whose
-engine is not implemented, so this document does not describe it.) The Dwarf additions (the `burrowed`,
+[section 22](#22-dwarf-faction-rules). The
+[Mind Control overlay](RULESET_7_MIND_CONTROL.md) is folded as its engine
+step landed (`pulp_wars-b5f.3`, `7r33`); its Normal AI (overlay section 8)
+and UI (overlay section 9) steps are pending
+([section 24](#24-known-discrepancies)). The Dwarf additions (the `burrowed`,
 `surfacedThisTurn`, and `bombedThisTurn` lists, the two per-unit flags and
 the `dwarf` block of the unit stats, and three combat-preview fields) are
 neutral in a match without a Dwarf seat
@@ -149,13 +158,13 @@ some Help text, an identity written as `7rNN`, and a fallback-art plan; the
 values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#24-known-discrepancies) lists the open items as of
-`pulp-wars-poc-7r32`.
+`pulp-wars-poc-7r33`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
-Bitten, and Infect, read per unit (`isLivingUnitV7`): a unit whose owner's
-faction is not `UNDEAD` and whose role is not a **construct** under its
-owner's registration. Undead units are therefore never living, whatever
+Bitten, and Infect, read per unit (`isLivingUnitV7`): a unit whose kind
+is not `UNDEAD` and whose role is not a **construct** under its kind's
+registration. Undead units are therefore never living, whatever
 their HP, and neither are the Dwarf Clockwork Gunner and Brass Titan;
 Human, Goblin, Dinosaur, Martian, and Ice Folk units and every other Dwarf
 unit are living (an Egg is living but takes no status,
@@ -170,12 +179,18 @@ Shaman, a boat, or an Egg. **Egg-laid roles** are the five trainable
 dinosaurs (all but the Brontosaurus), which a Dinosaur seat lays as
 **Eggs**: units of the form `EGG` ([section 19](#19-dinosaur-faction-rules)).
 **Shielded units** are the Martian seat's eight land roles in land or
-embarked form (never a boat or a Thrall); **machines** are its Saucer and
+embarked form (never a boat); **machines** are its Saucer and
 Mothership (**flyers**) and its Tripod and Colossus (**walkers**); **foot
-units** are its Grunt, Ray Gunner, Shield Projector, Brain, and Thrall;
-**ray units** are its Ray Gunner, Tripod, and Colossus; a **Thrall** is a
-`FIGHTER`-role unit of a Martian seat listed in `thralls`
-([section 20](#20-martian-faction-rules)). **Ice Folk units** are the land
+units** are its Grunt, Ray Gunner, Shield Projector, and Brain;
+**ray units** are its Ray Gunner, Tripod, and Colossus; a
+**mind-controlled** (or **controlled**) unit is a unit listed in
+`mindControlled`: its owner (its **controller**) is a Martian seat whose
+Brain took it, and its **original owner** gets it back when that Brain is
+lost ([section 20.9](#209-mind-controlled-units)). A unit's **kind** is the
+faction whose unit it is (`unitFactionV7`): its original owner's faction
+while it is controlled, otherwise its owner's. Every faction word above
+("Undead units", "Goblin-crewed", "dinosaurs", "Ice Folk units", "Dwarf
+units", the Martian terms) names a unit's kind. **Ice Folk units** are the land
 roles of an Ice Folk seat in land form (never a boat or an embarked unit);
 **Mountain-born** units are its Yeti, Boulder Yeti, and Frost Giant; a unit
 of any faction is **Chilled** while its `chilled` entry has `turnsLeft` of
@@ -196,8 +211,9 @@ costs, the shared "may act after moving" rule `unitMayActAfterMoveV7`, and
 the shared terrain rules `canEnterTerrainV7`, `terrainStopsMoveV7`, and
 `canCrossWaterV7`), `src/engine/v7/` (reducer, economy, spatial economy,
 combat, Graves, Infect, Wail, Plague and Bitten afflictions, explosions,
-Eggs, growth, Shields, Cooling, Thralls, and Mind Control cooldowns
-(`martian.ts`), Chill, Snow, the Blizzard, and the Cold Aura
+Eggs, growth, Shields, Cooling, controlled units and their release, and
+Mind Control cooldowns (`martian.ts`; the kind resolver `unitFactionV7` and
+`unitCapabilitiesV7` in `ruleset-v7.ts`), Chill, Snow, the Blizzard, and the Cold Aura
 (`ice-folk.ts`), Dig In, clockwork, Knockback, and the rider brake
 (`dwarf.ts`), Tunnel, surfacing, Bomb Run, and Assemble
 (`dwarf-reducer.ts`), the board and owned-unit accessors and the occupancy
@@ -222,10 +238,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r32`                                                                                                                                                                                                                                                                                                                                                                              |
+| Ruleset                                    | `pulp-wars-poc-7r33`                                                                                                                                                                                                                                                                                                                                                                              |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                               |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                               |
-| Browser autosave                           | `pulpWars.save.v7r32.current`                                                                                                                                                                                                                                                                                                                                                                     |
+| Browser autosave                           | `pulpWars.save.v7r33.current`                                                                                                                                                                                                                                                                                                                                                                     |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                                                                                                                                                        |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`                                                                                                                                                                                                                                                                                                                        |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`                                                                                                                                                                                                                                    |
@@ -237,7 +253,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r31`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r32`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -248,8 +264,8 @@ separate [Ruleset 6](RULESET_6.md) route.
   added the combat-preview fields `runUp` and `fortificationIgnored`.
   Revision 21 (`7r21`) widened every player's achievement entitlements and
   progress to seven entries. The Martian overlay (`7r22`) registered the
-  fifth faction with the `shields`, `cooling`, `thralls`, and
-  `mindControlCooldowns` state and view lists, the `BEAM_DOWN`,
+  fifth faction with the `shields`, `cooling`, `thralls` (now
+  `mindControlled`), and `mindControlCooldowns` state and view lists, the `BEAM_DOWN`,
   `MIND_CONTROL`, and `TRACTOR_BEAM` commands, the `SHIELDS_RECHARGED`,
   `UNIT_BEAMED`, `UNIT_MIND_CONTROLLED`, and `UNIT_PULLED` events, the
   `UNIT_DIED` cause `BRAIN_LOST`, four combat-preview fields, and the
@@ -291,9 +307,17 @@ separate [Ruleset 6](RULESET_6.md) route.
   ([section 22.14](#2214-commands-events-errors-and-queries)); its Normal
   AI and UI (`pulp_wars-78i.4` and `78i.6`) changed no shape.
   `pulp_wars-78i.7` (`7r31`) changed only the Dwarf bomb's damage, and
-  `pulp_wars-b5f.2` (`7r32`) only Martian role numbers (no shape).
+  `pulp_wars-b5f.2` (`7r32`) only Martian role numbers (no shape). The
+  Mind Control engine (`pulp_wars-b5f.3`, `7r33`) replaced the state and
+  view list `thralls` with `mindControlled` (in the same position), dropped
+  `thrallUnitId` from `UNIT_MIND_CONTROLLED`, added the event
+  `UNIT_RELEASED` right after it, renamed the `MIND_CONTROL_NOT_LEGAL`
+  reason `THRALL_LIMIT` to `CONTROL_LIMIT` and the `DISBAND_NOT_LEGAL`
+  reason `THRALL` to `MIND_CONTROLLED`, replaced the `martian` block's
+  `thrall` with a top-level `mindControl` unit stat, and reshaped the Mind
+  Control preview ([section 20.12](#2012-commands-events-errors-and-queries)).
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r31.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r32.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -311,10 +335,17 @@ separate [Ruleset 6](RULESET_6.md) route.
   `CAPTAIN`, `CATAPULT`, `KNIGHT`, `JUGGERNAUT`, `PATROL_BOAT`, `BATTLESHIP`.
   State, commands, events, reward IDs, and event literals serialize the
   mechanical role, never a faction label. Rules, public views, previews, UI,
-  and the AI resolve every unit through its **owner's** faction registration
+  and the AI resolve every unit through its **kind's** faction registration
   (label, cost, stats, abilities, role mechanics, faction rules) with no
-  cross-faction fallback. Units never change owner; Infect, Bitten, and Mind
-  Control remove the victim and create a new unit. An Egg hatches in place
+  cross-faction fallback: one resolver, `unitFactionV7`, returns the kind
+  (the original owner's faction for a mind-controlled unit, otherwise the
+  owner's), and `unitCapabilitiesV7` the unit-level technology (the
+  controller's research read through the kind's tree). A role-level read
+  with no unit (training, production rows, previews of a unit not yet
+  built) uses the seat's own faction (`seatRoleRuleV7`). Infect and Bitten
+  remove the victim and create a new unit; Mind Control changes a unit's
+  owner and keeps everything else, and a release gives it back
+  ([section 20.9](#209-mind-controlled-units)). An Egg hatches in place
   into its unit with the same ID ([section 19.5](#195-hatching)).
 - The Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf technology
   graphs, economy, and every non-unit rule are identical to the Human ones;
@@ -338,7 +369,7 @@ separate [Ruleset 6](RULESET_6.md) route.
   countdowns ([section 19.3](#193-eggs)); growth is derived from the
   existing `kills` and `maxHp` unit fields, and capacity slots are
   registration values. Its Martian fields are four side lists sorted by unit
-  ID, `shields`, `cooling`, `thralls`, and `mindControlCooldowns`
+  ID, `shields`, `cooling`, `mindControlled`, and `mindControlCooldowns`
   ([section 20](#20-martian-faction-rules)); no unit key was added, and the
   Shield maximum, movement mode, and Pierce are registration values. Its
   only Ice Folk field is `chilled`, the Chill entries sorted by unit ID
@@ -660,8 +691,8 @@ Land Baron and Sea Dog thresholds, and no unit has a kill).
 **Units.** One unit of each of the ten roles, in the seat's faction, at full
 HP with zero kills and a fresh activation. A Dinosaur seat's units are all
 hatched (no Egg exists at setup) and at growth stage 0. A Martian seat's
-units are at full Shield, with no Thrall, no Cooling entry, and no Mind
-Control cooldown; the first seat's first Start Turn recharges its Shields
+units are at full Shield, with no controlled unit, no Cooling entry, and no
+Mind Control cooldown; the first seat's first Start Turn recharges its Shields
 under the Force Field rule like any Start Turn, and with every technology
 known, Force Fields and the Disintegrator apply from the first turn. An Ice
 Folk seat's units start with no Chill entry; with every technology known,
@@ -769,7 +800,8 @@ North and Capital centers, is not dug in
   eruption's deaths, risings, and collapses, its chain, `PLUNDER_AWARDED`,
   and `TILES_REVEALED`) and the economy changes of the surfacing, then
   `PLAGUE_DAMAGED`, deaths,
-  risings, and Thrall collapses (`BRAIN_LOST`), `PLAGUE_SPREAD`,
+  risings, and releases of a dead Brain's controlled units
+  (`UNIT_RELEASED`, or `BRAIN_LOST`), `PLAGUE_SPREAD`,
   `PLAGUE_EXPIRED`, rising reveals and economy changes, then the chain
   events, `PLUNDER_AWARDED`, and the chain's rising reveals and economy
   changes, then one `EGG_HATCHED` per hatch and one `TILES_REVEALED` for the
@@ -804,11 +836,15 @@ North and Capital centers, is not dug in
   `SEA_NETWORK_CHANGED` in that `END_TURN`.
 - The first seat's first Start Turn runs when the match is created, so every
   seat's first turn includes ordinary income.
-- **Elimination:** a player owning zero cities is eliminated immediately; its
-  units, Eggs, Thralls, and burrowed units included, are removed (with
+- **Elimination:** a player owning zero cities is eliminated immediately.
+  First each unit it controls is released (`UNIT_RELEASED` to a living
+  original owner, else removed with `BRAIN_LOST`,
+  [section 20.9](#209-mind-controlled-units)); then its units, Eggs and
+  burrowed units included, are removed (with
   their Chill entries; `UNIT_DIED` cause
-  `ELIMINATION`, never `BRAIN_LOST`, leaving no Graves and setting off no
-  death blasts) and its future turns skipped. Plague
+  `ELIMINATION`, leaving no Graves and setting off no
+  death blasts) and its future turns skipped. Its units that another seat
+  controls stay controlled. Plague
   from its removed Liches and the bites it inflicted end
   ([section 17](#17-undead-faction-rules)).
 - **Outcome:** the human wins when every other player is eliminated and loses
@@ -890,8 +926,9 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   T-Rex, and Brontosaurus and the Martian Mothership and Colossus, which use
   2 (role mechanic `capacitySlots`), so for a Human, Undead, or Goblin city
   the used slots equal the unit count. Land and naval units share capacity;
-  orphaned units (no home city) use no slots anywhere, and a Thrall never
-  has a home city ([section 20.9](#209-thralls)). A burrowed Dwarf unit
+  orphaned units (no home city) use no slots anywhere, and a mind-controlled
+  unit never has a home city ([section 20.9](#209-mind-controlled-units));
+  Mind Control frees its old city's slot at once. A burrowed Dwarf unit
   keeps its home and its slot while it is off the board
   ([section 22.2](#222-the-tunnel-and-burrowed-units)). Martian, Ice Folk,
   and Dwarf cities have no capacity bonus, and every Ice Folk and Dwarf role
@@ -901,7 +938,8 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   unit need `used + slots(role) <= capacity`, otherwise
   `CITY_CAPACITY_FULL` (or the 5-Coin chest). Reward units (a two-slot Brontosaurus or Colossus too) and
   Undead risings ([section 17.3](#173-risings)) may exceed capacity; a
-  capturing unit is re-homed with its own slots (a Thrall stays homeless) and
+  capturing unit is re-homed with its own slots (a controlled unit stays
+  homeless) and
   may put its new city over capacity; capacity loss never removes a unit or
   an Egg. A death, Disband, removal, or Egg destruction frees its slots at
   once.
@@ -949,7 +987,7 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   Mountain-born, no unit, Egg, or mound, no treasure, not allied
   territory); an Egg is never displaced. If
   none exists, the occupant is removed with no refund or kill credit (and
-  no Grave or death blast; a removed Brain's Thralls collapse).
+  no Grave or death blast; a removed Brain's controlled unit is released).
 - **Goblin Militia** is two Goblins (`MILITIA_FIGHTERS_V7`): the first
   appears on the center as above; the second then appears on the first
   adjacent cell in `(y, x)` order that the same displacement rule allows, or
@@ -974,15 +1012,16 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   Marksman, Guard, or Juggernaut; Undead Skeleton, Ghoul, Banshee, Zombie, or
   Abomination; Goblin Goblin, Wolf Rider, Bomb Chucker, Orc Brute, or Troll;
   Dinosaur Caveman, Raptor, Spitter, Ankylosaurus, or Brontosaurus; Martian
-  Grunt, Ray Gunner, Shield Projector, Colossus, or Thrall; Ice Folk Yeti,
+  Grunt, Ray Gunner, Shield Projector, or Colossus; Ice Folk Yeti,
   Sled, Snow Hunter, Mammoth, or Frost Giant; Dwarf Hammerer, Clockwork
   Gunner, Steam Mole, or Brass Titan)
-  that began its owner's turn on a neutral
+  (a mind-controlled unit of a capture-capable kind too, for its
+  controller) that began its owner's turn on a neutral
   village or hostile city center, stands there alone, and has not moved or used
   a primary action this turn. Capture is terminal.
 - Capture transfers level, footprint, improvements, Roads, Walls, and reward
-  history; re-homes the capturing unit (with its capacity slots; a Thrall
-  stays homeless); destroys
+  history; re-homes the capturing unit (with its capacity slots; a
+  controlled unit stays homeless); destroys
   every Egg homed to the city (`UNIT_DIED` cause `CITY_CAPTURED`, in unit-ID
   order right after `CITY_CAPTURED`, with no kill credit, Plunder, or Grave);
   orphans the other units homed there by the former owner; and spends the
@@ -1066,8 +1105,9 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)): explosions
   credit no unit, a Shatter and a hostile Sweep kill credit the attacker,
   an eruption kill credits the Mole and a bomb kill the Gyrocopter,
-  a rising or a Thrall starts at 0, an Egg has 0, a Mind
-  Control or a Thrall collapse is a removal and no kill, kills of different
+  a rising starts at 0, an Egg has 0, a Mind Control is no kill and a
+  controlled unit keeps its kills (they count for its controller), a
+  `BRAIN_LOST` removal is no kill, kills of different
   units never add up, and a Promotion or growth stage does not reset the
   count.
 - Muster counts mechanical roles under the owner's registration (for Undead:
@@ -1083,7 +1123,8 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   Sabretooth, Patrol Boat, Battleship, with the Frost Giant excluded; for
   the Dwarves: Hammerer, Gyrocopter, Clockwork Gunner, Steam Mole, Engineer,
   Steam Cannon, Steam Tank, Patrol Boat, Battleship, with the Brass Titan
-  excluded). Risings, Thralls (as the `FIGHTER` role), hatched units, and
+  excluded). Risings, controlled units (by their role, when it is trainable
+  under their kind), hatched units, and
   assembled Gunners count; an Egg does not count until it hatches, and a
   burrowed unit, which is off the board, not until it surfaces.
 - Each unlocked, unspent entitlement funds one `BUILD_MONUMENT`: 0 Coins, +3
@@ -1659,10 +1700,10 @@ market income = min(3, 1 + distinct adjacent families)
   `floor(printed cost / 2)` Coins (a Goblin refunds 0 and is still offered
   Disband; a Chilled unit may Disband). Juggernaut, Abomination, Troll,
   Brontosaurus, Colossus, Frost Giant, Brass Titan, naval,
-  and embarked units cannot Disband, nor can a Thrall
-  (`DISBAND_NOT_LEGAL` reason `THRALL`, never offered) or a burrowed unit
+  and embarked units cannot Disband, nor can a mind-controlled unit
+  (`DISBAND_NOT_LEGAL` reason `MIND_CONTROLLED`, never offered) or a burrowed unit
   (every command naming it is `UNIT_ALREADY_HANDLED`). Disband never
-  explodes, and disbanding a Brain collapses its Thralls. A plagued or bitten unit
+  explodes, and disbanding a Brain releases its controlled unit. A plagued or bitten unit
   cannot Disband: it is not offered and is rejected with `DISBAND_NOT_LEGAL`
   (reason `PLAGUED`, reported first, or `BITTEN`). An own Egg may also be
   disbanded ("Abandon Egg", [section 19.7](#197-egg-destruction-capture-and-abandon-egg)).
@@ -1673,8 +1714,10 @@ market income = min(3, 1 + distinct adjacent families)
   heal. It is an explicit command,
   independent of the activation; embarked units cannot Promote, and neither
   a growing unit (a dinosaur), which grows instead
-  ([section 19.8](#198-grow)), nor a Thrall ever can: `PROMOTE` for them is
-  never offered and is rejected with `PROMOTION_NOT_ELIGIBLE`. `UNIT_PROMOTED { unitId, maxHp }`
+  ([section 19.8](#198-grow)): `PROMOTE` for it is
+  never offered and is rejected with `PROMOTION_NOT_ELIGIBLE`. A
+  mind-controlled unit Promotes (or grows) by its kind's rules, for its
+  controller. `UNIT_PROMOTED { unitId, maxHp }`
   implies `hp = maxHp`. Explosions credit no unit kill, and Bomb Chucker
   splash kills of own or allied units do not count
   ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)).
@@ -1887,19 +1930,18 @@ The Martian (`MARTIAN`) roster, by mechanical role, with the
 ([section 20.2](#202-shields)); "Slots" is the capacity the unit uses; "Mode"
 is its movement mode ([section 20.6](#206-movement-stride-flying-and-crossing-water)):
 
-| Unit             | Role          | Tech              | Cost | Slots |  HP | Shield |   Attack |  Defense | Move | Range | Sight | Mode   | Attack after Move | Capture | Abilities                                                    |
-| ---------------- | ------------- | ----------------- | ---: | ----: | --: | -----: | -------: | -------: | ---: | ----: | ----: | ------ | ----------------- | ------- | ------------------------------------------------------------ |
-| Grunt            | `FIGHTER`     | start             |   3⁶ |     1 |  10 |      2 | 1.5 (3)⁶ |  1.5 (3) |    1 |  1–2⁶ |     1 | ground | yes               | yes     | ray pistol (plain shot); no Field Defense                    |
-| Saucer           | `RAIDER`      | Scouting          |    4 |     1 |   8 |      2 |  1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | no      | Beam Down; Strafe (Raiding); no Escape, Pillage, or advance  |
-| Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |   8 |      2 |    3 (6) |    1 (2) |    1 |   1–2 |    1⁵ | ground | yes               | yes     | heat ray                                                     |
-| Shield Projector | `GUARD`       | Drill             |    4 |     1 |  12 |      3 |  1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                                |
-| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |   8 |      2 |    1 (2) |    1 (2) |    1 |     1 |     1 | ground | yes               | no      | Psychic Command; Mind Control; no Tend Wounded               |
-| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |    4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | no      | heat ray; Pierce; never advances                             |
-| Mothership       | `KNIGHT`      | Chivalry          |   10 |     2 |  16 |      4 |  2.5 (5) |    2 (4) |    2 |     1 |     1 | fly    | yes               | no      | Tractor Beam; no Overrun, Pillage, or advance                |
-| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |    4 (8) | 2.5 (5)⁶ |    1 |   1–2 |     1 | stride | yes               | yes     | heat ray; Push                                               |
-| Thrall           | `FIGHTER`     | Mind Control only |    — |     0 | ≤10 |      0 |  1.5 (3) |  1.5 (3) |    1 |   1–2 |     1 | ground | yes               | yes     | no Shield; no Promotion; no Disband; collapses without Brain |
-| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |    2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval                                                        |
-| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 |      0 |   6 (12) |    4 (8) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                                |
+| Unit             | Role          | Tech              | Cost | Slots |  HP | Shield |   Attack |  Defense | Move | Range | Sight | Mode   | Attack after Move | Capture | Abilities                                                   |
+| ---------------- | ------------- | ----------------- | ---: | ----: | --: | -----: | -------: | -------: | ---: | ----: | ----: | ------ | ----------------- | ------- | ----------------------------------------------------------- |
+| Grunt            | `FIGHTER`     | start             |   3⁶ |     1 |  10 |      2 | 1.5 (3)⁶ |  1.5 (3) |    1 |  1–2⁶ |     1 | ground | yes               | yes     | ray pistol (plain shot); no Field Defense                   |
+| Saucer           | `RAIDER`      | Scouting          |    4 |     1 |   8 |      2 |  1.5 (3) |    1 (2) |    3 |     1 |     2 | fly    | yes               | no      | Beam Down; Strafe (Raiding); no Escape, Pillage, or advance |
+| Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |   8 |      2 |    3 (6) |    1 (2) |    1 |   1–2 |    1⁵ | ground | yes               | yes     | heat ray                                                    |
+| Shield Projector | `GUARD`       | Drill             |    4 |     1 |  12 |      3 |  1.5 (3) |  2.5 (5) |    1 |     1 |     1 | ground | no                | yes     | Force Field; no Field Defense                               |
+| Brain            | `CAPTAIN`     | Administration    |    5 |     1 |   8 |      2 |    1 (2) |    1 (2) |    1 |     1 |     1 | ground | yes               | no      | Psychic Command; Mind Control; no Tend Wounded              |
+| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |    4 (8) |    1 (2) |    2 |    2⁶ |    2⁶ | stride | yes               | no      | heat ray; Pierce; never advances                            |
+| Mothership       | `KNIGHT`      | Chivalry          |   10 |     2 |  16 |      4 |  2.5 (5) |    2 (4) |    2 |     1 |     1 | fly    | yes               | no      | Tractor Beam; no Overrun, Pillage, or advance               |
+| Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |    4 (8) | 2.5 (5)⁶ |    1 |   1–2 |     1 | stride | yes               | yes     | heat ray; Push                                              |
+| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |    2 (4) |    2 (4) |    2 |     1 |     2 | —      | yes               | no      | naval                                                       |
+| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 |      0 |   6 (12) |    4 (8) |    2 |   1–3 |     3 | —      | no                | no      | naval; splash                                               |
 
 ⁵ Ray Gunner Sight becomes 2 with Fieldcraft.
 ⁶ [Martian tuning record](RULESET_7_MARTIANS.md#165-tuning-record)
@@ -1946,13 +1988,14 @@ only (minimum range 2, was 1) and has Sight 2 (was 1).
 - **Colossus** is a walker with a heat ray and Juggernaut parity otherwise:
   reward only, capture, Push on an adjacent surviving target (never at
   range 2), the advance after an adjacent kill, no Pillage, no Disband.
-- **Thrall:** the Grunt's statline with a `thralls` entry
-  ([section 20.9](#209-thralls)); its HP when created is the victim's.
+- **Mind-controlled units** keep their own kind's statline
+  ([section 20.9](#209-mind-controlled-units)); there is no Thrall (retired
+  in `7r33`).
 - **Patrol Boat and Battleship** are the Human units. Martian faction rules
   do not apply to them: no Shield, one slot, the ordinary Promotion.
 - Martian Disband refunds: Grunt 1 (`floor(3 / 2)`); Saucer, Ray Gunner, Shield Projector,
-  and Brain 2; Tripod 4; Mothership 5. The Colossus and a Thrall cannot
-  Disband.
+  and Brain 2; Tripod 4; Mothership 5. The Colossus and a mind-controlled
+  unit cannot Disband.
 - **Public abilities** (the role rule's `abilities`): Grunt `ATTACK`,
   `CAPTURE`; Saucer `ATTACK`, `CHARGE`, `FLY`, `BEAM_DOWN`; Ray Gunner
   `ATTACK`, `CAPTURE`, `HEAT_RAY`; Shield Projector `ATTACK`, `CAPTURE`,
@@ -2625,7 +2668,7 @@ Disintegrator ([section 21.5](#215-snow)).
   kills (credited to the Mole) and bomb kills (credited to the Gyrocopter),
   kills whose victim rises, and destroyed Eggs (not friendly bomb-splash or
   Pierce kills, explosion kills,
-  or the removals of Mind Control and a Thrall collapse). A dinosaur that reaches
+  or a Mind Control and a `BRAIN_LOST` removal). A dinosaur that reaches
   Big or Alpha grows at once, after the exchange's damage, Lifesteal, and
   kill credit and before the advance, Push, follow, and any chain
   ([section 19.8](#198-grow)).
@@ -2637,9 +2680,10 @@ Disintegrator ([section 21.5](#215-snow)).
   Bitten unit still rises. A Dwarf construct leaves no Grave on any death
   and never rises ([section 22.6](#226-clockwork)). A unit on a Rift is
   also immune to
-  Mind Control. A Brain's death collapses its Thralls (`UNIT_DIED`
-  cause `BRAIN_LOST`) right after the death events and before the advance,
-  Push, and any chain ([section 20.9](#209-thralls)). An exploding
+  Mind Control. A Brain's death releases its controlled unit
+  (`UNIT_RELEASED`, or `UNIT_DIED` cause `BRAIN_LOST` when its original
+  owner is eliminated) right after the death events and before the advance,
+  Push, and any chain ([section 20.9](#209-mind-controlled-units)). An exploding
   Goblin unit (the defender, a splash victim, or the attacker) then explodes,
   after the attack's deaths, risings, advance, and Push
   ([section 18.7](#187-where-chains-run-and-event-order)). The exact
@@ -2732,7 +2776,8 @@ Disintegrator ([section 21.5](#215-snow)).
   self-launch. Afloat, a Martian unit is an ordinary embarked unit (Move 2,
   Defense 1, Sight 1, no Attack, retaliation, ZOC, or ability) that keeps its
   Shield and Cooling; a walker afloat may enter Deep Water with Navigation.
-  An embarked Martian unit on a hostile dock blockades it, a Thrall too.
+  An embarked Martian unit on a hostile dock blockades it, and so does an
+  embarked mind-controlled unit.
 - **Ice Folk boats** are the Human Patrol Boat and Battleship too: no Snow
   cover, Glide, Blizzard protection, or Shatter, one slot, ordinary
   Promotion. Ice Folk land units embark at an own active, empty Port or
@@ -2759,8 +2804,9 @@ Disintegrator ([section 21.5](#215-snow)).
   recomputed after `ATTACK`, `BUILD_PORT`, `BUILD_ROAD`, `CAPTURE`,
   `DISEMBARK`, `MOVE`, `REDEVELOP`, `WAIL`, `KABOOM`, `MIND_CONTROL`,
   `TRACTOR_BEAM`, `BOMB_RUN`, `END_TURN`, `LAND_GRANT`, research of Roads,
-  Shorecraft, or Navigation, and `DISBAND` while the state has a Thrall (a
-  disbanded Brain's embarked Thrall may have been a blockader). `KABOOM` and
+  Shorecraft, or Navigation, `DISBAND` while the state has a mind-controlled
+  unit, and every command that emits `UNIT_RELEASED` (a released embarked
+  unit may have been, or may become, a blockader). `KABOOM` and
   `END_TURN` joined the list in revision 17, the three Martian entries
   with the Martian overlay, and `BOMB_RUN` with the Dwarf overlay (a bomb
   can kill an embarked blockader, and a self-launch can start a blockade); with `END_TURN`, a blockade lifted by a
@@ -2806,9 +2852,10 @@ Disintegrator ([section 21.5](#215-snow)).
   hatched unit reveals its sight. A city's capacity and used slots stay
   owner-private; each unit's own slot value is public in its unit stats.
 - **Martian statuses** are public on a visible unit: its Shield and Shield
-  maximum (`PlayerViewV7.shields`), Cooling (`cooling`), Thrall status
-  (`thralls`, naming the Brain only when the viewer sees it), and a Brain's
-  Mind Control cooldown (`mindControlCooldowns`) and Thrall count.
+  maximum (`PlayerViewV7.shields`), Cooling (`cooling`), control
+  (`mindControlled`, naming the Brain only when the viewer sees it, and the
+  original owner), and a Brain's Mind Control cooldown
+  (`mindControlCooldowns`) and controlled-unit count.
   `SHIELDS_RECHARGED` is projected like `WINDMILL_HEALING_RESOLVED`, with
   the entries of units the viewer can see; `UNIT_BEAMED`,
   `UNIT_MIND_CONTROLLED`, and `UNIT_PULLED` go to the actor and to every
@@ -2999,7 +3046,7 @@ Disintegrator ([section 21.5](#215-snow)).
 - **Martian play** (`pulp_wars-t6s.3`). Every Martian heuristic is gated on
   a match with a Martian seat or on a fact only a Martian unit has (a Shield,
   a heat ray, a walker's or flyer's movement, the Force Field, Beam Down,
-  Mind Control, a Thrall, the Tractor Beam; `src/ai/v7-martian.ts`), so
+  Mind Control, a controlled unit, the Tractor Beam; `src/ai/v7-martian.ts`), so
   matches without one are byte-identical. Shared estimates reduce the
   projected damage to a unit by the Shield it will have in the enemy turn,
   give a visible hostile ray unit full power only where it need not move and
@@ -3018,7 +3065,8 @@ Disintegrator ([section 21.5](#215-snow)).
   refuses a Pierce that kills an own unit without killing the target; beams
   passengers down when that gains at least three route steps and keeps a
   Saucer unmoved for it; takes Mind Control above every kill on the most
-  valuable convertible target; uses Thralls as the front row; scores a
+  valuable convertible target (since `7r33` only a wounded one, one per
+  Brain); uses its controlled units as the front row; scores a
   Tractor Beam by its effect (a defender pulled off a center next to an own
   capturer, a besieger off an own center, a target pulled into own reach, a
   fortified unit off its fortification, an own unit out of lethal reach);
@@ -3164,8 +3212,8 @@ or raised from, and it leaves no Grave
 units keep every Martian rule against Undead opponents and are living, with
 the Shield absorbing every hit except Plague damage: a Zombie bites and a
 Lich plagues only a unit that lost HP, a Vampire heals only by HP damage,
-Martians have no cure for Plague or Bitten, and a mind-controlled Lich has
-left the board, so its Plagues are cleared
+Martians have no cure for Plague or Bitten, and a mind-controlled Lich
+keeps its Plagues
 ([section 20.11](#2011-interactions-with-other-rules)). Ice Folk units keep
 every Ice Folk rule against Undead opponents and are living: they leave
 Graves, are plagued, bitten, infected, and wailed, and have no cure; Undead
@@ -3198,8 +3246,8 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
   rise (Infect or Bitten); and the tile has no Grave yet.
 - **No Grave** comes from a water, embarked, or naval death, an Egg's death
   (form `EGG`), Disband, reward displacement removal, elimination removal,
-  the destruction of Eggs with a captured city, a Mind Control, a Thrall
-  collapse (`BRAIN_LOST`), a Shatter (`SHATTER`), the death of a Dwarf
+  the destruction of Eggs with a captured city, a `BRAIN_LOST` removal, a
+  Shatter (`SHATTER`), the death of a Dwarf
   construct, or a death that rises. A
   chest
   is consumed by the unit that enters its tile, so no Grave shares a tile
@@ -3296,7 +3344,8 @@ infect, and a Dwarf construct never rises. Event
   Infect takes precedence when a Zombie is the killer. A melee attacker whose
   defender rises does not advance (so an Overrun ends there). A Bitten unit
   that dies afloat or embarked, or is removed by displacement, elimination,
-  Mind Control, or a Thrall collapse, does not rise. Event
+  or a `BRAIN_LOST` removal, does not rise (Mind Control removes nothing: a
+  Bitten unit stays Bitten through control and release). Event
   `BITTEN_UNIT_RISEN`.
 - **End.** Bitten persists through embarking and disembarking and ends when
   the unit leaves the board, its biter player is eliminated, or a Human
@@ -3325,7 +3374,7 @@ infect, and a Dwarf construct never rises. Event
      and straight from HP (a Martian Shield never absorbs it;
      `PLAGUE_DAMAGED`);
   2. deaths (cause `PLAGUE`, no kill credit) leave a Bitten rising or a
-     Grave, and a dead Brain's Thralls collapse;
+     Grave, and a dead Brain's controlled unit is released;
   3. surviving units on their **first** plagued Start Turn (3 turns left)
      spread their source, in unit-ID order, to every adjacent unit of any
      owner that is on the board, living, and not plagued (the lowest-ID
@@ -3344,8 +3393,9 @@ infect, and a Dwarf construct never rises. Event
   ([section 18.7](#187-where-chains-run-and-event-order)).
 
 - **End.** Plague ends when the unit leaves the board, when it expires, when
-  its source Lich leaves the board for any reason, a Mind Control included
-  (every unit it plagued is
+  its source Lich leaves the board for any reason (a Mind Control is not
+  one: the Lich stays, and its Plagues keep their source; every unit it
+  plagued is
   cured, `PLAGUE_CLEARED` at the end of the command's events), or when a
   Human Captain's or Dinosaur Shaman's Tend Wounded or a Dwarf Engineer's
   Repair cures it. A burrowed unit keeps its entry and, surfacing before
@@ -3381,7 +3431,7 @@ infect, and a Dwarf construct never rises. Event
 - **Result.** No retaliation, advance, Push, Infect, or Field Defense
   destruction. Kills count for the Banshee's promotion and leave Graves or
   Bitten risings, Goblin exploding units it kills explode, and a Brain it
-  kills takes its Thralls with it; the Banshee
+  kills releases its controlled unit; the Banshee
   is handled. Event `WAIL_RESOLVED` (then
   `UNIT_DIED` with cause `WAIL` per death). The preview `previewWailV7`
   lists exactly the resolution's targets (only visible units are targets)
@@ -3531,7 +3581,7 @@ One explosion resolves in this order:
    reported again);
 4. each unit reduced to 0 HP dies (`UNIT_DIED` cause `EXPLOSION`), in results
    order, each followed by its Grave or Bitten rising (and a dead Brain by
-   its Thralls' collapse).
+   the release of its controlled unit).
 
 "Death first, then the bang": an exploding unit's death, Grave, or rising is
 recorded before its explosion, so a unit on the exploder's own tile when the
@@ -3626,11 +3676,15 @@ Every death is credited to at most one player:
 | `EXPLOSION`                    | the exploding unit's owner       | none (the exploding unit is dead)  |
 | `KABOOM` (the exploder itself) | none                             | none                               |
 | `PLAGUE`                       | none                             | none                               |
-| `BRAIN_LOST` (Thrall collapse) | none                             | none                               |
+| `BRAIN_LOST` (release removal) | none                             | none                               |
 
 - A victim that rises (Infect or Bitten) still counts as killed. A Mind
-  Control is a removal, not a death: nobody is credited.
-- **Plunder** (the Goblin `COMMERCE`, displayed as Plunder; Mobility, tier 3,
+  Control kills nobody: nobody is credited. A mind-controlled unit's kills
+  are credited to its controller, and its death to its killer like any
+  unit's.
+- **Plunder** (a seat rule: it reads the credited player's own research, so a
+  Martian seat never gets it from a controlled Goblin; the Goblin `COMMERCE`,
+  displayed as Plunder; Mobility, tier 3,
   requires Roads, ordinary tier-3 cost): when a death is credited to a
   player that has Plunder and the victim's owner is hostile to that player,
   that player gains 1 Coin. This covers its attacks (primary and splash
@@ -3682,7 +3736,7 @@ Every death is credited to at most one player:
 | Capacity                | A Kaboom or blast death frees its home city's slot at once; the city trains again only with its city action still available.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Achievements, Promotion | Explosions credit no unit kill ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)), so they never advance Promotion, growth, or Slayer; Plunder counts them.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Dinosaurs               | Blasts hit Dinosaur units and Eggs with fixed damage (an Ankylosaurus takes 1 less; an Egg killed by a blast dies with cause `EXPLOSION`); a destroyed Egg is a credited hostile kill for Plunder. Eggs never help Gang Up. No Dinosaur attack has Gang Up.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Martians                | A Martian Shield absorbs blast and bomb-splash damage first (a Kaboom of 5 costs a Grunt 3 HP and a Grunt in a Force Field or a Mothership 1; a death blast of 2 costs a unit with a full Shield nothing). A Brain killed by a blast takes its Thralls with it, which earns no Plunder. A mind-controlled Bomb Chucker, Rocket Cart, or Scrap Buggy is removed, not killed, and does not explode. No Martian attack has Gang Up.                                                                                                                                                                                                                                                                                               |
+| Martians                | A Martian Shield absorbs blast and bomb-splash damage first (a Kaboom of 5 costs a Grunt 3 HP and a Grunt in a Force Field or a Mothership 1; a death blast of 2 costs a unit with a full Shield nothing). A Brain killed by a blast releases its controlled unit (a `BRAIN_LOST` removal earns no Plunder). A mind-controlled Goblin unit keeps Kaboom and its death blast, which hit its old side like any hostile units; the controller gets no Plunder (a seat rule). No Martian attack has Gang Up.                                                                                                                                                                                                                       |
 | Ice Folk                | Blasts and bomb splash ignore Snow cover and the Blizzard (fixed damage); a Bomb Chucker or Rocket Cart shot from distance 2 on an Ice Folk unit in its own Witch's Blizzard is halved, and the bomb splash derives from the halved hit. A shattered exploding unit does not explode (one Yeti hit shatters a Chilled full-HP Bomb Chucker or Rocket Cart); killed any other way it explodes as usual. A sluggish goblin-crewed unit that moved cannot Kaboom. Wolf Riders and Scrap Buggies end a Move on entering Snow (Fieldcraft waives it for the Wolf Rider and the Bomb Chucker). A Troll is Chilled but never shattered. Plunder counts Ice Folk kills; a Shatter is an Ice Folk kill. No Ice Folk attack has Gang Up. |
 | Dwarves                 | A blast and a Kaboom are fixed damage: they ignore Dig In and Walls, and a Steam Tank takes at most 4 of one (Plated). No Kaboom or blast ever finds a mound, but a blast destroys Field Defense on a mound tile like on any tile. An exploding unit killed by a bomb or an eruption explodes as usual: its blast hits the Gyrocopter on its landing tile, or the surfaced Mole and its rider. A Goblin seat earns Plunder for every Dwarf unit its units or blasts kill, constructs included. Gang Up does not ignore Dig In. A Dwarf construct leaves no Grave when a blast kills it. No Dwarf attack has Gang Up.                                                                                                           |
 
@@ -3772,16 +3826,16 @@ records: [revision 19](RULESET_7_REVISION_19_DINOSAURS.md),
 
 ### 19.1 Roles, Wild, and labels
 
-| Mechanical role | Human      | Undead      | Goblin       | Dinosaur     | Martian            | Ice Folk     | Dwarf            |
-| --------------- | ---------- | ----------- | ------------ | ------------ | ------------------ | ------------ | ---------------- |
-| `FIGHTER`       | Fighter    | Skeleton    | Goblin       | Caveman      | Grunt (and Thrall) | Yeti         | Hammerer         |
-| `RAIDER`        | Raider     | Ghoul       | Wolf Rider   | Raptor       | Saucer             | Sled         | Gyrocopter       |
-| `MARKSMAN`      | Marksman   | Banshee     | Bomb Chucker | Spitter      | Ray Gunner         | Snow Hunter  | Clockwork Gunner |
-| `GUARD`         | Guard      | Zombie      | Orc Brute    | Ankylosaurus | Shield Projector   | Mammoth      | Steam Mole       |
-| `CAPTAIN`       | Captain    | Necromancer | Orc Warboss  | Shaman       | Brain              | Ice Witch    | Engineer         |
-| `CATAPULT`      | Catapult   | Lich        | Rocket Cart  | Triceratops  | Tripod             | Boulder Yeti | Steam Cannon     |
-| `KNIGHT`        | Knight     | Vampire     | Scrap Buggy  | T-Rex        | Mothership         | Sabretooth   | Steam Tank       |
-| `JUGGERNAUT`    | Juggernaut | Abomination | Troll        | Brontosaurus | Colossus           | Frost Giant  | Brass Titan      |
+| Mechanical role | Human      | Undead      | Goblin       | Dinosaur     | Martian          | Ice Folk     | Dwarf            |
+| --------------- | ---------- | ----------- | ------------ | ------------ | ---------------- | ------------ | ---------------- |
+| `FIGHTER`       | Fighter    | Skeleton    | Goblin       | Caveman      | Grunt            | Yeti         | Hammerer         |
+| `RAIDER`        | Raider     | Ghoul       | Wolf Rider   | Raptor       | Saucer           | Sled         | Gyrocopter       |
+| `MARKSMAN`      | Marksman   | Banshee     | Bomb Chucker | Spitter      | Ray Gunner       | Snow Hunter  | Clockwork Gunner |
+| `GUARD`         | Guard      | Zombie      | Orc Brute    | Ankylosaurus | Shield Projector | Mammoth      | Steam Mole       |
+| `CAPTAIN`       | Captain    | Necromancer | Orc Warboss  | Shaman       | Brain            | Ice Witch    | Engineer         |
+| `CATAPULT`      | Catapult   | Lich        | Rocket Cart  | Triceratops  | Tripod           | Boulder Yeti | Steam Cannon     |
+| `KNIGHT`        | Knight     | Vampire     | Scrap Buggy  | T-Rex        | Mothership       | Sabretooth   | Steam Tank       |
+| `JUGGERNAUT`    | Juggernaut | Abomination | Troll        | Brontosaurus | Colossus         | Frost Giant  | Brass Titan      |
 
 - **Cavemen** (Caveman and Shaman) are trained on the city center with
   `TRAIN` and keep the ordinary Promotion. **Dinosaurs** (the six growing
@@ -4156,7 +4210,7 @@ Attack 3, Defense 2):
 | Cities, siege           | A besieged Dinosaur city cannot lay or train; its Eggs stay, count down, and hatch. An enemy that wants the city may ignore its Eggs: capture destroys them all. A Triceratops on a hostile center besieges it and never captures.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Boats, water            | Eggs never embark or stand on water or a dock; a two-slot unit embarks like any other. Dinosaur boats are the Human boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Achievements, Promotion | Muster counts hatched Dinosaur roles, never an Egg; Slayer counts a dinosaur's kills (growth does not reset them); a destroyed Egg is a kill for its killer. Promotion stays for the Caveman, the Shaman, and the boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Martians                | Martian attacks, rays, and Pierce hit an Egg like any unit (Defense 1, no retaliation); an Egg is never a Mind Control or Tractor Beam target, and its tile never a Beam Down or pull destination. A Charge! on a Martian unit is absorbed by the Shield first and pushes and follows whatever it absorbed; Acid and Wallbreaker reach only a Martian foot unit's cover and Walls (machines have neither). An Ankylosaurus takes 1 less from every Martian hit. The two-slot Triceratops, T-Rex, and Brontosaurus are immune to Mind Control and the Tractor Beam; a Raptor, Spitter, or Ankylosaurus at 6 HP or less is not, and its Thrall has no growth. A collapsed Thrall and a mind-controlled unit are no kill for growth.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Martians                | Martian attacks, rays, and Pierce hit an Egg like any unit (Defense 1, no retaliation); an Egg is never a Mind Control or Tractor Beam target, and its tile never a Beam Down or pull destination. A Charge! on a Martian unit is absorbed by the Shield first and pushes and follows whatever it absorbed; Acid and Wallbreaker reach only a Martian foot unit's cover and Walls (machines have neither). An Ankylosaurus takes 1 less from every Martian hit. The two-slot Triceratops, T-Rex, and Brontosaurus are immune to Mind Control and the Tractor Beam; a wounded Raptor, Spitter, or Ankylosaurus at 6 HP or less is not, and it keeps growing under its controller (it has no Hatch). A Mind Control and a `BRAIN_LOST` removal are no kill for growth.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Ice Folk                | An Egg cannot be Chilled (a Bolas on it is `TARGET_IMMUNE`; Cold Snap and the Cold Aura skip it) and is never shattered; it is an ordinary target of Ice Folk attacks (Defense 1, no retaliation), and a Sweep flank hit deals it 2. Dinosaurs are Chilled and shattered like any unit, the two-slot ones included (a Chilled T-Rex only by the hit that leaves it at 1 to 3 of its HP); a Brontosaurus (`JUGGERNAUT`) never. Growth from killing Ice Folk units is ordinary; its full heal takes a unit out of the Shatter window but removes no Chill. A Triceratops's Move ends on its first Snow tile, so its run-up inside Snow is at most the tiles up to that one; its Charge! ignores an Ice Folk defender's fortification, not its Snow cover, and a pushed unit keeps its Chill (a Mountain-born one may be pushed onto a Mountain). A Raptor's Pounce needs its first tile off Snow (Fieldcraft waives deep snow); a sluggish Raptor cannot Pounce, and a sluggish T-Rex that attacks without moving still Rampages. Acid ignores Snow cover; a Spitter's shot from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved. An Ankylosaurus takes 1 from a Sweep flank hit, Armoured applying before the Shatter test. Wallbreaker removes Walls levels, and the Ice Folk defender on that center still has no Snow cover. The Shaman's Tend Wounded cures Chill; War Drums and Hatch are primary actions a sluggish Shaman that moved cannot use. |
 | Dwarves                 | Dinosaur-faction units and Eggs on the eight tiles around a surfacing Steam Mole take its eruption (2, 3 with Blasting Charges): an Ankylosaurus 1 (2), a 6-HP Egg is left at 4 (3), a 10-HP Egg with Nesting at 8 (7). A bomb hits any form: it leaves a 6-HP Egg at 1 (a Dive bomb destroys it) and takes 4 (Dive 5) from an Ankylosaurus. A destroyed Egg is the Mole's or the Gyrocopter's kill; a dinosaur grows from killing Dwarf units as from any kill. No Egg is laid, and no hatching, Push, Charge! push or follow, or Rampage ends, on a mound tile. The Triceratops's Charge! and Acid ignore Dig In with the rest of the fortification; Wallbreaker removes only the Walls levels, so Dig In stays. A two-slot dinosaur and an Egg are never knocked back by the Steam Cannon.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
@@ -4237,11 +4291,11 @@ hold the front line. They are weak when rushed and focus-fired, and weak in a
 sustained brawl. Every rule in this section applies only to units of a
 `MARTIAN` seat, except where a rule names its target (Mind Control, the
 Tractor Beam, and Pierce act on other players' units); in a match without
-one the lists `shields`, `cooling`, `thralls`, and `mindControlCooldowns` are
+one the lists `shields`, `cooling`, `mindControlled`, and `mindControlCooldowns` are
 empty, no `BEAM_DOWN`, `MIND_CONTROL`, or `TRACTOR_BEAM` is offered or
 accepted, every role has movement mode `GROUND`, and every combat preview
 has `rayPower: "NONE"`, `coolingApplied: false`, and both Shield damages 0.
-Each rule resolves through the owner's registration (`FACTION_RULES_V7`,
+Each rule resolves through the unit's kind's registration (`FACTION_RULES_V7`,
 `MARTIAN_ROLE_RULES_V7`, `MARTIAN_ROLE_MECHANICS_V7`) and the helpers of
 `src/engine/v7/martian.ts`. Human, Undead, Goblin, Dinosaur, Ice Folk, and
 Dwarf units keep every ability against Martians, with the Shield rules of
@@ -4257,19 +4311,20 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
 
 ### 20.1 Roles, machines, and labels
 
-| Mechanical role | Martian unit       | Kind                 |
-| --------------- | ------------------ | -------------------- |
-| `FIGHTER`       | Grunt (and Thrall) | foot                 |
-| `RAIDER`        | Saucer             | machine, flyer       |
-| `MARKSMAN`      | Ray Gunner         | foot, ray unit       |
-| `GUARD`         | Shield Projector   | foot                 |
-| `CAPTAIN`       | Brain              | foot                 |
-| `CATAPULT`      | Tripod             | machine, walker, ray |
-| `KNIGHT`        | Mothership         | machine, flyer       |
-| `JUGGERNAUT`    | Colossus           | machine, walker, ray |
+| Mechanical role | Martian unit     | Kind                 |
+| --------------- | ---------------- | -------------------- |
+| `FIGHTER`       | Grunt            | foot                 |
+| `RAIDER`        | Saucer           | machine, flyer       |
+| `MARKSMAN`      | Ray Gunner       | foot, ray unit       |
+| `GUARD`         | Shield Projector | foot                 |
+| `CAPTAIN`       | Brain            | foot                 |
+| `CATAPULT`      | Tripod           | machine, walker, ray |
+| `KNIGHT`        | Mothership       | machine, flyer       |
+| `JUGGERNAUT`    | Colossus         | machine, walker, ray |
 
 - **Shielded units** are the eight Martian land roles in land or embarked
-  form. Martian boats (the Human boats) and Thralls have no Shield.
+  form. Martian boats (the Human boats) have no Shield, and neither has a
+  mind-controlled unit of another kind (its kind's Shield maximum is 0).
 - **Machines** have the movement mode `STRIDE` (walkers: Tripod, Colossus)
   or `FLY` (flyers: Saucer, Mothership); every other role of every faction
   is `GROUND`. The public abilities `STRIDE` and `FLY` mirror it. Machines
@@ -4281,8 +4336,10 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
   is **Strafe** (the Saucer); the commands, flags, and events are the shared
   ones (`RALLY`, `inspired`, `UNITS_RALLIED`; `chargeApplied`). The Tripod
   keeps the `SIEGE` and the Brain the `SUPPORT` label, so neither is ever
-  Inspired; the Grunt, Thrall, Saucer, Ray Gunner, Shield Projector,
-  Mothership, and Colossus are Psychic Command targets.
+  Inspired; the Grunt, Saucer, Ray Gunner, Shield Projector,
+  Mothership, and Colossus are Psychic Command targets, and so is a
+  mind-controlled unit of another kind by its own role (never `SUPPORT` or
+  `SIEGE`).
 - **No Field Defense, no healer:** no Martian unit builds Field Defense, and
   the Brain has no Tend Wounded, so a Martian seat cures neither Plague nor
   Bitten. City Walls are unchanged: a Martian city may choose the Walls
@@ -4290,14 +4347,14 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
 - **Treasure unit:** a Saucer (`treasureUnitRole` `RAIDER`). **Starting
   unit:** one Grunt. **Militia:** one Grunt. **Level-5+ reward:** a Colossus.
   Every new Martian unit (starting, trained, reward, treasure, Showcase)
-  starts at its Shield maximum; a Thrall is created by Mind Control only.
+  starts at its Shield maximum; no unit is ever created mind-controlled.
 
 ### 20.2 Shields
 
 - **Maximum** (role mechanic `shield`): Grunt, Saucer, Ray Gunner, Brain,
   and Tripod 2; Shield Projector and Colossus 3; Mothership 4. It is 0 for
-  the boats, for a Thrall whatever its role says, and for every role of
-  every other faction. No Shield in the game exceeds 4 (`SHIELD_CAP_V7`), so
+  the boats and for every role of every other faction (read by kind, so
+  also for a mind-controlled unit of another faction). No Shield in the game exceeds 4 (`SHIELD_CAP_V7`), so
   a hit of 5 always costs HP.
 - **State.** `GameStateV7.shields: { unitId, shield }[]`, sorted by unit ID,
   has one entry for each unit on the board whose current Shield is at least
@@ -4305,7 +4362,8 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
   without a unit on the board, a duplicate or unsorted entry, a `shield`
   that is not an integer from 1 to `max(maximum, FORCE_FIELD_SHIELD_V7)`,
   and an entry for a unit whose Shield maximum is 0 (so any entry in a match
-  without a Martian seat, and any entry for a Thrall or a boat).
+  without a Martian seat, and any entry for a boat or a unit of another
+  kind).
   `PlayerViewV7.shields` lists the visible units' entries: a visible unit's
   Shield and Shield maximum are public, like its HP.
 - **Recharge** at its owner's Start Turn, after the reset, the city actions,
@@ -4375,7 +4433,8 @@ Examples (engine formula, full HP, open Grass):
   Projector gains nothing until then, and killing the Projector removes
   nothing already granted. The covered unit's form does not matter (an
   embarked unit next to a Projector on the shore is covered); the Projector
-  must be in land form. Thralls and boats gain nothing.
+  must be in land form. Boats and units of another kind (Shield maximum 0)
+  gain nothing.
 - **Force Fields** (the Martian `FORTIFICATION`, Industry tier 2, requires
   Drill, ordinary tier-2 cost; capability `shieldsRechargeAtEndTurn`). While
   its owner has it, the recharge also runs at that owner's End Turn, after
@@ -4585,7 +4644,7 @@ being the (atomic) rejection:
 | 3   | It has not used a primary action and has not landed this turn.                                                                                                                                                                        | `UNIT_ALREADY_ACTED`                             |
 | 4   | It is in land form.                                                                                                                                                                                                                   | `BEAM_DOWN_NOT_LEGAL { reason: "EMBARKED" }`     |
 | 5   | It has not moved this turn.                                                                                                                                                                                                           | `BEAM_DOWN_NOT_LEGAL { reason: "MOVED" }`        |
-| 6   | `passengerUnitId` is another own unit on the board in land form, whose role uses one slot and whose movement mode is not `FLY`, standing on or next to the center of a city the actor owns. A Thrall or a Tripod qualifies.           | `BEAM_DOWN_NOT_LEGAL { reason: "NO_PASSENGER" }` |
+| 6   | `passengerUnitId` is another own unit on the board in land form, whose role uses one slot and whose movement mode is not `FLY`, standing on or next to the center of a city the actor owns. A controlled unit or a Tripod qualifies.  | `BEAM_DOWN_NOT_LEGAL { reason: "NO_PASSENGER" }` |
 | 7   | `to` is one of the eight tiles around the Saucer, land the passenger can enter (a Mountain needs Engineering unless it strides), with no unit and no treasure chest, not a settlement site, and not in territory allied to the actor. | `INVALID_TILE { action: "BEAM_DOWN" }`           |
 
 - **Result.** The passenger stands on `to` with the exhausted activation (it
@@ -4605,93 +4664,146 @@ being the (atomic) rejection:
 ### 20.8 Mind Control
 
 `MIND_CONTROL { kind, unitId, targetUnitId }` is a primary action of the
-Brain: a weakened enemy becomes a Thrall. It is not an Attack and costs no
-Coins. Legality, in this order (all rejections atomic):
+Brain: a weakened enemy unit changes sides and **stays what it is**
+(`pulp_wars-b5f.3`, `7r33`; the
+[Mind Control overlay](RULESET_7_MIND_CONTROL.md) retired the Thrall). It
+is not an Attack and costs no Coins. Legality, in this order (all
+rejections atomic):
 
-| #   | Requirement                                                                                                                                                                     | Rejection                                             |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                  | the ordinary unit errors                              |
-| 2   | Its role has `MIND_CONTROL`.                                                                                                                                                    | `UNIT_ROLE_INVALID { role }`                          |
-| 3   | It has not used a primary action and has not landed this turn (it may have moved).                                                                                              | `UNIT_ALREADY_ACTED`                                  |
-| 4   | It is in land form.                                                                                                                                                             | `MIND_CONTROL_NOT_LEGAL { reason: "EMBARKED" }`       |
-| 5   | It has no entry in `mindControlCooldowns`.                                                                                                                                      | `MIND_CONTROL_NOT_LEGAL { reason: "COOLDOWN" }`       |
-| 6   | It controls fewer than `MIND_CONTROL_THRALL_LIMIT_V7` (2) Thralls.                                                                                                              | `MIND_CONTROL_NOT_LEGAL { reason: "THRALL_LIMIT" }`   |
-| 7   | `targetUnitId` is a unit on the board that the actor can see.                                                                                                                   | `TARGET_NOT_FOUND`                                    |
-| 8   | It is hostile to the actor.                                                                                                                                                     | `TARGET_ALLIED`                                       |
-| 9   | It is in land form (not embarked, naval, or an Egg), its role is not `JUGGERNAUT`, it uses one slot, it is not on a settlement site or a Rift, and it is not a Dwarf construct. | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
-| 10  | It is within Chebyshev distance 2 of the Brain (`MIND_CONTROL_RANGE_V7`).                                                                                                       | `MIND_CONTROL_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
-| 11  | Its HP is at most `MIND_CONTROL_HP_V7` (6); a Shield does not count.                                                                                                            | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_HEALTHY" }` |
+| #   | Requirement                                                                                                                                                                                                                      | Rejection                                              |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 1   | `unitId` is the actor's own unit on the board and is not itself mind-controlled.                                                                                                                                                 | the ordinary unit errors; `UNIT_ROLE_INVALID { role }` |
+| 2   | Its role has `MIND_CONTROL`.                                                                                                                                                                                                     | `UNIT_ROLE_INVALID { role }`                           |
+| 3   | It has not used a primary action and has not landed this turn (it may have moved).                                                                                                                                               | `UNIT_ALREADY_ACTED`                                   |
+| 4   | It is in land form.                                                                                                                                                                                                              | `MIND_CONTROL_NOT_LEGAL { reason: "EMBARKED" }`        |
+| 5   | It has no entry in `mindControlCooldowns`.                                                                                                                                                                                       | `MIND_CONTROL_NOT_LEGAL { reason: "COOLDOWN" }`        |
+| 6   | It controls fewer than `MIND_CONTROL_LIMIT_V7` (1) units.                                                                                                                                                                        | `MIND_CONTROL_NOT_LEGAL { reason: "CONTROL_LIMIT" }`   |
+| 7   | `targetUnitId` is a unit on the board that the actor can see.                                                                                                                                                                    | `TARGET_NOT_FOUND`                                     |
+| 8   | It is hostile to the actor.                                                                                                                                                                                                      | `TARGET_ALLIED`                                        |
+| 9   | It is in land form (not embarked, naval, or an Egg), its kind role is not `JUGGERNAUT`, it uses one slot, it is not a construct, it is not on a settlement site or a Rift, and it is not already mind-controlled (by any Brain). | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_IMMUNE" }`   |
+| 10  | It is within Chebyshev distance 2 of the Brain (`MIND_CONTROL_RANGE_V7`).                                                                                                                                                        | `MIND_CONTROL_NOT_LEGAL { reason: "OUT_OF_RANGE" }`    |
+| 11  | Its HP is at most `MIND_CONTROL_HP_V7` (6); a Shield does not count.                                                                                                                                                             | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_HEALTHY" }`  |
+| 12  | It is wounded: `hp < maxHp`.                                                                                                                                                                                                     | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_HEALTHY" }`  |
 
-- **Result.** The target leaves the board as a **removal, not a death**: no
-  `UNIT_DIED`, Grave, rising, death blast, kill credit, growth, or Plunder.
-  Its Plague, Bitten, Shield, Cooling, and slot end with it, and everything
-  that depends on it ends as if it had left the board (a Lich's Plagues are
-  cleared with `PLAGUE_CLEARED`; a Brain's Thralls collapse). A **Thrall**
-  appears on the same tile with the next entity ID, with `hp` equal to the
-  target's HP ([section 20.9](#209-thralls)); it reveals its sight. The
-  Brain has used its primary action and gets the cooldown entry
-  `{ unitId, turnsRemaining: 2 }` (`MIND_CONTROL_COOLDOWN_TURNS_V7`).
+Row 1's own failure (a controlled Brain, possible only in a state with two
+Martian seats, which setup's one faction per seat forbids) is
+`UNIT_ROLE_INVALID`: a controlled unit's role rule drops `MIND_CONTROL`
+([section 20.9](#209-mind-controlled-units)), so such a Brain is never
+offered it. Rows 9 to 12 are one shared test (`mindControlTargetBlockV7`)
+for the reducer and the public query.
+
+- **Result.** In one step: the entry
+  `{ unitId: target, brainUnitId, originalOwnerId: target's owner }` is
+  added to `mindControlled`; the target's `ownerId` becomes the actor, its
+  `homeCityId` null (its old city's slot frees at once), `captureEligible`
+  false, and it gets the exhausted activation. It keeps everything else: ID,
+  role, kind, HP, maximum HP, kills, `veteran`, form, tile, and every status
+  entry (Plague, Bitten, Chill, Shield, Cooling, the Dwarf lists, a
+  cooldown). Nothing that depends on it ends: a Lich's Plagues and a
+  Witch's Blizzard stay, now on the controller's side. If the target is a
+  Brain, its own controlled unit is released (section 20.9). The Brain has
+  used its primary action, is handled, and gets the cooldown entry
+  `{ unitId, turnsRemaining: 2 }` (`MIND_CONTROL_COOLDOWN_TURNS_V7`). The
+  unit reveals its sight for the actor; then the tail and the naval
+  blockade and sea-network events. There is no `UNIT_DIED`, Grave, rising,
+  death blast, kill credit, growth, or Plunder.
 - **Cooldown.** `GameStateV7.mindControlCooldowns: { unitId, turnsRemaining }[]`
   (sorted by unit ID, 0 to 2): at the Brain's owner's Start Turn, before the
   Shield recharge, each of that player's entries at 0 is removed and every
   other loses 1. So a Brain that used Mind Control on turn `N` cannot on
-  `N + 1` and `N + 2` and can again on `N + 3`. The cooldown is public on a
+  `N + 1` and `N + 2` and can again on `N + 3`; the cooldown starts at the
+  Mind Control, not at a loss. The cooldown is public on a
   visible Brain (`PlayerViewV7.mindControlCooldowns`). State parsing rejects
   an entry without a unit on the board that has `MIND_CONTROL`, a duplicate
   or unsorted entry, and a value outside 0 to 2.
-- **Events:** `UNIT_MIND_CONTROLLED { playerId, unitId, targetUnitId, targetOwnerId, targetRole, thrallUnitId, at, hp }`;
-  `UNIT_DIED` (cause `BRAIN_LOST`) for each Thrall that collapses when the
-  target was a Brain; `TILES_REVEALED`; the tail; the naval blockade and
-  sea-network events; `PLAGUE_CLEARED`.
+- **Events:** `UNIT_MIND_CONTROLLED { playerId, unitId, targetUnitId, targetOwnerId, targetRole, at, hp }`
+  (the unit keeps its ID: `targetUnitId` is the controlled unit); for a
+  Brain target, the release events of section 20.9; `TILES_REVEALED`; the
+  tail; the naval blockade and sea-network events.
 - Only visible units are targets and no tile changes, so the preview equals
-  the result. A plagued or bitten Brain may use Mind Control, and a Thrall of
-  another Martian seat is a legal target.
+  the result. A plagued or bitten Brain may use Mind Control.
 
-### 20.9 Thralls
+### 20.9 Mind-controlled units
 
-A **Thrall** is a unit of the `FIGHTER` role owned by a Martian seat with an
-entry in `GameStateV7.thralls: { unitId, brainUnitId }[]` (sorted by unit
-ID). It resolves through the Martian registration, so it fights with the
-**Grunt's** Attack, Defense, Move, range (the ray pistol, 1–2, since
-`pulp_wars-b5f.2`), Sight, maximum HP (10), and
-abilities (`ATTACK`, `CAPTURE`); the entry changes exactly this:
+A **mind-controlled** unit is a unit with an entry in
+`GameStateV7.mindControlled: { unitId, brainUnitId, originalOwnerId }[]`
+(sorted by unit ID; empty in a match without a Martian seat). Its owner is
+its **controller**; its **kind** is its original owner's faction
+(`unitFactionV7`). It resolves label, art, cost, stats, maximum HP,
+abilities, role mechanics, and its faction's body rules through its kind,
+and every unit-level technology through `unitCapabilitiesV7` (the
+controller's research read through the kind's tree; the technology graph
+and IDs are the same in every tree). So a controlled Knight is a Knight, a
+controlled Goblin can Kaboom, and a Martian without Raiding commands a Wolf
+Rider with no Charge. Three rulings decide the rest:
 
-| Rule              | Thrall                                                                                                                                |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Label and art     | "Thrall"; its own sprite                                                                                                              |
-| HP when created   | the victim's HP at the Mind Control (1 to 6); it recovers and is healed toward 10                                                     |
-| Shield            | none: its Shield maximum is 0 and a Force Field never covers it                                                                       |
-| Home and capacity | `homeCityId` is always null: it uses no slot in any city, is never re-homed (not even by a capture it makes), and counts as an orphan |
-| Activation        | created exhausted, with 0 kills, `veteran` false, and `captureEligible` false; ordinary from its owner's next Start Turn              |
-| Promotion         | never: `PROMOTE` is not offered and is rejected with `PROMOTION_NOT_ELIGIBLE`                                                         |
-| Disband           | never: not offered, rejected with `DISBAND_NOT_LEGAL { reason: "THRALL" }`                                                            |
-| Capture, Pillage  | yes, as a Grunt                                                                                                                       |
-| Statuses          | living: plagued, bitten, and infected like any unit                                                                                   |
-| Psychic Command   | a target (its tactical label is `LINE`)                                                                                               |
-| Beam Down         | a legal passenger                                                                                                                     |
-| Muster            | counts as the `FIGHTER` role                                                                                                          |
+1. **Body rules follow the kind:** everything the unit is and does by itself
+   (stats, attacks and their modifiers, movement modes, statuses it causes,
+   blasts, healing restrictions such as Restless or Deep Winter recovery).
+2. **Seat rules follow the controller:** Coins, cities, capacity,
+   territory (Snow from territory too), research, achievements, Plunder,
+   hostility, and "own".
+3. **No spawning under control:** a controlled unit's role rule drops
+   `RAISE_DEAD`, `INFECT`, `BITE`, `HATCH`, `ASSEMBLE`, `MIND_CONTROL`, and
+   `RIDES_TUNNEL` (`MIND_CONTROLLED_LOST_ABILITIES_V7`): the commands are
+   never offered and are rejected with `UNIT_ROLE_INVALID { role }`, and the
+   passive rules do not trigger (a controlled Zombie's kill is an ordinary
+   death, with a Grave where the Grave rules allow).
 
-- **Limit.** A Brain controls at most 2 Thralls at a time.
-- **Collapse.** When a Brain leaves the board (killed, infected,
-  disbanded, mind-controlled, or removed by reward displacement), every
-  Thrall whose `brainUnitId` names it is removed at once, in unit-ID order,
-  each with `UNIT_DIED { cause: "BRAIN_LOST" }`: a removal, with no kill
-  credit, Plunder, Grave, rising (even if Bitten), or growth. It happens
-  right after the Brain's own death events (its `UNIT_DIED`, Grave, or
-  rising) and before the advance, Push, and any chain of the same command.
-  The Thralls of an eliminated seat are removed with its other units (cause
-  `ELIMINATION`). A Thrall whose Brain embarks keeps its link.
-- **State parsing** rejects an entry without a unit on the board, or with a
-  `brainUnitId` that is not a unit of the same owner on the board whose role
-  has `MIND_CONTROL`; a duplicate or unsorted entry; more than 2 entries for
-  one Brain; a Thrall whose owner is not a Martian seat, whose role is not
-  `FIGHTER`, whose form is not `LAND` or `EMBARKED`, whose `homeCityId` is
-  not null, whose `veteran` is true, or whose `maxHp` is not the `FIGHTER`
-  role's; a Thrall with a `shields` entry; and any entry in a match without
-  a Martian seat.
-- **View.** `PlayerViewV7.thralls` lists `{ unitId, brainUnitId }` for every
-  visible Thrall, with `brainUnitId` null when the viewer cannot see the
-  Brain.
+| Rule                              | Controlled unit                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Turn and commands                 | its controller's; its activation resets at the controller's Start Turn                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Home and capacity                 | `homeCityId` null: no slot anywhere, never re-homed (not even by a capture it makes), an orphan; its public `capacitySlots` is 0                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Healing                           | ordinary, under the controller ("own territory" is the controller's), with its kind's body rules (Restless for an Undead kind, Deep Winter recovery for Ice Folk)                                                                                                                                                                                                                                                                                                                                                                      |
+| Promotion, growth                 | by its kind's rules (`PROMOTE` offered to the controller; a dinosaur grows)                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Disband                           | never: not offered, rejected with `DISBAND_NOT_LEGAL { reason: "MIND_CONTROLLED" }`                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Capture, siege, Pillage, treasure | if its kind can, for the controller                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Psychic Command, Beam Down        | a target and a passenger like an own unit of its role                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Kill credit, Slayer, Muster       | its kills keep counting and are its controller's; Muster counts its role for the controller                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Sight and fog                     | reveals for the controller; the original owner sees it as a hostile unit                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Per faction                       | Human: all (Field Defense, Rally, Tend Wounded on the controller's units, Charge, Escape, Overrun). Undead: all but Raise Dead, Infect, Bite. Goblin: all (Kaboom, blasts, Ram, WAAAGH!, Gang Up with the controller's helpers). Dinosaur: all but Hatch. Martian: all but Mind Control. Ice Folk: all (her Blizzard halves ranged hits only for Ice Folk units of her controller and stops the controller's ground units). Dwarf: all but Assemble and tunnel riding (a controlled Mole tunnels alone; a controlled Engineer repairs) |
+
+- **Limit.** A Brain controls at most `MIND_CONTROL_LIMIT_V7` (1) unit.
+- **Release.** A controlled unit is released when its Brain leaves the
+  board (killed, infected, shattered, disbanded, removed by displacement or
+  elimination) or changes owner (mind-controlled itself); a Brain that
+  embarks keeps the link. For each of the Brain's entries, in unit-ID
+  order (`releaseControlledV7`): if the original owner is not eliminated,
+  the entry is removed and the unit returns to it (`ownerId` becomes
+  `originalOwnerId`, `homeCityId` stays null, `captureEligible` false, the
+  exhausted activation; it keeps HP, kills, statuses, form, and tile,
+  standing where it is whatever the movement-entry rules), with
+  `UNIT_RELEASED { unitId, brainUnitId, fromPlayerId, toPlayerId, at }`, and
+  after the command it reveals its sight for its owner at its final tile; a
+  burrowed unit is released in `burrowed` and surfaces at its owner's next
+  Start Turn. If the original owner is eliminated, the unit is removed with
+  `UNIT_DIED { cause: "BRAIN_LOST" }`: a removal, with no kill credit,
+  Plunder, Grave, rising (even if Bitten), or growth. Releases happen right
+  after the Brain's own death events (its `UNIT_DIED`, Grave, or rising)
+  and before the advance, Push, and any chain of the same command.
+- **Seats leaving.** When the controller is eliminated, each unit it
+  controls is released first, then its own units are removed (cause
+  `ELIMINATION`). When the original owner is eliminated, its controlled
+  units stay controlled (the entry keeps `originalOwnerId`, so the kind
+  still resolves) and a later release removes them (`BRAIN_LOST`).
+- **Death.** A controlled unit's death is an ordinary death of a unit of
+  its kind (Graves, Infect and Bitten risings, death blasts, Plunder for the
+  killer's seat, kill credit); its entry ends and the Brain's limit frees.
+  Bitten and Chill persist through control and release.
+- **State parsing** rejects a duplicate or unsorted entry; a `unitId` that
+  is not a unit on the board or burrowed, or whose form is not `LAND` or
+  `EMBARKED`, or whose `homeCityId` is not null; an `originalOwnerId` equal
+  to the unit's owner or not a player of the match (an eliminated player is
+  allowed); a `brainUnitId` that is not a unit on the board of the same
+  owner whose role, under its kind, has `MIND_CONTROL`, or that is itself
+  controlled; more than `MIND_CONTROL_LIMIT_V7` entries for one Brain; a
+  unit whose kind role is `JUGGERNAUT`, uses two slots, or is a construct;
+  an owner that is not a `MARTIAN` seat; and any entry in a match without a
+  `MARTIAN` seat.
+- **View.** `PlayerViewV7.mindControlled` lists
+  `{ unitId, brainUnitId, originalOwnerId }` for every visible controlled
+  unit (and visible mound), with `brainUnitId` null when the viewer cannot
+  see the Brain; `originalOwnerId` is public.
 
 ### 20.10 Tractor Beam
 
@@ -4744,20 +4856,20 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
 
 ### 20.11 Interactions with other rules
 
-| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Graves, Raise Dead      | Martian land-form units, flyers and Thralls included, leave Graves like any unit (in matches with an Undead seat). A mind-controlled victim and a collapsed Thrall leave none; neither does an embarked machine.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Infect, Bitten          | A Martian unit killed by a Zombie rises as an ordinary Zombie (10 of 18 HP, no Shield, one slot); a Brain that rises has left the board, so its Thralls collapse. A Zombie bites a Martian unit only when its hit cost HP. A collapsed Bitten Thrall does not rise. No Martian unit cures a bite.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Plague                  | A Lich plagues only the targets that lost HP; Plague damage bypasses the Shield and spread ignores Shields. A mind-controlled Lich has left the board: its Plagues are cleared. No Martian unit cures Plague.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Wail, Lifesteal         | Wail hits Martian units with the ordinary formula, the Shield absorbing first. A Vampire heals by the HP damage it dealt, not what a Shield absorbed; a Martian unit never retaliates against it. A Zombie, Ghoul, or Skeleton that becomes a Thrall loses every Undead ability.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Goblin rules            | Gang Up counts the Goblin attacker's helpers around a Martian target; no Martian attack has Gang Up. Blasts and bomb splash are absorbed by the Shield first. A mind-controlled exploding unit is removed and does not explode; a pulled one keeps everything. Plunder counts Martian kills, never a collapse or a Mind Control.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Dinosaur rules          | Martian attacks, rays, and Pierce hit Eggs; Eggs are never Mind Control or Tractor Beam targets. A Charge! is absorbed by the Shield first and pushes and follows whatever it absorbed. Acid and Wallbreaker matter only for a Martian foot unit. An Ankylosaurus takes 1 less from every Martian hit. The two-slot dinosaurs are immune to Mind Control and the Tractor Beam.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Human abilities         | Field Defense and Walls give a non-Martian defender their bonus against every Martian attack except a ray fired with the Disintegrator; a Tripod attack destroys Field Defense on the target tile. A Knight that kills a Martian unit advances and may attack again. A Juggernaut-role unit pushes a Martian unit under the ordinary conditions. The Catapult out-ranges every ray.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Cities, siege, capacity | Capture-capable: Grunt, Ray Gunner, Shield Projector, Colossus, Thrall. A foot unit or walker on a hostile center besieges it; a flyer is never there. Machines are never fortified. Slots: Mothership and Colossus 2, Thralls none; Martian cities have no capacity bonus. Beam Down, Mind Control, and the Tractor Beam spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Boats, water            | Martian boats are the Human boats. Foot units embark at Ports; machines self-launch on any water they may enter. An embarked Martian unit keeps its Shield, cannot attack, retaliate, or use an ability, and can be pulled from water to water.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Achievements, Promotion | Muster counts a Thrall as the `FIGHTER` role and excludes the Colossus; Sea Dog never counts an afloat machine. Promotion (3 kills, +5 maximum HP, full heal of HP, Shield unchanged) applies to every Martian unit except the Thrall; ray, hostile Pierce, and retaliation kills count; Mind Control is not a kill.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Ice Folk                | Chill is not damage and ignores Shields: a shielded unit is Chilled whatever its Shield. Shatter reads the HP after the Shield, so a Chilled unit at 1 to 3 HP is shattered by a hit its full Shield absorbs entirely; a Shield absorbs a Sweep flank hit, a Rockfall, and a Boulder like any damage (in a Force Field a Chilled Grunt takes three Yeti hits, not two). A ray fired from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved after its full or half power, and a Pierce hit derives from the halved hit; the Disintegrator leaves an Ice Folk unit on its Walled center with neither fortification nor Snow cover. Martian walkers and flyers ignore deep snow, and flyers ZOC; they are Chilled and shattered like any unit (the Mothership too), never the Colossus. A ray unit that stands still loses nothing to frost; a sluggish Saucer cannot Strafe, and a sluggish Brain or Mothership that moved cannot use Mind Control, Psychic Command, or the Tractor Beam. A Chilled unit may be mind-controlled (its entry ends; the Thrall is a new, unchilled Martian unit), a mind-controlled or shattered Witch takes her Blizzard with her, a shattered Brain's Thralls collapse, and the Frost Giant is immune to Mind Control and the Tractor Beam (`JUGGERNAUT`). The Tractor Beam pulls an Ice Folk unit off Snow, out of a Blizzard, or off Walls, and a Mountain-born unit onto a Mountain; a pulled or beamed unit keeps its Chill. A self-launched machine cannot be Chilled or shattered while afloat. |
-| Dwarves                 | A Shield absorbs an eruption and a bomb first: an eruption of 2 does nothing to a full Shield of 2 (3 puts 1 through); a bomb of 5 puts 3 through a Shield of 2 (Dive 6: 4) and 1 through a Force Field's 4 (Dive: 2); an eruption at the Dwarves' Start Turn strips a Shield for the rest of their turn. Eruptions never hit flyers (Saucer, Mothership) but hit walkers (Tripod, Colossus), foot units, and Thralls; bombs hit any form. The two constructs are immune to Mind Control (`TARGET_IMMUNE`); every other Dwarf land role is a target under the ordinary conditions (the Gyrocopter not on a Rift), and a Thrall made from a Dwarf unit has no Dwarf rule. A mound is never a Mind Control, Tractor Beam, or Pierce target, and no pull or Beam Down ends on one; a pulled Dwarf unit keeps its `moved` flag, and its Dig In is read on its new tile. The Disintegrator ignores Dig In like all fortification. The Saucer and the Gyrocopter share the flight rule; a Saucer with Strafe kills a landed Gyrocopter (8 of 8).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Graves, Raise Dead      | Martian land-form units, flyers included, leave Graves like any unit (in matches with an Undead seat), and so does a mind-controlled unit, by its kind. A `BRAIN_LOST` removal leaves none; neither does an embarked machine. A controlled Necromancer has no Raise Dead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Infect, Bitten          | A Martian unit killed by a Zombie rises as an ordinary Zombie (10 of 18 HP, no Shield, one slot); a Brain that rises has left the board, so its controlled unit is released. A Zombie bites a Martian unit only when its hit cost HP. A Bitten unit stays Bitten through control and release; a `BRAIN_LOST` removal does not rise. A controlled Zombie neither infects nor bites. No Martian unit cures a bite.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Plague                  | A Lich plagues only the targets that lost HP; Plague damage bypasses the Shield and spread ignores Shields. A mind-controlled Lich keeps its Plagues (they keep their source). No Martian unit cures Plague.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Wail, Lifesteal         | Wail hits Martian units with the ordinary formula, the Shield absorbing first. A Vampire heals by the HP damage it dealt, not what a Shield absorbed; a Martian unit never retaliates against it. A mind-controlled Undead unit keeps every Undead ability but Raise Dead, Infect, and Bite.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Goblin rules            | Gang Up counts the Goblin attacker's helpers around a Martian target; no Martian attack has Gang Up. Blasts and bomb splash are absorbed by the Shield first. A mind-controlled Goblin unit Kabooms and explodes as its kind (its blast hits its old friends); a pulled one keeps everything. Plunder counts Martian kills, never a `BRAIN_LOST` removal or a Mind Control, and a Martian seat has no Plunder.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Dinosaur rules          | Martian attacks, rays, and Pierce hit Eggs; Eggs are never Mind Control or Tractor Beam targets. A Charge! is absorbed by the Shield first and pushes and follows whatever it absorbed. Acid and Wallbreaker matter only for a Martian foot unit. An Ankylosaurus takes 1 less from every Martian hit. The two-slot dinosaurs are immune to Mind Control and the Tractor Beam.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Human abilities         | Field Defense and Walls give a non-Martian defender their bonus against every Martian attack except a ray fired with the Disintegrator; a Tripod attack destroys Field Defense on the target tile. A Knight that kills a Martian unit advances and may attack again. A Juggernaut-role unit pushes a Martian unit under the ordinary conditions. The Catapult out-ranges every ray.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Cities, siege, capacity | Capture-capable: Grunt, Ray Gunner, Shield Projector, Colossus, and a controlled unit of a capture-capable kind role. A foot unit or walker on a hostile center besieges it; a flyer is never there. Machines are never fortified. Slots: Mothership and Colossus 2, controlled units none; Martian cities have no capacity bonus. Beam Down, Mind Control, and the Tractor Beam spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Boats, water            | Martian boats are the Human boats. Foot units embark at Ports; machines self-launch on any water they may enter. An embarked Martian unit keeps its Shield, cannot attack, retaliate, or use an ability, and can be pulled from water to water.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Achievements, Promotion | Muster counts a controlled unit by its role and excludes the Colossus; Sea Dog never counts an afloat machine. Promotion (3 kills, +5 maximum HP, full heal of HP, Shield unchanged) applies to every Martian unit and to a controlled unit by its kind's rules; ray, hostile Pierce, and retaliation kills count; Mind Control is not a kill.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Ice Folk                | Chill is not damage and ignores Shields: a shielded unit is Chilled whatever its Shield. Shatter reads the HP after the Shield, so a Chilled unit at 1 to 3 HP is shattered by a hit its full Shield absorbs entirely; a Shield absorbs a Sweep flank hit, a Rockfall, and a Boulder like any damage (in a Force Field a Chilled Grunt takes three Yeti hits, not two). A ray fired from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved after its full or half power, and a Pierce hit derives from the halved hit; the Disintegrator leaves an Ice Folk unit on its Walled center with neither fortification nor Snow cover. Martian walkers and flyers ignore deep snow, and flyers ZOC; they are Chilled and shattered like any unit (the Mothership too), never the Colossus. A ray unit that stands still loses nothing to frost; a sluggish Saucer cannot Strafe, and a sluggish Brain or Mothership that moved cannot use Mind Control, Psychic Command, or the Tractor Beam. A Chilled unit may be mind-controlled (it stays Chilled), a mind-controlled Witch keeps her Blizzard (it now halves ranged hits only for Ice Folk units of her controller and stops the controller's ground units), a shattered Witch takes it with her, a shattered Brain's controlled unit is released, and the Frost Giant is immune to Mind Control and the Tractor Beam (`JUGGERNAUT`). The Tractor Beam pulls an Ice Folk unit off Snow, out of a Blizzard, or off Walls, and a Mountain-born unit onto a Mountain; a pulled or beamed unit keeps its Chill. A self-launched machine cannot be Chilled or shattered while afloat. |
+| Dwarves                 | A Shield absorbs an eruption and a bomb first: an eruption of 2 does nothing to a full Shield of 2 (3 puts 1 through); a bomb of 5 puts 3 through a Shield of 2 (Dive 6: 4) and 1 through a Force Field's 4 (Dive: 2); an eruption at the Dwarves' Start Turn strips a Shield for the rest of their turn. Eruptions never hit flyers (Saucer, Mothership) but hit walkers (Tripod, Colossus) and foot units; bombs hit any form. The two constructs are immune to Mind Control (`TARGET_IMMUNE`); every other Dwarf land role is a target under the ordinary conditions (the Gyrocopter not on a Rift), and a controlled Dwarf unit keeps its Dwarf rules but Assemble and tunnel riding (a controlled Mole tunnels alone). A mound is never a Mind Control, Tractor Beam, or Pierce target, and no pull or Beam Down ends on one; a pulled Dwarf unit keeps its `moved` flag, and its Dig In is read on its new tile. The Disintegrator ignores Dig In like all fortification. The Saucer and the Gyrocopter share the flight rule; a Saucer with Strafe kills a landed Gyrocopter (8 of 8).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 ### 20.12 Commands, events, errors, and queries
 
@@ -4784,9 +4896,9 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
   `fortificationLevel: 0` and `fortificationIgnored`.
 - **Errors:** `BEAM_DOWN_NOT_LEGAL` (reasons `EMBARKED`, `MOVED`,
   `NO_PASSENGER`), `MIND_CONTROL_NOT_LEGAL` (`EMBARKED`, `COOLDOWN`,
-  `THRALL_LIMIT`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `TARGET_HEALTHY`), and
+  `CONTROL_LIMIT`, `TARGET_IMMUNE`, `OUT_OF_RANGE`, `TARGET_HEALTHY`), and
   `TRACTOR_BEAM_NOT_LEGAL` (`EMBARKED`, `TARGET_IMMUNE`, `OUT_OF_RANGE`,
-  `BLOCKED`); `DISBAND_NOT_LEGAL` gains the reason `THRALL`; the movement
+  `BLOCKED`); `DISBAND_NOT_LEGAL` gains the reason `MIND_CONTROLLED`; the movement
   failure reasons and `UNIT_MOVE_INTERRUPTED` gain `SETTLEMENT_FORBIDDEN`;
   `INVALID_TILE` gains the action `BEAM_DOWN`. A flyer's Pillage is rejected
   with `PILLAGE_INVALID_TARGET`.
@@ -4800,15 +4912,24 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
   `advancesAfterKill` as [section 11](#11-unit-roster) states; faction rule
   `treasureUnitRole` `RAIDER`; constants `FORCE_FIELD_SHIELD_V7` 4,
   `SHIELD_CAP_V7` 4, `MIND_CONTROL_HP_V7` 6, `MIND_CONTROL_RANGE_V7` 2,
-  `MIND_CONTROL_COOLDOWN_TURNS_V7` 2, `MIND_CONTROL_THRALL_LIMIT_V7` 2, and
-  `TRACTOR_BEAM_RANGE_V7` 2.
+  `MIND_CONTROL_COOLDOWN_TURNS_V7` 2, `MIND_CONTROL_LIMIT_V7` 1, and
+  `TRACTOR_BEAM_RANGE_V7` 2. Helpers: `isMindControlledV7`,
+  `controlledByBrainV7`, `releaseControlledV7`, and the kind readers
+  `unitFactionV7`, `unitCapabilitiesV7`, `unitRoleRuleV7`,
+  `unitRoleMechanicsV7`, and `seatRoleRuleV7`.
+- **Events** (beyond those of the sections above): `UNIT_RELEASED { unitId, brainUnitId, fromPlayerId, toPlayerId, at }`,
+  right after `UNIT_MIND_CONTROLLED` in `DOMAIN_EVENT_KIND_ORDER_V7`; event
+  projection shows it to both seats and to every player who sees the tile,
+  like `UNIT_DIED`.
 - **`queryPlayerCommandsV7`** offers, for a Martian seat, `MOVE` commands
   under the Stride, Flying, and water rules; `BEAM_DOWN` for every legal
   `(Saucer, passenger, destination)` in unit-ID, passenger-ID, then `(y, x)`
   order; and `MIND_CONTROL` and `TRACTOR_BEAM` for every legal target. It
-  never offers Field Defense, Tend Wounded, `PROMOTE` or `DISBAND` for a
-  Thrall, a flyer's Move or landing onto a forbidden center, or Pillage for a
-  flyer. Every offered command is accepted.
+  never offers Field Defense or Tend Wounded for a Martian unit, `DISBAND`
+  or a dropped ability (section 20.9) for a controlled unit, a flyer's Move
+  or landing onto a forbidden center, or Pillage for a flyer. It offers a
+  controlled unit's commands under its kind. Every offered command is
+  accepted.
 - **`previewBeamDownV7(view, unitId, passengerUnitId)`** returns null unless
   a `BEAM_DOWN` with that pair is offered, otherwise
   `{ unitId, passengerUnitId, from, destinations, fieldDefenseDestroyed }`
@@ -4816,7 +4937,8 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
   Defense.
 - **`previewMindControlV7(view, unitId, targetUnitId)`** returns null unless
   that command is offered, otherwise
-  `{ unitId, targetUnitId, at, thrallHp, thrallMaxHp, thrallsAfter, thrallLimit, cooldownTurns, collapsingUnitIds, plagueCleared }`.
+  `{ unitId, targetUnitId, at, originalOwnerId, role, faction, hp, maxHp, controlledAfter, controlLimit, cooldownTurns, releasedUnitIds }`
+  (`faction` is the target's kind, which it keeps).
 - **`previewTractorBeamV7(view, unitId, targetUnitId)`** returns null unless
   that command is offered, otherwise
   `{ unitId, targetUnitId, from, to, fortificationLost, emptiesCenterOfCityId, liftsSiegeOfCityId }`.
@@ -4830,18 +4952,22 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
   its striding reach, and a ray unit range 2 from every tile it can reach;
   it adds nothing for Mind Control or the Tractor Beam, which deal no
   damage.
-- **Public unit stats** carry, exactly for units of a Martian seat, the
+- **Public unit stats** carry, exactly for units of the Martian kind, the
   `martian` block: `shield`, `shieldMaximum`, `capacitySlots` (0 for a
-  Thrall), `movementMode`, `rayPower` (what an attack made now would be, or
-  null), `cooling`, `pierce`, `forceField`, `thrall` (null, or
-  `{ brainUnitId }`), and `mindControl` (null, or
-  `{ cooldown, thralls, thrallLimit }`). A Shield row follows the HP row
+  controlled unit), `movementMode`, `rayPower` (what an attack made now
+  would be, or null), `cooling`, `pierce`, `forceField`, and `mindControl`
+  (null, or a Brain's `{ cooldown, controlled, controlLimit }`). In a match
+  with a Martian seat every unit's stats carry a top-level `mindControl`:
+  null, or `{ brainUnitId, originalOwnerId }` for a controlled unit
+  (`brainUnitId` null when the viewer cannot see the Brain). A controlled
+  unit's faction blocks (`goblin`, `dinosaur`, `iceFolk`, `dwarf`,
+  `martian`) follow its kind. A Shield row follows the HP row
   (with the `FORCE_FIELD` source above the maximum), and the Attack row lists
   the source `HALF_POWER`.
-- `previewCityCapacityV7` counts Martian slots and no Thrall;
-  `previewDisbandV7` never covers a Thrall. `PublicPlayerV7` and the
-  leaderboard carry `MARTIAN` and `MARTIAN_BASELINE_V1`; the leaderboard unit
-  count includes Thralls.
+- `previewCityCapacityV7` counts Martian slots and no controlled unit;
+  `previewDisbandV7` never covers a controlled unit. `PublicPlayerV7` and
+  the leaderboard carry `MARTIAN` and `MARTIAN_BASELINE_V1`; the leaderboard
+  unit count is by owner, so it includes controlled units.
 
 ## 21. Ice Folk faction rules
 
@@ -4934,7 +5060,7 @@ has an entry (thawing or not)  → set turnsLeft to 2; sluggish is not changed
 
 - **Who can be Chilled:** a unit on the board in **land form** that is
   hostile to the source's owner, of any role and faction (`JUGGERNAUT`
-  roles, two-slot units, flyers, walkers, Thralls, and another Ice Folk
+  roles, two-slot units, flyers, walkers, controlled units, and another Ice Folk
   seat's units included). Never an embarked unit, a naval unit, an Egg, or
   an own or allied unit.
 - Chill is **not damage**: a Martian Shield does not absorb or block it, and
@@ -4973,7 +5099,8 @@ one sluggish turn**:
   made sluggish at most on every third turn of its owner, and only after a
   whole Ice Folk turn without Shatter eligibility.
 - **Removal.** The entry is removed when the unit leaves the board for any
-  reason (death, rising, Disband, Mind Control, displacement, elimination).
+  reason (death, rising, Disband, displacement, elimination); Mind Control
+  and a release keep it (the unit stays on the board).
   Tend Wounded sets it to thawing ([section 10](#10-recovery-and-support)).
   Embarking, landing, Promotion, growth, a Push, a Tractor Beam pull, Beam
   Down, and a change of home do not remove it; while the unit is embarked
@@ -5345,8 +5472,9 @@ resolution, with these steps (new ones in bold):
 7. Deaths in order: the defender, flank and splash victims in `(y, x, id)`
    order, the attacker, each an Infect rising, a Bitten rising, or an
    ordinary death with its Grave; **a shattered defender has cause
-   `SHATTER` and leaves no Grave** (a Bitten one still rises). Thralls of a
-   dead Brain collapse; bites and Plague land on the survivors.
+   `SHATTER` and leaves no Grave** (a Bitten one still rises). The
+   controlled unit of a dead Brain is released; bites and Plague land on the
+   survivors.
 8. Push of a surviving target (Frost Giant), then the advance (never for a
    Boulder Yeti, never onto a foreign center for a Sabretooth).
 9. The death-blast chain of the exploding units among the dead, **except a
@@ -5370,7 +5498,7 @@ tail.
 | Undead actions          | Frenzy, Raise Dead, Devour, and Wail are primary actions a sluggish Necromancer, Ghoul, or Banshee that moved cannot use. Undead units are Chilled like anyone; a Chilled Zombie or Lich, which already cannot act after moving, only becomes Shatter-eligible. Restless is not an Ice Folk rule.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Goblin rules            | [Section 18.11](#1811-interactions-with-other-rules): blasts ignore Snow cover and the Blizzard, a shattered exploding unit does not explode, a sluggish goblin-crewed unit that moved cannot Kaboom, and Gang Up beats cover (a Goblin with two helpers deals a Yeti 11 in the open and 10 on Snow, either way more than its 9 HP).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Dinosaur rules          | [Section 19.12](#1912-interactions-with-other-rules): Eggs are never Chilled or shattered; deep snow cuts a run-up and a Pounce short; Charge! and Wallbreaker ignore fortification but not Snow cover, which is read from the defender's own fortification.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Chill ignores Shields; Shatter reads the HP after the Shield; walkers and flyers ignore deep snow; the Frost Giant is immune to Mind Control and the Tractor Beam.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Chill ignores Shields; Shatter reads the HP after the Shield; walkers and flyers ignore deep snow; the Frost Giant is immune to Mind Control and the Tractor Beam; a mind-controlled Ice Folk unit keeps its Ice Folk rules (a controlled Witch's Blizzard serves her controller).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Human abilities         | Field Defense and Walls give a defender their bonus against every Ice Folk attack except a Boulder Yeti's; a Mammoth's attack tramples the Field Defense on the target tile after the exchange; with Brittle, Ice Folk melee attackers demolish Field Defense like any owner of Explosives. A sluggish Captain that moved cannot Rally; a sluggish Knight that attacks without moving still Overruns. A Catapult always shoots from distance 2 or 3 and a Marksman from 2 is halved against a protected unit.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Cities, siege, capacity | An Ice Folk unit on a hostile center besieges it (never a Sabretooth). Capture needs no Move, so a sluggish unit that began its turn on a center captures as usual. Every Ice Folk role uses one slot; a reward Frost Giant may exceed capacity. Land Grant, Spoils, rewards, and the city action are unchanged; Bolas and Cold Snap spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Boats, water            | Ice Folk boats are the Human boats. Land units embark at Ports with Shorecraft. No embarked or naval unit is Chilled or shattered; an attack from the shore on an embarked unit never shatters it, and a naval attack from distance 2 or more on a protected unit is halved (a Battleship's splash from the halved hit). The `blizzard` flag covers water tiles for drawing only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -5654,7 +5782,7 @@ order:
    hostile to the Mole's owner and **on the ground** takes the owner's
    `eruptionDamage`: **2** (`ERUPTION_DAMAGE_V7`), **3** with Blasting
    Charges (`BLASTING_ERUPTION_DAMAGE_V7`). On the ground means a land-form
-   unit whose movement mode is not `FLY` (foot units, walkers, Thralls) or
+   unit whose movement mode is not `FLY` (foot units, walkers) or
    an Egg; never a flyer, a naval unit, or an embarked unit. The damage is
    fixed: no retaliation, Attack, Defense, cover, fortification, Walls,
    Snow, or Blizzard; Armoured takes 1 off, then Plated caps it, then a
@@ -5667,7 +5795,7 @@ order:
 4. **Deaths,** in `(y, x, id)` order: cause `ERUPTION`, kill credit to the
    Mole (Promotion and Slayer count it, a destroyed Egg too), then each
    death's Grave or Bitten rising under the ordinary rules (none on a Rift,
-   none for a construct), and a Brain's Thralls collapse.
+   none for a construct), and a dead Brain's controlled unit is released.
 5. **Death blasts.** Exploding victims explode as a chain
    ([section 18.7](#187-where-chains-run-and-event-order)); the blasts hit
    everyone in their areas, the surfaced Mole and rider included, and a
@@ -5767,7 +5895,7 @@ fixed. **Result,** in order:
 3. The target joins `bombedThisTurn`.
 4. **A kill** has cause `BOMB` and credits the Gyrocopter (Promotion,
    Slayer; a destroyed Egg counts), then the death's Grave or Bitten rising
-   under the ordinary rules, and a Brain's Thralls collapse. There is no
+   under the ordinary rules, and a dead Brain's controlled unit is released. There is no
    advance.
 5. **A death blast** of an exploding target resolves as a chain: the
    Gyrocopter, standing next to it, is in the blast.
@@ -6056,7 +6184,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
 | Lifesteal, Undead       | A Vampire heals by the damage it deals any Dwarf unit, constructs included, and draws no retaliation. Restless is an Undead rule only: Dwarf units recover under the Human rule, except constructs, which never recover. Frenzy is ordinary.                                                                                                                                                                                                                                                                                                                                                                   |
 | Goblin rules            | [Section 18.11](#1811-interactions-with-other-rules): blasts and Kaboom are fixed damage (they ignore Dig In and Walls; a Steam Tank takes at most 4), never find a mound, and hit the Gyrocopter beside a bombed exploding unit or the surfaced pair beside an erupted one; Gang Up does not ignore Dig In; Plunder counts Dwarf kills, constructs included.                                                                                                                                                                                                                                                  |
 | Dinosaur rules          | [Section 19.12](#1912-interactions-with-other-rules): eruptions hit Eggs; a bomb leaves a 6-HP Egg at 1 (a Dive bomb destroys it); Armoured takes 1 off an eruption and a bomb; Charge! and Acid ignore Dig In, Wallbreaker keeps it; two-slot dinosaurs and Eggs are never knocked back; nothing ends on a mound.                                                                                                                                                                                                                                                                                             |
-| Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Shields absorb eruptions and bombs first; eruptions never hit flyers but hit walkers; constructs are immune to Mind Control; a mound is never a Mind Control, Tractor Beam, or Pierce target; the Disintegrator ignores Dig In; the Saucer and the Gyrocopter share the flight rule.                                                                                                                                                                                                                                                                     |
+| Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Shields absorb eruptions and bombs first; eruptions never hit flyers but hit walkers; constructs are immune to Mind Control; a controlled Mole tunnels alone, a controlled Hammerer cannot ride, and a controlled Engineer repairs but cannot Assemble; a mound is never a Mind Control, Tractor Beam, or Pierce target; the Disintegrator ignores Dig In; the Saucer and the Gyrocopter share the flight rule.                                                                                                                                          |
 | Ice Folk rules          | [Section 21.14](#2114-interactions-with-other-rules): tunnels ignore Snow; deep snow stops only the Move-2 Steam Tank; every Dwarf unit can be Chilled (the Titan too) and shattered (never the Titan); a sluggish Gyrocopter cannot bomb, a sluggish Mole may tunnel; the Shatter test reads a Tank's HP after the cap; the Blizzard halves a Gunner's or Cannon's shot from distance 2 or more, never a bomb or eruption.                                                                                                                                                                                    |
 | Human abilities         | An eruption undermines Field Defense on nine tiles, whoever owns it; Walls are untouched; bombs and eruptions ignore both; Dig In and Field Defense never stack. A Catapult destroys Field Defense, never Dig In, and out-ranges every Dwarf unit but the Steam Cannon. A Juggernaut pushes a Dwarf unit under the ordinary conditions (Dig In read on the new tile), never onto a mound. A Knight's kill of a surfaced Mole may continue its Overrun; the Steam Tank has none. An Escape Move never ends on a mound. Human and Dinosaur healers tend only their own units.                                    |
 | Cities, siege, capacity | Capture-capable: Hammerer, Clockwork Gunner, Steam Mole, Brass Titan. A Dwarf unit on a hostile center besieges it; a mound and a Gyrocopter never do. The Mole may step onto a center on its surfacing turn and capture on the next; the rider may not. Every Dwarf role uses one slot; a burrowed unit keeps its slot and home; Assemble uses the Engineer's home city's slot; Dwarf cities have no capacity bonus. Dig In counts around the seat's own centers only: a captured city's ring stops counting at once, and a captured one starts at once. Tunnel, Bomb Run, and Assemble spend no city action. |
@@ -6218,6 +6346,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
 | Dwarf    | `pulp-wars-poc-7r30` | `pulp_wars-78i.6` Dwarf UI (setup offers the Dwarves; `78i.5` production art) and `78i.4` Dwarf Normal AI, no identity change                                                                                                                                                                                            | [Dwarf overlay](RULESET_7_DWARVES.md)                            |
 | Dwarf    | `pulp-wars-poc-7r31` | `pulp_wars-78i.7` coarse Dry Land Dwarf balance: the bomb deals 5, 6 with Dive                                                                                                                                                                                                                                           | [Dwarf balance](../validation/RULESET_7_DWARF_BALANCE.md)        |
 | Martian  | `pulp-wars-poc-7r32` | `pulp_wars-b5f.2`: the Grunt's ray pistol (range 1–2, Attack 1.5, 3 Coins) and the Tripod at range 2 only (minimum range 2, Sight 2); Normal AI step back                                                                                                                                                                | [Martian tuning record](RULESET_7_MARTIANS.md#165-tuning-record) |
+| Martian  | `pulp-wars-poc-7r33` | `pulp_wars-b5f.3` engine step: Mind Control keeps the unit (kind resolver `unitFactionV7`, `mindControlled` replaces `thralls`, limit 1, wounded targets, release to the original owner, `UNIT_RELEASED`); the Thrall is retired; matches without a Martian seat unchanged                                               | [Mind Control overlay](RULESET_7_MIND_CONTROL.md)                |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -6469,11 +6598,25 @@ cover at all (not the viewer's `snow` flags, as the Ice Folk fold wrote).
 
 ## 24. Known discrepancies
 
-As of `pulp-wars-poc-7r32` the rules in this document match the code for
+As of `pulp-wars-poc-7r33` the rules in this document match the code for
 the seven factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
-Martian overlay, the Ice Folk faction of the Ice Folk overlay, and the
-Dwarf faction of the Dwarf overlay. No item is open.
+Martian overlay with the engine of the Mind Control overlay, the Ice Folk
+faction of the Ice Folk overlay, and the Dwarf faction of the Dwarf
+overlay, with one open item: the pending Mind Control AI and UI steps below.
+
+**Open.**
+
+- **Mind Control AI and UI steps pending.** The engine of the
+  [Mind Control overlay](RULESET_7_MIND_CONTROL.md) is implemented
+  (`pulp_wars-b5f.3`, `7r33`), but its Normal AI (overlay section 8: value
+  targeting, re-gating per-unit policies on the unit's kind, the doubled
+  Brain bonus) and its UI (overlay section 9: the halo and brain chip in
+  the Martian faction colour, the control link, the dock, preview, Help,
+  and log texts, and the retirement of the Thrall art subjects) are not.
+  Until then the Normal AI still plays only its old targeting (now limited
+  to wounded targets, one per Brain), and the board draws a controlled unit
+  with its kind's sprite and a placeholder collar.
 
 **Resolved by a code change** (`pulp_wars-7g3.9`):
 

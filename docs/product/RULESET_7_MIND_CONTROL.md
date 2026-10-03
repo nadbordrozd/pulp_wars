@@ -1,7 +1,11 @@
 # Ruleset 7: Mind Control keeps the unit
 
-**Status:** contract (`pulp_wars-b5f.3`, spec step). Engine, Normal AI, and
-UI are not implemented. It is an overlay over
+**Status:** contract (`pulp_wars-b5f.3`, spec step). **The engine is
+implemented** (`pulp_wars-b5f.3` engine step, identity `pulp-wars-poc-7r33`:
+the kind resolver, every rule, shape, and ruling of sections 2 to 6; folded
+into [current rules sections 20.8 and 20.9](RULESET_7_CURRENT.md#208-mind-control),
+which win where this document differs). The Normal AI (section 8) and UI
+(section 9) steps are not implemented yet. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r30`
 (and the pending [Dwarf overlay](RULESET_7_DWARVES.md)); it amends the
 Martian Mind Control and **replaces the Thrall**

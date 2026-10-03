@@ -3,12 +3,15 @@ import {
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
-  MIND_CONTROL_THRALL_LIMIT_V7,
+  MIND_CONTROL_LIMIT_V7,
   TRACTOR_BEAM_RANGE_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
-  playerFactionV7,
+  isMindControlledV7,
   roleMechanicsV7,
+  seatRoleRuleV7,
+  unitFactionV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   type BeamDownPreviewV7,
   type CombatPreviewV7,
@@ -43,16 +46,23 @@ export function matchHasMartianV7(
   return view.players.some((player) => player.faction === "MARTIAN");
 }
 
+/** Whether a visible unit is of the Martian kind (`unitFactionV7`). */
 export function unitIsMartianV7(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId">,
 ): boolean {
-  return playerFactionV7(view, unit.ownerId) === "MARTIAN";
+  return unitFactionV7(view, unit) === "MARTIAN";
 }
 
-/** Whether a visible unit is a Thrall (it has a public `thralls` entry). */
-export function unitIsThrallV7(view: PlayerViewV7, unitId: number): boolean {
-  return view.thralls.some((entry) => entry.unitId === unitId);
+/**
+ * The Mind Control revision: whether a visible unit is mind-controlled (it
+ * has a public `mindControlled` entry).
+ */
+export function unitIsMindControlledV7(
+  view: PlayerViewV7,
+  unitId: number,
+): boolean {
+  return isMindControlledV7(view, unitId);
 }
 
 /** A Martian role's label under the Martian registration. */
@@ -108,7 +118,7 @@ export const BEAM_DOWN_NO_TILE_V7 = "No free tile next to this Saucer";
 export const BEAM_DOWN_PICK_PASSENGER_V7 = "Choose the unit to beam down";
 export const BEAM_DOWN_PICK_TILE_V7 = "Choose a tile next to the Saucer";
 export const MIND_CONTROL_LABEL_V7 = "Mind Control";
-export const MIND_CONTROL_TOOLTIP_V7 = `Take a hostile unit with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles. It becomes a Thrall.`;
+export const MIND_CONTROL_TOOLTIP_V7 = `Take a wounded hostile unit with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles. It fights for you as itself until this Brain is lost.`;
 export const MIND_CONTROL_PICK_V7 = "Choose a weakened enemy to take";
 export const MIND_CONTROL_IMMUNE_V7 = "Immune";
 export const MIND_CONTROL_PROTECTED_V7 =
@@ -122,10 +132,15 @@ export const PSYCHIC_COMMAND_STATUS_V7 =
 export const STRAFE_LABEL_V7 = "Strafe";
 export const MARTIAN_FIELD_DEFENSE_EXPLANATION_V7 =
   "Martians cannot build Field Defense";
-export const THRALL_LABEL_V7 = "Thrall";
-export const THRALL_INFO_V7 =
-  "Controlled by a Brain. No Shield. Collapses if the Brain is lost.";
-export const THRALL_NO_SLOT_V7 = "Thralls use no slot";
+/**
+ * The Mind Control revision (section 9): the control line of a
+ * mind-controlled unit. The UI pass (`pulp_wars-b5f.3`) words the dock with
+ * the controller and the original owner.
+ */
+export const MIND_CONTROLLED_LABEL_V7 = "Mind-controlled";
+export const MIND_CONTROLLED_INFO_V7 =
+  "Fights for a Brain as itself. Returns to its owner if the Brain is lost.";
+export const MIND_CONTROLLED_NO_SLOT_V7 = "Mind-controlled units use no slot";
 export const COOLING_LABEL_V7 = "Cooling";
 export const COOLING_TOOLTIP_V7 =
   "Cooling: its ray fires at half power until the end of its owner's next turn";
@@ -163,11 +178,11 @@ export function rayPowerTextV7(
   return mechanics.cooling ? "Half power: Cooling" : "Half power: moved";
 }
 
-/** Section 13.2 "Brain info": "Thralls 1 / 2". */
-export function brainThrallsTextV7(
+/** The Mind Control revision (section 9) "Brain info": "Controls 0 / 1". */
+export function brainControlTextV7(
   mindControl: NonNullable<PublicMartianMechanicsV7["mindControl"]>,
 ): string {
-  return `Thralls ${mindControl.thralls} / ${mindControl.thrallLimit}`;
+  return `Controls ${mindControl.controlled} / ${mindControl.controlLimit}`;
 }
 
 /**
@@ -181,7 +196,7 @@ export function mindControlReadyInV7(turnsRemaining: number): number {
 
 /**
  * Section 13.2 "Mind Control unavailable": "Recovering: ready in {n}
- * turn(s)" or "Controls 2 Thralls already"; null when neither applies.
+ * turn(s)" or "Controls a unit already"; null when neither applies.
  */
 export function mindControlUnavailableTextV7(
   mindControl: PublicMartianMechanicsV7["mindControl"],
@@ -189,8 +204,10 @@ export function mindControlUnavailableTextV7(
   if (mindControl === null) return null;
   if (mindControl.cooldown !== null)
     return `Recovering: ready in ${plural(mindControlReadyInV7(mindControl.cooldown), "turn")}`;
-  if (mindControl.thralls >= mindControl.thrallLimit)
-    return `Controls ${numberWord(mindControl.thrallLimit)} Thralls already`;
+  if (mindControl.controlled >= mindControl.controlLimit)
+    return mindControl.controlLimit === 1
+      ? "Controls a unit already"
+      : `Controls ${numberWord(mindControl.controlLimit)} units already`;
   return null;
 }
 
@@ -290,11 +307,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       MIND_CONTROL_LABEL_V7,
-      `a ${joinOr(brains)} takes a hostile unit with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles, not on a city or village; it becomes a Thrall, and the ${joinOr(brains)} needs ${numberWord(MIND_CONTROL_COOLDOWN_TURNS_V7)} turns before the next.`,
-    ],
-    [
-      "Thralls",
-      `a Thrall fights like a ${label("FIGHTER")} without a Shield; a ${joinOr(brains)} controls at most ${numberWord(MIND_CONTROL_THRALL_LIMIT_V7)}, and they collapse when the ${joinOr(brains)} is lost.`,
+      `a ${joinOr(brains)} takes control of ${MIND_CONTROL_LIMIT_V7 === 1 ? "one" : `up to ${numberWord(MIND_CONTROL_LIMIT_V7)}`} wounded hostile unit${MIND_CONTROL_LIMIT_V7 === 1 ? "" : "s"} with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles, not on a city or village, and needs ${numberWord(MIND_CONTROL_COOLDOWN_TURNS_V7)} turns before the next. The unit keeps its type and abilities but cannot be disbanded or create units. When the ${joinOr(brains)} is lost, the unit returns to its owner.`,
     ],
     [
       TRACTOR_BEAM_LABEL_V7,
@@ -461,15 +474,17 @@ export function martianRecruitNotesV7(
 
 /** One line of Martian unit information. */
 export interface MartianUnitInfoLineV7 {
-  readonly id: "shield" | "ray" | "thrall" | "brain" | "slots" | "afloat";
+  readonly id: "shield" | "ray" | "brain" | "slots" | "afloat";
   readonly name: string;
   readonly description: string;
 }
 
 /**
  * Unit info lines from the public Martian mechanics (`stats.martian`) that
- * are not abilities: the Shield, the ray's power now, a Thrall, a Brain's
- * Thralls and cooldown, a two-slot body, and a machine afloat.
+ * are not abilities: the Shield, the ray's power now, a Brain's controlled
+ * units and cooldown, a two-slot body, and a machine afloat. (A
+ * mind-controlled unit's line reads the top-level `mindControl` stats; the
+ * dock wording is the UI pass.)
  */
 export function martianUnitInfoLinesV7(
   unit: Pick<PublicUnitV7, "role" | "form">,
@@ -496,17 +511,11 @@ export function martianUnitInfoLinesV7(
           ? "Its next shot fires at full Attack and leaves it Cooling."
           : "It moved this turn: its next shot fires at half Attack.",
     });
-  if (mechanics.thrall !== null)
-    lines.push({
-      id: "thrall",
-      name: THRALL_LABEL_V7,
-      description: `${THRALL_INFO_V7} ${THRALL_NO_SLOT_V7}.`,
-    });
   if (mechanics.mindControl !== null) {
     const blocked = mindControlUnavailableTextV7(mechanics.mindControl);
     lines.push({
       id: "brain",
-      name: brainThrallsTextV7(mechanics.mindControl),
+      name: brainControlTextV7(mechanics.mindControl),
       description: blocked ?? `${MIND_CONTROL_LABEL_V7} is ready.`,
     });
   }
@@ -541,14 +550,15 @@ function allied(view: PlayerViewV7, left: number, right: number): boolean {
   return left !== view.humanPlayerId && right !== view.humanPlayerId;
 }
 
-/** A visible unit's name under its owner's registration ("Thrall" too). */
+/**
+ * A visible unit's name under its kind's registration (the Mind Control
+ * revision: a controlled Knight is a Knight).
+ */
 export function martianUnitNameV7(
   view: PlayerViewV7,
   unit: Pick<PublicUnitV7, "id" | "ownerId" | "role">,
 ): string {
-  return unitIsThrallV7(view, unit.id)
-    ? THRALL_LABEL_V7
-    : unitRoleRuleV7(view, unit).label;
+  return unitRoleRuleV7(view, unit).label;
 }
 
 /** The attack preview lines of section 13.1, split by kind. */
@@ -648,38 +658,34 @@ export function mindControlTargetReasonV7(
     ) ||
     (tile?.explored === true && tile.site === "VILLAGE");
   if (onSite) return MIND_CONTROL_PROTECTED_V7;
-  const mechanics = roleMechanicsV7(
-    target.role,
-    playerFactionV7(view, target.ownerId),
-  );
+  const mechanics = unitRoleMechanicsV7(view, target);
   if (
     target.form !== "LAND" ||
     target.role === "JUGGERNAUT" ||
-    mechanics.capacitySlots !== 1
+    mechanics.capacitySlots !== 1 ||
+    mechanics.construct
   )
     return MIND_CONTROL_IMMUNE_V7;
+  if (isMindControlledV7(view, target.id)) return "Already controlled";
   if (target.hp > MIND_CONTROL_HP_V7) return `Too healthy (${target.hp} HP)`;
+  if (target.hp >= target.maxHp) return "Unhurt";
   return null;
 }
 
 /** The Mind Control preview's lines (section 13.1). */
 export function mindControlPreviewLinesV7(
-  view: PlayerViewV7,
+  _view: PlayerViewV7,
   preview: MindControlPreviewV7,
 ): readonly string[] {
-  const target = view.units.find((unit) => unit.id === preview.targetUnitId);
-  const name = target === undefined ? "unit" : martianUnitNameV7(view, target);
+  const name = effectiveRoleRuleV7(preview.role, preview.faction).label;
   return [
-    `Becomes a Thrall with ${preview.thrallHp} / ${preview.thrallMaxHp} HP`,
-    `Thralls ${preview.thrallsAfter} / ${preview.thrallLimit} after`,
+    `Becomes yours: ${name} (${preview.hp} / ${preview.maxHp} HP)`,
     `Mind Control recovers for ${plural(preview.cooldownTurns, "turn")}`,
-    ...(preview.collapsingUnitIds.length > 0
+    "Returns if this Brain is lost",
+    ...(preview.releasedUnitIds.length > 0
       ? [
-          `${plural(preview.collapsingUnitIds.length, "Thrall")} of this ${name} collapse${preview.collapsingUnitIds.length === 1 ? "s" : ""}`,
+          `Releases ${plural(preview.releasedUnitIds.length, "unit")} this ${name} controls`,
         ]
-      : []),
-    ...(preview.plagueCleared.length > 0
-      ? [`Ends the Plague on ${plural(preview.plagueCleared.length, "unit")}`]
       : []),
   ];
 }
@@ -688,7 +694,7 @@ export function mindControlPreviewLinesV7(
 export function mindControlTargetLabelV7(
   preview: MindControlPreviewV7,
 ): string {
-  return `Thrall · ${preview.thrallHp} HP`;
+  return `Take · ${preview.hp} HP`;
 }
 
 /** Section 13.2 "Tractor Beam preview" lines. */
@@ -775,8 +781,8 @@ export function beamDownUnavailableTextV7(
       unit.id !== saucer.id &&
       unit.ownerId === view.viewer.id &&
       unit.form === "LAND" &&
-      roleMechanicsV7(unit.role, view.viewer.faction).capacitySlots === 1 &&
-      roleMechanicsV7(unit.role, view.viewer.faction).movementMode !== "FLY" &&
+      unitRoleMechanicsV7(view, unit).capacitySlots === 1 &&
+      unitRoleMechanicsV7(view, unit).movementMode !== "FLY" &&
       view.cities.some(
         (city) => city.ownerId === view.viewer.id && near(city.at, unit.at),
       ),
@@ -790,7 +796,8 @@ export function beamDownUnavailableTextV7(
 
 /**
  * Section 13.2 log lines of one projected boundary: Shields recharged, a
- * Beam Down, a Mind Control, Thralls collapsing, and a pull. A match without
+ * Beam Down, a Mind Control, a controlled unit released or lost with its
+ * Brain (the Mind Control revision section 9), and a pull. A match without
  * a Martian seat never emits these events, so its notices are unchanged.
  */
 export function martianBoundaryNoticeV7(
@@ -807,7 +814,6 @@ export function martianBoundaryNoticeV7(
     before.units.find((unit) => unit.id === id);
   const owner = (playerId: number): string =>
     capitalized(possessive(after, playerId));
-  let collapsed = 0;
   for (const event of events) {
     if (event.kind === "SHIELDS_RECHARGED") {
       if (event.results.length === 0) continue;
@@ -822,16 +828,27 @@ export function martianBoundaryNoticeV7(
       );
     } else if (event.kind === "UNIT_MIND_CONTROLLED") {
       toast = true;
-      const name = unitRoleRuleV7(after, {
-        ownerId: event.targetOwnerId,
-        role: event.targetRole,
-      }).label;
+      // The target keeps its kind: the original owner's registration.
+      const name = seatRoleRuleV7(
+        after,
+        event.targetOwnerId,
+        event.targetRole,
+      ).label;
       parts.push(
-        `${owner(event.playerId)} ${martianLabelV7("CAPTAIN")} took control of a ${name}`,
+        `${owner(event.playerId)} ${martianLabelV7("CAPTAIN")} took control of ${possessive(after, event.targetOwnerId)} ${name}`,
       );
-    } else if (event.kind === "UNIT_DIED" && event.cause === "BRAIN_LOST") {
-      collapsed += 1;
+    } else if (event.kind === "UNIT_RELEASED") {
       toast = true;
+      const unit = unitById(event.unitId);
+      const name =
+        unit === undefined ? "A unit" : martianUnitNameV7(after, unit);
+      parts.push(`${name} returned to ${possessive(after, event.toPlayerId)}`);
+    } else if (event.kind === "UNIT_DIED" && event.cause === "BRAIN_LOST") {
+      toast = true;
+      const unit = unitById(event.unitId);
+      const name =
+        unit === undefined ? "A unit" : martianUnitNameV7(before, unit);
+      parts.push(`${name} was lost with its Brain`);
     } else if (event.kind === "UNIT_PULLED") {
       const source = unitById(event.sourceUnitId);
       const target = unitById(event.targetUnitId);
@@ -847,10 +864,6 @@ export function martianBoundaryNoticeV7(
       );
     }
   }
-  if (collapsed > 0)
-    parts.push(
-      `${collapsed} ${collapsed === 1 ? "Thrall" : "Thralls"} collapsed`,
-    );
   return parts.length === 0 ? null : { text: parts.join(" · "), toast };
 }
 
@@ -881,7 +894,7 @@ export function martianFieldDefenseBlockedV7(
           return (
             candidate.ownerId === view.viewer.id &&
             candidate.form === "LAND" &&
-            !unitIsThrallV7(view, candidate.id) &&
+            !isMindControlledV7(view, candidate.id) &&
             roleMechanicsV7(candidate.role, "ORIGINAL").buildsFieldDefense &&
             !roleMechanicsV7(candidate.role, "MARTIAN").buildsFieldDefense &&
             !activation.moved &&
@@ -913,7 +926,7 @@ export const DISINTEGRATOR_UNLOCK_TEXT_V7 =
 
 /**
  * The slot-capacity stat's tooltip for a Martian viewer: the roles that
- * take more than one slot, from the registry, and the Thrall rule.
+ * take more than one slot, from the registry, and the mind-controlled rule.
  */
 export function martianSlotCapacityTooltipV7(): string {
   const big = UNIT_ROLE_IDS_V7.filter(
@@ -924,6 +937,6 @@ export function martianSlotCapacityTooltipV7(): string {
     ...big.map((role) => roleMechanicsV7(role, "MARTIAN").capacitySlots),
   );
   return big.length === 0
-    ? `Unit slots used in this city; ${THRALL_NO_SLOT_V7.toLowerCase()}`
-    : `Unit slots used in this city; a ${joinOr(big.map(martianLabelV7))} takes ${slots}; ${THRALL_NO_SLOT_V7.toLowerCase()}`;
+    ? `Unit slots used in this city; ${MIND_CONTROLLED_NO_SLOT_V7.toLowerCase()}`
+    : `Unit slots used in this city; a ${joinOr(big.map(martianLabelV7))} takes ${slots}; ${MIND_CONTROLLED_NO_SLOT_V7.toLowerCase()}`;
 }

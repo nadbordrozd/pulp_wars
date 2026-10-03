@@ -167,7 +167,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "COLD_SNAP",
       "TUNNEL",
     ]);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(81);
+    // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(82);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(

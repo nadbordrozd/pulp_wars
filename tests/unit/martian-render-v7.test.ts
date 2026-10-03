@@ -321,18 +321,23 @@ describe("Martian board plan", () => {
       shieldSegments: dentedStats.shieldMaximum,
       shieldMaximum: dentedStats.shieldMaximum,
       cooling: false,
-      thrall: false,
+      controlled: false,
       flyer: false,
     });
     expect(dented.faction).toBe("MARTIAN");
     expect(dented.artSubject).toBe("UNIT:MARTIAN:FIGHTER");
     expect(unitEntry(plan, view, AT.coolingGunner).martian?.cooling).toBe(true);
-    const thrall = unitEntry(plan, view, AT.thrall);
-    expect(thrall).toMatchObject({
-      label: "Thrall",
-      artSubject: "UNIT:MARTIAN:THRALL",
+    // The Mind Control revision: a controlled Human Fighter keeps its own
+    // name and sprite and carries the control marker.
+    const controlled = unitEntry(plan, view, AT.controlled);
+    expect(controlled).toMatchObject({
+      label: "Fighter",
+      artSubject: "UNIT:FIGHTER",
     });
-    expect(thrall.martian).toMatchObject({ thrall: true, shieldSegments: 0 });
+    expect(controlled.martian).toMatchObject({
+      controlled: true,
+      shieldSegments: 0,
+    });
     const saucer = unitEntry(plan, view, AT.saucer);
     expect(saucer.martian?.flyer).toBe(true);
     expect(saucer.martian?.shieldSegments).toBe(
@@ -354,7 +359,7 @@ describe("Martian board plan", () => {
     expect(unitEntry(plan, view, AT.rayTarget).martian).toBeUndefined();
   });
 
-  it("shows a selected Shield Projector's Force Field and the Thrall-Brain link", () => {
+  it("shows a selected Shield Projector's Force Field and the control link", () => {
     const view = humanView(martianUiFixtureV7());
     const projector = planFor(view, AT.projector);
     const field = projector.entries.filter(
@@ -375,21 +380,22 @@ describe("Martian board plan", () => {
         .map(([x, y]) => `${x},${y}`)
         .sort(),
     );
-    const brain = unitAt(view, AT.brain);
-    const thrall = unitAt(view, AT.thrall);
-    const fromBrain = planFor(view, AT.brain).entries.filter(
-      (entry) => entry.kind === "LINK" && entry.label === "THRALL_LINK",
+    const brain = unitAt(view, AT.controller);
+    const controlled = unitAt(view, AT.controlled);
+    const fromBrain = planFor(view, AT.controller).entries.filter(
+      (entry) => entry.kind === "LINK" && entry.label === "CONTROL_LINK",
     );
-    expect(fromBrain.map((entry) => entry.linkTo)).toEqual([thrall.at]);
-    const fromThrall = planFor(view, AT.thrall).entries.filter(
-      (entry) => entry.kind === "LINK" && entry.label === "THRALL_LINK",
+    expect(fromBrain.map((entry) => entry.linkTo)).toEqual([controlled.at]);
+    const fromControlled = planFor(view, AT.controlled).entries.filter(
+      (entry) => entry.kind === "LINK" && entry.label === "CONTROL_LINK",
     );
-    expect(fromThrall.map((entry) => entry.linkTo)).toEqual([brain.at]);
+    expect(fromControlled.map((entry) => entry.linkTo)).toEqual([brain.at]);
     // Nothing of the kind without a selection.
     expect(
       planFor(view, null).entries.some(
         (entry) =>
-          entry.abilityStyle === "FORCE_FIELD" || entry.label === "THRALL_LINK",
+          entry.abilityStyle === "FORCE_FIELD" ||
+          entry.label === "CONTROL_LINK",
       ),
     ).toBe(false);
   });
@@ -441,7 +447,7 @@ describe("Martian board plan", () => {
     expect(plan.targets[0]).toMatchObject({
       family: "MIND_CONTROL",
       at: weak.at,
-      previewLabel: `Thrall · ${preview.thrallHp} HP`,
+      previewLabel: `Take · ${preview.hp} HP`,
     });
     const reasons = plan.entries
       .filter(

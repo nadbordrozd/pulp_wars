@@ -19,7 +19,8 @@ import {
   distinctFactionsV7,
   effectiveRoleRuleV7,
   factionRulesV7,
-  playerFactionV7,
+  seatRoleMechanicsV7,
+  unitFactionV7,
   previewKaboomV7,
   unitRoleRuleV7,
   unitRoleMechanicsV7,
@@ -226,14 +227,14 @@ import {
   MIND_CONTROL_PICK_V7,
   MIND_CONTROL_TOOLTIP_V7,
   STRAFE_LABEL_V7,
-  THRALL_INFO_V7,
-  THRALL_LABEL_V7,
-  THRALL_NO_SLOT_V7,
+  MIND_CONTROLLED_INFO_V7,
+  MIND_CONTROLLED_LABEL_V7,
+  MIND_CONTROLLED_NO_SLOT_V7,
   TRACTOR_BEAM_LABEL_V7,
   TRACTOR_BEAM_PICK_V7,
   TRACTOR_BEAM_TOOLTIP_V7,
   beamDownUnavailableTextV7,
-  brainThrallsTextV7,
+  brainControlTextV7,
   martianAbilityDescriptionV7,
   martianAbilityNameV7,
   martianBoundaryNoticeV7,
@@ -252,7 +253,6 @@ import {
   rayPowerTextV7,
   shieldTextV7,
   tractorBeamPreviewLinesV7,
-  unitIsThrallV7,
 } from "../martian-presentation-v7";
 import {
   martianMachineV7,
@@ -1690,23 +1690,18 @@ export class Ruleset7DomAppView {
       // Revision 19: an Egg is named after the unit inside ("Raptor Egg").
       const egg = unit.form === "EGG";
       const eggTurns = egg ? eggTurnsRemainingV7(view, unit.id) : null;
-      // The Martian revision: a Thrall is "Thrall", with its own sprite, and
-      // a machine afloat is drawn as itself.
-      const thrall = unitIsThrallV7(view, unit.id);
+      // The Martian revision: a machine afloat is drawn as itself; the Mind
+      // Control revision: a controlled unit keeps its own name and sprite.
       const machine = martianMachineV7(view, unit);
-      const roleLabel = egg
-        ? `${roleRule.label} Egg`
-        : thrall
-          ? THRALL_LABEL_V7
-          : roleRule.label;
+      const roleLabel = egg ? `${roleRule.label} Egg` : roleRule.label;
       const undeadUnit = unitIsUndeadV7(view, unit);
-      // Revision 17: every unit resolves through its owner's faction.
-      const unitFaction = playerFactionV7(view, unit.ownerId);
+      // Revision 17: every unit resolves through its owner's faction; the
+      // Mind Control revision: through its kind (`unitFactionV7`).
+      const unitFaction = unitFactionV7(view, unit);
       const unitBadge: FactionBadgeV7 = factionBadgeV7(unitFaction);
       const unitSubject = unitArtSubjectV7({
         ...unit,
         faction: unitFaction,
-        thrall,
         machine,
       });
       const transportArt = unit.form === "EMBARKED" && !machine;
@@ -1922,8 +1917,8 @@ export class Ruleset7DomAppView {
           identityColumn?.append(growth);
         }
       }
-      // The Martian revision (section 13.1): the Shield, Cooling, a Thrall
-      // and a Brain's Thralls and cooldown, from `stats.martian`.
+      // The Martian revision (section 13.1): the Shield, Cooling, and a
+      // Brain's controlled units and cooldown, from `stats.martian`.
       const martian = stats?.martian;
       if (martian !== undefined) {
         const chip = (
@@ -1965,17 +1960,11 @@ export class Ruleset7DomAppView {
               ? "Full power: its next shot fires at full Attack and leaves it Cooling"
               : "Half power: it moved this turn",
           );
-        if (martian.thrall !== null)
-          chip(
-            THRALL_LABEL_V7,
-            "thrall",
-            `${THRALL_INFO_V7} ${THRALL_NO_SLOT_V7}.`,
-          );
         if (martian.mindControl !== null) {
           const blocked = mindControlUnavailableTextV7(martian.mindControl);
           chip(
-            brainThrallsTextV7(martian.mindControl),
-            "thralls",
+            brainControlTextV7(martian.mindControl),
+            "controlled",
             blocked ?? `${MIND_CONTROL_LABEL_V7} is ready`,
           );
           if (martian.mindControl.cooldown !== null && blocked !== null)
@@ -1987,6 +1976,22 @@ export class Ruleset7DomAppView {
             "slots",
             `Takes ${slotsTextV7(martian.capacitySlots)} in its city`,
           );
+      }
+      // The Mind Control revision (section 9): a controlled unit of any kind
+      // shows the control chip (the UI pass words it with the controller and
+      // the original owner).
+      if (stats?.mindControl != null) {
+        const cue = text(
+          this.#document,
+          "span",
+          MIND_CONTROLLED_LABEL_V7,
+          "v7-chip v7-martian-chip",
+        );
+        const title = `${MIND_CONTROLLED_INFO_V7} ${MIND_CONTROLLED_NO_SLOT_V7}.`;
+        cue.dataset.unitStatus = "mind-controlled";
+        cue.title = title;
+        cue.setAttribute("aria-label", title);
+        identityColumn?.append(cue);
       }
       // The Ice Folk revision (section 13.1): the Chill of a unit of any
       // owner (Frozen, Frosted or Thawing), and an Ice Folk unit's Blizzard
@@ -3244,10 +3249,11 @@ export class Ruleset7DomAppView {
             this.#viewerFaction() === "ICE_FOLK" ||
             this.#viewerFaction() === "DWARF")
         ) {
-          const slots = unitCapacitySlotsV7(view, {
-            ownerId: view.viewer.id,
-            role: command.role,
-          });
+          const slots = seatRoleMechanicsV7(
+            view,
+            view.viewer.id,
+            command.role,
+          ).capacitySlots;
           const facts = el(this.#document, "span", "v7-egg-facts");
           const fact = text(
             this.#document,
@@ -5467,7 +5473,7 @@ export class Ruleset7DomAppView {
       unit === undefined ||
       unit.ownerId !== view.viewer.id ||
       unit.form !== "LAND" ||
-      playerFactionV7(view, unit.ownerId) !== "MARTIAN" ||
+      unitFactionV7(view, unit) !== "MARTIAN" ||
       this.#snapshot.offeredCommands.length === 0
     )
       return [];
@@ -5737,7 +5743,7 @@ export class Ruleset7DomAppView {
         const target = unitById(command.targetUnitId);
         choice(
           `mind-control-${command.targetUnitId}`,
-          `Take ${target === undefined ? "unit" : `${possessiveName(view, target.ownerId)} ${nameOf(target.id)}`} (${target?.hp ?? preview.thrallHp} HP)`,
+          `Take ${target === undefined ? "unit" : `${possessiveName(view, target.ownerId)} ${nameOf(target.id)}`} (${target?.hp ?? preview.hp} HP)`,
           mindControlPreviewLinesV7(view, preview),
           () => void this.#dispatch(command),
         );
@@ -6085,7 +6091,7 @@ export class Ruleset7DomAppView {
       unit === undefined ||
       unit.ownerId !== view.viewer.id ||
       unit.form !== "LAND" ||
-      playerFactionV7(view, unit.ownerId) !== "DWARF" ||
+      unitFactionV7(view, unit) !== "DWARF" ||
       this.#snapshot.offeredCommands.length === 0
     )
       return [];
@@ -6351,7 +6357,8 @@ export class Ruleset7DomAppView {
             unit === undefined
               ? null
               : this.#chibiArt(
-                  portraitSubjectV7(unit.role, view.viewer.faction),
+                  // Mind Control revision: the rider's kind.
+                  portraitSubjectV7(unit.role, unitFactionV7(view, unit)),
                   CHIBI_DOM_BOXES_V7.passenger,
                   this.#viewerColour(),
                 );
@@ -7005,7 +7012,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r32",
+    rulesetId: "pulp-wars-poc-7r33",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

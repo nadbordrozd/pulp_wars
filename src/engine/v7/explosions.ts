@@ -7,16 +7,17 @@ import {
 import { biteOfV7, recordBittenRisingV7 } from "./afflictions";
 import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
-import { absorbHitV7, collapseThrallsV7, withShieldsV7 } from "./martian";
+import { absorbHitV7, releaseControlledV7, withShieldsV7 } from "./martian";
 import { exhaustedActivationV7 } from "./plague";
 import { riftAtV7 } from "./rift";
 import type {
   BittenStatusV7,
   BoardStateV7,
+  BurrowedEntryV7,
   CoordV7,
   GameStateV7,
+  MindControlledStatusV7,
   ShieldStatusV7,
-  ThrallStatusV7,
   UnitRoleIdV7,
   UnitStateV7,
 } from "./types";
@@ -67,13 +68,17 @@ export interface CreditedDeathV7 {
 
 /**
  * The fixed blast damage of `unit` for an explosion of `cause` under its
- * owner's registration, or null when it has no such explosion (a Kaboom of a
- * non-goblin-crewed unit, a death blast of a Goblin or Wolf Rider, or any
- * Human or Undead unit).
+ * kind (a body rule: a mind-controlled Goblin unit keeps its blasts), or
+ * null when it has no such explosion (a Kaboom of a non-goblin-crewed unit,
+ * a death blast of a Goblin or Wolf Rider, or any Human or Undead unit).
  */
 export function blastDamageV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
   cause: ExplosionCauseV7,
 ): number | null {
   const mechanics = unitRoleMechanicsV7(roster, unit);
@@ -85,7 +90,11 @@ export function blastDamageV7(
 /** An exploding unit (Bomb Chucker, Rocket Cart, Scrap Buggy) death-blasts. */
 export function isExplodingUnitV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
 ): boolean {
   return blastDamageV7(roster, unit, "DEATH") !== null;
 }
@@ -137,13 +146,21 @@ export interface ExplosionChainInputV7<U extends BlastUnitV7> {
    */
   readonly shields?: ReadonlyMap<UnitId, number> | undefined;
   /**
-   * The Martian revision section 8.3: called after each death is recorded
-   * with the units on the board; returns the IDs of the Thralls that
-   * collapse with it (they leave the board at once and are hit by no later
-   * explosion).
+   * The Mind Control revision section 4.2: called after each death is
+   * recorded with the units on the board; returns the controlled units
+   * released by it (they change owner and stay) and the IDs of those
+   * removed with it (an eliminated original owner: they leave the board at
+   * once and are hit by no later explosion).
    */
-  readonly onCollapse?:
-    ((units: readonly U[], victim: U) => readonly UnitId[]) | undefined;
+  readonly onRelease?:
+    | ((
+        units: readonly U[],
+        victim: U,
+      ) => {
+        readonly removed: readonly UnitId[];
+        readonly released: readonly U[];
+      })
+    | undefined;
 }
 
 export interface ExplosionChainResultV7<U extends BlastUnitV7> {
@@ -261,10 +278,16 @@ export function resolveExplosionChainV7<U extends BlastUnitV7>(
         shields.delete(victim.id);
         const rising = input.onDeath(victim, explosion);
         if (rising !== null) units = [...units, rising];
-        const collapsed = input.onCollapse?.(units, victim) ?? [];
-        if (collapsed.length > 0) {
-          units = units.filter((unit) => !collapsed.includes(unit.id));
-          for (const id of collapsed) shields.delete(id);
+        const release = input.onRelease?.(units, victim);
+        if (release !== undefined && release.removed.length > 0) {
+          units = units.filter((unit) => !release.removed.includes(unit.id));
+          for (const id of release.removed) shields.delete(id);
+        }
+        if (release !== undefined && release.released.length > 0) {
+          const released = new Map(
+            release.released.map((unit) => [unit.id, unit] as const),
+          );
+          units = units.map((unit) => released.get(unit.id) ?? unit);
         }
         if (
           isExplodingUnitV7(input.roster, victim) &&
@@ -289,9 +312,14 @@ export interface StateChainWorkV7 {
   readonly graves: readonly CoordV7[];
   readonly nextEntityId: number;
   readonly bitten: readonly BittenStatusV7[];
-  /** The Martian revision: the Shields and Thralls the chain reads. */
+  /** The Martian revision: the Shields the chain reads. */
   readonly shields: readonly ShieldStatusV7[];
-  readonly thralls: readonly ThrallStatusV7[];
+  /**
+   * The Mind Control revision: the controlled units and the burrowed list
+   * a release may change.
+   */
+  readonly mindControlled: readonly MindControlledStatusV7[];
+  readonly burrowed: readonly BurrowedEntryV7[];
 }
 
 export interface StateChainResultV7 extends StateChainWorkV7 {
@@ -308,7 +336,8 @@ export interface StateChainResultV7 extends StateChainWorkV7 {
  * `EXPLOSION_RESOLVED`, its `FIELD_DEFENSE_DESTROYED` (reason `EXPLOSION`),
  * then each death's `UNIT_DIED` (cause `EXPLOSION`) followed by its
  * `GRAVE_CREATED` or `BITTEN_UNIT_RISEN`. Explosions never infect or bite.
- * `lookup` supplies the roster, setup, and treasure chests.
+ * `lookup` supplies the players, setup, and treasure chests; the roster
+ * reads the work's `mindControlled` list.
  */
 export function resolveStateExplosionChainV7(
   lookup: Pick<GameStateV7, "players" | "setup" | "treasureChests">,
@@ -328,10 +357,11 @@ export function resolveStateExplosionChainV7(
   let current: readonly UnitStateV7[] = work.units;
   const risings: UnitStateV7[] = [];
   const credits: CreditedDeathV7[] = [];
-  let thralls = work.thralls;
+  let mindControlled = work.mindControlled;
+  let burrowed = work.burrowed;
   const tileIndex = (at: CoordV7): number => at.y * board.width + at.x;
   const chain = resolveExplosionChainV7<UnitStateV7>({
-    roster: lookup,
+    roster: { players: lookup.players, mindControlled: work.mindControlled },
     width: work.board.width,
     height: work.board.height,
     units: work.units,
@@ -342,18 +372,31 @@ export function resolveStateExplosionChainV7(
       work.shields.length === 0
         ? undefined
         : new Map(work.shields.map((entry) => [entry.unitId, entry.shield])),
-    // The Martian revision section 8.3: a Brain killed by a blast takes its
-    // Thralls with it at once (`UNIT_DIED` cause `BRAIN_LOST`).
-    onCollapse:
-      work.thralls.length === 0
+    // The Mind Control revision section 4.2: a Brain killed by a blast
+    // releases its controlled unit at once (`UNIT_RELEASED`, or `UNIT_DIED`
+    // cause `BRAIN_LOST` when its original owner was eliminated).
+    onRelease:
+      work.mindControlled.length === 0
         ? undefined
         : (units) => {
-            const collapse = collapseThrallsV7(units, thralls, events);
-            thralls = collapse.thralls;
-            const gone = collapse.collapsed.map((unit) => unit.id);
-            if (gone.length > 0)
-              current = current.filter((unit) => !gone.includes(unit.id));
-            return gone;
+            const release = releaseControlledV7(
+              units,
+              burrowed,
+              mindControlled,
+              lookup.players,
+              events,
+            );
+            mindControlled = release.mindControlled;
+            burrowed = release.burrowed;
+            const removed = release.removed.map((unit) => unit.id);
+            const released = new Map(
+              release.released.map((unit) => [unit.id, unit] as const),
+            );
+            if (removed.length > 0 || released.size > 0)
+              current = current
+                .filter((unit) => !removed.includes(unit.id))
+                .map((unit) => released.get(unit.id) ?? unit);
+            return { removed, released: release.released };
           },
     onExplosion: (explosion) => {
       events.push({
@@ -411,6 +454,7 @@ export function resolveStateExplosionChainV7(
             board,
             treasureChests: lookup.treasureChests,
             players: lookup.players,
+            mindControlled,
           },
           graves,
           victim,
@@ -453,7 +497,8 @@ export function resolveStateExplosionChainV7(
               ]),
             ),
           ),
-    thralls,
+    mindControlled,
+    burrowed,
     risings,
     credits,
     explosions: chain.explosions,

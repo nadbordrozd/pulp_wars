@@ -134,7 +134,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
     // Revision 21 (`pulp_wars-9s0.4`) adds four locked entitlements to every
     // player and nothing else; the hashes return once they are removed too.
     // The Martian revision (`pulp_wars-t6s.2`) adds the four empty lists
-    // `shields`, `cooling`, `thralls`, and `mindControlCooldowns`; the
+    // `shields`, `cooling`, `mindControlled`, and `mindControlCooldowns`; the
     // hashes return once they are removed as well.
     // Revision 20 section 6.3 (`pulp_wars-0hi.3`) gives the starting Human
     // Fighter 12 HP (was 10) and changes nothing else in these states; the
@@ -168,7 +168,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         eggs,
         shields,
         cooling,
-        thralls,
+        mindControlled,
         mindControlCooldowns,
         chilled,
         // The Dwarf revision (`pulp_wars-78i.3`): three empty lists.
@@ -181,7 +181,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       expect([
         shields,
         cooling,
-        thralls,
+        mindControlled,
         mindControlCooldowns,
         chilled,
         burrowed,

@@ -12,7 +12,7 @@ import {
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
   knockbackDestinationV7,
-  playerFactionV7,
+  unitFactionV7,
   roleMechanicsV7,
   sluggishUnitMovedV7,
   technologyCapabilitiesV7,
@@ -54,11 +54,12 @@ export function matchHasDwarfSeatV7(
   return view.players.some((player) => player.faction === "DWARF");
 }
 
+/** Whether a visible unit is of the Dwarf kind (`unitFactionV7`). */
 export function unitIsDwarfV7(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId">,
 ): boolean {
-  return playerFactionV7(view, unit.ownerId) === "DWARF";
+  return unitFactionV7(view, unit) === "DWARF";
 }
 
 /** A Dwarf role's label under the Dwarf registration. */
@@ -285,10 +286,10 @@ export function dwarfPossessiveV7(
   return player === undefined ? "an enemy's" : `Player ${player.seat + 1}'s`;
 }
 
-/** A visible unit's name under its owner's registration. */
+/** A visible unit's name under its kind's registration. */
 function unitName(
   view: PlayerViewV7,
-  unit: Pick<PublicUnitV7, "ownerId" | "role">,
+  unit: Pick<PublicUnitV7, "id" | "ownerId" | "role">,
 ): string {
   return unitRoleRuleV7(view, unit).label;
 }
@@ -1028,10 +1029,7 @@ export function dwarfBoundaryNoticeV7(
       );
     } else if (event.kind === "WOUNDED_TENDED") {
       const engineer = unitById(event.captainId);
-      if (
-        engineer === undefined ||
-        playerFactionV7(after, engineer.ownerId) !== "DWARF"
-      )
+      if (engineer === undefined || unitFactionV7(after, engineer) !== "DWARF")
         continue;
       const healed = event.results.reduce(
         (sum, result) => sum + result.amount,

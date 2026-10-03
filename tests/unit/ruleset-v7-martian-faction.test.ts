@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 32;
+const REVISION = 33;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -269,7 +269,8 @@ describe("Martian faction registration (sections 2 and 11)", () => {
       "MIND_CONTROL",
       "TRACTOR_BEAM",
     ]);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(81);
+    // The Mind Control revision adds UNIT_RELEASED after UNIT_MIND_CONTROLLED.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(82);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1
@@ -277,6 +278,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     expect(after("UNITS_REGENERATED")).toBe("SHIELDS_RECHARGED");
     expect(after("UNIT_DISEMBARKED")).toBe("UNIT_BEAMED");
     expect(after("UNIT_INFECTED")).toBe("UNIT_MIND_CONTROLLED");
+    expect(after("UNIT_MIND_CONTROLLED")).toBe("UNIT_RELEASED");
     expect(after("UNIT_PUSHED")).toBe("UNIT_PULLED");
     // The Dwarf revision inserts UNIT_TUNNELLED after UNIT_PULLED.
     expect(after("UNIT_PULLED")).toBe("UNIT_TUNNELLED");
@@ -341,9 +343,16 @@ describe("Martian faction registration (sections 2 and 11)", () => {
         targetUnitId: 7,
         targetOwnerId: 2,
         targetRole: "KNIGHT",
-        thrallUnitId: 9,
         at: at(3, 4),
         hp: 6,
+      },
+      {
+        kind: "UNIT_RELEASED",
+        unitId: 7,
+        brainUnitId: 5,
+        fromPlayerId: 1,
+        toPlayerId: 2,
+        at: at(3, 4),
       },
       {
         kind: "UNIT_PULLED",
@@ -376,9 +385,33 @@ describe("Martian faction registration (sections 2 and 11)", () => {
         targetUnitId: 7,
         targetOwnerId: 2,
         targetRole: "KNIGHT",
-        thrallUnitId: 9,
         at: at(3, 4),
         hp: 0,
+      }).ok,
+    ).toBe(false);
+    // The Mind Control revision: the target keeps its ID (no `thrallUnitId`),
+    // and a release goes from one player to another.
+    expect(
+      parseEventV7({
+        kind: "UNIT_MIND_CONTROLLED",
+        playerId: 1,
+        unitId: 5,
+        targetUnitId: 7,
+        targetOwnerId: 2,
+        targetRole: "KNIGHT",
+        thrallUnitId: 9,
+        at: at(3, 4),
+        hp: 6,
+      }).ok,
+    ).toBe(false);
+    expect(
+      parseEventV7({
+        kind: "UNIT_RELEASED",
+        unitId: 7,
+        brainUnitId: 5,
+        fromPlayerId: 1,
+        toPlayerId: 1,
+        at: at(3, 4),
       }).ok,
     ).toBe(false);
   });
@@ -504,7 +537,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
         );
         expect([
           other.cooling,
-          other.thralls,
+          other.mindControlled,
           other.mindControlCooldowns,
         ]).toEqual([[], [], []]);
       }
@@ -934,10 +967,12 @@ describe("Martian roster (section 3)", () => {
     expect(shieldAtV7(result.state, at(4, 3))).toBe(1);
   });
 
-  it("counts the Martian trainable roles for Muster: a Thrall counts as the Grunt role, the Colossus is excluded", () => {
+  it("counts the Martian trainable roles for Muster: a controlled unit counts its role, the Colossus is excluded", () => {
     const state = martianFieldV7([
       { seat: 0, role: "CAPTAIN", at: at(4, 3) },
-      { seat: 0, role: "FIGHTER", at: at(5, 3), thrallOf: at(4, 3), hp: 4 },
+      // A Human Fighter the Brain controls counts the FIGHTER role (the
+      // Mind Control revision section 4.1).
+      { seat: 1, role: "FIGHTER", at: at(5, 3), controlledBy: at(4, 3), hp: 4 },
       { seat: 0, role: "RAIDER", at: at(6, 3) },
       { seat: 0, role: "JUGGERNAUT", at: at(7, 3) },
       { seat: 1, role: "FIGHTER", at: at(1, 1) },
@@ -962,7 +997,7 @@ describe("Martian roster (section 3)", () => {
       "PATROL_BOAT",
       "BATTLESHIP",
     ]);
-    // The leaderboard unit count includes Thralls.
+    // The leaderboard unit count includes controlled units.
     const view = viewForV7(state, seatIdV7(state, 1));
     expect(
       view.leaderboard.find((entry) => entry.faction === "MARTIAN"),
@@ -975,7 +1010,7 @@ describe("Martian roster (section 3)", () => {
       { seat: 0, role: "JUGGERNAUT", at: at(5, 3) },
       { seat: 0, role: "CATAPULT", at: at(6, 3) },
       { seat: 0, role: "CAPTAIN", at: at(7, 3) },
-      { seat: 0, role: "FIGHTER", at: at(7, 4), thrallOf: at(7, 3), hp: 4 },
+      { seat: 1, role: "FIGHTER", at: at(7, 4), controlledBy: at(7, 3), hp: 4 },
       { seat: 1, role: "FIGHTER", at: at(1, 1) },
     ]);
     const city = cityOfV7(state, 0);
@@ -1149,7 +1184,7 @@ describe("Martian starting units and substitutions (section 10.10)", () => {
       const { state } = initial;
       expect([
         state.cooling,
-        state.thralls,
+        state.mindControlled,
         state.mindControlCooldowns,
       ]).toEqual([[], [], []]);
       factions.forEach((faction, seat) => {
@@ -1401,11 +1436,11 @@ describe("Martian Showcase (section 2.4)", () => {
         })),
     );
     expect(state.shields).toHaveLength(8);
-    expect([state.cooling, state.thralls, state.mindControlCooldowns]).toEqual([
-      [],
-      [],
-      [],
-    ]);
+    expect([
+      state.cooling,
+      state.mindControlled,
+      state.mindControlCooldowns,
+    ]).toEqual([[], [], []]);
     expect(
       state.players.find((player) => player.id === martianId)?.researchedTechs,
     ).toEqual(TECHNOLOGY_IDS_V7);
@@ -1492,7 +1527,14 @@ describe("Martian public unit stats (section 11)", () => {
         { seat: 0, role: "MARKSMAN", at: at(6, 3), activation: movedV7(1) },
         { seat: 0, role: "GUARD", at: at(7, 3) },
         { seat: 0, role: "CAPTAIN", at: at(4, 5), cooldown: 1 },
-        { seat: 0, role: "FIGHTER", at: at(5, 5), thrallOf: at(4, 5), hp: 4 },
+        // A Human Fighter the Brain controls (the Mind Control revision).
+        {
+          seat: 1,
+          role: "FIGHTER",
+          at: at(5, 5),
+          controlledBy: at(4, 5),
+          hp: 4,
+        },
         { seat: 0, role: "KNIGHT", at: at(6, 5) },
         { seat: 0, role: "PATROL_BOAT", at: at(9, 2), form: "NAVAL" },
         { seat: 1, role: "FIGHTER", at: at(1, 1) },
@@ -1511,7 +1553,6 @@ describe("Martian public unit stats (section 11)", () => {
       cooling: true,
       pierce: true,
       forceField: false,
-      thrall: null,
       mindControl: null,
     });
     expect(stats(at(6, 3)).martian).toMatchObject({
@@ -1529,13 +1570,14 @@ describe("Martian public unit stats (section 11)", () => {
     });
     expect(stats(at(4, 5)).martian?.mindControl).toEqual({
       cooldown: 1,
-      thralls: 1,
-      thrallLimit: 2,
+      controlled: 1,
+      controlLimit: 1,
     });
-    expect(stats(at(5, 5)).martian).toMatchObject({
-      shield: 0,
-      shieldMaximum: 0,
-      thrall: { brainUnitId: brainId },
+    // A controlled Human unit has no Martian block; its control is public.
+    expect(stats(at(5, 5))).not.toHaveProperty("martian");
+    expect(stats(at(5, 5)).mindControl).toEqual({
+      brainUnitId: brainId,
+      originalOwnerId: seatIdV7(state, 1),
     });
     expect(stats(at(6, 5)).martian).toMatchObject({
       shield: 4,
@@ -1558,7 +1600,8 @@ describe("Martian public unit stats (section 11)", () => {
     ).toEqual(["HALF_POWER"]);
     const ids = tripod.stats.map((stat) => stat.id);
     expect(ids[ids.indexOf("HP") + 1]).toBe("SHIELD");
-    // A Thrall and a boat have no Shield row; a Human unit has none either.
+    // A controlled Human unit and a boat have no Shield row; a Human unit
+    // has none either.
     for (const where of [at(5, 5), at(9, 2), at(1, 1)])
       expect(stats(where).stats.map((stat) => stat.id)).not.toContain("SHIELD");
     // Labels.
@@ -1567,10 +1610,10 @@ describe("Martian public unit stats (section 11)", () => {
     );
   });
 
-  it("hides a Thrall's Brain in a view that cannot see it", () => {
+  it("hides a controlled unit's Brain in a view that cannot see it", () => {
     const state = martianFieldV7([
       { seat: 0, role: "CAPTAIN", at: at(4, 5) },
-      { seat: 0, role: "FIGHTER", at: at(5, 5), thrallOf: at(4, 5), hp: 4 },
+      { seat: 1, role: "FIGHTER", at: at(5, 5), controlledBy: at(4, 5), hp: 4 },
       { seat: 1, role: "FIGHTER", at: at(1, 1) },
     ]);
     const hidden = checkedV7({
@@ -1587,13 +1630,21 @@ describe("Martian public unit stats (section 11)", () => {
       ),
     });
     const view = viewForV7(hidden, seatIdV7(hidden, 1));
-    const thrall = view.units.find(
+    const controlled = view.units.find(
       (unit) => unit.at.x === 5 && unit.at.y === 5,
     );
-    expect(thrall).toBeDefined();
-    expect(view.thralls).toEqual([
-      { unitId: must(thrall).id, brainUnitId: null },
+    expect(controlled).toBeDefined();
+    expect(view.mindControlled).toEqual([
+      {
+        unitId: must(controlled).id,
+        brainUnitId: null,
+        originalOwnerId: seatIdV7(state, 1),
+      },
     ]);
+    expect(
+      view.unitStats.find((entry) => entry.unitId === must(controlled).id)
+        ?.mindControl,
+    ).toEqual({ brainUnitId: null, originalOwnerId: seatIdV7(state, 1) });
   });
 });
 
@@ -1686,7 +1737,7 @@ describe("Martian persistence (section 15)", () => {
     expect(state.cooling).toEqual([
       { unitId: own("JUGGERNAUT"), firedThisTurn: false },
     ]);
-    expect(state.thralls).toHaveLength(1);
+    expect(state.mindControlled).toHaveLength(1);
     expect(state.mindControlCooldowns).toEqual([
       { unitId: own("CAPTAIN"), turnsRemaining: 1 },
     ]);
@@ -1715,7 +1766,7 @@ describe("Martian persistence (section 15)", () => {
     for (const key of [
       "shields",
       "cooling",
-      "thralls",
+      "mindControlled",
       "mindControlCooldowns",
     ]) {
       const tampered = JSON.parse(JSON.stringify(save)) as {

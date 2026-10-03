@@ -5,9 +5,11 @@ import {
   BOMB_RANGE_V7,
   armouredDamageV7,
   canEnterTerrainV7,
-  effectiveRoleRuleV7,
-  playerFactionV7,
+  isMindControlledV7,
+  seatRoleMechanicsV7,
+  seatRoleRuleV7,
   technologyCapabilitiesV7,
+  unitCapabilitiesV7,
   unitIsMountainBornV7,
   unitIsSluggishV7,
   unitMovementModeV7,
@@ -35,7 +37,7 @@ import {
 import { recordCombatDeathV7 } from "./graves";
 import {
   absorbHitV7,
-  collapseThrallsV7,
+  releaseControlledV7,
   shieldOfV7,
   withFullShieldsV7,
   withShieldDamageV7,
@@ -146,7 +148,7 @@ type AssembleCommandV7 = Extract<CommandV7, { kind: "ASSEMBLE" }>;
 export function tunnelTileLegalV7(
   state: GameStateV7,
   actor: PlayerId,
-  unit: Pick<UnitStateV7, "ownerId" | "role">,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "role">,
   at: CoordV7,
 ): boolean {
   const tile = tileAtV7(state.board, at);
@@ -244,16 +246,19 @@ function canonicalTunnelReachV7(
  * Section 5.1 row 7: whether `rider` may ride `mole`'s tunnel: another own
  * living land-form unit on the board whose role has `RIDES_TUNNEL`, next to
  * the Mole, that has not moved, used a primary action, or landed this turn
- * and did not surface this turn.
+ * and did not surface this turn. The Mind Control revision (section 5.3): a
+ * controlled Mole tunnels alone, and a controlled unit never rides (its
+ * role rule drops `RIDES_TUNNEL`).
  */
 export function riderReadyV7(
-  state: Pick<GameStateV7, "players" | "surfacedThisTurn">,
+  state: Pick<GameStateV7, "players" | "surfacedThisTurn" | "mindControlled">,
   mole: Pick<UnitStateV7, "id" | "ownerId" | "at">,
   rider: UnitStateV7,
   primaryUsed: (unit: UnitStateV7) => boolean,
 ): boolean {
   return (
     rider.id !== mole.id &&
+    !isMindControlledV7(state, mole.id) &&
     rider.hp > 0 &&
     rider.ownerId === mole.ownerId &&
     rider.form === "LAND" &&
@@ -385,7 +390,7 @@ export function applyTunnelV7(
 /** Section 5.4: whether an eruption hits `unit` (a unit on the ground). */
 export function eruptionHitsV7(
   roster: FactionRosterV7,
-  unit: Pick<UnitStateV7, "ownerId" | "role" | "form">,
+  unit: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form">,
 ): boolean {
   return (
     unit.form === "EGG" ||
@@ -503,10 +508,13 @@ export function resolveStartTurnSurfacingV7(
     let units: UnitStateV7[] = [...current.units, ...surfaced].sort(
       (left, right) => left.id - right.id,
     );
+    // The Mind Control revision section 5.2: the eruption damage is a
+    // unit-level unlock (the controller's research through the kind's tree).
     const owner = kit.requirePlayer(current, playerId);
-    const eruptionDamage = technologyCapabilitiesV7(
+    const eruptionDamage = unitCapabilitiesV7(
+      current,
+      mole,
       owner.researchedTechs,
-      owner.faction,
     ).eruptionDamage;
     const results = eruptionResultsV7(
       current,
@@ -563,7 +571,10 @@ export function resolveStartTurnSurfacingV7(
       );
     let graves = current.graves;
     let nextEntityId = current.nextEntityId;
-    let thralls = current.thralls;
+    let mindControlled = current.mindControlled;
+    let burrowed: readonly BurrowedEntryV7[] = current.burrowed.filter(
+      (entry) => !returned.has(entry.unit.id),
+    );
     const risings: UnitStateV7[] = [];
     const initial: { unit: UnitStateV7; cause: "DEATH" }[] = [];
     const lookup = { ...current, board };
@@ -599,10 +610,17 @@ export function resolveStartTurnSurfacingV7(
         risings.push(rising);
         units = [...units, rising];
       }
-      // A Brain killed by the eruption takes its Thralls with it.
-      const collapse = collapseThrallsV7(units, thralls, events);
-      units = [...collapse.units];
-      thralls = collapse.thralls;
+      // A Brain killed by the eruption releases its controlled unit.
+      const release = releaseControlledV7(
+        units,
+        burrowed,
+        mindControlled,
+        current.players,
+        events,
+      );
+      units = [...release.units];
+      burrowed = release.burrowed;
+      mindControlled = release.mindControlled;
       if (isExplodingUnitV7(current, victim))
         initial.push({ unit: { ...victim, hp: 0 }, cause: "DEATH" });
     }
@@ -621,7 +639,8 @@ export function resolveStartTurnSurfacingV7(
         nextEntityId,
         bitten: current.bitten,
         shields,
-        thralls,
+        mindControlled,
+        burrowed,
       },
       initial,
       events,
@@ -685,10 +704,8 @@ export function resolveStartTurnSurfacingV7(
       graves: chain.graves,
       nextEntityId: chain.nextEntityId,
       shields: chain.shields,
-      thralls: chain.thralls,
-      burrowed: current.burrowed.filter(
-        (entry) => !returned.has(entry.unit.id),
-      ),
+      mindControlled: chain.mindControlled,
+      burrowed: chain.burrowed,
       surfacedThisTurn: [
         ...current.surfacedThisTurn,
         ...[...returned].filter((unitId) =>
@@ -785,10 +802,13 @@ export function applyBombRunV7(
   if (!bombLandingLegalV7(state, actor, gyro, target, command.to))
     return kit.rejected(original, "BOMB_RUN_NOT_LEGAL", { reason: "LANDING" });
   try {
+    // The Mind Control revision section 5.2: the bomb damage is a
+    // unit-level unlock (the controller's research through the kind's tree).
     const owner = kit.requirePlayer(state, actor);
-    const bombDamage = technologyCapabilitiesV7(
+    const bombDamage = unitCapabilitiesV7(
+      state,
+      gyro,
       owner.researchedTechs,
-      owner.faction,
     ).bombDamage;
     const from = gyro.at;
     const to = { x: command.to.x, y: command.to.y };
@@ -838,7 +858,8 @@ export function applyBombRunV7(
       .filter((unit) => unit.hp > 0);
     let graves = state.graves;
     let nextEntityId = state.nextEntityId;
-    let thralls = state.thralls;
+    let mindControlled = state.mindControlled;
+    let burrowed = state.burrowed;
     const risings: UnitStateV7[] = [];
     const initial: { unit: UnitStateV7; cause: "DEATH" }[] = [];
     if (killed) {
@@ -865,9 +886,16 @@ export function applyBombRunV7(
         risings.push(rising);
         units = [...units, rising];
       }
-      const collapse = collapseThrallsV7(units, thralls, events);
-      units = [...collapse.units];
-      thralls = collapse.thralls;
+      const release = releaseControlledV7(
+        units,
+        burrowed,
+        mindControlled,
+        state.players,
+        events,
+      );
+      units = [...release.units];
+      burrowed = release.burrowed;
+      mindControlled = release.mindControlled;
       // Step 5: the death blast hits the Gyrocopter beside the wreck.
       if (isExplodingUnitV7(state, target))
         initial.push({ unit: { ...target, hp: 0 }, cause: "DEATH" });
@@ -884,7 +912,8 @@ export function applyBombRunV7(
           state.shields,
           new Map([[target.id, hit.shieldDamage]]),
         ),
-        thralls,
+        mindControlled,
+        burrowed,
       },
       initial,
       events,
@@ -964,7 +993,8 @@ export function applyBombRunV7(
         units,
         graves: chain.graves,
         shields: chain.shields,
-        thralls: chain.thralls,
+        mindControlled: chain.mindControlled,
+        burrowed: chain.burrowed,
         bombedThisTurn: [...state.bombedThisTurn, target.id].sort(
           (left, right) => left - right,
         ),
@@ -993,9 +1023,16 @@ export function assembleTileLegalV7(
   engineer: Pick<UnitStateV7, "at">,
   to: CoordV7,
 ): boolean {
+  // The Gunner is not built yet: a role-level read of the actor's seat
+  // (its future ID, `nextEntityId`, is never a controlled unit's).
   return (
     chebyshev(engineer.at, to) === 1 &&
-    tunnelTileLegalV7(state, actor, { ownerId: actor, role: "MARKSMAN" }, to)
+    tunnelTileLegalV7(
+      state,
+      actor,
+      { id: state.nextEntityId as UnitId, ownerId: actor, role: "MARKSMAN" },
+      to,
+    )
   );
 }
 
@@ -1054,7 +1091,7 @@ export function applyAssembleV7(
   const role = "MARKSMAN" as const;
   if (
     assignedUnitCountV7(state, home.id) +
-      unitRoleMechanicsV7(state, { ownerId: actor, role }).capacitySlots >
+      seatRoleMechanicsV7(state, actor, role).capacitySlots >
     cityUnitCapacityV7(state, home)
   )
     return kit.rejected(original, "CITY_CAPACITY_FULL", { cityId: home.id });
@@ -1065,7 +1102,7 @@ export function applyAssembleV7(
     return kit.rejected(original, "INVALID_TILE", { action: "ASSEMBLE" });
   try {
     const allocation = allocateUnitId(state.nextEntityId);
-    const rule = effectiveRoleRuleV7(role, playerFactionV7(state, actor));
+    const rule = seatRoleRuleV7(state, actor, role);
     const to = { x: command.to.x, y: command.to.y };
     const gunner: UnitStateV7 = {
       id: allocation.id,

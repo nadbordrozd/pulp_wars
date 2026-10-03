@@ -11,6 +11,7 @@ import { canonicalHash, canonicalJson } from "../engine/replay/canonical";
 import {
   ORIGINAL_BASELINE_V5_TREE,
   TECHNOLOGY_BRANCH_IDS_V7,
+  unitFactionV7,
   unitFliesV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
@@ -109,7 +110,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r32";
+  readonly rulesetId: "pulp-wars-poc-7r33";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -372,9 +373,15 @@ export interface MartianMetricsV7 {
   mindControls: number;
   readonly mindControlTargets: Record<UnitRoleIdV7, number>;
   mindControlTargetHp: number;
-  thrallsCollapsed: number;
-  thrallsMaximum: number;
-  thrallCaptures: number;
+  /**
+   * The Mind Control revision: controlled units released to their original
+   * owner, lost with their Brain (`BRAIN_LOST`), the most controlled at
+   * once, and captures made by controlled units.
+   */
+  controlledReleased: number;
+  controlledLost: number;
+  controlledMaximum: number;
+  controlledCaptures: number;
   tractorBeamsOwn: number;
   tractorBeamsHostile: number;
   /** Pulls that moved a unit off a city center. */
@@ -858,7 +865,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r32",
+              rulesetId: "pulp-wars-poc-7r33",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -971,7 +978,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r32",
+    rulesetId: "pulp-wars-poc-7r33",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1145,9 +1152,10 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       mindControls: 0,
       mindControlTargets: zeroRecord(UNIT_ROLE_IDS_V7),
       mindControlTargetHp: 0,
-      thrallsCollapsed: 0,
-      thrallsMaximum: state.thralls.length,
-      thrallCaptures: 0,
+      controlledReleased: 0,
+      controlledLost: 0,
+      controlledMaximum: state.mindControlled.length,
+      controlledCaptures: 0,
       tractorBeamsOwn: 0,
       tractorBeamsHostile: 0,
       tractorBeamsOffCenter: 0,
@@ -1245,7 +1253,7 @@ function recordCommandAndEventsV7(
     telemetry.catapultSetupUnits.add(actorUnit.id);
   if (command.kind === "CAPTURE" && actorUnit !== undefined) {
     metrics.roles.captures[actorUnit.role] += 1;
-    metrics.factionRoles[ownerFaction(before, actorUnit.ownerId)].captures[
+    metrics.factionRoles[unitKind(before, actorUnit)].captures[
       actorUnit.role
     ] += 1;
     if (telemetry.raisedSkeletons.has(actorUnit.id))
@@ -1450,7 +1458,7 @@ function recordEventsV7(
         metrics.undead.splashKills += splashKills;
         if (
           attacker.role === "CATAPULT" &&
-          ownerFaction(before, attacker.ownerId) === "UNDEAD"
+          unitKind(before, attacker) === "UNDEAD"
         ) {
           metrics.undead.lichSplashDamage += splashDamage;
           metrics.undead.lichSplashKills += splashKills;
@@ -1600,9 +1608,7 @@ function recordEventsV7(
       );
       if (unit !== undefined) {
         metrics.roles.losses[unit.role] += 1;
-        metrics.factionRoles[ownerFaction(before, unit.ownerId)].losses[
-          unit.role
-        ] += 1;
+        metrics.factionRoles[unitKind(before, unit)].losses[unit.role] += 1;
       }
       if (telemetry.raisedSkeletons.has(removedUnitId))
         metrics.undead.raisedSkeletonLosses += 1;
@@ -1920,9 +1926,9 @@ function recordMartianV7(
   metrics: HeadlessMetricsV7,
 ): void {
   const martian = metrics.martian;
-  martian.thrallsMaximum = Math.max(
-    martian.thrallsMaximum,
-    after.thralls.length,
+  martian.controlledMaximum = Math.max(
+    martian.controlledMaximum,
+    after.mindControlled.length,
   );
   const absorbed = (
     source: keyof MartianMetricsV7["shieldAbsorbed"],
@@ -1938,13 +1944,13 @@ function recordMartianV7(
       : undefined;
   if (
     command.kind === "CAPTURE" &&
-    before.thralls.some((entry) => entry.unitId === command.unitId)
+    before.mindControlled.some((entry) => entry.unitId === command.unitId)
   )
-    martian.thrallCaptures += 1;
+    martian.controlledCaptures += 1;
   if (
     command.kind === "RALLY" &&
     actorUnit !== undefined &&
-    ownerFaction(before, actorUnit.ownerId) === "MARTIAN"
+    unitKind(before, actorUnit) === "MARTIAN"
   )
     martian.psychicCommands += 1;
   if (
@@ -2050,8 +2056,9 @@ function recordMartianV7(
       martian.mindControlTargets[event.targetRole] += 1;
       martian.mindControlTargetHp += event.hp;
     }
+    if (event.kind === "UNIT_RELEASED") martian.controlledReleased += 1;
     if (event.kind === "UNIT_DIED" && event.cause === "BRAIN_LOST")
-      martian.thrallsCollapsed += 1;
+      martian.controlledLost += 1;
     if (event.kind === "UNIT_PULLED") {
       const target = before.units.find(
         (unit) => unit.id === event.targetUnitId,
@@ -2067,6 +2074,19 @@ function recordMartianV7(
         martian.selfLaunches += 1;
     }
   }
+}
+
+/**
+ * The Mind Control revision: a unit's kind (its role statistics belong to
+ * the faction whose unit it is, also while it is mind-controlled).
+ */
+function unitKind(
+  state: GameStateV7,
+  unit: Pick<GameStateV7["units"][number], "id" | "ownerId">,
+): FactionIdV7 {
+  return state.players.some((player) => player.id === unit.ownerId)
+    ? unitFactionV7(state, unit)
+    : "ORIGINAL";
 }
 
 function ownerFaction(state: GameStateV7, playerId: PlayerId): FactionIdV7 {
@@ -2085,7 +2105,7 @@ function creditDamage(
   damage: number,
   kills: number,
 ): void {
-  const faction = metrics.factionRoles[ownerFaction(before, dealer.ownerId)];
+  const faction = metrics.factionRoles[unitKind(before, dealer)];
   metrics.roles.damage[dealer.role] += damage;
   metrics.roles.kills[dealer.role] += kills;
   faction.damage[dealer.role] += damage;

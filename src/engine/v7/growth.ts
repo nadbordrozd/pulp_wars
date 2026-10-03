@@ -25,7 +25,7 @@ import type { UnitStateV7 } from "./types";
  */
 export function grownHpV7(
   roster: FactionRosterV7,
-  unit: Pick<DinosaurUnitFactsV7, "ownerId" | "role" | "form"> & {
+  unit: Pick<DinosaurUnitFactsV7, "id" | "ownerId" | "role" | "form"> & {
     readonly maxHp: number;
   },
   killsBefore: number,

@@ -14,7 +14,6 @@ import type {
   UnitRoleIdV7,
 } from "../../engine/index";
 import {
-  playerFactionV7,
   previewAttackExplosionsV7,
   previewHatchV7,
   previewKaboomV7,
@@ -24,8 +23,9 @@ import {
   previewWailV7,
   queryCombatPreviewV7,
   queryLandingPreviewV7,
+  seatRoleRuleV7,
+  unitFactionV7,
   unitGrowthStageV7,
-  unitRoleRuleV7,
   WAIL_RADIUS_V7,
 } from "../../engine/index";
 import {
@@ -89,7 +89,7 @@ import {
   martianUnitMarkersV7,
   type MartianPickV7,
 } from "./martian-board-plan-v7";
-import { matchHasMartianV7, unitIsThrallV7 } from "../martian-presentation-v7";
+import { matchHasMartianV7 } from "../martian-presentation-v7";
 import {
   drawBlizzardCellV7,
   drawBlizzardRingV7,
@@ -806,7 +806,9 @@ export function buildBoardRenderPlanV7(
     ? selectedWitchV7(view, interaction.selectedUnitId)
     : undefined;
   for (const unit of view.units) {
-    const faction = playerFactionV7(view, unit.ownerId);
+    // The Mind Control revision (section 9): the sprite, label, and faction
+    // cue follow the unit's kind; the owner colour stays the controller's.
+    const faction = unitFactionV7(view, unit);
     const factionUnit =
       faction === "UNDEAD" ||
       faction === "GOBLIN" ||
@@ -818,17 +820,13 @@ export function buildBoardRenderPlanV7(
     const dwarf = dwarfMatch ? dwarfUnitMarkersV7(view, unit) : undefined;
     // The Ice Folk revision: Chill markers on units of any owner.
     const iceFolk = iceFolkMatch ? iceFolkUnitMarkersV7(view, unit) : undefined;
-    // The Martian revision: a Thrall is labelled "Thrall", and a machine
-    // afloat is drawn as itself (never as the transport).
-    const thrall = martianMatch && unitIsThrallV7(view, unit.id);
+    // The Martian revision: a machine afloat is drawn as itself (never as
+    // the transport); the Mind Control revision: a controlled unit keeps its
+    // own name and sprite and carries the control marker.
     const machine = martianMatch && martianMachineV7(view, unit);
     const martian = martianMatch ? martianUnitMarkersV7(view, unit) : undefined;
     // Revision 19: an Egg is "{Unit} Egg".
-    const factionLabel = thrall
-      ? "Thrall"
-      : factionUnit
-        ? unitDisplayNameV7(view, unit)
-        : null;
+    const factionLabel = factionUnit ? unitDisplayNameV7(view, unit) : null;
     const afflictions: AfflictionIdV7[] = [];
     if (plaguedIds.has(unit.id)) afflictions.push("PLAGUE");
     if (bittenIds.has(unit.id)) afflictions.push("BITTEN");
@@ -852,7 +850,7 @@ export function buildBoardRenderPlanV7(
       // Undead and Goblin land units ask for their own art first
       // (UNIT:<FACTION>:<ROLE>); without it the renderer falls back to the
       // Human sprite plus the faction badge.
-      artSubject: unitArtSubjectV7({ ...unit, faction, thrall, machine }),
+      artSubject: unitArtSubjectV7({ ...unit, faction, machine }),
       label:
         unit.form === "EMBARKED" && machine
           ? `${factionLabel ?? title(unit.role)} afloat`
@@ -2407,7 +2405,9 @@ export function drawBoardV7(input: {
           drawDinosaurBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Martian revision: the saucer badge over Human stand-in art
         // (LEGACY and the classic look), then the Cooling glyph or the
-        // Thrall collar in the status slot right of the sprite.
+        // control marker (the Mind Control revision: the former Thrall
+        // collar as a placeholder until the UI pass) in the status slot
+        // right of the sprite.
         if (entry.kind === "UNIT" && entry.faction === "MARTIAN" && !factionArt)
           drawMartianBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Ice Folk revision: the snow-capped peak badge over Human stand-in art
@@ -2434,7 +2434,7 @@ export function drawBoardV7(input: {
             highContrast: input.highContrast ?? false,
           });
         if (entry.kind === "UNIT" && entry.martian !== undefined) {
-          if (entry.martian.thrall)
+          if (entry.martian.controlled)
             drawThrallCollarV7(context, x, y, camera.zoom, {
               chibi: chibiPiece,
               highContrast: input.highContrast ?? false,
@@ -2886,7 +2886,7 @@ export function drawBoardV7(input: {
     (entry) =>
       entry.kind === "LINK" &&
       entry.linkTo !== undefined &&
-      entry.label !== "THRALL_LINK" &&
+      entry.label !== "CONTROL_LINK" &&
       entry.label !== TUNNEL_TETHER_LINK_V7,
   );
   if (publicLinks.length > 0) {
@@ -2902,12 +2902,13 @@ export function drawBoardV7(input: {
     for (const link of publicLinks) drawPublicLink(context, camera, link);
     context.restore();
   }
-  // The Martian revision: the link from a selected Thrall to its Brain, or
-  // from a selected Brain to its Thralls, drawn over the pieces.
+  // The Mind Control revision: the link from a selected controlled unit to
+  // its Brain, or from a selected Brain to its controlled units, drawn over
+  // the pieces.
   for (const entry of input.plan.entries)
     if (
       entry.kind === "LINK" &&
-      entry.label === "THRALL_LINK" &&
+      entry.label === "CONTROL_LINK" &&
       entry.linkTo !== undefined
     )
       drawThrallLinkV7(
@@ -4285,10 +4286,7 @@ function layEggTargets(
   commands: readonly CommandV7[],
   pick: { readonly cityId: number; readonly role: UnitRoleIdV7 },
 ): MapCommandTargetV7[] {
-  const label = unitRoleRuleV7(view, {
-    ownerId: view.viewer.id,
-    role: pick.role,
-  }).label;
+  const label = seatRoleRuleV7(view, view.viewer.id, pick.role).label;
   return commands.flatMap((command): readonly MapCommandTargetV7[] =>
     command.kind === "LAY_EGG" &&
     command.cityId === pick.cityId &&
@@ -4345,10 +4343,7 @@ function commandMapTargets(
     if (command.kind === "HATCH" && command.unitId === selectedUnitId) {
       const preview = previewHatchV7(view, command.unitId, command.eggUnitId);
       if (preview === null) return [];
-      const label = unitRoleRuleV7(view, {
-        ownerId: view.viewer.id,
-        role: preview.role,
-      }).label;
+      const label = seatRoleRuleV7(view, view.viewer.id, preview.role).label;
       return [
         {
           at: preview.at,

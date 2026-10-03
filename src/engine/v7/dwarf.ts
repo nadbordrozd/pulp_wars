@@ -1,8 +1,7 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   DIG_IN_RADIUS_V7,
-  playerFactionV7,
-  technologyCapabilitiesV7,
+  unitCapabilitiesV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
@@ -40,35 +39,40 @@ export interface DwarfUnitFactsV7 {
   readonly activation: { readonly moved: boolean };
 }
 
-/** The technology capabilities of `ownerId` (canonical state only). */
-function ownerCapabilitiesV7(
-  state: Pick<GameStateV7, "players">,
-  ownerId: PlayerId,
-): ReturnType<typeof technologyCapabilitiesV7> {
-  const owner = state.players.find((player) => player.id === ownerId);
+/**
+ * The unit-level technology of `unit` (canonical state only): its
+ * controller's research through its kind's tree (the Mind Control
+ * revision section 5.2).
+ */
+function unitOwnerCapabilitiesV7(
+  state: Pick<GameStateV7, "players" | "mindControlled">,
+  unit: { readonly id: UnitId; readonly ownerId: PlayerId },
+): ReturnType<typeof unitCapabilitiesV7> {
+  const owner = state.players.find((player) => player.id === unit.ownerId);
   if (owner === undefined) throw new RangeError("INVALID_STATE");
-  return technologyCapabilitiesV7(
+  return unitCapabilitiesV7(
+    state,
+    unit,
     owner.researchedTechs as readonly TechnologyIdV7[],
-    owner.faction,
   );
 }
 
 /**
  * Section 8 Dig In on canonical state: a land-form unit whose role digs in
- * (Hammerer, Steam Mole), owned by a seat with Dig In, that has not moved
- * (its activation's `moved`), standing on or next to
- * (`DIG_IN_RADIUS_V7`) the center of a city its owner owns, whatever the
- * tile's territory.
+ * (Hammerer, Steam Mole), whose controller's research grants Dig In
+ * through its kind's tree, that has not moved (its activation's `moved`),
+ * standing on or next to (`DIG_IN_RADIUS_V7`) the center of a city its
+ * owner (its controller) owns, whatever the tile's territory.
  */
 export function unitIsDugInV7(
-  state: Pick<GameStateV7, "players" | "cities">,
+  state: Pick<GameStateV7, "players" | "cities" | "mindControlled">,
   unit: DwarfUnitFactsV7,
 ): boolean {
   if (
     unit.form !== "LAND" ||
     unit.activation.moved ||
     !unitRoleMechanicsV7(state, unit).digsIn ||
-    !ownerCapabilitiesV7(state, unit.ownerId).digIn
+    !unitOwnerCapabilitiesV7(state, unit).digIn
   )
     return false;
   return state.cities.some(
@@ -96,7 +100,11 @@ export function publicUnitIsDugInV7(
 /** Section 2.3: a machine for Repair (every Dwarf land role but two). */
 export function unitIsMachineV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
 ): boolean {
   return unitRoleMechanicsV7(roster, unit).repairsAsMachine;
 }
@@ -108,6 +116,7 @@ export function unitIsMachineV7(
 export function attackIsUnflinchingV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -139,6 +148,7 @@ export function roleRetaliatesV7(rule: {
 export function attackAllowanceV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -158,6 +168,7 @@ export function attackAllowanceV7(
 export function twinShotReadyV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -199,6 +210,7 @@ export function knockbackDestinationV7(
 export function attackKnocksBackV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -216,6 +228,7 @@ export function attackKnocksBackV7(
 export function cannonIgnoresFortificationV7(
   roster: FactionRosterV7,
   unit: {
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form: UnitFormV7;
@@ -224,10 +237,8 @@ export function cannonIgnoresFortificationV7(
 ): boolean {
   return (
     attackKnocksBackV7(roster, unit) &&
-    technologyCapabilitiesV7(
-      ownerTechs as readonly TechnologyIdV7[],
-      playerFactionV7(roster, unit.ownerId),
-    ).cannonIgnoresFortification
+    unitCapabilitiesV7(roster, unit, ownerTechs as readonly TechnologyIdV7[])
+      .cannonIgnoresFortification
   );
 }
 
@@ -241,14 +252,13 @@ export function surfacedRiderV7(
     readonly surfacedThisTurn?: readonly UnitId[];
   },
   unit: {
-    readonly id?: UnitId;
+    readonly id: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
   },
 ): boolean {
   const surfaced = lookup.surfacedThisTurn;
   return (
-    unit.id !== undefined &&
     surfaced !== undefined &&
     surfaced.length > 0 &&
     surfaced.includes(unit.id) &&
@@ -256,10 +266,14 @@ export function surfacedRiderV7(
   );
 }
 
-/** Whether the unit's role has the given ability under its owner. */
+/** Whether the unit's role has the given ability under its kind. */
 export function unitHasAbilityV7(
   roster: FactionRosterV7,
-  unit: { readonly ownerId: PlayerId; readonly role: UnitRoleIdV7 },
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
   ability: string,
 ): boolean {
   return (unitRoleRuleV7(roster, unit).abilities as readonly string[]).includes(
