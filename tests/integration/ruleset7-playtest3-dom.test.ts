@@ -18,7 +18,8 @@ import {
   browserRandomSeedV7,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
-import { setupV7 } from "../fixtures/v7-builders";
+// pulp_wars-w5j.1: the browser launches only distinct factions.
+import { browserSetupV7 } from "../fixtures/v7-builders";
 
 /**
  * Playtest round 3 UI fixes (pulp_wars-6gd.4): non-selectable chrome, the
@@ -469,7 +470,7 @@ async function mountMatch(
   dispatch?: Ruleset7ControllerPortV7["dispatch"],
 ) {
   const source = new Ruleset7BrowserController();
-  const launched = await source.launch(setupV7(1539));
+  const launched = await source.launch(browserSetupV7(1539));
   if (!launched.ok) throw new Error(launched.diagnostic);
   const initial = source.snapshot();
   const view = initial.view;

@@ -11,7 +11,7 @@ import { placeTreasureChestsV6 } from "../v6/map";
 import { initialAchievementEntitlementsV7 } from "./achievements";
 import { withFullShieldsV7 } from "./martian";
 import { placeRiftsV7 } from "./rift";
-import { parseMatchSetupV7 } from "./setup";
+import { validateMatchSetupV7, type MatchSetupErrorV7 } from "./setup";
 import {
   createShowcaseEntitiesV7,
   showcaseBoardV7,
@@ -95,10 +95,8 @@ export type GenerateMapResultV7 =
   | {
       readonly ok: false;
       readonly error:
-        | {
-            readonly code: "INVALID_SETUP";
-            readonly params: Readonly<Record<string, never>>;
-          }
+        // `DUPLICATE_FACTION`: docs/product/RULESET_7_UNIQUE_FACTIONS.md.
+        | MatchSetupErrorV7
         | {
             readonly code: "MAP_GENERATION_FAILED";
             readonly params: Readonly<{
@@ -189,9 +187,9 @@ export function resourceForBiomeTerrainV7(
 }
 
 export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
-  const setup = parseMatchSetupV7(input);
-  if (setup === null)
-    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  const validated = validateMatchSetupV7(input);
+  if (!validated.ok) return validated;
+  const setup = validated.setup;
   if (setup.mapType === "SHOWCASE") return showcaseMapV7(setup);
   return generateMapWithVillageCountV7(setup, villageCount(setup), "RIFTS");
 }
@@ -272,9 +270,10 @@ export function generateInitialMapWithVillageCountV7(
   villages: number,
   rules: MapGenerationRulesV7 = "RIFTS",
 ): GenerateMapResultV7 {
-  const setup = parseMatchSetupV7(input);
+  const validated = validateMatchSetupV7(input);
+  if (!validated.ok) return validated;
+  const setup = validated.setup;
   if (
-    setup === null ||
     // The fixed Showcase board has no generator and no village count.
     setup.mapType === "SHOWCASE" ||
     !Number.isSafeInteger(villages) ||
@@ -2003,9 +2002,9 @@ export type CreateInitialMapStateResultV7 =
 export function createInitialMapStateV7(
   input: unknown,
 ): CreateInitialMapStateResultV7 {
-  const setup = parseMatchSetupV7(input);
-  if (setup === null)
-    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  const validated = validateMatchSetupV7(input);
+  if (!validated.ok) return validated;
+  const setup = validated.setup;
   return initialMapStateFromV7(setup, generateInitialMapV7(setup));
 }
 
@@ -2019,9 +2018,9 @@ export function createInitialMapStateWithVillageCountV7(
   villages: number,
   rules: MapGenerationRulesV7 = "RIFTS",
 ): CreateInitialMapStateResultV7 {
-  const setup = parseMatchSetupV7(input);
-  if (setup === null)
-    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  const validated = validateMatchSetupV7(input);
+  if (!validated.ok) return validated;
+  const setup = validated.setup;
   return initialMapStateFromV7(
     setup,
     generateInitialMapWithVillageCountV7(setup, villages, rules),

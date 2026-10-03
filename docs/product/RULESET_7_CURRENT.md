@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r28`, for all five playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r29`, for all five playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), and Martian
 (`MARTIAN`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
@@ -41,13 +41,16 @@ Ice Folk overlay and changes no rule of the five factions, and
 `pulp-wars-poc-7r26` (`pulp_wars-9s0.2`) changes only Pangea map generation
 (the coast ring, [section 2.3](#23-map-types)), `pulp-wars-poc-7r27`
 (`pulp_wars-7g3.7`) changes only the Ice Folk Yeti (9 HP, Defense 1.5),
-and `pulp-wars-poc-7r28` (`pulp_wars-9s0.5`) adds the **Rift** terrain,
+`pulp-wars-poc-7r28` (`pulp_wars-9s0.5`) adds the **Rift** terrain,
 folded in directly here (sections [2.3](#23-map-types),
 [2.4](#24-biomes-terrain-and-resources), [8.1](#81-common-placement-gates),
 [12.1](#121-movement), and [13.4](#134-after-combat)); its full ruling of
-every interaction is the [Rift overlay](RULESET_7_RIFT.md).
+every interaction is the [Rift overlay](RULESET_7_RIFT.md), and
+`pulp-wars-poc-7r29` (`pulp_wars-w5j.1`) makes every player play a
+different faction, folded in directly in [section 2.1](#21-match-setup)
+from the [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md).
 
-**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r28` also
+**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r29` also
 registers a sixth faction, `ICE_FOLK`, whose rules are in the
 [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (engine implemented by
 `pulp_wars-7g3.3` at `pulp-wars-poc-7r24`; its Normal AI and UI are in
@@ -104,7 +107,7 @@ placeholder-art plan, and Rift rules written before the terrain existed
 the values here are current. Where a document and the code
 disagreed, the code's behavior is the rule and is stated below;
 [Known discrepancies](#22-known-discrepancies) lists the open items as of
-`pulp-wars-poc-7r28`.
+`pulp-wars-poc-7r29`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague, and
@@ -156,10 +159,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                      |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Ruleset                                    | `pulp-wars-poc-7r28`                                                                                                                                                                                               |
+| Ruleset                                    | `pulp-wars-poc-7r29`                                                                                                                                                                                               |
 | Game-state schema                          | `7`                                                                                                                                                                                                                |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                |
-| Browser autosave                           | `pulpWars.save.v7r28.current`                                                                                                                                                                                      |
+| Browser autosave                           | `pulpWars.save.v7r29.current`                                                                                                                                                                                      |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                         |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK` (the last is the pending Ice Folk overlay)                                                                                                       |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`                                                                          |
@@ -199,9 +202,13 @@ separate [Ruleset 6](RULESET_6.md) route.
   `pulp_wars-7g3.7` (`7r27`) changed only the Ice Folk Yeti's HP and
   Defense. `pulp_wars-9s0.5` (`7r28`) appended the terrain `RIFT` to the
   frozen terrain order and changed map generation (the Rift); no field was
-  added, and a stored state keeps its board.
+  added, and a stored state keeps its board. `pulp_wars-w5j.1` (`7r29`)
+  refuses a setup in which two seats play the same faction
+  (`DUPLICATE_FACTION`) and added the optional headless and test only setup
+  field `allowDuplicateFactions: true`; no state, command, event, or view
+  shape changed.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r27.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r28.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -252,21 +259,31 @@ separate [Ruleset 6](RULESET_6.md) route.
 A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 `COOPERATIVE` mode, on a square board.
 
-| Setup field | Legal values                                                                                                |
-| ----------- | ----------------------------------------------------------------------------------------------------------- |
-| Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                                  |
-| Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                                             |
-| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only)            |
-| AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                           |
-| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                           |
-| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, or `MARTIAN` |
-| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                      |
+| Setup field | Legal values                                                                                                                    |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                                                      |
+| Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                                                                 |
+| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only)                                |
+| AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                               |
+| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                                               |
+| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, or `MARTIAN`; no two seats alike |
+| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                          |
 
 - **Faction choice.** `factions` is a dense array; index `i` is seat `i`'s
-  faction, and every combination is legal (single-faction or any mix of the
-  five). The browser setup always offers one
+  faction. **Every seat plays a different faction**
+  ([unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md), `pulp_wars-w5j.1`,
+  folded here): a setup that repeats a faction, on any map type including the
+  Showcase, is refused with `DUPLICATE_FACTION` (params `faction`, the first
+  repeated faction, and `seats`); any mix of distinct factions is legal.
+  Only headless and test setups may lift the rule, with
+  `allowDuplicateFactions: true`, which the browser never builds and
+  refuses to launch or resume. The browser setup always offers one
   Human/Undead/Goblin/Dinosaur/Martian select per seat ("Your faction",
-  "Player N faction"), all Human by default. The headless tools accept
+  "Player N faction"), with the factions other seats play disabled in the
+  opponents' selects (the human's pick moves an opponent who played it to a
+  free faction), and defaults to Human, Undead, Goblin, and Dinosaur for
+  seats 0–3. The
+  headless tools default to the same distinct factions and accept
   `original` (alias `human`), `undead`, `goblin`, `dinosaur`, and `martian`
   in `--factions`. The engine and the headless tools also accept `ICE_FOLK`
   (`ice` or `ice_folk`), which the browser does not offer
@@ -445,7 +462,7 @@ match from its first Start Turn on.
 | `width`, `height` | exactly 16; any other size is `INVALID_SETUP`                                       |
 | `aiCount`         | 1–3, as in a normal setup                                                           |
 | `aiMode`          | `RIVAL` or `COOPERATIVE`, unchanged meaning                                         |
-| `factions`        | any faction per seat                                                                |
+| `factions`        | any faction per seat, no two seats alike (`DUPLICATE_FACTION`)                      |
 | `seed`            | any uint32; it affects nothing but `setup.seed` and `random`                        |
 | Turn order        | seat order, seat 0 (the human) first                                                |
 | `random`          | the Mulberry32 initial state of the seed, no draw consumed; `mapAttempt` is 1       |
@@ -4197,12 +4214,12 @@ the code's behavior is stated:
 
 ## 22. Known discrepancies
 
-No rule discrepancy is open: as of `pulp-wars-poc-7r28` the rules in this
+No rule discrepancy is open: as of `pulp-wars-poc-7r29` the rules in this
 document match the code for the five playable factions, including the
 Dinosaur faction of revisions 19 and 20, the achievements of revision 21,
 and the Martian faction of the Martian overlay.
 
-**Pending overlay in the code.** The engine at `pulp-wars-poc-7r28` also
+**Pending overlay in the code.** The engine at `pulp-wars-poc-7r29` also
 contains the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`,
 `7r24`), which this document does not describe: the `ICE_FOLK`
 faction and `ICE_FOLK_BASELINE_V1` tree, the commands `THROW_BOLAS` and

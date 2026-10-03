@@ -75,7 +75,10 @@ describe("Revision 17 Goblin DOM", () => {
         "Martian",
         "Ice Folk",
       ]);
-      expect(field.value).toBe("ORIGINAL");
+      // pulp_wars-w5j.1: distinct defaults (Human, Undead, Goblin, Dinosaur).
+      expect(field.value).toBe(
+        ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"][seat],
+      );
     }
     for (const [seat, faction] of [
       [0, "GOBLIN"],
@@ -87,10 +90,12 @@ describe("Revision 17 Goblin DOM", () => {
     }
     requiredButton("launch").click();
     await waitUntil(() => chosen.launched.length === 1);
+    // Seat 0 takes Goblin from seat 2, which moves to the first untaken
+    // faction (Human); seat 2 cannot then take Undead from seat 1.
     expect(chosen.launched[0]?.factions).toEqual([
       "GOBLIN",
-      "ORIGINAL",
       "UNDEAD",
+      "ORIGINAL",
     ]);
     app.destroy();
   });

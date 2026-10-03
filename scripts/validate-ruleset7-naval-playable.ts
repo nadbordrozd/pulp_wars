@@ -305,6 +305,7 @@ function matchSetup(
     aiMode,
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
+    allowDuplicateFactions: true,
     mapType,
   };
 }

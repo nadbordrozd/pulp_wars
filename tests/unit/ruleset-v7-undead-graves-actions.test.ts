@@ -38,7 +38,7 @@ import {
   type UnitStateV7,
 } from "../../src/engine/index";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
 import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
 // Seed-2 DRY_LAND boards (factions never change the board):
@@ -1336,6 +1336,7 @@ function setupWith(
     aiMode,
     humanColor: "CORAL",
     factions: [...factions],
+    ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

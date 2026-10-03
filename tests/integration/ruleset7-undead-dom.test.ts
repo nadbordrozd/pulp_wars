@@ -38,6 +38,22 @@ beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
 });
 
+/** The shown seats' faction values, seat 0 first. */
+function factionValues(): string[] {
+  return [
+    ...document.querySelectorAll<HTMLSelectElement>(
+      "[data-v7-factions] select",
+    ),
+  ].map((field) => field.value);
+}
+
+/** Sets a seat's faction select and dispatches its change event. */
+function choose(seat: number, faction: string): void {
+  const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
+  field.value = faction;
+  field.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
 describe("Revision 13 Undead DOM", () => {
   it("offers per-seat faction choice in the default setup", async () => {
     const chosen = new SetupController();
@@ -60,6 +76,13 @@ describe("Revision 13 Undead DOM", () => {
       "Player 3 faction",
       "Player 4 faction",
     ]);
+    // The unique-factions rule (pulp_wars-w5j.1): distinct defaults.
+    expect(factionValues()).toEqual([
+      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+    ]);
     for (const seat of [0, 2]) {
       const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
       // The Martian UI (pulp_wars-t6s.4) adds the fifth faction, the Ice Folk
@@ -72,42 +95,107 @@ describe("Revision 13 Undead DOM", () => {
         "Martian",
         "Ice Folk",
       ]);
-      expect(field.value).toBe("ORIGINAL");
-      field.value = "UNDEAD";
-      field.dispatchEvent(new Event("change", { bubbles: true }));
     }
+    // Seat 0 picks Martian; seat 2 then picks Human, which seat 0 freed.
+    choose(0, "MARTIAN");
+    choose(2, "ORIGINAL");
+    expect(factionValues()).toEqual([
+      "MARTIAN",
+      "UNDEAD",
+      "ORIGINAL",
+      "DINOSAUR",
+    ]);
     requiredButton("launch").click();
     await waitUntil(() => chosen.launched.length === 1);
     expect(chosen.launched[0]?.factions).toEqual([
+      "MARTIAN",
       "UNDEAD",
       "ORIGINAL",
-      "UNDEAD",
-      "ORIGINAL",
+      "DINOSAUR",
     ]);
     app.destroy();
 
     document.body.innerHTML = '<div id="app"></div>';
     const plain = new SetupController();
     const defaultApp = mount(plain, new RecordingBoardHost());
-    // Untouched faction selects keep every seat Human.
+    // Untouched faction selects keep the distinct defaults.
     const plainCount = requiredElement<HTMLSelectElement>("#v7-ai-count");
     plainCount.value = "2";
     plainCount.dispatchEvent(new Event("change", { bubbles: true }));
-    expect(
-      [
-        ...document.querySelectorAll<HTMLSelectElement>(
-          "[data-v7-factions] select",
-        ),
-      ].map((field) => field.value),
-    ).toEqual(["ORIGINAL", "ORIGINAL", "ORIGINAL"]);
+    expect(factionValues()).toEqual(["ORIGINAL", "UNDEAD", "GOBLIN"]);
     requiredButton("launch").click();
     await waitUntil(() => plain.launched.length === 1);
     expect(plain.launched[0]?.factions).toEqual([
       "ORIGINAL",
-      "ORIGINAL",
-      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
     ]);
     defaultApp.destroy();
+  });
+
+  it("disables taken factions for opponents and keeps every seat distinct", async () => {
+    const chosen = new SetupController();
+    const app = mount(chosen, new RecordingBoardHost());
+    expect(requiredElement(".v7-setup-factions-hint").textContent).toBe(
+      "Every player plays a different faction. Take an opponent's and they switch to a free one.",
+    );
+    const disabled = (seat: number): string[] =>
+      [...requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`).options]
+        .filter((option) => option.disabled)
+        .map((option) => option.value);
+    // "Your faction" offers every faction; an opponent's select disables
+    // the factions the other shown seats play.
+    expect(disabled(0)).toEqual([]);
+    expect(disabled(1)).toEqual(["ORIGINAL"]);
+    choose(1, "ICE_FOLK");
+    expect(disabled(0)).toEqual([]);
+    expect(disabled(1)).toEqual(["ORIGINAL"]);
+    // A hidden seat's earlier choice never disables a shown option.
+    const count = requiredElement<HTMLSelectElement>("#v7-ai-count");
+    count.value = "3";
+    count.dispatchEvent(new Event("change", { bubbles: true }));
+    // Seat 2 keeps Goblin, seat 3 Dinosaur: every AI seat is distinct.
+    expect(factionValues()).toEqual([
+      "ORIGINAL",
+      "ICE_FOLK",
+      "GOBLIN",
+      "DINOSAUR",
+    ]);
+    expect(disabled(0)).toEqual([]);
+    expect(disabled(2)).toEqual(["ORIGINAL", "DINOSAUR", "ICE_FOLK"]);
+    expect(disabled(3)).toEqual(["ORIGINAL", "GOBLIN", "ICE_FOLK"]);
+    // The human's choice comes first: the opponent who played it takes the
+    // first untaken faction.
+    choose(0, "GOBLIN");
+    expect(factionValues()).toEqual([
+      "GOBLIN",
+      "ICE_FOLK",
+      "ORIGINAL",
+      "DINOSAUR",
+    ]);
+    // An opponent set to a taken faction by script (its option is
+    // disabled) falls back to the first untaken faction.
+    choose(3, "GOBLIN");
+    expect(factionValues()).toEqual([
+      "GOBLIN",
+      "ICE_FOLK",
+      "ORIGINAL",
+      "UNDEAD",
+    ]);
+    // Showcase: the same rule.
+    const map = requiredElement<HTMLSelectElement>("#v7-map-type");
+    map.value = "SHOWCASE";
+    map.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(disabled(1)).toEqual(["ORIGINAL", "UNDEAD", "GOBLIN"]);
+    requiredButton("launch").click();
+    await waitUntil(() => chosen.launched.length === 1);
+    expect(chosen.launched[0]).toMatchObject({
+      mapType: "SHOWCASE",
+      factions: ["GOBLIN", "ICE_FOLK", "ORIGINAL", "UNDEAD"],
+    });
+    expect(new Set(chosen.launched[0]?.factions).size).toBe(4);
+    expect(chosen.launched[0]).not.toHaveProperty("allowDuplicateFactions");
+    app.destroy();
   });
 
   it("labels Undead units, offers previewed Undead commands, and explains Restless", async () => {

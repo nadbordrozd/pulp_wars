@@ -1,8 +1,10 @@
 import {
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
+  distinctFactionsV7,
   parseGameStateV7,
   type CoordV7,
+  type FactionIdV7,
   type GameStateV7,
   type MatchSetupV7,
   type PlayerStateV7,
@@ -10,6 +12,49 @@ import {
 } from "../../src/engine/index";
 import { revision13MapStateV7 } from "./v7-revision13-map";
 
+/**
+ * Test only: the mirror option (`allowDuplicateFactions: true`,
+ * docs/architecture/HEADLESS_SIMULATION.md) when `factions` repeats a
+ * faction, so a fixture keeps its mirror match under the unique-factions
+ * rule (docs/product/RULESET_7_UNIQUE_FACTIONS.md); nothing otherwise.
+ */
+export function mirrorOptionV7(factions: readonly FactionIdV7[]): {
+  readonly allowDuplicateFactions?: true;
+} {
+  return new Set(factions).size === factions.length
+    ? {}
+    : { allowDuplicateFactions: true };
+}
+
+/**
+ * A browser-legal setup (the browser refuses the mirror option): the
+ * {@link setupV7} board with distinct factions, Human then Undead, Goblin,
+ * and Dinosaur (docs/product/RULESET_7_UNIQUE_FACTIONS.md).
+ */
+export function browserSetupV7(
+  seed = 71,
+  aiCount: 1 | 2 | 3 = 1,
+): MatchSetupV7 {
+  const size = aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16;
+  return {
+    rulesetId: RULESET_7_ID,
+    seed,
+    width: size,
+    height: size,
+    aiCount,
+    aiDifficulty: "NORMAL",
+    aiMode: "RIVAL",
+    humanColor: "CORAL",
+    factions: distinctFactionsV7(aiCount + 1),
+    mapType: "DRY_LAND",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  };
+}
+
+/**
+ * The all-Human rule fixture setup: a Human mirror match through the test
+ * only mirror option.
+ */
 export function setupV7(seed = 71, aiCount: 1 | 2 | 3 = 1): MatchSetupV7 {
   const size = aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16;
   return {
@@ -24,6 +69,7 @@ export function setupV7(seed = 71, aiCount: 1 | 2 | 3 = 1): MatchSetupV7 {
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    allowDuplicateFactions: true,
   };
 }
 

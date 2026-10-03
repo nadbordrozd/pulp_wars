@@ -33,6 +33,7 @@ const setup: MatchSetupV7 = {
   aiMode: "RIVAL",
   humanColor: "CORAL",
   factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
+  allowDuplicateFactions: true,
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
 };
 const created = createInitialMapStateV7(setup);

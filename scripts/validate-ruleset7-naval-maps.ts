@@ -66,6 +66,9 @@ for (const mapType of mapTypes)
             { length: aiCount + 1 },
             () => "ORIGINAL" as const,
           ),
+          // Human mirrors: the headless and test only mirror option
+          // (docs/architecture/HEADLESS_SIMULATION.md).
+          allowDuplicateFactions: true as const,
           mapType,
           mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
         };
@@ -139,6 +142,7 @@ for (const [width, aiCount] of setups)
       aiMode: "RIVAL" as const,
       humanColor: "CORAL" as const,
       factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
+      allowDuplicateFactions: true,
       mapType: "PANGEA" as const,
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
     });
@@ -168,6 +172,9 @@ for (const mapType of mapTypes)
           { length: aiCount + 1 },
           () => "ORIGINAL" as const,
         ),
+        // Human mirrors: the headless and test only mirror option
+        // (docs/architecture/HEADLESS_SIMULATION.md).
+        allowDuplicateFactions: true as const,
         mapType,
         mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
       };

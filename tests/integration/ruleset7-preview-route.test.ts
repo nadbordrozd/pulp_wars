@@ -87,7 +87,8 @@ describe("Ruleset 7 application route", () => {
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     expect(app.controller.snapshot().view?.setup).toMatchObject({
       seed: 2,
-      factions: ["ORIGINAL", "ORIGINAL"],
+      // pulp_wars-w5j.1: the distinct defaults.
+      factions: ["ORIGINAL", "UNDEAD"],
     });
     expect(document.querySelector("#v7-live")?.textContent).toBe(
       "Game started.",

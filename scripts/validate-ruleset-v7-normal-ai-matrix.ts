@@ -189,6 +189,7 @@ function setup(
     aiMode,
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
+    allowDuplicateFactions: true,
     mapGenerationRevision: "SPATIAL_ECONOMY",
   };
 }

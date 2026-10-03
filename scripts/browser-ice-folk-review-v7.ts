@@ -86,7 +86,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__ICE_FOLK_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r28.current";
+const SAVE_KEY = "pulpWars.save.v7r29.current";
 const only = process.argv
   .slice(2)
   .find((argument) => argument.startsWith("--only="))
@@ -127,12 +127,13 @@ try {
       await capture(connection, `setup-ice-folk-${size}.png`);
     }
 
-  // Real Showcase launches: the Ice Folk against Humans, four Ice Folk
-  // players, and the Ice Folk beside every other faction.
+  // Real Showcase launches: the Ice Folk against Humans, and the Ice Folk
+  // beside every other faction. Since pulp_wars-w5j.1 every player plays a
+  // different faction, so the setup form can no longer launch the former
+  // "four Ice Folk" or "Ice Folk against three Humans" scenes.
   if (want("showcase"))
     for (const [label, factions] of [
-      ["showcase-ice-folk", ["ICE_FOLK", "ORIGINAL", "ORIGINAL", "ORIGINAL"]],
-      ["four-ice-folk", ["ICE_FOLK", "ICE_FOLK", "ICE_FOLK", "ICE_FOLK"]],
+      ["showcase-ice-folk", ["ICE_FOLK", "ORIGINAL"]],
       ["mixed-a", ["ICE_FOLK", "ORIGINAL", "UNDEAD", "GOBLIN"]],
       ["mixed-b", ["ICE_FOLK", "DINOSAUR", "MARTIAN", "UNDEAD"]],
     ] as const)

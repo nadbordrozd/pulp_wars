@@ -160,7 +160,10 @@ an Undead seat looks and behaves exactly as in revision 12.
   [Goblin overlay](#current-ruleset-7-revision-17-goblin-overlay), the
   [Dinosaur overlay](#current-ruleset-7-revision-19-dinosaur-overlay), and the
   [Martian overlay](#current-ruleset-7-martian-overlay)), all Human
-  by default and resized with the opponent count; the launched setup carries
+  by default (since `pulp_wars-w5j.1`, distinct defaults and no repeated
+  faction: see the
+  [unique factions overlay](#current-ruleset-7-unique-factions-overlay))
+  and resized with the opponent count; the launched setup carries
   each seat's choice. There is no URL parameter or development flag for it
   (`pulp_wars-vkq.16` removed the former `?undead=1` flag). Saves with Undead
   seats resume and play like any other save.
@@ -821,6 +824,36 @@ what changed.
   sail, and keep your killers alive."
 - **No new art.** The cards use the existing drawn state symbols and the
   notice the existing trophy icon.
+
+## Current Ruleset 7 unique factions overlay
+
+This overlay (`pulp_wars-w5j.1`) applies to the setup of the current Ruleset
+7 route in both art sets; the rule is in the
+[unique-factions overlay](../product/RULESET_7_UNIQUE_FACTIONS.md). Where a
+faction overlay below says the seats default to Human, or that every seat's
+select offers every faction, this overlay wins.
+
+- **Every player plays a different faction.** Under the **Factions** legend
+  the hint reads "Every player plays a different faction. Take an
+  opponent's and they switch to a free one." "Your faction" offers every
+  faction; in each opponent's select
+  ("Player N faction") the factions the other shown seats play are disabled,
+  so the form can never hold two seats of one faction. The option labels are
+  unchanged.
+- **Distinct defaults.** Seats 0–3 default to Human, Undead, Goblin, and
+  Dinosaur. Seats keep their choice in seat order, the human first: picking
+  an opponent's faction for yourself, raising the opponent count, or a
+  script setting a taken faction moves each later seat whose faction an
+  earlier seat now plays to the first untaken faction in the frozen faction
+  order. The AI seats are therefore always distinct, and every seat count
+  from 2 to 4 always has a legal assignment.
+- **Showcase.** The Showcase uses the same selects and the same rule.
+- **Launch and resume.** A setup that still repeats a faction (never built
+  by the form) is refused by the engine with `DUPLICATE_FACTION` and the
+  setup error "Every player must play a different faction." A save carrying
+  the headless and test only mirror option opens the save-recovery screen
+  ("Saved match repeats a faction; every player must play a different
+  faction.").
 
 ## Current Ruleset 7 playtest round 3 interface overlay
 

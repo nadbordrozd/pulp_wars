@@ -8,6 +8,7 @@ import {
 import type { NormalAiDecisionV7 } from "../../src/ai/index";
 import {
   RULESET_7_ID,
+  distinctFactionsV7,
   queryPlayerCommandsV7,
   type CommandV7,
   type MatchSetupV7,
@@ -552,7 +553,8 @@ function setupV7(seed: number, aiCount: 1 | 2 | 3): MatchSetupV7 {
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
-    factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
+    // pulp_wars-w5j.1: the browser launches only distinct factions.
+    factions: distinctFactionsV7(aiCount + 1),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

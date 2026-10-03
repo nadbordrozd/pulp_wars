@@ -23,7 +23,7 @@ import {
   runAiBatchV7,
   type HeadlessMetricsV7,
 } from "../../src/headless/v7";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
 import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
 const READY: UnitStateV7["activation"] = {
@@ -299,6 +299,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: [...factions],
+    ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

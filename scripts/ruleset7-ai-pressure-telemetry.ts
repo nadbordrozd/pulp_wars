@@ -43,6 +43,7 @@ import {
   chooseNormalTurnCommandV7,
 } from "../src/ai/v7";
 import { runAiMatchV7 } from "../src/headless/v7";
+import { duplicateFactionV7 } from "../src/engine/v7/setup";
 import type { PlayerId } from "../src/engine/model/ids";
 import type { CommandV7 } from "../src/engine/v7/commands";
 import { viewForV7, type PlayerViewV7 } from "../src/engine/v7/view";
@@ -386,6 +387,12 @@ export function runCell(cell: Cell): MatchPressure {
     humanColor: "CORAL",
     factions,
     mapType: cell.mapType,
+    // Mirror pairings (HH, UU, GG, DD, MM, II and repeated four-seat
+    // mixes) use the headless and test only mirror option
+    // (docs/architecture/HEADLESS_SIMULATION.md); other cells are unchanged.
+    ...(duplicateFactionV7(factions) === null
+      ? {}
+      : { allowDuplicateFactions: true as const }),
   };
   const result = cell.turtle
     ? runTurtleMatch(setup, cell.maxRounds)

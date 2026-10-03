@@ -24,7 +24,7 @@ import {
   PLAGUE_DURATION_TURNS_V7,
 } from "../../src/engine/index";
 import { runAiMatchV7 } from "../../src/headless/v7";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
 import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
 // `pulp_wars-vkq.21` Normal AI follow-ups on the seed-2 DRY_LAND two-seat
@@ -341,6 +341,7 @@ function setupWith(factions: readonly FactionIdV7[]): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: [...factions],
+    ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

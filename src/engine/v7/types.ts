@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r28" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r29" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -39,8 +39,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r25",
   "pulp-wars-poc-7r26",
   "pulp-wars-poc-7r27",
+  "pulp-wars-poc-7r28",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r28.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r29.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
@@ -338,6 +339,14 @@ export interface MatchSetupV7 {
   readonly factions: readonly FactionIdV7[];
   readonly mapType: MapTypeV7;
   readonly mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2";
+  /**
+   * Headless and test only (docs/architecture/HEADLESS_SIMULATION.md): when
+   * present (always `true`), two or more seats may play the same faction,
+   * which the unique-factions rule otherwise refuses
+   * (docs/product/RULESET_7_UNIQUE_FACTIONS.md). The browser never sets it
+   * and refuses to launch or resume a setup that carries it.
+   */
+  readonly allowDuplicateFactions?: true;
 }
 
 export interface RandomStateV7 {

@@ -293,6 +293,9 @@ function legalWorstCaseView(): PlayerViewV7 {
     factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
     mapType: "CONTINENTS",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    // Human v Human: the headless and test only mirror option
+    // (docs/architecture/HEADLESS_SIMULATION.md).
+    allowDuplicateFactions: true,
   });
   if (!created.ok)
     throw new Error(`25x25 fixture failed: ${created.error.code}`);

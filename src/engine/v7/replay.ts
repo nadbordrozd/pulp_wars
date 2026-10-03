@@ -11,7 +11,7 @@ import {
   isDenseArrayV7,
   isNonNegativeSafeIntegerV7,
 } from "./schema";
-import { parseMatchSetupV7 } from "./setup";
+import { parseMatchSetupV7, validateMatchSetupV7 } from "./setup";
 import { parseGameStateV7 } from "./state-schema";
 import {
   PRIOR_RULESET_7_IDS,
@@ -83,8 +83,10 @@ export function cachedAcceptedReplayStateHashV7(
 }
 
 export function createReplayV7(input: unknown): ReplayFileV7 {
-  const setup = parseMatchSetupV7(input);
-  if (setup === null) throw new RangeError("INVALID_SETUP");
+  // INVALID_SETUP, or DUPLICATE_FACTION (RULESET_7_UNIQUE_FACTIONS.md).
+  const validated = validateMatchSetupV7(input);
+  if (!validated.ok) throw new RangeError(validated.error.code);
+  const setup = validated.setup;
   const replay = deepFreeze({
     format: "pulp-wars-replay",
     version: 7,

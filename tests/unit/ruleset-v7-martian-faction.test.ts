@@ -71,7 +71,7 @@ import {
 } from "../../src/persistence/index";
 import { technologyEffectGroupsV7 } from "../../src/render/dom/app-view-v7";
 import { technologyNameV7 } from "../../src/render/goblin-presentation-v7";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
 import {
   cityOfV7,
   newUnitsV7,
@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 28;
+const REVISION = 29;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -1329,6 +1329,7 @@ const showcase = (factions: readonly FactionIdV7[]): MatchSetupV7 => ({
   aiMode: "RIVAL",
   humanColor: "CORAL",
   factions: [...factions],
+  ...mirrorOptionV7(factions),
   mapType: "SHOWCASE",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
 });

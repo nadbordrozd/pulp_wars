@@ -85,7 +85,8 @@ function setup(): MatchSetupV7 {
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
-    factions: ["ORIGINAL", "ORIGINAL"],
+    // pulp_wars-w5j.1: the browser launches only distinct factions.
+    factions: ["ORIGINAL", "UNDEAD"],
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

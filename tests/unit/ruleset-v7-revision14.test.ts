@@ -51,7 +51,7 @@ import {
   createSaveEnvelopeV7,
   parseSaveV7,
 } from "../../src/persistence/index";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
 import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 import { scriptedUndeadRaiseDeadSaveV7 } from "../fixtures/v7-undead-ui";
 
@@ -102,10 +102,10 @@ interface ArenaOptions {
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("keeps rejecting r13 after the r28 identity and cleans the r13 through r27 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r28");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r28.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-15)).toEqual([
+  it("keeps rejecting r13 after the r29 identity and cleans the r13 through r28 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r29");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r29.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-16)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -121,6 +121,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "pulpWars.save.v7r25.current",
       "pulpWars.save.v7r26.current",
       "pulpWars.save.v7r27.current",
+      "pulpWars.save.v7r28.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
@@ -1162,6 +1163,7 @@ function setupWith(
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: [...factions],
+    ...mirrorOptionV7(factions),
     mapType: options.mapType ?? "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

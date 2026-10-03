@@ -55,7 +55,9 @@ function setup(seed: number): MatchSetupV7 {
     aiDifficulty: "NORMAL",
     aiMode: "RIVAL",
     humanColor: "CORAL",
-    factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
+    // Distinct factions: this setup also launches the browser controller
+    // (docs/product/RULESET_7_UNIQUE_FACTIONS.md).
+    factions: ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"],
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };
 }
@@ -113,7 +115,7 @@ function rendererStressView(): PlayerViewV7 {
     width: 11,
     height: 11,
     aiCount: 1,
-    factions: ["ORIGINAL", "ORIGINAL"],
+    factions: ["ORIGINAL", "UNDEAD"],
   });
   if (!created.ok) throw new Error(created.error.code);
   const view = viewForV7(created.state, created.state.humanPlayerId);

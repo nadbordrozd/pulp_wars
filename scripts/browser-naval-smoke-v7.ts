@@ -735,9 +735,12 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r28', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V2', seed: 42,
+        rulesetId: 'pulp-wars-poc-7r29', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V2', seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
+        // A Human mirror presentation scene: the headless and test only
+        // mirror option (docs/architecture/HEADLESS_SIMULATION.md).
+        allowDuplicateFactions: true,
       };
       const created = engine.createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);

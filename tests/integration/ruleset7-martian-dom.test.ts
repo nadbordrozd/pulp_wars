@@ -81,7 +81,10 @@ describe("Martian setup", () => {
         "Martian",
         "Ice Folk",
       ]);
-      expect(field.value).toBe("ORIGINAL");
+      // pulp_wars-w5j.1: distinct defaults (Human, Undead, Goblin, Dinosaur).
+      expect(field.value).toBe(
+        ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"][seat],
+      );
     }
     for (const seat of [0, 2]) {
       const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
@@ -90,11 +93,13 @@ describe("Martian setup", () => {
     }
     requiredButton("launch").click();
     await waitUntil(() => chosen.launched.length === 1);
+    // pulp_wars-w5j.1: a second Martian seat is impossible; seat 2 takes
+    // the first untaken faction (Human).
     expect(chosen.launched[0]?.factions).toEqual([
       "MARTIAN",
+      "UNDEAD",
       "ORIGINAL",
-      "MARTIAN",
-      "ORIGINAL",
+      "DINOSAUR",
     ]);
     app.destroy();
   });

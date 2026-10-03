@@ -28,6 +28,8 @@ describe("ruleset-7 naval map contract", () => {
         aiMode: "RIVAL" as const,
         humanColor: "CORAL" as const,
         factions: ["ORIGINAL", "ORIGINAL"] as const,
+        // pulp_wars-w5j.1: a Human mirror through the test only option.
+        allowDuplicateFactions: true as const,
         mapType,
         mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
       };
@@ -69,6 +71,7 @@ describe("ruleset-7 naval map contract", () => {
           aiMode: "RIVAL",
           humanColor: "CORAL",
           factions: ["ORIGINAL", "ORIGINAL"],
+          allowDuplicateFactions: true,
           mapType,
           mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
         });
@@ -95,6 +98,7 @@ describe("ruleset-7 naval map contract", () => {
       aiMode: "RIVAL",
       humanColor: "CORAL",
       factions: ["ORIGINAL", "ORIGINAL"],
+      allowDuplicateFactions: true,
       mapType: "CONTINENTS",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     });

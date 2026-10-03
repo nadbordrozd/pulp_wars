@@ -15,7 +15,7 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "../../src/engine/index";
-import { checkedV7 } from "./v7-builders";
+import { checkedV7, mirrorOptionV7 } from "./v7-builders";
 import { createRevision13MapStateV7 } from "./v7-revision13-map";
 
 /**
@@ -81,6 +81,7 @@ export function goblinSetupV7(
     factions: [...factions],
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    ...mirrorOptionV7(factions),
   };
 }
 

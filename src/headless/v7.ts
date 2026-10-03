@@ -17,6 +17,7 @@ import {
 import { attackHasPierceV7 } from "../engine/v7/combat";
 import type { CommandV7 } from "../engine/v7/commands";
 import { pierceTileV7 } from "../engine/v7/martian";
+import { distinctFactionsV7 } from "../engine/v7/setup";
 import {
   createIceFolkMetricsV7,
   createIceFolkTelemetryStateV7,
@@ -100,7 +101,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r28";
+  readonly rulesetId: "pulp-wars-poc-7r29";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -430,8 +431,18 @@ export interface AiBatchOptionsV7 {
   readonly modes?: readonly MatchSetupV7["aiMode"][];
   readonly mapTypes?: readonly MatchSetupV7["mapType"][];
   readonly boardSize?: BoardSizeV7;
-  /** Seat-ordered factions; its length must be `aiCount + 1` for every count. */
+  /**
+   * Seat-ordered factions; its length must be `aiCount + 1` for every count.
+   * Without it the seats play distinct factions in registration order
+   * (Human, Undead, Goblin, Dinosaur).
+   */
   readonly factions?: readonly FactionIdV7[];
+  /**
+   * Headless and test only: lets `factions` repeat a faction (mirror
+   * matches). Every setup of the batch then carries
+   * `allowDuplicateFactions: true` (docs/architecture/HEADLESS_SIMULATION.md).
+   */
+  readonly allowDuplicateFactions?: boolean;
   readonly maxCommands?: number;
   readonly maxRounds?: number;
 }
@@ -832,12 +843,10 @@ export async function runAiBatchV7(
           throw new RangeError("boardSize is too small for aiCount");
         for (const seed of options.seeds) {
           await new Promise<void>((resolve) => setTimeout(resolve, 0));
-          const factions =
-            options.factions ??
-            Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
+          const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r28",
+              rulesetId: "pulp-wars-poc-7r29",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -848,6 +857,9 @@ export async function runAiBatchV7(
               humanColor: "CORAL",
               factions,
               mapType,
+              ...(options.allowDuplicateFactions === true
+                ? { allowDuplicateFactions: true as const }
+                : {}),
             },
             {
               ...(options.maxCommands === undefined
@@ -944,7 +956,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r28",
+    rulesetId: "pulp-wars-poc-7r29",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,

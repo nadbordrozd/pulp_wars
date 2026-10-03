@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r28`: Human, Undead, Goblin, Dinosaur, and Martian)
+## Current release contract (`pulp-wars-poc-7r29`: Human, Undead, Goblin, Dinosaur, and Martian)
 
-The current runtime is `pulp-wars-poc-7r28` (autosave
-`pulpWars.save.v7r28.current`; saves and replays of `pulp-wars-poc-7r27`
+The current runtime is `pulp-wars-poc-7r29` (autosave
+`pulpWars.save.v7r29.current`; saves and replays of `pulp-wars-poc-7r28`
 and earlier are refused, and startup removes their autosave keys). Its five
 playable factions, Human, Undead, Goblin, Dinosaur, and Martian, are
 described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -53,7 +53,10 @@ the ring on every size. `pulp_wars-7g3.7` (`7r27`) gives the Ice Folk Yeti
 stand on, placed on 16 x 16 to 25 x 25 generated boards;
 `npm run validate:ruleset7-naval-maps` checks every Rift rule on every map
 type and size (seeds 0-31), and the Dry Land parity file was re-pinned for
-the 60 cells whose board gained a Rift. The engine also
+the 60 cells whose board gained a Rift. `pulp_wars-w5j.1` (`7r29`) makes
+every player play a different faction
+([unique-factions overlay](../product/RULESET_7_UNIQUE_FACTIONS.md)); the
+browser smoke launches only distinct factions. The engine also
 registers a sixth faction from the
 [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`,
 identity `7r24`), which is **not folded** into the current rules: its
@@ -62,7 +65,7 @@ browser smokes do not probe it.
 The Undead, the Goblins, the Dinosaurs, and the Martians are part of the
 default route: match setup always offers a
 Human/Undead/Goblin/Dinosaur/Martian choice for the human and each AI seat
-(all Human by default), and there is no development flag
+(distinct by default: Human, Undead, Goblin, Dinosaur), and there is no development flag
 (`pulp_wars-vkq.16` removed `?undead=1`; the later factions never had
 one). Balance evidence is the
 [Goblin balance report](RULESET_7_GOBLIN_BALANCE.md), the
@@ -73,7 +76,7 @@ does not rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r28` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r29` identity (ruleset ID, autosave key, the
   six-entry `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
   that the archived corpus below still carries the revision-2 identity, and

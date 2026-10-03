@@ -118,7 +118,7 @@ for (const [width, aiCount] of setups) {
     grandWorks: 0,
   };
   const setup = (seed: number, mode: "RIVAL" | "COOPERATIVE") => ({
-    rulesetId: "pulp-wars-poc-7r28" as const,
+    rulesetId: "pulp-wars-poc-7r29" as const,
     seed,
     width,
     height: width,
@@ -126,7 +126,12 @@ for (const [width, aiCount] of setups) {
     aiDifficulty: "NORMAL" as const,
     aiMode: mode,
     humanColor: "CORAL" as const,
-    factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
+    // Distinct factions (RULESET_7_UNIQUE_FACTIONS.md); factions never
+    // affect map generation.
+    factions: (["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"] as const).slice(
+      0,
+      aiCount + 1,
+    ),
     mapType: "DRY_LAND" as const,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
   });
@@ -366,7 +371,7 @@ for (const [width, aiCount] of setups) {
 console.log(
   JSON.stringify(
     {
-      rulesetId: "pulp-wars-poc-7r28",
+      rulesetId: "pulp-wars-poc-7r29",
       seeds: "0..999",
       setups: report,
       failures,

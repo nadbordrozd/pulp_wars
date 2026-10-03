@@ -60,6 +60,7 @@ function setup(
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
+    allowDuplicateFactions: true,
     mapType,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

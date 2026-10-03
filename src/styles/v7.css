@@ -2158,6 +2158,13 @@
   text-transform: uppercase;
 }
 
+/* The unique-factions rule (RULESET_7_UNIQUE_FACTIONS.md): helper text. */
+.v7-setup-factions-hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+}
+
 .v7-undead-art {
   position: relative;
   display: grid;

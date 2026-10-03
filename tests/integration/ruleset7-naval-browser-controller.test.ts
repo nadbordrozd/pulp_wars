@@ -20,7 +20,8 @@ import type {
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
 import { Ruleset7DomAppView } from "../../src/render/dom/app-view-v7";
-import { setupV7 } from "../fixtures/v7-builders";
+// pulp_wars-w5j.1: the browser launches only distinct factions.
+import { browserSetupV7 } from "../fixtures/v7-builders";
 
 const MAP_TYPES = [
   "DRY_LAND",
@@ -57,7 +58,7 @@ describe("Ruleset 7 naval browser controller", () => {
     async (mapType) => {
       const storage = new MemoryStorage();
       const controller = new Ruleset7BrowserController({ storage });
-      const setup = { ...setupV7(9300), mapType };
+      const setup = { ...browserSetupV7(9300), mapType };
       const launched = await controller.launch(setup);
       if (!launched.ok) throw new Error(launched.diagnostic);
       expect(launched.view.setup.mapType).toBe(mapType);
@@ -86,7 +87,7 @@ describe("Ruleset 7 naval browser controller", () => {
       },
     });
     const launched = await controller.launch({
-      ...setupV7(0, 1),
+      ...browserSetupV7(0, 1),
       mapType: "CONTINENTS",
     });
     if (!launched.ok) throw new Error(launched.diagnostic);

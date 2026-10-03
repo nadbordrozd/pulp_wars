@@ -30,14 +30,15 @@ const setup: MatchSetupV7 = {
   aiDifficulty: "NORMAL",
   aiMode: "RIVAL",
   humanColor: "CORAL",
-  factions: ["ORIGINAL", "ORIGINAL"],
+  // pulp_wars-w5j.1: every seat plays a different faction.
+  factions: ["ORIGINAL", "UNDEAD"],
   mapType: "DRY_LAND",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
 };
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r28");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r29");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -202,6 +203,10 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     expect(
       parseMatchSetupV7({ ...setup, factions: ["ORIGINAL", "CANDY"] }),
     ).toBeNull();
+    // pulp_wars-w5j.1: a repeated faction is refused (DUPLICATE_FACTION).
+    expect(
+      parseMatchSetupV7({ ...setup, factions: ["ORIGINAL", "ORIGINAL"] }),
+    ).toBeNull();
     for (const rulesetId of [
       "pulp-wars-poc-6",
       "pulp-wars-poc-7",
@@ -211,7 +216,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     ])
       expect(parseMatchSetupV7({ ...setup, rulesetId })).toBeNull();
     expect(parseMatchSetupV7({ ...setup, scenario: "DEMO" })).toBeNull();
-    const sparse = ["ORIGINAL", "ORIGINAL"] as unknown[];
+    const sparse = ["ORIGINAL", "UNDEAD"] as unknown[];
     Reflect.deleteProperty(sparse, "1");
     expect(parseMatchSetupV7({ ...setup, factions: sparse })).toBeNull();
   });

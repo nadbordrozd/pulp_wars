@@ -11,6 +11,7 @@ import type { AiModeV6, FactionIdV6, MatchSetupV6 } from "../engine/v6/types";
 import type { ReplayFileV6 } from "../engine/v6/replay";
 import type { ReplayFileV7 } from "../engine/v7/replay";
 import type { FactionIdV7, MapTypeV7, MatchSetupV7 } from "../engine/v7/types";
+import { distinctFactionsV7, duplicateFactionV7 } from "../engine/v7/setup";
 import { headless } from "./index";
 import {
   V6_MATCH_MAX_COMMANDS_DEFAULT,
@@ -41,12 +42,12 @@ if (mode === "replay") {
         : await headless.run(replay as ReplayFile);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-7r28") await runV7Match();
+  if (ruleset === "pulp-wars-poc-7r29") await runV7Match();
   else if (ruleset === "pulp-wars-poc-6") await runV6Match();
   else if (ruleset === "pulp-wars-poc-5") await runV5Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-7r28") await runV7Batch();
+  if (ruleset === "pulp-wars-poc-7r29") await runV7Batch();
   else if (ruleset === "pulp-wars-poc-6") await runV6Batch();
   else if (ruleset === "pulp-wars-poc-5") await runV5Batch();
   else invalidRuleset();
@@ -61,7 +62,7 @@ async function runV7Match(): Promise<void> {
   const mapType = mapTypeArg();
   const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r28",
+    rulesetId: "pulp-wars-poc-7r29",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: numberArg("--seed", 0),
     width: size,
@@ -72,6 +73,7 @@ async function runV7Match(): Promise<void> {
     humanColor: "CORAL",
     factions: factionsArgV7(aiCount),
     mapType,
+    ...(allowDuplicateFactionsArgV7() ? { allowDuplicateFactions: true } : {}),
   };
   const result = await headlessV7.runAiMatch(setup, {
     maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
@@ -94,6 +96,7 @@ async function runV7Batch(): Promise<void> {
     ...v7BatchBoardSize(mapTypes),
     mapTypes,
     ...(factions === null ? {} : { factions }),
+    ...(allowDuplicateFactionsArgV7() ? { allowDuplicateFactions: true } : {}),
   });
   process.stdout.write(`${canonicalJson(result)}\n`);
 }
@@ -339,19 +342,30 @@ function factionsArgV6(aiCount: 1 | 2 | 3): readonly FactionIdV6[] {
 }
 
 /**
+ * Tools only: `--allow-duplicate-factions` lets `--factions` repeat a
+ * faction (mirror matches); without it a repeated faction is refused, as in
+ * the game (docs/product/RULESET_7_UNIQUE_FACTIONS.md).
+ */
+function allowDuplicateFactionsArgV7(): boolean {
+  return args.includes("--allow-duplicate-factions");
+}
+
+/**
  * Ruleset 7 seat-ordered factions: `original` (alias `human`), `undead`,
  * `goblin`, `dinosaur`, `martian`, or `ice` (alias `ice_folk`),
- * case-insensitive, exactly one value per seat (seat 0 first).
+ * case-insensitive, exactly one value per seat (seat 0 first), no faction
+ * twice unless `--allow-duplicate-factions`. Without `--factions` the seats
+ * play distinct factions in registration order (Human, Undead, Goblin,
+ * Dinosaur).
  */
 function factionsArgV7(aiCount: 1 | 2 | 3): readonly FactionIdV7[] {
-  if (!args.includes("--factions"))
-    return Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const);
+  if (!args.includes("--factions")) return distinctFactionsV7(aiCount + 1);
   const values = stringArg("--factions", "").split(",");
   if (values.length !== aiCount + 1)
     throw new Error(
       `ruleset 7 --factions must contain exactly ${aiCount + 1} seat values`,
     );
-  return values.map((value): FactionIdV7 => {
+  const factions = values.map((value): FactionIdV7 => {
     const normalized = value.trim().toLowerCase();
     if (normalized === "original" || normalized === "human") return "ORIGINAL";
     if (normalized === "undead") return "UNDEAD";
@@ -363,6 +377,12 @@ function factionsArgV7(aiCount: 1 | 2 | 3): readonly FactionIdV7[] {
       "ruleset 7 --factions values must be original (human), undead, goblin, dinosaur, martian, or ice",
     );
   });
+  const duplicate = duplicateFactionV7(factions);
+  if (duplicate !== null && !allowDuplicateFactionsArgV7())
+    throw new Error(
+      `ruleset 7 --factions must give every seat a different faction (${duplicate.faction} repeats at seats ${duplicate.seats.join(", ")}); tools may pass --allow-duplicate-factions`,
+    );
+  return factions;
 }
 
 function factionsArgV5(
@@ -421,6 +441,6 @@ function parseFactionValues(
 
 function invalidRuleset(): never {
   throw new Error(
-    "--ruleset must be pulp-wars-poc-7r28, pulp-wars-poc-6, or pulp-wars-poc-5",
+    "--ruleset must be pulp-wars-poc-7r29, pulp-wars-poc-6, or pulp-wars-poc-5",
   );
 }

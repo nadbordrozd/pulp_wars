@@ -42,6 +42,7 @@ import {
 } from "../../src/engine/index";
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/v7";
+import { mirrorOptionV7 } from "../fixtures/v7-builders";
 
 /**
  * Revision 18 section 5 (`pulp_wars-6gd.3`): the fixed `SHOWCASE` setup.
@@ -65,6 +66,8 @@ function showcaseSetup(
     factions,
     mapType: "SHOWCASE",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    // pulp_wars-w5j.1: the test only mirror option for repeated factions.
+    ...mirrorOptionV7(factions),
     ...overrides,
   };
 }

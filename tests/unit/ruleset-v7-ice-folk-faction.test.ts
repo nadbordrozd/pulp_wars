@@ -64,7 +64,7 @@ import {
 } from "../../src/engine/index";
 import { technologyEffectGroupsV7 } from "../../src/render/dom/app-view-v7";
 import { technologyNameV7 } from "../../src/render/goblin-presentation-v7";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
 import {
   cityOfV7,
   newUnitsV7,
@@ -1090,6 +1090,7 @@ const showcase = (factions: readonly FactionIdV7[]): MatchSetupV7 => ({
   aiMode: "RIVAL",
   humanColor: "CORAL",
   factions: [...factions],
+  ...mirrorOptionV7(factions),
   mapType: "SHOWCASE",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
 });

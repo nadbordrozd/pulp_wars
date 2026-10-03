@@ -78,6 +78,7 @@ for (const [mapType, size, aiCount] of cells) {
       aiMode: "RIVAL",
       humanColor: "CORAL",
       factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
+      allowDuplicateFactions: true,
       mapType,
     });
     const label = `${mapType}/${size}/${aiCount}/${seed}`;

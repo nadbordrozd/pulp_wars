@@ -243,6 +243,7 @@ function setupWith(seed = 2): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: ["ORIGINAL", "ORIGINAL"],
+    allowDuplicateFactions: true,
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

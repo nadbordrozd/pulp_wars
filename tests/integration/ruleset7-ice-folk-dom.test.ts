@@ -81,7 +81,10 @@ describe("Ice Folk setup", () => {
         "Martian",
         "Ice Folk",
       ]);
-      expect(field.value).toBe("ORIGINAL");
+      // pulp_wars-w5j.1: distinct defaults (Human, Undead, Goblin, Dinosaur).
+      expect(field.value).toBe(
+        ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"][seat],
+      );
     }
     for (const seat of [0, 3]) {
       const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
@@ -90,11 +93,13 @@ describe("Ice Folk setup", () => {
     }
     requiredButton("launch").click();
     await waitUntil(() => chosen.launched.length === 1);
+    // pulp_wars-w5j.1: a second Ice Folk seat is impossible; seat 3 takes
+    // the first untaken faction (Human).
     expect(chosen.launched[0]?.factions).toEqual([
       "ICE_FOLK",
+      "UNDEAD",
+      "GOBLIN",
       "ORIGINAL",
-      "ORIGINAL",
-      "ICE_FOLK",
     ]);
     app.destroy();
   });

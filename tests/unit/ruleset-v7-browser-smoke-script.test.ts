@@ -150,11 +150,16 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       "document.querySelector('[data-v7-factions]') !== null",
     );
-    expect(probe).toContain("field.value !== 'ORIGINAL'");
+    // pulp_wars-w5j.1: distinct defaults, the opponent's select disables
+    // the human's faction, and picking Undead moves the opponent to Human.
+    expect(probe).toContain(`=== '["ORIGINAL","UNDEAD"]'`);
     expect(probe).toContain(
-      "document.querySelector('#v7-faction-${seat}')?.value === 'UNDEAD'",
+      `document.querySelector('#v7-faction-1 option[value="ORIGINAL"]').disabled`,
     );
-    expect(probe).toContain('["UNDEAD","UNDEAD"]');
+    expect(probe).toContain(
+      "document.querySelector('#v7-faction-0')?.value === 'UNDEAD'",
+    );
+    expect(probe).toContain('["UNDEAD","ORIGINAL"]');
     expect(probe).not.toContain("flagUrl");
   });
   it("plays a Goblin Kaboom! through the default setup and resumes the save", () => {
@@ -169,7 +174,7 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       "document.querySelector('#v7-faction-0')?.value === 'GOBLIN'",
     );
-    expect(probe).toContain('JSON.stringify(["GOBLIN", "ORIGINAL"])');
+    expect(probe).toContain('JSON.stringify(["GOBLIN", "UNDEAD"])');
     expect(probe).toContain('await pressKey(connection, "Enter", "Enter")');
     expect(probe).toContain(
       `await pointerClick(connection, '[data-action="command-kaboom"]')`,
@@ -181,7 +186,7 @@ describe("Ruleset 7 browser smoke script", () => {
       `await pointerClick(connection, '[data-action="confirm-kaboom"]')`,
     );
     expect(probe).toContain("includes('Your Goblin blew up')");
-    expect(probe).toContain(`'["GOBLIN","ORIGINAL"]'`);
+    expect(probe).toContain(`'["GOBLIN","UNDEAD"]'`);
     expect(probe.indexOf("confirm-kaboom")).toBeLessThan(
       probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
     );
@@ -209,7 +214,7 @@ describe("Ruleset 7 browser smoke script", () => {
       "document.querySelector('#v7-faction-0')?.value === 'DINOSAUR'",
     );
     expect(probe).toContain(
-      'JSON.stringify(["DINOSAUR", "ORIGINAL", "ORIGINAL", "ORIGINAL"])',
+      'JSON.stringify(["DINOSAUR", "UNDEAD", "GOBLIN", "ORIGINAL"])',
     );
     // The human moves first, so the launch is a plain trusted click.
     expect(probe).not.toContain("launchWithFastForward");
@@ -256,7 +261,7 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(endTurn).toBeLessThan(
       probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
     );
-    expect(probe).toContain(`'["DINOSAUR","ORIGINAL","ORIGINAL","ORIGINAL"]'`);
+    expect(probe).toContain(`'["DINOSAUR","UNDEAD","GOBLIN","ORIGINAL"]'`);
     expect(probe).toContain(
       "JSON.stringify(resumed) !== JSON.stringify(hatched)",
     );
@@ -284,7 +289,7 @@ describe("Ruleset 7 browser smoke script", () => {
       "document.querySelector('#v7-faction-0')?.value === 'MARTIAN'",
     );
     expect(probe).toContain(
-      'JSON.stringify(["MARTIAN", "ORIGINAL", "ORIGINAL", "ORIGINAL"])',
+      'JSON.stringify(["MARTIAN", "UNDEAD", "GOBLIN", "DINOSAUR"])',
     );
     expect(probe).not.toContain("launchWithFastForward");
     // The ray: "Full power" in the dock, the preview's power and Cooling
@@ -311,7 +316,7 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(beam).toBeLessThan(
       probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
     );
-    expect(probe).toContain(`'["MARTIAN","ORIGINAL","ORIGINAL","ORIGINAL"]'`);
+    expect(probe).toContain(`'["MARTIAN","UNDEAD","GOBLIN","DINOSAUR"]'`);
     expect(probe).toContain(
       "JSON.stringify(resumed) !== JSON.stringify(beamed)",
     );
@@ -349,7 +354,7 @@ describe("Ruleset 7 browser smoke script", () => {
       "document.querySelector('#v7-faction-0')?.value === 'ICE_FOLK'",
     );
     expect(probe).toContain(
-      'JSON.stringify(["ICE_FOLK", "ORIGINAL", "ORIGINAL", "ORIGINAL"])',
+      'JSON.stringify(["ICE_FOLK", "UNDEAD", "GOBLIN", "DINOSAUR"])',
     );
     expect(probe).not.toContain("launchWithFastForward");
     // Snow from the view's flags and in the cursor's description.
@@ -369,7 +374,7 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(bolas).toBeLessThan(
       probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
     );
-    expect(probe).toContain(`'["ICE_FOLK","ORIGINAL","ORIGINAL","ORIGINAL"]'`);
+    expect(probe).toContain(`'["ICE_FOLK","UNDEAD","GOBLIN","DINOSAUR"]'`);
     expect(probe).toContain(
       "JSON.stringify(resumed) !== JSON.stringify(chilled)",
     );
@@ -538,7 +543,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r28", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r29", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

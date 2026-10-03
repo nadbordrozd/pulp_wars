@@ -16,6 +16,7 @@ import type {
 } from "../../app/v7-controller";
 import {
   cityUnitCapacityForV7,
+  distinctFactionsV7,
   effectiveRoleRuleV7,
   factionRulesV7,
   playerFactionV7,
@@ -342,6 +343,31 @@ const FACTIONS: readonly FactionIdV7[] = [
   "MARTIAN",
   "ICE_FOLK",
 ];
+/** The setup's helper text under "Factions". */
+const FACTIONS_HINT_V7 =
+  "Every player plays a different faction. Take an opponent's and they switch to a free one.";
+/**
+ * Brings the faction selects in line with the draft: each shows its seat's
+ * faction. In an opponent's select a faction another shown seat plays is
+ * disabled; "Your faction" offers every faction, because the human's choice
+ * comes first and moves the opponent who played it to a free faction.
+ */
+function syncFactionFieldsV7(fieldset: HTMLElement, draft: DraftV7): void {
+  const shown = draft.factions.slice(0, draft.aiCount + 1);
+  shown.forEach((faction, seat) => {
+    const field = fieldset.querySelector<HTMLSelectElement>(
+      `#v7-faction-${seat}`,
+    );
+    if (field === null) return;
+    for (const option of Array.from(field.options))
+      option.disabled =
+        seat !== 0 &&
+        shown.some(
+          (other, otherSeat) => otherSeat !== seat && other === option.value,
+        );
+    if (field.value !== faction) field.value = faction;
+  });
+}
 const FACTION_LABELS: Readonly<Record<string, string>> = {
   ORIGINAL: "Human",
   UNDEAD: "Undead",
@@ -450,7 +476,11 @@ interface DraftV7 {
   readonly seedText: string;
   readonly humanColor: PlayerColorV7;
   readonly mapType: MapTypeV7;
-  /** Seat factions (seat 0 is the human): Human, Undead, Goblin, Dinosaur. */
+  /**
+   * Seat factions (seat 0 is the human), always four and always distinct
+   * (docs/product/RULESET_7_UNIQUE_FACTIONS.md): Human, Undead, Goblin,
+   * Dinosaur by default. Seats beyond the AI count keep their choice hidden.
+   */
   readonly factions: readonly FactionIdV7[];
 }
 
@@ -482,7 +512,7 @@ export class Ruleset7DomAppView {
     seedText: "42",
     humanColor: "CORAL",
     mapType: "CONTINENTS",
-    factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
+    factions: distinctFactionsV7(4),
   };
   #selection: BoardSelectionV7 | null = null;
   #screen: ScreenV7 = "MATCH";
@@ -996,6 +1026,8 @@ export class Ruleset7DomAppView {
           this.#draft.aiCount + 1
       )
         liveFactions.replaceWith(this.#factionFields());
+      else if (liveFactions !== null)
+        syncFactionFieldsV7(liveFactions, this.#draft);
     });
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -1071,11 +1103,19 @@ export class Ruleset7DomAppView {
     return group;
   }
 
-  /** Per-seat faction choice (Human, Undead or Goblin): one select per seat. */
+  /**
+   * Per-seat faction choice: one select per seat. Every player plays a
+   * different faction (docs/product/RULESET_7_UNIQUE_FACTIONS.md): an
+   * opponent's select disables the factions other seats play, and the
+   * human's choice moves an opponent who played it to a free faction.
+   */
   #factionFields(): HTMLElement {
     const fieldset = el(this.#document, "fieldset", "v7-setup-factions");
     fieldset.dataset.v7Factions = "true";
-    fieldset.append(text(this.#document, "legend", "Factions"));
+    fieldset.append(
+      text(this.#document, "legend", "Factions"),
+      text(this.#document, "p", FACTIONS_HINT_V7, "v7-setup-factions-hint"),
+    );
     for (let seat = 0; seat <= this.#draft.aiCount; seat += 1)
       fieldset.append(
         select(
@@ -1087,6 +1127,7 @@ export class Ruleset7DomAppView {
           FACTION_LABELS,
         ),
       );
+    syncFactionFieldsV7(fieldset, this.#draft);
     return fieldset;
   }
 
@@ -4259,19 +4300,21 @@ export class Ruleset7DomAppView {
       mapType: MAP_TYPES.includes(value(form, "v7-map-type") as MapTypeV7)
         ? (value(form, "v7-map-type") as MapTypeV7)
         : "CONTINENTS",
-      factions: this.#draft.factions.map((prior, seat) => {
-        const field = form.querySelector<HTMLSelectElement>(
-          `#v7-faction-${seat}`,
-        );
-        if (field === null) return prior;
-        return field.value === "UNDEAD" ||
-          field.value === "GOBLIN" ||
-          field.value === "DINOSAUR" ||
-          field.value === "MARTIAN" ||
-          field.value === "ICE_FOLK"
-          ? field.value
-          : "ORIGINAL";
-      }),
+      // Seats keep their choice in seat order; a seat whose faction an
+      // earlier seat now plays takes the first untaken faction, so the four
+      // seats always play different factions (RULESET_7_UNIQUE_FACTIONS.md).
+      factions: distinctFactionsV7(
+        4,
+        this.#draft.factions.map((prior, seat) => {
+          const field = form.querySelector<HTMLSelectElement>(
+            `#v7-faction-${seat}`,
+          );
+          if (field === null) return prior;
+          return FACTIONS.includes(field.value as FactionIdV7)
+            ? (field.value as FactionIdV7)
+            : "ORIGINAL";
+        }),
+      ),
     };
   }
   async #launch(setup: MatchSetupV7, replace: boolean): Promise<void> {
@@ -6091,7 +6134,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r28",
+    rulesetId: "pulp-wars-poc-7r29",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

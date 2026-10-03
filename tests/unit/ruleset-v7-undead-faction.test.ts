@@ -58,7 +58,12 @@ import {
   type StorageAdapter,
 } from "../../src/persistence/index";
 import { technologyEffectGroupsV7 } from "../../src/render/dom/app-view-v7";
-import { allTechsV7, checkedV7, exploredAllV7 } from "../fixtures/v7-builders";
+import {
+  allTechsV7,
+  checkedV7,
+  exploredAllV7,
+  mirrorOptionV7,
+} from "../fixtures/v7-builders";
 import {
   createRevision13MapStateV7,
   revision13PlayableGameV7,
@@ -81,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r28");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r28.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r29");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r29.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -125,11 +130,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r27 and preserves the r28 save", () => {
+  it("cleans obsolete keys through v7r28 and preserves the r29 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r27.current",
+      "pulpWars.save.v7r28.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(27);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(28);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -148,7 +153,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r25.current", "r25"],
       ["pulpWars.save.v7r26.current", "r26"],
       ["pulpWars.save.v7r27.current", "r27"],
-      [SAVE_STORAGE_KEY_V7, "r28"],
+      ["pulpWars.save.v7r28.current", "r28"],
+      [SAVE_STORAGE_KEY_V7, "r29"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -170,8 +176,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r25.current",
         "pulpWars.save.v7r26.current",
         "pulpWars.save.v7r27.current",
+        "pulpWars.save.v7r28.current",
       ],
-      removedCount: 16,
+      removedCount: 17,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1639,6 +1646,8 @@ describe("ruleset-7 all-Human parity digests", () => {
           { length: baseline.aiCount + 1 },
           () => "ORIGINAL" as const,
         ),
+        // pulp_wars-w5j.1: a Human mirror through the test only option.
+        allowDuplicateFactions: true,
         mapType: baseline.mapType,
         mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
       };
@@ -1833,6 +1842,10 @@ describe("ruleset-7 all-Human parity digests", () => {
             if ((key === "snow" || key === "blizzard") && item === false)
               return undefined;
             if (key === "chill" && item === null) return undefined;
+            // pulp_wars-w5j.1: the test only mirror option in the setup of
+            // this all-Human match; parity is defined apart from it.
+            if (key === "allowDuplicateFactions" && item === true)
+              return undefined;
             if (key === "snow" || key === "blizzard" || key === "chill")
               winterValues += 1;
             return item;
@@ -1936,6 +1949,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: [...factions],
+    ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   };

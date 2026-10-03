@@ -28,7 +28,8 @@ import {
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import { createTacticalSymbolV7 } from "../../src/render/dom/tactical-symbol-v7";
-import { setupV7 } from "../fixtures/v7-builders";
+// pulp_wars-w5j.1: the browser launches only distinct factions.
+import { browserSetupV7 } from "../fixtures/v7-builders";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -38,7 +39,7 @@ beforeEach(() => {
 describe("Ruleset 7 DOM shell", () => {
   it("queues personal achievement dialogs once and lets a mandatory reward take priority", async () => {
     const source = new Ruleset7BrowserController();
-    const launched = await source.launch(setupV7(1542));
+    const launched = await source.launch(browserSetupV7(1542));
     if (!launched.ok) throw new Error(launched.diagnostic);
     let snapshot = source.snapshot();
     const view = snapshot.view;
@@ -183,7 +184,7 @@ describe("Ruleset 7 DOM shell", () => {
   });
   it("keeps signed Treasury notices paired with the current gold coin", async () => {
     const source = new Ruleset7BrowserController();
-    const launched = await source.launch(setupV7(1541));
+    const launched = await source.launch(browserSetupV7(1541));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const host = new CapturingBoardHost();
     const app = new Ruleset7DomAppView(document, requiredRoot(), source, {
@@ -209,7 +210,7 @@ describe("Ruleset 7 DOM shell", () => {
   it("coalesces human movement notifications and installs the board before rebuilding the HUD", async () => {
     const source = new Ruleset7BrowserController();
     // Seed 1543: the human moves first on its revision-14 map.
-    const launched = await source.launch(setupV7(1543));
+    const launched = await source.launch(browserSetupV7(1543));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const host = new CapturingBoardHost();
     let finishSlide: (() => void) | undefined;
@@ -470,7 +471,7 @@ describe("Ruleset 7 DOM shell", () => {
     const source = new Ruleset7BrowserController({
       aiProgressScheduler: () => () => {},
     });
-    const launched = await source.launch(setupV7(2));
+    const launched = await source.launch(browserSetupV7(2));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const initial = source.snapshot();
     if (initial.view === null) throw new Error("public view missing");
@@ -579,7 +580,7 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("omits recruitment controls while a unit is stationed in the selected city", async () => {
     const source = new Ruleset7BrowserController();
-    const launched = await source.launch(setupV7(1538));
+    const launched = await source.launch(browserSetupV7(1538));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const snapshot = source.snapshot();
     if (snapshot.view === null) throw new Error("public view missing");
@@ -616,7 +617,7 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("opens inert train help without mutation, restores focus and scroll, then dispatches Train once", async () => {
     const source = new Ruleset7BrowserController();
-    const launched = await source.launch(setupV7(1539));
+    const launched = await source.launch(browserSetupV7(1539));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const initial = source.snapshot();
     if (initial.view === null) throw new Error("public view missing");
@@ -752,7 +753,7 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("keeps the dock scroll across re-renders of the same selection and resets it on a new selection", async () => {
     const source = new Ruleset7BrowserController();
-    const launched = await source.launch(setupV7(1539));
+    const launched = await source.launch(browserSetupV7(1539));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const initial = source.snapshot();
     const launchedView = initial.view;
@@ -1254,7 +1255,7 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("uses only public Monument provenance and places an unlocked entitlement in one map activation", async () => {
     const source = new Ruleset7BrowserController();
-    const launched = await source.launch(setupV7(1540));
+    const launched = await source.launch(browserSetupV7(1540));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const initial = source.snapshot();
     if (initial.view === null) throw new Error("public view missing");

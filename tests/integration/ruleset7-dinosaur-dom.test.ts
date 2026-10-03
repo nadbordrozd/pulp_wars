@@ -150,7 +150,10 @@ describe("Revision 19 Dinosaur setup", () => {
         "Martian",
         "Ice Folk",
       ]);
-      expect(field.value).toBe("ORIGINAL");
+      // pulp_wars-w5j.1: distinct defaults (Human, Undead, Goblin, Dinosaur).
+      expect(field.value).toBe(
+        ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"][seat],
+      );
     }
     for (const seat of [0, 3]) {
       const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
@@ -159,11 +162,13 @@ describe("Revision 19 Dinosaur setup", () => {
     }
     requiredButton("launch").click();
     await waitUntil(() => chosen.launched.length === 1);
+    // pulp_wars-w5j.1: a second Dinosaur seat is impossible; seat 3 takes
+    // the first untaken faction (Human).
     expect(chosen.launched[0]?.factions).toEqual([
       "DINOSAUR",
+      "UNDEAD",
+      "GOBLIN",
       "ORIGINAL",
-      "ORIGINAL",
-      "DINOSAUR",
     ]);
     app.destroy();
   });
@@ -187,10 +192,12 @@ describe("Revision 19 Dinosaur setup", () => {
         !app.controller.snapshot().transitioning,
     );
     const view = required(app.controller.snapshot().view);
+    // pulp_wars-w5j.1: Dinosaur, then the distinct defaults (seat 3 takes
+    // Human, which seat 0 freed).
     expect(view.setup.factions).toEqual([
       "DINOSAUR",
-      "ORIGINAL",
-      "ORIGINAL",
+      "UNDEAD",
+      "GOBLIN",
       "ORIGINAL",
     ]);
     const own = view.units.filter((unit) => unit.ownerId === view.viewer.id);

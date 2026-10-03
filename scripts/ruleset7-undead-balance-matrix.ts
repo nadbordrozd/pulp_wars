@@ -67,6 +67,7 @@ import {
   type UndeadMetricsV7,
 } from "../src/headless/v7";
 import type { IceFolkMetricsV7 } from "../src/headless/ice-folk-telemetry-v7";
+import { duplicateFactionV7 } from "../src/engine/v7/setup";
 import {
   FACTION_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -2487,7 +2488,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r28",
+    rulesetId: "pulp-wars-poc-7r29",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -2498,6 +2499,12 @@ export function runCell(cell: MatrixCell): MatrixEntry {
     humanColor: "CORAL",
     factions,
     mapType: cell.mapType,
+    // Mirror pairings (HH, UU, GG, DD, MM, II and repeated four-seat
+    // mixes) use the headless and test only mirror option
+    // (docs/architecture/HEADLESS_SIMULATION.md); other cells are unchanged.
+    ...(duplicateFactionV7(factions) === null
+      ? {}
+      : { allowDuplicateFactions: true as const }),
   };
   const result = runAiMatchV7(setup, {
     maxRounds: cell.maxRounds,
@@ -3151,7 +3158,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r28",
+          rulesetId: "pulp-wars-poc-7r29",
           parameters,
           summary,
           games: ordered.map(compactEntry),

@@ -85,7 +85,7 @@ const browser = spawn(
 const errors: string[] = [];
 const evidence: Record<string, unknown> = {};
 const REVIEW = "globalThis.__MARTIAN_REVIEW__";
-const SAVE_KEY = "pulpWars.save.v7r28.current";
+const SAVE_KEY = "pulpWars.save.v7r29.current";
 const only = process.argv
   .slice(2)
   .find((argument) => argument.startsWith("--only="))
@@ -126,12 +126,13 @@ try {
       await capture(connection, `setup-martian-${size}.png`);
     }
 
-  // Real Showcase launches: Martians against Humans, four Martian players,
-  // and the Martians beside every other faction.
+  // Real Showcase launches: Martians against Humans, and the Martians
+  // beside every other faction. Since pulp_wars-w5j.1 every player plays a
+  // different faction, so the setup form can no longer launch the former
+  // "four Martians" or "Martians against three Humans" scenes.
   if (want("showcase"))
     for (const [label, factions] of [
-      ["showcase-martian", ["MARTIAN", "ORIGINAL", "ORIGINAL", "ORIGINAL"]],
-      ["four-martians", ["MARTIAN", "MARTIAN", "MARTIAN", "MARTIAN"]],
+      ["showcase-martian", ["MARTIAN", "ORIGINAL"]],
       ["mixed-a", ["MARTIAN", "ORIGINAL", "UNDEAD", "GOBLIN"]],
       ["mixed-b", ["MARTIAN", "DINOSAUR", "UNDEAD", "ORIGINAL"]],
     ] as const)

@@ -21,7 +21,8 @@ import {
   Ruleset7DomAppView,
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
-import { setupV7 } from "../fixtures/v7-builders";
+// pulp_wars-w5j.1: the browser launches only distinct factions.
+import { browserSetupV7 } from "../fixtures/v7-builders";
 
 // Revision 21 (docs/product/RULESET_7_REVISION_21_ACHIEVEMENTS.md section 5):
 // the Achievements screen, the completion notice, the Monument action, and
@@ -166,7 +167,7 @@ function cardFacts(achievement: AchievementIdV7): {
 }
 
 const pangea = (seed: number): MatchSetupV7 => ({
-  ...setupV7(seed),
+  ...browserSetupV7(seed),
   mapType: "PANGEA",
 });
 
@@ -251,7 +252,7 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
   });
 
   it("omits Sea Dog on a Dry Land map", async () => {
-    const { app, source } = await mount(setupV7(2102));
+    const { app, source } = await mount(browserSetupV7(2102));
     openMenuItem("achievements");
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-achievement")].map(

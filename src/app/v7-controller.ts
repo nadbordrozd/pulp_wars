@@ -88,6 +88,9 @@ export type Ruleset7LaunchResult =
       readonly code:
         | "CONTROLLER_DESTROYED"
         | "INVALID_SETUP"
+        // docs/product/RULESET_7_UNIQUE_FACTIONS.md: two seats chose the
+        // same faction.
+        | "DUPLICATE_FACTION"
         | "PRESERVED_SAVE_REQUIRES_DELETE"
         | "STORED_MATCH_REQUIRES_REPLACE";
       readonly diagnostic: string;
@@ -330,9 +333,19 @@ export class Ruleset7BrowserController {
       ) {
         return launchFailureV7("STORED_MATCH_REQUIRES_REPLACE");
       }
+      // The headless and test only mirror option never reaches the browser
+      // (docs/architecture/HEADLESS_SIMULATION.md).
+      if (Object.prototype.hasOwnProperty.call(setup, "allowDuplicateFactions"))
+        return launchFailureV7("INVALID_SETUP");
       const raw = createInitialMapStateV7(setup);
       const created = createPlayableGameV7(setup);
-      if (!raw.ok || !created.ok) return launchFailureV7("INVALID_SETUP");
+      if (!raw.ok)
+        return launchFailureV7(
+          raw.error.code === "DUPLICATE_FACTION"
+            ? "DUPLICATE_FACTION"
+            : "INVALID_SETUP",
+        );
+      if (!created.ok) return launchFailureV7("INVALID_SETUP");
       if (
         canonicalJson(raw.state.setup) !== canonicalJson(created.state.setup) ||
         canonicalJson(raw.state.random) !== canonicalJson(created.state.random)
@@ -594,6 +607,18 @@ export class Ruleset7BrowserController {
     if (loaded.kind !== "VALID") {
       this.#phase = "RECOVERY";
       this.#recovery = { kind: loaded.kind, diagnostic: loaded.diagnostic };
+      return;
+    }
+    // The headless and test only mirror option never reaches the browser
+    // (docs/product/RULESET_7_UNIQUE_FACTIONS.md): the browser never writes
+    // such a save and refuses to resume one.
+    if (loaded.save.setup.allowDuplicateFactions !== undefined) {
+      this.#phase = "RECOVERY";
+      this.#recovery = {
+        kind: "CORRUPT",
+        diagnostic:
+          "Saved match repeats a faction; every player must play a different faction.",
+      };
       return;
     }
     try {
@@ -971,7 +996,9 @@ function launchFailureV7(
         ? "The preserved incompatible or corrupt Ruleset 7 save must be explicitly deleted before starting a new match."
         : code === "STORED_MATCH_REQUIRES_REPLACE"
           ? "Starting a new Ruleset 7 match requires explicit replacement of this route's stored match."
-          : "Ruleset 7 match generation rejected the setup.";
+          : code === "DUPLICATE_FACTION"
+            ? "Every player must play a different faction."
+            : "Ruleset 7 match generation rejected the setup.";
   return { ok: false, code, diagnostic };
 }
 

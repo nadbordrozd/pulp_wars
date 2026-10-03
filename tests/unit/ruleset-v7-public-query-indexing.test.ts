@@ -244,6 +244,7 @@ function alliedCityViews(): {
     aiMode: "COOPERATIVE",
     humanColor: "CORAL",
     factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
+    allowDuplicateFactions: true,
     mapType: "CONTINENTS",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   });

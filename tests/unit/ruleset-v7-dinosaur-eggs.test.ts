@@ -37,7 +37,7 @@ import {
   type TileStateV7,
   type UnitRoleIdV7,
 } from "../../src/engine/index";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
 import {
   cityOfV7,
   eggEntryAtV7,
@@ -2431,6 +2431,7 @@ describe("ruleset-7 revision-19 Eggs and city capture", () => {
     aiMode: "RIVAL",
     humanColor: "CORAL",
     factions: [...factions],
+    ...mirrorOptionV7(factions),
     mapType: "SHOWCASE",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
   });
@@ -2806,6 +2807,7 @@ describe("ruleset-7 revision-19 Showcase with a Dinosaur seat", () => {
       aiMode: "RIVAL",
       humanColor: "CORAL",
       factions: ["DINOSAUR", "DINOSAUR"],
+      allowDuplicateFactions: true,
       mapType: "SHOWCASE",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     });
