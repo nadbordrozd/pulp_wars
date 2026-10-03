@@ -406,7 +406,12 @@ export function resolveStateExplosionChainV7(
         riftAtV7(board, victim.at)
       ) {
         graves = recordCombatDeathV7(
-          { setup: lookup.setup, board, treasureChests: lookup.treasureChests },
+          {
+            setup: lookup.setup,
+            board,
+            treasureChests: lookup.treasureChests,
+            players: lookup.players,
+          },
           graves,
           victim,
           "EXPLOSION",

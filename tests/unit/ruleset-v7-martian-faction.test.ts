@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 29;
+const REVISION = 30;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -224,6 +224,8 @@ describe("Martian faction registration (sections 2 and 11)", () => {
       "DINOSAUR",
       "MARTIAN",
       "ICE_FOLK",
+      // The Dwarf revision (`pulp_wars-78i.3`).
+      "DWARF",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -232,6 +234,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
       "DINOSAUR_BASELINE_V1",
       "MARTIAN_BASELINE_V1",
       "ICE_FOLK_BASELINE_V1",
+      "DWARF_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("MARTIAN")).toBe("MARTIAN_BASELINE_V1");
     expect(FACTION_TREES_V7.MARTIAN).toMatchObject({
@@ -257,8 +260,8 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     );
   });
 
-  it("has the new kinds at the stated positions (48 command and 76 event kinds; the Ice Folk revision adds two and one)", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(50);
+  it("has the new kinds at the stated positions (48 command and 76 event kinds; the Ice Folk revision adds two and one, the Dwarf revision three and four)", () => {
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(53);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -266,7 +269,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
       "MIND_CONTROL",
       "TRACTOR_BEAM",
     ]);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(77);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(81);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1
@@ -275,6 +278,8 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     expect(after("UNIT_DISEMBARKED")).toBe("UNIT_BEAMED");
     expect(after("UNIT_INFECTED")).toBe("UNIT_MIND_CONTROLLED");
     expect(after("UNIT_PUSHED")).toBe("UNIT_PULLED");
+    // The Dwarf revision inserts UNIT_TUNNELLED after UNIT_PULLED.
+    expect(after("UNIT_PULLED")).toBe("UNIT_TUNNELLED");
     // The player event order inherits these positions.
     const playerAfter = (kind: string) =>
       PLAYER_EVENT_KIND_ORDER_V7[
@@ -749,15 +754,23 @@ describe("Martian roster (section 3)", () => {
       "FLY",
       "STRIDE",
     ];
+    // The Dwarf revision (`pulp_wars-78i.3`): the Gyrocopter flies under
+    // the Martian flyer rule (`FLY`); it is the one exception.
     for (const faction of FACTION_IDS_V7.filter((id) => id !== "MARTIAN"))
       for (const role of UNIT_ROLE_IDS_V7) {
+        const gyrocopter = faction === "DWARF" && role === "RAIDER";
         expect(
           roleMechanicsV7(role, faction),
           `${faction} ${role}`,
-        ).toMatchObject({ shield: 0, movementMode: "GROUND" });
+        ).toMatchObject({
+          shield: 0,
+          movementMode: gyrocopter ? "FLY" : "GROUND",
+        });
         expect(
-          effectiveRoleRuleV7(role, faction).abilities.filter((ability) =>
-            martianAbilities.includes(ability),
+          effectiveRoleRuleV7(role, faction).abilities.filter(
+            (ability) =>
+              martianAbilities.includes(ability) &&
+              !(gyrocopter && ability === "FLY"),
           ),
         ).toEqual([]);
       }
@@ -1037,6 +1050,7 @@ describe("Martian technology (section 4)", () => {
       ["DINOSAUR", false, false],
       ["MARTIAN", true, true],
       ["ICE_FOLK", false, false],
+      ["DWARF", false, false],
     ]);
     const some = (...techs: (typeof TECHNOLOGY_IDS_V7)[number][]) =>
       technologyCapabilitiesV7(techs, "MARTIAN");

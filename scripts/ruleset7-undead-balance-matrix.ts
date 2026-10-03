@@ -155,6 +155,20 @@ const PAIRINGS = {
   IM: ["ICE_FOLK", "MARTIAN"],
   MI: ["MARTIAN", "ICE_FOLK"],
   II: ["ICE_FOLK", "ICE_FOLK"],
+  // The Dwarf revision (docs/product/RULESET_7_DWARVES.md section 19.2):
+  // `W` Dwarf (`D` is the Dinosaur's); there is no `WW` mirror.
+  WH: ["DWARF", "ORIGINAL"],
+  HW: ["ORIGINAL", "DWARF"],
+  WU: ["DWARF", "UNDEAD"],
+  UW: ["UNDEAD", "DWARF"],
+  WG: ["DWARF", "GOBLIN"],
+  GW: ["GOBLIN", "DWARF"],
+  WD: ["DWARF", "DINOSAUR"],
+  DW: ["DINOSAUR", "DWARF"],
+  WM: ["DWARF", "MARTIAN"],
+  MW: ["MARTIAN", "DWARF"],
+  WI: ["DWARF", "ICE_FOLK"],
+  IW: ["ICE_FOLK", "DWARF"],
   HUHU: ["ORIGINAL", "UNDEAD", "ORIGINAL", "UNDEAD"],
   UHUH: ["UNDEAD", "ORIGINAL", "UNDEAD", "ORIGINAL"],
   GHUG: ["GOBLIN", "ORIGINAL", "UNDEAD", "GOBLIN"],
@@ -1514,6 +1528,7 @@ const FACTION_INITIAL: Partial<Record<FactionIdV7, string>> = {
   DINOSAUR: "D",
   MARTIAN: "M",
   ICE_FOLK: "I",
+  DWARF: "W",
 };
 
 /**
@@ -2488,7 +2503,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r29",
+    rulesetId: "pulp-wars-poc-7r30",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -3158,7 +3173,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r29",
+          rulesetId: "pulp-wars-poc-7r30",
           parameters,
           summary,
           games: ordered.map(compactEntry),

@@ -9,9 +9,11 @@ import {
   factionRulesV7,
   flyerMayStandOnSiteV7,
   halfPowerAttack2V7,
+  platedCapAppliesV7,
   playerFactionV7,
   technologyCapabilitiesV7,
   unitAlphaAttack2V7,
+  unitCapacitySlotsV7,
   unitIsMountainBornV7,
   unitIsSluggishV7,
   unitMovementModeV7,
@@ -21,7 +23,16 @@ import {
   type EffectiveRoleRuleV7,
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
-import { afflictionCombatEffectsV7 } from "./afflictions";
+import { afflictionCombatEffectsV7, unitIsConstructV7 } from "./afflictions";
+import {
+  attackAllowanceV7,
+  attackIsUnflinchingV7,
+  attackKnocksBackV7,
+  cannonIgnoresFortificationV7,
+  knockbackDestinationV7,
+  roleRetaliatesV7,
+  unitIsDugInV7,
+} from "./dwarf";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
 import type { CombatPreviewV7, CombatSplashEntryV7 } from "./events";
 import {
@@ -41,6 +52,7 @@ import {
 import { absorbHitV7, pierceTileV7, rayPowerV7, shieldOfV7 } from "./martian";
 import { riftAtV7 } from "./rift";
 import { tileAtV7 } from "./spatial-economy";
+import { tileOccupiedV7 } from "./units";
 import {
   isAfloatFormV7,
   type CoordV7,
@@ -93,21 +105,37 @@ export const CITY_WALLS_FORTIFICATION_LEVELS_V7 = 2;
 
 /**
  * A unit's fortification by source: the City Walls levels (0 or 2) and the
- * Field Defense level (0 or 1) of its tile in its owner's territory.
+ * Field Defense level (0 or 1) of its tile in its owner's territory. The
+ * Dwarf revision (section 8): a dug-in unit has one level in the Field
+ * Defense part (`max`, never added to Field Defense), computed before the
+ * territory checks, which gate Walls and Field Defense only.
+ * `tileFieldDefense` says whether the tile's Field Defense counts.
  */
 export function fortificationPartsForUnitV7(
   state: GameStateV7,
   unit: UnitStateV7,
-): { readonly walls: number; readonly fieldDefense: number } {
-  const none = { walls: 0, fieldDefense: 0 };
+): {
+  readonly walls: number;
+  readonly fieldDefense: number;
+  readonly dugIn: boolean;
+  readonly tileFieldDefense: boolean;
+} {
+  const none = {
+    walls: 0,
+    fieldDefense: 0,
+    dugIn: false,
+    tileFieldDefense: false,
+  };
   // The Martian revision section 7.1: a walker or flyer is never fortified.
   if (!unitTakesCoverV7(state, unit)) return none;
+  const dugIn = unitIsDugInV7(state, unit);
+  const dug = { ...none, fieldDefense: dugIn ? 1 : 0, dugIn };
   const tile = tileAtV7(state.board, unit.at);
-  if (tile === undefined || tile.territoryCityId === null) return none;
+  if (tile === undefined || tile.territoryCityId === null) return dug;
   const territoryCity = state.cities.find(
     (city) => city.id === tile.territoryCityId,
   );
-  if (territoryCity?.ownerId !== unit.ownerId) return none;
+  if (territoryCity?.ownerId !== unit.ownerId) return dug;
   const city = state.cities.find(
     (candidate) =>
       candidate.id === tile.territoryCityId && same(candidate.at, unit.at),
@@ -120,7 +148,9 @@ export function fortificationPartsForUnitV7(
       )
         ? CITY_WALLS_FORTIFICATION_LEVELS_V7
         : 0,
-    fieldDefense: tile.fieldDefense ? 1 : 0,
+    fieldDefense: tile.fieldDefense || dugIn ? 1 : 0,
+    dugIn,
+    tileFieldDefense: tile.fieldDefense,
   };
 }
 
@@ -149,6 +179,11 @@ export function attackFortificationV7(
     readonly disintegrator?: boolean;
     /** The Ice Folk revision section 7.6: a Boulder Yeti's Boulders. */
     readonly boulders?: boolean;
+    /**
+     * The Dwarf revision section 10.1: a Steam Cannon with Blasting
+     * Charges (Walls, Field Defense, and Dig In; cover stays).
+     */
+    readonly blasting?: boolean;
   },
 ): {
   readonly fortificationLevel: number;
@@ -156,7 +191,10 @@ export function attackFortificationV7(
 } {
   if (attack.acid) return { fortificationLevel: 0, fortificationIgnored: 0 };
   const ignored =
-    attack.charge || attack.disintegrator === true || attack.boulders === true
+    attack.charge ||
+    attack.disintegrator === true ||
+    attack.boulders === true ||
+    attack.blasting === true
       ? parts.walls + parts.fieldDefense
       : attack.ignoresCityWalls
         ? parts.walls
@@ -218,6 +256,9 @@ export function calculateCombatPreviewV7(
   const defenderRule = unitRoleRuleV7(state, defender);
   const attackerMechanics = unitRoleMechanicsV7(state, attacker);
   const distance = chebyshev(attacker.at, defender.at);
+  // The Dwarf revision section 7.1: a construct's attack uses its maximum
+  // HP for its own force (Unflinching, on attack only).
+  const unflinching = attackIsUnflinchingV7(state, attacker);
   // The Ice Folk revision (section 8, step 1): Rockfall, Planted, and Cold
   // Blood. A Chill entry has no effect on an embarked unit (section 10.8).
   const attackerLand = attacker.form === "LAND";
@@ -283,8 +324,17 @@ export function calculateCombatPreviewV7(
   const acid = attackHasAcidV7(attackerRule, attacker);
   // Revision 20: Charge! removes every fortification level and Wallbreaker
   // the City Walls levels, for the damage and for the retaliation.
+  const fullParts = fortificationPartsForUnitV7(state, defender);
+  const defenderParts =
+    options.ignoreDigIn === true && fullParts.dugIn
+      ? {
+          ...fullParts,
+          fieldDefense: fullParts.tileFieldDefense ? 1 : 0,
+          dugIn: false,
+        }
+      : fullParts;
   const { fortificationLevel, fortificationIgnored } = attackFortificationV7(
-    fortificationPartsForUnitV7(state, defender),
+    defenderParts,
     {
       acid,
       charge,
@@ -302,6 +352,12 @@ export function calculateCombatPreviewV7(
         ).raysIgnoreFortification,
       // The Ice Folk revision section 7.6: Boulders.
       boulders: attackerLand && attackerMechanics.ignoresFortification,
+      // The Dwarf revision section 10.1: a Blasting Steam Cannon.
+      blasting: cannonIgnoresFortificationV7(
+        state,
+        attacker,
+        requirePlayer(state, attacker.ownerId).researchedTechs,
+      ),
     },
   );
   // Revision 19 section 6.2: an Egg defends with a fixed 1, like an embarked
@@ -324,7 +380,8 @@ export function calculateCombatPreviewV7(
     : defenseBonusForUnitV7(state, defender, snowAt);
   const snowCover = !acid && snowCoverAppliesV7(state, defender, snowAt);
 
-  const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
+  const attackForceNumerator =
+    BigInt(attack2) * BigInt(unflinching ? attacker.maxHp : attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
   const defenseForceNumerator =
     BigInt(defense2) * BigInt(defender.hp) * BigInt(bonus.numerator);
@@ -357,10 +414,11 @@ export function calculateCombatPreviewV7(
     ? blizzardHalvedDamageV7(rawDefenderDamage)
     : rawDefenderDamage;
   const defenderShield = shieldOfV7(state.shields, defender.id);
+  const plated = options.ignorePlated !== true;
   const defenderHit = absorbHitV7(
     defenderShield,
     defender.hp,
-    armouredDamageV7(state, defender, formulaDefenderDamage),
+    armouredDamageV7(state, defender, formulaDefenderDamage, plated),
   );
   // The Ice Folk revision section 5.5: Shatter reads the HP the hit leaves.
   const shatters =
@@ -384,13 +442,14 @@ export function calculateCombatPreviewV7(
   // Revision 14 (V1): an UNANSWERED attacker (the Vampire) draws no
   // retaliation.
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
-  // Revision 19: an Egg never retaliates.
+  // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
+  // a Gyrocopter (`BOMB_RUN`, no `ATTACK`) retaliates too.
   const retaliates =
     !defenderDies &&
     !unanswered &&
     defender.form !== "EMBARKED" &&
     defender.form !== "EGG" &&
-    defenderRule.abilities.includes("ATTACK") &&
+    roleRetaliatesV7(defenderRule) &&
     defenderRule.attack2 > 0 &&
     distance >= defenderRule.minimumRange &&
     distance <= defenderRule.range;
@@ -399,7 +458,7 @@ export function calculateCombatPreviewV7(
     ? absorbHitV7(
         attackerShield,
         attacker.hp,
-        armouredDamageV7(state, attacker, rawAttackerDamage),
+        armouredDamageV7(state, attacker, rawAttackerDamage, plated),
       )
     : { shieldDamage: 0, hpDamage: 0 };
   const damageToAttacker = attackerHit.hpDamage;
@@ -490,20 +549,18 @@ export function calculateCombatPreviewV7(
     attackerOnRift: riftAtV7(state.board, attacker.at),
     defenderOnRift: riftAtV7(state.board, defender.at),
     splash,
-    splashOwner: (unitId) =>
-      state.units.find((unit) => unit.id === unitId)?.ownerId,
+    splashUnit: (unitId) => state.units.find((unit) => unit.id === unitId),
     plaguedUnitIds: new Set(state.plagued.map((entry) => entry.unitId)),
     bittenUnitIds: new Set(state.bitten.map((entry) => entry.unitId)),
     eggUnitIds: new Set(
       state.units.filter((unit) => unit.form === "EGG").map((unit) => unit.id),
     ),
   });
-  const push = pushState(
-    state,
-    attacker,
-    defender,
-    !defenderDies && distance === 1,
-  );
+  // The Dwarf revision section 10.1: a Steam Cannon's Knockback is the
+  // Push step of a ranged attack.
+  const push = attackKnocksBackV7(state, attacker)
+    ? knockbackStateV7(state, attacker, defender, !defenderDies)
+    : pushState(state, attacker, defender, !defenderDies && distance === 1);
   // Revision 19 section 6.7: a melee attacker that destroys an Egg advances
   // onto its tile exactly as after killing a land unit. Revision 20: a
   // Charge! also follows a pushed target into the tile it vacated.
@@ -527,9 +584,13 @@ export function calculateCombatPreviewV7(
       state.cities.find((city) => same(city.at, defender.at))?.ownerId ?? null,
     );
   const nextAttacks = attacker.activation.attacksUsed + 1;
+  // The Dwarf revision section 7.3: an unmoved Clockwork Gunner's first
+  // shot leaves a second one.
+  const twinShotLeft =
+    !attackerDies && attackAllowanceV7(state, attacker) > nextAttacks;
   const undead = undeadCombatEffectsV7({
-    attacker,
-    defender,
+    attacker: { ...attacker, construct: unitIsConstructV7(state, attacker) },
+    defender: { ...defender, construct: unitIsConstructV7(state, defender) },
     attackerRule,
     defenderRule,
     damageToDefender,
@@ -576,7 +637,7 @@ export function calculateCombatPreviewV7(
     advances,
     push,
     attacksUsed: nextAttacks,
-    attacksRemaining: 0,
+    attacksRemaining: twinShotLeft ? 1 : 0,
     overrunAdvance: attackerRule.abilities.includes("OVERRUN") && advances,
     overrunContinues: false,
     // The Ice Folk revision section 5.3: a sluggish unit is never granted
@@ -606,6 +667,11 @@ export function calculateCombatPreviewV7(
     snowCover,
     sweep,
     hiddenBlizzardPossible: false,
+    dugIn: fullParts.dugIn,
+    unflinchingApplied: unflinching,
+    platedApplied:
+      platedCapAppliesV7(state, defender, formulaDefenderDamage) ||
+      (retaliates && platedCapAppliesV7(state, attacker, rawAttackerDamage)),
   };
 }
 
@@ -624,6 +690,12 @@ export interface CombatOptionsV7 {
   readonly ignoreBlizzard?: boolean;
   readonly ignoreSnowCover?: boolean;
   readonly ignoreShatter?: boolean;
+  /**
+   * The Dwarf revision telemetry (section 19.2): the same exchange without
+   * Dig In or without Plated, to measure what each prevented.
+   */
+  readonly ignoreDigIn?: boolean;
+  readonly ignorePlated?: boolean;
 }
 
 /**
@@ -632,8 +704,10 @@ export interface CombatOptionsV7 {
  * it does not own).
  */
 export function advanceSiteAllowedV7(
-  roster: FactionRosterV7,
-  attacker: Pick<UnitStateV7, "ownerId" | "role" | "form">,
+  roster: FactionRosterV7 & { readonly surfacedThisTurn?: readonly UnitId[] },
+  attacker: Pick<UnitStateV7, "ownerId" | "role" | "form"> & {
+    readonly id?: UnitId;
+  },
   site: "CAPITAL" | "VILLAGE" | "CITY" | null,
   cityOwnerId: PlayerId | null,
 ): boolean {
@@ -756,6 +830,8 @@ interface UndeadCombatantV7 {
   readonly hp: number;
   readonly maxHp: number;
   readonly form: UnitStateV7["form"];
+  /** The Dwarf revision section 7.2: a construct never rises. */
+  readonly construct?: boolean;
 }
 
 /**
@@ -798,11 +874,13 @@ export function undeadCombatEffectsV7(input: {
     attackerInfected:
       input.attackerDies &&
       input.attacker.form === "LAND" &&
+      input.attacker.construct !== true &&
       !input.attackerOnRift &&
       input.defenderRule.abilities.includes("INFECT"),
     defenderInfected:
       input.defenderDies &&
       input.defender.form === "LAND" &&
+      input.defender.construct !== true &&
       !input.defenderOnRift &&
       input.attackerRule.abilities.includes("INFECT"),
   };
@@ -828,6 +906,11 @@ export function pushedDestinationV7(
   attacker: UnitStateV7,
   defender: UnitStateV7,
 ): CoordV7 | null {
+  // The Dwarf revision section 10.1: a Steam Cannon's Knockback.
+  if (attackKnocksBackV7(state, attacker))
+    return knockbackStateV7(state, attacker, defender, true) === "WILL_PUSH"
+      ? knockbackDestinationV7(attacker.at, defender.at)
+      : null;
   const destination = {
     x: defender.at.x + defender.at.x - attacker.at.x,
     y: defender.at.y + defender.at.y - attacker.at.y,
@@ -872,10 +955,9 @@ export function displacementDestinationLegalV7(
       // pushed or pulled onto a Mountain.
       mountainBorn: unitIsMountainBornV7(state, moved),
     }) ||
-    state.units.some(
-      (unit) =>
-        unit.id !== moved.id && unit.hp > 0 && same(unit.at, destination),
-    )
+    // The Dwarf revision section 5.3: the occupancy predicate (no unit and
+    // no mound).
+    tileOccupiedV7(state, destination, moved.id)
   )
     return false;
   const territoryOwner =
@@ -887,6 +969,41 @@ export function displacementDestinationLegalV7(
     territoryOwner !== null &&
     arePlayersAlliedV7(state, moved.ownerId, territoryOwner)
   );
+}
+
+/**
+ * The Dwarf revision section 10.1: the Knockback of a Steam Cannon's attack
+ * on a surviving target: one tile directly away from the Cannon under the
+ * Push conditions (explored by the attacker, empty, not a settlement site,
+ * the same land or water kind, enterable, not allied territory) and the
+ * Tractor Beam's chest condition. A `JUGGERNAUT`-role unit, a two-slot
+ * unit, and an Egg are never knocked back.
+ */
+export function knockbackStateV7(
+  state: GameStateV7,
+  attacker: UnitStateV7,
+  defender: UnitStateV7,
+  survives: boolean,
+): CombatPreviewV7["push"] {
+  if (
+    !survives ||
+    defender.form === "EGG" ||
+    defender.role === "JUGGERNAUT" ||
+    unitCapacitySlotsV7(state, defender) !== 1
+  )
+    return "BLOCKED";
+  const destination = knockbackDestinationV7(attacker.at, defender.at);
+  if (tileAtV7(state.board, destination) === undefined) return "BLOCKED";
+  if (
+    !requirePlayer(state, attacker.ownerId).explored.some((at) =>
+      same(at, destination),
+    )
+  )
+    return "UNKNOWN_BEHIND_FOG";
+  return displacementDestinationLegalV7(state, defender, destination) &&
+    !state.treasureChests.some((chest) => same(chest, destination))
+    ? "WILL_PUSH"
+    : "BLOCKED";
 }
 
 function pushState(

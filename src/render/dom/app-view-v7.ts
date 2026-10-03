@@ -375,6 +375,9 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   DINOSAUR: "Dinosaur",
   MARTIAN: "Martian",
   ICE_FOLK: "Ice Folk",
+  // The Dwarf revision: named for headless and test states; the setup
+  // screen offers the faction from its UI bead (`pulp_wars-78i.6`).
+  DWARF: "Dwarf",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
 type FactionBadgeV7 =
@@ -6134,7 +6137,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r29",
+    rulesetId: "pulp-wars-poc-7r30",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -6297,6 +6300,18 @@ function effectDescription(
       return DEEP_WINTER_UNLOCK_TEXT_V7;
     case "BRITTLE":
       return BRITTLE_UNLOCK_TEXT_V7;
+    // The Dwarf revision (section 4): the engine bead's unlock texts; the
+    // Dwarf UI (`pulp_wars-78i.6`) owns the full presentation.
+    case "ENGINEER_SUPPORT":
+      return "Engineers Repair adjacent units: +4 machines, +2 others";
+    case "ASSEMBLE":
+      return "Engineers Assemble Gunners";
+    case "DIVE":
+      return "Dive: bombs deal 5";
+    case "DIG_IN":
+      return "Hammerers and Moles that stand still on or next to your city centers are dug in";
+    case "BLASTING_CHARGES":
+      return "Eruptions deal 3; Steam Cannons ignore Walls and Field Defense";
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -6449,6 +6464,11 @@ function technologyEffectGroupIdV7(
     case "WITCH_SUPPORT":
     case "DEEP_WINTER":
     case "BRITTLE":
+    case "ENGINEER_SUPPORT":
+    case "ASSEMBLE":
+    case "DIVE":
+    case "DIG_IN":
+    case "BLASTING_CHARGES":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":

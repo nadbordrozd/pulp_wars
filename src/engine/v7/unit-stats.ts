@@ -19,9 +19,10 @@ import {
 } from "../rules/ruleset-v7";
 import {
   defenseBonusForUnitV7,
-  fortificationLevelForUnitV7,
+  fortificationPartsForUnitV7,
   snowCoverAppliesV7,
 } from "./combat";
+import { attackAllowanceV7, matchHasDwarvesV7, unitIsDugInV7 } from "./dwarf";
 import {
   chillOfV7,
   isBlizzardV7,
@@ -76,7 +77,10 @@ export type UnitStatModifierSourceV7 =
   | "SNOW"
   | "PLANTED"
   | "ROCKFALL"
-  | "COLD_BLOOD";
+  | "COLD_BLOOD"
+  // The Dwarf revision: Dig In, one fortification level in the Field Defense
+  // part (shown when the tile's Field Defense does not already count).
+  | "DIG_IN";
 export interface PublicUnitStatValueV7 {
   readonly numerator: number;
   readonly denominator: number;
@@ -182,6 +186,27 @@ export interface PublicIceFolkMechanicsV7 {
   /** A land-form Ice Witch (her Blizzard). */
   readonly blizzard: boolean;
 }
+/**
+ * The Dwarf revision (section 14): the Dwarf mechanics of a unit owned by a
+ * Dwarf seat. `dugIn` is the canonical Dig In (public: activations are
+ * public and Dig In stores nothing); `shotsLeft` is what a Clockwork Gunner
+ * may still fire (this turn on its owner's turn, otherwise on its owner's
+ * next turn if it does not move), null for every other role;
+ * `eruptionDamage` and `bombDamage` are the owner's (public: they tell
+ * Blasting Charges and Dive); `burrowed` marks a mound's record.
+ */
+export interface PublicDwarfMechanicsV7 {
+  readonly construct: boolean;
+  readonly machine: boolean;
+  readonly dugIn: boolean;
+  readonly digsIn: boolean;
+  readonly shotsLeft: number | null;
+  readonly plated: number | null;
+  readonly tunnelRange: number;
+  readonly eruptionDamage: number;
+  readonly bombDamage: number;
+  readonly burrowed: boolean;
+}
 export interface PublicUnitStatsV7 {
   readonly unitId: UnitStateV7["id"];
   readonly minimumRange: number;
@@ -205,6 +230,14 @@ export interface PublicUnitStatsV7 {
   } | null;
   /** The Ice Folk revision: present exactly for units of an Ice Folk seat. */
   readonly iceFolk?: PublicIceFolkMechanicsV7;
+  /**
+   * The Dwarf revision: present for every unit exactly when the match has a
+   * Dwarf seat: the unit was bombed this turn, or surfaced this turn.
+   */
+  readonly bombedThisTurn?: boolean;
+  readonly surfacedThisTurn?: boolean;
+  /** The Dwarf revision: present exactly for units of a Dwarf seat. */
+  readonly dwarf?: PublicDwarfMechanicsV7;
 }
 
 /** The Snow and Blizzard a stats reader may know of (section 6.5). */
@@ -632,6 +665,43 @@ export function publicUnitStatsV7(
           },
         }
       : {}),
+    // The Dwarf revision (section 14): the public per-turn lists, and the
+    // Dwarf block of a Dwarf unit.
+    ...(matchHasDwarvesV7(state)
+      ? {
+          bombedThisTurn: state.bombedThisTurn.includes(unit.id),
+          surfacedThisTurn: state.surfacedThisTurn.includes(unit.id),
+        }
+      : {}),
+    ...(owner.faction === "DWARF"
+      ? {
+          dwarf: {
+            construct: mechanics.construct,
+            machine: mechanics.repairsAsMachine,
+            dugIn: unitIsDugInV7(state, unit),
+            digsIn: mechanics.digsIn,
+            shotsLeft:
+              mechanics.unmovedShots > 1 && !embarked
+                ? state.turnOrder[state.activeSeatIndex] === unit.ownerId
+                  ? unit.activation.recovered ||
+                    unit.activation.captured ||
+                    unit.activation.specialActed
+                    ? 0
+                    : Math.max(
+                        0,
+                        attackAllowanceV7(state, unit) -
+                          unit.activation.attacksUsed,
+                      )
+                  : mechanics.unmovedShots
+                : null,
+            plated: mechanics.plated,
+            tunnelRange: mechanics.tunnelRange,
+            eruptionDamage: capabilities.eruptionDamage,
+            bombDamage: capabilities.bombDamage,
+            burrowed: state.burrowed.some((entry) => entry.unit.id === unit.id),
+          },
+        }
+      : {}),
     ...(iceFolk
       ? {
           iceFolk: {
@@ -691,6 +761,13 @@ function eggStats(
     abilities: [],
     statuses: [],
     chill: null,
+    // The Dwarf revision: an Egg may be bombed (the public per-turn list).
+    ...(matchHasDwarvesV7(state)
+      ? {
+          bombedThisTurn: state.bombedThisTurn.includes(unit.id),
+          surfacedThisTurn: false,
+        }
+      : {}),
     dinosaur: {
       capacitySlots: mechanics.capacitySlots,
       growthStage: null,
@@ -737,7 +814,22 @@ function fortificationTerms(
   state: GameStateV7,
   unit: UnitStateV7,
 ): readonly PublicUnitStatTermV7[] {
-  if (fortificationLevelForUnitV7(state, unit) === 0) return [];
+  const parts = fortificationPartsForUnitV7(state, unit);
+  if (parts.walls + parts.fieldDefense === 0) return [];
+  // The Dwarf revision section 8: Dig In is the Field Defense level of a
+  // dug-in unit whose tile's Field Defense does not count.
+  if (parts.dugIn && !parts.tileFieldDefense)
+    return [
+      ...(parts.walls > 0
+        ? [modifier(2, "CITY_WALLS", "City Walls", "City Walls add 2 Defense.")]
+        : []),
+      modifier(
+        1,
+        "DIG_IN",
+        "Dug in",
+        "Dug in: a Hammerer or Steam Mole that has not moved, on or next to its own city center, adds 1 Defense.",
+      ),
+    ];
   const tile = tileAtV7(state.board, unit.at);
   const city = state.cities.find(
     (candidate) =>

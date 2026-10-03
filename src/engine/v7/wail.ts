@@ -3,11 +3,11 @@ import {
   EGG_DEFENSE2_V7,
   armouredDamageV7,
   gravesEnabledV7,
-  playerFactionV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
+import { isLivingUnitV7 } from "./afflictions";
 import { defenseBonusForUnitV7, fortificationLevelForUnitV7 } from "./combat";
 import { arePlayersHostileV7 } from "./economy";
 import type { CombatSplashEntryV7 } from "./events";
@@ -69,7 +69,8 @@ export function wailTargetsV7(
           unit.id !== banshee.id &&
           chebyshev(unit.at, banshee.at) <= WAIL_RADIUS_V7 &&
           arePlayersHostileV7(state, banshee.ownerId, unit.ownerId) &&
-          playerFactionV7(state, unit.ownerId) !== "UNDEAD" &&
+          // The Dwarf revision section 2.3: the per-unit living test.
+          isLivingUnitV7(state, unit) &&
           isUnitVisibleToPlayerV7(state, banshee.ownerId, unit),
       )
       .map((unit) => {
@@ -111,7 +112,7 @@ export function publicWailTargetsV7(
       unit.id === banshee.id ||
       chebyshev(unit.at, banshee.at) > WAIL_RADIUS_V7 ||
       !arePlayersHostileV7(view, banshee.ownerId, unit.ownerId) ||
-      playerFactionV7(view, unit.ownerId) === "UNDEAD"
+      !isLivingUnitV7(view, unit)
     )
       continue;
     const tile = publicTile(view, unit.at);

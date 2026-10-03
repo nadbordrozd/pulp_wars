@@ -23,6 +23,7 @@ import type {
   UnitStateV7,
 } from "./types";
 import type { PlayerViewV7 } from "./view";
+import { tileOccupiedV7 } from "./units";
 
 /**
  * Revision 19 Eggs (docs/product/RULESET_7_REVISION_19_DINOSAURS.md section
@@ -152,7 +153,8 @@ export function isNestTileV7(
       // An Egg is never Mountain-born (only the Ice Folk have the rule).
       mountainBorn: false,
     }) &&
-    !state.units.some((unit) => unit.hp > 0 && same(unit.at, at)) &&
+    // The Dwarf revision section 5.3: the occupancy predicate.
+    !tileOccupiedV7(state, at) &&
     !state.treasureChests.some((chest) => same(chest, at))
   );
 }
@@ -195,7 +197,8 @@ export function publicNestTilesV7(
         navigation: false,
         mountainBorn: false,
       }) &&
-      !view.units.some((unit) => unit.hp > 0 && same(unit.at, at)) &&
+      // The Dwarf revision section 5.3: the occupancy predicate.
+      !tileOccupiedV7(view, at) &&
       !view.treasureChests.some((chest) => same(chest, at))
     );
   });

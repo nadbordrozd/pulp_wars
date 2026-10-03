@@ -2,9 +2,9 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r29` (autosave
-`pulpWars.save.v7r29.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r28.current`), whose rules for the five factions
+The current client runs `pulp-wars-poc-7r30` (autosave
+`pulpWars.save.v7r30.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r29.current`), whose rules for the five factions
 the setup screen offers, Human, Undead, Goblin, Dinosaur, and Martian, are
 described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
 (`pulp_wars-c87.9` folded revisions 19–21 into it, and `pulp_wars-t6s.7` the
@@ -305,6 +305,70 @@ Folk seat (55 Snow and 9 Blizzard cells), 2.7 ms with four (176 and 36) at
 DPR 1, and 1.8 to 2.1 ms for all three at DPR 2. While a Blizzard is in view
 and no ready unit already animates the board, the host redraws about
 fifteen times a second for the flakes (full motion only).
+
+## Dwarf engine boundary (`pulp_wars-78i.3`)
+
+The engine registers a seventh faction, `DWARF`
+([Dwarf overlay](../product/RULESET_7_DWARVES.md)), with every rule of that
+document, under `pulp-wars-poc-7r30`. The setup screen does not offer it
+yet (`FACTIONS` in `src/render/dom/app-view-v7.ts` leaves it out until the
+Dwarf UI bead `pulp_wars-78i.6`); `FACTION_LABELS` names it "Dwarf" so that
+a headless or test state renders its seat.
+
+**The off-board list.** A burrowed unit (a Steam Mole that tunnelled and
+its rider) is not in `units`: it lives in `GameStateV7.burrowed` as
+`{ unit, moleUnitId }` until its owner's next Start Turn. Every reader of
+a unit list chooses between `boardUnitsV7` (what stands on the board) and
+`allOwnedUnitsV7` (everything a player owns: capacity, orphaning,
+elimination, status pruning, the leaderboard, metrics, parsing, entity
+IDs), both in `src/engine/v7/units.ts`; `tileOccupiedV7` is the one
+occupancy predicate (a unit or a mound). The classification of every
+`<expression>.units` reader in `src` is checked in
+(`tests/fixtures/v7-unit-reader-classes.ts`) and enforced by
+`tests/unit/ruleset-v7-dwarf-unit-readers.test.ts`: a new reader needs a
+class, and every all-units reader reads `burrowed` or `allOwnedUnitsV7`.
+The UI is a board-only reader: it never selects, cycles, or commands a
+mound; a mound is information only.
+
+What the Dwarf UI reads, all from `PlayerViewV7` and the public queries:
+
+- `view.burrowed`: the mounds on tiles the viewer has explored, with the
+  ordinary public unit record and `moleUnitId`; `view.surfacedThisTurn` and
+  `view.bombedThisTurn` for visible units;
+- `publicUnitStatsV7(...)`: `bombedThisTurn` and `surfacedThisTurn`
+  (booleans, present for every unit exactly when the match has a Dwarf
+  seat) and, for units of a Dwarf seat, the `dwarf` block (`construct`,
+  `machine`, `dugIn`, `digsIn`, `shotsLeft`, `plated`, `tunnelRange`,
+  `eruptionDamage`, `bombDamage`, `burrowed`); Dig In is the `DIG_IN`
+  Defense source of a dug-in unit (when the tile's Field Defense does not
+  already count);
+- the commands `TUNNEL`, `BOMB_RUN`, and `ASSEMBLE` in
+  `queryPlayerCommandsV7`, with `previewTunnelV7` (the eruption forecast on
+  the current board, `projected: true`), `previewBombRunV7` (exact damage,
+  the blast of a killed exploding target, and `landingThreat`),
+  `previewAssembleV7`, and `queryAssembleUnavailableReasonV7`, each null
+  unless the command is offered;
+- the combat-preview fields `dugIn`, `unflinchingApplied`, and
+  `platedApplied`; Knockback in the existing `push` field, Blasting
+  Charges in `fortificationIgnored`, the Gunner's second shot in
+  `attacksRemaining`;
+- `queryThreatenedTilesV7` with a Gyrocopter's bombing reach (Chebyshev 2,
+  no ordinary attack), each mound's eruption ring and surfacing reach, and a
+  Gunner's two shots from where it stands;
+- the events `UNIT_TUNNELLED` (its tiles null where the viewer has explored
+  neither), `UNIT_SURFACED` (to a viewer that owns a victim but cannot see
+  the mound: its own entries, the Mole hidden), `UNIT_BOMBED` (to a target
+  owner who cannot see the Gyrocopter: a `COMBAT_SPLASH_DAMAGE` entry), and
+  `UNIT_ASSEMBLED` (owner-private, like training); the `UNIT_DIED` causes
+  `BOMB` and `ERUPTION`, the `FIELD_DEFENSE_DESTROYED` reason `UNDERMINED`,
+  and the `UNIT_MOVE_INTERRUPTED` and move-rejection reason `MOUND`;
+- the errors `TUNNEL_NOT_LEGAL`, `BOMB_RUN_NOT_LEGAL`, and
+  `ASSEMBLE_NOT_LEGAL` with their reasons, and the `RECOVER_NOT_LEGAL`
+  reason `CONSTRUCT`.
+
+In a match without a Dwarf seat the three lists are empty, the two
+per-unit flags and the `dwarf` block are absent, and the three
+combat-preview fields are `false`, so every existing screen is unchanged.
 
 ## 0. Ruleset-6 replacement boundary
 

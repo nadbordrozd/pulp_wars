@@ -8,6 +8,7 @@ import {
 import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
 import type { DomainEventV7 } from "./events";
 import { spatialContributionAtV7 } from "./spatial-economy";
+import { allOwnedUnitsV7, type UnitListsV7 } from "./units";
 import {
   isAfloatFormV7,
   type CityStateV7,
@@ -91,16 +92,18 @@ export function cityUnitCapacityV7(
 
 /**
  * Revision 19 section 5.1: the used capacity slots of a city: the sum of the
- * slots of every unit on the board homed to it, Eggs included, each resolved
- * through its owner's registration. Every role of a Human, Undead, or Goblin
- * seat uses one slot, so there the sum equals the unit count.
+ * slots of every unit homed to it, Eggs included, each resolved through its
+ * owner's registration. Every role of a Human, Undead, or Goblin seat uses
+ * one slot, so there the sum equals the unit count. The Dwarf revision
+ * (section 5.5): a burrowed unit keeps its slot (an all-units reader).
  */
 export function assignedUnitCountV7(
-  state: Pick<GameStateV7, "units" | "players">,
+  state: Pick<GameStateV7, "units" | "players"> &
+    Partial<Pick<UnitListsV7<GameStateV7["units"][number]>, "burrowed">>,
   cityId: CityId,
 ): number {
   let used = 0;
-  for (const unit of state.units)
+  for (const unit of allOwnedUnitsV7(state))
     if (unit.hp > 0 && unit.homeCityId === cityId)
       used += unitCapacitySlotsV7(state, unit);
   return used;
@@ -967,8 +970,10 @@ function resolveWindmillHealingV7(
         (unit) =>
           unit.ownerId === playerId &&
           unit.hp > 0 &&
-          // Revision 19 section 6.2: a Windmill never heals an Egg.
+          // Revision 19 section 6.2: a Windmill never heals an Egg. The Dwarf
+          // revision section 7.2: nor a construct.
           unit.form !== "EGG" &&
+          !unitRoleMechanicsV7(state, unit).construct &&
           unit.hp < unit.maxHp &&
           !assigned.has(unit.id) &&
           Math.max(

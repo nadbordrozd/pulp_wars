@@ -119,8 +119,9 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         expect(created.ok).toBe(true);
         accepted += 1;
       }
-    // The Ice Folk revision: six factions (36, 216, and 1296 mixes).
-    expect(accepted).toBe(36 + 216 + 1296);
+    // The Ice Folk revision: six factions (36, 216, and 1296 mixes); the
+    // Dwarf revision: seven (49, 343, and 2401 mixes).
+    expect(accepted).toBe(49 + 343 + 2401);
     for (const aiMode of ["RIVAL", "COOPERATIVE"] as const)
       expect(createPlayableGameV7(showcaseSetup(THREE, { aiMode })).ok).toBe(
         true,
@@ -197,6 +198,10 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         thralls,
         mindControlCooldowns,
         chilled,
+        // The Dwarf revision (`pulp_wars-78i.3`): three empty lists.
+        burrowed,
+        surfacedThisTurn,
+        bombedThisTurn,
         ...revision19State
       } = created.state;
       expect(eggs).toEqual([]);
@@ -206,7 +211,10 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         thralls,
         mindControlCooldowns,
         chilled,
-      ]).toEqual([[], [], [], [], []]);
+        burrowed,
+        surfacedThisTurn,
+        bombedThisTurn,
+      ]).toEqual([[], [], [], [], [], [], [], []]);
       for (const player of revision19State.players)
         expect(player.achievementEntitlements.slice(3)).toEqual(
           ["CONQUEROR", "LAND_BARON", "SEA_DOG", "SLAYER"].map(
@@ -842,6 +850,8 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       "Brontosaurus",
       "Colossus",
       "Frost Giant",
+      // The Dwarf revision (`pulp_wars-78i.3`).
+      "Brass Titan",
     ]);
   });
 });

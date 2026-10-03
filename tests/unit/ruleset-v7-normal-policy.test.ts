@@ -294,9 +294,12 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // below is unchanged. The Ice Folk revision (`pulp_wars-7g3.3`) inserts
     // THROW_BOLAS and COLD_SNAP after TRACTOR_BEAM, moving every later kind
     // forward by two (was 4bb1e3…d3fc); the revision-12-ordinal value below
-    // is unchanged.
+    // is unchanged. The Dwarf revision (`pulp_wars-78i.3`) inserts TUNNEL,
+    // BOMB_RUN, and ASSEMBLE after COLD_SNAP, moving every later kind
+    // forward by three (was fcdf9a…fdae); the revision-12-ordinal value
+    // below is unchanged.
     expect(canonicalHash(basicChoice)).toBe(
-      "fcdf9abcaefef1539db4f7fc2a73e0d9af729873381d12027b54c7a710dcfdae",
+      "ffcd2f87f16f229e66fbb87f5de8085684d0e7142c9474d11304b3433398677b",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -871,9 +874,12 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     // section 6.3); every other candidate of this subset is unchanged.
     // The Ice Folk revision (`pulp_wars-7g3.3`) inserts THROW_BOLAS and
     // COLD_SNAP after TRACTOR_BEAM, moving every later command-kind ordinal
-    // forward by two (was 1fc167…6276).
+    // forward by two (was 1fc167…6276). The Dwarf revision
+    // (`pulp_wars-78i.3`) inserts TUNNEL, BOMB_RUN, and ASSEMBLE after
+    // COLD_SNAP, moving every later command-kind ordinal forward by three
+    // (was b1425a…a491).
     expect(canonicalHash(revision4Candidates)).toBe(
-      "b1425a75a1a3782ea2c86155e5eba907908ba8aa42701ee351a6fa1e9ef3a491",
+      "7c54998440aca09077f39b723922e8cd67b3eea32d04afb3ddb32f60703fbf5c",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -890,7 +896,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r29");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r30");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r29");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r29.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r30");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r30.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -95,6 +95,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       "DINOSAUR",
       "MARTIAN",
       "ICE_FOLK",
+      // The Dwarf revision (`pulp_wars-78i.3`).
+      "DWARF",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -103,6 +105,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       "DINOSAUR_BASELINE_V1",
       "MARTIAN_BASELINE_V1",
       "ICE_FOLK_BASELINE_V1",
+      "DWARF_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("ORIGINAL")).toBe("ORIGINAL_BASELINE_V5");
     expect(factionTreeIdV7("UNDEAD")).toBe("UNDEAD_BASELINE_V1");
@@ -113,6 +116,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       DINOSAUR: "Dinosaur",
       MARTIAN: "Martian",
       ICE_FOLK: "Ice Folk",
+      DWARF: "Dwarf",
     });
     expect(Object.keys(RULESET_7.factionTrees)).toEqual([
       "ORIGINAL",
@@ -121,6 +125,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       "DINOSAUR",
       "MARTIAN",
       "ICE_FOLK",
+      // The Dwarf revision (`pulp_wars-78i.3`).
+      "DWARF",
     ]);
     expect(FACTION_TREES_V7.UNDEAD.faction).toBe("UNDEAD");
     expect(() => assertRuleset7Registry()).not.toThrow();
@@ -130,11 +136,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r28 and preserves the r29 save", () => {
+  it("cleans obsolete keys through v7r29 and preserves the r30 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r28.current",
+      "pulpWars.save.v7r29.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(28);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(29);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -154,7 +160,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r26.current", "r26"],
       ["pulpWars.save.v7r27.current", "r27"],
       ["pulpWars.save.v7r28.current", "r28"],
-      [SAVE_STORAGE_KEY_V7, "r29"],
+      ["pulpWars.save.v7r29.current", "r29"],
+      [SAVE_STORAGE_KEY_V7, "r30"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -177,8 +184,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r26.current",
         "pulpWars.save.v7r27.current",
         "pulpWars.save.v7r28.current",
+        "pulpWars.save.v7r29.current",
       ],
-      removedCount: 17,
+      removedCount: 18,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1723,8 +1731,17 @@ describe("ruleset-7 all-Human parity digests", () => {
           snowCover,
           sweep,
           hiddenBlizzardPossible,
+          dugIn,
+          unflinchingApplied,
+          platedApplied,
           ...previewWithoutSplash
         } = event.preview;
+        // The Dwarf revision (pulp_wars-78i.3): three neutral fields.
+        expect([dugIn, unflinchingApplied, platedApplied]).toEqual([
+          false,
+          false,
+          false,
+        ]);
         // The Ice Folk revision: eight neutral combat-preview fields.
         expect([
           shatters,
@@ -1809,6 +1826,9 @@ describe("ruleset-7 all-Human parity digests", () => {
           thralls,
           mindControlCooldowns,
           chilled,
+          burrowed,
+          surfacedThisTurn,
+          bombedThisTurn,
           ...rest
         } = value as {
           graves: unknown;
@@ -1820,6 +1840,9 @@ describe("ruleset-7 all-Human parity digests", () => {
           thralls: unknown;
           mindControlCooldowns: unknown;
           chilled: unknown;
+          burrowed: unknown;
+          surfacedThisTurn: unknown;
+          bombedThisTurn: unknown;
         };
         void _graves;
         void _plagued;
@@ -1835,6 +1858,12 @@ describe("ruleset-7 all-Human parity digests", () => {
         // The Ice Folk revision: the empty Chill list, and the neutral tile
         // flags and unit stat, removed (any other value fails the match).
         expect(chilled).toEqual([]);
+        // The Dwarf revision (pulp_wars-78i.3): three empty lists.
+        expect([burrowed, surfacedThisTurn, bombedThisTurn]).toEqual([
+          [],
+          [],
+          [],
+        ]);
         let winterValues = 0;
         const neutral = JSON.parse(
           JSON.stringify(rest).replaceAll(RULESET_7_ID, "IDENTITY"),

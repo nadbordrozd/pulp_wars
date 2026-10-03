@@ -1,5 +1,5 @@
 import { canonicalHash, canonicalJson } from "../replay/canonical";
-import type { PlayerId } from "../model/ids";
+import type { PlayerId, UnitId } from "../model/ids";
 import {
   FORCE_FIELD_SHIELD_V7,
   GROWTH_HP_V7,
@@ -32,6 +32,7 @@ import {
   type AchievementEntitlementV7,
   type AchievementIdV7,
   type BittenStatusV7,
+  type BurrowedEntryV7,
   type ChillStatusV7,
   type CityRewardRecordV7,
   type CityStateV7,
@@ -85,6 +86,8 @@ const STATE_KEYS = [
   "activeSeatIndex",
   "bitten",
   "board",
+  "bombedThisTurn",
+  "burrowed",
   "chilled",
   "cities",
   "commandIndex",
@@ -105,6 +108,7 @@ const STATE_KEYS = [
   "schemaVersion",
   "setup",
   "shields",
+  "surfacedThisTurn",
   "thralls",
   "treasureChests",
   "turnOrder",
@@ -161,6 +165,12 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     input.mindControlCooldowns,
   );
   const chilled = parseChilled(input.chilled);
+  // The Dwarf revision (section 5.2): the burrowed units and the two
+  // per-turn lists; the cross references are checked below.
+  const burrowed =
+    players === null ? null : parseBurrowed(input.burrowed, players);
+  const surfacedThisTurn = parseSortedUnitIds(input.surfacedThisTurn);
+  const bombedThisTurn = parseSortedUnitIds(input.bombedThisTurn);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -183,6 +193,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     thralls === null ||
     mindControlCooldowns === null ||
     chilled === null ||
+    burrowed === null ||
+    surfacedThisTurn === null ||
+    bombedThisTurn === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -219,6 +232,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       thralls,
       mindControlCooldowns,
       chilled,
+      burrowed,
+      surfacedThisTurn,
+      bombedThisTurn,
       choices,
       outcome,
       humanPlayerId,
@@ -255,6 +271,9 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     thralls,
     mindControlCooldowns,
     chilled,
+    burrowed,
+    surfacedThisTurn,
+    bombedThisTurn,
     pendingChoices: choices,
     outcome,
   };
@@ -815,7 +834,10 @@ function parseUnit(
       : input.maxHp !== rule.maxHp + (input.veteran ? PROMOTION_HP_V7 : 0)) ||
     (input.veteran && input.kills < PROMOTION_KILLS_V7) ||
     (input.captureEligible && !rule.abilities.includes("CAPTURE")) ||
-    (!overrun && activation.attacksUsed > 1) ||
+    // The Dwarf revision section 7.3: an unmoved Clockwork Gunner fires
+    // twice.
+    (!overrun &&
+      activation.attacksUsed > roleMechanicsV7(role, faction).unmovedShots) ||
     (activation.overrunActive &&
       (!overrun || !activation.attacked || activation.handled)) ||
     (activation.escapeAvailable &&
@@ -1145,6 +1167,49 @@ function parseChilled(input: unknown): readonly ChillStatusV7[] | null {
   return values;
 }
 
+/**
+ * The Dwarf revision (section 5.2): the burrowed entries, strictly ascending
+ * by `unit.id`; each unit parses like a unit on the board under its owner's
+ * registration. The cross references are checked separately.
+ */
+function parseBurrowed(
+  input: unknown,
+  players: readonly PlayerStateV7[],
+): readonly BurrowedEntryV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: BurrowedEntryV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["moleUnitId", "unit"])) return null;
+    const unit = parseUnit(candidate.unit, players);
+    const moleUnitId =
+      candidate.moleUnitId === null
+        ? null
+        : parseUnitIdV7(candidate.moleUnitId);
+    if (
+      unit === null ||
+      (candidate.moleUnitId !== null && moleUnitId === null) ||
+      (values.length > 0 &&
+        (values.at(-1) as BurrowedEntryV7).unit.id >= unit.id)
+    )
+      return null;
+    values.push({ unit, moleUnitId });
+  }
+  return values;
+}
+
+/** Strictly ascending unit IDs (the Dwarf revision's per-turn lists). */
+function parseSortedUnitIds(input: unknown): readonly UnitId[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: UnitId[] = [];
+  for (const candidate of input) {
+    const id = parseUnitIdV7(candidate);
+    if (id === null || (values.length > 0 && (values.at(-1) as UnitId) >= id))
+      return null;
+    values.push(id);
+  }
+  return values;
+}
+
 function parseSortedCoords(input: unknown): readonly CoordV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: CoordV7[] = [];
@@ -1189,6 +1254,9 @@ interface CrossInput {
   thralls: readonly ThrallStatusV7[];
   mindControlCooldowns: readonly MindControlCooldownV7[];
   chilled: readonly ChillStatusV7[];
+  burrowed: readonly BurrowedEntryV7[];
+  surfacedThisTurn: readonly UnitId[];
+  bombedThisTurn: readonly UnitId[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
@@ -1215,15 +1283,22 @@ function validateCrossReferences(value: CrossInput): boolean {
     thralls,
     mindControlCooldowns,
     chilled,
+    burrowed,
+    surfacedThisTurn,
+    bombedThisTurn,
     choices,
     outcome,
   } = value;
   const playerById = new Map(players.map((player) => [player.id, player]));
   const cityById = new Map(cities.map((city) => [city.id, city]));
+  // The Dwarf revision section 5.2: unit IDs are unique across `units` and
+  // `burrowed`, and the next entity ID is above all of them (all-units).
+  const burrowedUnits = burrowed.map((entry) => entry.unit);
   const entityIds = [
     ...cities.map((item) => item.id),
     ...contributions.map((item) => item.id),
     ...units.map((item) => item.id),
+    ...burrowedUnits.map((item) => item.id),
   ];
   if (
     new Set(entityIds).size !== entityIds.length ||
@@ -1235,7 +1310,7 @@ function validateCrossReferences(value: CrossInput): boolean {
       player.spoilsClaimedCityIds.some((id) => !cityById.has(id)),
     ) ||
     cities.some((city) => !playerById.has(city.ownerId)) ||
-    units.some(
+    [...units, ...burrowedUnits].some(
       (unit) =>
         !playerById.has(unit.ownerId) ||
         (unit.homeCityId !== null &&
@@ -1257,7 +1332,8 @@ function validateCrossReferences(value: CrossInput): boolean {
       (player) =>
         player.status === "ELIMINATED" &&
         (cities.some((city) => city.ownerId === player.id) ||
-          units.some((unit) => unit.ownerId === player.id)),
+          units.some((unit) => unit.ownerId === player.id) ||
+          burrowedUnits.some((unit) => unit.ownerId === player.id)),
     )
   )
     return false;
@@ -1419,13 +1495,40 @@ function validateCrossReferences(value: CrossInput): boolean {
     !gravesEnabledV7(value.setup)
   )
     return false;
-  const unitById = new Map(units.map((unit) => [unit.id, unit]));
+  // The Dwarf revision section 5.2: status entries stay on burrowed units.
+  const unitById = new Map(
+    [...units, ...burrowedUnits].map((unit) => [unit.id, unit]),
+  );
+  if (
+    !burrowedValid(
+      board,
+      playerById,
+      units,
+      burrowed,
+      treasureChests,
+      value.setup,
+    ) ||
+    !turnListsValid(
+      playerById,
+      units,
+      surfacedThisTurn,
+      bombedThisTurn,
+      value.activePlayerId,
+    )
+  )
+    return false;
   // Revision 19: an Egg takes no status, so it is never plagued or bitten.
+  // The Dwarf revision section 2.3: the per-unit living test (a construct is
+  // never plagued or bitten).
   const living = (unit: UnitStateV7 | undefined): boolean =>
     unit !== undefined &&
     unit.hp > 0 &&
     unit.form !== "EGG" &&
-    playerById.get(unit.ownerId)?.faction !== "UNDEAD";
+    playerById.get(unit.ownerId)?.faction !== "UNDEAD" &&
+    !roleMechanicsV7(
+      unit.role,
+      playerById.get(unit.ownerId)?.faction ?? "ORIGINAL",
+    ).construct;
   for (const entry of plagued) {
     const source = unitById.get(entry.sourceUnitId);
     const sourceFaction =
@@ -1588,6 +1691,93 @@ function validateCrossReferences(value: CrossInput): boolean {
     } else if (!playerById.has(outcome.winnerId)) return false;
   }
   return true;
+}
+
+/**
+ * The Dwarf revision (section 5.2) state parsing of the burrowed list: only
+ * in a match with a Dwarf seat; every owner a Dwarf seat; a Mole entry (role
+ * with `TUNNEL`, no Mole ID) or a rider entry (role with `RIDES_TUNNEL`, the
+ * ID of a burrowed Mole of the same owner on a tile next to its own, one
+ * rider per Mole); land form; every mound tile on the board, land, not a
+ * Rift, not a settlement site, with no unit and no treasure chest, and not
+ * shared by another entry.
+ */
+function burrowedValid(
+  board: BoardStateV7,
+  playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
+  units: readonly UnitStateV7[],
+  burrowed: readonly BurrowedEntryV7[],
+  treasureChests: readonly CoordV7[],
+  setup: MatchSetupV7,
+): boolean {
+  if (burrowed.length === 0) return true;
+  if (!setup.factions.includes("DWARF")) return false;
+  const byId = new Map(burrowed.map((entry) => [entry.unit.id, entry]));
+  const tiles = new Set<string>();
+  const ridden = new Set<number>();
+  for (const entry of burrowed) {
+    const unit = entry.unit;
+    const owner = playerById.get(unit.ownerId);
+    const tile = tileAt(board, unit.at);
+    if (
+      owner === undefined ||
+      owner.faction !== "DWARF" ||
+      unit.form !== "LAND" ||
+      units.some((other) => other.id === unit.id) ||
+      tile === undefined ||
+      tile.biome === null ||
+      tile.terrain === "RIFT" ||
+      tile.site !== null ||
+      units.some((other) => sameCoordV7(other.at, unit.at)) ||
+      treasureChests.some((chest) => sameCoordV7(chest, unit.at)) ||
+      tiles.has(key(unit.at))
+    )
+      return false;
+    tiles.add(key(unit.at));
+    const mechanics = roleMechanicsV7(unit.role, owner.faction);
+    if (entry.moleUnitId === null) {
+      if (mechanics.tunnelRange === 0) return false;
+      continue;
+    }
+    const mole = byId.get(entry.moleUnitId);
+    if (
+      !mechanics.ridesTunnel ||
+      mole === undefined ||
+      mole.moleUnitId !== null ||
+      mole.unit.ownerId !== unit.ownerId ||
+      Math.max(
+        Math.abs(mole.unit.at.x - unit.at.x),
+        Math.abs(mole.unit.at.y - unit.at.y),
+      ) !== 1 ||
+      ridden.has(entry.moleUnitId)
+    )
+      return false;
+    ridden.add(entry.moleUnitId);
+  }
+  return true;
+}
+
+/**
+ * The Dwarf revision (sections 5.4 and 6.3): `surfacedThisTurn` lists only
+ * units on the board owned by the active player, a Dwarf seat;
+ * `bombedThisTurn` lists only units on the board, and only while the active
+ * player is a Dwarf seat.
+ */
+function turnListsValid(
+  playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
+  units: readonly UnitStateV7[],
+  surfacedThisTurn: readonly UnitId[],
+  bombedThisTurn: readonly UnitId[],
+  activePlayerId: PlayerStateV7["id"],
+): boolean {
+  if (surfacedThisTurn.length === 0 && bombedThisTurn.length === 0) return true;
+  if (playerById.get(activePlayerId)?.faction !== "DWARF") return false;
+  const unitById = new Map(units.map((unit) => [unit.id, unit]));
+  return (
+    surfacedThisTurn.every(
+      (unitId) => unitById.get(unitId)?.ownerId === activePlayerId,
+    ) && bombedThisTurn.every((unitId) => unitById.has(unitId))
+  );
 }
 
 function populationLedgerValid(

@@ -19,6 +19,7 @@ import type {
   UnitRoleIdV7,
   UnitStateV7,
 } from "./types";
+import { allOwnedUnitsV7 } from "./units";
 
 /**
  * The Martian revision (docs/product/RULESET_7_MARTIANS.md): Shields
@@ -389,8 +390,11 @@ export function prunedMartianV7(state: GameStateV7): GameStateV7 {
     state.mindControlCooldowns.length === 0
   )
     return state;
+  // The Dwarf revision section 5.2: a burrowed unit keeps its entries.
   const alive = new Set(
-    state.units.filter((unit) => unit.hp > 0).map((unit) => unit.id),
+    allOwnedUnitsV7(state)
+      .filter((unit) => unit.hp > 0)
+      .map((unit) => unit.id),
   );
   const keep = <T extends { readonly unitId: UnitId }>(
     entries: readonly T[],

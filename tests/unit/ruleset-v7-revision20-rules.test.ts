@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r29");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r29");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r30");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r30");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r29.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-10, -8)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r30.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-11, -9)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-10, -8)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-11, -9)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r29");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r30");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -216,11 +216,12 @@ describe("ruleset-7 revision-20 identity", () => {
 });
 
 describe("ruleset-7 revision-20 Stampede removal", () => {
-  it("has no STAMPEDE kind; KABOOM and HATCH stay adjacent (the Ice Folk revision: 50 commands, 77 events)", () => {
+  it("has no STAMPEDE kind; KABOOM and HATCH stay adjacent (the Dwarf revision: 53 commands, 81 events)", () => {
     // Revision 20 had 45 command kinds and 72 event kinds; the Martian
-    // revision inserts three commands after HATCH and four events, and the
-    // Ice Folk revision two commands after TRACTOR_BEAM and one event.
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(50);
+    // revision inserts three commands after HATCH and four events, the
+    // Ice Folk revision two commands after TRACTOR_BEAM and one event, and
+    // the Dwarf revision three commands after COLD_SNAP and four events.
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(53);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     const kaboom = COMMAND_KIND_ORDER_V7.indexOf("KABOOM");
     expect(COMMAND_KIND_ORDER_V7.slice(kaboom, kaboom + 8)).toEqual([
@@ -231,9 +232,9 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
       "TRACTOR_BEAM",
       "THROW_BOLAS",
       "COLD_SNAP",
-      "RECOVER",
+      "TUNNEL",
     ]);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(77);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(81);
   });
 
   it("fails to parse a STAMPEDE command, like any unknown kind", () => {

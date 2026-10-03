@@ -2083,6 +2083,9 @@ function initialMapStateFromV7(
     thralls: [],
     mindControlCooldowns: [],
     chilled: [],
+    burrowed: [],
+    surfacedThisTurn: [],
+    bombedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -2134,6 +2137,9 @@ function showcaseInitialStateV7(
     thralls: [],
     mindControlCooldowns: [],
     chilled: [],
+    burrowed: [],
+    surfacedThisTurn: [],
+    bombedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -2178,6 +2184,7 @@ export const STARTING_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
     DINOSAUR: 1,
     MARTIAN: 1,
     ICE_FOLK: 1,
+    DWARF: 1,
   });
 
 /**
@@ -2192,6 +2199,7 @@ export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
     DINOSAUR: 1,
     MARTIAN: 1,
     ICE_FOLK: 1,
+    DWARF: 1,
   });
 
 /**

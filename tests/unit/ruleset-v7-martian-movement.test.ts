@@ -230,13 +230,20 @@ describe("the shared terrain-entry rule", () => {
   //   Push onto a Rift (`pulp_wars-9s0.5`: only a flyer).
   // - eggs.ts (2): the Ice Folk revision moved the nest-tile Mountain test
   //   (canonical and public) onto the helper.
+  // - The Dwarf revision (`pulp_wars-78i.3`): dwarf-reducer.ts (1),
+  //   `tunnelTileLegalV7`, the canonical tile of a Tunnel, its rider, and an
+  //   Assemble; query.ts (+2), the public tunnel and Assemble tile and the
+  //   public Knockback (the canonical Knockback is the shared displacement
+  //   rule in combat.ts). Tested in ruleset-v7-dwarf-tunnel.test.ts and
+  //   ruleset-v7-dwarf-units.test.ts.
   it("is the only terrain-entry rule: the audited call sites of canEnterTerrainV7", () => {
     const AUDITED: Readonly<Record<string, number>> = {
       "src/engine/v7/combat.ts": 1,
       "src/engine/v7/eggs.ts": 2,
       "src/engine/v7/movement.ts": 3,
-      "src/engine/v7/query.ts": 5,
+      "src/engine/v7/query.ts": 7,
       "src/engine/v7/reducer.ts": 5,
+      "src/engine/v7/dwarf-reducer.ts": 1,
     };
     for (const [file, count] of Object.entries(AUDITED)) {
       const source = readFileSync(file, "utf8");

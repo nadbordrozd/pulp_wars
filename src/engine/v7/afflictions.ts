@@ -1,6 +1,7 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   playerFactionV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   type EffectiveRoleRuleV7,
   type FactionRosterV7,
@@ -16,6 +17,7 @@ import type {
   PlagueStatusV7,
   UnitStateV7,
 } from "./types";
+import { allOwnedUnitsV7 } from "./units";
 
 /**
  * Revision 14 afflictions: Plague (applied by a Lich attack, spreading at
@@ -47,10 +49,37 @@ export function isLivingOwnerV7(
   return playerFactionV7(roster, ownerId) !== "UNDEAD";
 }
 
+/**
+ * The Dwarf revision (docs/product/RULESET_7_DWARVES.md section 2.3): the
+ * per-unit "living" test. A unit is living when its owner's faction is not
+ * UNDEAD (the revision-13 per-owner test) and its role is not a construct
+ * under its owner's registration (the Clockwork Gunner, the Brass Titan).
+ * Plague, Bitten, the Wail, and their previews read this test; with no
+ * Dwarf seat it returns exactly what {@link isLivingOwnerV7} returns.
+ */
+export function isLivingUnitV7(
+  roster: FactionRosterV7,
+  unit: { readonly ownerId: PlayerId; readonly role: UnitStateV7["role"] },
+): boolean {
+  return (
+    isLivingOwnerV7(roster, unit.ownerId) &&
+    !unitRoleMechanicsV7(roster, unit).construct
+  );
+}
+
+/** The Dwarf revision (section 7): whether the unit's role is a construct. */
+export function unitIsConstructV7(
+  roster: FactionRosterV7,
+  unit: { readonly ownerId: PlayerId; readonly role: UnitStateV7["role"] },
+): boolean {
+  return unitRoleMechanicsV7(roster, unit).construct;
+}
+
 /** The combatant facts the revision-14 combat afflictions read. */
 export interface AfflictionCombatantV7 {
   readonly id: UnitId;
   readonly ownerId: PlayerId;
+  readonly role: UnitStateV7["role"];
   readonly form: UnitStateV7["form"];
 }
 
@@ -82,7 +111,15 @@ export function afflictionCombatEffectsV7(input: {
   readonly attackerOnRift: boolean;
   readonly defenderOnRift: boolean;
   readonly splash: readonly CombatSplashEntryV7[];
-  readonly splashOwner: (unitId: UnitId) => PlayerId | undefined;
+  /**
+   * The owner and role of a splash victim (the Dwarf revision: the living
+   * test is per unit).
+   */
+  readonly splashUnit: (
+    unitId: UnitId,
+  ) =>
+    | { readonly ownerId: PlayerId; readonly role: UnitStateV7["role"] }
+    | undefined;
   readonly plaguedUnitIds: ReadonlySet<UnitId>;
   readonly bittenUnitIds: ReadonlySet<UnitId>;
   /**
@@ -98,8 +135,13 @@ export function afflictionCombatEffectsV7(input: {
   | "attackerBittenRises"
   | "defenderBittenRises"
 > {
-  const living = (ownerId: PlayerId | undefined): boolean =>
-    ownerId !== undefined && isLivingOwnerV7(input.roster, ownerId);
+  // The Dwarf revision section 2.3: the per-unit living test (a construct
+  // is never plagued or bitten).
+  const living = (
+    unit:
+      | { readonly ownerId: PlayerId; readonly role: UnitStateV7["role"] }
+      | undefined,
+  ): boolean => unit !== undefined && isLivingUnitV7(input.roster, unit);
   const plagued: UnitId[] = [];
   if (input.attackerRule.abilities.includes("PLAGUE") && !input.attackerDies) {
     // The Martian revision section 5.3: a Lich plagues only targets that
@@ -111,7 +153,7 @@ export function afflictionCombatEffectsV7(input: {
       !(
         (input.defenderShieldDamage ?? 0) > 0 && input.damageToDefender === 0
       ) &&
-      living(input.defender.ownerId) &&
+      living(input.defender) &&
       !input.plaguedUnitIds.has(input.defender.id)
     )
       plagued.push(input.defender.id);
@@ -120,7 +162,7 @@ export function afflictionCombatEffectsV7(input: {
         !entry.dies &&
         !(entry.shieldDamage > 0 && entry.damage === 0) &&
         input.eggUnitIds?.has(entry.unitId) !== true &&
-        living(input.splashOwner(entry.unitId)) &&
+        living(input.splashUnit(entry.unitId)) &&
         !input.plaguedUnitIds.has(entry.unitId)
       )
         plagued.push(entry.unitId);
@@ -132,13 +174,13 @@ export function afflictionCombatEffectsV7(input: {
       input.damageToDefender > 0 &&
       !input.defenderDies &&
       input.defender.form === "LAND" &&
-      living(input.defender.ownerId),
+      living(input.defender),
     attackerBitten:
       input.defenderRule.abilities.includes("BITE") &&
       input.damageToAttacker > 0 &&
       !input.attackerDies &&
       input.attacker.form === "LAND" &&
-      living(input.attacker.ownerId),
+      living(input.attacker),
     // Infect (a Zombie killer) takes precedence over an earlier bite.
     defenderBittenRises:
       input.defenderDies &&
@@ -199,8 +241,11 @@ export function withBittenV7(
  */
 export function prunedAfflictionsV7(state: GameStateV7): GameStateV7 {
   if (state.plagued.length === 0 && state.bitten.length === 0) return state;
+  // The Dwarf revision section 5.2: a burrowed unit keeps its entries.
   const alive = new Set(
-    state.units.filter((unit) => unit.hp > 0).map((unit) => unit.id),
+    allOwnedUnitsV7(state)
+      .filter((unit) => unit.hp > 0)
+      .map((unit) => unit.id),
   );
   const active = new Set(
     state.players
@@ -229,7 +274,9 @@ export function plagueClearedEventsV7(
 ): DomainEventV7[] {
   if (before.plagued.length === 0) return [];
   const alive = new Set(
-    after.units.filter((unit) => unit.hp > 0).map((unit) => unit.id),
+    allOwnedUnitsV7(after)
+      .filter((unit) => unit.hp > 0)
+      .map((unit) => unit.id),
   );
   const still = new Set(after.plagued.map((entry) => entry.unitId));
   const unitIds = before.plagued

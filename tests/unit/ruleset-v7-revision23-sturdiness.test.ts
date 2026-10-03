@@ -212,7 +212,10 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // own numbers (docs/product/RULESET_7_ICE_FOLK.md section 3); its coarse
     // balance (`pulp_wars-7g3.7`) gave the Yeti 9 HP.
     expect(hp("ICE_FOLK")).toEqual([9, 10, 8, 20, 12, 12, 14, 40]);
-    expect(FACTION_IDS_V7).toHaveLength(6);
+    // The Dwarf revision (`pulp_wars-78i.3`) adds a seventh faction
+    // (docs/product/RULESET_7_DWARVES.md section 3).
+    expect(hp("DWARF")).toEqual([12, 8, 10, 16, 10, 10, 16, 36]);
+    expect(FACTION_IDS_V7).toHaveLength(7);
   });
 
   it("changes only maximum HP: the Human core roles keep every other value", () => {

@@ -19,7 +19,8 @@ import {
  * the revision-12-ordinal proofs are unaffected. The Martian revision
  * inserts BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM after HATCH (its section
  * 11), and the Ice Folk revision THROW_BOLAS and COLD_SNAP after
- * TRACTOR_BEAM (its section 11).
+ * TRACTOR_BEAM (its section 11), and the Dwarf revision TUNNEL, BOMB_RUN,
+ * and ASSEMBLE after COLD_SNAP (its section 14).
  */
 const LATER_COMMAND_KINDS: readonly string[] = [
   "RAISE_DEAD",
@@ -32,6 +33,9 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "TRACTOR_BEAM",
   "THROW_BOLAS",
   "COLD_SNAP",
+  "TUNNEL",
+  "BOMB_RUN",
+  "ASSEMBLE",
   "LAY_EGG",
 ];
 const REVISION_12_COMMAND_KIND_ORDER = COMMAND_KIND_ORDER_V7.filter(

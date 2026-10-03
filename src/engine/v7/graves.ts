@@ -1,5 +1,6 @@
 import type { UnitId } from "../model/ids";
 import { gravesEnabledV7 } from "../rules/ruleset-v7";
+import { unitIsConstructV7 } from "./afflictions";
 import type { DomainEventV7 } from "./events";
 import { compareCoordsV7, sameCoordV7 } from "./schema";
 import { tileAtV7 } from "./spatial-economy";
@@ -17,13 +18,24 @@ export type GraveDeathCauseV7 =
   | "WAIL"
   | "PLAGUE"
   | "KABOOM"
-  | "EXPLOSION";
+  | "EXPLOSION"
+  // The Dwarf revision: a bomb and an eruption (section 5.4, 6.3).
+  | "BOMB"
+  | "ERUPTION";
 
-/** The canonical state a Grave decision reads. */
+/**
+ * The canonical state a Grave decision reads. The Dwarf revision: with the
+ * players, a construct's death leaves no Grave (section 7.2).
+ */
 export type GraveContextV7 = Pick<
   GameStateV7,
   "setup" | "board" | "treasureChests"
->;
+> &
+  Partial<Pick<GameStateV7, "players">>;
+
+/** The facts of a dead unit a Grave decision reads. */
+export type GraveUnitV7 = Pick<UnitStateV7, "form" | "at"> &
+  Partial<Pick<UnitStateV7, "ownerId" | "role">>;
 
 /**
  * Whether the death of `unit` on its tile creates a Grave, given the Graves
@@ -33,9 +45,20 @@ export type GraveContextV7 = Pick<
 export function deathCreatesGraveV7(
   context: GraveContextV7,
   graves: readonly CoordV7[],
-  unit: Pick<UnitStateV7, "form" | "at">,
+  unit: GraveUnitV7,
 ): boolean {
   if (!gravesEnabledV7(context.setup) || unit.form !== "LAND") return false;
+  // The Dwarf revision section 7.2: a construct leaves no Grave.
+  if (
+    context.players !== undefined &&
+    unit.ownerId !== undefined &&
+    unit.role !== undefined &&
+    unitIsConstructV7(
+      { players: context.players },
+      { ownerId: unit.ownerId, role: unit.role },
+    )
+  )
+    return false;
   const tile = tileAtV7(context.board, unit.at);
   // The Rift (RULESET_7_RIFT.md section 4): no Grave lies on a Rift.
   return (
@@ -97,7 +120,7 @@ export function withoutGravesV7(
 export function recordCombatDeathV7(
   context: GraveContextV7,
   graves: readonly CoordV7[],
-  unit: Pick<UnitStateV7, "form" | "at"> & { readonly id: UnitId },
+  unit: GraveUnitV7 & { readonly id: UnitId },
   cause: GraveDeathCauseV7,
   events: DomainEventV7[],
 ): readonly CoordV7[] {

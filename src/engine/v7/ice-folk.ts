@@ -12,8 +12,10 @@ import {
   unitRoleRuleV7,
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
+import { surfacedRiderV7 } from "./dwarf";
 import { arePlayersHostileV7 } from "./economy";
 import type { DomainEventV7 } from "./events";
+import { allOwnedUnitsV7 } from "./units";
 import type { PlayerViewV7 } from "./view";
 import type {
   ChillStatusV7,
@@ -147,11 +149,8 @@ export function chillCountdownV7(
   playerId: PlayerId,
 ): GameStateV7 {
   if (state.chilled.length === 0) return state;
-  const own = new Set(
-    state.units
-      .filter((unit) => unit.ownerId === playerId)
-      .map((unit) => unit.id),
-  );
+  // The Dwarf revision section 5.2: burrowed units keep counting down.
+  const own = new Set(allOwnedUnitsV7(state, playerId).map((unit) => unit.id));
   let changed = false;
   const chilled = state.chilled.flatMap((entry): ChillStatusV7[] => {
     if (!own.has(entry.unitId)) return [entry];
@@ -193,8 +192,11 @@ export function withChillCuredV7(
  */
 export function prunedIceFolkV7(state: GameStateV7): GameStateV7 {
   if (state.chilled.length === 0) return state;
+  // The Dwarf revision section 5.2: a burrowed unit keeps its Chill entry.
   const alive = new Set(
-    state.units.filter((unit) => unit.hp > 0).map((unit) => unit.id),
+    allOwnedUnitsV7(state)
+      .filter((unit) => unit.hp > 0)
+      .map((unit) => unit.id),
   );
   const chilled = state.chilled.filter((entry) => alive.has(entry.unitId));
   return chilled.length === state.chilled.length
@@ -569,8 +571,9 @@ export function deepSnowStopsUnitV7(
  * (`PROWL`).
  */
 export function unitAvoidsForeignSitesV7(
-  roster: FactionRosterV7,
+  roster: FactionRosterV7 & { readonly surfacedThisTurn?: readonly UnitId[] },
   unit: {
+    readonly id?: UnitId;
     readonly ownerId: PlayerId;
     readonly role: UnitRoleIdV7;
     readonly form?: UnitFormV7;
@@ -579,7 +582,11 @@ export function unitAvoidsForeignSitesV7(
   return (
     (unit.form === undefined || unit.form === "LAND") &&
     (unitRoleMechanicsV7(roster, unit).movementMode === "FLY" ||
-      unitRoleRuleV7(roster, unit).abilities.includes("PROWL"))
+      unitRoleRuleV7(roster, unit).abilities.includes("PROWL") ||
+      // The Dwarf revision (section 5.4, root ruling 1): a rider never ends
+      // a Move or advances on a foreign or neutral center on the turn it
+      // surfaced.
+      surfacedRiderV7(roster, unit))
   );
 }
 

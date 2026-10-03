@@ -5,6 +5,10 @@ import type {
   PlayerEventV7,
 } from "./events";
 import {
+  ASSEMBLE_COST_V7,
+  BLASTING_ERUPTION_DAMAGE_V7,
+  DIVE_BOMB_DAMAGE_V7,
+  REPAIR_MACHINE_V7,
   SHIELD_CAP_V7,
   MIND_CONTROL_HP_V7,
   effectiveRoleRuleV7,
@@ -189,6 +193,15 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "populationAdded",
   ],
   UNIT_TRAINED: ["kind", "playerId", "cityId", "unitId", "role", "cost", "at"],
+  UNIT_ASSEMBLED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "assembledUnitId",
+    "at",
+    "cityId",
+    "cost",
+  ],
   NAVAL_UNIT_TRAINED: [
     "kind",
     "playerId",
@@ -254,10 +267,42 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   GRAVE_DEVOURED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
   UNIT_PUSHED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
   UNIT_PULLED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
+  UNIT_TUNNELLED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "from",
+    "to",
+    "riderUnitId",
+    "riderFrom",
+    "riderTo",
+  ],
+  UNIT_SURFACED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "at",
+    "riderUnitId",
+    "riderAt",
+    "eruptionDamage",
+    "results",
+  ],
   UNIT_MOVED: ["kind", "unitId", "path"],
   UNIT_MOVE_INTERRUPTED: ["kind", "unitId", "at", "reason"],
   TILES_REVEALED: ["kind", "playerId", "tiles"],
   COMBAT_RESOLVED: ["kind", "preview"],
+  UNIT_BOMBED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "from",
+    "to",
+    "targetUnitId",
+    "at",
+    "damage",
+    "shieldDamage",
+    "killed",
+  ],
   WAIL_RESOLVED: ["kind", "playerId", "unitId", "at", "results"],
   EXPLOSION_RESOLVED: [
     "kind",
@@ -461,6 +506,18 @@ export function parsePlayerEventEnvelopeV7(
     const projectedChill = parseProjectedUnitsChilled(candidate);
     if (projectedChill !== null) {
       events.push(projectedChill);
+      continue;
+    }
+    // The Dwarf revision (section 13.11): hidden tunnel tiles and a hidden
+    // surfacing Mole.
+    const projectedTunnel = parseProjectedUnitTunnelled(candidate);
+    if (projectedTunnel !== null) {
+      events.push(projectedTunnel);
+      continue;
+    }
+    const projectedSurface = parseProjectedUnitSurfaced(candidate);
+    if (projectedSurface !== null) {
+      events.push(projectedSurface);
       continue;
     }
     const presentation = parsePresentationEvent(candidate);
@@ -765,6 +822,8 @@ function validPayload(
           "OCCUPATION",
           "EXPLOSION",
           "TRAMPLE",
+          // The Dwarf revision: a surfacing Mole's undermining.
+          "UNDERMINED",
         ].includes(e.reason as string)
       );
     case "LAND_GRANTED":
@@ -845,6 +904,17 @@ function validPayload(
           (cost) => e.cost === cost || e.cost === Math.max(1, cost - 1),
         ) &&
         parseCoordV7(e.at) !== null
+      );
+    case "UNIT_ASSEMBLED":
+      // The Dwarf revision (section 9.2): 4 Coins, 3 with Arms Industry.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.assembledUnitId) &&
+        e.unitId !== e.assembledUnitId &&
+        id(e.cityId) &&
+        parseCoordV7(e.at) !== null &&
+        (e.cost === ASSEMBLE_COST_V7 || e.cost === ASSEMBLE_COST_V7 - 1)
       );
     case "NAVAL_UNIT_TRAINED":
       return (
@@ -961,6 +1031,10 @@ function validPayload(
         parseCoordV7(e.from) !== null &&
         parseCoordV7(e.to) !== null
       );
+    case "UNIT_TUNNELLED":
+      return tunnelled(e, false);
+    case "UNIT_SURFACED":
+      return surfaced(e, false);
     case "UNIT_MOVED":
       return id(e.unitId) && coords(e.path);
     case "UNIT_MOVE_INTERRUPTED":
@@ -973,12 +1047,32 @@ function validPayload(
           "ZOC",
           "SETTLEMENT_FORBIDDEN",
           "SNOW",
+          // The Dwarf revision: a hidden mound on the last tile of a Move.
+          "MOUND",
         ].includes(e.reason as string)
       );
     case "TILES_REVEALED":
       return id(e.playerId) && sortedCoords(e.tiles);
     case "COMBAT_RESOLVED":
       return combat(e.preview);
+    case "UNIT_BOMBED":
+      // The Dwarf revision (section 6.3): a bomb of at most 5 (Dive), split
+      // between HP and a Shield; a kill needs HP damage.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        e.unitId !== e.targetUnitId &&
+        parseCoordV7(e.from) !== null &&
+        parseCoordV7(e.to) !== null &&
+        parseCoordV7(e.at) !== null &&
+        nn(e.damage) &&
+        nn(e.shieldDamage) &&
+        Number(e.shieldDamage) <= SHIELD_CAP_V7 &&
+        Number(e.damage) + Number(e.shieldDamage) <= DIVE_BOMB_DAMAGE_V7 &&
+        typeof e.killed === "boolean" &&
+        (e.killed !== true || Number(e.damage) > 0)
+      );
     case "WAIL_RESOLVED":
       return (
         id(e.playerId) &&
@@ -1072,6 +1166,9 @@ function validPayload(
           "CITY_CAPTURED",
           "BRAIN_LOST",
           "SHATTER",
+          // The Dwarf revision: a bomb and an eruption.
+          "BOMB",
+          "ERUPTION",
         ].includes(e.cause as string)
       );
     case "UNIT_MIND_CONTROLLED":
@@ -1179,6 +1276,9 @@ function combat(input: unknown): boolean {
       "snowCover",
       "sweep",
       "hiddenBlizzardPossible",
+      "dugIn",
+      "unflinchingApplied",
+      "platedApplied",
     ])
   )
     return false;
@@ -1248,7 +1348,12 @@ function combat(input: unknown): boolean {
         input.defenseBonusDenominator === 2 &&
         input.fortificationLevel === 0)) &&
     (input.attacksRemaining === 0 || input.attacksRemaining === 1) &&
-    input.overrunContinues === (input.attacksRemaining === 1) &&
+    // The Dwarf revision (section 7.3): an unmoved Clockwork Gunner's first
+    // shot also leaves one attack (`attacksRemaining` 1 with no Overrun).
+    (!input.overrunContinues || input.attacksRemaining === 1) &&
+    [input.dugIn, input.unflinchingApplied, input.platedApplied].every(
+      (item) => typeof item === "boolean",
+    ) &&
     (!input.overrunContinues ||
       (input.overrunAdvance === true &&
         input.advances === true &&
@@ -1312,6 +1417,79 @@ function combat(input: unknown): boolean {
 }
 function splash(input: unknown): boolean {
   return splashEntries(input, false);
+}
+/**
+ * The Dwarf revision (section 5.1) `UNIT_TUNNELLED`: the rider fields are
+ * all null or all set; a projection (`projected`) may hide `from` and `to`.
+ */
+function tunnelled(e: Record<string, unknown>, projected: boolean): boolean {
+  const coord = (value: unknown): boolean =>
+    parseCoordV7(value) !== null || (projected && value === null);
+  const rider =
+    (e.riderUnitId === null && e.riderFrom === null && e.riderTo === null) ||
+    (id(e.riderUnitId) &&
+      e.riderUnitId !== e.unitId &&
+      coord(e.riderFrom) &&
+      coord(e.riderTo));
+  return (
+    id(e.playerId) && id(e.unitId) && coord(e.from) && coord(e.to) && rider
+  );
+}
+/**
+ * The Dwarf revision (section 5.4) `UNIT_SURFACED`: an eruption of 1 to 3;
+ * results splash-shaped, each hit at most the eruption, never the Mole or
+ * its rider. A projection (`projected`) may hide the Mole and its tile.
+ */
+function surfaced(e: Record<string, unknown>, projected: boolean): boolean {
+  if (
+    !id(e.playerId) ||
+    !(id(e.unitId) || (projected && e.unitId === null)) ||
+    !(parseCoordV7(e.at) !== null || (projected && e.at === null)) ||
+    !(
+      (e.riderUnitId === null && e.riderAt === null) ||
+      (id(e.riderUnitId) &&
+        e.riderUnitId !== e.unitId &&
+        parseCoordV7(e.riderAt) !== null) ||
+      (projected && id(e.riderUnitId) && e.riderAt === null)
+    ) ||
+    !pos(e.eruptionDamage) ||
+    Number(e.eruptionDamage) > BLASTING_ERUPTION_DAMAGE_V7 ||
+    !splashEntries(e.results, true)
+  )
+    return false;
+  return (
+    e.results as readonly {
+      unitId: number;
+      damage: number;
+      shieldDamage: number;
+    }[]
+  ).every(
+    (entry) =>
+      entry.unitId !== e.unitId &&
+      entry.unitId !== e.riderUnitId &&
+      entry.damage + entry.shieldDamage <= (e.eruptionDamage as number),
+  );
+}
+/** The Dwarf revision: a projected `UNIT_TUNNELLED` with hidden tiles. */
+function parseProjectedUnitTunnelled(input: unknown): PlayerEventV7 | null {
+  return hasExactKeysV7(input, FIELDS.UNIT_TUNNELLED) &&
+    input.kind === "UNIT_TUNNELLED" &&
+    (input.from === null ||
+      input.to === null ||
+      input.riderFrom === null ||
+      input.riderTo === null) &&
+    tunnelled(input, true)
+    ? (input as unknown as PlayerEventV7)
+    : null;
+}
+/** The Dwarf revision: a projected `UNIT_SURFACED` with a hidden Mole. */
+function parseProjectedUnitSurfaced(input: unknown): PlayerEventV7 | null {
+  return hasExactKeysV7(input, FIELDS.UNIT_SURFACED) &&
+    input.kind === "UNIT_SURFACED" &&
+    (input.unitId === null || input.at === null || input.riderAt === null) &&
+    surfaced(input, true)
+    ? (input as unknown as PlayerEventV7)
+    : null;
 }
 /** Revision 14 Plague damage entries: Plague bypasses Shields. */
 function plagueEntries(input: unknown): boolean {
@@ -1534,7 +1712,8 @@ function tendResults(input: unknown): boolean {
       ]) ||
       !id(result.unitId) ||
       !nn(result.amount) ||
-      Number(result.amount) > 2 ||
+      // The Dwarf revision (section 9.1): Repair heals a machine 4.
+      Number(result.amount) > REPAIR_MACHINE_V7 ||
       typeof result.curedPlague !== "boolean" ||
       typeof result.curedBitten !== "boolean" ||
       // The Ice Folk revision section 10.5: Tend Wounded cures Chill.

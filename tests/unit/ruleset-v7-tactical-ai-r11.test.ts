@@ -972,8 +972,12 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // (`pulp_wars-7g3.3`) inserts THROW_BOLAS and COLD_SNAP after
         // TRACTOR_BEAM, moving every later kind forward by two (was
         // 45d48c…e816); the revision-12-ordinal value below is unchanged.
+        // The Dwarf revision (`pulp_wars-78i.3`) inserts TUNNEL, BOMB_RUN,
+        // and ASSEMBLE after COLD_SNAP, moving every later kind forward by
+        // three (was 618190…e242); the revision-12-ordinal value below is
+        // unchanged.
         expect(canonicalHash(beforeDecision)).toBe(
-          "6181903db4063c5f66237694dd5eec1cb5165ad3b8be50f9eccecf2ed9c7e242",
+          "96afa0d51757e57da35cb9d3f2fd27a191f17a78af3898e8fbb340a2c0204064",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1040,9 +1044,12 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // same candidate's strategic value is 17 (was 15), the Guard's HP.
         // The Ice Folk revision (`pulp_wars-7g3.3`) inserts THROW_BOLAS and
         // COLD_SNAP after TRACTOR_BEAM, moving every later command-kind
-        // ordinal forward by two (was 2d3708…8e6e).
+        // ordinal forward by two (was 2d3708…8e6e). The Dwarf revision
+        // (`pulp_wars-78i.3`) inserts TUNNEL, BOMB_RUN, and ASSEMBLE after
+        // COLD_SNAP, moving every later command-kind ordinal forward by
+        // three (was 6f8cb1…6174).
         expect(canonicalHash(capturedDecision)).toBe(
-          "6f8cb1168a4730a5b6eb34e0ac684debf5be58d3269bb1586c02db23c77c6174",
+          "9651adfd72f861d43d5942e2178cea5a8920f63416c4ecba10f27dcc79a60520",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

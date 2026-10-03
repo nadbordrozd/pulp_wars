@@ -1,6 +1,8 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
+  ASSEMBLE_COST_V7,
   BASIC_ECONOMIC_ACTIONS_V7,
+  BOMB_RANGE_V7,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   TECHNOLOGY_BRANCH_IDS_V7,
   EMBARKED_LANDING_MAX_SPENT_V7,
@@ -39,6 +41,7 @@ import {
   cityUnitCapacityForV7,
   isRallyTargetV7,
   isResourceRevealedV7,
+  platedCapAppliesV7,
   playerTechnologyResearchCostV7,
   technologyResearchCostV7,
   type BasicEconomicCommandKindV7,
@@ -60,7 +63,22 @@ import {
 } from "./economy";
 import { raiseDeadGravesV7 } from "./graves";
 import { applyCommandV7 } from "./reducer";
-import { BITTEN_RISING_HP_V7, afflictionCombatEffectsV7 } from "./afflictions";
+import {
+  BITTEN_RISING_HP_V7,
+  afflictionCombatEffectsV7,
+  unitIsConstructV7,
+} from "./afflictions";
+import { eruptionResultsV7, tunnelReachV7 } from "./dwarf-reducer";
+import {
+  attackAllowanceV7,
+  attackIsUnflinchingV7,
+  attackKnocksBackV7,
+  cannonIgnoresFortificationV7,
+  knockbackDestinationV7,
+  publicUnitIsDugInV7,
+  roleRetaliatesV7,
+  twinShotReadyV7,
+} from "./dwarf";
 import {
   blastAreaV7,
   isExplodingUnitV7,
@@ -109,7 +127,11 @@ import {
 import { riftAtV7 } from "./rift";
 import { grownHpV7 } from "./growth";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
-import type { CombatPreviewV7, DomainEventV7 } from "./events";
+import type {
+  CombatPreviewV7,
+  CombatSplashEntryV7,
+  DomainEventV7,
+} from "./events";
 import { reachablePlayerMovementPathsV7 } from "./movement";
 import {
   spatialContributionAtV7,
@@ -138,7 +160,13 @@ import {
   type UnitStateV7,
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
-import { viewForV7, type PlayerTileViewV7, type PlayerViewV7 } from "./view";
+import { allOwnedUnitsV7, tileOccupiedV7 } from "./units";
+import {
+  viewForV7,
+  type PlayerTileViewV7,
+  type PlayerViewV7,
+  type PublicUnitV7,
+} from "./view";
 import {
   WAIL_RADIUS_V7,
   publicWailLeavesGraveV7,
@@ -442,9 +470,10 @@ function appendPublicCityCommandsV7(
     player.faction,
   );
   // Revision 19 section 5.1: used slots are a sum (own units are always
-  // visible to their owner, with their home city).
-  const assigned = view.units
-    .filter((unit) => unit.ownerId === player.id && unit.homeCityId === city.id)
+  // visible to their owner, with their home city). The Dwarf revision: own
+  // burrowed units keep their slots (every own mound is explored).
+  const assigned = allOwnedUnitsV7(view, player.id)
+    .filter((unit) => unit.homeCityId === city.id)
     .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
   const fits = (role: UnitRoleIdV7): boolean =>
     assigned + unitCapacitySlotsV7(view, { ownerId: player.id, role }) <=
@@ -580,9 +609,8 @@ function publicLandingTilesV7(
       (tile.territoryOwnerId === null ||
         tile.territoryOwnerId === player.id ||
         !publicAllied(view, player.id, tile.territoryOwnerId)) &&
-      !view.units.some(
-        (candidate) => candidate.id !== unit.id && same(candidate.at, tile.at),
-      ),
+      // The Dwarf revision section 5.3: the occupancy predicate.
+      !tileOccupiedV7(view, tile.at, unit.id),
   );
 }
 
@@ -701,8 +729,13 @@ function appendPublicUnitCommandsV7(
   const rule = unitRoleRuleV7(view, unit);
   const primaryReady =
     !primaryUsedForQuery(unit) && !primaryActionBlockedAfterMoveV7(view, unit);
+  // The Dwarf revision section 7.3: an unmoved Clockwork Gunner's second
+  // shot.
   const attackReady =
-    unit.form !== "EMBARKED" && (primaryReady || unit.activation.overrunActive);
+    unit.form !== "EMBARKED" &&
+    (primaryReady ||
+      unit.activation.overrunActive ||
+      twinShotReadyV7(view, unit));
   // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2.
   const attackRange = publicAttackMaximumRangeV7(view, unit);
   for (const target of view.units) {
@@ -768,6 +801,34 @@ function appendPublicUnitCommandsV7(
     )
       candidates.push({ kind: "COLD_SNAP", unitId: unit.id });
   }
+  // The Dwarf revision: the Steam Mole's Tunnel, the Gyrocopter's bombing
+  // run, and the Engineer's Assemble, each offered exactly when legal.
+  if (!overrun && unit.form === "LAND") {
+    if (
+      rule.abilities.includes("TUNNEL") &&
+      !unit.activation.moved &&
+      !primaryUsedForQuery(unit) &&
+      !view.surfacedThisTurn.includes(unit.id)
+    )
+      candidates.push(...publicTunnelCommandsV7(view, unit));
+    if (
+      rule.abilities.includes("BOMB_RUN") &&
+      !unit.activation.moved &&
+      !primaryUsedForQuery(unit) &&
+      !unitIsSluggishV7(view, unit)
+    )
+      for (const target of publicBombTargetsV7(view, unit))
+        for (const to of publicBombLandingsV7(view, unit, target))
+          candidates.push({
+            kind: "BOMB_RUN",
+            unitId: unit.id,
+            targetUnitId: target.id,
+            to,
+          });
+    if (rule.abilities.includes("ASSEMBLE") && primaryReady)
+      for (const to of publicAssembleTilesV7(view, unit))
+        candidates.push({ kind: "ASSEMBLE", unitId: unit.id, to });
+  }
   // Revision 19 Hatch: every adjacent own Egg laid on an earlier turn.
   if (
     !overrun &&
@@ -819,7 +880,7 @@ function appendPublicUnitCommandsV7(
     primaryReady &&
     unit.form === "LAND" &&
     rule.abilities.includes("RAISE_DEAD") &&
-    raiseDeadGravesV7(view.graves, view.units, unit.at).length > 0
+    raiseDeadGravesV7(view.graves, allOwnedUnitsV7(view), unit.at).length > 0
   )
     candidates.push({ kind: "RAISE_DEAD", unitId: unit.id });
   if (
@@ -836,6 +897,8 @@ function appendPublicUnitCommandsV7(
     !primaryUsedForQuery(unit) &&
     unit.hp < unit.maxHp &&
     unit.form !== "EMBARKED" &&
+    // The Dwarf revision section 7.2: clockwork never recovers by itself.
+    !unitIsConstructV7(view, unit) &&
     !publicRestlessOutsideOwnTerritory(view, unit) &&
     (unit.form !== "NAVAL" ||
       [tileAtView(view, unit.at), ...adjacentPublicTiles(view, unit.at)].some(
@@ -905,6 +968,493 @@ function appendPublicUnitCommandsV7(
     candidates.push({ kind: "BUILD_FIELD_DEFENSE", unitId: unit.id });
   if (!unit.activation.handled)
     candidates.push({ kind: "WAIT", unitId: unit.id });
+}
+
+/**
+ * The Dwarf revision section 5.1: whether `at` is a tunnel tile for `unit`
+ * in the viewer's view (exact: every unit and mound on an explored tile is
+ * visible, and the unit is the viewer's own).
+ */
+function publicTunnelTileV7(
+  view: PlayerViewV7,
+  unit: Pick<PublicUnitV7, "ownerId" | "role">,
+  at: CoordV7,
+): boolean {
+  const tile = tileAtView(view, at);
+  return (
+    tile?.explored === true &&
+    tile.biome !== null &&
+    tile.terrain !== "RIFT" &&
+    tile.site === null &&
+    canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: unitMovementModeV7(view, unit),
+      afloat: false,
+      engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
+      navigation: false,
+      mountainBorn: unitIsMountainBornV7(view, unit),
+    }) &&
+    !tileOccupiedV7(view, at) &&
+    !view.treasureChests.some((chest) => same(chest, at)) &&
+    !(
+      tile.territoryOwnerId !== null &&
+      publicAllied(view, view.viewer.id, tile.territoryOwnerId)
+    )
+  );
+}
+
+/**
+ * The Dwarf revision section 5.1: every legal `TUNNEL` of an own ready Mole,
+ * one per destination and rider tile plus the rider-less entry (the Beam
+ * Down precedent), in `compareCommandsV7` order.
+ */
+function publicTunnelCommandsV7(
+  view: PlayerViewV7,
+  mole: PublicUnitV7,
+): readonly CommandV7[] {
+  const range = unitRoleMechanicsV7(view, mole).tunnelRange;
+  const reach = tunnelReachV7(
+    view.board,
+    (at) => {
+      const tile = tileAtView(view, at);
+      return tile?.explored === true && tile.biome !== null;
+    },
+    mole.at,
+    range,
+  );
+  const riders = view.units
+    .filter(
+      (rider) =>
+        rider.id !== mole.id &&
+        rider.ownerId === mole.ownerId &&
+        rider.hp > 0 &&
+        rider.form === "LAND" &&
+        unitRoleRuleV7(view, rider).abilities.includes("RIDES_TUNNEL") &&
+        chebyshev(rider.at, mole.at) === 1 &&
+        !rider.activation.moved &&
+        !rider.activation.overrunActive &&
+        !primaryUsedForQuery(rider) &&
+        !view.surfacedThisTurn.includes(rider.id),
+    )
+    .sort((left, right) => left.id - right.id);
+  const commands: CommandV7[] = [];
+  for (const to of [...reach.values()].sort(
+    (left, right) => left.y - right.y || left.x - right.x,
+  )) {
+    if (!publicTunnelTileV7(view, mole, to)) continue;
+    commands.push({ kind: "TUNNEL", unitId: mole.id, to, rider: null });
+    for (const rider of riders)
+      for (const tile of adjacentPublicTiles(view, to))
+        if (publicTunnelTileV7(view, rider, tile.at))
+          commands.push({
+            kind: "TUNNEL",
+            unitId: mole.id,
+            to,
+            rider: { unitId: rider.id, to: tile.at },
+          });
+  }
+  return commands;
+}
+
+/**
+ * The Dwarf revision section 6.2 rows 6 to 9: the targets of an own ready
+ * Gyrocopter: visible hostile units within `BOMB_RANGE_V7` not bombed this
+ * turn, in unit-ID order.
+ */
+function publicBombTargetsV7(
+  view: PlayerViewV7,
+  gyro: PublicUnitV7,
+): readonly PublicUnitV7[] {
+  return view.units
+    .filter(
+      (target) =>
+        target.hp > 0 &&
+        target.id !== gyro.id &&
+        publicHostile(view, gyro.ownerId, target.ownerId) &&
+        chebyshev(target.at, gyro.at) <= BOMB_RANGE_V7 &&
+        !view.bombedThisTurn.includes(target.id),
+    )
+    .sort((left, right) => left.id - right.id);
+}
+
+/**
+ * The Dwarf revision section 6.2 row 10: the landings of a bombing run on
+ * `target`, in (y, x) order: next to the target, strictly farther from the
+ * Gyrocopter, explored, no treasure chest, and an offered Move destination
+ * of the Gyrocopter.
+ */
+function publicBombLandingsV7(
+  view: PlayerViewV7,
+  gyro: PublicUnitV7,
+  target: PublicUnitV7,
+): readonly CoordV7[] {
+  const destinations = reachablePlayerMovementPathsV7(view, gyro).map(
+    (path) => path.destination,
+  );
+  return adjacentPublicTiles(view, target.at)
+    .filter(
+      (tile) =>
+        tile.explored &&
+        chebyshev(tile.at, gyro.at) > chebyshev(target.at, gyro.at) &&
+        !view.treasureChests.some((chest) => same(chest, tile.at)) &&
+        destinations.some((at) => same(at, tile.at)),
+    )
+    .map((tile) => tile.at)
+    .sort((left, right) => left.y - right.y || left.x - right.x);
+}
+
+/**
+ * The Dwarf revision section 9.2: the legal Assemble tiles of an own ready
+ * Engineer (Marksmanship, a home city of the viewer with a free slot, the
+ * Coins), in (y, x) order; empty when any condition but the tile fails.
+ */
+function publicAssembleTilesV7(
+  view: PlayerViewV7,
+  engineer: PublicUnitV7,
+): readonly CoordV7[] {
+  const facts = publicAssembleFactsV7(view, engineer);
+  if (facts === null || facts.unavailableReason !== null) return [];
+  return facts.tiles;
+}
+
+/** The Dwarf revision section 9.2: the public facts of an Assemble. */
+function publicAssembleFactsV7(
+  view: PlayerViewV7,
+  engineer: PublicUnitV7,
+): {
+  readonly cityId: CityId | null;
+  readonly cost: number;
+  readonly usedSlots: number;
+  readonly capacity: number;
+  readonly tiles: readonly CoordV7[];
+  readonly unavailableReason:
+    | "TECH_REQUIRED"
+    | "NO_HOME"
+    | "CITY_CAPACITY_FULL"
+    | "INSUFFICIENT_COINS"
+    | "INVALID_TILE"
+    | null;
+} | null {
+  if (engineer.ownerId !== view.viewer.id) return null;
+  const player = view.viewer;
+  const home = view.cities.find(
+    (city) => city.id === engineer.homeCityId && city.ownerId === player.id,
+  );
+  const tiles = adjacentPublicTiles(view, engineer.at)
+    .filter((tile) =>
+      publicTunnelTileV7(
+        view,
+        { ownerId: player.id, role: "MARKSMAN" },
+        tile.at,
+      ),
+    )
+    .map((tile) => tile.at)
+    .sort((left, right) => left.y - right.y || left.x - right.x);
+  const capacity =
+    home === undefined
+      ? 0
+      : cityUnitCapacityForV7(
+          home.level,
+          player.researchedTechs,
+          player.faction,
+        );
+  const usedSlots =
+    home === undefined
+      ? 0
+      : allOwnedUnitsV7(view, player.id)
+          .filter((unit) => unit.homeCityId === home.id)
+          .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+  const forge =
+    home !== undefined &&
+    view.improvementValues.some((value) => {
+      if (value.improvement !== "FORGE" || value.level <= 0) return false;
+      const tile = tileAtView(view, value.at);
+      return tile?.explored === true && tile.territoryCityId === home.id;
+    });
+  const cost = Math.max(1, ASSEMBLE_COST_V7 - (forge ? 1 : 0));
+  const slots = unitCapacitySlotsV7(view, {
+    ownerId: player.id,
+    role: "MARKSMAN",
+  });
+  return {
+    cityId: home?.id ?? null,
+    cost,
+    usedSlots,
+    capacity,
+    tiles,
+    unavailableReason: !technologyCapabilitiesV7(
+      player.researchedTechs,
+      player.faction,
+    ).assemble
+      ? "TECH_REQUIRED"
+      : home === undefined
+        ? "NO_HOME"
+        : usedSlots + slots > capacity
+          ? "CITY_CAPACITY_FULL"
+          : player.coins < cost
+            ? "INSUFFICIENT_COINS"
+            : tiles.length === 0
+              ? "INVALID_TILE"
+              : null,
+  };
+}
+
+/** The Dwarf revision (section 14): the preview of an offered Tunnel. */
+export interface TunnelPreviewV7 {
+  readonly unitId: UnitId;
+  readonly to: CoordV7;
+  readonly riderUnitId: UnitId | null;
+  readonly riderTo: CoordV7 | null;
+  /** The viewer's eruption (2, or 3 with Blasting Charges). */
+  readonly eruptionDamage: number;
+  /**
+   * The eruption is a forecast on the current board: the targets may move
+   * before the Mole surfaces at its owner's next Start Turn.
+   */
+  readonly projected: true;
+  /** The visible hostile ground units around `to`, in (y, x, id) order. */
+  readonly eruptionTargets: readonly CombatSplashEntryV7[];
+  /** The explored tiles whose Field Defense the surfacing undermines. */
+  readonly undermines: readonly CoordV7[];
+}
+
+/**
+ * The Dwarf revision (section 14): null unless that `TUNNEL` is offered;
+ * the eruption as if it happened on the current board (`projected`).
+ */
+export function previewTunnelV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "TUNNEL" }>,
+): TunnelPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (candidate) =>
+        candidate.kind === "TUNNEL" && sameTunnelV7(candidate, command),
+    )
+  )
+    return null;
+  const eruptionDamage = technologyCapabilitiesV7(
+    view.viewer.researchedTechs,
+    view.viewer.faction,
+  ).eruptionDamage;
+  const undermines: CoordV7[] = [];
+  for (let y = command.to.y - 1; y <= command.to.y + 1; y += 1)
+    for (let x = command.to.x - 1; x <= command.to.x + 1; x += 1) {
+      const tile = tileAtView(view, { x, y });
+      if (tile?.explored === true && tile.fieldDefense)
+        undermines.push({ x, y });
+    }
+  return {
+    unitId: command.unitId,
+    to: command.to,
+    riderUnitId: command.rider?.unitId ?? null,
+    riderTo: command.rider?.to ?? null,
+    eruptionDamage,
+    projected: true,
+    eruptionTargets: eruptionResultsV7(
+      view,
+      view.viewer.id,
+      command.to,
+      eruptionDamage,
+      view.units,
+      (unitId) => shieldOfV7(view.shields, unitId),
+    ),
+    undermines,
+  };
+}
+
+function sameTunnelV7(
+  left: Extract<CommandV7, { kind: "TUNNEL" }>,
+  right: Extract<CommandV7, { kind: "TUNNEL" }>,
+): boolean {
+  return (
+    left.unitId === right.unitId &&
+    same(left.to, right.to) &&
+    (left.rider === null
+      ? right.rider === null
+      : right.rider !== null &&
+        left.rider.unitId === right.rider.unitId &&
+        same(left.rider.to, right.rider.to))
+  );
+}
+
+/** The Dwarf revision (section 14): the preview of an offered bombing run. */
+export interface BombRunPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+  readonly to: CoordV7;
+  /** HP damage of the bomb (exact: fixed damage on a visible target). */
+  readonly damage: number;
+  /** What the target's Shield absorbs. */
+  readonly shieldDamage: number;
+  readonly kills: boolean;
+  /** The death blasts of a killed exploding target (the Gyrocopter beside). */
+  readonly blast: readonly ExplosionPreviewV7[];
+  /**
+   * An estimate of the damage the visible enemies could deal the Gyrocopter
+   * at `to` on their next turn: the sum, over every visible hostile unit
+   * whose threatened tiles (`queryThreatenedTilesV7`) include `to`, of one
+   * full-strength hit on it (a Gyrocopter enemy: its public bomb), capped
+   * at the Gyrocopter's HP.
+   */
+  readonly landingThreat: number;
+}
+
+/** The Dwarf revision (section 14): null unless that `BOMB_RUN` is offered. */
+export function previewBombRunV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "BOMB_RUN" }>,
+): BombRunPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (candidate) =>
+        candidate.kind === "BOMB_RUN" &&
+        candidate.unitId === command.unitId &&
+        candidate.targetUnitId === command.targetUnitId &&
+        same(candidate.to, command.to),
+    )
+  )
+    return null;
+  const gyro = view.units.find((unit) => unit.id === command.unitId);
+  const target = view.units.find((unit) => unit.id === command.targetUnitId);
+  if (gyro === undefined || target === undefined) return null;
+  const bombDamage = technologyCapabilitiesV7(
+    view.viewer.researchedTechs,
+    view.viewer.faction,
+  ).bombDamage;
+  const hit = absorbHitV7(
+    shieldOfV7(view.shields, target.id),
+    target.hp,
+    armouredDamageV7(view, target, bombDamage),
+  );
+  const kills = hit.hpDamage >= target.hp;
+  let blast: readonly ExplosionPreviewV7[] = [];
+  if (kills && isExplodingUnitV7(view, target)) {
+    const sim = createPublicChainSimulationV7(view);
+    const units = view.units
+      .filter((unit) => unit.id !== target.id)
+      .map((unit) =>
+        unit.id === gyro.id
+          ? { ...sim.blastUnit(unit), at: command.to }
+          : sim.blastUnit(unit),
+      );
+    const rising = sim.rise(sim.blastUnit(target));
+    if (rising !== null) units.push(rising);
+    blast = sim.run(
+      sim.collapse(units),
+      [{ unit: { ...sim.blastUnit(target), hp: 0 }, cause: "DEATH" }],
+      false,
+      [],
+      new Map([[target.id, hit.shieldDamage]]),
+    ).explosions;
+  }
+  return {
+    unitId: gyro.id,
+    targetUnitId: target.id,
+    to: command.to,
+    damage: hit.hpDamage,
+    shieldDamage: hit.shieldDamage,
+    kills,
+    blast,
+    landingThreat: publicLandingThreatV7(view, gyro, command.to),
+  };
+}
+
+/** See {@link BombRunPreviewV7.landingThreat}. */
+function publicLandingThreatV7(
+  view: PlayerViewV7,
+  gyro: PublicUnitV7,
+  at: CoordV7,
+): number {
+  const gyroRule = unitRoleRuleV7(view, gyro);
+  let total = 0;
+  for (const enemy of view.units) {
+    if (
+      enemy.hp <= 0 ||
+      enemy.form === "EGG" ||
+      !publicHostile(view, gyro.ownerId, enemy.ownerId) ||
+      !queryThreatenedTilesV7(view, enemy.id).some((tile) => same(tile, at))
+    )
+      continue;
+    const rule = unitRoleRuleV7(view, enemy);
+    if (rule.abilities.includes("BOMB_RUN")) {
+      const stats = view.unitStats.find((entry) => entry.unitId === enemy.id);
+      total += stats?.dwarf?.bombDamage ?? 0;
+      continue;
+    }
+    if (!rule.abilities.includes("ATTACK") || rule.attack2 <= 0) continue;
+    const attack = BigInt(rule.attack2) * BigInt(enemy.hp);
+    const attackDenominator = 2n * BigInt(enemy.maxHp);
+    const defense = BigInt(gyroRule.defense2) * BigInt(gyro.hp);
+    const defenseDenominator = 2n * BigInt(gyro.maxHp);
+    const attackOnCommon = attack * defenseDenominator;
+    const totalForce = attackOnCommon + defense * attackDenominator;
+    if (totalForce <= 0n) continue;
+    total += roundHalfUpPublic(
+      attackOnCommon * BigInt(rule.attack2) * 9n,
+      totalForce * 4n,
+    );
+  }
+  return Math.min(total, gyro.hp);
+}
+
+/** The Dwarf revision (section 14): the preview of an Engineer's Assemble. */
+export interface AssemblePreviewV7 {
+  readonly unitId: UnitId;
+  readonly cost: number;
+  readonly cityId: CityId;
+  readonly usedSlots: number;
+  readonly capacity: number;
+  /** The offered tiles in (y, x) order. */
+  readonly tiles: readonly CoordV7[];
+}
+
+/** The Dwarf revision (section 14): null unless `ASSEMBLE` is offered. */
+export function previewAssembleV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): AssemblePreviewV7 | null {
+  const tiles = queryPlayerCommandsV7(view).flatMap((command) =>
+    command.kind === "ASSEMBLE" && command.unitId === unitId
+      ? [command.to]
+      : [],
+  );
+  const engineer = view.units.find((unit) => unit.id === unitId);
+  if (tiles.length === 0 || engineer === undefined) return null;
+  const facts = publicAssembleFactsV7(view, engineer);
+  if (facts === null || facts.cityId === null) return null;
+  return {
+    unitId,
+    cost: facts.cost,
+    cityId: facts.cityId,
+    usedSlots: facts.usedSlots,
+    capacity: facts.capacity,
+    tiles,
+  };
+}
+
+/**
+ * The Dwarf revision (section 16.1): why an own Engineer cannot Assemble
+ * now (for the UI's disabled reason), or null when it can; null for any
+ * other unit.
+ */
+export function queryAssembleUnavailableReasonV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+):
+  | "TECH_REQUIRED"
+  | "NO_HOME"
+  | "CITY_CAPACITY_FULL"
+  | "INSUFFICIENT_COINS"
+  | "INVALID_TILE"
+  | null {
+  const engineer = view.units.find((unit) => unit.id === unitId);
+  if (
+    engineer === undefined ||
+    !unitRoleRuleV7(view, engineer).abilities.includes("ASSEMBLE")
+  )
+    return null;
+  return publicAssembleFactsV7(view, engineer)?.unavailableReason ?? null;
 }
 
 /**
@@ -981,7 +1531,8 @@ function publicBeamDownDestinationsV7(
           navigation: player.researchedTechs.includes("NAVIGATION"),
           mountainBorn: unitIsMountainBornV7(view, passenger),
         }) &&
-        !view.units.some((unit) => unit.hp > 0 && same(unit.at, tile.at)) &&
+        // The Dwarf revision section 5.3: the occupancy predicate.
+        !tileOccupiedV7(view, tile.at) &&
         !view.treasureChests.some((chest) => same(chest, tile.at)) &&
         !(
           tile.territoryOwnerId !== null &&
@@ -1069,9 +1620,8 @@ function publicTractorBeamDestinationV7(
     ...technology,
     mountainBorn: unitIsMountainBornV7(view, target),
   }) &&
-    !view.units.some(
-      (unit) => unit.id !== target.id && unit.hp > 0 && same(unit.at, to),
-    ) &&
+    // The Dwarf revision section 5.3: the occupancy predicate.
+    !tileOccupiedV7(view, to, target.id) &&
     !view.treasureChests.some((chest) => same(chest, to)) &&
     !(
       tile.territoryOwnerId !== null &&
@@ -1845,7 +2395,9 @@ export function previewRaiseDeadV7(
   const unit = offeredGraveActor(view, "RAISE_DEAD", unitId);
   return unit === null
     ? null
-    : { graves: raiseDeadGravesV7(view.graves, view.units, unit.at) };
+    : {
+        graves: raiseDeadGravesV7(view.graves, allOwnedUnitsV7(view), unit.at),
+      };
 }
 
 /** Revision 13 Devour preview; `amount` may be 0. */
@@ -1955,8 +2507,8 @@ export function previewLayEggV7(
   });
   const cost = Math.max(1, rule.cost - (forgeDiscount ? 1 : 0));
   const slots = unitCapacitySlotsV7(view, { ownerId: player.id, role });
-  const usedSlots = view.units
-    .filter((unit) => unit.ownerId === player.id && unit.homeCityId === city.id)
+  const usedSlots = allOwnedUnitsV7(view, player.id)
+    .filter((unit) => unit.homeCityId === city.id)
     .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
   const capacity = cityUnitCapacityForV7(
     city.level,
@@ -2206,9 +2758,25 @@ export function queryThreatenedTilesV7(
   const unit = view.units.find(
     (candidate) => candidate.id === unitId && candidate.hp > 0,
   );
+  // The Dwarf revision section 14: a mound's eruption ring and surfacing
+  // reach (Move 1 and an attack): the tiles within 2 of its tile.
+  const mound = view.burrowed.find((entry) => entry.unit.id === unitId);
+  if (unit === undefined && mound !== undefined)
+    return tilesWithinV7(view, mound.unit.at, 1, 2);
   // Revision 19 section 6.2: an Egg threatens nothing.
   if (unit === undefined || unit.form === "EGG") return [];
   const rule = unitRoleRuleV7(view, unit);
+  // The Dwarf revision section 14: a Gyrocopter's bombing reach (no
+  // ordinary attack): every tile within 2 of its tile, unless it is
+  // sluggish (it cannot bomb on its next turn).
+  if (
+    unit.form === "LAND" &&
+    rule.abilities.includes("BOMB_RUN") &&
+    !rule.abilities.includes("ATTACK")
+  )
+    return unitIsSluggishV7(view, unit)
+      ? []
+      : tilesWithinV7(view, unit.at, 1, BOMB_RANGE_V7);
   // Revision 13: a Banshee threatens Chebyshev 1-2 around each reachable tile.
   const wail = rule.abilities.includes("WAIL");
   // Revision 17: a goblin-crewed land unit may Kaboom after moving, so it
@@ -2263,6 +2831,22 @@ export function queryThreatenedTilesV7(
   return [
     ...new Map(direct.map((at) => [`${at.y},${at.x}`, at])).values(),
   ].sort((a, b) => a.y - b.y || a.x - b.x);
+}
+
+/** The board tiles at Chebyshev distance `minimum` to `maximum`, in (y, x). */
+function tilesWithinV7(
+  view: PlayerViewV7,
+  center: CoordV7,
+  minimum: number,
+  maximum: number,
+): readonly CoordV7[] {
+  return view.board.tiles
+    .map((tile) => tile.at)
+    .filter((at) => {
+      const distance = chebyshev(at, center);
+      return distance >= minimum && distance <= maximum;
+    })
+    .sort((left, right) => left.y - right.y || left.x - right.x);
 }
 
 function primaryUsedForQuery(unit: Pick<UnitStateV7, "activation">): boolean {
@@ -5408,14 +5992,20 @@ function publicCombatPreviewCore(
   const defenderRule = unitRoleRuleV7(view, target);
   const attackerMechanics = unitRoleMechanicsV7(view, attacker);
   const distance = chebyshev(attacker.at, target.at);
+  // The Dwarf revision section 7.3: an unmoved Clockwork Gunner's second
+  // shot.
+  const twinShot = twinShotReadyV7(view, attacker);
   const attackReady =
-    !primaryUsedForQuery(attacker) || attacker.activation.overrunActive;
+    !primaryUsedForQuery(attacker) ||
+    attacker.activation.overrunActive ||
+    twinShot;
   if (
     attacker.form === "EMBARKED" ||
     attacker.form === "EGG" ||
     !attackerRule.abilities.includes("ATTACK") ||
     !attackReady ||
     (!attacker.activation.overrunActive &&
+      !twinShot &&
       attacker.activation.attacksUsed >= 1) ||
     primaryActionBlockedAfterMoveV7(view, attacker) ||
     distance < attackerRule.minimumRange ||
@@ -5487,10 +6077,14 @@ function publicCombatPreviewCore(
     tileFortification,
     targetTile.fieldDefense ? 1 : 0,
   );
+  // The Dwarf revision section 8: Dig In is one level in the Field Defense
+  // part (never added to Field Defense), read from the target's public
+  // stats (its owner's technologies are private).
+  const dugIn = targetTakesCover && publicUnitIsDugInV7(view, target.id);
   const { fortificationLevel, fortificationIgnored } = attackFortificationV7(
     {
       walls: tileFortification - tileFieldDefense,
-      fieldDefense: tileFieldDefense,
+      fieldDefense: Math.max(tileFieldDefense, dugIn ? 1 : 0),
     },
     {
       acid,
@@ -5509,6 +6103,12 @@ function publicCombatPreviewCore(
         ).raysIgnoreFortification,
       // The Ice Folk revision section 7.6: Boulders.
       boulders: attackerLand && attackerMechanics0.ignoresFortification,
+      // The Dwarf revision section 10.1: a Blasting Steam Cannon.
+      blasting: cannonIgnoresFortificationV7(
+        view,
+        attacker,
+        view.viewer.researchedTechs,
+      ),
     },
   );
   // Revision 19 section 6.2: an Egg defends with a fixed 1.
@@ -5536,7 +6136,10 @@ function publicCombatPreviewCore(
       : { numerator: 1, denominator: 1 };
   const breachApplied = false;
   const applied = bonus;
-  const attackForceNumerator = BigInt(attack2) * BigInt(attacker.hp);
+  // The Dwarf revision section 7.1: Unflinching (a construct's attack).
+  const unflinching = attackIsUnflinchingV7(view, attacker);
+  const attackForceNumerator =
+    BigInt(attack2) * BigInt(unflinching ? attacker.maxHp : attacker.hp);
   const attackForceDenominator = 2n * BigInt(attacker.maxHp);
   const defenseForceNumerator =
     BigInt(defense2) * BigInt(target.hp) * BigInt(applied.numerator);
@@ -5585,13 +6188,14 @@ function publicCombatPreviewCore(
   const defenderDies = damageToDefender >= target.hp;
   // Revision 14 (V1): an UNANSWERED attacker draws no retaliation.
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
-  // Revision 19: an Egg never retaliates.
+  // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
+  // a Gyrocopter retaliates too.
   const retaliation =
     !defenderDies &&
     !unanswered &&
     target.form !== "EMBARKED" &&
     target.form !== "EGG" &&
-    defenderRule.abilities.includes("ATTACK") &&
+    roleRetaliatesV7(defenderRule) &&
     defenderRule.attack2 > 0 &&
     distance >= defenderRule.minimumRange &&
     distance <= defenderRule.range;
@@ -5698,20 +6302,17 @@ function publicCombatPreviewCore(
     attackerOnRift: riftAtV7(view.board, attacker.at),
     defenderOnRift: riftAtV7(view.board, target.at),
     splash,
-    splashOwner: (unitId) =>
-      view.units.find((unit) => unit.id === unitId)?.ownerId,
+    splashUnit: (unitId) => view.units.find((unit) => unit.id === unitId),
     plaguedUnitIds: new Set(view.plagued.map((entry) => entry.unitId)),
     bittenUnitIds: new Set(view.bitten.map((entry) => entry.unitId)),
     eggUnitIds: new Set(
       view.units.filter((unit) => unit.form === "EGG").map((unit) => unit.id),
     ),
   });
-  const push = publicPushState(
-    view,
-    attacker,
-    target,
-    !defenderDies && distance === 1,
-  );
+  // The Dwarf revision section 10.1: a Steam Cannon's Knockback.
+  const push = attackKnocksBackV7(view, attacker)
+    ? publicKnockbackState(view, attacker, target, !defenderDies)
+    : publicPushState(view, attacker, target, !defenderDies && distance === 1);
   // Revision 19 section 6.7: a melee attacker that destroys an Egg advances
   // like after killing a land unit. Revision 20: a Charge! also follows a
   // pushed target into the tile it vacated.
@@ -5781,7 +6382,12 @@ function publicCombatPreviewCore(
     advances,
     push,
     attacksUsed: nextAttacks,
-    attacksRemaining: overrunContinues ? 1 : 0,
+    // The Dwarf revision section 7.3: an unmoved Gunner's first shot.
+    attacksRemaining:
+      overrunContinues ||
+      (!attackerDies && attackAllowanceV7(view, attacker) > nextAttacks)
+        ? 1
+        : 0,
     overrunAdvance: attackerRule.abilities.includes("OVERRUN") && advances,
     overrunContinues,
     escapeAvailable:
@@ -5792,8 +6398,8 @@ function publicCombatPreviewCore(
     splash,
     // Revision 13 Lifesteal and Infect from the visible attacker and target.
     ...undeadCombatEffectsV7({
-      attacker,
-      defender: target,
+      attacker: { ...attacker, construct: unitIsConstructV7(view, attacker) },
+      defender: { ...target, construct: unitIsConstructV7(view, target) },
       attackerRule,
       defenderRule,
       damageToDefender,
@@ -5825,6 +6431,19 @@ function publicCombatPreviewCore(
     hiddenBlizzardPossible:
       isIceFolkLandUnitV7(view, target) &&
       adjacentPublicTiles(view, target.at).some((tile) => !tile.explored),
+    dugIn,
+    unflinchingApplied: unflinching,
+    platedApplied:
+      platedCapAppliesV7(view, target, formulaDefenderDamage) ||
+      (retaliation &&
+        platedCapAppliesV7(
+          view,
+          attacker,
+          roundHalfUpPublic(
+            defenseOnCommon * BigInt(defense2) * 9n,
+            total * 4n,
+          ),
+        )),
   };
 }
 
@@ -6189,10 +6808,12 @@ function publicAttackChainV7(
       ...target,
       at:
         preview.push === "WILL_PUSH"
-          ? {
-              x: target.at.x * 2 - attacker.at.x,
-              y: target.at.y * 2 - attacker.at.y,
-            }
+          ? attackKnocksBackV7(view, attackerUnit)
+            ? knockbackDestinationV7(attacker.at, target.at)
+            : {
+                x: target.at.x * 2 - attacker.at.x,
+                y: target.at.y * 2 - attacker.at.y,
+              }
           : target.at,
       hp: grownHpV7(
         view,
@@ -6310,9 +6931,8 @@ function publicPushState(
     return "BLOCKED";
   if (
     tile.site !== null ||
-    view.units.some(
-      (unit) => unit.id !== defender.id && same(unit.at, behind),
-    ) ||
+    // The Dwarf revision section 5.3: the occupancy predicate.
+    tileOccupiedV7(view, behind, defender.id) ||
     (tile.territoryOwnerId !== null &&
       publicAllied(view, defender.ownerId, tile.territoryOwnerId))
   )
@@ -6350,6 +6970,74 @@ function publicPushState(
     )
   )
     return "BLOCKED";
+  if (tile.terrain === "DEEP_WATER") {
+    if (defender.ownerId !== view.viewer.id) return "UNKNOWN_BEHIND_FOG";
+    if (!view.viewer.researchedTechs.includes("NAVIGATION")) return "BLOCKED";
+  }
+  return "WILL_PUSH";
+}
+
+/**
+ * The Dwarf revision section 10.1: the public Knockback of an own Steam
+ * Cannon's attack, mirroring {@link knockbackStateV7}: every unit and mound
+ * on an explored tile is visible, so the result is exact except where the
+ * target owner's private technologies decide (a hostile target pushed onto
+ * a Mountain or Deep Water: `UNKNOWN_BEHIND_FOG`).
+ */
+function publicKnockbackState(
+  view: PlayerViewV7,
+  attacker: PlayerViewV7["units"][number],
+  defender: PlayerViewV7["units"][number],
+  survives: boolean,
+): CombatPreviewV7["push"] {
+  if (
+    !survives ||
+    defender.form === "EGG" ||
+    defender.role === "JUGGERNAUT" ||
+    unitCapacitySlotsV7(view, defender) !== 1
+  )
+    return "BLOCKED";
+  const behind = knockbackDestinationV7(attacker.at, defender.at);
+  const tile = tileAtView(view, behind);
+  if (tile === undefined) return "BLOCKED";
+  if (!tile.explored) return "UNKNOWN_BEHIND_FOG";
+  const water = tile.biome === null;
+  if (
+    isAfloatFormV7(defender.form) !== water ||
+    tile.site !== null ||
+    tileOccupiedV7(view, behind, defender.id) ||
+    view.treasureChests.some((chest) => same(chest, behind)) ||
+    (tile.territoryOwnerId !== null &&
+      publicAllied(view, defender.ownerId, tile.territoryOwnerId))
+  )
+    return "BLOCKED";
+  if (
+    tile.terrain === "RIFT" &&
+    !canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: unitMovementModeV7(view, defender),
+      afloat: false,
+      engineering: false,
+      navigation: false,
+      mountainBorn: false,
+    })
+  )
+    return "BLOCKED";
+  if (tile.terrain === "MOUNTAIN") {
+    if (
+      !unitMayEnterMountainV7(view, defender, false) &&
+      defender.ownerId !== view.viewer.id
+    )
+      return "UNKNOWN_BEHIND_FOG";
+    if (
+      !unitMayEnterMountainV7(
+        view,
+        defender,
+        view.viewer.researchedTechs.includes("ENGINEERING"),
+      )
+    )
+      return "BLOCKED";
+  }
   if (tile.terrain === "DEEP_WATER") {
     if (defender.ownerId !== view.viewer.id) return "UNKNOWN_BEHIND_FOG";
     if (!view.viewer.researchedTechs.includes("NAVIGATION")) return "BLOCKED";
@@ -6401,7 +7089,13 @@ function roundHalfUpPublic(numerator: bigint, denominator: bigint): number {
 
 function publicCommandTarget(view: PlayerViewV7, command: CommandV7): CoordV7 {
   if ("at" in command) return command.at;
-  if (command.kind === "BEAM_DOWN") return command.to;
+  if (
+    command.kind === "BEAM_DOWN" ||
+    command.kind === "TUNNEL" ||
+    command.kind === "BOMB_RUN" ||
+    command.kind === "ASSEMBLE"
+  )
+    return command.to;
   if ("path" in command) return command.path.at(-1) ?? { x: -1, y: -1 };
   if ("targetUnitId" in command)
     return (

@@ -150,6 +150,22 @@ export type TechnologyUnlockV7 =
    * threshold is 4 instead of 3.
    */
   | { readonly kind: "BRITTLE" }
+  /**
+   * The Dwarf revision (docs/product/RULESET_7_DWARVES.md section 4): the
+   * Engineer's Repair (the Dwarf `ADMINISTRATION`, no Rally).
+   */
+  | { readonly kind: "ENGINEER_SUPPORT" }
+  /** The Dwarf revision: Engineers Assemble Gunners (`MARKSMANSHIP`). */
+  | { readonly kind: "ASSEMBLE" }
+  /** The Dwarf revision: Dive, a bomb deals 5 (the Dwarf `RAIDING`). */
+  | { readonly kind: "DIVE" }
+  /** The Dwarf revision: Dig In (the Dwarf `FORTIFICATION`). */
+  | { readonly kind: "DIG_IN" }
+  /**
+   * The Dwarf revision: Blasting Charges (the Dwarf `EXPLOSIVES`):
+   * eruptions deal 3 and Steam Cannon shots ignore fortification.
+   */
+  | { readonly kind: "BLASTING_CHARGES" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -228,7 +244,22 @@ export type UnitRoleAbilityV7 =
   | "COLD_SNAP"
   | "BOULDERS"
   | "PROWL"
-  | "COLD_AURA";
+  | "COLD_AURA"
+  // The Dwarf revision (section 3): the Hammerer rides the tunnel and digs
+  // in; the Gyrocopter's bombing run; clockwork and the Gunner's two shots;
+  // the Steam Mole's Tunnel and eruption; the Engineer's Assemble; the Steam
+  // Cannon's Knockback; the Steam Tank's Plated. Repair keeps the
+  // `TEND_WOUNDED` literal.
+  | "RIDES_TUNNEL"
+  | "DIG_IN"
+  | "BOMB_RUN"
+  | "CLOCKWORK"
+  | "TWIN_SHOT"
+  | "TUNNEL"
+  | "ERUPTION"
+  | "ASSEMBLE"
+  | "KNOCKBACK"
+  | "PLATED";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -357,6 +388,45 @@ export interface RoleMechanicsV7 {
   readonly rockfallAttack2: number;
   /** The Ice Folk revision (section 7.4): the Cold Blood `attack2` bonus. */
   readonly coldBloodBonus2: number;
+  /**
+   * The Dwarf revision (docs/product/RULESET_7_DWARVES.md section 2.3): a
+   * construct (Clockwork Gunner, Brass Titan) is fully mechanical: not
+   * living, no Grave, Mind Control-immune, never mends itself. False for
+   * every role of every other faction.
+   */
+  readonly construct: boolean;
+  /**
+   * The Dwarf revision (section 7.1): Unflinching, an `ATTACK` by the unit
+   * in land form uses its maximum HP for its own force.
+   */
+  readonly unflinchingAttack: boolean;
+  /** The Dwarf revision (section 9.1): Repair heals it as a machine. */
+  readonly repairsAsMachine: boolean;
+  /**
+   * The Dwarf revision (section 9.1): the Engineer's Repair heals a machine
+   * this much (null for every other healer, which heals 2).
+   */
+  readonly repairMachineHeal: number | null;
+  /** The Dwarf revision (section 8): the role digs in (Hammerer, Mole). */
+  readonly digsIn: boolean;
+  /** The Dwarf revision (section 5.1): the Tunnel range, or 0 without. */
+  readonly tunnelRange: number;
+  /** The Dwarf revision (section 5.5): the role rides a Mole's tunnel. */
+  readonly ridesTunnel: boolean;
+  /** The Dwarf revision (section 6): the role makes bombing runs. */
+  readonly bombs: boolean;
+  /**
+   * The Dwarf revision (section 7.3): the shots of a turn on which the unit
+   * had not moved at its first shot (2 for the Clockwork Gunner), or 1.
+   */
+  readonly unmovedShots: 1 | 2;
+  /** The Dwarf revision (section 10.1): the Steam Cannon's Knockback. */
+  readonly knockback: boolean;
+  /**
+   * The Dwarf revision (section 10.2): Plated, the most HP one instance of
+   * damage takes (the Steam Tank's 4), or null.
+   */
+  readonly plated: number | null;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -992,6 +1062,17 @@ const mechanics = (
           plantedBonus2: 0,
           rockfallAttack2: 0,
           coldBloodBonus2: 0,
+          construct: false,
+          unflinchingAttack: false,
+          repairsAsMachine: false,
+          repairMachineHeal: null,
+          digsIn: false,
+          tunnelRange: 0,
+          ridesTunnel: false,
+          bombs: false,
+          unmovedShots: 1,
+          knockback: false,
+          plated: null,
           ...overrides[roleId],
         },
       ]),
@@ -2005,6 +2086,242 @@ export const ICE_FOLK_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
   roleMechanics: ICE_FOLK_ROLE_MECHANICS_V7,
 });
 
+/**
+ * The Dwarf technology graph (docs/product/RULESET_7_DWARVES.md section 4):
+ * identical to ORIGINAL_BASELINE_V5 except that Administration grants
+ * `ENGINEER_SUPPORT` (Repair) instead of Captain support, Marksmanship also
+ * grants `ASSEMBLE`, Raiding grants `DIVE` instead of `CHARGE_BONUS`,
+ * Chivalry grants no Overrun, Fortification (displayed as Dig In) grants
+ * `DIG_IN` instead of `BUILD_FIELD_DEFENSE`, and Explosives (displayed as
+ * Blasting Charges) keeps both of its unlocks and adds `BLASTING_CHARGES`.
+ */
+export const DWARF_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
+  ORIGINAL_BASELINE_V5_NODES.map((original) =>
+    node(original.id, original.branch, original.tier, original.prerequisites, [
+      ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+        unlock.kind === "CAPTAIN_SUPPORT"
+          ? [{ kind: "ENGINEER_SUPPORT" }]
+          : unlock.kind === "OVERRUN"
+            ? []
+            : unlock.kind === "CHARGE_BONUS"
+              ? [{ kind: "DIVE" }]
+              : unlock.kind === "COMMAND" &&
+                  unlock.command === "BUILD_FIELD_DEFENSE"
+                ? [{ kind: "DIG_IN" }]
+                : [unlock],
+      ),
+      ...(original.id === "MARKSMANSHIP"
+        ? [{ kind: "ASSEMBLE" } as const]
+        : []),
+      ...(original.id === "EXPLOSIVES"
+        ? [{ kind: "BLASTING_CHARGES" } as const]
+        : []),
+    ]),
+  ),
+);
+
+/** The Dwarf roster (docs/product/RULESET_7_DWARVES.md section 3). */
+export const DWARF_ROLE_RULES_V7: Readonly<
+  Record<UnitRoleIdV7, EffectiveRoleRuleV7>
+> = deepFreeze({
+  FIGHTER: role({
+    role: "FIGHTER",
+    label: "Hammerer",
+    tacticalRole: "LINE",
+    cost: 2,
+    maxHp: 12,
+    attack2: 4,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "RIDES_TUNNEL", "DIG_IN"],
+  }),
+  // The Gyrocopter has no `ATTACK`: its Attack is used only when it
+  // retaliates (section 6.1); range 1 is its retaliation reach.
+  RAIDER: role({
+    role: "RAIDER",
+    label: "Gyrocopter",
+    tacticalRole: "SKIRMISHER",
+    cost: 4,
+    maxHp: 8,
+    attack2: 3,
+    defense2: 2,
+    move: 3,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SCOUTING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["FLY", "BOMB_RUN"],
+  }),
+  MARKSMAN: role({
+    role: "MARKSMAN",
+    label: "Clockwork Gunner",
+    tacticalRole: "RANGED",
+    cost: 3,
+    maxHp: 10,
+    attack2: 3,
+    defense2: 2,
+    move: 1,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "MARKSMANSHIP",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "CLOCKWORK", "TWIN_SHOT"],
+  }),
+  GUARD: role({
+    role: "GUARD",
+    label: "Steam Mole",
+    tacticalRole: "DEFENDER",
+    cost: 5,
+    maxHp: 16,
+    attack2: 4,
+    defense2: 5,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "DRILL",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "TUNNEL", "ERUPTION", "DIG_IN"],
+  }),
+  CAPTAIN: role({
+    role: "CAPTAIN",
+    label: "Engineer",
+    tacticalRole: "SUPPORT",
+    cost: 5,
+    maxHp: 10,
+    attack2: 2,
+    defense2: 2,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "ADMINISTRATION",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "TEND_WOUNDED", "ASSEMBLE"],
+  }),
+  CATAPULT: role({
+    role: "CATAPULT",
+    label: "Steam Cannon",
+    tacticalRole: "SIEGE",
+    cost: 8,
+    maxHp: 10,
+    attack2: 7,
+    defense2: 1,
+    move: 1,
+    range: 3,
+    minimumRange: 2,
+    sightRadius: 1,
+    technology: "SAWMILLING",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "KNOCKBACK"],
+  }),
+  KNIGHT: role({
+    role: "KNIGHT",
+    label: "Steam Tank",
+    tacticalRole: "BREAKTHROUGH",
+    cost: 9,
+    maxHp: 16,
+    attack2: 6,
+    defense2: 4,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "CHIVALRY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "PLATED"],
+  }),
+  JUGGERNAUT: role({
+    role: "JUGGERNAUT",
+    label: "Brass Titan",
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: 36,
+    attack2: 8,
+    defense2: 6,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "PUSH", "CLOCKWORK"],
+  }),
+  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
+  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+});
+
+/** The Dwarf revision (section 10.2): the Steam Tank's Plated cap. */
+export const PLATED_CAP_V7 = 4;
+/** The Dwarf revision (section 9.1): Repair on a machine. */
+export const REPAIR_MACHINE_V7 = 4;
+/** The Dwarf revision (section 7.3): the shots of an unmoved Gunner. */
+export const GUNNER_UNMOVED_SHOTS_V7 = 2;
+/** The Dwarf revision (section 5.1): the Tunnel range in steps. */
+export const TUNNEL_RANGE_V7 = 3;
+
+/**
+ * The Dwarf engine mechanics (section 14): no role builds Field Defense; the
+ * Hammerer and the Mole dig in, the Hammerer rides the tunnel and the Mole
+ * digs it; the Gyrocopter flies and bombs; the Gunner and the Titan are
+ * constructs (Unflinching), the Gunner shoots twice when unmoved; the
+ * Cannon knocks back; the Tank is Plated; every Dwarf land role but the
+ * Hammerer and the Engineer is a machine for Repair, and the Engineer
+ * repairs machines by 4. The flyer, the Gunner, and the Cannon never
+ * advance. Every role uses one slot. Boats are Human boats.
+ */
+export const DWARF_ROLE_MECHANICS_V7 = mechanics({
+  FIGHTER: { buildsFieldDefense: false, digsIn: true, ridesTunnel: true },
+  RAIDER: {
+    movementMode: "FLY",
+    advancesAfterKill: false,
+    bombs: true,
+    repairsAsMachine: true,
+  },
+  MARKSMAN: {
+    construct: true,
+    unflinchingAttack: true,
+    advancesAfterKill: false,
+    unmovedShots: GUNNER_UNMOVED_SHOTS_V7,
+    repairsAsMachine: true,
+  },
+  GUARD: {
+    buildsFieldDefense: false,
+    digsIn: true,
+    tunnelRange: TUNNEL_RANGE_V7,
+    repairsAsMachine: true,
+  },
+  CAPTAIN: { repairMachineHeal: REPAIR_MACHINE_V7 },
+  CATAPULT: {
+    advancesAfterKill: false,
+    knockback: true,
+    repairsAsMachine: true,
+  },
+  KNIGHT: { plated: PLATED_CAP_V7, repairsAsMachine: true },
+  JUGGERNAUT: {
+    construct: true,
+    unflinchingAttack: true,
+    repairsAsMachine: true,
+  },
+  BATTLESHIP: { splash: true },
+});
+
+export const DWARF_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "DWARF_BASELINE_V1",
+  faction: "DWARF",
+  startingTechIds: [],
+  nodes: DWARF_BASELINE_V1_NODES,
+  roleRules: DWARF_ROLE_RULES_V7,
+  roleMechanics: DWARF_ROLE_MECHANICS_V7,
+});
+
 /** Frozen faction registrations; there is no cross-faction fallback. */
 export const FACTION_TREES_V7: Readonly<
   Record<FactionIdV7, FactionTechnologyTreeV7>
@@ -2015,6 +2332,7 @@ export const FACTION_TREES_V7: Readonly<
   DINOSAUR: DINOSAUR_BASELINE_V1_TREE,
   MARTIAN: MARTIAN_BASELINE_V1_TREE,
   ICE_FOLK: ICE_FOLK_BASELINE_V1_TREE,
+  DWARF: DWARF_BASELINE_V1_TREE,
 });
 
 export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
@@ -2025,6 +2343,7 @@ export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
     DINOSAUR: "Dinosaur",
     MARTIAN: "Martian",
     ICE_FOLK: "Ice Folk",
+    DWARF: "Dwarf",
   });
 
 /**
@@ -2046,6 +2365,8 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   MARTIAN: { FORTIFICATION: "Force Fields", EXPLOSIVES: "Disintegrator" },
   // The Ice Folk revision: Fortification and Explosives are renamed.
   ICE_FOLK: { FORTIFICATION: "Deep Winter", EXPLOSIVES: "Brittle" },
+  // The Dwarf revision: Fortification and Explosives are renamed.
+  DWARF: { FORTIFICATION: "Dig In", EXPLOSIVES: "Blasting Charges" },
 });
 
 export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
@@ -2133,6 +2454,14 @@ export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
       gangUpMaximum: 0,
       treasureUnitRole: "RAIDER",
       snow: true,
+    },
+    // The Dwarf revision (section 13.13): the treasure unit is a Gyrocopter.
+    DWARF: {
+      restless: false,
+      cityCapacityBonus: 0,
+      gangUpMaximum: 0,
+      treasureUnitRole: "RAIDER",
+      snow: false,
     },
   });
 
@@ -2558,6 +2887,10 @@ export function unitCapacitySlotsV7(
  * Revision 19 Armoured (section 8.2): one instance of `damage` before the cap
  * at current HP, reduced by the unit's armour to a minimum of 1 (0 and 1 are
  * unchanged). It applies in land form and while embarked, never to an Egg.
+ * The Dwarf revision (section 10.2): then Plated caps the instance for a
+ * land-form Plated unit (the Steam Tank); every hit, splash, Pierce, Sweep,
+ * Wail, blast, bomb, eruption, and Plague damage goes through this helper.
+ * `plated: false` leaves the cap out (headless telemetry only).
  */
 export function armouredDamageV7(
   roster: FactionRosterV7,
@@ -2567,10 +2900,38 @@ export function armouredDamageV7(
     readonly form: UnitFormV7;
   },
   damage: number,
+  plated = true,
 ): number {
-  if (unit.form === "EGG" || damage < 2) return damage;
+  if (unit.form === "EGG") return damage;
+  const mechanics = unitRoleMechanicsV7(roster, unit);
+  const reduction = mechanics.armourReduction;
+  const armoured =
+    reduction === 0 || damage < 2 ? damage : Math.max(1, damage - reduction);
+  return plated && mechanics.plated !== null && unit.form === "LAND"
+    ? Math.min(armoured, mechanics.plated)
+    : armoured;
+}
+
+/**
+ * The Dwarf revision (section 10.2): whether Plated lowered one instance of
+ * `damage` (after Armoured) to the unit.
+ */
+export function platedCapAppliesV7(
+  roster: FactionRosterV7,
+  unit: {
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form: UnitFormV7;
+  },
+  damage: number,
+): boolean {
+  if (unit.form !== "LAND") return false;
+  const plated = unitRoleMechanicsV7(roster, unit).plated;
+  if (plated === null) return false;
   const reduction = unitRoleMechanicsV7(roster, unit).armourReduction;
-  return reduction === 0 ? damage : Math.max(1, damage - reduction);
+  const armoured =
+    reduction === 0 || damage < 2 ? damage : Math.max(1, damage - reduction);
+  return armoured > plated;
 }
 
 /** The Martian revision (section 5.4): a covered unit recharges to this. */
@@ -2615,6 +2976,21 @@ export const ROCKFALL_ATTACK2_V7 = 3;
 export const PLANTED_BONUS2_V7 = 2;
 /** The Ice Folk revision (section 7.4): the Cold Blood `attack2` bonus. */
 export const COLD_BLOOD_BONUS2_V7 = 1;
+
+/** The Dwarf revision (section 5.4): the eruption of a surfacing Mole. */
+export const ERUPTION_DAMAGE_V7 = 2;
+/** The Dwarf revision (section 5.4): the eruption with Blasting Charges. */
+export const BLASTING_ERUPTION_DAMAGE_V7 = 3;
+/** The Dwarf revision (section 6.2): the bombing-run reach (Chebyshev). */
+export const BOMB_RANGE_V7 = 2;
+/** The Dwarf revision (section 6.3): the fixed bomb. */
+export const BOMB_DAMAGE_V7 = 4;
+/** The Dwarf revision (section 6.3): the bomb with Dive. */
+export const DIVE_BOMB_DAMAGE_V7 = 5;
+/** The Dwarf revision (section 8): Dig In reach from an own city center. */
+export const DIG_IN_RADIUS_V7 = 1;
+/** The Dwarf revision (section 9.2): the Coins an Assemble costs. */
+export const ASSEMBLE_COST_V7 = 4;
 
 /** The unit facts the Martian registry helpers read. */
 export interface MartianUnitFactsV7 {
@@ -2935,6 +3311,29 @@ export interface TechnologyCapabilitiesV7 {
    * (`SHATTER_HP_V7`, or `BRITTLE_SHATTER_HP_V7` with Brittle).
    */
   readonly shatterThreshold: number;
+  /**
+   * The Dwarf revision (section 8): Dig In, the player's unmoved Hammerers
+   * and Moles on or next to its city centers are dug in.
+   */
+  readonly digIn: boolean;
+  /** The Dwarf revision (section 9.2): the player's Engineers Assemble. */
+  readonly assemble: boolean;
+  /**
+   * The Dwarf revision (section 6.3): the bomb of the player's Gyrocopters
+   * (`BOMB_DAMAGE_V7`, or `DIVE_BOMB_DAMAGE_V7` with Dive).
+   */
+  readonly bombDamage: number;
+  /**
+   * The Dwarf revision (section 5.4): the eruption of the player's Moles
+   * (`ERUPTION_DAMAGE_V7`, or `BLASTING_ERUPTION_DAMAGE_V7` with Blasting
+   * Charges).
+   */
+  readonly eruptionDamage: number;
+  /**
+   * The Dwarf revision (section 10.1): Blasting Charges, the player's Steam
+   * Cannon shots ignore the defender's fortification.
+   */
+  readonly cannonIgnoresFortification: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -2981,6 +3380,11 @@ export function technologyCapabilitiesV7(
   let raysIgnoreFortification = false;
   let deepWinter = false;
   let shatterThreshold = SHATTER_HP_V7;
+  let digIn = false;
+  let assemble = false;
+  let bombDamage = BOMB_DAMAGE_V7;
+  let eruptionDamage = ERUPTION_DAMAGE_V7;
+  let cannonIgnoresFortification = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -3063,6 +3467,20 @@ export function technologyCapabilitiesV7(
       case "BRITTLE":
         shatterThreshold = BRITTLE_SHATTER_HP_V7;
         break;
+      case "DIG_IN":
+        digIn = true;
+        break;
+      case "ASSEMBLE":
+        assemble = true;
+        break;
+      case "DIVE":
+        bombDamage = DIVE_BOMB_DAMAGE_V7;
+        break;
+      case "BLASTING_CHARGES":
+        eruptionDamage = BLASTING_ERUPTION_DAMAGE_V7;
+        cannonIgnoresFortification = true;
+        break;
+      case "ENGINEER_SUPPORT":
       case "WITCH_SUPPORT":
       case "BRAIN_SUPPORT":
       case "CAPTAIN_SUPPORT":
@@ -3112,6 +3530,11 @@ export function technologyCapabilitiesV7(
     raysIgnoreFortification,
     deepWinter,
     shatterThreshold,
+    digIn,
+    assemble,
+    bombDamage,
+    eruptionDamage,
+    cannonIgnoresFortification,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

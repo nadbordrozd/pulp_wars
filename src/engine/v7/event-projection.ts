@@ -45,6 +45,22 @@ export function projectEventsV7(
     )
       visiblyCreatedUnitIds.add(event.unitId);
     else if (
+      // The Dwarf revision: the Gunner of a projected Assemble.
+      event.kind === "UNIT_ASSEMBLED" &&
+      event.playerId === viewerId
+    )
+      visiblyCreatedUnitIds.add(event.assembledUnitId);
+    else if (
+      // The Dwarf revision: the Mole and rider of a projected surfacing
+      // (section 13.11) return to the board in plain sight of its viewers.
+      event.kind === "UNIT_SURFACED" &&
+      (event.playerId === viewerId ||
+        coordVisible(beforeState, afterState, viewerId, event.at))
+    ) {
+      visiblyCreatedUnitIds.add(event.unitId);
+      if (event.riderUnitId !== null)
+        visiblyCreatedUnitIds.add(event.riderUnitId);
+    } else if (
       // The Martian revision: the Thrall of a projected Mind Control.
       event.kind === "UNIT_MIND_CONTROLLED" &&
       eventVisible(
@@ -167,6 +183,90 @@ export function projectEventsV7(
           ...event,
           sourceUnitId: sourceSeen ? event.sourceUnitId : null,
           results,
+        });
+      continue;
+    }
+    // The Dwarf revision (section 13.11): a tunnel is projected to its
+    // actor and to every viewer that explored one of its tiles (the others
+    // hidden); a surfacing like a Rally (the results the viewer owns or can
+    // see) or, to a viewer that owns a victim but cannot see the mound, its
+    // own entries with the Mole hidden; a bombing run like an attack.
+    if (event.kind === "UNIT_TUNNELLED") {
+      const known = (at: CoordV7 | null): boolean =>
+        at !== null && coordVisible(beforeState, afterState, viewerId, at);
+      if (event.playerId === viewerId) projected.push(event);
+      else if (
+        known(event.from) ||
+        known(event.to) ||
+        known(event.riderFrom) ||
+        known(event.riderTo)
+      )
+        projected.push({
+          ...event,
+          from: known(event.from) ? event.from : null,
+          to: known(event.to) ? event.to : null,
+          riderFrom: known(event.riderFrom) ? event.riderFrom : null,
+          riderTo: known(event.riderTo) ? event.riderTo : null,
+        });
+      continue;
+    }
+    if (event.kind === "UNIT_SURFACED") {
+      const owned = (entry: { readonly unitId: UnitId }): boolean =>
+        beforeState.units.find((unit) => unit.id === entry.unitId)?.ownerId ===
+        viewerId;
+      if (event.playerId === viewerId) projected.push(event);
+      else if (coordVisible(beforeState, afterState, viewerId, event.at)) {
+        const riderSeen =
+          event.riderAt !== null &&
+          coordVisible(beforeState, afterState, viewerId, event.riderAt);
+        projected.push({
+          ...event,
+          riderUnitId: riderSeen ? event.riderUnitId : null,
+          riderAt: riderSeen ? event.riderAt : null,
+          results: event.results.filter(
+            (entry) =>
+              owned(entry) ||
+              beforeVisible.has(entry.unitId) ||
+              afterVisible.has(entry.unitId),
+          ),
+        });
+      } else {
+        const results = event.results.filter(owned);
+        if (results.length > 0)
+          projected.push({
+            ...event,
+            unitId: null,
+            at: null,
+            riderUnitId: null,
+            riderAt: null,
+            results,
+          });
+      }
+      continue;
+    }
+    if (event.kind === "UNIT_BOMBED") {
+      const seen = (unitId: UnitId): boolean =>
+        beforeVisible.has(unitId) || afterVisible.has(unitId);
+      if (
+        event.playerId === viewerId ||
+        (seen(event.unitId) && seen(event.targetUnitId))
+      )
+        projected.push(event);
+      else if (
+        beforeState.units.find((unit) => unit.id === event.targetUnitId)
+          ?.ownerId === viewerId
+      )
+        projected.push({
+          kind: "COMBAT_SPLASH_DAMAGE",
+          splash: [
+            {
+              unitId: event.targetUnitId,
+              at: event.at,
+              damage: event.damage,
+              dies: event.killed,
+              shieldDamage: event.shieldDamage,
+            },
+          ],
         });
       continue;
     }
@@ -354,8 +454,11 @@ function eventVisible(
       );
     case "WINDMILL_HEALING_RESOLVED":
       return event.playerId === viewerId;
+    // The Dwarf revision: an Assemble is owner-private like training (its
+    // Gunner is revealed to other viewers as an ordinary unit).
     case "UNIT_TRAINED":
     case "UNIT_REWARD_GRANTED":
+    case "UNIT_ASSEMBLED":
       return event.playerId === viewerId;
     // Revision 19 section 9.6: the owner and every viewer that explored the
     // Egg's tile.

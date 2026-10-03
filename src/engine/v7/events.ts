@@ -146,6 +146,19 @@ export interface CombatPreviewV7 {
    * 1 of an Ice Folk defender, so a hidden Witch may change the result.
    */
   readonly hiddenBlizzardPossible: boolean;
+  /**
+   * The Dwarf revision (section 14): the defender is dug in (its level is
+   * in `fortificationLevel`, or in `fortificationIgnored` when the attack
+   * ignores fortification).
+   */
+  readonly dugIn: boolean;
+  /** The attacker is a construct and its force used its maximum HP. */
+  readonly unflinchingApplied: boolean;
+  /**
+   * A hit on a Plated unit was capped; `damageToDefender` and
+   * `damageToAttacker` are the capped values.
+   */
+  readonly platedApplied: boolean;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -374,7 +387,12 @@ export type DomainEventV7 =
         /** Revision 17: every explosion clears its whole 3 × 3 blast area. */
         | "EXPLOSION"
         /** The Ice Folk revision: a Mammoth attack (section 7.5). */
-        | "TRAMPLE";
+        | "TRAMPLE"
+        /**
+         * The Dwarf revision (section 5.4): a surfacing Steam Mole destroys
+         * Field Defense on its tile and the eight around it.
+         */
+        | "UNDERMINED";
     }
   | {
       readonly kind: "LAND_GRANTED";
@@ -447,6 +465,19 @@ export type DomainEventV7 =
       readonly role: UnitRoleIdV7;
       readonly cost: number;
       readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Dwarf revision (section 9.2): the Engineer `unitId` assembled
+       * the Clockwork Gunner `assembledUnitId` on `at`, homed to `cityId`.
+       */
+      readonly kind: "UNIT_ASSEMBLED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly assembledUnitId: UnitId;
+      readonly at: CoordV7;
+      readonly cityId: CityId;
+      readonly cost: number;
     }
   | {
       readonly kind: "NAVAL_UNIT_TRAINED";
@@ -618,6 +649,37 @@ export type DomainEventV7 =
       readonly to: CoordV7;
     }
   | {
+      /**
+       * The Dwarf revision (section 5.1): the Steam Mole `unitId` tunnelled
+       * from `from` to its mound tile `to`, with its rider (null fields
+       * without one). A projection hides the tiles a viewer has not
+       * explored (null).
+       */
+      readonly kind: "UNIT_TUNNELLED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+      readonly riderUnitId: UnitId | null;
+      readonly riderFrom: CoordV7 | null;
+      readonly riderTo: CoordV7 | null;
+    }
+  | {
+      /**
+       * The Dwarf revision (section 5.4): the burrowed Mole `unitId` and
+       * its rider surfaced at their owner's Start Turn; the eruption hit
+       * every listed unit, in (y, x, id) order (`damage` is HP damage).
+       */
+      readonly kind: "UNIT_SURFACED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly riderUnitId: UnitId | null;
+      readonly riderAt: CoordV7 | null;
+      readonly eruptionDamage: number;
+      readonly results: readonly CombatSplashEntryV7[];
+    }
+  | {
       readonly kind: "UNIT_MOVED";
       readonly unitId: UnitId;
       readonly path: readonly CoordV7[];
@@ -639,7 +701,12 @@ export type DomainEventV7 =
          * The Ice Folk revision (section 6.5): the unit entered Snow it could
          * not know about (a hidden Ice Witch's Blizzard) and stopped there.
          */
-        | "SNOW";
+        | "SNOW"
+        /**
+         * The Dwarf revision (section 5.3): the unit met a mound on a tile it
+         * had not explored, on the last tile of its Move.
+         */
+        | "MOUND";
     }
   | {
       readonly kind: "TILES_REVEALED";
@@ -647,6 +714,23 @@ export type DomainEventV7 =
       readonly tiles: readonly CoordV7[];
     }
   | { readonly kind: "COMBAT_RESOLVED"; readonly preview: CombatPreviewV7 }
+  | {
+      /**
+       * The Dwarf revision (section 6.3): the Gyrocopter `unitId` flew from
+       * `from` to `to` and bombed `targetUnitId` on `at` (`damage` is HP
+       * damage, `shieldDamage` what its Shield absorbed).
+       */
+      readonly kind: "UNIT_BOMBED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly from: CoordV7;
+      readonly to: CoordV7;
+      readonly targetUnitId: UnitId;
+      readonly at: CoordV7;
+      readonly damage: number;
+      readonly shieldDamage: number;
+      readonly killed: boolean;
+    }
   | {
       /**
        * Revision 13 Wail: every target in (y, x, id) order with its damage,
@@ -759,7 +843,11 @@ export type DomainEventV7 =
          * The Ice Folk revision (section 5.5): a shattered unit (no Grave,
          * no death blast; a Bitten one still rises).
          */
-        | "SHATTER";
+        | "SHATTER"
+        /** The Dwarf revision: a Gyrocopter's bomb (section 6.3). */
+        | "BOMB"
+        /** The Dwarf revision: a surfacing Mole's eruption (section 5.4). */
+        | "ERUPTION";
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */
@@ -898,6 +986,31 @@ export interface ProjectedCombatSplashDamageV7 {
   readonly splash: readonly CombatSplashEntryV7[];
 }
 
+/**
+ * The Dwarf revision (section 13.11): `UNIT_TUNNELLED` as seen by a viewer
+ * that has not explored every tile it names (those tiles are null).
+ */
+export type ProjectedUnitTunnelledV7 = Omit<
+  Extract<DomainEventV7, { kind: "UNIT_TUNNELLED" }>,
+  "from" | "to"
+> & {
+  readonly from: CoordV7 | null;
+  readonly to: CoordV7 | null;
+};
+
+/**
+ * The Dwarf revision (section 13.11): `UNIT_SURFACED` as seen by a viewer
+ * that owns an eruption victim but cannot see the Mole: its own entries
+ * only, with the Mole and its tiles hidden (null).
+ */
+export type ProjectedUnitSurfacedV7 = Omit<
+  Extract<DomainEventV7, { kind: "UNIT_SURFACED" }>,
+  "unitId" | "at"
+> & {
+  readonly unitId: UnitId | null;
+  readonly at: CoordV7 | null;
+};
+
 export type PlayerEventV7 =
   | Exclude<
       DomainEventV7,
@@ -908,6 +1021,8 @@ export type PlayerEventV7 =
           | "MONUMENT_BUILT";
       }
     >
+  | ProjectedUnitTunnelledV7
+  | ProjectedUnitSurfacedV7
   | ProjectedResourceRestorationEventV7
   | ProjectedMonumentBuiltV7
   | ProjectedEggLaidV7

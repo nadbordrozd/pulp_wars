@@ -37,6 +37,7 @@ import type {
   TileStateV7,
   UnitStateV7,
 } from "./types";
+import { moundAtV7, tileOccupiedV7 } from "./units";
 import type { PlayerTileViewV7, PlayerViewV7, PublicUnitV7 } from "./view";
 
 export type MovementFailureReasonV7 =
@@ -57,7 +58,9 @@ export type MovementFailureReasonV7 =
   | "SETTLEMENT_FORBIDDEN"
   // The Ice Folk revision section 6.2 (3): deep snow ends the Move of
   // another faction's ground unit, so a path cannot continue past it.
-  | "SNOW_STOPS_MOVE";
+  | "SNOW_STOPS_MOVE"
+  // The Dwarf revision section 5.3: no Move ends on a mound tile.
+  | "MOUND";
 
 export type MovementPathResultV7 =
   | {
@@ -78,7 +81,10 @@ export type MovementPathResultV7 =
           // is a settlement center it cannot stand on.
           | "SETTLEMENT_FORBIDDEN"
           // The Ice Folk revision: Snow the mover could not know about.
-          | "SNOW";
+          | "SNOW"
+          // The Dwarf revision: a mound on a tile the mover had not
+          // explored, met on the last tile of the Move.
+          | "MOUND";
       } | null;
     }
   | { readonly legal: false; readonly reason: MovementFailureReasonV7 };
@@ -200,6 +206,33 @@ function validateMovementPathWithOptionsV7(
       (occupant.ownerId === unit.ownerId || flies) &&
       (passThroughProbe || index < path.length - 1);
     const occupied = occupant !== undefined && !passesOwnUnit;
+    // The Dwarf revision section 5.3: a Move may pass over a mound tile but
+    // never ends on one (the occupancy predicate). A mound on a tile the
+    // mover had not explored interrupts the Move (reason `MOUND`).
+    const endsOnMound =
+      occupant === undefined &&
+      !passThroughProbe &&
+      index === path.length - 1 &&
+      tileOccupiedV7(state, step, unit.id);
+    if (endsOnMound) {
+      if (wasKnownBeforeCommand) return { legal: false, reason: "MOUND" };
+      const entered = lastFreeEnteredPath(
+        state,
+        unit,
+        traversedPath,
+        ownSitesOnly,
+      );
+      return {
+        legal: true,
+        destination: entered.at(-1) ?? unit.at,
+        traversedPath: entered,
+        spentPoints2,
+        stopped: true,
+        explored,
+        revealed: unique(revealed),
+        interruption: { at: step, reason: "MOUND" },
+      };
+    }
     const water =
       tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER";
     const autoEmbark =
@@ -475,6 +508,9 @@ export function reachableMovementPathsV7(
             (flies || other.ownerId === unit.ownerId) &&
             same(other.at, destination),
         ) ||
+        // The Dwarf revision section 5.3: a mound tile is passed, never
+        // ended on.
+        moundAtV7(state, destination) !== undefined ||
         (ownSitesOnly &&
           !flyerMayStandOnSiteV7(
             tileAtV7(state.board, destination)?.site ?? null,
@@ -540,6 +576,9 @@ export function reachablePlayerMovementPathsV7(
         context.unitsByPosition
           .get(destinationKey)
           ?.some((other) => other.id !== unit.id) === true ||
+        // The Dwarf revision section 5.3: a mound tile is passed, never
+        // ended on (every mound on an explored tile is in the view).
+        moundAtV7(view, destination) !== undefined ||
         (ownSitesOnly &&
           !publicFlyerMayStandV7(view, unit, publicTileAt(view, destination)));
       if (ownOccupied && validation.stopped) continue;
@@ -732,6 +771,9 @@ function validatePlayerMovementPathWithContextV7(
       publicAllied(view, unit.ownerId, tile.territoryOwnerId)
     )
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
+    // The Dwarf revision section 5.3: no Move ends on a mound tile.
+    if (!passesOwnUnits && moundAtV7(view, step) !== undefined)
+      return { legal: false, reason: "MOUND" };
     if (
       tile.explored &&
       tile.biome !== null &&
@@ -1081,9 +1123,8 @@ function lastFreeEnteredPath(
     const at = entered[length - 1];
     if (
       at !== undefined &&
-      !state.units.some(
-        (other) => other.id !== unit.id && other.hp > 0 && same(other.at, at),
-      ) &&
+      // The occupancy predicate: no other unit and no mound.
+      !tileOccupiedV7(state, at, unit.id) &&
       (!ownSitesOnly ||
         flyerMayStandOnSiteV7(
           tileAtV7(state.board, at)?.site ?? null,

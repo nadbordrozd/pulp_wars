@@ -634,7 +634,12 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     expect(COMMAND_KIND_ORDER_V7.indexOf("WAIL")).toBeLessThan(
       COMMAND_KIND_ORDER_V7.indexOf("RECOVER"),
     );
+    // The Dwarf revision (`pulp_wars-78i.3`) inserts UNIT_BOMBED
+    // immediately after COMBAT_RESOLVED, before WAIL_RESOLVED.
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WAIL_RESOLVED")).toBe(
+      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 2,
+    );
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_BOMBED")).toBe(
       DOMAIN_EVENT_KIND_ORDER_V7.indexOf("COMBAT_RESOLVED") + 1,
     );
     expect(parseCommandV7({ kind: "WAIL", unitId: 3 })).toEqual({

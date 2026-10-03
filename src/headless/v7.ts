@@ -76,6 +76,14 @@ import {
   type UnitRoleIdV7,
 } from "../engine/v7/types";
 import { viewForV7, type PlayerViewV7 } from "../engine/v7/view";
+import { allOwnedUnitsV7 } from "../engine/v7/units";
+import {
+  createDwarfMetricsV7,
+  createDwarfTelemetryStateV7,
+  recordDwarfV7,
+  type DwarfMetricsV7,
+  type DwarfTelemetryStateV7,
+} from "./dwarf-telemetry-v7";
 
 export const V7_MATCH_MAX_COMMANDS_DEFAULT = 30_000;
 export const V7_MATCH_MAX_ROUNDS_DEFAULT = 750;
@@ -101,7 +109,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r29";
+  readonly rulesetId: "pulp-wars-poc-7r30";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -188,6 +196,8 @@ export interface HeadlessMetricsV7 {
   readonly martian: MartianMetricsV7;
   /** The Ice Folk revision: Chill, Shatter, Snow, and ability telemetry. */
   readonly iceFolk: IceFolkMetricsV7;
+  /** The Dwarf revision: Tunnel, eruption, bomb, and ability telemetry. */
+  readonly dwarf: DwarfMetricsV7;
   readonly knightOverrun: {
     chainsStarted: number;
     attacks: number;
@@ -798,7 +808,9 @@ function finalizeMetricsV7(
   checkpoints: readonly string[],
 ): void {
   for (const role of UNIT_ROLE_IDS_V7) {
-    metrics.roles.survivors[role] = state.units.filter(
+    // The Dwarf revision section 5.2: survivors are everything owned,
+    // burrowed units included.
+    metrics.roles.survivors[role] = allOwnedUnitsV7(state).filter(
       (unit) => unit.hp > 0 && unit.role === role,
     ).length;
     metrics.roles.survivorsPerThousandCoins[role] =
@@ -846,7 +858,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r29",
+              rulesetId: "pulp-wars-poc-7r30",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -932,6 +944,8 @@ interface TelemetryStateV7 {
   readonly plagueTurns: Map<UnitId, number>;
   /** The Ice Folk revision telemetry state. */
   readonly iceFolk: IceFolkTelemetryStateV7;
+  /** The Dwarf revision telemetry state. */
+  readonly dwarf: DwarfTelemetryStateV7;
 }
 
 function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
@@ -948,6 +962,7 @@ function createTelemetryState(state: GameStateV7): TelemetryStateV7 {
     centerRisings: new Set(),
     plagueTurns: new Map(),
     iceFolk: createIceFolkTelemetryStateV7(),
+    dwarf: createDwarfTelemetryStateV7(),
   };
 }
 
@@ -956,7 +971,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r29",
+    rulesetId: "pulp-wars-poc-7r30",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1141,6 +1156,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
       flyoverMoves: 0,
     },
     iceFolk: createIceFolkMetricsV7(),
+    dwarf: createDwarfMetricsV7(),
     knightOverrun: {
       chainsStarted: 0,
       attacks: 0,
@@ -1247,6 +1263,15 @@ function recordCommandAndEventsV7(
     events,
     metrics.iceFolk,
     telemetry.iceFolk,
+  );
+  recordDwarfV7(
+    before,
+    after,
+    actorId,
+    command,
+    events,
+    metrics.dwarf,
+    telemetry.dwarf,
   );
   if (command.kind === "END_TURN") {
     for (const [unitId, chain] of telemetry.knightOverrunChains) {
@@ -1569,7 +1594,10 @@ function recordEventsV7(
     ) {
       const removedUnitId =
         event.kind === "UNIT_DIED" ? event.unitId : event.displacedUnitId;
-      const unit = before.units.find((item) => item.id === removedUnitId);
+      // A burrowed unit dies with its eliminated seat (an all-units read).
+      const unit = allOwnedUnitsV7(before).find(
+        (item) => item.id === removedUnitId,
+      );
       if (unit !== undefined) {
         metrics.roles.losses[unit.role] += 1;
         metrics.factionRoles[ownerFaction(before, unit.ownerId)].losses[

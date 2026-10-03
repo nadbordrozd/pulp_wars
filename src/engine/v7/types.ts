@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r29" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r30" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -40,8 +40,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r26",
   "pulp-wars-poc-7r27",
   "pulp-wars-poc-7r28",
+  "pulp-wars-poc-7r29",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r29.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r30.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
@@ -51,6 +52,8 @@ export const FACTION_IDS_V7 = Object.freeze([
   "MARTIAN",
   // The Ice Folk revision (docs/product/RULESET_7_ICE_FOLK.md).
   "ICE_FOLK",
+  // The Dwarf revision (docs/product/RULESET_7_DWARVES.md).
+  "DWARF",
 ] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
@@ -59,6 +62,7 @@ export const FACTION_TREE_IDS_V7 = Object.freeze([
   "DINOSAUR_BASELINE_V1",
   "MARTIAN_BASELINE_V1",
   "ICE_FOLK_BASELINE_V1",
+  "DWARF_BASELINE_V1",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -159,6 +163,11 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // The Ice Folk revision: the Sled's Bolas and the Ice Witch's Cold Snap.
   "THROW_BOLAS",
   "COLD_SNAP",
+  // The Dwarf revision: the Steam Mole's Tunnel, the Gyrocopter's bombing
+  // run, and the Engineer's Assemble.
+  "TUNNEL",
+  "BOMB_RUN",
+  "ASSEMBLE",
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
@@ -251,6 +260,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "ACHIEVEMENT_UNLOCKED",
   "MONUMENT_BUILT",
   "UNIT_TRAINED",
+  // The Dwarf revision: an Engineer assembled a Clockwork Gunner.
+  "UNIT_ASSEMBLED",
   "NAVAL_UNIT_TRAINED",
   "EGG_LAID",
   "EGG_HATCHED",
@@ -267,10 +278,15 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "GRAVE_DEVOURED",
   "UNIT_PUSHED",
   "UNIT_PULLED",
+  // The Dwarf revision: a Steam Mole tunnelled; a burrowed Mole surfaced.
+  "UNIT_TUNNELLED",
+  "UNIT_SURFACED",
   "UNIT_MOVED",
   "UNIT_MOVE_INTERRUPTED",
   "TILES_REVEALED",
   "COMBAT_RESOLVED",
+  // The Dwarf revision: a Gyrocopter's bombing run.
+  "UNIT_BOMBED",
   "WAIL_RESOLVED",
   "EXPLOSION_RESOLVED",
   "IMPROVEMENT_PILLAGED",
@@ -580,8 +596,34 @@ export interface GameStateV7 {
    * Blizzard are derived on every read.
    */
   readonly chilled: readonly ChillStatusV7[];
+  /**
+   * The Dwarf revision (section 5.2): the burrowed Steam Moles and their
+   * riders, sorted by `unit.id`. A burrowed unit is off the board: it is not
+   * in `units`, and `unit.at` is its mound tile. Always empty in a match
+   * whose setup has no DWARF seat.
+   */
+  readonly burrowed: readonly BurrowedEntryV7[];
+  /**
+   * The Dwarf revision (section 5.4): the active player's units that
+   * surfaced at its Start Turn, sorted. Emptied at its End Turn.
+   */
+  readonly surfacedThisTurn: readonly UnitId[];
+  /**
+   * The Dwarf revision (section 6.3): the units the active player's
+   * Gyrocopters bombed this turn, sorted. Emptied at its End Turn.
+   */
+  readonly bombedThisTurn: readonly UnitId[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/**
+ * The Dwarf revision (section 5.2): a burrowed unit. A Mole's entry has
+ * `moleUnitId` null; a rider's names the burrowed Mole it rides with.
+ */
+export interface BurrowedEntryV7 {
+  readonly unit: UnitStateV7;
+  readonly moleUnitId: UnitId | null;
 }
 
 /**

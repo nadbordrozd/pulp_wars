@@ -48,6 +48,7 @@ import type {
   UnitRoleIdV7,
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
+import { allOwnedUnitsV7 } from "./units";
 
 export const UNKNOWN_RESOURCE_V7 = "UNKNOWN_RESOURCE" as const;
 export type PublicResourceV7 = ResourceIdV7 | null | typeof UNKNOWN_RESOURCE_V7;
@@ -277,8 +278,25 @@ export interface PlayerViewV7 {
    * `units`, sorted by unit ID (Chill is public on a visible unit).
    */
   readonly chilled: readonly ChillStatusV7[];
+  /**
+   * The Dwarf revision (section 5.2): every mound on a tile the viewer has
+   * explored (every own mound is), sorted by unit ID, with the public
+   * fields of the burrowed record (`at` is the mound tile) and its Mole. A
+   * mound is public exactly as a unit on that tile would be.
+   */
+  readonly burrowed: readonly PublicBurrowedEntryV7[];
+  /** The Dwarf revision (section 5.4): `surfacedThisTurn` of visible units. */
+  readonly surfacedThisTurn: readonly UnitId[];
+  /** The Dwarf revision (section 6.3): `bombedThisTurn` of visible units. */
+  readonly bombedThisTurn: readonly UnitId[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/** The Dwarf revision (section 5.2): a mound in a player's view. */
+export interface PublicBurrowedEntryV7 {
+  readonly unit: PublicUnitV7;
+  readonly moleUnitId: UnitId | null;
 }
 
 /** The Martian revision: the public status of a visible Thrall. */
@@ -465,7 +483,12 @@ export function viewForV7(
     isUnitVisibleToPlayerV7(state, viewerId, unit),
   );
   const visibleUnitIds = new Set(visibleUnits.map((unit) => unit.id));
-  const publicUnits = visibleUnits.map((unit): PublicUnitV7 => {
+  // The Dwarf revision section 5.3: a mound is visible on an explored tile.
+  const visibleBurrowed = state.burrowed.filter(
+    (entry) =>
+      entry.unit.ownerId === viewerId || explored.has(key(entry.unit.at)),
+  );
+  const publicUnit = (unit: GameStateV7["units"][number]): PublicUnitV7 => {
     return {
       id: unit.id,
       ownerId: unit.ownerId,
@@ -483,7 +506,8 @@ export function viewForV7(
           ? unit.activation
           : { ...unit.activation, tendedThisTurn: false },
     };
-  });
+  };
+  const publicUnits = visibleUnits.map(publicUnit);
   const visibleContributions = state.populationContributions.flatMap(
     (contribution): readonly PublicPopulationContributionV7[] => {
       if (!explored.has(key(contribution.source.at))) return [];
@@ -576,8 +600,12 @@ export function viewForV7(
     rewards: city.rewards,
   }));
   const cityCounts = countBy(state.cities.map((city) => city.ownerId));
+  // The Dwarf revision section 5.2: the leaderboard counts everything a
+  // player owns, burrowed units included.
   const unitCounts = countBy(
-    state.units.filter((unit) => unit.hp > 0).map((unit) => unit.ownerId),
+    allOwnedUnitsV7(state)
+      .filter((unit) => unit.hp > 0)
+      .map((unit) => unit.ownerId),
   );
   const playersById = new Map(
     state.players.map((player) => [player.id, player] as const),
@@ -641,7 +669,11 @@ export function viewForV7(
     populationContributions: visibleContributions,
     improvementValues,
     units: publicUnits,
-    unitStats: visibleUnits.map((unit) =>
+    // The Dwarf revision: a mound's record has stats like a visible unit.
+    unitStats: [
+      ...visibleUnits,
+      ...visibleBurrowed.map((entry) => entry.unit),
+    ].map((unit) =>
       publicUnitStatsForViewerV7(
         // The Ice Folk revision: Snow cover from the Snow the viewer knows.
         publicUnitStatsV7(state, unit, {
@@ -750,6 +782,18 @@ export function viewForV7(
         sluggish: entry.sluggish,
         turnsLeft: entry.turnsLeft,
       })),
+    // The Dwarf revision (sections 5.2, 5.4, and 6.3): the mounds the viewer
+    // has explored and the public per-turn lists of visible units.
+    burrowed: visibleBurrowed.map((entry) => ({
+      unit: publicUnit(entry.unit),
+      moleUnitId: entry.moleUnitId,
+    })),
+    surfacedThisTurn: state.surfacedThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
+    bombedThisTurn: state.bombedThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
     pendingChoices: state.pendingChoices.filter((choice) =>
       state.cities.some(
         (city) => city.id === choice.cityId && city.ownerId === viewerId,

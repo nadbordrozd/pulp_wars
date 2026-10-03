@@ -78,9 +78,12 @@ describe("ruleset-7 late public query performance", () => {
     // later kind forward by three (was 5097a1…935b). The Ice Folk revision
     // (`pulp_wars-7g3.3`) inserts THROW_BOLAS and COLD_SNAP after
     // TRACTOR_BEAM, moving every later kind forward by two (was
-    // 187249…93ea); the revision-12-ordinal value below is unchanged.
+    // 187249…93ea). The Dwarf revision (`pulp_wars-78i.3`) inserts TUNNEL,
+    // BOMB_RUN, and ASSEMBLE after COLD_SNAP, moving every later kind
+    // forward by three (was cf39a3…918b); the revision-12-ordinal value
+    // below is unchanged.
     expect(canonicalHash(ready)).toBe(
-      "cf39a378853cc9863b8d22e06fb0729e9175caf77d0bb94dfc297ab7ac3b918b",
+      "845cbd55910327d48866590941161c24c9dc0f7313c3d5e69d307fd14c50b1a9",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

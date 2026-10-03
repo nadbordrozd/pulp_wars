@@ -38,7 +38,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r29");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r30");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -46,6 +46,8 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "DINOSAUR",
       "MARTIAN",
       "ICE_FOLK",
+      // The Dwarf revision (`pulp_wars-78i.3`).
+      "DWARF",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -54,6 +56,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "DINOSAUR_BASELINE_V1",
       "MARTIAN_BASELINE_V1",
       "ICE_FOLK_BASELINE_V1",
+      "DWARF_BASELINE_V1",
     ]);
     expect(RESOURCE_IDS_V7).toEqual([
       "FRUIT",
@@ -102,10 +105,11 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // Revision 20 removes STAMPEDE (46 -> 45 command kinds). The Martian
     // revision adds BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM (48) and four
     // event kinds (72 -> 76); the Ice Folk revision THROW_BOLAS and
-    // COLD_SNAP (50) and UNITS_CHILLED (77).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(50);
+    // COLD_SNAP (50) and UNITS_CHILLED (77); the Dwarf revision TUNNEL,
+    // BOMB_RUN, and ASSEMBLE (53) and four event kinds (81).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(53);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(77);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(81);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after
@@ -125,7 +129,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       // The Ice Folk revision inserts its two right after TRACTOR_BEAM.
       "THROW_BOLAS",
       "COLD_SNAP",
-      "RECOVER",
+      "TUNNEL",
     ]);
     expect(
       COMMAND_KIND_ORDER_V7.slice(

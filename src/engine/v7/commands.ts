@@ -130,6 +130,39 @@ export type CommandV7 =
       readonly unitId: UnitId;
     }
   | {
+      /**
+       * The Dwarf revision (section 5.1): a Steam Mole tunnels to `to`,
+       * optionally taking an adjacent Hammerer (`rider`) to the tile
+       * `rider.to` next to `to`.
+       */
+      readonly kind: "TUNNEL";
+      readonly unitId: UnitId;
+      readonly to: CoordV7;
+      readonly rider: {
+        readonly unitId: UnitId;
+        readonly to: CoordV7;
+      } | null;
+    }
+  | {
+      /**
+       * The Dwarf revision (section 6.2): a Gyrocopter bombs a hostile unit
+       * within 2 tiles and lands on `to`, beyond it.
+       */
+      readonly kind: "BOMB_RUN";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly to: CoordV7;
+    }
+  | {
+      /**
+       * The Dwarf revision (section 9.2): an Engineer assembles a Clockwork
+       * Gunner on the adjacent tile `to`.
+       */
+      readonly kind: "ASSEMBLE";
+      readonly unitId: UnitId;
+      readonly to: CoordV7;
+    }
+  | {
       /** Revision 19: a Dinosaur city lays an Egg of `role` on `at`. */
       readonly kind: "LAY_EGG";
       readonly cityId: CityId;
@@ -319,6 +352,48 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
           value: { kind, unitId: unit, passengerUnitId: passenger, to },
         };
   }
+  if (kind === "TUNNEL") {
+    if (!hasExactKeysV7(input, ["kind", "rider", "to", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const to = parseCoordV7(candidate.to);
+    if (unit === null || to === null) return invalid(kind);
+    if (candidate.rider === null)
+      return { ok: true, value: { kind, unitId: unit, to, rider: null } };
+    if (!hasExactKeysV7(candidate.rider, ["to", "unitId"]))
+      return invalid(kind);
+    const riderUnit = parseUnitIdV7(candidate.rider.unitId);
+    const riderTo = parseCoordV7(candidate.rider.to);
+    return riderUnit === null || riderTo === null
+      ? invalid(kind)
+      : {
+          ok: true,
+          value: {
+            kind,
+            unitId: unit,
+            to,
+            rider: { unitId: riderUnit, to: riderTo },
+          },
+        };
+  }
+  if (kind === "BOMB_RUN") {
+    if (!hasExactKeysV7(input, ["kind", "targetUnitId", "to", "unitId"]))
+      return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const target = parseUnitIdV7(candidate.targetUnitId);
+    const to = parseCoordV7(candidate.to);
+    return unit === null || target === null || to === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, targetUnitId: target, to } };
+  }
+  if (kind === "ASSEMBLE") {
+    if (!hasExactKeysV7(input, ["kind", "to", "unitId"])) return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const to = parseCoordV7(candidate.to);
+    return unit === null || to === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, to } };
+  }
   if (kind === "HATCH") {
     if (!hasExactKeysV7(input, ["kind", "unitId", "eggUnitId"]))
       return invalid(kind);
@@ -451,6 +526,28 @@ export function compareCommandsV7(left: CommandV7, right: CommandV7): number {
       left.unitId - right.unitId ||
       left.passengerUnitId - right.passengerUnitId ||
       compareNullableCoords(left.to, right.to)
+    );
+  // The Dwarf revision section 14: `TUNNEL` in unit-ID, destination (y, x),
+  // then rider order (the rider-less entry first, then rider ID and tile);
+  // `BOMB_RUN` in unit-ID, target-ID, then landing (y, x); `ASSEMBLE` in
+  // unit-ID then (y, x) order.
+  if (left.kind === "TUNNEL" && right.kind === "TUNNEL")
+    return (
+      left.unitId - right.unitId ||
+      compareNullableCoords(left.to, right.to) ||
+      (left.rider === null ? 0 : 1) - (right.rider === null ? 0 : 1) ||
+      (left.rider?.unitId ?? 0) - (right.rider?.unitId ?? 0) ||
+      compareNullableCoords(left.rider?.to ?? null, right.rider?.to ?? null)
+    );
+  if (left.kind === "BOMB_RUN" && right.kind === "BOMB_RUN")
+    return (
+      left.unitId - right.unitId ||
+      left.targetUnitId - right.targetUnitId ||
+      compareNullableCoords(left.to, right.to)
+    );
+  if (left.kind === "ASSEMBLE" && right.kind === "ASSEMBLE")
+    return (
+      left.unitId - right.unitId || compareNullableCoords(left.to, right.to)
     );
   const leftAt = targetCoord(left);
   const rightAt = targetCoord(right);

@@ -3,7 +3,7 @@ import {
   PLAGUE_DAMAGE_V7,
   PLAGUE_DURATION_TURNS_V7,
   biteOfV7,
-  isLivingOwnerV7,
+  isLivingUnitV7,
   recordBittenRisingV7,
   withPlaguedV7,
 } from "./afflictions";
@@ -153,7 +153,8 @@ export function resolveStartTurnPlagueV7(
         unit.form !== "EGG" &&
         chebyshev(unit.at, spreader.at) === 1 &&
         !alreadyPlagued.has(unit.id) &&
-        isLivingOwnerV7(state, unit.ownerId)
+        // The Dwarf revision section 2.3: the per-unit living test.
+        isLivingUnitV7(state, unit)
       ) {
         alreadyPlagued.add(unit.id);
         spread.push({ unitId: unit.id, sourceUnitId });

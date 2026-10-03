@@ -66,10 +66,10 @@ const READY: UnitStateV7["activation"] = {
 };
 
 describe("ruleset-7 revision-15 identity", () => {
-  it("keeps rejecting r14 after the r29 identity and cleans the r14 through r28 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r29");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r29.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-15)).toEqual([
+  it("keeps rejecting r14 after the r30 identity and cleans the r14 through r29 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r30");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r30.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-16)).toEqual([
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
@@ -85,6 +85,7 @@ describe("ruleset-7 revision-15 identity", () => {
       "pulpWars.save.v7r26.current",
       "pulpWars.save.v7r27.current",
       "pulpWars.save.v7r28.current",
+      "pulpWars.save.v7r29.current",
     ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const setup = setupWith(["ORIGINAL", "UNDEAD"]);

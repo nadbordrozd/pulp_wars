@@ -149,6 +149,17 @@ import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
 import { wailResultEntriesV7, wailTargetsV7 } from "./wail";
 import { isRiftTerrainV7, riftAtV7 } from "./rift";
+import { allOwnedUnitsV7, tileOccupiedV7 } from "./units";
+import {
+  applyAssembleV7,
+  applyBombRunV7,
+  applyTunnelV7,
+  prunedDwarfV7,
+  resolveStartTurnSurfacingV7,
+  type DwarfReducerKitV7,
+} from "./dwarf-reducer";
+import { twinShotReadyV7, unitIsMachineV7 } from "./dwarf";
+import { unitIsConstructV7 } from "./afflictions";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import {
   TECHNOLOGY_IDS_V7,
@@ -236,7 +247,14 @@ export type RuleErrorCodeV7 =
   // The Ice Folk revision: an illegal Bolas (`EMBARKED`, `TARGET_IMMUNE`,
   // `OUT_OF_RANGE`) or Cold Snap (`EMBARKED`, `NO_TARGET`).
   | "BOLAS_NOT_LEGAL"
-  | "COLD_SNAP_NOT_LEGAL";
+  | "COLD_SNAP_NOT_LEGAL"
+  // The Dwarf revision: an illegal Tunnel (`EMBARKED`, `SURFACED`,
+  // `DESTINATION`, `RIDER`, `RIDER_DESTINATION`), bombing run (`EMBARKED`,
+  // `SLUGGISH`, `OUT_OF_RANGE`, `ALREADY_BOMBED`, `LANDING`), or Assemble
+  // (`EMBARKED`, `NO_HOME`).
+  | "TUNNEL_NOT_LEGAL"
+  | "BOMB_RUN_NOT_LEGAL"
+  | "ASSEMBLE_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -367,6 +385,9 @@ function navalFactsMayChangeV7(
   // was a blockader (only a state with Thralls can be affected).
   if (command.kind === "MIND_CONTROL" || command.kind === "TRACTOR_BEAM")
     return true;
+  // The Dwarf revision section 6.3: a bomb can kill an embarked blockader,
+  // and a self-launch can start a blockade.
+  if (command.kind === "BOMB_RUN") return true;
   if (command.kind === "DISBAND")
     return Array.isArray(state.thralls) && state.thralls.length > 0;
   if (command.kind === "RESEARCH")
@@ -426,6 +447,18 @@ function applyCommandCoreV7(
     if (named !== undefined && named.ownerId === actor && named.form === "EGG")
       return rejected(stateInput, "UNIT_IS_EGG", { unitId: named.id });
   }
+  // The Dwarf revision section 5.3: a burrowed unit spent its turn
+  // underground; every command naming it is refused.
+  if (
+    "unitId" in command &&
+    state.burrowed.some(
+      (entry) =>
+        entry.unit.id === command.unitId && entry.unit.ownerId === actor,
+    )
+  )
+    return rejected(stateInput, "UNIT_ALREADY_HANDLED", {
+      unitId: command.unitId,
+    });
   if (command.kind === "RESEARCH")
     return applyResearch(stateInput, state, actor, command.tech);
   if (command.kind === "BUILD_MONUMENT")
@@ -522,6 +555,12 @@ function applyCommandCoreV7(
     return applyThrowBolas(stateInput, state, actor, command);
   if (command.kind === "COLD_SNAP")
     return applyColdSnap(stateInput, state, actor, command.unitId);
+  if (command.kind === "TUNNEL")
+    return applyTunnelV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "BOMB_RUN")
+    return applyBombRunV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "ASSEMBLE")
+    return applyAssembleV7(DWARF_KIT_V7, stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -1594,9 +1633,8 @@ function applyDisembark(
     (territoryOwner !== undefined &&
       territoryOwner !== actor &&
       arePlayersAlliedV7(state, actor, territoryOwner)) ||
-    state.units.some(
-      (candidate) => candidate.hp > 0 && same(candidate.at, command.at),
-    )
+    // The Dwarf revision section 5.3: the occupancy predicate.
+    tileOccupiedV7(state, command.at)
   )
     return rejected(original, "MOVEMENT_ILLEGAL");
   // The Martian revision section 7.2: a flyer cannot land on a neutral
@@ -2103,7 +2141,8 @@ function applyBeamDown(
       navigation: player.researchedTechs.includes("NAVIGATION"),
       mountainBorn: unitIsMountainBornV7(state, passenger),
     }) ||
-    state.units.some((unit) => unit.hp > 0 && same(unit.at, command.to)) ||
+    // The Dwarf revision section 5.3: the occupancy predicate.
+    tileOccupiedV7(state, command.to) ||
     state.treasureChests.some((chest) => same(chest, command.to)) ||
     (territoryOwner !== undefined &&
       arePlayersAlliedV7(state, actor, territoryOwner))
@@ -2244,7 +2283,9 @@ function applyMindControl(
     target.role === "JUGGERNAUT" ||
     unitCapacitySlotsV7(state, target) !== 1 ||
     tileAtV7(state.board, target.at)?.site !== null ||
-    riftAtV7(state.board, target.at)
+    riftAtV7(state.board, target.at) ||
+    // The Dwarf revision section 7.2: a construct is immune.
+    unitIsConstructV7(state, target)
   )
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
       reason: "TARGET_IMMUNE",
@@ -3271,7 +3312,8 @@ function treasureKnightPlacement(
           navigation: player.researchedTechs.includes("NAVIGATION"),
           mountainBorn: unitIsMountainBornV7(state, { ownerId: actor, role }),
         }) ||
-        state.units.some((unit) => unit.hp > 0 && same(unit.at, candidate)) ||
+        // The Dwarf revision section 5.3: the occupancy predicate.
+        tileOccupiedV7(state, candidate) ||
         state.treasureChests.some((chest) => same(chest, candidate))
       )
         continue;
@@ -3301,9 +3343,18 @@ function applyAttack(
   if (attacker.form === "EMBARKED")
     return rejected(original, "ATTACK_NOT_LEGAL", { reason: "EMBARKED" });
   const rule = unitRoleRuleV7(state, attacker);
+  // The Dwarf revision section 6.1: a Gyrocopter has no ordinary attack.
+  if (rule.abilities.includes("BOMB_RUN") && !rule.abilities.includes("ATTACK"))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: attacker.role });
+  // The Dwarf revision section 7.3: an unmoved Clockwork Gunner's second
+  // shot.
+  const twinShot = twinShotReadyV7(state, attacker);
   if (
-    (!attacker.activation.overrunActive && primaryUsed(attacker)) ||
     (!attacker.activation.overrunActive &&
+      !twinShot &&
+      primaryUsed(attacker)) ||
+    (!attacker.activation.overrunActive &&
+      !twinShot &&
       attacker.activation.attacksUsed >= 1) ||
     (primaryActionBlockedAfterMoveV7(state, attacker) &&
       attacker.activation.attacksUsed === 0)
@@ -3404,12 +3455,19 @@ function applyAttack(
       captureEligible: false,
       activation: {
         ...attacker.activation,
+        // The Dwarf revision section 8: a Hammerer's or a Mole's advance
+        // counts as moving (Dig In).
+        moved:
+          attacker.activation.moved ||
+          (preview.advances && unitRoleMechanicsV7(state, attacker).digsIn),
         attacked: true,
         attacksUsed,
         inspired: false,
         overrunActive: false,
         escapeAvailable: preview.escapeAvailable,
-        handled: !preview.escapeAvailable,
+        // The Dwarf revision section 7.3: a Gunner with a second shot left
+        // still awaits orders.
+        handled: !preview.escapeAvailable && preview.attacksRemaining === 0,
       },
     };
     let defenderAfter: UnitStateV7 = {
@@ -3711,7 +3769,8 @@ function applyAttack(
     }
     const finalPreview = {
       ...preview,
-      attacksRemaining: overrunContinues ? 1 : 0,
+      attacksRemaining:
+        overrunContinues || preview.attacksRemaining === 1 ? 1 : 0,
       overrunAdvance: rule.abilities.includes("OVERRUN") && preview.advances,
       overrunContinues,
     };
@@ -3916,9 +3975,23 @@ function applyTendWounded(
     )
     .sort((a, b) => a.id - b.id);
   if (targets.length === 0) return rejected(original, "HEAL_TARGET_NOT_FOUND");
+  // The Dwarf revision section 9.1: an Engineer's Repair heals a machine 4.
+  const machineHeal = unitRoleMechanicsV7(
+    state,
+    result.captain,
+  ).repairMachineHeal;
   const amounts = new Map(
     targets.map(
-      (unit) => [unit.id, Math.min(2, unit.maxHp - unit.hp)] as const,
+      (unit) =>
+        [
+          unit.id,
+          Math.min(
+            machineHeal !== null && unitIsMachineV7(state, unit)
+              ? machineHeal
+              : 2,
+            unit.maxHp - unit.hp,
+          ),
+        ] as const,
     ),
   );
   return accepted(
@@ -4038,7 +4111,13 @@ function applyRaiseDead(
   const result = graveActionActor(original, state, actor, unitId, "RAISE_DEAD");
   if ("accepted" in result) return result;
   const necromancer = result.unit;
-  const graves = raiseDeadGravesV7(state.graves, state.units, necromancer.at);
+  // The Dwarf revision section 5.3: a Grave under a mound cannot be raised
+  // (every burrowed record stands on its mound tile).
+  const graves = raiseDeadGravesV7(
+    state.graves,
+    allOwnedUnitsV7(state),
+    necromancer.at,
+  );
   if (graves.length === 0)
     return rejected(original, "RAISE_DEAD_NOT_LEGAL", { reason: "NO_GRAVE" });
   try {
@@ -4193,6 +4272,9 @@ function applyRecover(
   const unit = actorCheck.unit;
   if (primaryUsed(unit) || unit.activation.moved)
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
+  // The Dwarf revision section 7.2: clockwork never mends itself.
+  if (unitIsConstructV7(state, unit))
+    return rejected(original, "RECOVER_NOT_LEGAL", { reason: "CONSTRUCT" });
   if (unit.hp >= unit.maxHp)
     return rejected(original, "RECOVER_NOT_LEGAL", { reason: "FULL_HP" });
   if (unit.form === "EMBARKED")
@@ -4689,13 +4771,24 @@ function applyCapture(
     const eliminatesFormerOwner =
       formerOwner !== null &&
       !cities.some((item) => item.ownerId === formerOwner);
+    // The Dwarf revision section 5.5: a burrowed unit homed to the captured
+    // city is orphaned like any unit.
+    let burrowed = state.burrowed.map((entry) =>
+      formerOwner !== null && entry.unit.homeCityId === captured.id
+        ? { ...entry, unit: { ...entry.unit, homeCityId: null } }
+        : entry,
+    );
+    // The Dwarf revision section 5.2: every unit of an eliminated seat dies
+    // with it, burrowed units included (an all-units read).
     const eliminatedUnits = eliminatesFormerOwner
-      ? units
-          .filter((item) => item.ownerId === formerOwner)
-          .sort((a, b) => a.id - b.id)
+      ? [...allOwnedUnitsV7({ units, burrowed }, formerOwner)].sort(
+          (a, b) => a.id - b.id,
+        )
       : [];
-    if (eliminatesFormerOwner)
+    if (eliminatesFormerOwner) {
       units = units.filter((item) => item.ownerId !== formerOwner);
+      burrowed = burrowed.filter((entry) => entry.unit.ownerId !== formerOwner);
+    }
     const events: DomainEventV7[] = [
       {
         kind: "CITY_CAPTURED",
@@ -4809,6 +4902,7 @@ function applyCapture(
         players,
         cities,
         units,
+        burrowed,
         populationContributions: contributions,
         pendingChoices: choices,
         outcome,
@@ -4852,7 +4946,14 @@ function applyEndTurn(
     const fields = rechargeShieldsAtEndTurnV7(cooled, actor);
     // The Ice Folk revision section 5.4: the Chill countdown of the
     // player's units, after the Force Fields recharge (no event).
-    const expired = chillCountdownV7(fields.state, actor);
+    // The Dwarf revision (sections 5.4 and 6.3): the per-turn lists of the
+    // active seat are emptied after the Chill countdown.
+    const counted = chillCountdownV7(fields.state, actor);
+    const expired =
+      counted.surfacedThisTurn.length === 0 &&
+      counted.bombedThisTurn.length === 0
+        ? counted
+        : { ...counted, surfacedThisTurn: [], bombedThisTurn: [] };
     const preview = playerIncomeV7(expired, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");
@@ -4882,14 +4983,21 @@ function applyEndTurn(
       // The Ice Folk revision section 7.8: the Cold Aura runs after the
       // Shield recharge and before Plague.
       const aura = resolveColdAuraV7(recharge.state, nextPlayer.id);
-      const next = aura.state;
+      // The Dwarf revision section 5.4: the burrowed Moles surface after the
+      // Shield recharge (and the Cold Aura) and before Plague.
+      const surfacing = resolveStartTurnSurfacingV7(
+        DWARF_KIT_V7,
+        aura.state,
+        nextPlayer.id,
+      );
+      const next = surfacing.state;
       const plague = resolveStartTurnPlagueAndChainV7(next, nextPlayer.id);
       const hatch = resolveStartTurnHatchV7(plague.state, nextPlayer.id);
       const afflicted =
         hatch.events.length === 0 && hatch.state === plague.state
           ? plague
           : { state: hatch.state, events: [...plague.events, ...hatch.events] };
-      const before = [...recharge.events, ...aura.events];
+      const before = [...recharge.events, ...aura.events, ...surfacing.events];
       return before.length === 0
         ? afflicted
         : {
@@ -5426,6 +5534,8 @@ function recoverIdleUnits(
         unit.form !== "EMBARKED" &&
         // Revision 19 section 6.2: idle recovery skips an Egg.
         unit.form !== "EGG" &&
+        // The Dwarf revision section 7.2: and a construct.
+        !unitIsConstructV7(state, unit) &&
         (unit.form !== "NAVAL" ||
           [unit.at, ...adjacentCoords(state, unit.at)].some((at) =>
             isActivePortV7(state, at, player.id),
@@ -5685,7 +5795,8 @@ function rewardDisplacementCellV7(
         arePlayersAlliedV7(state, ownerId, territoryOwner)
       )
         return false;
-      return !state.units.some((unit) => unit.hp > 0 && same(unit.at, at));
+      // The Dwarf revision section 5.3: the occupancy predicate.
+      return !tileOccupiedV7(state, at);
     }) ?? null
   );
 }
@@ -6011,8 +6122,14 @@ function checked(state: GameStateV7): GameStateV7 {
   // Martian revision: drop the Shield, Cooling, Thrall, and cooldown entries
   // of units that left the board.
   // The Ice Folk revision: drop the Chill entries of units that left it.
+  // The Dwarf revision: drop the per-turn entries of units that left the
+  // board.
   const result = parseGameStateV7(
-    prunedIceFolkV7(prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state)))),
+    prunedDwarfV7(
+      prunedIceFolkV7(
+        prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+      ),
+    ),
   );
   if (result === null) throw new RangeError("INVALID_STATE");
   return result;
@@ -6056,6 +6173,30 @@ function error(
 ): RuleErrorV7 {
   return { code, params };
 }
+/**
+ * The Dwarf revision: the reducer helpers the Dwarf commands and the Start
+ * Turn surfacing (src/engine/v7/dwarf-reducer.ts) share with every other
+ * command, so their results follow the same tails and validation.
+ */
+const DWARF_KIT_V7: DwarfReducerKitV7 = {
+  accepted,
+  rejected,
+  checked,
+  arithmeticFailure,
+  validateUnitActor,
+  primaryUsed,
+  exhaustedActivation,
+  revealRadius,
+  setExplored,
+  debit,
+  replaceTile,
+  requirePlayer,
+  nextSafe,
+  graveActionTail,
+  plunderAwards: plunderAwardsV7,
+  economyAndGrowth,
+  uniqueCoords,
+};
 const same = (a: CoordV7, b: CoordV7): boolean => a.x === b.x && a.y === b.y;
 const chebyshev = (a: CoordV7, b: CoordV7): number =>
   Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));

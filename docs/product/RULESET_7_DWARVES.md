@@ -1,6 +1,10 @@
 # Ruleset 7: Steampunk Dwarf faction
 
-**Status:** contract (`pulp_wars-78i.2`). Nothing of it is implemented. The
+**Status:** contract (`pulp_wars-78i.2`); **the engine is implemented**
+(`pulp_wars-78i.3`, identity `pulp-wars-poc-7r30`: every rule, command, event,
+query, and state shape of this document; the browser setup does not offer
+the faction yet). What the engine implementation changed or made precise is
+in [section 22](#22-implementation-notes-pulp_wars-78i3). The
 engine (`pulp_wars-78i.3`), the Normal AI (`pulp_wars-78i.4`), the art
 (`pulp_wars-78i.5`), the UI (`pulp_wars-78i.6`), and the coarse balance
 (`pulp_wars-78i.7`) follow it; `pulp_wars-78i.8` folds it into
@@ -17,7 +21,8 @@ Dwarf engine ([section 13.14](#1314-one-faction-per-player)).
 starts (after `7r29`, the one-faction-per-player identity). Other beads may
 take identities first, so this document names no number: **`7rNN` and `v7rNN` stand
 for that identity everywhere below, and "the previous identity" for the one
-current just before it.**
+current just before it.** The engine bead took `pulp-wars-poc-7r30`
+(autosave `pulpWars.save.v7r30.current`; the previous identity is `7r29`).
 
 **Map-generation revision:** unchanged by this revision. Faction choice never
 affects generation.
@@ -2805,3 +2810,82 @@ In addition, the one-faction-per-player rule of `pulp_wars-w5j.1` lands on
     one-faction-per-player bead and any tuning before `pulp_wars-78i.3` may
     change other factions' numbers; the analysis must be re-run first
     ([section 18](#18-implementation-split-and-test-expectations)).
+
+## 22. Implementation notes (`pulp_wars-78i.3`)
+
+### 22.1 The re-run before coding (section 18, first step)
+
+The scratch analysis of [section 12](#12-per-unit-battle-analysis) was re-run
+on the registry of commit `c6478ac` (`pulp-wars-poc-7r29`, the
+one-faction-per-player identity) before any Dwarf number was coded. Every
+regenerated output (the duel tables, the scenario and worked-example tables,
+and the per-unit tables) is byte-identical to the one this document was
+written from: **no per-unit verdict flips, and no Dwarf number was
+changed.** The formula check against `calculateCombatPreviewV7` again
+compares 12,480 exchanges; its 274 mismatches are the Vampire attacks of
+[section 12.1](#121-method) (the script lets a defender answer unless told
+otherwise), as before.
+
+### 22.2 Order of the work and parity
+
+The three helper refactors of [section 18](#18-implementation-split-and-test-expectations)
+landed first, each behaviour-neutral: `isLivingUnitV7` (every caller of the
+per-owner test moved onto it), `boardUnitsV7` and `allOwnedUnitsV7` in
+`src/engine/v7/units.ts` with the reader-classification test (the table
+`tests/fixtures/v7-unit-reader-classes.ts`, generated from a TypeScript
+syntax scan of every `<expression>.units` reader in `src` and enforced by
+`tests/unit/ruleset-v7-dwarf-unit-readers.test.ts`, before `burrowed`
+existed), and `tileOccupiedV7` with every placement rule moved onto it.
+
+Parity is proved step by step: 48 Normal-vs-Normal matches (24 setups over
+every other faction, with mirrors through `allowDuplicateFactions`, the
+Showcase, and two to four seats, two seeds each; 31,706 accepted commands at `c6478ac`, 31,277 at `e3bca91`)
+hash, after every step, the command with its events and state, every
+player's view, and the commands offered to the next active player. With the
+identity, the three empty Dwarf lists, and the three `false` combat-preview
+fields normalised away, every hash equals the base's: before the Dwarf
+rules (base `c6478ac`), after them, and again after the final rebase (base
+`e3bca91`).
+
+### 22.3 Deviations and precise readings
+
+1. **"Territory allied to the actor"** (a tunnel tile, a rider tile, an
+   Assemble tile) reads as the Beam Down rule does: territory of a
+   cooperative partner. A Mole may tunnel into its own territory, and an
+   Engineer may Assemble there.
+2. **The hidden mound.** `UNIT_MOVE_INTERRUPTED` with reason `MOUND` names
+   the mound tile where the Move met it (the `SNOW`, `ZOC`, and
+   `SETTLEMENT_FORBIDDEN` precedent); the mover stays on the last tile it
+   entered on which it may end.
+3. **`unflinchingApplied`** is true for every `ATTACK` by a land-form
+   construct, at full HP too (its force reads its maximum HP).
+4. **Projection.** `UNIT_TUNNELLED` reaches every viewer that has explored
+   one of its four tiles, the others null (`ProjectedUnitTunnelledV7`); a
+   viewer that owns an eruption victim but cannot see the mound receives
+   `UNIT_SURFACED` with its own entries and `unitId`, `at`, and the rider
+   null (`ProjectedUnitSurfacedV7`); the owner of a bombed unit who sees
+   neither the Gyrocopter's start nor its landing receives the hit as a
+   `COMBAT_SPLASH_DAMAGE` entry; `UNIT_ASSEMBLED` is owner-private, like
+   `UNIT_TRAINED`.
+5. **The `dwarf` stat block** carries the owner's `eruptionDamage` and
+   `bombDamage` for every Dwarf unit (public: they tell Blasting Charges and
+   Dive), `tunnelRange` 0 for every role but the Mole, and `shotsLeft` (a
+   Gunner only) as the shots it may still fire this turn on its owner's
+   turn and, on another player's turn, on its owner's next turn if it does
+   not move.
+6. **`landingThreat`** of a bombing-run preview is the sum, over every
+   visible hostile unit whose threatened tiles (`queryThreatenedTilesV7`)
+   include the landing, of one full-strength hit on the Gyrocopter there (a
+   hostile Gyrocopter's public bomb), capped at the Gyrocopter's HP.
+7. **Infect** (a Zombie's kill rising) gains only the construct exclusion;
+   its existing victim rule is otherwise unchanged.
+8. **Setup.** `DWARF` joins every list the one-faction-per-player rule keeps
+   (registration order, so the distinct defaults reach it only as a
+   seventh seat; the headless `--factions` value `dwarf`; setup validation)
+   **except the browser setup select**, which offers it from the UI bead
+   (`pulp_wars-78i.6`): until then no browser match has a Dwarf seat.
+9. **Telemetry windows.** "Surfaced units lost" and "Gyrocopters lost after
+   a bomb" count deaths before their owner's next Start Turn.
+10. **Not done here:** the release corpus refresh
+    (`npm run validate:ruleset7-release` and its reviewed refresh) is left to
+    the root's release gate.

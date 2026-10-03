@@ -101,6 +101,8 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "DINOSAUR",
       "MARTIAN",
       "ICE_FOLK",
+      // The Dwarf revision (`pulp_wars-78i.3`).
+      "DWARF",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -109,6 +111,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "DINOSAUR_BASELINE_V1",
       "MARTIAN_BASELINE_V1",
       "ICE_FOLK_BASELINE_V1",
+      "DWARF_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("ICE_FOLK")).toBe("ICE_FOLK_BASELINE_V1");
     expect(FACTION_TREES_V7.ICE_FOLK).toMatchObject({
@@ -153,16 +156,18 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     ]).toEqual([3, 4, 2, 2, 2, 1, 2, 6, 2, 3, 2, 1]);
   });
 
-  it("has 50 command kinds and 77 event kinds, with the new kinds at the stated positions", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(50);
+  // The Dwarf revision (`pulp_wars-78i.3`) adds three command kinds after
+  // COLD_SNAP and four event kinds (ruleset-v7-dwarf-faction.test.ts).
+  it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(53);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
       "THROW_BOLAS",
       "COLD_SNAP",
-      "RECOVER",
+      "TUNNEL",
     ]);
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(77);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(81);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
@@ -891,6 +896,7 @@ describe("Ice Folk technology (section 4)", () => {
       ["DINOSAUR", false, 3],
       ["MARTIAN", false, 3],
       ["ICE_FOLK", true, 4],
+      ["DWARF", false, 3],
     ]);
     const some = (...techs: (typeof TECHNOLOGY_IDS_V7)[number][]) =>
       technologyCapabilitiesV7(techs, "ICE_FOLK");

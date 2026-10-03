@@ -499,6 +499,13 @@ describe("ruleset-7 revision-19 form audit: source", () => {
   // Ice Witch of a Cold Snap. Its Chill targets are tested with
   // `form === "LAND"` (an Egg, an embarked unit, and a boat are never
   // Chilled).
+  //
+  // The Dwarf revision (`pulp_wars-78i.3`) adds land-form gates that an
+  // Egg, an embarked unit, and a boat must fail: the Mole of a Tunnel, the
+  // Gyrocopter of a Bomb Run, and the Engineer of an Assemble; the rising
+  // of a Bitten eruption or bomb victim (an Egg is never Bitten); Dig In
+  // (dwarf.ts); Plated (ruleset-v7.ts: the Tank's cap, land form only); and
+  // the state schema's burrowed entry (a mound is a land-form record).
   const AUDITED: Readonly<Record<string, number>> = {
     "src/engine/v7/combat.ts": 1,
     "src/engine/v7/explosions.ts": 1,
@@ -510,9 +517,11 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/reducer.ts": 17,
     // `pulp_wars-9s0.5`: only a land-form flyer stands on a Rift (an Egg,
     // an embarked unit, and a boat must fail the state check).
-    "src/engine/v7/state-schema.ts": 4,
+    "src/engine/v7/state-schema.ts": 5,
+    "src/engine/v7/dwarf-reducer.ts": 5,
+    "src/engine/v7/dwarf.ts": 1,
     "src/engine/v7/wail.ts": 1,
-    "src/engine/rules/ruleset-v7.ts": 1,
+    "src/engine/rules/ruleset-v7.ts": 2,
     // `pulp_wars-c87.5`: the own land units counted for the Shaman training
     // bias (an Egg and an embarked unit are neither a Shaman nor a fighter).
     // Revision 20: the Wallbreaker estimate asks for a land-form attacker
