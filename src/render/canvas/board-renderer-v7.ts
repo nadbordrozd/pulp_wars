@@ -90,6 +90,36 @@ import {
 } from "./martian-board-plan-v7";
 import { matchHasMartianV7, unitIsThrallV7 } from "../martian-presentation-v7";
 import {
+  drawBlizzardCellV7,
+  drawBlizzardRingV7,
+  drawChillGlyphV7,
+  drawFrozenCasingV7,
+  drawFrostedRimeV7,
+  drawIceFolkBadgeV7,
+  drawShatterCracksV7,
+  drawShatterWindowV7,
+  drawSnowCapsV7,
+  drawSnowCellV7,
+  type HpBarGeometryV7,
+  type IceFolkBoardArtV7,
+} from "./ice-folk-canvas-v7";
+import {
+  addIceFolkPickEntriesV7,
+  iceFolkAttackTargetExtrasV7,
+  iceFolkPickTargetsV7,
+  iceFolkTerrainCellsV7,
+  iceFolkUnitMarkersV7,
+  selectedWitchV7,
+  type IceFolkPickV7,
+  type IceFolkSnowCellV7,
+  type IceFolkUnitMarkersV7,
+} from "./ice-folk-board-plan-v7";
+import { shatterBoardCueV7 } from "./ice-folk-effects-v7";
+import {
+  SHATTERS_PREVIEW_V7,
+  matchHasIceFolkSeatV7,
+} from "../ice-folk-presentation-v7";
+import {
   blastPreviewPresentationV7,
   goblinAttackPreviewTextV7,
   matchHasGoblinV7,
@@ -125,7 +155,11 @@ import {
 import { selectionJumpOffsetCssPx } from "./selection-jump-presentation";
 import { RULESET7_TACTICAL_UI_SYMBOL_BY_ID } from "../../assets/ruleset7-tactical-ui-symbols";
 import { tacticalAttachmentsV7 } from "../tactical-presentation-v7";
-import type { ArtSetV7, ArtSubjectV7 } from "../../assets/chibi-art-v7";
+import type {
+  ArtSetV7,
+  ArtSubjectV7,
+  ChibiArtAssetV7,
+} from "../../assets/chibi-art-v7";
 import {
   chibiOverflowV7,
   cityArtSubjectV7,
@@ -156,6 +190,7 @@ import { chibiMountainFringeEdgesV7 } from "./chibi-terrain-fringe-v7";
 import { RULESET7_PLAYER_COLORS } from "./owner-recolour-v7";
 import {
   CALM_ROAD_STROKES_V7,
+  DIRECTED_BASE_HP_BAR_TOP_V7,
   drawDirectedFlagV7,
   drawDirectedPieceChromeV7,
   drawDirectedTerritoryBoundaryV7,
@@ -194,6 +229,12 @@ export interface BoardRenderInteractionV7 {
    * become the only map targets; null or omitted aims none.
    */
   readonly martianPick?: MartianPickV7 | null;
+  /**
+   * The Ice Folk revision (bead pulp_wars-7g3.6): the Bolas or Cold Snap
+   * being aimed by the selected unit. Its targets become the only map
+   * targets; null or omitted aims none.
+   */
+  readonly iceFolkPick?: IceFolkPickV7 | null;
 }
 
 /** Revision 19: the ID of the legacy code-drawn Egg (no raster exists). */
@@ -227,7 +268,13 @@ export interface MapCommandTargetV7 {
     | "BEAM_DOWN_PASSENGER"
     | "BEAM_DOWN"
     | "MIND_CONTROL"
-    | "TRACTOR_BEAM";
+    | "TRACTOR_BEAM"
+    /**
+     * The Ice Folk revision: a Bolas target, and a Cold Snap target (every
+     * one carries the same command, so choosing any of them casts it).
+     */
+    | "THROW_BOLAS"
+    | "COLD_SNAP";
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -284,6 +331,15 @@ export interface MapCommandTargetV7 {
     readonly lethal: boolean;
     readonly note: string;
   };
+  /**
+   * The Ice Folk revision: a Mammoth's Sweep flank victims, shown while the
+   * target is focused.
+   */
+  readonly sweep?: readonly {
+    readonly at: CoordV7;
+    readonly label: string;
+    readonly lethal: boolean;
+  }[];
   /** Revision 13: public splash entries of this attack (Undead matches only). */
   readonly splash?: readonly {
     readonly at: CoordV7;
@@ -367,7 +423,7 @@ export interface BoardRenderPlanEntryV7 {
    * with its faction badge unless the CHIBI art set shows its own faction
    * raster.
    */
-  readonly faction?: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN";
+  readonly faction?: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK";
   /**
    * UNIT only, revision 14: the public Plague and Bitten statuses, drawn as
    * small markers in the piece's overlay frame (absent when there are none).
@@ -389,6 +445,20 @@ export interface BoardRenderPlanEntryV7 {
    * and afloat markers of a visible Martian unit.
    */
   readonly martian?: MartianUnitMarkersV7;
+  /**
+   * TERRAIN only, the Ice Folk revision: the cell is Snow (the view's flag);
+   * the overlay is drawn over its ground and under Roads, bodies and units.
+   */
+  readonly snow?: IceFolkSnowCellV7;
+  /** TERRAIN only, the Ice Folk revision: the cell is in a known Blizzard. */
+  readonly blizzard?: true;
+  /**
+   * UNIT only, the Ice Folk revision: the Chill markers, the HP bar's
+   * Shatter window and the Witch of a visible unit (any owner).
+   */
+  readonly iceFolk?: IceFolkUnitMarkersV7;
+  /** UNIT only, the Ice Folk revision: the selected Witch's outline. */
+  readonly blizzardRing?: true;
 }
 
 export interface BoardRenderPlanV7 {
@@ -424,6 +494,10 @@ export function buildBoardRenderPlanV7(
       .map((city) => coordKey(city.at)),
   );
   for (const cityKey of cityKeys) roadKeys.add(cityKey);
+  // The Ice Folk revision: Snow and the Blizzard from the view's tile flags
+  // (a match without an Ice Folk seat has neither).
+  const iceFolkMatch = matchHasIceFolkSeatV7(view);
+  const winter = iceFolkMatch ? iceFolkTerrainCellsV7(view) : null;
   for (const tile of view.board.tiles) {
     if (!tile.explored) {
       entries.push({
@@ -459,6 +533,14 @@ export function buildBoardRenderPlanV7(
             : `TERRAIN:${tile.terrain}`,
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
+      ...(winter === null
+        ? {}
+        : {
+            ...snowOf(winter.snow, tile.at),
+            ...(winter.blizzard.has(coordKey(tile.at))
+              ? { blizzard: true as const }
+              : {}),
+          }),
     });
     const joins: (readonly [CoordV7, CoordV7])[] = [];
     for (const dx of [-1, 1])
@@ -605,13 +687,19 @@ export function buildBoardRenderPlanV7(
     view.eggs.map((entry) => [entry.unitId, entry.turnsRemaining] as const),
   );
   const martianMatch = matchHasMartianV7(view);
+  const ringWitch = iceFolkMatch
+    ? selectedWitchV7(view, interaction.selectedUnitId)
+    : undefined;
   for (const unit of view.units) {
     const faction = playerFactionV7(view, unit.ownerId);
     const factionUnit =
       faction === "UNDEAD" ||
       faction === "GOBLIN" ||
       faction === "DINOSAUR" ||
-      faction === "MARTIAN";
+      faction === "MARTIAN" ||
+      faction === "ICE_FOLK";
+    // The Ice Folk revision: Chill markers on units of any owner.
+    const iceFolk = iceFolkMatch ? iceFolkUnitMarkersV7(view, unit) : undefined;
     // The Martian revision: a Thrall is labelled "Thrall", and a machine
     // afloat is drawn as itself (never as the transport).
     const thrall = martianMatch && unitIsThrallV7(view, unit.id);
@@ -664,6 +752,8 @@ export function buildBoardRenderPlanV7(
       ...(egg ? { egg: { turnsRemaining: eggTurns.get(unit.id) ?? 1 } } : {}),
       ...(growthStage === 1 || growthStage === 2 ? { growthStage } : {}),
       ...(martian === undefined ? {} : { martian }),
+      ...(iceFolk === undefined ? {} : { iceFolk }),
+      ...(ringWitch?.id === unit.id ? { blizzardRing: true as const } : {}),
     });
   }
   for (const value of view.improvementValues)
@@ -805,17 +895,27 @@ export function buildBoardRenderPlanV7(
     interaction.martianPick.unitId === interaction.selectedUnitId
       ? interaction.martianPick
       : null;
+  // The Ice Folk revision: likewise while a Bolas or Cold Snap is aimed.
+  const iceFolkPick =
+    interaction.iceFolkPick !== undefined &&
+    interaction.iceFolkPick !== null &&
+    interaction.iceFolkPick.unitId === interaction.selectedUnitId
+      ? interaction.iceFolkPick
+      : null;
   const targets = kaboomPreview
     ? []
     : layEgg !== null
       ? layEggTargets(view, commands, layEgg)
       : martianPick !== null
         ? martianPickTargetsV7(view, commands, martianPick)
-        : dedupeMapTargets(
-            mapTargets(view, commands, interaction.selectedUnitId),
-          );
+        : iceFolkPick !== null
+          ? iceFolkPickTargetsV7(view, commands, iceFolkPick)
+          : dedupeMapTargets(
+              mapTargets(view, commands, interaction.selectedUnitId),
+            );
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
+  if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
   for (const target of targets) {
     if (target.family === "LAY_EGG")
       entries.push({
@@ -862,6 +962,15 @@ export function buildBoardRenderPlanV7(
       a.key.localeCompare(b.key),
   );
   return { version: 7, entries, targets };
+}
+
+/** The Ice Folk revision: the `snow` member of a terrain entry, if any. */
+function snowOf(
+  snow: ReadonlyMap<string, IceFolkSnowCellV7>,
+  at: CoordV7,
+): { readonly snow?: IceFolkSnowCellV7 } {
+  const cell = snow.get(coordKey(at));
+  return cell === undefined ? {} : { snow: cell };
 }
 
 /** Presentation-only replacement of a same-cell Forest canopy with its ground. */
@@ -1150,6 +1259,19 @@ export function drawBoardV7(input: {
    * LEGACY art set ignores it.
    */
   readonly direction?: BoardDirectionRuntimeV7;
+  /**
+   * The Ice Folk revision (bead pulp_wars-7g3.6): the cached Snow tiles,
+   * snow caps, rime and casings. Omitted, Snow is a plain wash and the
+   * Chill markers are code-drawn stand-ins.
+   */
+  readonly iceFolkArt?: IceFolkBoardArtV7;
+  /** The Blizzard flakes' clock in ms (0, the default, for reduced motion). */
+  readonly blizzardTimeMs?: number;
+  /** A unit being shattered, `elapsedMs` into the Shatter timeline. */
+  readonly iceFolkShatter?: {
+    readonly unitId: number;
+    readonly elapsedMs: number;
+  } | null;
 }): void {
   const { context, viewport, devicePixelRatio } = input;
   const saturationOf = (entry: BoardRenderPlanEntryV7): number => {
@@ -1241,6 +1363,44 @@ export function drawBoardV7(input: {
           )
           .map((entry) => coordKey(entry.at)),
   );
+  // The Ice Folk revision: a tall terrain body on a Snow cell is drawn after
+  // its ground and Snow overlay, like a body over a Road, so the Snow lies
+  // on the ground under the trees and peaks and their snow caps go on top.
+  const splitCells = new Set(roadCells);
+  if (chibiArt !== undefined)
+    for (const entry of input.plan.entries)
+      if (entry.kind === "TERRAIN" && entry.snow !== undefined)
+        splitCells.add(coordKey(entry.at));
+  const iceFolkArt = input.iceFolkArt;
+  const blizzardTime =
+    input.reducedMotion === true ? 0 : (input.blizzardTimeMs ?? 0);
+  /** The Snow overlay and the Blizzard of a terrain cell (ground pass). */
+  const drawWinterGround = (
+    entry: BoardRenderPlanEntryV7,
+    x: number,
+    y: number,
+  ): void => {
+    if (entry.snow === undefined && entry.blizzard !== true) return;
+    const cell =
+      chibiArt === undefined
+        ? {
+            x: x - (TILE_WIDTH * camera.zoom) / 2,
+            y: y - (TILE_HEIGHT * camera.zoom) / 2,
+            width: TILE_WIDTH * camera.zoom,
+            height: TILE_HEIGHT * camera.zoom,
+          }
+        : chibiTerrainPartRect(
+            { x, y },
+            camera,
+            SNOW_OVERLAY_ASSET_V7,
+            devicePixelRatio,
+            "CELL",
+          );
+    if (entry.snow !== undefined)
+      drawSnowCellV7(context, iceFolkArt, cell, entry.snow, sceneAlpha);
+    if (entry.blizzard === true)
+      drawBlizzardCellV7(context, entry.at, cell, blizzardTime, sceneAlpha);
+  };
   // CHIBI settlement centres (cities and villages): a unit standing on one
   // draws smaller in the cell's front-right, so the settlement stays
   // readable. A unit mid-move (fractional cell) never matches.
@@ -1286,7 +1446,7 @@ export function drawBoardV7(input: {
           entry.kind !== "ROAD" &&
           entry.kind !== "ROAD_JOIN") ||
         (pass === "TALL_BODY" &&
-          (entry.kind !== "TERRAIN" || !roadCells.has(coordKey(entry.at)))) ||
+          (entry.kind !== "TERRAIN" || !splitCells.has(coordKey(entry.at)))) ||
         (pass === "FOREGROUND" &&
           (entry.kind === "FOG" ||
             entry.kind === "ROAD" ||
@@ -1329,13 +1489,14 @@ export function drawBoardV7(input: {
           saturationOf(entry),
           input.saturation?.cache,
         );
-        // Tall terrain under a Road: ground now, the body after Roads.
+        // Tall terrain under a Road (or, the Ice Folk revision, on Snow):
+        // ground now, the body after Roads.
         const layers =
-          chibi?.kind === "READY" && roadCells.has(coordKey(entry.at))
+          chibi?.kind === "READY" && splitCells.has(coordKey(entry.at))
             ? chibi.layers
             : undefined;
         if (pass === "TALL_BODY") {
-          if (chibi?.kind === "READY" && layers !== undefined)
+          if (chibi?.kind === "READY" && layers !== undefined) {
             drawChibiTerrainV7(context, chibi, {
               centre: { x, y },
               camera,
@@ -1344,6 +1505,19 @@ export function drawBoardV7(input: {
               part: "CELL",
               image: layers.body,
             });
+            if (entry.snow !== undefined)
+              drawChibiSnowCapsV7(
+                context,
+                iceFolkArt,
+                chibi,
+                layers.body,
+                { x, y },
+                camera,
+                devicePixelRatio,
+                "CELL",
+                sceneAlpha,
+              );
+          }
           continue;
         }
         if (chibi !== null && chibi.kind !== "MISSING") {
@@ -1418,6 +1592,25 @@ export function drawBoardV7(input: {
                   ? { part: "CELL" }
                   : { part: "GROUND", image: layers.ground }),
             });
+          // The Ice Folk revision: Snow and the Blizzard over the ground;
+          // the snow caps of the body's overflow over the overflow.
+          if (pass === "GROUND") drawWinterGround(entry, x, y);
+          else if (
+            entry.snow !== undefined &&
+            chibi.kind === "READY" &&
+            chibi.layers !== undefined
+          )
+            drawChibiSnowCapsV7(
+              context,
+              iceFolkArt,
+              chibi,
+              chibi.layers.body,
+              { x, y },
+              camera,
+              devicePixelRatio,
+              "OVERFLOW",
+              sceneAlpha,
+            );
           continue;
         }
         if (pass === "GROUND") {
@@ -1440,12 +1633,14 @@ export function drawBoardV7(input: {
               entry,
               sceneAlpha,
             });
+          // The Ice Folk revision: Snow and the Blizzard over the ground.
+          drawWinterGround(entry, x, y);
         } else {
           const raised = atSaturation(
             entry,
             input.images.resolveRaisedTerrain?.(entry.assetId ?? ""),
           );
-          if (raised !== null && raised !== undefined)
+          if (raised !== null && raised !== undefined) {
             drawEntryImage(context, raised, {
               x,
               y,
@@ -1453,7 +1648,21 @@ export function drawBoardV7(input: {
               entry,
               sceneAlpha,
             });
-          else
+            // The Ice Folk revision: snow caps on the raised body.
+            if (entry.snow !== undefined)
+              drawSnowCapsV7(
+                context,
+                iceFolkArt,
+                raised,
+                anchoredDestinationRect(
+                  { x, y },
+                  camera.zoom,
+                  geometryFor(entry),
+                ),
+                null,
+                sceneAlpha,
+              );
+          } else
             drawTallTerrainOverflowFallback(
               context,
               atSaturation(entry, input.images.resolve(entry.assetId ?? "")),
@@ -1586,6 +1795,14 @@ export function drawBoardV7(input: {
               (pulse) => pulse.unitId === Number(entry.key.slice(5)),
             ) ?? null)
           : null;
+      // The Ice Folk revision: this frame of a Shatter on this unit, if any.
+      const shatterCue =
+        entry.kind === "UNIT" &&
+        input.iceFolkShatter !== undefined &&
+        input.iceFolkShatter !== null &&
+        input.iceFolkShatter.unitId === Number(entry.key.slice(5))
+          ? shatterBoardCueV7(input.iceFolkShatter.elapsedMs)
+          : null;
       if (entry.assetId !== undefined) {
         const resolved = resolveChibiEntry(entry);
         const chibi = resolved?.resolution ?? null;
@@ -1702,6 +1919,10 @@ export function drawBoardV7(input: {
               height: rect.height * scale,
             };
             alpha = readiness?.opacity ?? 1;
+            // The Ice Folk revision: a unit being shattered shakes by 1 px
+            // while the cracks run over its casing.
+            if (shatterCue !== null && shatterCue.shakeCssPx !== 0)
+              rect = { ...rect, x: rect.x + shatterCue.shakeCssPx };
             if (readiness !== null)
               for (const layer of [readiness.halo, readiness.core]) {
                 // Each layer raster is phase-free and cached; only its
@@ -1762,6 +1983,18 @@ export function drawBoardV7(input: {
               rect.height,
             );
           context.restore();
+          // The Ice Folk revision (section 13.1): a Frozen unit is cased in
+          // ice to the waist, a Frosted one has a thin rime on its top edges;
+          // a unit being shattered is cased to the top, then cracks.
+          if (entry.kind === "UNIT") {
+            if (shatterCue !== null && shatterCue.casing) {
+              drawFrozenCasingV7(context, iceFolkArt, image, rect, 1);
+              drawShatterCracksV7(context, rect, shatterCue.cracks);
+            } else if (entry.iceFolk?.chill === "FROZEN")
+              drawFrozenCasingV7(context, iceFolkArt, image, rect);
+            else if (entry.iceFolk?.chill === "FROSTED")
+              drawFrostedRimeV7(context, iceFolkArt, image, rect);
+          }
           // The Martian revision: a walker afloat wades (ripples at its feet).
           if (
             entry.kind === "UNIT" &&
@@ -1860,6 +2093,14 @@ export function drawBoardV7(input: {
         // Thrall collar in the status slot right of the sprite.
         if (entry.kind === "UNIT" && entry.faction === "MARTIAN" && !factionArt)
           drawMartianBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        // The Ice Folk revision: the snow-capped peak badge over Human stand-in art
+        // (LEGACY and the classic look).
+        if (
+          entry.kind === "UNIT" &&
+          entry.faction === "ICE_FOLK" &&
+          !factionArt
+        )
+          drawIceFolkBadgeV7(context, x, y, camera.zoom, chibiPiece);
         if (entry.kind === "UNIT" && entry.martian !== undefined) {
           if (entry.martian.thrall)
             drawThrallCollarV7(context, x, y, camera.zoom, {
@@ -1900,6 +2141,27 @@ export function drawBoardV7(input: {
               devicePixelRatio,
             });
           }
+        // The Ice Folk revision: a Frosted unit's frost glyph in the next
+        // status slot after its afflictions.
+        if (entry.kind === "UNIT" && entry.iceFolk?.chill === "FROSTED") {
+          const registered =
+            chibiPiece &&
+            chibiArt !== undefined &&
+            !(input.highContrast ?? false)
+              ? chibiArt.resolve({
+                  subject: "ICON:STATUS:CHILLED",
+                  at: entry.at,
+                  deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+                })
+              : null;
+          drawChillGlyphV7(context, x, y, camera.zoom, {
+            chibi: chibiPiece,
+            slot: entry.afflictions?.length ?? 0,
+            raster: registered?.kind === "READY" ? registered.image : null,
+            highContrast: input.highContrast ?? false,
+            devicePixelRatio,
+          });
+        }
         if (
           entry.kind === "CITY" &&
           entry.capital === true &&
@@ -1998,6 +2260,87 @@ export function drawBoardV7(input: {
             );
           }
         }
+        // The Ice Folk revision (section 13.1): the Shatter window on a
+        // Chilled unit's HP bar, in the bar of the look. The live look's
+        // base bar shows only when damaged, so a Chilled unit at full HP
+        // gets its bar too: the window is the point.
+        if (
+          entry.kind === "UNIT" &&
+          entry.hp !== undefined &&
+          entry.maxHp !== undefined &&
+          entry.iceFolk !== undefined &&
+          entry.iceFolk.shatterWindow !== null
+        ) {
+          const zoom = camera.zoom;
+          let bar: HpBarGeometryV7;
+          if (directed?.hp === true && direction !== undefined) {
+            if (direction.chrome.hpPlacement === "SIDE") {
+              const side = { left: -63, top: -36, width: 9, height: 76 };
+              bar = {
+                vertical: true,
+                inner: {
+                  x: x + (side.left + 1) * zoom,
+                  y: y + (side.top + 1) * zoom,
+                  width: (side.width - 2) * zoom,
+                  height: (side.height - 2) * zoom,
+                },
+              };
+            } else {
+              const width = (directedGarrison ? 40 : 54) * zoom;
+              const height = 8 * zoom;
+              const left = x + (directedGarrison ? 20 : 0) * zoom - width / 2;
+              const top = y + DIRECTED_BASE_HP_BAR_TOP_V7 * zoom;
+              if (direction.chrome.hp !== "ALWAYS" && entry.hp >= entry.maxHp) {
+                context.fillStyle = "#101718";
+                context.fillRect(left, top, width, height);
+                context.fillStyle = "#65d889";
+                context.fillRect(
+                  left + zoom,
+                  top + zoom,
+                  width - 2 * zoom,
+                  height - 2 * zoom,
+                );
+              }
+              bar = {
+                vertical: false,
+                inner: {
+                  x: left + zoom,
+                  y: top + zoom,
+                  width: width - 2 * zoom,
+                  height: height - 2 * zoom,
+                },
+              };
+            }
+          } else if (chibiPiece) {
+            const side = CHIBI_OVERLAY_FRAME_V7.hpBar;
+            bar = {
+              vertical: true,
+              inner: {
+                x: x + (side.left + 1) * zoom,
+                y: y + (side.top + 1) * zoom,
+                width: (side.width - 2) * zoom,
+                height: (side.height - 2) * zoom,
+              },
+            };
+          } else
+            bar = {
+              vertical: false,
+              inner: {
+                x: x - 24 * zoom,
+                y: y + 26 * zoom,
+                width: 48 * zoom,
+                height: 5 * zoom,
+              },
+            };
+          drawShatterWindowV7(
+            context,
+            bar,
+            entry.hp,
+            entry.maxHp,
+            entry.iceFolk.shatterWindow,
+            input.highContrast ?? false,
+          );
+        }
         // The Martian revision (section 13.1): the segmented Shield bar,
         // with the HP bar of the look: under the LEGACY bar's row, beside the
         // classic CHIBI side bar, or on the live look's base.
@@ -2012,7 +2355,9 @@ export function drawBoardV7(input: {
             placement: base ? "BASE" : chibiPiece ? "SIDE" : "LEGACY",
             hpShown:
               direction?.chrome.hp === "ALWAYS" ||
-              (entry.hp ?? 0) < (entry.maxHp ?? 0),
+              (entry.hp ?? 0) < (entry.maxHp ?? 0) ||
+              // The Ice Folk revision: a Chilled unit always shows its bar.
+              (entry.iceFolk?.shatterWindow ?? null) !== null,
             garrisoned: directedGarrison,
             highContrast: input.highContrast ?? false,
           });
@@ -2045,6 +2390,25 @@ export function drawBoardV7(input: {
     }
   for (const drawOverlays of deferredChibiOverlays) drawOverlays();
   for (const drawMarker of deferredGraveMarkers) drawMarker();
+  // The Ice Folk revision: the selected (or hovered) Witch's nine tiles.
+  for (const entry of input.plan.entries)
+    if (
+      entry.kind === "UNIT" &&
+      entry.iceFolk?.witch === true &&
+      (entry.blizzardRing === true ||
+        (input.previewFocus !== undefined &&
+          input.previewFocus !== null &&
+          same(input.previewFocus, entry.at)))
+    )
+      drawBlizzardRingV7(
+        context,
+        {
+          x: camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
+          y: camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom,
+        },
+        TILE_WIDTH * camera.zoom,
+        input.highContrast ?? false,
+      );
   const targetEdgeKeys = new Set(
     input.plan.entries.flatMap((entry) =>
       entry.kind === "TARGET"
@@ -2213,6 +2577,14 @@ export function drawBoardV7(input: {
       paintLater,
     );
     drawMartianFocusPreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      placer,
+      defer,
+    );
+    drawIceFolkFocusPreviewV7(
       context,
       camera,
       input.plan,
@@ -2410,7 +2782,9 @@ function targetPriority(family: MapCommandTargetV7["family"]): number {
     family === "MIND_CONTROL" ||
     family === "TRACTOR_BEAM" ||
     family === "BEAM_DOWN" ||
-    family === "BEAM_DOWN_PASSENGER"
+    family === "BEAM_DOWN_PASSENGER" ||
+    family === "THROW_BOLAS" ||
+    family === "COLD_SNAP"
   )
     return 5;
   if (family === "HATCH") return 4;
@@ -2439,6 +2813,8 @@ function targetStroke(
     family === "BEAM_DOWN_PASSENGER"
   )
     return "#ff8fd6";
+  // The Ice Folk revision: the pale ice of ICE_FOLK_PALETTE_V7.
+  if (family === "THROW_BOLAS" || family === "COLD_SNAP") return "#d6f0ff";
   return "#64e6cf";
 }
 
@@ -2737,6 +3113,40 @@ function drawMartianFocusPreviewV7(
       pierce.friendly ? "BLAST_FRIENDLY" : "PIERCE",
       pierce.label,
       pierce.lethal,
+      placer,
+      defer,
+    );
+}
+
+/**
+ * The Ice Folk revision: the focused (or only) attack target's Sweep flank
+ * victims, each with its damage.
+ */
+function drawIceFolkFocusPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  placer: PreviewLabelPlacerV7,
+  defer: (draw: () => void) => void,
+): void {
+  const sweeping = plan.targets.filter(
+    (target) => target.family === "ATTACK" && target.sweep !== undefined,
+  );
+  const target =
+    (focus === null
+      ? undefined
+      : sweeping.find((candidate) => same(candidate.at, focus))) ??
+    (sweeping.length === 1 ? sweeping[0] : undefined);
+  for (const victim of target?.sweep ?? [])
+    drawAbilityTargetV7(
+      context,
+      camera.offsetX + victim.at.x * TILE_WIDTH * camera.zoom,
+      camera.offsetY + victim.at.y * TILE_HEIGHT * camera.zoom,
+      camera.zoom,
+      "SWEEP",
+      victim.label,
+      victim.lethal,
       placer,
       defer,
     );
@@ -3356,6 +3766,7 @@ function commandMapTargets(
   const goblinMatch = matchHasGoblinV7(view);
   const dinosaurMatch = matchHasDinosaurV7(view);
   const martianMatch = matchHasMartianV7(view);
+  const iceFolkMatch = matchHasIceFolkSeatV7(view);
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
     // Revision 19: an adjacent own Egg the selected Shaman may hatch.
@@ -3451,11 +3862,18 @@ function commandMapTargets(
       const martian = martianMatch
         ? martianAttackTargetExtrasV7(view, preview)
         : null;
+      // The Ice Folk revision (Ice Folk matches only): Shatter, Chilled,
+      // Sweep, Trample, Boulders, Rockfall, Planted, Cold Blood, Snow cover,
+      // the Blizzard and the hidden-Blizzard caveat.
+      const iceFolk = iceFolkMatch
+        ? iceFolkAttackTargetExtrasV7(view, preview)
+        : null;
       const noteParts = [
         undeadNote,
         goblin?.gangUp ?? null,
         dinosaurNote,
         ...(martian?.notes ?? []),
+        ...(iceFolk?.notes ?? []),
       ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [
@@ -3490,12 +3908,18 @@ function commandMapTargets(
           previewLabel:
             preview === null
               ? "Damage uncertain"
-              : // The Martian revision: a Tripod's second hit is "pierce".
-                `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}${martian?.pierce !== undefined ? ` · pierce ${preview.splash[0]?.damage ?? 0}` : preview.splash.length > 0 ? ` · splash ${preview.splash.reduce((sum, item) => sum + item.damage, 0)} to ${preview.splash.length}` : ""}`,
+              : // The Ice Folk revision: "Shatters" in place of the damage
+                // and retaliation lines; a Sweep's flank hits are "sweep".
+                iceFolk?.shatters === true
+                ? `${SHATTERS_PREVIEW_V7}${iceFolk.sweep === undefined ? "" : ` · sweep ${iceFolk.sweep.length}`}`
+                : iceFolk?.sweep !== undefined
+                  ? `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker} · sweep ${iceFolk.sweep.length}`
+                  : // The Martian revision: a Tripod's second hit is "pierce".
+                    `Deal ${preview.damageToDefender} · take ${preview.damageToAttacker}${martian?.pierce !== undefined ? ` · pierce ${preview.splash[0]?.damage ?? 0}` : preview.splash.length > 0 ? ` · splash ${preview.splash.reduce((sum, item) => sum + item.damage, 0)} to ${preview.splash.length}` : ""}`,
           ...(preview === null
             ? {}
             : {
-                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined ? splashSentence : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}`,
+                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined && iceFolk?.sweep === undefined ? splashSentence : martian?.pierce === undefined ? "" : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}${iceFolk === null || iceFolk.semantic === null ? "" : ` ${iceFolk.semantic}`}`,
               }),
           ...(note === null ? {} : { previewNote: note }),
           ...(martian === null || martian.shooter.length === 0
@@ -3507,8 +3931,10 @@ function commandMapTargets(
             : { previewWarningSummary: goblin.summary }),
           ...(blast === null ? {} : { blast }),
           ...(martian?.pierce === undefined ? {} : { pierce: martian.pierce }),
+          ...(iceFolk?.sweep === undefined ? {} : { sweep: iceFolk.sweep }),
           ...((undeadMatch || goblinMatch) &&
           martian?.pierce === undefined &&
+          iceFolk?.sweep === undefined &&
           preview !== null &&
           preview.splash.length > 0
             ? {
@@ -3805,6 +4231,49 @@ function drawChibiTerrainV7(
       rect.height,
     );
   context.restore();
+}
+
+/**
+ * The Ice Folk revision: the geometry of the 80 x 80 Snow overlay tile (a
+ * centred terrain tile), so it lands on the cell's exact device pixels.
+ */
+const SNOW_OVERLAY_ASSET_V7: ChibiArtAssetV7 = {
+  id: "ice-folk-snow-overlay",
+  subject: "TERRAIN:GRASS",
+  assetClass: "TERRAIN",
+  width: 80,
+  height: 80,
+  url: "",
+};
+
+/**
+ * The Ice Folk revision: the snow caps of a tall terrain body (its body
+ * layer), drawn over the body's owning cell or its upward overflow, the
+ * same parts as drawChibiTerrainV7.
+ */
+function drawChibiSnowCapsV7(
+  context: CanvasRenderingContext2D,
+  art: IceFolkBoardArtV7 | undefined,
+  chibi: Extract<ChibiResolutionV7, { readonly kind: "READY" }>,
+  body: CanvasImageSource,
+  centre: { readonly x: number; readonly y: number },
+  camera: CameraState,
+  devicePixelRatio: number,
+  part: "CELL" | "OVERFLOW",
+  sceneAlpha: number,
+): void {
+  const { asset } = chibi;
+  const up = chibiOverflowV7(asset).up;
+  const rows = part === "OVERFLOW" ? up : asset.height - up;
+  if (rows <= 0) return;
+  drawSnowCapsV7(
+    context,
+    art,
+    body,
+    chibiTerrainPartRect(centre, camera, asset, devicePixelRatio, part),
+    { x: 0, y: part === "OVERFLOW" ? 0 : up, width: asset.width, height: rows },
+    sceneAlpha,
+  );
 }
 
 function drawSquareTerrainGround(

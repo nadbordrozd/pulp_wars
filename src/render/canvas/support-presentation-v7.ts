@@ -1,5 +1,6 @@
 import type {
   ChibiEffectIdV7,
+  IceFolkEffectIdV7,
   MartianEffectIdV7,
 } from "../../assets/chibi-art-v7";
 import type { CoordV7 } from "../../engine/index";
@@ -38,7 +39,9 @@ export type SupportEffectSubjectV7 =
   | "STATUS:PLAGUED"
   | `EFFECT:${ChibiEffectIdV7}`
   /** The Martian effect sprites (bead pulp_wars-t6s.4, martian-effects-v7). */
-  | `EFFECT:${MartianEffectIdV7}`;
+  | `EFFECT:${MartianEffectIdV7}`
+  /** The Ice Folk effect sprites (bead pulp_wars-7g3.6, ice-folk-effects-v7). */
+  | `EFFECT:${IceFolkEffectIdV7}`;
 
 export const SUPPORT_EFFECT_SUBJECTS_V7: readonly SupportEffectSubjectV7[] = [
   "EFFECT:WAIL",

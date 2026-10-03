@@ -1,4 +1,5 @@
 import type { ArtSubjectV7 } from "../../assets/chibi-art-v7";
+import { ICE_FOLK_FLAG_ANCHORS_V7 } from "../../assets/chibi-direction-ice-folk-presentation";
 import { MARTIAN_FLAG_ANCHORS_V7 } from "../../assets/chibi-direction-martian-presentation";
 import type { BoardRenderPlanEntryV7 } from "./board-renderer-v7";
 import type {
@@ -349,6 +350,9 @@ export const DIRECTION_FLAG_ANCHORS_V7: Readonly<
   // --- Martian (art of bead pulp_wars-t6s.6, wired in by pulp_wars-t6s.4):
   // the tips of the colonies' own antenna masts, so no pole is drawn.
   ...MARTIAN_FLAG_ANCHORS_V7,
+  // --- Ice Folk (art of bead pulp_wars-7g3.5, wired in by pulp_wars-7g3.6):
+  // the tips of the camps' own bone poles, so no pole is drawn.
+  ...ICE_FOLK_FLAG_ANCHORS_V7,
 };
 
 const clampPercent = (value: unknown, low: number, high: number): number =>

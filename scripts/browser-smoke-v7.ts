@@ -66,6 +66,18 @@ type Connection = {
   readonly close: () => void;
 };
 
+/**
+ * The setup's faction options in order, for every faction probe (the Martian
+ * UI added the fifth, the Ice Folk UI, pulp_wars-7g3.6, the sixth).
+ */
+const FACTION_OPTIONS_V7 = [
+  "Human",
+  "Undead",
+  "Goblin",
+  "Dinosaur",
+  "Martian",
+  "Ice Folk",
+] as const;
 const timingMode = browserTimingModeV7(process.argv);
 const deployed = process.argv.includes("--deployed");
 const baseUrl = smokeUrl(
@@ -591,6 +603,7 @@ try {
   const goblin = await probeGoblinMatch(connection);
   const dinosaur = await probeDinosaurMatch(connection);
   const martian = await probeMartianMatch(connection);
+  const iceFolk = await probeIceFolkMatch(connection);
   const showcase = await probeShowcaseMatch(connection);
   await evaluate(
     connection,
@@ -674,7 +687,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -1126,10 +1139,7 @@ async function probeGoblinMatch(connection: Connection): Promise<string> {
     connection,
     `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
   );
-  if (
-    JSON.stringify(options) !==
-    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])
-  )
+  if (JSON.stringify(options) !== JSON.stringify(FACTION_OPTIONS_V7))
     throw new Error(
       `Goblin faction option missing: ${JSON.stringify(options)}`,
     );
@@ -1367,10 +1377,7 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
     connection,
     `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
   );
-  if (
-    JSON.stringify(options) !==
-    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])
-  )
+  if (JSON.stringify(options) !== JSON.stringify(FACTION_OPTIONS_V7))
     throw new Error(
       `Dinosaur faction option missing: ${JSON.stringify(options)}`,
     );
@@ -1694,10 +1701,7 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
     connection,
     `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
   );
-  if (
-    JSON.stringify(options) !==
-    JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])
-  )
+  if (JSON.stringify(options) !== JSON.stringify(FACTION_OPTIONS_V7))
     throw new Error(
       `Martian faction option missing: ${JSON.stringify(options)}`,
     );
@@ -1843,6 +1847,219 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
   );
   await navigateFresh(freshSetup);
   return `Showcase launch as Martian vs three Humans, full-power ${ray.role === "JUGGERNAUT" ? "Colossus" : ray.role === "CATAPULT" ? "Tripod" : "Ray Gunner"} ray from ${ray.at.x},${ray.at.y} (Cooling after), Grunt beamed down to ${beamed.at.x},${beamed.at.y}, and resume`;
+}
+
+/**
+ * The Ice Folk in the default route (pulp_wars-7g3.6): setup offers Ice Folk
+ * for every seat; a Showcase with an Ice Folk seat and three Human opponents
+ * launches from the production setup, its strip under Snow (the view's
+ * flags; the cursor on the capital names what Snow does for the viewer);
+ * the Sled is selected with the keyboard and moved, by a keyboard-chosen
+ * offered Move, to a tile within Bolas reach of an enemy; its Bolas button
+ * aims, the dock lists the targets with the preview's Frozen or Frosted hint,
+ * and the throw leaves the target Frozen (a sluggish Chill entry); and the
+ * save resumes with its Ice Folk seat and the Chill on a fresh default-route
+ * load. It uses no fixture, so it also runs against a deployed bundle.
+ */
+async function probeIceFolkMatch(connection: Connection): Promise<string> {
+  const defaultUrl = (): string => {
+    const url = new URL(baseUrl);
+    url.searchParams.delete("art");
+    return url.href;
+  };
+  const navigateFresh = async (readiness: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `globalThis.__V7_ICE_FOLK_PRIOR_DOCUMENT__ = true`,
+    );
+    await connection.send("Page.navigate", { url: defaultUrl() });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_ICE_FOLK_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
+    );
+  };
+  const typeahead = async (selector: string, letter: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `document.querySelector(${JSON.stringify(selector)}).focus()`,
+    );
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: letter,
+      code: `Key${letter}`,
+      text: letter,
+      windowsVirtualKeyCode: letter.charCodeAt(0),
+    });
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: letter,
+      code: `Key${letter}`,
+      windowsVirtualKeyCode: letter.charCodeAt(0),
+    });
+  };
+  const focusBoard = async (): Promise<void> => {
+    await evaluate(
+      connection,
+      `document.querySelector('canvas.board-canvas-v7').focus()`,
+    );
+  };
+  const arrows = async (dx: number, dy: number): Promise<void> => {
+    const horizontal = dx < 0 ? "ArrowLeft" : "ArrowRight";
+    const vertical = dy < 0 ? "ArrowUp" : "ArrowDown";
+    for (let step = 0; step < Math.abs(dx); step += 1)
+      await pressKey(connection, horizontal, horizontal);
+    for (let step = 0; step < Math.abs(dy); step += 1)
+      await pressKey(connection, vertical, vertical);
+  };
+  const cursorText = `document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? ''`;
+  const saveKey = "pulpWars.save.v7r25.current";
+  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  const options = await evaluate<readonly string[]>(
+    connection,
+    `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
+  );
+  if (JSON.stringify(options) !== JSON.stringify(FACTION_OPTIONS_V7))
+    throw new Error(
+      `Ice Folk faction option missing: ${JSON.stringify(options)}`,
+    );
+  // Three opponents, the Showcase map, and an Ice Folk human seat, each
+  // chosen by keyboard on its focused, closed select.
+  await evaluate(connection, `document.querySelector('#v7-ai-count').focus()`);
+  await typeSelectValue(connection, "#v7-ai-count", "3");
+  await typeahead("#v7-map-type", "S");
+  await typeahead("#v7-faction-0", "I");
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-map-type')?.value === 'SHOWCASE' && document.querySelector('#v7-faction-0')?.value === 'ICE_FOLK' && document.querySelectorAll('[data-v7-factions] select').length === 4 && document.querySelector('#v7-faction-3')?.value === 'ORIGINAL'`,
+  );
+  await pointerClick(connection, '[data-action="launch"]');
+  const settled = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId && v.pendingChoices.length === 0 && document.querySelector('[data-action="end-turn"]:not(:disabled)') !== null; })()`;
+  await waitForExpression(connection, settled, 900);
+  interface IceFolkStartV7 {
+    readonly factions: readonly string[];
+    readonly viewer: string;
+    readonly snow: number;
+    readonly capital: { readonly x: number; readonly y: number };
+    readonly sled: { readonly x: number; readonly y: number };
+    /** An offered Move of the Sled that ends within Bolas reach of an enemy. */
+    readonly to: { readonly x: number; readonly y: number } | null;
+  }
+  const started = await evaluate<IceFolkStartV7>(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const view = s.view; const sled = view.units.find((unit) => unit.ownerId === view.viewer.id && unit.role === 'RAIDER' && unit.form === 'LAND'); const enemies = view.units.filter((unit) => unit.ownerId !== view.viewer.id && unit.form === 'LAND'); const near = (at) => enemies.some((unit) => Math.max(Math.abs(unit.at.x - at.x), Math.abs(unit.at.y - at.y)) <= 2); const moves = s.offeredCommands.filter((command) => command.kind === 'MOVE' && command.unitId === sled.id).map((command) => command.path.at(-1)).filter((at) => near(at)).sort((left, right) => left.y - right.y || left.x - right.x); return { factions: view.setup.factions, viewer: view.viewer.faction, snow: view.board.tiles.filter((tile) => tile.explored && tile.snow === true).length, capital: view.cities.find((city) => city.ownerId === view.viewer.id && city.isCapital).at, sled: sled.at, to: moves[0] ?? null }; })()`,
+  );
+  if (
+    JSON.stringify(started.factions) !==
+      JSON.stringify(["ICE_FOLK", "ORIGINAL", "ORIGINAL", "ORIGINAL"]) ||
+    started.viewer !== "ICE_FOLK" ||
+    started.snow === 0 ||
+    started.to === null
+  )
+    throw new Error(`Ice Folk setup launch failed: ${JSON.stringify(started)}`);
+  const to = started.to;
+  // The board cursor starts on the capital: its description names Snow.
+  await focusBoard();
+  const capitalText = await evaluate<string>(connection, cursorText);
+  if (!capitalText.includes("Snow: your units move at half cost"))
+    throw new Error(`Snow description missing: ${capitalText}`);
+  // The Sled, selected with Enter, moves to a tile in Bolas reach.
+  await arrows(
+    started.sled.x - started.capital.x,
+    started.sled.y - started.capital.y,
+  );
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock h2')?.textContent === 'Sled'`,
+  );
+  await focusBoard();
+  await arrows(to.x - started.sled.x, to.y - started.sled.y);
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 1 && ${settled}`,
+    300,
+  );
+  // Escape clears the selection; Enter on the same cell selects the Sled.
+  await focusBoard();
+  await pressKey(connection, "Escape", "Escape");
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock h2')?.textContent === 'Sled' && document.querySelector('[data-action="ice-folk-bolas"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
+  );
+  await pointerClick(connection, '[data-action="ice-folk-bolas"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]') !== null`,
+  );
+  const hint = await evaluate<string>(
+    connection,
+    `document.querySelector('[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]')?.getAttribute('aria-label') ?? ''`,
+  );
+  if (!/Will be (Frozen|Frosted)/.test(hint))
+    throw new Error(`Bolas hint missing: ${hint}`);
+  await capture(connection, "ice-folk-bolas-desktop.png");
+  const targetId = Number(
+    await evaluate<string>(
+      connection,
+      `document.querySelector('[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]')?.dataset.action?.slice('bolas-'.length) ?? '-1'`,
+    ),
+  );
+  await pointerClick(
+    connection,
+    '[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]',
+  );
+  await waitForExpression(
+    connection,
+    `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 2 && (document.querySelector('#v7-live')?.textContent ?? '').includes('Sled chilled a') && ${settled}`,
+    300,
+  );
+  const chilledExpression = `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const entry = view.chilled.find((item) => item.unitId === ${targetId}); return { entry: entry ?? null, commandIndex: view.commandIndex, factions: view.setup.factions }; })()`;
+  interface IceFolkChilledV7 {
+    readonly entry: {
+      readonly unitId: number;
+      readonly sluggish: boolean;
+      readonly turnsLeft: number;
+    } | null;
+    readonly commandIndex: number;
+    readonly factions: readonly string[];
+  }
+  const chilled = await evaluate<IceFolkChilledV7>(
+    connection,
+    chilledExpression,
+  );
+  if (chilled.entry === null || !chilled.entry.sluggish)
+    throw new Error(`Bolas left no Frozen entry: ${JSON.stringify(chilled)}`);
+  await capture(connection, "ice-folk-frozen-desktop.png");
+  // The save resumes on a fresh default-route load with its Ice Folk seat
+  // and the Chill.
+  await navigateFresh(
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
+  );
+  await touchClick(connection, '[data-action="resume"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && JSON.stringify(s.view?.setup.factions) === '["ICE_FOLK","ORIGINAL","ORIGINAL","ORIGINAL"]' && s.view.commandIndex === ${chilled.commandIndex}; })()`,
+    900,
+  );
+  const resumed = await evaluate<IceFolkChilledV7>(
+    connection,
+    chilledExpression,
+  );
+  if (JSON.stringify(resumed) !== JSON.stringify(chilled))
+    throw new Error(`Ice Folk save did not resume: ${JSON.stringify(resumed)}`);
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  return `Showcase launch as Ice Folk vs three Humans (${started.snow} Snow tiles), Sled moved to ${to.x},${to.y}, Bolas left the target Frozen, and resume`;
 }
 
 /**

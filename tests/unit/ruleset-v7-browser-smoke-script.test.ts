@@ -165,9 +165,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
 
     expect(source).toContain("await probeGoblinMatch(connection)");
-    expect(probe).toContain(
-      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])',
-    );
+    expect(probe).toContain("JSON.stringify(FACTION_OPTIONS_V7)");
     expect(probe).toContain(
       "document.querySelector('#v7-faction-0')?.value === 'GOBLIN'",
     );
@@ -199,13 +197,11 @@ describe("Ruleset 7 browser smoke script", () => {
 
     expect(source).toContain("await probeDinosaurMatch(connection)");
     expect(source).toContain(
-      "; Dinosaur ${dinosaur}; Martian ${martian}; Showcase ${showcase}.",
+      "; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Showcase ${showcase}.",
     );
     // Setup: Dinosaur is offered, and chosen with three opponents on the
     // Showcase, the one setup with a turn-1 lane and lay-able Eggs.
-    expect(probe).toContain(
-      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])',
-    );
+    expect(probe).toContain("JSON.stringify(FACTION_OPTIONS_V7)");
     expect(probe).toContain(
       'await typeSelectValue(connection, "#v7-ai-count", "3")',
     );
@@ -277,15 +273,13 @@ describe("Ruleset 7 browser smoke script", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(
       source.indexOf("async function probeMartianMatch("),
-      source.indexOf("async function probeShowcaseMatch("),
+      source.indexOf("async function probeIceFolkMatch("),
     );
 
     expect(source).toContain("await probeMartianMatch(connection)");
     // Setup: Martian is offered, and chosen with three opponents on the
     // Showcase, whose first turn has a ray in reach and a Beam Down.
-    expect(probe).toContain(
-      'JSON.stringify(["Human", "Undead", "Goblin", "Dinosaur", "Martian"])',
-    );
+    expect(probe).toContain("JSON.stringify(FACTION_OPTIONS_V7)");
     expect(probe).toContain(
       "document.querySelector('#v7-faction-0')?.value === 'MARTIAN'",
     );
@@ -324,6 +318,64 @@ describe("Ruleset 7 browser smoke script", () => {
     for (const name of [
       "martian-ray-preview-desktop.png",
       "martian-beam-down-desktop.png",
+    ])
+      expect(probe).toContain(`await capture(connection, "${name}")`);
+    // No fixture import: the probe also runs against a deployed bundle.
+    expect(probe).not.toContain("/tests/fixtures/");
+  });
+  it("throws a Bolas with its hint, leaves the target Frozen and resumes as Ice Folk", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = source.slice(
+      source.indexOf("async function probeIceFolkMatch("),
+      source.indexOf("async function probeShowcaseMatch("),
+    );
+
+    expect(source).toContain("await probeIceFolkMatch(connection)");
+    expect(source).toContain(
+      "; Martian ${martian}; Ice Folk ${iceFolk}; Showcase ${showcase}.",
+    );
+    // The setup's six faction options, Ice Folk last (pulp_wars-7g3.6).
+    const options = source.slice(
+      source.indexOf("const FACTION_OPTIONS_V7 = ["),
+      source.indexOf("] as const;", source.indexOf("FACTION_OPTIONS_V7")),
+    );
+    expect(
+      [...options.matchAll(/"([^"]+)"/g)].map((match) => match[1]),
+    ).toEqual(["Human", "Undead", "Goblin", "Dinosaur", "Martian", "Ice Folk"]);
+    // Setup: Ice Folk is offered, and chosen with three opponents on the
+    // Showcase.
+    expect(probe).toContain("JSON.stringify(FACTION_OPTIONS_V7)");
+    expect(probe).toContain(
+      "document.querySelector('#v7-faction-0')?.value === 'ICE_FOLK'",
+    );
+    expect(probe).toContain(
+      'JSON.stringify(["ICE_FOLK", "ORIGINAL", "ORIGINAL", "ORIGINAL"])',
+    );
+    expect(probe).not.toContain("launchWithFastForward");
+    // Snow from the view's flags and in the cursor's description.
+    expect(probe).toContain("tile.snow === true");
+    expect(probe).toContain(
+      'capitalText.includes("Snow: your units move at half cost")',
+    );
+    // The Sled moves into reach, aims its Bolas and throws it from the dock.
+    const bolas = probe.indexOf(
+      `await pointerClick(connection, '[data-action="ice-folk-bolas"]')`,
+    );
+    expect(bolas).toBeGreaterThan(-1);
+    expect(probe).toContain("/Will be (Frozen|Frosted)/.test(hint)");
+    expect(probe).toContain("includes('Sled chilled a')");
+    expect(probe).toContain("!chilled.entry.sluggish");
+    // Save and resume on a fresh load with the Ice Folk seat and the Chill.
+    expect(bolas).toBeLessThan(
+      probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
+    );
+    expect(probe).toContain(`'["ICE_FOLK","ORIGINAL","ORIGINAL","ORIGINAL"]'`);
+    expect(probe).toContain(
+      "JSON.stringify(resumed) !== JSON.stringify(chilled)",
+    );
+    for (const name of [
+      "ice-folk-bolas-desktop.png",
+      "ice-folk-frozen-desktop.png",
     ])
       expect(probe).toContain(`await capture(connection, "${name}")`);
     // No fixture import: the probe also runs against a deployed bundle.
@@ -431,8 +483,9 @@ describe("Ruleset 7 browser smoke script", () => {
     // revision-14 Plague/Bitten fixture capture per art set (in a loop), and
     // three revision-17 Goblin probe captures, four Dinosaur probe captures
     // (revision 20 adds the Charge! attack preview), two Martian probe
-    // captures (pulp_wars-t6s.4), and one revision-18 Showcase capture.
-    expect(source.match(/await capture\(/g)).toHaveLength(17);
+    // captures (pulp_wars-t6s.4), two Ice Folk probe captures
+    // (pulp_wars-7g3.6), and one revision-18 Showcase capture.
+    expect(source.match(/await capture\(/g)).toHaveLength(19);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");

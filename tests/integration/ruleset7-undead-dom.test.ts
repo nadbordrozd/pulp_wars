@@ -62,13 +62,15 @@ describe("Revision 13 Undead DOM", () => {
     ]);
     for (const seat of [0, 2]) {
       const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
-      // The Martian UI (pulp_wars-t6s.4) adds the fifth faction.
+      // The Martian UI (pulp_wars-t6s.4) adds the fifth faction, the Ice Folk
+      // UI (pulp_wars-7g3.6) the sixth.
       expect([...field.options].map((option) => option.textContent)).toEqual([
         "Human",
         "Undead",
         "Goblin",
         "Dinosaur",
         "Martian",
+        "Ice Folk",
       ]);
       expect(field.value).toBe("ORIGINAL");
       field.value = "UNDEAD";

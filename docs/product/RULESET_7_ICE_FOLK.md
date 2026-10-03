@@ -2,13 +2,15 @@
 
 **Status:** contract (`pulp_wars-7g3.2`); **the engine is implemented**
 (`pulp_wars-7g3.3`, identity `pulp-wars-poc-7r24`: every rule, command, event,
-query, and state shape of this document). **The Normal AI
-([section 12](#12-normal-ai-requirements), `pulp_wars-7g3.4`), the UI
-([section 13](#13-ui-requirements), `pulp_wars-7g3.6`), and coarse balance
-(`pulp_wars-7g3.7`) are pending:** an Ice Folk seat plays with the generic
-Normal policy and the setup screen does not offer the faction. What the
-implementation changed or made precise is in
-[section 19](#19-implementation-notes-pulp_wars-7g33). It is an
+query, and state shape of this document). **The UI is implemented**
+([section 13](#13-ui-requirements), `pulp_wars-7g3.6`): setup offers the
+faction, and the production art, Snow, the Blizzard, the Chill markers, the
+abilities, previews, cues and Help are wired in
+([section 20](#20-ui-implementation-notes-pulp_wars-7g36)). **The Normal AI
+([section 12](#12-normal-ai-requirements), `pulp_wars-7g3.4`) and coarse
+balance (`pulp_wars-7g3.7`) are pending:** an Ice Folk seat plays with the
+generic Normal policy. What the engine implementation changed or made
+precise is in [section 19](#19-implementation-notes-pulp_wars-7g33). It is an
 overlay over the rules in force when `pulp_wars-7g3.3` starts: the
 [Martian faction](RULESET_7_MARTIANS.md) (epic `pulp_wars-t6s`, whose engine
 landed on `main` in commit `d88503c`, `pulp-wars-poc-7r22`, after this
@@ -3122,9 +3124,42 @@ remaining reads.
   seat's Engineering from units standing on Mountains, which a
   Mountain-born Yeti makes wrong.
 - **`pulp_wars-7g3.6` (UI).** Nothing Ice Folk is drawn or offered; the art
-  of `pulp_wars-7g3.5` is checked in but not wired.
+  of `pulp_wars-7g3.5` is checked in but not wired. (Done since:
+  [section 20](#20-ui-implementation-notes-pulp_wars-7g36).)
 - **`pulp_wars-7g3.7` (balance).** The balance matrix has no Ice Folk
   pairing yet; the headless result carries the `iceFolk` telemetry block
   ([headless simulation](../architecture/HEADLESS_SIMULATION.md#ice-folk-seats-pulp_wars-7g33)).
 - **Release corpus.** The identity change invalidates the checked release
   corpus; its reviewed refresh is the root's gate.
+
+## 20. UI implementation notes (`pulp_wars-7g3.6`)
+
+The UI implements section 13 as the
+[Screen Flow Ice Folk overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-ice-folk-overlay)
+describes, with the production art of
+[the Ice Folk fragment](../art/factions/ICE_FOLK.md) (whose
+[decisions of the UI bead](../art/factions/ICE_FOLK.md#decisions-of-the-ui-bead)
+record the presentation choices). It reads only the public view, the
+public unit stats, the public previews and projected events (the
+[client architecture](../architecture/CLIENT_ARCHITECTURE.md#ice-folk-presentation-pulp_wars-7g36)
+lists them); no rule is recomputed. Precise readings of this section:
+
+1. **Texts.** The table of section 13.2 is followed as written: the attack
+   preview says "Shatters" (in place of the damage line) and "Chilled" on
+   the defender; "Sweep: {unit} {n} damage" counts the HP and Shield damage
+   of the flank hit, like Pierce, and adds "(Shield absorbs N)" and
+   ", lethal" where they apply.
+2. **The Frosted threshold** shown to a viewer is that of the Ice Folk seats
+   hostile to the unit's owner, as far as the viewer knows it: its own
+   technologies, or the public `shatterThreshold` of their visible units,
+   else `SHATTER_HP_V7`.
+3. **Sluggish actions.** The engine withholds every primary action of a
+   Frozen unit that moved; the dock shows one disabled "Act" with "Frozen:
+   it moved, so it cannot act this turn" (and a Sled's Bolas reads
+   "Frozen: it moved").
+4. **The faction badge** of the Classic look and LEGACY is a snow-capped
+   peak rather than a snowflake, so that it is never read as the Frosted
+   glyph (section 13.1 asks that the markers not be confused).
+5. **Cold Aura** pulses from the `UNITS_CHILLED` event of source
+   `COLD_AURA` (the Giant's eight tiles flash, frost forms on each target);
+   a Shatter is presented from the `COMBAT_RESOLVED` preview's `shatters`.

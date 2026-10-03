@@ -13,12 +13,11 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * and status icons, five effect sprites and City 1-3 (an igloo settlement
  * with a bone pole for the pennant).
  *
- * **Nothing imports this module yet** except the review scenes. The faction
- * is added to the engine and the interface by other beads;
- * `pulp_wars-7g3.6` registers this list in the direction registry
- * (chibiDirectionArtRegistryV7), copies ICE_FOLK_FLAG_ANCHORS_V7 into
- * DIRECTION_FLAG_ANCHORS_V7, and draws the Snow overlay, the Blizzard and
- * the Chill markers from chibi-direction-ice-folk-presentation.ts.
+ * Since bead `pulp_wars-7g3.6` this list is registered in the direction
+ * registry (chibiDirectionArtRegistryV7), ICE_FOLK_FLAG_ANCHORS_V7 is part
+ * of DIRECTION_FLAG_ANCHORS_V7, and the board draws the Snow overlay, the
+ * Blizzard and the Chill markers from
+ * chibi-direction-ice-folk-presentation.ts.
  */
 export const CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [

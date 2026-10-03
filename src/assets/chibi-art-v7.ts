@@ -60,8 +60,8 @@ export type ArtSubjectV7 =
  * portraits, the igloo settlement, the command, ability, technology and
  * status icons (`ICON:TECH:ICE_FOLK:*` are Deep Winter and Brittle, the Ice
  * Folk names of Fortification and Explosives) and the ability effect
- * sprites. The art exists before the faction is wired in: nothing resolves
- * these subjects until the UI bead (pulp_wars-7g3.6) registers them.
+ * sprites, registered in the direction registry since the UI bead
+ * (pulp_wars-7g3.6).
  */
 export type IceFolkArtSubjectV7 =
   | `UNIT:ICE_FOLK:${IceFolkArtRoleV7}`
@@ -180,7 +180,8 @@ export type DinosaurArtRoleV7 = UndeadArtRoleV7;
 export type MartianArtRoleV7 = UndeadArtRoleV7;
 
 /** Factions with their own city art; every other faction uses `CITY:<level>`. */
-export type CityArtFactionV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN";
+export type CityArtFactionV7 =
+  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK";
 
 /**
  * The art subject of a city on the map or in the interface: the owner
@@ -196,7 +197,8 @@ export function cityArtSubjectV7(city: {
     city.faction === "UNDEAD" ||
     city.faction === "GOBLIN" ||
     city.faction === "DINOSAUR" ||
-    city.faction === "MARTIAN"
+    city.faction === "MARTIAN" ||
+    city.faction === "ICE_FOLK"
   )
     return `CITY:${city.faction}:${city.artLevel}`;
   return `CITY:${city.artLevel}`;
@@ -244,6 +246,9 @@ export function unitArtSubjectV7(unit: {
     return `UNIT:DINOSAUR:${unit.role as DinosaurArtRoleV7}`;
   if (unit.faction === "MARTIAN")
     return `UNIT:MARTIAN:${unit.role as MartianArtRoleV7}`;
+  // The Ice Folk (bead pulp_wars-7g3.6): every land role has its own art.
+  if (unit.faction === "ICE_FOLK")
+    return `UNIT:ICE_FOLK:${unit.role as IceFolkArtRoleV7}`;
   return `UNIT:${unit.role}`;
 }
 
@@ -263,9 +268,12 @@ export function unitArtSubjectV7(unit: {
  * `PORTRAIT:MARTIAN:<ROLE>`, `CITY:MARTIAN:<level>` and
  * `ICON:ACTION:MARTIAN:RALLY` (Psychic Command) fall back like the other
  * factions'; the Thrall (`UNIT:MARTIAN:THRALL`, `PORTRAIT:MARTIAN:THRALL`)
- * falls back to the Human Fighter, the role it fights as. Every other
- * subject (the Martian ability, status and effect icons included) has no
- * fallback.
+ * falls back to the Human Fighter, the role it fights as. The Ice Folk
+ * (bead pulp_wars-7g3.6): `UNIT:ICE_FOLK:<ROLE>`, `PORTRAIT:ICE_FOLK:<ROLE>`
+ * and `CITY:ICE_FOLK:<level>` fall back like the other factions'; Deep
+ * Winter and Brittle (`ICON:TECH:ICE_FOLK:*`) to the Human Fortification
+ * and Explosives art. Every other subject (the Martian and Ice Folk
+ * ability, status and effect icons included) has no fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
@@ -273,7 +281,17 @@ export function chibiFallbackSubjectV7(
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:MARTIAN:THRALL") return "UNIT:FIGHTER";
   if (subject === "PORTRAIT:MARTIAN:THRALL") return "PORTRAIT:FIGHTER";
-  for (const faction of [":UNDEAD:", ":GOBLIN:", ":DINOSAUR:", ":MARTIAN:"])
+  if (subject === "ICON:TECH:ICE_FOLK:FORTIFICATION")
+    return "ICON:TECH:FORTIFICATION";
+  if (subject === "ICON:TECH:ICE_FOLK:EXPLOSIVES")
+    return "ICON:ACTION:BLAST_MOUNTAIN";
+  for (const faction of [
+    ":UNDEAD:",
+    ":GOBLIN:",
+    ":DINOSAUR:",
+    ":MARTIAN:",
+    ":ICE_FOLK:",
+  ])
     if (subject.includes(faction))
       return subject.replace(faction, ":") as ArtSubjectV7;
   return null;

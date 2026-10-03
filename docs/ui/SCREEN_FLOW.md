@@ -668,6 +668,122 @@ without a Martian seat looks as before apart from the extra faction option.
   for every viewer of a match with a Martian seat (numbers and names from
   the registry); a Martian viewer is not told of the Raider's Escape.
 
+## Current Ruleset 7 Ice Folk overlay
+
+This overlay implements
+[Ice Folk spec section 13](../product/RULESET_7_ICE_FOLK.md#13-ui-requirements)
+(`pulp_wars-7g3.6`) with the production art of the
+[Ice Folk art fragment](../art/factions/ICE_FOLK.md) (bead `pulp_wars-7g3.5`)
+and its code-drawn pieces. Every cue reads only public views (the tile
+flags `snow` and `blizzard`, `view.chilled`), the public unit stats' `chill`
+and `iceFolk` blocks, the public previews (`previewBolasV7`,
+`previewColdSnapV7`, `queryCombatPreviewV7`) and projected events; nothing
+recomputes a rule. A match without an Ice Folk seat looks as before apart
+from the extra faction option.
+
+- **Setup.** Every seat's faction select offers Human, Undead, Goblin,
+  Dinosaur, Martian and Ice Folk (default Human); saves, resume and the
+  Showcase keep Ice Folk seats.
+- **Art and labels.** Units are named by their owner's registration (Yeti,
+  Sled, Snow Hunter, Mammoth, Ice Witch, Boulder Yeti, Sabretooth, Frost
+  Giant). The default look paints the frost-and-fur sprites, portraits,
+  icons and the igloo camps (whose pennant flies from the bone pole). The
+  Classic look and LEGACY draw the Human sprite of the role with a
+  **snow-capped peak badge** (ice-blue peak, white cap, navy disc) in the
+  corner of the other factions' badges, and the Human city; boats wear the
+  badge too. The dock shows an "Ice Folk" faction chip. Fortification is
+  "Deep Winter" and Explosives "Brittle" (their own icons) in the tree, its
+  detail and research; unit unlocks read "Train Ice Witch (Blizzard, Cold
+  Snap)", "Train Mammoth (Sweep, Trample)", "Train Boulder Yeti (ignores
+  Walls and Field Defense)", all from the registry. Rewards read "A free
+  Yeti" and "Frost Giant: A giant unit".
+- **Snow** (`ICE_FOLK_SNOW_OVERLAY_V7`): every explored land tile whose
+  flag `snow` is true gets the cached 80 x 80 overlay tile of its edges and
+  variant: a soft white wash with drifts and sparkle, cut raggedly with a
+  blue-grey bank where the neighbour is not Snow (a territory edge, water,
+  an unexplored cell; never at the board's edge). It lies over the ground
+  and under Roads, improvements, resources, cities and units; a Forest or
+  Mountain body is drawn over it (as over a Road) with white snow caps on
+  its top edges. It follows the flag: captures, Land Grants, Deep Winter and
+  a Witch's steps change it at once. The cursor description and a tile's
+  dock name what Snow does for the viewer: "Snow: your units move at half
+  cost and have cover here unless fortified" for an Ice Folk viewer, "Snow:
+  your units stop on entering, as in a Forest. Ice Folk units have cover"
+  for the others.
+- **Blizzard** (`ICE_FOLK_BLIZZARD_V7`): every explored tile whose flag
+  `blizzard` is true, water included, gets a faint white veil and nine calm
+  falling flakes, over the Snow and under the plates and units. The flakes
+  move with full motion (a slow redraw, about fifteen frames a second, while
+  a Blizzard is in view) and stand still for reduced motion. The selected or
+  hovered Witch draws the white dashed outline of her nine tiles. A
+  Blizzard tile is named "Blizzard: Snow, and Ice Folk units here take half
+  damage from ranged attacks".
+- **Chill markers**, on units of any owner (`ICE_FOLK_CHILL_MARKER_V7`):
+  - **Frozen** (sluggish): the unit cased in ice to the waist, built from
+    its own sprite; the dock chip "Frozen" ("Frozen: move or act, not
+    both").
+  - **Frosted**: a thin pale rime on the sprite's top edges and the frost
+    glyph (`ICON:STATUS:CHILLED`, or a code-drawn snowflake) in the status
+    slot after any Plague or Bitten marker; the chip "Frosted" ("Frosted:
+    an Ice Folk blow that leaves it at 4 HP or less shatters it", with the
+    threshold of the hostile Ice Folk seat).
+  - **Thawing**: nothing on the board; the chip "Thawing" ("Thawing: frost
+    will not slow it again this turn").
+  - **Shatter window**: the HP bar of a Frozen or Frosted unit marks its
+    lowest {threshold} HP in ice glow with a white divider (faint above the
+    current HP). In the default look a Chilled unit shows its base HP bar
+    even at full HP.
+- **Dock and unit info.** Chips: the Chill, "Blizzard" or "Snow" for an Ice
+  Folk unit standing in one, "Rockfall" for a Yeti on a Mountain, and the
+  Boulder Yeti's throw now ("Planted: Attack 3" or "Moved: Attack 2"). Unit
+  info adds the Chill, "Shatters at 4 HP or less" for an Ice Folk unit, its
+  Snow or Blizzard, Rockfall and the throw. Ability lines name Mountain-born,
+  Rockfall, Bolas, Cold Blood, Sweep, Trample, Blizzard, Cold Snap,
+  Boulders, Prowl and Cold Aura. A Yeti or Mammoth where a Fighter or Guard
+  would fortify shows a disabled Fortify: "Ice Folk cannot build Field
+  Defense". A Frozen own unit that moved shows a disabled "Act" ("Frozen: it
+  moved, so it cannot act this turn"); the engine offers it nothing else.
+- **Abilities.** Bolas (Sled) and Cold Snap (Witch) are one button each (the
+  offered commands are never buttons). Without a legal choice the button is
+  `aria-disabled` and names why: "No enemy within 2 tiles" or "Frozen: it
+  moved". A press aims it: the dock shows a compact prompt, the board's
+  only targets become the ability's (pale-ice outlines, each labelled
+  "Frozen" or "Frosted" by the preview) and the camera frames them; Escape
+  or Cancel leaves.
+  - **Bolas**: one chip per target ("Player 2's Fighter (7 HP)"), its
+    accessible name carrying "Will be Frozen" or "Will be Frosted" and
+    "Yeti can then shatter it" (`shatterSetups`); a chip or a board target
+    throws it.
+  - **Cold Snap**: the summary "Chills 2 units: 1 Frozen, 1 Frosted", each
+    target named, the Witch's two-tile reach tinted with an outer dashed
+    edge, and one "Cast Cold Snap"; a board target casts it too.
+- **Attack preview** (own and enemy attacks; the cursor description carries
+  every line): "Shatters" replaces the damage label when the preview
+  shatters; notes "Chilled", "Rockfall: Attack 1.5 from the Mountain",
+  "Planted: +1 Attack", "Cold Blood: +0.5 Attack", "Ignores fortification"
+  (Boulders), "Snow cover", "Blizzard: half damage", "Tramples Field
+  Defense" and "A hidden Blizzard may change this"; a Mammoth's label adds
+  "sweep N" and, while the target is focused, each flank victim is marked
+  with its damage ("Sweep: Marksman 2 damage" in the description).
+- **Cues** (effects canvas; reduced motion holds a frame): a **Shatter**
+  follows the timeline: the defender (kept on the board after the hit) is
+  cased in ice to the top, three white cracks run over it while it shakes,
+  then it is gone and the burst flashes at its centre and its shards fly
+  out, fall and melt; no Grave, no blast. A **Bolas** spins from the Sled
+  to its target; a **Cold Snap** ring grows from the Witch to five tiles
+  across; frost forms on each chilled unit; a **Cold Aura** flashes the
+  Giant's eight tiles; a **Sweep** draws a white arc over the Mammoth's
+  three tiles; a **Rockfall** lobs a rock like a Catapult. Without the
+  effect sprites (Classic look, LEGACY) code shapes stand in.
+- **Log.** "Your Sled chilled a Fighter", "Your Ice Witch chilled 2 units",
+  "Player 2's Frost Giant chilled 1 unit", "Your Yeti shattered a Fighter"
+  (toast), "Your Mammoth trampled Field Defense".
+- **City panel.** An Ice Folk viewer's city counts slots ("5/7 slots";
+  every Ice Folk unit takes one) and every train card names its slot.
+- **Help.** An "Ice Folk" section lists the fifteen section-13.3 sentences
+  for every viewer of a match with an Ice Folk seat (numbers and names from
+  the registry); an Ice Folk viewer is not told of the Raider's Escape.
+
 ## Current Ruleset 7 revision 21 achievements overlay
 
 Rules: [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md)

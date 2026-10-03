@@ -196,14 +196,12 @@ both.
 
 The engine registers a sixth faction, `ICE_FOLK`
 ([Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md)), with every rule of
-that document. **The client does not offer it yet:** the setup screen's
-faction list (`FACTIONS` in `src/render/dom/app-view-v7.ts`) leaves it out
-until the Ice Folk UI bead (`pulp_wars-7g3.6`), and no Ice Folk sprite,
-marker, Snow overlay, button, or Help text is wired in (the art of
-`pulp_wars-7g3.5` is checked in but not drawn). The only render changes of
-the engine bead are the display label "Ice Folk" and unlock texts for the
-three new technology unlock kinds (`WITCH_SUPPORT`, `DEEP_WINTER`,
-`BRITTLE`), which the exhaustive switches need to compile.
+that document. Since the Ice Folk UI bead (`pulp_wars-7g3.6`) the setup
+screen offers it for every seat (`FACTIONS` in
+`src/render/dom/app-view-v7.ts`), and the client draws and plays it as the
+[Screen Flow Ice Folk overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-ice-folk-overlay)
+describes (see [Ice Folk presentation](#ice-folk-presentation-pulp_wars-7g36)
+below).
 
 Snow and the Blizzard are derived, never stored: the engine computes them
 from the state on demand (`winterV7` in `src/engine/v7/ice-folk.ts`, cached
@@ -245,6 +243,68 @@ public queries:
 In a match without an Ice Folk seat the `chilled` lists are empty, every
 tile flag is `false`, and the new fields have their neutral values, so every
 existing screen is unchanged.
+
+### Ice Folk presentation (`pulp_wars-7g3.6`)
+
+The Ice Folk UI reads only the sources above, in the pattern of the Martian
+presentation:
+
+- `src/render/ice-folk-presentation-v7.ts`: every Ice Folk text (section
+  13.2 labels, the fifteen Help sentences, the Chill state of a unit
+  (Frozen, Frosted, Thawing) and the Shatter threshold that applies to it,
+  unit info lines, the attack preview's Shatter, Chilled, Sweep, Trample,
+  Boulders, Rockfall, Planted, Cold Blood, Snow cover, Blizzard and
+  hidden-Blizzard lines, the Bolas and Cold Snap preview lines, why either
+  is unavailable, log lines, unlock and recruit texts), with names and
+  numbers from the registry and the engine constants;
+- `src/render/canvas/ice-folk-board-plan-v7.ts`: the Ice Folk part of the
+  board plan: the Snow cells with their exposed edges and variant and the
+  Blizzard cells from the view's tile flags (`BoardRenderPlanEntryV7.snow`
+  and `.blizzard` on TERRAIN entries), the unit markers
+  (`BoardRenderPlanEntryV7.iceFolk`: Chill, Shatter window, Witch; and
+  `blizzardRing` on the selected Witch), the two aimed abilities
+  (`BoardRenderInteractionV7.iceFolkPick`; target families `THROW_BOLAS`
+  and `COLD_SNAP`, the Cold Snap reach as an `ABILITY_AREA`), and an attack
+  target's Ice Folk lines (`MapCommandTargetV7.sweep`);
+- `src/render/canvas/ice-folk-canvas-v7.ts`: the code-drawn pieces from
+  the pure functions of `chibi-direction-ice-folk-presentation.ts`: the peak
+  badge, the Snow overlay and snow caps, the Blizzard veil, flakes and the
+  Witch's outline, the Frozen casing and the Frosted rime, the frost glyph,
+  the HP bar's Shatter window and a Shatter's cracks. Rasters are built once
+  and cached by `IceFolkBoardArtV7` (`createIceFolkBoardArtV7`, the board
+  host's): at most 64 Snow tiles (edge set by variant), and the caps, rime
+  and casings of each body or sprite image (a `WeakMap` keyed by the image,
+  which the art resolvers keep stable). `drawBoardV7` takes `iceFolkArt`,
+  `blizzardTimeMs` (0 for reduced motion) and `iceFolkShatter` (the unit
+  being shattered and the time into the timeline);
+- `src/render/canvas/ice-folk-effects-v7.ts`: the cues of the `ICE_FOLK`
+  presentation step (Shatter, Cold Snap, Bolas, Cold Aura, Sweep) with the
+  effect sprites through the support effect art of the effects canvas, and
+  the Shatter's board cue (`shatterBoardCueV7`: casing, cracks, shake, gone)
+  from `ICE_FOLK_SHATTER_TIMELINE_V7`. A shattering attack's hit step has
+  `holdTarget`, so the defender stays on the board until it bursts;
+- art: the Ice Folk module of the direction registry
+  (`chibi-direction-ice-folk-art-manifest.ts`), resolved by
+  `unitArtSubjectV7`, `cityArtSubjectV7`, `portraitSubjectV7`,
+  `technologySubjectV7` (Deep Winter and Brittle: `ICON:TECH:ICE_FOLK:*`)
+  and `commandSubjectV7`, with `chibiFallbackSubjectV7` falling back to the
+  Human subject; `ICE_FOLK_FLAG_ANCHORS_V7` is part of
+  `DIRECTION_FLAG_ANCHORS_V7`.
+
+The Classic look and LEGACY have no Ice Folk art: an Ice Folk unit is the
+Human sprite of its role with the peak badge, and an Ice Folk city the
+Human city; Snow, the Blizzard and every marker are code-drawn in both
+(LEGACY caps its raised Forest and Mountain bodies too).
+
+**Cost.** The Snow overlay is one `drawImage` of a cached tile per Snow cell
+(and one of a cached caps raster per Snow Forest or Mountain), a Blizzard
+cell one veil rectangle and nine flakes. Measured on whole 16 x 16 Showcase
+boards in the live look (headless Chrome, `drawBoardV7` submission time,
+median of 120 frames): 2.0 ms with four Human seats, 2.3 ms with one Ice
+Folk seat (55 Snow and 9 Blizzard cells), 2.7 ms with four (176 and 36) at
+DPR 1, and 1.8 to 2.1 ms for all three at DPR 2. While a Blizzard is in view
+and no ready unit already animates the board, the host redraws about
+fifteen times a second for the flakes (full motion only).
 
 ## 0. Ruleset-6 replacement boundary
 

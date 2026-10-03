@@ -37,7 +37,11 @@ export type UiIconIdV7 =
   | "cooling"
   | "beam-down"
   | "mind-control"
-  | "tractor-beam";
+  | "tractor-beam"
+  // The Ice Folk revision (bead pulp_wars-7g3.6).
+  | "snowflake"
+  | "bolas"
+  | "ice-peak";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   hp: "M12 20.5 4.2 12.8a4.6 4.6 0 0 1 6.5-6.5L12 7.6l1.3-1.3a4.6 4.6 0 0 1 6.5 6.5Z",
@@ -100,6 +104,15 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   "mind-control":
     "M12 12a1.5 1.5 0 0 1 3 0 3 3 0 0 1-6 0 4.5 4.5 0 0 1 9 0 6 6 0 0 1-12 0 7.5 7.5 0 0 1 15 0",
   "tractor-beam": "M12 3 5 20h14ZM8.3 15h7.4M9.8 10h4.4",
+  // The Ice Folk revision: a six-spoke snowflake with barbs (Cold Snap and
+  // Chill), two weights on a cord (Bolas), and a snow-capped peak (the Ice
+  // Folk badge, filled): LEGACY glyphs; CHIBI draws the PixelLab icons.
+  "ice-peak":
+    "M12 3.5 21.5 19.5h-19ZM12 3.5l3.6 6.1-1.6 1-1-1.4-1 1.4-1-1.4-1.6 1Z",
+  snowflake:
+    "M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 4.2 12 6.6l2.4-2.4M9.6 19.8 12 17.4l2.4 2.4M3.5 10.6l3.3.9-.9-3.3M20.5 13.4l-3.3-.9.9 3.3M5.9 16.5l.9-3.3-3.3.9M18.1 7.5l-.9 3.3 3.3-.9",
+  bolas:
+    "M7 15.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM17 15.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM8.6 16 12 4l3.4 12M12 4l-1.6-1.5M12 4l1.6-1.5",
 };
 
 /** One shape of a multi-part icon; `fill` may be a fixed colour. */

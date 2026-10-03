@@ -33,6 +33,8 @@ import {
   previewBeamDownV7,
   previewMindControlV7,
   previewTractorBeamV7,
+  previewBolasV7,
+  previewColdSnapV7,
   queryLandingPreviewV7,
   unitCapacitySlotsV7,
   UNIT_ROLE_IDS_V7,
@@ -249,6 +251,41 @@ import {
   martianMoveLabelV7,
   type MartianPickV7,
 } from "../canvas/martian-board-plan-v7";
+import {
+  BLIZZARD_LABEL_V7,
+  BLIZZARD_TOOLTIP_V7,
+  BOLAS_LABEL_V7,
+  BOLAS_PICK_V7,
+  BOLAS_TOOLTIP_V7,
+  BRITTLE_UNLOCK_TEXT_V7,
+  COLD_SNAP_CAST_V7,
+  COLD_SNAP_LABEL_V7,
+  COLD_SNAP_TOOLTIP_V7,
+  DEEP_WINTER_UNLOCK_TEXT_V7,
+  FROZEN_MOVED_V7,
+  ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7,
+  ICE_FOLK_HELP_RULES_V7,
+  SNOW_LABEL_V7,
+  WITCH_SUPPORT_UNLOCK_TEXT_V7,
+  bolasPreviewLinesV7,
+  chillChipV7,
+  coldSnapSummaryV7,
+  frozenAfterMoveV7,
+  iceFolkAbilityDescriptionV7,
+  iceFolkAbilityNameV7,
+  iceFolkAbilityUnavailableTextV7,
+  iceFolkBoundaryNoticeV7,
+  iceFolkCommandLabelV7,
+  iceFolkFieldDefenseBlockedV7,
+  iceFolkRecruitNotesV7,
+  iceFolkRewardLabelV7,
+  iceFolkRoleUnlockTextV7,
+  iceFolkUnitInfoLinesV7,
+  boulderThrowTextV7,
+  matchHasIceFolkSeatV7,
+  snowTooltipV7,
+} from "../ice-folk-presentation-v7";
+import type { IceFolkPickV7 } from "../canvas/ice-folk-board-plan-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
@@ -287,7 +324,8 @@ const COLOR_LABELS: Readonly<Record<string, string>> = {
 };
 /**
  * The factions the setup screen offers: every registered faction. The
- * Martians joined with their UI bead (`pulp_wars-t6s.4`).
+ * Martians joined with their UI bead (`pulp_wars-t6s.4`), the Ice Folk with
+ * theirs (`pulp_wars-7g3.6`).
  */
 const FACTIONS: readonly FactionIdV7[] = [
   "ORIGINAL",
@@ -295,6 +333,7 @@ const FACTIONS: readonly FactionIdV7[] = [
   "GOBLIN",
   "DINOSAUR",
   "MARTIAN",
+  "ICE_FOLK",
 ];
 const FACTION_LABELS: Readonly<Record<string, string>> = {
   ORIGINAL: "Human",
@@ -302,22 +341,23 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   GOBLIN: "Goblin",
   DINOSAUR: "Dinosaur",
   MARTIAN: "Martian",
-  // The Ice Folk (`pulp_wars-7g3.3`) are registered in the engine but not
-  // offered in FACTIONS until their UI bead (`pulp_wars-7g3.6`).
   ICE_FOLK: "Ice Folk",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
-type FactionBadgeV7 = "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | null;
+type FactionBadgeV7 =
+  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | null;
 /**
  * The placeholder badge of a faction. Revision 19 (bead `pulp_wars-c87.7`):
  * Dinosaur units shown with Human art wear the footprint badge; Martian
- * units (bead `pulp_wars-t6s.4`) the saucer badge.
+ * units (bead `pulp_wars-t6s.4`) the saucer badge; Ice Folk units (bead
+ * `pulp_wars-7g3.6`) the snow-capped peak badge.
  */
 function factionBadgeV7(faction: FactionIdV7): FactionBadgeV7 {
   return faction === "UNDEAD" ||
     faction === "GOBLIN" ||
     faction === "DINOSAUR" ||
-    faction === "MARTIAN"
+    faction === "MARTIAN" ||
+    faction === "ICE_FOLK"
     ? faction
     : null;
 }
@@ -336,6 +376,11 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "BEAM_DOWN",
   "MIND_CONTROL",
   "TRACTOR_BEAM",
+  // The Ice Folk revision: Bolas and Cold Snap have one button per unit
+  // each; the targets are highlighted (and a Bolas target picked) on the
+  // board.
+  "THROW_BOLAS",
+  "COLD_SNAP",
 ]);
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
 export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
@@ -462,6 +507,11 @@ export class Ruleset7DomAppView {
    * passenger).
    */
   #martianPick: MartianPickV7 | null = null;
+  /**
+   * The Ice Folk revision: the Bolas or Cold Snap the selected unit is
+   * aiming on the board (Escape, Cancel or another selection leaves).
+   */
+  #iceFolkPick: IceFolkPickV7 | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
@@ -678,6 +728,10 @@ export class Ruleset7DomAppView {
       } else if (this.#martianPick !== null) {
         // The Martian revision: Escape first steps back out of the aiming.
         this.#cancelMartianPick(true);
+        return;
+      } else if (this.#iceFolkPick !== null) {
+        // The Ice Folk revision: Escape first leaves the aiming.
+        this.#cancelIceFolkPick();
         return;
       } else this.#selection = null;
       this.#render();
@@ -1148,6 +1202,7 @@ export class Ruleset7DomAppView {
           this.#kaboomHoverUnitId = null;
           this.#layEggPick = null;
           this.#martianPick = null;
+          this.#iceFolkPick = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -1469,6 +1524,11 @@ export class Ruleset7DomAppView {
         this.#martianPick.unitId === selectedUnitId
           ? { martianPick: this.#martianPick }
           : {}),
+        // The Ice Folk revision: the Bolas or Cold Snap being aimed.
+        ...(this.#iceFolkPick !== null &&
+        this.#iceFolkPick.unitId === selectedUnitId
+          ? { iceFolkPick: this.#iceFolkPick }
+          : {}),
       },
     };
   }
@@ -1485,6 +1545,7 @@ export class Ruleset7DomAppView {
       this.#selection = null;
       this.#layEggPick = null;
       this.#martianPick = null;
+      this.#iceFolkPick = null;
       this.#render();
       this.#queueBoardFocus();
     };
@@ -1795,6 +1856,66 @@ export class Ruleset7DomAppView {
             `Takes ${slotsTextV7(martian.capacitySlots)} in its city`,
           );
       }
+      // The Ice Folk revision (section 13.1): the Chill of a unit of any
+      // owner (Frozen, Frosted or Thawing), and an Ice Folk unit's Blizzard
+      // or Snow, Rockfall reach and Boulder throw, from `stats.chill` and
+      // `stats.iceFolk`.
+      if (matchHasIceFolkSeatV7(view)) {
+        const iceChip = (
+          label: string,
+          status: string,
+          title: string,
+        ): HTMLElement => {
+          const cue = text(
+            this.#document,
+            "span",
+            label,
+            "v7-chip v7-ice-folk-chip",
+          );
+          cue.dataset.unitStatus = status;
+          cue.title = title;
+          cue.setAttribute("aria-label", title);
+          identityColumn?.append(cue);
+          return cue;
+        };
+        const chill = chillChipV7(view, unit);
+        if (chill !== null)
+          iceChip(chill.label, "chill", chill.status).dataset.chill =
+            chill.state.toLowerCase();
+        const mechanics = stats?.iceFolk;
+        if (mechanics !== undefined && unit.form === "LAND") {
+          if (mechanics.inBlizzard)
+            iceChip(BLIZZARD_LABEL_V7, "blizzard", BLIZZARD_TOOLTIP_V7);
+          else if (mechanics.onSnow)
+            iceChip(
+              SNOW_LABEL_V7,
+              "snow",
+              mechanics.snowCover
+                ? "On Snow: it moves at half cost from here and has cover"
+                : "On Snow, but fortified: no Snow cover here",
+            );
+          if (mechanics.rockfall)
+            iceChip(
+              "Rockfall",
+              "rockfall",
+              "On a Mountain: it can attack two tiles away",
+            );
+          if (mechanics.planted !== null)
+            iceChip(
+              boulderThrowTextV7(mechanics.planted),
+              "planted",
+              mechanics.planted
+                ? "It has not moved this turn: its throw has the Planted bonus"
+                : "It moved this turn: no Planted bonus",
+            );
+        }
+        if (frozenAfterMoveV7(view, unit)) {
+          const state = el(this.#document, "section", "v7-tactical-state");
+          state.dataset.tacticalState = "frozen";
+          state.append(text(this.#document, "strong", FROZEN_MOVED_V7));
+          unitDetails.append(state);
+        }
+      }
       if (stats !== undefined) {
         if (stats.statuses.length > 0) {
           const cues = el(this.#document, "div", "v7-unit-status-cues");
@@ -1963,6 +2084,18 @@ export class Ruleset7DomAppView {
             );
             abilities.append(entry);
           }
+        // The Ice Folk revision: the Chill (any owner), the Shatter
+        // threshold, Snow or the Blizzard, Rockfall and the Boulder throw.
+        if (matchHasIceFolkSeatV7(view))
+          for (const line of iceFolkUnitInfoLinesV7(view, unit, stats)) {
+            const entry = el(this.#document, "p", "v7-unit-ability");
+            entry.dataset.iceFolkInfo = line.id;
+            entry.append(
+              text(this.#document, "strong", line.name),
+              text(this.#document, "span", line.description),
+            );
+            abilities.append(entry);
+          }
         if (
           undeadUnit &&
           unit.role === "CATAPULT" &&
@@ -2040,6 +2173,15 @@ export class Ruleset7DomAppView {
           explanation: MARTIAN_FIELD_DEFENSE_EXPLANATION_V7,
           icon: null,
         });
+      // The Ice Folk revision (section 13.2): the Field Defense restriction.
+      if (iceFolkFieldDefenseBlockedV7(view, unit.id))
+        dinosaurBlocked.push({
+          action: "ice-folk-field-defense",
+          label: "Fortify",
+          reason: "ice-folk-field-defense",
+          explanation: ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7,
+          icon: null,
+        });
       for (const entry of dinosaurBlocked) {
         const blocked = button(
           this.#document,
@@ -2082,8 +2224,11 @@ export class Ruleset7DomAppView {
       // The Martian revision: Beam Down, Mind Control and Tractor Beam
       // aim on the board; each has one button, or a disabled one with the
       // reason, ahead of the other actions.
+      // The Ice Folk revision: Bolas and Cold Snap likewise, and a Frozen
+      // unit that moved names why it cannot act.
       for (const button of [
         ...this.#martianActionButtons(view, unit.id),
+        ...this.#iceFolkActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
@@ -2160,7 +2305,9 @@ export class Ruleset7DomAppView {
       }
       // The Martian revision: while an ability is aimed, the dock shows its
       // compact prompt instead of the actions, so the board stays in view.
-      const martianPanel = this.#martianPickPanel(view, unit.id);
+      const martianPanel =
+        this.#martianPickPanel(view, unit.id) ??
+        this.#iceFolkPickPanel(view, unit.id);
       if (martianPanel !== null) {
         dock.dataset.hasActions = "true";
         dock.append(martianPanel);
@@ -2298,15 +2445,21 @@ export class Ruleset7DomAppView {
         );
         // The Martian revision: a Martian viewer also counts slots (the
         // Mothership and the Colossus take two; a Thrall none).
+        // The Ice Folk revision: an Ice Folk viewer counts slots too (the
+        // spec's production rows name them; every Ice Folk unit takes one).
         const eggLaying = view.viewer.faction === "DINOSAUR";
-        const slotCapacity = eggLaying || view.viewer.faction === "MARTIAN";
+        const iceFolkSlots = view.viewer.faction === "ICE_FOLK";
+        const slotCapacity =
+          eggLaying || view.viewer.faction === "MARTIAN" || iceFolkSlots;
         const units = el(this.#document, "div", "v7-city-stat");
         units.dataset.stat = "units";
         units.title = eggLaying
           ? slotCapacityTooltipV7()
-          : slotCapacity
-            ? martianSlotCapacityTooltipV7()
-            : "Units supported by this city";
+          : iceFolkSlots
+            ? "Unit slots used in this city; every Ice Folk unit takes 1"
+            : slotCapacity
+              ? martianSlotCapacityTooltipV7()
+              : "Units supported by this city";
         const unitsValue = el(this.#document, "dd", "v7-city-units");
         unitsValue.append(
           uiIconV7(this.#document, "units"),
@@ -2491,6 +2644,29 @@ export class Ruleset7DomAppView {
         const details = el(this.#document, "div", "v7-selection-details");
         if (tile.road && name !== "Road")
           details.append(text(this.#document, "p", "Road", "v7-chip"));
+        // The Ice Folk revision (section 13.2): what Snow and a Blizzard do
+        // for the viewer's faction.
+        for (const [shown, label, tooltip, kind] of [
+          [tile.snow === true, SNOW_LABEL_V7, snowTooltipV7(view), "snow"],
+          [
+            tile.blizzard === true,
+            BLIZZARD_LABEL_V7,
+            BLIZZARD_TOOLTIP_V7,
+            "blizzard",
+          ],
+        ] as const) {
+          if (!shown) continue;
+          const chip = text(
+            this.#document,
+            "p",
+            label,
+            "v7-chip v7-ice-folk-chip",
+          );
+          chip.dataset.winter = kind;
+          chip.title = tooltip;
+          chip.setAttribute("aria-label", tooltip);
+          details.append(chip);
+        }
         if (view.graves.some((grave) => same(grave, tile.at))) {
           const grave = text(this.#document, "p", "Grave", "v7-chip");
           grave.dataset.grave = "true";
@@ -2703,11 +2879,12 @@ export class Ruleset7DomAppView {
         // Revision 19: a Dinosaur viewer counts capacity in slots, so every
         // production row names its slots (trained units always use one);
         // the Martian revision: so does a Martian viewer (a Mothership
-        // takes two).
+        // takes two); the Ice Folk revision: and an Ice Folk one (spec 13.1).
         if (
           view !== null &&
           (this.#viewerFaction() === "DINOSAUR" ||
-            this.#viewerFaction() === "MARTIAN")
+            this.#viewerFaction() === "MARTIAN" ||
+            this.#viewerFaction() === "ICE_FOLK")
         ) {
           const slots = unitCapacitySlotsV7(view, {
             ownerId: view.viewer.id,
@@ -3060,10 +3237,12 @@ export class Ruleset7DomAppView {
         ? undeadHelpTipsV7(view)
         : [
             // Revision 17: Goblin Wolf Riders have no Escape; revision 19:
-            // neither have Dinosaur Raptors, nor Martian Saucers.
+            // neither have Dinosaur Raptors, nor Martian Saucers, nor Ice
+            // Folk Sleds.
             ...(view?.viewer.faction === "GOBLIN" ||
             view?.viewer.faction === "DINOSAUR" ||
-            view?.viewer.faction === "MARTIAN"
+            view?.viewer.faction === "MARTIAN" ||
+            view?.viewer.faction === "ICE_FOLK"
               ? []
               : ["A Raider that survives an attack may move again (Escape)."]),
             ...(view !== null && matchHasUndeadV7(view)
@@ -3151,6 +3330,18 @@ export class Ruleset7DomAppView {
         rules.append(item);
       }
       section.append(text(this.#document, "h3", "Martians"), rules);
+    }
+    // The Ice Folk revision (section 13.3): one sentence per Ice Folk rule,
+    // for every viewer of a match with an Ice Folk seat.
+    if (view !== null && matchHasIceFolkSeatV7(view)) {
+      const rules = this.#document.createElement("ul");
+      rules.className = "v7-help-tips v7-help-goblin v7-help-ice-folk";
+      for (const [name, sentence] of ICE_FOLK_HELP_RULES_V7) {
+        const item = el(this.#document, "li", "v7-help-rule");
+        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
+        rules.append(item);
+      }
+      section.append(text(this.#document, "h3", "Ice Folk"), rules);
     }
     section.append(text(this.#document, "h3", "Keyboard"), keys);
     return section;
@@ -4045,7 +4236,8 @@ export class Ruleset7DomAppView {
         return field.value === "UNDEAD" ||
           field.value === "GOBLIN" ||
           field.value === "DINOSAUR" ||
-          field.value === "MARTIAN"
+          field.value === "MARTIAN" ||
+          field.value === "ICE_FOLK"
           ? field.value
           : "ORIGINAL";
       }),
@@ -4115,6 +4307,7 @@ export class Ruleset7DomAppView {
     this.#kaboomHoverUnitId = null;
     this.#layEggPick = null;
     this.#martianPick = null;
+    this.#iceFolkPick = null;
     const restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -5186,6 +5379,272 @@ export class Ruleset7DomAppView {
     return panel;
   }
 
+  /**
+   * The Ice Folk revision (section 13.1): the Bolas button of an own Sled
+   * and the Cold Snap button of an own Witch. With a legal target it aims
+   * the ability on the board (pressed while aiming); without one it is
+   * disabled and names the reason ("No enemy within 2 tiles", "Frozen: it
+   * moved"). A Frozen unit of any other role that moved gets one disabled
+   * button with the reason it cannot act.
+   */
+  #iceFolkActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      !matchHasIceFolkSeatV7(view) ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const abilities = unitRoleRuleV7(view, unit).abilities as readonly string[];
+    const buttons: HTMLButtonElement[] = [];
+    const entries: readonly {
+      readonly kind: "THROW_BOLAS" | "COLD_SNAP";
+      readonly ability: string;
+      readonly label: string;
+      readonly tooltip: string;
+      readonly icon: "bolas" | "snowflake";
+    }[] = [
+      {
+        kind: "THROW_BOLAS",
+        ability: "BOLAS",
+        label: BOLAS_LABEL_V7,
+        tooltip: BOLAS_TOOLTIP_V7,
+        icon: "bolas",
+      },
+      {
+        kind: "COLD_SNAP",
+        ability: "COLD_SNAP",
+        label: COLD_SNAP_LABEL_V7,
+        tooltip: COLD_SNAP_TOOLTIP_V7,
+        icon: "snowflake",
+      },
+    ];
+    for (const entry of entries) {
+      if (!abilities.includes(entry.ability)) continue;
+      const offered = this.#snapshot.offeredCommands.some(
+        (command) => command.kind === entry.kind && command.unitId === unit.id,
+      );
+      const reason = iceFolkAbilityUnavailableTextV7(
+        view,
+        unit,
+        entry.kind,
+        offered,
+      );
+      if (!offered && reason === null) continue;
+      const action = button(
+        this.#document,
+        "",
+        `ice-folk-${entry.kind === "THROW_BOLAS" ? "bolas" : "cold-snap"}`,
+        "v7-context-action",
+      );
+      action.append(
+        this.#chibiArt(`ICON:ACTION:${entry.kind}`, CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", entry.label, "v7-action-label"),
+      );
+      action.dataset.iceFolkAbility = entry.kind.toLowerCase();
+      if (reason === null) {
+        const aiming = this.#iceFolkPick?.kind === entry.kind;
+        action.title = entry.tooltip;
+        action.setAttribute("aria-label", `${entry.label}. ${entry.tooltip}`);
+        action.setAttribute("aria-pressed", String(aiming));
+        action.disabled = this.#localBusy();
+        action.onclick = () =>
+          aiming
+            ? this.#cancelIceFolkPick()
+            : this.#startIceFolkPick(entry.kind, unit.id);
+      } else {
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        action.setAttribute("aria-disabled", "true");
+        action.dataset.disabledReason = reason;
+        action.title = reason;
+        action.setAttribute(
+          "aria-label",
+          `${entry.label} unavailable. ${reason}`,
+        );
+        action.onclick = () => {
+          this.#notice = `${reason}.`;
+          this.#showToast(`${reason}.`);
+          this.#pendingFocusAction = action.dataset.action ?? null;
+          this.#render();
+        };
+      }
+      buttons.push(action);
+    }
+    // Section 13.1 "sluggish actions": a Frozen unit that moved cannot act.
+    if (
+      buttons.length === 0 &&
+      frozenAfterMoveV7(view, unit) &&
+      !unit.activation.handled
+    ) {
+      const frozen = button(
+        this.#document,
+        "",
+        "ice-folk-frozen",
+        "v7-context-action",
+      );
+      frozen.append(
+        this.#chibiArt("ICON:STATUS:FROZEN", CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(this.#document, "snowflake", "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", "Act", "v7-action-label"),
+      );
+      frozen.setAttribute("aria-disabled", "true");
+      frozen.dataset.disabledReason = "frozen";
+      frozen.title = FROZEN_MOVED_V7;
+      frozen.setAttribute("aria-label", `Act unavailable. ${FROZEN_MOVED_V7}`);
+      frozen.onclick = () => {
+        this.#notice = `${FROZEN_MOVED_V7}.`;
+        this.#showToast(`${FROZEN_MOVED_V7}.`);
+        this.#pendingFocusAction = "ice-folk-frozen";
+        this.#render();
+      };
+      buttons.push(frozen);
+    }
+    return buttons;
+  }
+
+  /** Starts aiming a Bolas or a Cold Snap of the selected unit. */
+  #startIceFolkPick(kind: "THROW_BOLAS" | "COLD_SNAP", unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    this.#iceFolkPick = { kind, unitId };
+    this.#notice =
+      kind === "THROW_BOLAS"
+        ? `${BOLAS_PICK_V7}.`
+        : `${COLD_SNAP_LABEL_V7}: confirm to chill every highlighted unit.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so the arrow keys and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /** Leaves the aiming, and returns focus to the ability's button. */
+  #cancelIceFolkPick(): void {
+    const pick = this.#iceFolkPick;
+    this.#iceFolkPick = null;
+    this.#pendingFocusAction =
+      pick === null
+        ? null
+        : `ice-folk-${pick.kind === "THROW_BOLAS" ? "bolas" : "cold-snap"}`;
+    this.#render();
+  }
+
+  /**
+   * The Ice Folk aiming panel in the dock: the prompt, the Bolas targets
+   * (each with its Frozen or Frosted hint and the units that could then
+   * shatter it) or the Cold Snap targets and its one confirm, and Cancel.
+   * Null (and the aiming ends) when nothing is offered any more.
+   */
+  #iceFolkPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    const pick = this.#iceFolkPick;
+    if (pick === null || pick.unitId !== unitId) return null;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === pick.kind && command.unitId === unitId,
+    );
+    if (commands.length === 0) {
+      this.#iceFolkPick = null;
+      return null;
+    }
+    const unitById = (id: number) =>
+      view.units.find((candidate) => candidate.id === id);
+    const nameOf = (id: number): string => {
+      const target = unitById(id);
+      return target === undefined
+        ? "unit"
+        : `${possessiveName(view, target.ownerId)} ${unitRoleRuleV7(view, target).label}`;
+    };
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-ice-folk-pick",
+    );
+    panel.dataset.v7IceFolkPick =
+      pick.kind === "THROW_BOLAS" ? "bolas" : "cold_snap";
+    const lines = el(this.#document, "div", "v7-martian-choices");
+    let prompt: string;
+    let detail: string | null = null;
+    if (pick.kind === "THROW_BOLAS") {
+      prompt = BOLAS_PICK_V7;
+      const summaries: string[] = [];
+      for (const command of commands) {
+        if (command.kind !== "THROW_BOLAS") continue;
+        const preview = previewBolasV7(
+          view,
+          command.unitId,
+          command.targetUnitId,
+        );
+        if (preview === null) continue;
+        const details = bolasPreviewLinesV7(view, preview);
+        // Two targets of one kind are told apart by their HP.
+        const label = `${nameOf(command.targetUnitId)} (${unitById(command.targetUnitId)?.hp ?? 0} HP)`;
+        const control = button(
+          this.#document,
+          label,
+          `bolas-${command.targetUnitId}`,
+          "v7-martian-choice-button",
+        );
+        control.setAttribute(
+          "aria-label",
+          `${BOLAS_LABEL_V7}: ${label}. ${details.join(". ")}.`,
+        );
+        control.title = details.join(" · ");
+        control.disabled = this.#localBusy();
+        control.onclick = () => void this.#dispatch(command);
+        lines.append(control);
+        summaries.push(details.join(" · "));
+      }
+      if (summaries.length === 1) detail = summaries[0] ?? null;
+    } else {
+      const command = commands[0];
+      const preview =
+        command === undefined ? null : previewColdSnapV7(view, unitId);
+      if (command === undefined || preview === null) {
+        this.#iceFolkPick = null;
+        return null;
+      }
+      prompt = coldSnapSummaryV7(preview);
+      detail = preview.targets
+        .map(
+          (target) =>
+            `${nameOf(target.unitId)}: ${target.becomesSluggish ? "Will be Frozen" : "Will be Frosted"}`,
+        )
+        .join(" · ");
+      const cast = button(
+        this.#document,
+        COLD_SNAP_CAST_V7,
+        "cold-snap-cast",
+        "v7-martian-choice-button",
+      );
+      cast.setAttribute("aria-label", `${COLD_SNAP_CAST_V7}. ${prompt}.`);
+      cast.title = COLD_SNAP_TOOLTIP_V7;
+      cast.disabled = this.#localBusy();
+      cast.onclick = () => void this.#dispatch(command);
+      lines.append(cast);
+    }
+    panel.setAttribute("aria-label", prompt);
+    panel.append(text(this.#document, "p", prompt, "v7-kaboom-summary"));
+    if (lines.childElementCount > 0) panel.append(lines);
+    if (detail !== null && detail !== "")
+      panel.append(text(this.#document, "p", detail, "v7-martian-detail"));
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "ice-folk-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelIceFolkPick();
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
   #syncBoard(): void {
     const view = this.#snapshot.view;
     if (view === null || this.#matchRoot === null || this.#destroyed) return;
@@ -5757,14 +6216,13 @@ function effectDescription(
       return FORCE_FIELDS_UNLOCK_TEXT_V7;
     case "DISINTEGRATOR":
       return DISINTEGRATOR_UNLOCK_TEXT_V7;
-    // The Ice Folk revision (section 4): the engine bead's unlock texts; the
-    // Ice Folk UI (`pulp_wars-7g3.6`) owns the full presentation.
+    // The Ice Folk revision (section 4).
     case "WITCH_SUPPORT":
-      return "Ice Witches cast Cold Snap on enemies within 2 tiles";
+      return WITCH_SUPPORT_UNLOCK_TEXT_V7;
     case "DEEP_WINTER":
-      return "Snow spreads two tiles from your city centers; Recover heals 6 in your territory";
+      return DEEP_WINTER_UNLOCK_TEXT_V7;
     case "BRITTLE":
-      return "Shatter at 4 HP or less";
+      return BRITTLE_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -5861,6 +6319,8 @@ function technologyRoleDescriptionsV7(
   const label = effectiveRoleRuleV7(roleId, faction).label;
   // The Martian revision (section 4): "Tripod (heat ray, Pierce)".
   if (faction === "MARTIAN") return [martianRoleUnlockTextV7(roleId)];
+  // The Ice Folk revision (section 4): "Ice Witch (Blizzard, Cold Snap)".
+  if (faction === "ICE_FOLK") return [iceFolkRoleUnlockTextV7(roleId)];
   // Revision 19 (section 4): a Dinosaur egg-laid role is laid, not trained:
   // "Raptor Egg", "Triceratops Egg (Charge!)" (revision 20).
   if (isEggLaidRoleV7(roleId, faction))
@@ -5965,6 +6425,9 @@ export function recruitmentRolePresentationV7(
   // The Martian revision: the Shield, flying or striding, slots and the
   // Field Defense restriction from the Martian registration.
   restrictions.push(...martianRecruitNotesV7(roleId, faction));
+  // The Ice Folk revision: Mountain-born, Glide and the Field Defense
+  // restriction from the Ice Folk registration.
+  restrictions.push(...iceFolkRecruitNotesV7(roleId, faction));
   return {
     label: role.label,
     stats: [
@@ -6018,6 +6481,8 @@ function abilityDescription(
   if (dinosaur !== null) return dinosaur;
   const martian = martianAbilityDescriptionV7(ability, faction);
   if (martian !== null) return martian;
+  const iceFolk = iceFolkAbilityDescriptionV7(ability, faction);
+  if (iceFolk !== null) return iceFolk;
   switch (ability) {
     case "ATTACK":
       return minimum > 1
@@ -6128,18 +6593,22 @@ function boundaryNoticeV7(
   // The Martian revision: recharges, Beam Down, Mind Control, collapses,
   // pulls.
   const martian = martianBoundaryNoticeV7(events, before, after);
+  // The Ice Folk revision: Bolas, Cold Snap, Cold Aura, Shatter, Trample.
+  const iceFolk = iceFolkBoundaryNoticeV7(events, before, after);
   const parts = [
     undead?.text ?? null,
     goblin?.text ?? null,
     dinosaur?.text ?? null,
     martian?.text ?? null,
+    iceFolk?.text ?? null,
     special,
   ].filter((part): part is string => part !== null);
   if (
     undead === null &&
     goblin === null &&
     dinosaur === null &&
-    martian === null
+    martian === null &&
+    iceFolk === null
   )
     return { text: special, toast: special !== null };
   return {
@@ -6149,7 +6618,8 @@ function boundaryNoticeV7(
       undead?.toast === true ||
       goblin?.toast === true ||
       dinosaur?.toast === true ||
-      martian?.toast === true,
+      martian?.toast === true ||
+      iceFolk?.toast === true,
   };
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
@@ -6179,6 +6649,9 @@ function rewardLabel(
   // The Martian revision: Militia is a Grunt; the giant is a Colossus.
   const martian = faction === "MARTIAN" ? martianRewardLabelV7(reward) : null;
   if (martian !== null) return martian;
+  // The Ice Folk revision: Militia is a Yeti; the giant is a Frost Giant.
+  const iceFolk = faction === "ICE_FOLK" ? iceFolkRewardLabelV7(reward) : null;
+  if (iceFolk !== null) return iceFolk;
   if (reward === "SURVEY") return ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
@@ -6232,6 +6705,8 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (dinosaur !== null) return dinosaur;
   const martian = martianCommandLabelV7(command.kind, faction);
   if (martian !== null) return martian;
+  const iceFolk = iceFolkCommandLabelV7(command.kind);
+  if (iceFolk !== null) return iceFolk;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
   return COMMAND_LABELS[command.kind] ?? title(command.kind);
 }
@@ -6561,6 +7036,8 @@ function abilityName(ability: string, faction: FactionIdV7): string {
   if (dinosaur !== null) return dinosaur;
   const martian = martianAbilityNameV7(ability, faction);
   if (martian !== null) return martian;
+  const iceFolk = iceFolkAbilityNameV7(ability, faction);
+  if (iceFolk !== null) return iceFolk;
   if (ability === "TEND_WOUNDED") return "Tend";
   return title(ability);
 }
@@ -6574,7 +7051,8 @@ function matchHasFactionsV7(view: PlayerViewV7): boolean {
     matchHasUndeadV7(view) ||
     matchHasGoblinV7(view) ||
     matchHasDinosaurV7(view) ||
-    matchHasMartianV7(view)
+    matchHasMartianV7(view) ||
+    matchHasIceFolkSeatV7(view)
   );
 }
 
@@ -6631,6 +7109,9 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   BEAM_DOWN: "beam-down",
   MIND_CONTROL: "mind-control",
   TRACTOR_BEAM: "tractor-beam",
+  // The Ice Folk revision: LEGACY glyphs of Bolas and Cold Snap.
+  THROW_BOLAS: "bolas",
+  COLD_SNAP: "snowflake",
 };
 
 function undeadCommandPreview(
@@ -6684,10 +7165,16 @@ function factionBadgeArt<Image extends HTMLElement | SVGElement>(
 /** The Undead skull, Goblin head, Dinosaur footprint or Martian saucer badge. */
 function factionBadgeIcon(
   documentRoot: Document,
-  badge: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN",
+  badge: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK",
 ): SVGSVGElement {
   if (badge === "UNDEAD")
     return uiIconV7(documentRoot, "skull", "v7-undead-badge");
+  if (badge === "ICE_FOLK")
+    return uiIconV7(
+      documentRoot,
+      "ice-peak",
+      "v7-undead-badge v7-ice-folk-badge",
+    );
   if (badge === "MARTIAN")
     return uiIconV7(
       documentRoot,

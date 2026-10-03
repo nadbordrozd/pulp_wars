@@ -1,8 +1,10 @@
 # Faction fragment: ICE_FOLK
 
 **Status:** direction chosen and production art made in bead
-`pulp_wars-7g3.5` (batch `direction-ice-folk`), **not wired into the game
-yet**. The user delegated the look: "pick art direction and implement. I'll
+`pulp_wars-7g3.5` (batch `direction-ice-folk`), **live in the default look
+since the Ice Folk UI bead `pulp_wars-7g3.6`** (see
+[What the UI bead wired](#what-the-ui-bead-wired)). The user delegated the
+look: "pick art direction and implement. I'll
 come back when it's done and fix or not." The root proposed "frost and fur"
 (warm white fur, slate faces, one glacier ice-blue accent); this bead
 measured that proposal and its alternatives in a short study, kept the fur
@@ -365,28 +367,87 @@ icePale, alpha: 0.85 })`) and the `ICON:STATUS:CHILLED` glyph at 16 px in
   `COLD_SNAP` ring scaled from the Witch's tile out to five tiles across
   over 450 ms, then `FROST_HIT` on each target.
 
-## What the UI bead must wire
+## What the UI bead wired
 
-`pulp_wars-7g3.6` (the faction is in the engine by then):
+`pulp_wars-7g3.6` did each step (the faction was in the engine by then);
+the list stays as the record of what the wiring is.
 
-1. Add `...CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7` to
+1. **Done.** Add `...CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7` to
    `chibiDirectionArtRegistryV7`
    ([`chibi-direction-art-manifest.ts`](../../../src/assets/chibi-direction-art-manifest.ts)).
    The subjects exist (`IceFolkArtSubjectV7` in
    [`chibi-art-v7.ts`](../../../src/assets/chibi-art-v7.ts)).
-2. Resolve them: `unitArtSubjectV7` for an `ICE_FOLK` unit
+2. **Done.** Resolve them: `unitArtSubjectV7` for an `ICE_FOLK` unit
    (`UNIT:ICE_FOLK:<ROLE>`), `cityArtSubjectV7` and `CityArtFactionV7` for
    an Ice Folk city, the fallback of `chibiFallbackSubjectV7` (Human art
-   with the Ice Folk badge), and the portrait, icon and technology-icon
-   lookups of the DOM art hook (`ICON:TECH:ICE_FOLK:FORTIFICATION` for
-   Deep Winter, `…:EXPLOSIVES` for Brittle, by the viewer's faction).
-3. Copy `ICE_FOLK_FLAG_ANCHORS_V7` into `DIRECTION_FLAG_ANCHORS_V7`.
-4. Draw the Snow overlay, the snow caps, the Blizzard and the Witch's
-   outline, the Frozen and Frosted markers and the HP Shatter window from
-   the presentation module, and play the effect sprites (the Shatter
-   timeline, Cold Snap, Bolas, frost on hit) through the effects canvas.
-5. Turn round the test "is not wired into the game yet" of
-   `tests/unit/chibi-ice-folk-direction-assets.test.ts`.
+   with the Ice Folk badge; Deep Winter and Brittle fall back to the Human
+   Fortification and Explosives art), and the portrait, icon and
+   technology-icon lookups of the DOM art hook
+   (`ICON:TECH:ICE_FOLK:FORTIFICATION` for Deep Winter, `…:EXPLOSIVES` for
+   Brittle, by the viewer's faction).
+3. **Done.** Copy `ICE_FOLK_FLAG_ANCHORS_V7` into `DIRECTION_FLAG_ANCHORS_V7`.
+4. **Done.** Draw the Snow overlay, the snow caps, the Blizzard and the
+   Witch's outline, the Frozen and Frosted markers and the HP Shatter window
+   from the presentation module
+   ([`ice-folk-canvas-v7.ts`](../../../src/render/canvas/ice-folk-canvas-v7.ts)),
+   and play the effect sprites (the Shatter timeline, Cold Snap, Bolas,
+   frost on hit) through the effects canvas
+   ([`ice-folk-effects-v7.ts`](../../../src/render/canvas/ice-folk-effects-v7.ts)).
+5. **Done.** Turn round the test "is not wired into the game yet" of
+   `tests/unit/chibi-ice-folk-direction-assets.test.ts`, which now checks
+   that the live direction registry holds every Ice Folk asset, and only
+   it.
+
+### Decisions of the UI bead
+
+Made in `pulp_wars-7g3.6` and recorded so that they can be overruled:
+
+1. **Classic look and LEGACY.** The Ice Folk have no classic art, so both
+   draw the Human sprite of the role with a code-drawn badge in the corner
+   every earlier faction's badge uses, and the Human city; boats wear it
+   too (spec 13.4). **The badge is a snow-capped peak**, an ice-blue peak
+   with a white cap on a navy disc with a pale ice rim, **not a snowflake**:
+   the Frosted marker is a snowflake glyph on the other side of the unit,
+   and the two must not be confused. The DOM uses the same peak
+   (`ice-peak`). Snow, the Blizzard and every marker are code-drawn in
+   both looks; LEGACY caps its raised Forest and Mountain bodies too.
+2. **Snow under the bodies.** On a Snow cell a Forest or Mountain is drawn
+   like one under a Road: its ground, then the Snow, then the body (after
+   the Roads) with its snow caps, in the body's cell and in its overflow. So
+   the Snow whitens the ground between the trees and peaks and never the
+   trees themselves, and the caps say "Snow" on a peak, where the wash is
+   subtle. The board's edge is not a Snow edge (no cut there, as the
+   Mountain fringe keeps straight edges at the board's edge).
+3. **The Blizzard moves calmly**, at about fifteen redraws a second while it
+   is in view (no redraw at all for reduced motion, which shows time 0); the
+   flakes are drawn in the ground pass, so a tree or a peak may hide some.
+4. **The frost glyph** takes the next status slot after the Plague and
+   Bitten markers (a third slot exists for it); Frozen shows only its
+   casing (heavy on purpose), Thawing nothing.
+5. **The Shatter window is on every Chilled unit's HP bar, and a Chilled
+   unit always shows its HP bar**, also at full HP in the default look,
+   whose base bar otherwise shows only when damaged: the window says how
+   close the unit is to shattering, which is the point of the marker. The
+   threshold is the highest of the hostile Ice Folk seats, as far as the
+   viewer knows it (its own technologies, else the public stats of their
+   visible units, else 3). A `JUGGERNAUT`-role unit, which never shatters,
+   has no window.
+6. **The Shatter keeps its defender on the board** after the hit (the hit
+   step is held), cased to the top with cracks and a 1 px shake, then the
+   board shows the result and the burst and shards play over it, as the
+   timeline says. Reduced motion shows the burst frame only.
+7. **Preview texts follow the spec's table (13.2)**: "Shatters" (not
+   "Shatters!"), "Chilled" on the defender, "Planted: +1 Attack". The
+   Shatter label replaces the damage line ("Shatters", plus "sweep N" for a
+   Mammoth), and the flank victims are drawn only on the focused (or only)
+   attack target, so a row of Mammoth targets stays calm.
+8. **Cold Snap is cast from any highlighted target** as well as from its
+   one "Cast" button (every target carries the same command), and its
+   two-tile reach is tinted with an outer dashed edge. Bolas choices name
+   the target's HP, so two targets of one kind are told apart.
+9. **City panel**: an Ice Folk viewer's city counts slots and every train
+   card names "1 slot", as spec 13.1 asks, though every Ice Folk unit takes
+   one.
 
 ## Evidence
 
@@ -431,8 +492,9 @@ Decided in bead `pulp_wars-7g3.5` under the user's delegation:
    no raster tile set.
 10. **Status and technology icons** use the families `ICON:STATUS:*` (the
     Martian precedent) and `ICON:TECH:ICE_FOLK:*`.
-11. **Not registered:** the module is imported only by the review scenes
-    until `pulp_wars-7g3.6`.
+11. **Not registered** by this bead: the module was imported only by the
+    review scenes until `pulp_wars-7g3.6` registered it (see
+    [What the UI bead wired](#what-the-ui-bead-wired)).
 
 ## Weak spots
 
@@ -459,6 +521,7 @@ Decided in bead `pulp_wars-7g3.5` under the user's delegation:
   blue and was rejected), and City 3 is a flat, sparse ring of igloos
   beside the other factions' crowded capitals.
 - **The Martian test's list of accent presets** now names `ice-folk-blue`.
-- **The review scenes use stand-in factions,** and the Snow overlay and the
-  Blizzard are shown in a board mock (approximate plates, Roads and
-  borders), not in the renderer.
+- **The review scenes of this bead use stand-in factions,** and the Snow
+  overlay and the Blizzard are shown in a board mock (approximate plates,
+  Roads and borders). Since `pulp_wars-7g3.6` the renderer draws them; its
+  evidence is the Ice Folk UI review (`npm run review:ruleset7-ice-folk-ui`).

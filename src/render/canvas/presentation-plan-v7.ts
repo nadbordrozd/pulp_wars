@@ -8,6 +8,10 @@ import type { Ruleset7TacticalUiSymbolId } from "../../assets/ruleset7-tactical-
 import type { ExplosionBlastV7 } from "./goblin-explosion-v7";
 import type { DinosaurEffectV7 } from "./dinosaur-effects-v7";
 import type { MartianFeedbackEffectV7 } from "./martian-effects-v7";
+import {
+  ICE_FOLK_EFFECT_DURATIONS_V7,
+  type IceFolkFeedbackEffectV7,
+} from "./ice-folk-effects-v7";
 
 export type CorePresentationStepV7 =
   | {
@@ -59,6 +63,21 @@ export type CorePresentationStepV7 =
       readonly followCamera?: true;
     }
   | {
+      /**
+       * The Ice Folk cues (bead pulp_wars-7g3.6, ice-folk-effects-v7): a
+       * Shatter (`unitId` is the shattered unit, shown cased in ice until it
+       * bursts), a Cold Snap, a Bolas, a Cold Aura, and a Mammoth's Sweep.
+       */
+      readonly kind: "ICE_FOLK";
+      readonly effect: IceFolkFeedbackEffectV7;
+      readonly cells: readonly CoordV7[];
+      readonly from?: CoordV7;
+      readonly unitId?: number;
+      readonly durationMs: number;
+      /** Another player's cue: the camera frames it, like enemy moves. */
+      readonly followCamera?: true;
+    }
+  | {
       readonly kind: "BUILD";
       readonly at: CoordV7;
       readonly durationMs: 180;
@@ -74,6 +93,11 @@ export type CorePresentationStepV7 =
        * Revision 19: a Spitter lobs a pale cream acid blob.
        */
       readonly projectile?: "BOMB" | "ACID";
+      /**
+       * The Ice Folk revision: the target shatters, so the hit keeps it on
+       * the board (no impact) for the Shatter step that follows.
+       */
+      readonly holdTarget?: true;
     }
   | {
       /**
@@ -269,6 +293,23 @@ export function corePresentationPlanV7(
       ...(enemyTurn ? { followCamera: true as const } : {}),
     });
   };
+  /** Adds an Ice Folk cue at its ICE_FOLK_EFFECT_DURATIONS_V7 duration. */
+  const pushIceFolk = (
+    step: Omit<
+      Extract<CorePresentationStepV7, { readonly kind: "ICE_FOLK" }>,
+      "kind" | "followCamera" | "durationMs"
+    >,
+  ): void => {
+    steps.push({
+      kind: "ICE_FOLK",
+      ...step,
+      durationMs: ICE_FOLK_EFFECT_DURATIONS_V7[step.effect],
+      ...(enemyTurn ? { followCamera: true as const } : {}),
+    });
+  };
+  const unitAnywhere = (id: number) =>
+    before.units.find((unit) => unit.id === id) ??
+    after.units.find((unit) => unit.id === id);
   const graves = envelope.events.flatMap((event) =>
     event.kind === "GRAVE_CREATED" &&
     explored.has(`${event.at.x},${event.at.y}`)
@@ -410,6 +451,31 @@ export function corePresentationPlanV7(
           ...(brain === undefined ? {} : { from: brain.at }),
           durationMs: 520,
         });
+    } else if (event.kind === "UNITS_CHILLED") {
+      // The Ice Folk revision: a Bolas flies from the Sled, a Cold Snap
+      // rings out from the Witch, a Cold Aura pulses round the Giant; frost
+      // forms on each chilled unit.
+      const cells = event.results.flatMap((result) => {
+        const unit = unitAnywhere(result.unitId);
+        return unit === undefined || !isExplored(unit.at) ? [] : [unit.at];
+      });
+      const source =
+        event.sourceUnitId === null
+          ? undefined
+          : unitAnywhere(event.sourceUnitId);
+      if (cells.length > 0)
+        pushIceFolk({
+          effect:
+            event.source === "BOLAS"
+              ? "BOLAS"
+              : event.source === "COLD_SNAP"
+                ? "COLD_SNAP"
+                : "COLD_AURA",
+          cells,
+          ...(source === undefined || !isExplored(source.at)
+            ? {}
+            : { from: source.at }),
+        });
     } else if (event.kind === "UNIT_DIED") {
       // Revision 19: a destroyed Egg scatters its shell.
       const egg = before.units.find((unit) => unit.id === event.unitId);
@@ -473,6 +539,10 @@ export function corePresentationPlanV7(
         attacker.role === "MARKSMAN" && attackerFaction === "DINOSAUR";
       // Revision 20: a Charge! after a run-up lands with a star flash.
       const chargeHit = event.preview.runUp > 0;
+      // The Ice Folk revision: a Yeti's Rockfall lobs a rock from its peak;
+      // a shattered defender stays on the board until it bursts.
+      const rockfall = event.preview.rockfallApplied;
+      const shatters = event.preview.shatters && isExplored(defender.at);
       // The Martian revision: a heat ray is a beam from the shooter (with a
       // thinner beam on to a Pierce victim), not a projectile or a lunge.
       const ray = event.preview.rayPower !== "NONE";
@@ -493,7 +563,10 @@ export function corePresentationPlanV7(
       else
         steps.push({
           kind:
-            (attacker.role === "CATAPULT" && !triceratops) || bomb || acid
+            (attacker.role === "CATAPULT" && !triceratops) ||
+            bomb ||
+            acid ||
+            rockfall
               ? "CATAPULT"
               : ranged
                 ? "RANGED"
@@ -501,12 +574,31 @@ export function corePresentationPlanV7(
           unitId: attacker.id,
           from: attacker.at,
           to: defender.at,
-          durationMs: ranged ? 280 : 230,
+          durationMs: ranged || rockfall ? 280 : 230,
           ...(bomb
             ? { projectile: "BOMB" as const }
             : acid
               ? { projectile: "ACID" as const }
               : {}),
+          ...(shatters ? { holdTarget: true as const } : {}),
+        });
+      // The Ice Folk revision: a Mammoth's Sweep arcs over its three tiles
+      // (the flank hits follow as damage cues); a Shatter freezes, cracks and
+      // bursts the defender: the faction's "wow" moment.
+      if (event.preview.sweep && isExplored(defender.at))
+        pushIceFolk({
+          effect: "SWEEP",
+          cells: [
+            defender.at,
+            ...event.preview.splash.map((splash) => splash.at),
+          ],
+          from: attacker.at,
+        });
+      if (shatters)
+        pushIceFolk({
+          effect: "SHATTER",
+          cells: [defender.at],
+          unitId: defender.id,
         });
       // The Martian revision: a Shield that absorbed part of a hit flares,
       // turned toward the blow.

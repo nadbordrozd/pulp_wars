@@ -147,6 +147,8 @@ describe("the Ice Folk revision identity", () => {
       "scripts/browser-smoke-v7.ts",
       "scripts/browser-dinosaur-review-v7.ts",
       "scripts/browser-martian-review-v7.ts",
+      // The Ice Folk UI review (pulp_wars-7g3.6).
+      "scripts/browser-ice-folk-review-v7.ts",
     ]) {
       const text = readFileSync(
         join(import.meta.dirname, "..", "..", file),

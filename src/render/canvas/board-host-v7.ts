@@ -31,6 +31,21 @@ import {
   type MartianFeedbackV7,
 } from "./martian-effects-v7";
 import {
+  ICE_FOLK_EFFECT_DURATIONS_V7,
+  ICE_FOLK_EFFECT_SUBJECTS_V7,
+  drawIceFolkFeedbackV7,
+  shatterBoardCueV7,
+  type IceFolkFeedbackV7,
+} from "./ice-folk-effects-v7";
+import {
+  createIceFolkBoardArtV7,
+  type IceFolkBoardArtV7,
+} from "./ice-folk-canvas-v7";
+import {
+  snowTooltipV7,
+  BLIZZARD_TOOLTIP_V7,
+} from "../ice-folk-presentation-v7";
+import {
   MAX_ZOOM,
   MIN_ZOOM,
   boardWorldBounds,
@@ -232,6 +247,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #martianFeedback: MartianFeedbackV7 | null = null;
   /** Review tooling only (pinMartianFeedback): cues frozen mid-animation. */
   #pinnedMartianFeedback: readonly MartianFeedbackV7[] = [];
+  /** The Ice Folk cue playing on the effects overlay (bead pulp_wars-7g3.6). */
+  #iceFolkFeedback: IceFolkFeedbackV7 | null = null;
+  /** Review tooling only (pinIceFolkFeedback): cues frozen mid-animation. */
+  #pinnedIceFolkFeedback: readonly IceFolkFeedbackV7[] = [];
+  /** The Ice Folk Snow tiles, snow caps, rime and casings, built once. */
+  readonly #iceFolkArt: IceFolkBoardArtV7;
+  /** The Blizzard's slow ambient redraw (a timer, not every frame). */
+  #blizzardTimer: number | null = null;
+  /** The unit being shattered on the board, cased in ice until it bursts. */
+  #iceFolkShatter: {
+    readonly unitId: number;
+    readonly elapsedMs: number;
+  } | null = null;
   /** Revision 19: this frame's unit sprite cues (growth, Egg, hatchling). */
   #unitPulses: readonly UnitPulseV7[] = [];
   /**
@@ -287,6 +315,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       this.#draw();
     });
     this.#saturationCache = createSpriteSaturationCacheV7(
+      browserChibiRasterEnvironmentV7(documentRoot),
+    );
+    this.#iceFolkArt = createIceFolkBoardArtV7(
       browserChibiRasterEnvironmentV7(documentRoot),
     );
     this.#chibiArt = createChibiArtResolverV7({
@@ -439,6 +470,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // The Martian revision: an aimed Beam Down, Mind Control or Tractor
     // Beam frames its unit and targets the same way, once per stage.
     const martianPick = model.interaction.martianPick ?? null;
+    // The Ice Folk revision: an aimed Bolas or Cold Snap likewise.
+    const iceFolkPick = model.interaction.iceFolkPick ?? null;
     const subject =
       unitId !== null
         ? String(unitId)
@@ -446,7 +479,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           ? `nest:${layEgg.cityId}:${layEgg.role}`
           : martianPick !== null
             ? `martian:${martianPick.kind}:${martianPick.unitId}:${martianPick.kind === "BEAM_DOWN" ? String(martianPick.passengerUnitId) : ""}`
-            : null;
+            : iceFolkPick !== null
+              ? `ice-folk:${iceFolkPick.kind}:${iceFolkPick.unitId}`
+              : null;
     if (subject === null) {
       this.#kaboomFramedKey = null;
       return;
@@ -456,12 +491,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (key === this.#kaboomFramedKey) return;
     this.#kaboomFramedKey = key;
     const framed = this.#planFor(model.view, model.offeredCommands);
+    const pickUnitId = martianPick?.unitId ?? iceFolkPick?.unitId ?? null;
     const pickUnit =
-      martianPick === null
+      pickUnitId === null
         ? undefined
-        : model.view.units.find((unit) => unit.id === martianPick.unitId);
+        : model.view.units.find((unit) => unit.id === pickUnitId);
     const area = cellWorldBounds(
-      martianPick !== null && unitId === null && layEgg === null
+      (martianPick !== null || iceFolkPick !== null) &&
+        unitId === null &&
+        layEgg === null
         ? [
             ...(pickUnit === undefined ? [] : [pickUnit.at]),
             ...framed.targets.map((target) => target.at),
@@ -579,6 +617,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#pinnedDinosaurFeedback = [];
     this.#martianFeedback = null;
     this.#pinnedMartianFeedback = [];
+    this.#iceFolkFeedback = null;
+    this.#pinnedIceFolkFeedback = [];
+    this.#iceFolkShatter = null;
     this.#unitPulses = [];
     this.#heldUnits = new Map();
     this.#drawSupportOverlay();
@@ -629,12 +670,14 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const explosionSteps = steps.filter((step) => step.kind === "EXPLOSION");
       const dinosaurSteps = steps.filter((step) => step.kind === "DINOSAUR");
       const martianSteps = steps.filter((step) => step.kind === "MARTIAN");
+      const iceFolkSteps = steps.filter((step) => step.kind === "ICE_FOLK");
       if (
         supportSteps.length > 0 ||
         windmillSteps.length > 0 ||
         explosionSteps.length > 0 ||
         dinosaurSteps.length > 0 ||
-        martianSteps.length > 0
+        martianSteps.length > 0 ||
+        iceFolkSteps.length > 0
       ) {
         this.#presentedView = after;
         this.#draw();
@@ -665,6 +708,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           await this.#animate(220 * durationScale, () => undefined);
           if (token !== this.#presentationToken) return;
           this.#martianFeedback = null;
+          this.#drawSupportOverlay();
+        }
+        // The Ice Folk revision: each Ice Folk cue holds a frame after its
+        // midpoint (a Shatter shows its burst, the shattered unit gone).
+        for (const step of iceFolkSteps) {
+          if (step.followCamera === true && step.cells[0] !== undefined)
+            this.#followCamera(step.cells[0]);
+          this.#iceFolkFeedback = iceFolkFeedbackOf(
+            step,
+            step.effect === "SHATTER" ? 0.4 : 0.6,
+          );
+          this.#drawSupportOverlay();
+          await this.#animate(240 * durationScale, () => undefined);
+          if (token !== this.#presentationToken) return;
+          this.#iceFolkFeedback = null;
           this.#drawSupportOverlay();
         }
         // Revision 17: each explosion wave holds its midpoint burst, in
@@ -718,7 +776,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             windmillSteps.length +
             explosionSteps.length +
             dinosaurSteps.length +
-            martianSteps.length ===
+            martianSteps.length +
+            iceFolkSteps.length ===
           steps.length
         ) {
           this.#presentedView = null;
@@ -821,6 +880,35 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#presentedView = after;
         this.#draw();
         this.#drawSupportOverlay();
+      } else if (step.kind === "ICE_FOLK") {
+        const first = step.cells[0];
+        if (first !== undefined && step.followCamera === true)
+          this.#followCamera(first);
+        // A Shatter shows the defender cased in ice, cracking, until it
+        // bursts (ICE_FOLK.md timeline); every other cue shows the result
+        // (the Chill markers appear as the frost forms).
+        const shatter = step.effect === "SHATTER" && step.unitId !== undefined;
+        this.#presentedView = shatter ? before : after;
+        this.#draw();
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#iceFolkFeedback = iceFolkFeedbackOf(step, progress);
+          if (shatter) {
+            const elapsedMs = progress * ICE_FOLK_EFFECT_DURATIONS_V7.SHATTER;
+            const gone = shatterBoardCueV7(elapsedMs).gone;
+            this.#iceFolkShatter = gone
+              ? null
+              : { unitId: step.unitId ?? -1, elapsedMs };
+            if (gone) this.#presentedView = after;
+            this.#draw();
+          }
+          this.#drawSupportOverlay();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#iceFolkShatter = null;
+        this.#iceFolkFeedback = null;
+        this.#presentedView = after;
+        this.#draw();
+        this.#drawSupportOverlay();
       } else if (step.kind === "BUILD") {
         this.#followCamera(step.at);
         this.#crossfade = { before, after, progress: 0 };
@@ -854,6 +942,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             step.projectile === "ACID",
           );
         if (token !== this.#presentationToken) return;
+        // The Ice Folk revision: a shattered target stays for its Shatter.
+        if (step.holdTarget === true) continue;
         this.#presentedView = after;
         await this.#animateImpact(step.to, 100 * durationScale);
         if (token !== this.#presentationToken) return;
@@ -1154,6 +1244,11 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             }),
         previewFocus: this.#hovered ?? this.#focused,
         labelSafeArea,
+        // The Ice Folk revision: Snow, the Blizzard's clock (frozen at 0 for
+        // reduced motion), and a Shatter in progress.
+        iceFolkArt: this.#iceFolkArt,
+        blizzardTimeMs: model.motion === "REDUCED" ? 0 : now,
+        iceFolkShatter: this.#iceFolkShatter,
         selectionJump:
           jump === null
             ? null
@@ -1295,6 +1390,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const art = this.#supportEffectArt();
     for (const subject of SUPPORT_EFFECT_SUBJECTS_V7) art?.image(subject);
     for (const subject of MARTIAN_EFFECT_SUBJECTS_V7) art?.image(subject);
+    for (const subject of ICE_FOLK_EFFECT_SUBJECTS_V7) art?.image(subject);
   }
 
   /**
@@ -1338,6 +1434,41 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#drawSupportOverlay();
   }
 
+  /**
+   * Review tooling and tests: draws the given Ice Folk cues at their fixed
+   * progress on the effects canvas until cleared with an empty list; a
+   * pinned Shatter before its burst also cases its unit (`unitId`) in ice on
+   * the board. The game never calls it; presentations clear it.
+   */
+  pinIceFolkFeedback(feedback: readonly IceFolkFeedbackV7[]): void {
+    this.#pinnedIceFolkFeedback = feedback;
+    const shatter = feedback.find(
+      (entry) => entry.effect === "SHATTER" && entry.unitId !== undefined,
+    );
+    const elapsedMs =
+      (shatter?.progress ?? 0) * ICE_FOLK_EFFECT_DURATIONS_V7.SHATTER;
+    const gone = shatter !== undefined && shatterBoardCueV7(elapsedMs).gone;
+    this.#iceFolkShatter =
+      shatter === undefined || gone
+        ? null
+        : { unitId: shatter.unitId ?? -1, elapsedMs };
+    // After the burst the shattered unit is gone from the board, as in the
+    // game, where the board then shows the view after the attack.
+    const model = this.#model;
+    this.#presentedView =
+      gone && model !== null
+        ? {
+            ...model.view,
+            units: model.view.units.filter(
+              (unit) => unit.id !== shatter?.unitId,
+            ),
+          }
+        : null;
+    this.#requestEffectArt();
+    this.#draw();
+    this.#drawSupportOverlay();
+  }
+
   #drawSupportOverlay(): void {
     const context = this.#effectsContext;
     const canvas = this.#effectsCanvas;
@@ -1346,6 +1477,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
     const effectArt = this.#supportEffectArt();
+    for (const pinned of this.#pinnedIceFolkFeedback)
+      drawIceFolkFeedbackV7(context, this.#camera, pinned, effectArt);
+    const iceFolk = this.#iceFolkFeedback;
+    if (iceFolk === null) {
+      delete canvas.dataset.iceFolkEffect;
+      delete canvas.dataset.iceFolkProgress;
+    } else {
+      canvas.dataset.iceFolkEffect = iceFolk.effect;
+      canvas.dataset.iceFolkProgress = iceFolk.progress.toFixed(3);
+      drawIceFolkFeedbackV7(context, this.#camera, iceFolk, effectArt);
+    }
     for (const pinned of this.#pinnedSupportFeedback)
       drawSupportFeedbackV7(context, this.#camera, pinned, false, effectArt);
     for (const pinned of this.#pinnedExplosionFeedback)
@@ -1502,6 +1644,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       );
     this.#description.textContent = [
       title(tile.terrain),
+      // The Ice Folk revision: what Snow and a Blizzard do for the viewer.
+      tile.snow === true ? snowTooltipV7(model.view) : "",
+      tile.blizzard === true ? BLIZZARD_TOOLTIP_V7 : "",
       tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
         ? title(tile.resource)
         : "",
@@ -2036,6 +2181,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         selectionJumpDurationMs(model.animationSpeed);
     if (!ready && !jumping) {
       if (!jumping) this.#selectionJump = null;
+      // The Ice Folk revision: a visible Blizzard keeps its flakes falling
+      // with a calm redraw about fifteen times a second (full motion only).
+      if (
+        model.motion === "FULL" &&
+        model.view.board.tiles.some(
+          (tile) => tile.explored && tile.blizzard === true,
+        ) &&
+        typeof browser.setTimeout === "function"
+      )
+        this.#blizzardTimer = browser.setTimeout(() => {
+          this.#blizzardTimer = null;
+          this.#draw();
+          this.#syncAmbientFrame();
+        }, 66);
       return;
     }
     this.#ambientFrame = browser.requestAnimationFrame(() => {
@@ -2049,11 +2208,28 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (this.#ambientFrame !== null)
       this.#document.defaultView?.cancelAnimationFrame(this.#ambientFrame);
     this.#ambientFrame = null;
+    if (this.#blizzardTimer !== null)
+      this.#document.defaultView?.clearTimeout(this.#blizzardTimer);
+    this.#blizzardTimer = null;
   }
 
   #now(): number {
     return this.#document.defaultView?.performance.now() ?? Date.now();
   }
+}
+
+/** The effects-overlay cue of an Ice Folk presentation step at `progress`. */
+function iceFolkFeedbackOf(
+  step: Extract<CorePresentationStepV7, { readonly kind: "ICE_FOLK" }>,
+  progress: number,
+): IceFolkFeedbackV7 {
+  return {
+    effect: step.effect,
+    cells: step.cells,
+    ...(step.from === undefined ? {} : { from: step.from }),
+    ...(step.unitId === undefined ? {} : { unitId: step.unitId }),
+    progress,
+  };
 }
 
 /** The effects-overlay cue of a Martian presentation step at `progress`. */

@@ -389,15 +389,15 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     }
   });
 
-  it("is registered but not offered by the setup screen until the UI bead", () => {
-    // The FACTIONS constant of the setup screen leaves ICE_FOLK out until
-    // `pulp_wars-7g3.6`; the label exists for every other surface.
+  // Turned round by the UI bead (`pulp_wars-7g3.6`): the setup screen's
+  // FACTIONS constant offers ICE_FOLK last, labelled "Ice Folk".
+  it("is registered and offered by the setup screen since the UI bead", () => {
     const source = readFileSync("src/render/dom/app-view-v7.ts", "utf8");
     const factions = source.slice(
       source.indexOf("const FACTIONS: readonly FactionIdV7[] = ["),
       source.indexOf("];", source.indexOf("const FACTIONS:")),
     );
-    expect(factions).not.toContain("ICE_FOLK");
+    expect(factions).toContain('"ICE_FOLK"');
     expect(source).toContain('ICE_FOLK: "Ice Folk"');
   });
 });

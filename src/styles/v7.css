@@ -2719,3 +2719,62 @@
   border-style: dotted;
   border-color: #c7e7f5;
 }
+
+/*
+ * The Ice Folk revision (docs/art/factions/ICE_FOLK.md, bead
+ * pulp_wars-7g3.6): the snowflake badge is ice on navy with a pale ice rim;
+ * the Ice Folk chips, the aiming panel and the ability glyphs use the
+ * faction's ice glow (ICE_FOLK_PALETTE_V7), apart from every owner colour.
+ */
+.v7-ice-folk-badge {
+  border-color: #d6f0ff;
+  background: #1b2552;
+  color: #37b1fa;
+}
+
+.v7-faction-chip[data-faction="ice_folk"] {
+  border: 1px solid #7fcbff55;
+  background: #1b2552;
+  color: #d6f0ff;
+}
+
+.v7-ice-folk-chip {
+  border: 1px solid #7fcbff55;
+  background: #1c2a3e;
+  color: #d6f0ff;
+  white-space: nowrap;
+}
+
+.v7-ice-folk-chip[data-chill="frozen"] {
+  border-color: #7fcbff;
+  background: #145a9c;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.v7-ice-folk-chip[data-chill="thawing"] {
+  border-color: #9aaec766;
+  color: #bccbdd;
+}
+
+.v7-command-icon[data-icon="snowflake"],
+.v7-command-icon[data-icon="bolas"] {
+  color: #7fcbff;
+}
+
+.v7-ice-folk-pick {
+  border-color: #7fcbff66;
+}
+
+.v7-ice-folk-pick .v7-martian-choice-button {
+  border-color: #7fcbff;
+  background: #1c2a3e;
+  color: #d6f0ff;
+}
+
+.v7-context-action[data-disabled-reason="frozen"],
+.v7-context-action[data-disabled-reason="ice-folk-field-defense"],
+.v7-context-action[data-ice-folk-ability][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

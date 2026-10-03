@@ -601,11 +601,12 @@ by the UI bead; their colours and shapes are suggested in
 
 ## Ice Folk production art: batch `direction-ice-folk` (bead `pulp_wars-7g3.5`)
 
-A sixth faction's art, made before the faction is in the game and **not
-registered**: the entries are in
-[`chibi-direction-ice-folk-art-manifest.ts`](../../src/assets/chibi-direction-ice-folk-art-manifest.ts),
-which nothing imports until bead `pulp_wars-7g3.6` (the review scenes
-excepted). Fixed faction colours ("frost and fur": warm white and cream fur
+A sixth faction's art, made before the faction was in the game and
+**registered in the direction registry by the Ice Folk UI bead
+`pulp_wars-7g3.6`** (live in the default look; the Classic look and LEGACY
+draw the Human stand-in with a snow-capped peak badge): the entries are in
+[`chibi-direction-ice-folk-art-manifest.ts`](../../src/assets/chibi-direction-ice-folk-art-manifest.ts).
+Fixed faction colours ("frost and fur": warm white and cream fur
 shaded taupe, charcoal slate faces, dark brown-grey hide, ivory bone, one
 deep ice-blue accent), no owner mask. See [ICE_FOLK.md](factions/ICE_FOLK.md).
 
