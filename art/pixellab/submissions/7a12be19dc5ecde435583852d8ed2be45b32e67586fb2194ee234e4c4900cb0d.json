@@ -1,0 +1,36 @@
+{
+  "id": "grunt-r5-edit-b",
+  "jobId": "0a1289f7-72ce-47f2-95da-e590ccf0d528",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-grunt",
+    "subject": "UNIT:MARTIAN:FIGHTER",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 96103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make his body a little chunkier and cuter: short stubby arms and legs, dark gunmetal gloves, belt and boots; add one small glowing hot magenta light on his chest, make the antenna tip a glowing hot magenta ball and the pistol muzzle glow hot magenta. Keep him small and plain with no armour and nothing on his back, his lavender head, big black eyes, glass bubble helmet, silver jumpsuit, pistol held forward, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Make his body a little chunkier and cuter: short stubby arms and legs, dark gunmetal gloves, belt and boots; add one small glowing hot magenta light on his chest, make the antenna tip a glowing hot magenta ball and the pistol muzzle glow hot magenta. Keep him small and plain with no armour and nothing on his back, his lavender head, big black eyes, glass bubble helmet, silver jumpsuit, pistol held forward, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make his body a little chunkier and cuter: short stubby arms and legs, dark gunmetal gloves, belt and boots; add one small glowing hot magenta light on his chest, make the antenna tip a glowing hot magenta ball and the pistol muzzle glow hot magenta. Keep him small and plain with no armour and nothing on his back, his lavender head, big black eyes, glass bubble helmet, silver jumpsuit, pistol held forward, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Make his body a little chunkier and cuter: short stubby arms and legs, dark gunmetal gloves, belt and boots; add one small glowing hot magenta light on his chest, make the antenna tip a glowing hot magenta ball and the pistol muzzle glow hot magenta. Keep him small and plain with no armour and nothing on his back, his lavender head, big black eyes, glass bubble helmet, silver jumpsuit, pistol held forward, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "grunt-r5-edit-a",
+      "candidate": 0,
+      "sha256": "a9e72f0dee7d8f04001e2c2a5c5406e7f25b212e33de8ef08b36784ac0a7a09d"
+    }
+  }
+}

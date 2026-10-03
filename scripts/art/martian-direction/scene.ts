@@ -32,6 +32,11 @@
  * - MIXED_B: Martian players in Coral and Violet (so magenta is seen on the
  *   Coral and Violet plates) with their Thralls, against a Human in Teal and
  *   a Goblin in Gold.
+ * - ALIENS (bead pulp_wars-b5f.1): the redesigned Grunt, Ray Gunner and
+ *   Shield Projector of a Martian in Teal in mixed groups on Grass, Forest
+ *   and Mountain, beside the other Martian units, with the "before" trio
+ *   (a second Martian seat in Violet, whose rasters the review passes as
+ *   `before` data URLs) and the Human and Dinosaur unit of each role.
  */
 import type {
   CityId,
@@ -66,13 +71,16 @@ type Tile = PlayerViewV7["board"]["tiles"][number];
 type Seat = "A" | "B" | "C" | "D";
 type StandIn = Exclude<FactionIdV7, "ORIGINAL">;
 
-export type MartianSceneKindV7 = "FOUR" | "MIXED_A" | "MIXED_B";
+export type MartianSceneKindV7 = "FOUR" | "MIXED_A" | "MIXED_B" | "ALIENS";
 
 const SEATS: readonly Seat[] = ["A", "B", "C", "D"];
 
 interface Seating {
-  /** `MARTIAN` seats take the scene's stand-in faction. */
-  readonly faction: FactionIdV7 | "MARTIAN";
+  /**
+   * `MARTIAN` seats take the scene's stand-in faction; a `MARTIAN_BEFORE`
+   * seat takes the `before` stand-in, which draws the "before" trio.
+   */
+  readonly faction: FactionIdV7 | "MARTIAN" | "MARTIAN_BEFORE";
   readonly color: PlayerColorV7;
 }
 
@@ -82,6 +90,12 @@ interface SceneSpec {
   readonly martian: StandIn;
   /** The faction whose FIGHTER is the Thrall, or null for no Thralls. */
   readonly thrall: StandIn | null;
+  /**
+   * The faction whose FIGHTER, MARKSMAN and GUARD carry the "before"
+   * Grunt, Ray Gunner and Shield Projector (and its other roles the
+   * current Martian units), if any.
+   */
+  readonly before?: StandIn;
   readonly layout: readonly (readonly string[])[];
 }
 
@@ -342,6 +356,82 @@ const SCENES: Readonly<Record<MartianSceneKindV7, SceneSpec>> = {
       ],
     ],
   },
+  ALIENS: {
+    seats: [
+      { faction: "MARTIAN", color: "TEAL" },
+      { faction: "MARTIAN_BEFORE", color: "VIOLET" },
+      { faction: "ORIGINAL", color: "CORAL" },
+      { faction: "DINOSAUR", color: "GOLD" },
+    ],
+    martian: "GOBLIN",
+    thrall: null,
+    before: "UNDEAD",
+    layout: [
+      [
+        "g-",
+        "g-/G:A:100",
+        "g-/R:A:100",
+        "g-/P:A:100",
+        "g-/S:A:100",
+        "g-/B:A:100",
+        "g-",
+      ],
+      [
+        "g-",
+        "g-/G:B:100",
+        "g-/R:B:100",
+        "g-/P:B:100",
+        "g-/T:A:100",
+        "g-/M:A:100",
+        "g-",
+      ],
+      [
+        "f-",
+        "f-/P:A:100",
+        "f-/G:A:100:r",
+        "f-/R:A:100",
+        "f-/G:C:100",
+        "f-/R:C:100",
+        "f-/P:C:100",
+      ],
+      [
+        "g-",
+        "g-/R:A:100",
+        "g-/P:A:60",
+        "g-/G:A:100",
+        "g-/G:D:100",
+        "g-/R:D:100",
+        "g-/P:D:100",
+      ],
+      [
+        "gA",
+        "gA/G:A:100",
+        "gA/R:A:100:r",
+        "gA/city2*",
+        "gA/P:A:100",
+        "g-/S:A:100",
+        "g-/G:B:100",
+      ],
+      [
+        "m-",
+        "m-/G:A:100",
+        "m-/R:A:100",
+        "m-/P:A:100:r",
+        "m-/G:B:100",
+        "m-/R:B:100",
+        "m-/P:B:100",
+      ],
+      [
+        "g-",
+        "g-/T:A:100",
+        "g-/G:A:100",
+        "g-/C:A:100",
+        "g-/R:A:100",
+        "g-/P:A:100",
+        "g-/B:A:100:r",
+      ],
+    ],
+  },
 };
 const CAPITAL: CoordV7 = { x: 3, y: 4 };
 
@@ -394,11 +484,13 @@ function parse(cell: string): ParsedCell {
  */
 export function martianSceneArtV7(
   kind: MartianSceneKindV7,
+  before: Readonly<Partial<Record<UnitRoleIdV7, string>>> = {},
 ): readonly ChibiArtAssetV7[] {
   const spec = SCENES[kind];
   const standIns = [
     spec.martian,
     ...(spec.thrall === null ? [] : [spec.thrall]),
+    ...(spec.before === undefined ? [] : [spec.before]),
   ];
   const taken = (subject: string): boolean =>
     standIns.some(
@@ -436,7 +528,27 @@ export function martianSceneArtV7(
       ];
     return [];
   });
-  return [...live, ...martian];
+  // The "before" seat: its trio from the given rasters, its other roles
+  // the current Martian units, under the `before` stand-in's subjects.
+  const beforeFaction = spec.before;
+  const earlier =
+    beforeFaction === undefined
+      ? []
+      : CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7.flatMap((asset) => {
+          if (!asset.subject.startsWith("UNIT:MARTIAN:")) return [];
+          const role = asset.subject.slice("UNIT:MARTIAN:".length);
+          if (role === "THRALL") return [];
+          const url = before[role as UnitRoleIdV7];
+          return [
+            {
+              ...asset,
+              id: `${asset.id}-before-seat`,
+              subject: `UNIT:${beforeFaction}:${role}` as ArtSubjectV7,
+              ...(url === undefined ? {} : { url }),
+            },
+          ];
+        });
+  return [...live, ...martian, ...earlier];
 }
 
 export interface MartianSceneV7 {
@@ -480,7 +592,11 @@ export function martianSceneViewV7(
   };
   const firstFreeId = Math.max(...live.players.map((player) => player.id)) + 1;
   const faction = (seating: Seating): FactionIdV7 =>
-    seating.faction === "MARTIAN" ? spec.martian : seating.faction;
+    seating.faction === "MARTIAN"
+      ? spec.martian
+      : seating.faction === "MARTIAN_BEFORE"
+        ? (spec.before ?? spec.martian)
+        : seating.faction;
   const players = spec.seats.map((seating, index) => ({
     ...viewer,
     id: (index === 0 ? viewerId : firstFreeId + index) as PlayerId,
@@ -657,6 +773,8 @@ export function martianSceneViewV7(
 
 export interface MartianSceneOptionsV7 {
   readonly kind: MartianSceneKindV7;
+  /** ALIENS: the "before" Grunt, Ray Gunner and Shield Projector by role. */
+  readonly before?: Readonly<Partial<Record<UnitRoleIdV7, string>>>;
 }
 
 /** Mounts a full-screen CHIBI board host over the page showing the scene. */
@@ -689,7 +807,9 @@ export function showMartianSceneV7(
   });
   const scene = martianSceneViewV7(live, options.kind);
   const look = liveBoardLookV7("CHIBI");
-  const art = buildChibiArtRegistryV7(martianSceneArtV7(options.kind));
+  const art = buildChibiArtRegistryV7(
+    martianSceneArtV7(options.kind, options.before),
+  );
   if (art.problems.length > 0) throw new Error(art.problems.join("; "));
   host.update({
     matchInstanceId: `martian-direction-${options.kind}`,

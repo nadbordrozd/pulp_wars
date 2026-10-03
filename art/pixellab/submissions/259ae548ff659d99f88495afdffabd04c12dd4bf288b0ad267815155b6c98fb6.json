@@ -1,0 +1,36 @@
+{
+  "id": "portrait-ray-gunner-r5-edit-a",
+  "jobId": "20db96a9-afbb-467b-92f5-abfe566dc026",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-ray-gunner",
+    "subject": "PORTRAIT:MARTIAN:MARKSMAN",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96211,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Give him the heavy gunner's gear: replace the antenna on top of the helmet with one tall polished chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; add the top of a big boxy dark gunmetal power pack behind his shoulder with one thick coiled black cable. Keep the huge finned rifle with its glowing hot magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Give him the heavy gunner's gear: replace the antenna on top of the helmet with one tall polished chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; add the top of a big boxy dark gunmetal power pack behind his shoulder with one thick coiled black cable. Keep the huge finned rifle with its glowing hot magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Give him the heavy gunner's gear: replace the antenna on top of the helmet with one tall polished chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; add the top of a big boxy dark gunmetal power pack behind his shoulder with one thick coiled black cable. Keep the huge finned rifle with its glowing hot magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Give him the heavy gunner's gear: replace the antenna on top of the helmet with one tall polished chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; add the top of a big boxy dark gunmetal power pack behind his shoulder with one thick coiled black cable. Keep the huge finned rifle with its glowing hot magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-ray-gunner-b",
+      "candidate": 0,
+      "sha256": "13a4184cd5e51c016c08eb4bce06d80c69bdafb61f930cc58b44b6e75ae07b72"
+    }
+  }
+}

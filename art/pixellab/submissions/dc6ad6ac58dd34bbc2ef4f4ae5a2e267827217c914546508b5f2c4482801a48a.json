@@ -1,0 +1,36 @@
+{
+  "id": "portrait-shield-projector-r5-edit-c",
+  "jobId": "5f6aadeb-68f1-43b2-89e0-68b78906c2f5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-shield-projector",
+    "subject": "PORTRAIT:MARTIAN:GUARD",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96313,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-shield-projector-r5-edit-b",
+      "candidate": 0,
+      "sha256": "9de48943b60d8fae59e90494b6069fa5c14aaa134fadc833f7a4a7e1b7f2d0f7"
+    }
+  }
+}

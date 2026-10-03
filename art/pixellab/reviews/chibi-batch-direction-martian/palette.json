@@ -3,82 +3,82 @@
   "palette": [
     {
       "role": "Hot magenta accent",
-      "mean": "#a81972",
+      "mean": "#aa1671",
       "tones": [
+        "#ef0f93",
         "#b00873",
-        "#540738",
-        "#58063a",
-        "#860855"
+        "#fe53b9",
+        "#680342"
       ],
-      "share": 9.3,
-      "lit": "#f30a96",
-      "meanHue": 322
+      "share": 8,
+      "lit": "#ef0f93",
+      "meanHue": 323
     },
     {
       "role": "Outline and darkest tones",
-      "mean": "#010107",
+      "mean": "#010104",
       "tones": [
         "#000000",
-        "#00000a",
-        "#010016",
-        "#000013"
+        "#000006",
+        "#000009",
+        "#000007"
       ],
-      "share": 21.2
+      "share": 22.7
     },
     {
       "role": "Lavender-grey skin",
-      "mean": "#8e8cb2",
+      "mean": "#8885ab",
       "tones": [
-        "#b5b4d3",
-        "#b3b1cf",
-        "#b3b1d0",
-        "#6e749b"
+        "#767e97",
+        "#b3b0d0",
+        "#6c6699",
+        "#afabce"
       ],
-      "share": 11.4
+      "share": 9.8
     },
     {
       "role": "Glass",
-      "mean": "#8db9cd",
+      "mean": "#8eb8cc",
       "tones": [
         "#c7e7f5",
         "#88a6c1",
         "#9ed3e6",
         "#64a2bb"
       ],
-      "share": 17.7
+      "share": 16.7
     },
     {
       "role": "Chrome, lit",
-      "mean": "#d1dbe1",
+      "mean": "#d3dde2",
       "tones": [
+        "#c8d7d6",
         "#afc6d3",
         "#ffffff",
-        "#ecf6f8",
-        "#dbd9c8"
+        "#ecf6f8"
       ],
-      "share": 14
+      "share": 13.3
     },
     {
       "role": "Chrome, shaded blue-grey",
-      "mean": "#65718d",
+      "mean": "#6a758d",
       "tones": [
-        "#61759e",
-        "#687c99",
-        "#5e719a",
-        "#6a6b71"
+        "#515777",
+        "#8b95a3",
+        "#9ba7ad",
+        "#61759e"
       ],
-      "share": 7.1
+      "share": 11
     },
     {
       "role": "Gunmetal",
-      "mean": "#34354e",
+      "mean": "#34364d",
       "tones": [
         "#332a47",
         "#3a3e5e",
         "#1f2a3b",
         "#2c1926"
       ],
-      "share": 11
+      "share": 12.2
     }
   ],
   "codeDrawn": {

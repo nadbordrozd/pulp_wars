@@ -20,6 +20,13 @@
  *   scenes of scripts/art/martian-direction/scene.ts drawn by the real board
  *   host with the default look (the four-Martian scene is no longer
  *   captured since bead pulp_wars-w5j.3);
+ * - `aliens-before-after-{x4,1x}.png`, `aliens-before-after-zoom-0.75.png`,
+ *   `aliens-silhouettes-x4.png`, `aliens-portraits-x4.png` and
+ *   `aliens.json` (bead pulp_wars-b5f.1): the Grunt, the Ray Gunner and the
+ *   Shield Projector before and after their redesign, beside the other
+ *   Martian units, with their outline overlaps; the "before" sprites are
+ *   re-derived from the superseded recipes in the records, so they need no
+ *   checked-in copy. `scene-aliens-*` draws both trios on the real board;
  * - `index.json`.
  *
  * The faction is not in the engine yet, so nothing here launches a Martian
@@ -39,9 +46,10 @@ import {
   MARTIAN_PALETTE_V7,
 } from "../../src/assets/chibi-direction-martian-presentation";
 import { RULESET7_PLAYER_COLORS } from "../../src/render/canvas/owner-recolour-v7";
-import { ACCENT_PRESETS, isAccentColour } from "./chibi/accent";
+import { ACCENT_PRESETS, accentRaster, isAccentColour } from "./chibi/accent";
 import { rgbToHsv, type RgbaRaster } from "./chibi/owner-mask";
-import { readRaster } from "./chibi/pipeline";
+import { loadRecords, productionLayout, readRaster } from "./chibi/pipeline";
+import { candidateCell, cropRaster } from "./chibi/raster";
 
 const ROOT = process.cwd();
 const OUT = path.join(
@@ -1392,7 +1400,9 @@ const ZOOMS = ["1", "0.75"] as const;
 // The FOUR scene (four Martian players) is no longer captured: every player
 // plays a different faction since bead pulp_wars-w5j.1 (dropped in
 // pulp_wars-w5j.3; its earlier captures stay as history).
-const SCENES = ["MIXED_A", "MIXED_B"] as const;
+// ALIENS (bead pulp_wars-b5f.1): the redesigned Grunt, Ray Gunner and Shield
+// Projector beside their "before" sprites and the other Martian units.
+const SCENES = ["MIXED_A", "MIXED_B", "ALIENS"] as const;
 const SCENE = `globalThis.__MARTIAN_SCENE__`;
 
 async function captureAll(baseUrl: string): Promise<void> {
@@ -1475,7 +1485,7 @@ async function captureAll(baseUrl: string): Promise<void> {
       for (const scene of SCENES) {
         await evaluate(
           connection,
-          `(async () => { const module = await import('/scripts/art/martian-direction/scene.ts'); ${SCENE} = module.showMartianSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, ${JSON.stringify({ kind: scene })}); return true; })()`,
+          `(async () => { const module = await import('/scripts/art/martian-direction/scene.ts'); ${SCENE} = module.showMartianSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, ${JSON.stringify({ kind: scene, ...(scene === "ALIENS" ? { before: beforeUrls } : {}) })}); return true; })()`,
         );
         for (const step of ZOOMS) {
           for (let attempt = 0; attempt < 6; attempt += 1) {
@@ -1553,8 +1563,358 @@ function stopDevServer(server: ChildProcess): void {
   }
 }
 
+// ------------------------------------------------- the three aliens
+
+/**
+ * Bead pulp_wars-b5f.1: the Grunt, the Ray Gunner and the Shield Projector
+ * were one alien with three tools. The recipes they were accepted from
+ * before the redesign; each "before" sprite is that recipe's recorded
+ * candidate through the accent step, i.e. the old master byte for byte.
+ */
+const ALIENS = [
+  {
+    name: "grunt",
+    title: "Grunt",
+    role: "FIGHTER",
+    before: "grunt-a",
+    portraitBefore: "portrait-grunt-b-edit",
+  },
+  {
+    name: "ray-gunner",
+    title: "Ray Gunner",
+    role: "MARKSMAN",
+    before: "ray-gunner-b",
+    portraitBefore: "portrait-ray-gunner-b",
+  },
+  {
+    name: "shield-projector",
+    title: "Shield Projector",
+    role: "GUARD",
+    before: "shield-projector-a",
+    portraitBefore: "portrait-shield-projector-b",
+  },
+] as const;
+/** The other Martian units the trio is seen beside. */
+const ALIEN_NEIGHBOURS = [
+  "saucer",
+  "brain",
+  "tripod",
+  "mothership",
+  "colossus",
+  "thrall",
+] as const;
+
+async function recordedCandidate(recipeId: string): Promise<RgbaRaster> {
+  const batch = "direction-martian";
+  const records = await loadRecords(productionLayout(ROOT, batch), batch);
+  const recipe = records.recipes[recipeId];
+  if (recipe?.rawSheet === undefined || recipe.candidateSize === undefined)
+    throw new Error(`${recipeId}: no recorded raw sheet`);
+  const candidate = recipe.review?.candidate ?? 0;
+  const sheet = await readRaster(path.join(ROOT, recipe.rawSheet));
+  return accentRaster(
+    cropRaster(sheet, {
+      ...candidateCell(
+        candidate,
+        recipe.candidateCount ?? 1,
+        recipe.candidateSize,
+      ),
+      ...recipe.candidateSize,
+    }),
+    SPEC,
+  ).raster;
+}
+
+interface AlienPair {
+  readonly name: string;
+  readonly title: string;
+  readonly role: string;
+  readonly before: RgbaRaster;
+  readonly after: RgbaRaster;
+  readonly portraitBefore: RgbaRaster;
+  readonly portraitAfter: RgbaRaster;
+}
+
+async function alienPairs(): Promise<AlienPair[]> {
+  return Promise.all(
+    ALIENS.map(async (alien) => ({
+      name: alien.name,
+      title: alien.title,
+      role: alien.role,
+      before: await recordedCandidate(alien.before),
+      after: await readRaster(
+        unitFile(`chibi-direction-martian-${alien.name}`),
+      ),
+      portraitBefore: await recordedCandidate(alien.portraitBefore),
+      portraitAfter: await readRaster(
+        chibi("portraits", `chibi-direction-portrait-martian-${alien.name}`),
+      ),
+    })),
+  );
+}
+
+/** Rows "before" and "after": the trio, then the other Martian units. */
+async function aliensSheet(
+  pairs: readonly AlienPair[],
+  scale: number,
+  name: string,
+): Promise<void> {
+  const ground = (await grounds()).grass as Ground;
+  const neighbours = await Promise.all(
+    ALIEN_NEIGHBOURS.map(async (unit) => {
+      const id = `chibi-direction-martian-${unit}`;
+      return { id, raster: await readRaster(unitFile(id)) };
+    }),
+  );
+  const labelW = scale === 1 ? 64 : 110;
+  const columns = pairs.length + neighbours.length;
+  const sheet = blank(
+    labelW + columns * (CELL_W * scale + GAP) + GAP,
+    LABEL_H + 2 * (CELL_H * scale + GAP) + GAP,
+    PAPER,
+  );
+  const labels: Label[] = [
+    ...pairs.map((pair) => pair.title),
+    ...ALIEN_NEIGHBOURS.map(
+      (unit) => (UNITS.find((row) => row[1] === unit)?.[2] ?? unit) as string,
+    ),
+  ].map((text, column) => ({
+    text: scale === 1 ? (text.split(" ")[0] ?? text) : text,
+    left: labelW + column * (CELL_W * scale + GAP),
+    top: 4,
+    size: scale === 1 ? 9 : 14,
+  }));
+  for (const [row, title] of ["before", "after"].entries()) {
+    const top = LABEL_H + row * (CELL_H * scale + GAP);
+    labels.push({
+      text: title,
+      left: 6,
+      top: top + 6,
+      size: scale === 1 ? 10 : 14,
+    });
+    const trio = pairs.map((pair) => (row === 0 ? pair.before : pair.after));
+    const cells = [
+      ...trio.map((sprite) => boardCell(ground, sprite, scale)),
+      ...neighbours.map((unit) =>
+        boardCell(ground, unit.raster, scale, flyerShadow(unit.id)),
+      ),
+    ];
+    for (const [column, cell] of cells.entries())
+      blit(sheet, cell, labelW + column * (CELL_W * scale + GAP), top);
+  }
+  await writeSheet(name, sheet, labels);
+}
+
+/** The opaque outline only (alpha >= 128), the way a silhouette reads. */
+function silhouette(raster: RgbaRaster, rgb: Rgb): RgbaRaster {
+  const data = new Uint8Array(raster.data.length);
+  for (let index = 0; index < raster.width * raster.height; index += 1)
+    if ((raster.data[index * 4 + 3] ?? 0) >= 128)
+      data.set([rgb[0], rgb[1], rgb[2], 255], index * 4);
+  return { width: raster.width, height: raster.height, data };
+}
+
+/** The trio's silhouettes before and after, and each pair overlaid. */
+async function aliensSilhouettesSheet(
+  pairs: readonly AlienPair[],
+): Promise<void> {
+  const scale = 4;
+  const cellW = 60 * scale;
+  const cellH = 84 * scale;
+  const labelW = 110;
+  const sheet = blank(
+    labelW + 4 * (cellW + GAP) + GAP,
+    LABEL_H + 2 * (cellH + GAP) + GAP,
+    PAPER,
+  );
+  const labels: Label[] = [
+    ...pairs.map((pair) => pair.title),
+    "all three overlaid",
+  ].map((text, column) => ({
+    text,
+    left: labelW + column * (cellW + GAP),
+    top: 4,
+  }));
+  const tints: readonly Rgb[] = [
+    [240, 200, 80],
+    [90, 200, 240],
+    [240, 110, 200],
+  ];
+  for (const [row, title] of ["before", "after"].entries()) {
+    const top = LABEL_H + row * (cellH + GAP);
+    labels.push({ text: title, left: 6, top: top + 6 });
+    for (let column = 0; column < 4; column += 1)
+      fill(sheet, labelW + column * (cellW + GAP), top, cellW, cellH, LIGHT);
+    for (const [column, pair] of pairs.entries()) {
+      const sprite = row === 0 ? pair.before : pair.after;
+      const left = labelW + column * (cellW + GAP) + 2 * scale;
+      blit(
+        sheet,
+        silhouette(sprite, [22, 24, 30]),
+        left,
+        top + 2 * scale,
+        scale,
+      );
+      blit(
+        sheet,
+        silhouette(sprite, tints[column] ?? LIGHT),
+        labelW + 3 * (cellW + GAP) + 2 * scale,
+        top + 2 * scale,
+        scale,
+        0.45,
+      );
+    }
+  }
+  await writeSheet("aliens-silhouettes-x4.png", sheet, labels);
+}
+
+async function aliensPortraitsSheet(
+  pairs: readonly AlienPair[],
+): Promise<void> {
+  const scale = 4;
+  const cell = 52 * scale;
+  const labelW = 110;
+  const sheet = blank(
+    labelW + pairs.length * (cell + GAP) + GAP,
+    LABEL_H + 2 * (cell + GAP) + GAP,
+    PAPER,
+  );
+  const labels: Label[] = pairs.map((pair, column) => ({
+    text: pair.title,
+    left: labelW + column * (cell + GAP),
+    top: 4,
+  }));
+  for (const [row, title] of ["before", "after"].entries()) {
+    const top = LABEL_H + row * (cell + GAP);
+    labels.push({ text: title, left: 6, top: top + 6 });
+    for (const [column, pair] of pairs.entries()) {
+      const left = labelW + column * (cell + GAP);
+      fill(sheet, left, top, cell, cell, [36, 40, 48]);
+      blit(
+        sheet,
+        row === 0 ? pair.portraitBefore : pair.portraitAfter,
+        left + 2 * scale,
+        top + 2 * scale,
+        scale,
+      );
+    }
+  }
+  await writeSheet("aliens-portraits-x4.png", sheet, labels);
+}
+
+const opaqueCount = (raster: RgbaRaster): number => {
+  let count = 0;
+  for (let index = 0; index < raster.width * raster.height; index += 1)
+    if ((raster.data[index * 4 + 3] ?? 0) >= 128) count += 1;
+  return count;
+};
+
+/**
+ * Intersection over union of two outlines on the same canvas and anchor
+ * (1 is the same silhouette, 0 none in common).
+ */
+function outlineOverlap(left: RgbaRaster, right: RgbaRaster): number {
+  let both = 0;
+  let either = 0;
+  for (let index = 0; index < left.width * left.height; index += 1) {
+    const a = (left.data[index * 4 + 3] ?? 0) >= 128;
+    const b = (right.data[index * 4 + 3] ?? 0) >= 128;
+    if (a && b) both += 1;
+    if (a || b) either += 1;
+  }
+  return either === 0 ? 0 : Math.round((both / either) * 1000) / 1000;
+}
+
+function alienStats(raster: RgbaRaster): Record<string, unknown> {
+  const box = bounds(raster);
+  return {
+    bounds: { width: box.width, height: box.height },
+    opaquePixels: opaqueCount(raster),
+    accentPixels: accentRaster(raster, SPEC).accentPixels,
+  };
+}
+
+async function aliensJson(pairs: readonly AlienPair[]): Promise<void> {
+  const overlaps = (pick: (pair: AlienPair) => RgbaRaster) =>
+    Object.fromEntries(
+      pairs.flatMap((first, index) =>
+        pairs
+          .slice(index + 1)
+          .map((second) => [
+            `${first.name}/${second.name}`,
+            outlineOverlap(pick(first), pick(second)),
+          ]),
+      ),
+    );
+  const report = {
+    bead: "pulp_wars-b5f.1",
+    note: "Outline overlap is the intersection over union of the opaque pixels (alpha >= 128) of two sprites on their shared 56 x 80 canvas and anchor: lower means more different silhouettes.",
+    units: Object.fromEntries(
+      pairs.map((pair) => [
+        pair.name,
+        {
+          role: pair.role,
+          beforeRecipe: ALIENS.find((alien) => alien.name === pair.name)
+            ?.before,
+          before: alienStats(pair.before),
+          after: alienStats(pair.after),
+          beforeToAfterOverlap: outlineOverlap(pair.before, pair.after),
+        },
+      ]),
+    ),
+    outlineOverlap: {
+      before: overlaps((pair) => pair.before),
+      after: overlaps((pair) => pair.after),
+    },
+  };
+  await writeFile(
+    path.join(OUT, "aliens.json"),
+    `${JSON.stringify(report, null, 2)}\n`,
+  );
+  written.push("aliens.json");
+  console.log("wrote aliens.json");
+}
+
+async function encodeDataUrl(raster: RgbaRaster): Promise<string> {
+  const png = await sharp(Buffer.from(raster.data), {
+    raw: { width: raster.width, height: raster.height, channels: 4 },
+  })
+    .png()
+    .toBuffer();
+  return `data:image/png;base64,${png.toString("base64")}`;
+}
+
+/** The "before" trio for the ALIENS scene, by role, as data URLs. */
+let beforeUrls: Record<string, string> = {};
+
+async function aliensEvidence(): Promise<void> {
+  const pairs = await alienPairs();
+  await aliensSheet(pairs, 4, "aliens-before-after-x4.png");
+  await aliensSheet(pairs, 1, "aliens-before-after-1x.png");
+  const native = sharp(path.join(OUT, "aliens-before-after-1x.png"));
+  const { width = 0, height = 0 } = await native.metadata();
+  await native
+    .resize(Math.round(width * 0.75), Math.round(height * 0.75), {
+      kernel: "lanczos3",
+    })
+    .png({ compressionLevel: 9 })
+    .toFile(path.join(OUT, "aliens-before-after-zoom-0.75.png"));
+  written.push("aliens-before-after-zoom-0.75.png");
+  await aliensSilhouettesSheet(pairs);
+  await aliensPortraitsSheet(pairs);
+  await aliensJson(pairs);
+  beforeUrls = Object.fromEntries(
+    await Promise.all(
+      pairs.map(
+        async (pair) => [pair.role, await encodeDataUrl(pair.before)] as const,
+      ),
+    ),
+  );
+}
+
 async function main(): Promise<void> {
   await mkdir(OUT, { recursive: true });
+  await aliensEvidence();
   await rosterSheet(4, "roster-x4.png");
   await rosterSheet(1, "roster-1x.png");
   // The 1:1 sheet at zoom step 0.75, resampled as the board does.

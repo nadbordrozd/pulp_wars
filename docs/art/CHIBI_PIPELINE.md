@@ -911,6 +911,25 @@ unless `--port` says otherwise, need `CHROME_PATH`, and are written after
 the browser closes (a file written under the project while the page is
 open makes the dev server reload it).
 
+**The three aliens (bead `pulp_wars-b5f.1`).** The Grunt, the Ray Gunner and
+the Shield Projector were redesigned in place (same asset ids, canvases and
+anchors; new recipes `*-r5-*` in the same batch, whose `accept` supersedes
+the earlier one; see [the faction fragment](factions/MARTIAN.md#the-three-aliens-bead-pulp_wars-b5f1)).
+The review now also writes `aliens-before-after-{x4,1x}.png`,
+`aliens-before-after-zoom-0.75.png`, `aliens-silhouettes-x4.png`,
+`aliens-portraits-x4.png`, `aliens.json` (outline overlap of each pair,
+before and after) and `scene-aliens-{desktop,phone}-zoom-{1,0.75}.png` (the
+`ALIENS` scene: the new trio and the other Martian units in the live look,
+with the "before" trio under a second stand-in seat). The "before" sprites
+are re-derived from the superseded recipes' recorded candidates through the
+accent step, so no copy of the old masters is kept. What worked: sibling
+sprites drift apart only through edits that change the **outline** (a crest
+in place of the antenna, a pack, a shield disc wider than the body, a
+smaller slimmer body); fresh creations from new subject lines drew other
+aliens once more. "Make him smaller, slimmer …" shrank a 54 px figure to
+48 px but gave it long thin limbs, which a second edit ("short stubby arms
+and legs") fixed.
+
 ## The Ice Folk batch (bead `pulp_wars-7g3.5`)
 
 Batch `direction-ice-folk` holds the direction study and the production art

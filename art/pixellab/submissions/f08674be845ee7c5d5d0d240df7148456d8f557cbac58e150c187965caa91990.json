@@ -1,0 +1,36 @@
+{
+  "id": "portrait-shield-projector-r5-edit-b",
+  "jobId": "c4b6945b-4fb9-4909-b6bb-4506dd3578d3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-shield-projector",
+    "subject": "PORTRAIT:MARTIAN:GUARD",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96312,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the round chrome shield disc twice as big: it covers the whole bottom half of the image from edge to edge in front of his chest and shoulders, with the glowing hot magenta lens at its centre, a thin hot magenta rim and one thin curved hot magenta arc above it. Keep his lavender head, big black eyes looking over the top of the shield, glass bubble helmet, antenna, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Make the round chrome shield disc twice as big: it covers the whole bottom half of the image from edge to edge in front of his chest and shoulders, with the glowing hot magenta lens at its centre, a thin hot magenta rim and one thin curved hot magenta arc above it. Keep his lavender head, big black eyes looking over the top of the shield, glass bubble helmet, antenna, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the round chrome shield disc twice as big: it covers the whole bottom half of the image from edge to edge in front of his chest and shoulders, with the glowing hot magenta lens at its centre, a thin hot magenta rim and one thin curved hot magenta arc above it. Keep his lavender head, big black eyes looking over the top of the shield, glass bubble helmet, antenna, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Make the round chrome shield disc twice as big: it covers the whole bottom half of the image from edge to edge in front of his chest and shoulders, with the glowing hot magenta lens at its centre, a thin hot magenta rim and one thin curved hot magenta arc above it. Keep his lavender head, big black eyes looking over the top of the shield, glass bubble helmet, antenna, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-shield-projector-r5-edit-a",
+      "candidate": 0,
+      "sha256": "90cbe69ce9a74fc82a8f5ba1f8cd3f15dc3d20b040b791dad52850c7856be8f8"
+    }
+  }
+}

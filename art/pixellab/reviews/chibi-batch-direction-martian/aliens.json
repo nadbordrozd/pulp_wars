@@ -1,0 +1,81 @@
+{
+  "bead": "pulp_wars-b5f.1",
+  "note": "Outline overlap is the intersection over union of the opaque pixels (alpha >= 128) of two sprites on their shared 56 x 80 canvas and anchor: lower means more different silhouettes.",
+  "units": {
+    "grunt": {
+      "role": "FIGHTER",
+      "beforeRecipe": "grunt-a",
+      "before": {
+        "bounds": {
+          "width": 54,
+          "height": 73
+        },
+        "opaquePixels": 2436,
+        "accentPixels": 330
+      },
+      "after": {
+        "bounds": {
+          "width": 48,
+          "height": 75
+        },
+        "opaquePixels": 1949,
+        "accentPixels": 57
+      },
+      "beforeToAfterOverlap": 0.747
+    },
+    "ray-gunner": {
+      "role": "MARKSMAN",
+      "beforeRecipe": "ray-gunner-b",
+      "before": {
+        "bounds": {
+          "width": 56,
+          "height": 73
+        },
+        "opaquePixels": 2411,
+        "accentPixels": 271
+      },
+      "after": {
+        "bounds": {
+          "width": 56,
+          "height": 73
+        },
+        "opaquePixels": 2288,
+        "accentPixels": 198
+      },
+      "beforeToAfterOverlap": 0.735
+    },
+    "shield-projector": {
+      "role": "GUARD",
+      "beforeRecipe": "shield-projector-a",
+      "before": {
+        "bounds": {
+          "width": 52,
+          "height": 72
+        },
+        "opaquePixels": 2389,
+        "accentPixels": 297
+      },
+      "after": {
+        "bounds": {
+          "width": 54,
+          "height": 73
+        },
+        "opaquePixels": 2849,
+        "accentPixels": 371
+      },
+      "beforeToAfterOverlap": 0.835
+    }
+  },
+  "outlineOverlap": {
+    "before": {
+      "grunt/ray-gunner": 0.815,
+      "grunt/shield-projector": 0.738,
+      "ray-gunner/shield-projector": 0.658
+    },
+    "after": {
+      "grunt/ray-gunner": 0.622,
+      "grunt/shield-projector": 0.646,
+      "ray-gunner/shield-projector": 0.686
+    }
+  }
+}

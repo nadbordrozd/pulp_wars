@@ -1,0 +1,36 @@
+{
+  "id": "shield-projector-r5-edit-b",
+  "jobId": "6351c12f-e131-47cb-8d52-c10c60d1e33b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-shield-projector",
+    "subject": "UNIT:MARTIAN:GUARD",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 96303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add a backpack frame: a tall dark gunmetal frame on his back that holds one big round silver radar dish above and behind his helmet, facing forward, with a glowing hot magenta emitter at its centre, so the dish rises above his head; replace the antenna with nothing. Keep the dish emitter and the magenta arc he holds in front, his lavender head, big black eyes, glass bubble helmet, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Add a backpack frame: a tall dark gunmetal frame on his back that holds one big round silver radar dish above and behind his helmet, facing forward, with a glowing hot magenta emitter at its centre, so the dish rises above his head; replace the antenna with nothing. Keep the dish emitter and the magenta arc he holds in front, his lavender head, big black eyes, glass bubble helmet, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add a backpack frame: a tall dark gunmetal frame on his back that holds one big round silver radar dish above and behind his helmet, facing forward, with a glowing hot magenta emitter at its centre, so the dish rises above his head; replace the antenna with nothing. Keep the dish emitter and the magenta arc he holds in front, his lavender head, big black eyes, glass bubble helmet, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Add a backpack frame: a tall dark gunmetal frame on his back that holds one big round silver radar dish above and behind his helmet, facing forward, with a glowing hot magenta emitter at its centre, so the dish rises above his head; replace the antenna with nothing. Keep the dish emitter and the magenta arc he holds in front, his lavender head, big black eyes, glass bubble helmet, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "shield-projector-a",
+      "candidate": 0,
+      "sha256": "1e0624c0b7508afe3b69ec1f2282aabb94fc0193a271e8be310330bdd238fcbc"
+    }
+  }
+}

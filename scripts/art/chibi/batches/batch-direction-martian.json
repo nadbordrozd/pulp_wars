@@ -1256,6 +1256,234 @@
       },
       "editInstruction": "Add three small glowing hot magenta lights, colour #ff2fb0: the ball on the tip of the antenna becomes a bigger hot magenta ball, the muzzle of the pistol glows hot magenta, and one round hot magenta light sits on the chest of the suit. Do not redraw anything else: keep the head, the big black eyes, the glass bubble helmet, the silver suit, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "The bust has only ten magenta pixels: the accent must be on every piece."
+    },
+    {
+      "id": "grunt-r5-a",
+      "asset": "chibi-direction-martian-grunt",
+      "endpoint": "create-image-pixen",
+      "seed": 96101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "sword, shield, bow, cape, cloak, hair, human face, green skin, antennae on the skin, tentacles, backpack, shoulder pads, armour plates, rifle, headphones",
+      "notes": "Bead pulp_wars-b5f.1 (the three aliens look the same): a fresh creation from the new plain Grunt subject line."
+    },
+    {
+      "id": "grunt-r5-edit-a",
+      "asset": "chibi-direction-martian-grunt",
+      "endpoint": "edit-image-pixen",
+      "seed": 96102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "grunt-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make him a smaller, slimmer, plainer foot soldier: shrink the whole figure to about four fifths of its height, feet on the same bottom line; remove the pack on his back and the magenta ear pieces; a plain slim silver jumpsuit, no armour; he holds the small ray pistol low and forward, the other arm at his side. Keep his lavender head, big black eyes, glass bubble helmet and antenna, magenta muzzle and chest light, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-b5f.1: the accepted Grunt made smaller and plainer, so the Ray Gunner and the Shield Projector can grow around it."
+    },
+    {
+      "id": "ray-gunner-r5-a",
+      "asset": "chibi-direction-martian-ray-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 96201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "sword, shield, bow, cape, cloak, hair, human face, green skin, antennae on the skin, tentacles, pistol, red, orange",
+      "notes": "Bead pulp_wars-b5f.1: a fresh creation from the new heavy-gunner subject line (crest, visor, power pack, long rifle at the hip)."
+    },
+    {
+      "id": "ray-gunner-r5-edit-a",
+      "asset": "chibi-direction-martian-ray-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 96202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "ray-gunner-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make him a heavy gunner with a new outline: replace the helmet antenna with one tall chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; make his back pack much bigger and boxier, with one thick coiled black cable looping to the rifle; widen his stance. Keep the huge finned rifle with its magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-b5f.1: the accepted Ray Gunner with a crest, a visor, a bigger pack and a cable, so the head and back read differently from the Grunt."
+    },
+    {
+      "id": "shield-projector-r5-a",
+      "asset": "chibi-direction-martian-shield-projector",
+      "endpoint": "create-image-pixen",
+      "seed": 96301,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "sword, bow, cape, cloak, hair, human face, green skin, antennae on the skin, tentacles, pistol, rifle, gun, red, orange, wooden shield, cross",
+      "notes": "Bead pulp_wars-b5f.1: a fresh creation from the new defender subject line (heavy armour, a big round shield disc in front)."
+    },
+    {
+      "id": "shield-projector-r5-edit-a",
+      "asset": "chibi-direction-martian-shield-projector",
+      "endpoint": "edit-image-pixen",
+      "seed": 96302,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "shield-projector-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the dish emitter he holds much bigger: one big round polished chrome energy shield disc held in front of him that covers his body from the chest down to the knees and is wider than his body, with a glowing hot magenta lens at its centre and a thin hot magenta rim; one faint thin curved magenta arc in front of it. Keep his lavender head, big black eyes, glass bubble helmet, antenna, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-b5f.1: the accepted Shield Projector with the dish grown into a big round shield in front of the body."
+    },
+    {
+      "id": "shield-projector-r5-edit-b",
+      "asset": "chibi-direction-martian-shield-projector",
+      "endpoint": "edit-image-pixen",
+      "seed": 96303,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "shield-projector-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add a backpack frame: a tall dark gunmetal frame on his back that holds one big round silver radar dish above and behind his helmet, facing forward, with a glowing hot magenta emitter at its centre, so the dish rises above his head; replace the antenna with nothing. Keep the dish emitter and the magenta arc he holds in front, his lavender head, big black eyes, glass bubble helmet, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-b5f.1: the accepted Shield Projector with a dish on a backpack frame rising above the head (a taller outline)."
+    },
+    {
+      "id": "grunt-r5-edit-b",
+      "asset": "chibi-direction-martian-grunt",
+      "endpoint": "edit-image-pixen",
+      "seed": 96103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "grunt-r5-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make his body a little chunkier and cuter: short stubby arms and legs, dark gunmetal gloves, belt and boots; add one small glowing hot magenta light on his chest, make the antenna tip a glowing hot magenta ball and the pistol muzzle glow hot magenta. Keep him small and plain with no armour and nothing on his back, his lavender head, big black eyes, glass bubble helmet, silver jumpsuit, pistol held forward, thick black outline and art style, on a transparent background.",
+      "notes": "grunt-r5-edit-a is the right plain, slim, small trooper, but its limbs are long and thin (not chibi) and it has only 20 magenta pixels."
+    },
+    {
+      "id": "grunt-r5-edit-c",
+      "asset": "chibi-direction-martian-grunt",
+      "endpoint": "edit-image-pixen",
+      "seed": 96104,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "grunt-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make him plainer and lighter: remove the pack on his back and the magenta ear pieces on the helmet; a plain slim silver jumpsuit with no armour pieces; he holds the small ray pistol forward at arm's length, the other arm at his side. Keep his size, lavender head, big black eyes, glass bubble helmet with its antenna, hot magenta muzzle and chest light, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Alternative to grunt-r5-edit-b: the accepted Grunt at its own size, only plainer."
+    },
+    {
+      "id": "shield-projector-r5-edit-a-2",
+      "asset": "chibi-direction-martian-shield-projector",
+      "endpoint": "edit-image-pixen",
+      "seed": 96304,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "shield-projector-r5-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the single stray dark pixel in the bottom-left corner of the image, far below and to the left of his feet, so nothing is drawn below the feet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "shield-projector-r5-edit-a is the design (a big round shield disc in front of a heavy trooper) but has one stray opaque pixel at (1, 79), four rows below the feet."
+    },
+    {
+      "id": "portrait-ray-gunner-r5-edit-a",
+      "asset": "chibi-direction-portrait-martian-ray-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 96211,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-ray-gunner-b",
+        "candidate": 0
+      },
+      "editInstruction": "Give him the heavy gunner's gear: replace the antenna on top of the helmet with one tall polished chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; add the top of a big boxy dark gunmetal power pack behind his shoulder with one thick coiled black cable. Keep the huge finned rifle with its glowing hot magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-b5f.1: the bust follows the new Ray Gunner (crest, visor, pack and cable)."
+    },
+    {
+      "id": "portrait-shield-projector-r5-edit-a",
+      "asset": "chibi-direction-portrait-martian-shield-projector",
+      "endpoint": "edit-image-pixen",
+      "seed": 96311,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-shield-projector-b",
+        "candidate": 0
+      },
+      "editInstruction": "Make the dish he holds much bigger: the top half of one big round polished chrome energy shield disc fills the bottom of the image in front of his chest, wider than his shoulders, with a glowing hot magenta lens at its centre and a thin hot magenta rim. Keep his lavender head, big black eyes above the shield, glass bubble helmet, antenna, big round shoulder plates, thick black outline and art style, on a transparent background.",
+      "notes": "Bead pulp_wars-b5f.1: the bust follows the new Shield Projector (a big round shield disc in front)."
+    },
+    {
+      "id": "portrait-shield-projector-r5-edit-b",
+      "asset": "chibi-direction-portrait-martian-shield-projector",
+      "endpoint": "edit-image-pixen",
+      "seed": 96312,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-shield-projector-r5-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the round chrome shield disc twice as big: it covers the whole bottom half of the image from edge to edge in front of his chest and shoulders, with the glowing hot magenta lens at its centre, a thin hot magenta rim and one thin curved hot magenta arc above it. Keep his lavender head, big black eyes looking over the top of the shield, glass bubble helmet, antenna, thick black outline and art style, on a transparent background.",
+      "notes": "portrait-shield-projector-r5-edit-a kept the disc small (16 px) between huge shoulder plates and dropped the arc; the map sprite's shield is wider than the body."
+    },
+    {
+      "id": "shield-projector-r5-edit-a-3",
+      "asset": "chibi-direction-martian-shield-projector",
+      "endpoint": "edit-image-pixen",
+      "seed": 96305,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "shield-projector-r5-edit-a-2",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: a short dark gunmetal mast on his back that holds one small round silver dish emitter with a glowing hot magenta centre just above and behind the top left of his helmet, in place of the antenna. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, size, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The accepted shield-projector-r5-edit-a-2 shares the round helmet top with the Grunt; a test of a small dish above the helmet to change the head outline too (the idea of shield-projector-r5-edit-b)."
+    },
+    {
+      "id": "portrait-shield-projector-r5-edit-c",
+      "asset": "chibi-direction-portrait-martian-shield-projector",
+      "endpoint": "edit-image-pixen",
+      "seed": 96313,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-shield-projector-r5-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The map sprite (shield-projector-r5-edit-a-3) gained a small dish on a mast beside the helmet; the bust follows."
     }
   ]
 }

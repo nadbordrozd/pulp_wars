@@ -1,0 +1,36 @@
+{
+  "id": "shield-projector-r5-edit-a",
+  "jobId": "739e72a8-7589-49fe-9d1f-0b4bdaa829bc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-shield-projector",
+    "subject": "UNIT:MARTIAN:GUARD",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 96302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the dish emitter he holds much bigger: one big round polished chrome energy shield disc held in front of him that covers his body from the chest down to the knees and is wider than his body, with a glowing hot magenta lens at its centre and a thin hot magenta rim; one faint thin curved magenta arc in front of it. Keep his lavender head, big black eyes, glass bubble helmet, antenna, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Make the dish emitter he holds much bigger: one big round polished chrome energy shield disc held in front of him that covers his body from the chest down to the knees and is wider than his body, with a glowing hot magenta lens at its centre and a thin hot magenta rim; one faint thin curved magenta arc in front of it. Keep his lavender head, big black eyes, glass bubble helmet, antenna, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the dish emitter he holds much bigger: one big round polished chrome energy shield disc held in front of him that covers his body from the chest down to the knees and is wider than his body, with a glowing hot magenta lens at its centre and a thin hot magenta rim; one faint thin curved magenta arc in front of it. Keep his lavender head, big black eyes, glass bubble helmet, antenna, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Make the dish emitter he holds much bigger: one big round polished chrome energy shield disc held in front of him that covers his body from the chest down to the knees and is wider than his body, with a glowing hot magenta lens at its centre and a thin hot magenta rim; one faint thin curved magenta arc in front of it. Keep his lavender head, big black eyes, glass bubble helmet, antenna, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "shield-projector-a",
+      "candidate": 0,
+      "sha256": "1e0624c0b7508afe3b69ec1f2282aabb94fc0193a271e8be310330bdd238fcbc"
+    }
+  }
+}

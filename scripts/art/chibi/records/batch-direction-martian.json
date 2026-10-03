@@ -1054,9 +1054,9 @@
       ],
       "completedAt": "2026-10-02T20:01:25.874Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The style anchor of the faction: big-headed lavender-grey alien in a bubble helmet and silver suit, ray pistol, magenta lights; chibi proportions match the Human Fighter.",
+        "notes": "The style anchor of the faction: big-headed lavender-grey alien in a bubble helmet and silver suit, ray pistol, magenta lights; chibi proportions match the Human Fighter. Superseded by grunt-r5-edit-b.",
         "reviewedAt": "2026-10-02T20:08:24.627Z"
       }
     },
@@ -1125,6 +1125,292 @@
         "candidate": null,
         "notes": "A clean alien in the Human Fighter's proportions, but paler and with almost no magenta: the pistol is a small dark shape. The fresh creation grunt-a has the bigger head and the lights, and reads better at native size.",
         "reviewedAt": "2026-10-02T20:21:29.143Z"
+      }
+    },
+    "grunt-r5-a": {
+      "id": "grunt-r5-a",
+      "asset": "chibi-direction-martian-grunt",
+      "jobId": "sync-3b590b87-c7c1-4f5c-a22e-f477744f76fb",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-grunt",
+        "subject": "UNIT:MARTIAN:FIGHTER",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96101,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/MARTIAN.md#prompt-fragment + docs/art/factions/MARTIAN.md#negative-fragment",
+            "text": "Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips.",
+            "negative": "green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: Grunt, a small plain cute little alien foot trooper with a huge round head about half of the figure's height and a small slim body: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, no nose and a tiny mouth, inside a plain clear round glass dome helmet with one white highlight and one short antenna with a glowing hot magenta tip; a plain light silver-white jumpsuit shaded soft blue-grey with a dark gunmetal belt and boots and one small hot magenta chest light; no armour, no shoulder pads, nothing on the back; one small stubby silver ray pistol with a glowing hot magenta muzzle held forward in one hand, the other arm relaxed at the side; simple shapes and very few details; clearly the smallest, plainest basic soldier."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "sword, shield, bow, cape, cloak, hair, human face, green skin, antennae on the skin, tentacles, backpack, shoulder pads, armour plates, rifle, headphones"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Grunt, a small plain cute little alien foot trooper with a huge round head about half of the figure's height and a small slim body: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, no nose and a tiny mouth, inside a plain clear round glass dome helmet with one white highlight and one short antenna with a glowing hot magenta tip; a plain light silver-white jumpsuit shaded soft blue-grey with a dark gunmetal belt and boots and one small hot magenta chest light; no armour, no shoulder pads, nothing on the back; one small stubby silver ray pistol with a glowing hot magenta muzzle held forward in one hand, the other arm relaxed at the side; simple shapes and very few details; clearly the smallest, plainest basic soldier.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, cape, cloak, hair, human face, antennae on the skin, backpack, shoulder pads, armour plates, rifle, headphones",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Grunt, a small plain cute little alien foot trooper with a huge round head about half of the figure's height and a small slim body: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, no nose and a tiny mouth, inside a plain clear round glass dome helmet with one white highlight and one short antenna with a glowing hot magenta tip; a plain light silver-white jumpsuit shaded soft blue-grey with a dark gunmetal belt and boots and one small hot magenta chest light; no armour, no shoulder pads, nothing on the back; one small stubby silver ray pistol with a glowing hot magenta muzzle held forward in one hand, the other arm relaxed at the side; simple shapes and very few details; clearly the smallest, plainest basic soldier. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, cape, cloak, hair, human face, antennae on the skin, backpack, shoulder pads, armour plates, rifle, headphones."
+      },
+      "submittedAt": "2026-10-03T14:28:33.662Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/grunt-r5-a.png",
+      "rawSheetSha256": "bb3e6974d234314cbc9a0ce5f15394a6c6184c399e473364f45de26774693394",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5714,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:29:04.891Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Another alien: a plain grey head instead of the lavender-grey one, a smaller face and helmet than the rest of the faction; it would be the odd one out beside the Saucer pilot and the Brain. The plain-trooper look is made by editing the accepted Grunt instead.",
+        "reviewedAt": "2026-10-03T14:31:55.965Z"
+      }
+    },
+    "grunt-r5-edit-a": {
+      "id": "grunt-r5-edit-a",
+      "asset": "chibi-direction-martian-grunt",
+      "jobId": "82473b48-3a72-4fa1-b7f6-364679b5d569",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-grunt",
+        "subject": "UNIT:MARTIAN:FIGHTER",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96102,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make him a smaller, slimmer, plainer foot soldier: shrink the whole figure to about four fifths of its height, feet on the same bottom line; remove the pack on his back and the magenta ear pieces; a plain slim silver jumpsuit, no armour; he holds the small ray pistol low and forward, the other arm at his side. Keep his lavender head, big black eyes, glass bubble helmet and antenna, magenta muzzle and chest light, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Make him a smaller, slimmer, plainer foot soldier: shrink the whole figure to about four fifths of its height, feet on the same bottom line; remove the pack on his back and the magenta ear pieces; a plain slim silver jumpsuit, no armour; he holds the small ray pistol low and forward, the other arm at his side. Keep his lavender head, big black eyes, glass bubble helmet and antenna, magenta muzzle and chest light, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make him a smaller, slimmer, plainer foot soldier: shrink the whole figure to about four fifths of its height, feet on the same bottom line; remove the pack on his back and the magenta ear pieces; a plain slim silver jumpsuit, no armour; he holds the small ray pistol low and forward, the other arm at his side. Keep his lavender head, big black eyes, glass bubble helmet and antenna, magenta muzzle and chest light, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Make him a smaller, slimmer, plainer foot soldier: shrink the whole figure to about four fifths of its height, feet on the same bottom line; remove the pack on his back and the magenta ear pieces; a plain slim silver jumpsuit, no armour; he holds the small ray pistol low and forward, the other arm at his side. Keep his lavender head, big black eyes, glass bubble helmet and antenna, magenta muzzle and chest light, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "grunt-a",
+          "candidate": 0,
+          "sha256": "cced8a83858cbafc8acdc02994fb4f7086a48b27d72063662c9385634c8df36d"
+        }
+      },
+      "submittedAt": "2026-10-03T14:29:04.907Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/grunt-r5-edit-a.png",
+      "rawSheetSha256": "84cb53368d8890b52cdc6897c225e4bf43e53aea0105e284347a3bdb56d504b0",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3542,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.3542,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:29:40.073Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right plain, slim, small trooper (48 px wide, no pack, no ear pieces), but long thin arms and legs that are not chibi and only 20 magenta pixels; grunt-r5-edit-b makes the limbs stubby and adds the magenta lights.",
+        "reviewedAt": "2026-10-03T14:33:59.574Z"
+      }
+    },
+    "grunt-r5-edit-b": {
+      "id": "grunt-r5-edit-b",
+      "asset": "chibi-direction-martian-grunt",
+      "jobId": "0a1289f7-72ce-47f2-95da-e590ccf0d528",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-grunt",
+        "subject": "UNIT:MARTIAN:FIGHTER",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96103,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make his body a little chunkier and cuter: short stubby arms and legs, dark gunmetal gloves, belt and boots; add one small glowing hot magenta light on his chest, make the antenna tip a glowing hot magenta ball and the pistol muzzle glow hot magenta. Keep him small and plain with no armour and nothing on his back, his lavender head, big black eyes, glass bubble helmet, silver jumpsuit, pistol held forward, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Make his body a little chunkier and cuter: short stubby arms and legs, dark gunmetal gloves, belt and boots; add one small glowing hot magenta light on his chest, make the antenna tip a glowing hot magenta ball and the pistol muzzle glow hot magenta. Keep him small and plain with no armour and nothing on his back, his lavender head, big black eyes, glass bubble helmet, silver jumpsuit, pistol held forward, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make his body a little chunkier and cuter: short stubby arms and legs, dark gunmetal gloves, belt and boots; add one small glowing hot magenta light on his chest, make the antenna tip a glowing hot magenta ball and the pistol muzzle glow hot magenta. Keep him small and plain with no armour and nothing on his back, his lavender head, big black eyes, glass bubble helmet, silver jumpsuit, pistol held forward, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Make his body a little chunkier and cuter: short stubby arms and legs, dark gunmetal gloves, belt and boots; add one small glowing hot magenta light on his chest, make the antenna tip a glowing hot magenta ball and the pistol muzzle glow hot magenta. Keep him small and plain with no armour and nothing on his back, his lavender head, big black eyes, glass bubble helmet, silver jumpsuit, pistol held forward, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "grunt-r5-edit-a",
+          "candidate": 0,
+          "sha256": "a9e72f0dee7d8f04001e2c2a5c5406e7f25b212e33de8ef08b36784ac0a7a09d"
+        }
+      },
+      "submittedAt": "2026-10-03T14:31:44.233Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/grunt-r5-edit-b.png",
+      "rawSheetSha256": "82390f7cf92401e4e5445b04045f82f30ee570de5086af9bf8c29143b6fa060c",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:32:24.826Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-b5f.1: the plainest of the three aliens. A slim small trooper (48 x 75 px against the Ray Gunner's 56 and the Shield Projector's 54) in a plain silver jumpsuit with gunmetal belt, gloves and boots, no armour and nothing on the back, a small pistol held out at arm's length; the same lavender head, black eyes and bubble helmet with a magenta-tipped antenna; 57 magenta pixels (antenna ball, chest light, muzzle). Reads as the basic soldier at 1:1 and zoom 0.75.",
+        "reviewedAt": "2026-10-03T14:33:39.147Z"
+      }
+    },
+    "grunt-r5-edit-c": {
+      "id": "grunt-r5-edit-c",
+      "asset": "chibi-direction-martian-grunt",
+      "jobId": "fd5fbf8a-0e58-42c0-9797-c52c7e4fe1a6",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-grunt",
+        "subject": "UNIT:MARTIAN:FIGHTER",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96104,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make him plainer and lighter: remove the pack on his back and the magenta ear pieces on the helmet; a plain slim silver jumpsuit with no armour pieces; he holds the small ray pistol forward at arm's length, the other arm at his side. Keep his size, lavender head, big black eyes, glass bubble helmet with its antenna, hot magenta muzzle and chest light, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make him plainer and lighter: remove the pack on his back and the magenta ear pieces on the helmet; a plain slim silver jumpsuit with no armour pieces; he holds the small ray pistol forward at arm's length, the other arm at his side. Keep his size, lavender head, big black eyes, glass bubble helmet with its antenna, hot magenta muzzle and chest light, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make him plainer and lighter: remove the pack on his back and the magenta ear pieces on the helmet; a plain slim silver jumpsuit with no armour pieces; he holds the small ray pistol forward at arm's length, the other arm at his side. Keep his size, lavender head, big black eyes, glass bubble helmet with its antenna, hot magenta muzzle and chest light, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Make him plainer and lighter: remove the pack on his back and the magenta ear pieces on the helmet; a plain slim silver jumpsuit with no armour pieces; he holds the small ray pistol forward at arm's length, the other arm at his side. Keep his size, lavender head, big black eyes, glass bubble helmet with its antenna, hot magenta muzzle and chest light, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "grunt-a",
+          "candidate": 0,
+          "sha256": "cced8a83858cbafc8acdc02994fb4f7086a48b27d72063662c9385634c8df36d"
+        }
+      },
+      "submittedAt": "2026-10-03T14:31:44.233Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/grunt-r5-edit-c.png",
+      "rawSheetSha256": "a603d2ddc61837fe03d4151dc4f0ea3a1859d28187958575b814c30d1a38bfba",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5102,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5102,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:32:44.350Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The edit erased the glass bubble helmet (a bare lavender head with an antenna) and left 12 magenta pixels, below the faction's minimum of 15; grunt-r5-edit-b is used.",
+        "reviewedAt": "2026-10-03T14:34:00.943Z"
       }
     },
     "icon-beam-down-a": {
@@ -3251,10 +3537,76 @@
       ],
       "completedAt": "2026-10-02T20:54:35.043Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The Grunt's bust with the big rifle across the chest and its magenta emitter ball. Superseded by portrait-ray-gunner-r5-edit-a.",
+        "reviewedAt": "2026-10-02T21:02:42.556Z"
+      }
+    },
+    "portrait-ray-gunner-r5-edit-a": {
+      "id": "portrait-ray-gunner-r5-edit-a",
+      "asset": "chibi-direction-portrait-martian-ray-gunner",
+      "jobId": "20db96a9-afbb-467b-92f5-abfe566dc026",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-portrait-martian-ray-gunner",
+        "subject": "PORTRAIT:MARTIAN:MARKSMAN",
+        "faction": "MARTIAN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96211,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Give him the heavy gunner's gear: replace the antenna on top of the helmet with one tall polished chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; add the top of a big boxy dark gunmetal power pack behind his shoulder with one thick coiled black cable. Keep the huge finned rifle with its glowing hot magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Give him the heavy gunner's gear: replace the antenna on top of the helmet with one tall polished chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; add the top of a big boxy dark gunmetal power pack behind his shoulder with one thick coiled black cable. Keep the huge finned rifle with its glowing hot magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Give him the heavy gunner's gear: replace the antenna on top of the helmet with one tall polished chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; add the top of a big boxy dark gunmetal power pack behind his shoulder with one thick coiled black cable. Keep the huge finned rifle with its glowing hot magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Give him the heavy gunner's gear: replace the antenna on top of the helmet with one tall polished chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; add the top of a big boxy dark gunmetal power pack behind his shoulder with one thick coiled black cable. Keep the huge finned rifle with its glowing hot magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "portrait-ray-gunner-b",
+          "candidate": 0,
+          "sha256": "13a4184cd5e51c016c08eb4bce06d80c69bdafb61f930cc58b44b6e75ae07b72"
+        }
+      },
+      "submittedAt": "2026-10-03T14:32:32.488Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/portrait-ray-gunner-r5-edit-a.png",
+      "rawSheetSha256": "83e1e3c434b64565ec542c026cd33033f897f1365f60b319d5fbd3f58d3cac74",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8298,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8298,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:33:36.677Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The Grunt's bust with the big rifle across the chest and its magenta emitter ball.",
-        "reviewedAt": "2026-10-02T21:02:42.556Z"
+        "notes": "Bead pulp_wars-b5f.1: the bust of the new Ray Gunner: the chrome fin crest, the gunmetal visor band and the boxy power pack behind the shoulder, with the finned rifle and its magenta emitter ball; it is now told from the Grunt's bust by the crest and the visor.",
+        "reviewedAt": "2026-10-03T14:35:02.100Z"
       }
     },
     "portrait-saucer-a": {
@@ -3580,10 +3932,208 @@
       ],
       "completedAt": "2026-10-02T20:55:13.804Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The Grunt's bust with shoulder plates and the dish emitter with a magenta centre and arc. Superseded by portrait-shield-projector-r5-edit-b.",
+        "reviewedAt": "2026-10-02T21:02:43.683Z"
+      }
+    },
+    "portrait-shield-projector-r5-edit-a": {
+      "id": "portrait-shield-projector-r5-edit-a",
+      "asset": "chibi-direction-portrait-martian-shield-projector",
+      "jobId": "373899c2-ea8f-401a-9c2e-e94a367905cc",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-portrait-martian-shield-projector",
+        "subject": "PORTRAIT:MARTIAN:GUARD",
+        "faction": "MARTIAN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96311,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the dish he holds much bigger: the top half of one big round polished chrome energy shield disc fills the bottom of the image in front of his chest, wider than his shoulders, with a glowing hot magenta lens at its centre and a thin hot magenta rim. Keep his lavender head, big black eyes above the shield, glass bubble helmet, antenna, big round shoulder plates, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Make the dish he holds much bigger: the top half of one big round polished chrome energy shield disc fills the bottom of the image in front of his chest, wider than his shoulders, with a glowing hot magenta lens at its centre and a thin hot magenta rim. Keep his lavender head, big black eyes above the shield, glass bubble helmet, antenna, big round shoulder plates, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the dish he holds much bigger: the top half of one big round polished chrome energy shield disc fills the bottom of the image in front of his chest, wider than his shoulders, with a glowing hot magenta lens at its centre and a thin hot magenta rim. Keep his lavender head, big black eyes above the shield, glass bubble helmet, antenna, big round shoulder plates, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Make the dish he holds much bigger: the top half of one big round polished chrome energy shield disc fills the bottom of the image in front of his chest, wider than his shoulders, with a glowing hot magenta lens at its centre and a thin hot magenta rim. Keep his lavender head, big black eyes above the shield, glass bubble helmet, antenna, big round shoulder plates, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "portrait-shield-projector-b",
+          "candidate": 0,
+          "sha256": "8d9a979a5fa522b988aa0b2c83f3ca3626b91cb37183a53a0ffe145f2f6baa3a"
+        }
+      },
+      "submittedAt": "2026-10-03T14:33:36.717Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/portrait-shield-projector-r5-edit-a.png",
+      "rawSheetSha256": "aea8b7eb1fee6091b1c24696a4ca4f10594a39fecd2f2bc8aca38f8691986963",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:34:28.615Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The disc grew only a little (about 16 px) between huge shoulder plates and the magenta arc was dropped; the map sprite's shield is wider than the body. portrait-shield-projector-r5-edit-b doubles it.",
+        "reviewedAt": "2026-10-03T14:36:09.087Z"
+      }
+    },
+    "portrait-shield-projector-r5-edit-b": {
+      "id": "portrait-shield-projector-r5-edit-b",
+      "asset": "chibi-direction-portrait-martian-shield-projector",
+      "jobId": "c4b6945b-4fb9-4909-b6bb-4506dd3578d3",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-portrait-martian-shield-projector",
+        "subject": "PORTRAIT:MARTIAN:GUARD",
+        "faction": "MARTIAN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96312,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the round chrome shield disc twice as big: it covers the whole bottom half of the image from edge to edge in front of his chest and shoulders, with the glowing hot magenta lens at its centre, a thin hot magenta rim and one thin curved hot magenta arc above it. Keep his lavender head, big black eyes looking over the top of the shield, glass bubble helmet, antenna, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Make the round chrome shield disc twice as big: it covers the whole bottom half of the image from edge to edge in front of his chest and shoulders, with the glowing hot magenta lens at its centre, a thin hot magenta rim and one thin curved hot magenta arc above it. Keep his lavender head, big black eyes looking over the top of the shield, glass bubble helmet, antenna, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the round chrome shield disc twice as big: it covers the whole bottom half of the image from edge to edge in front of his chest and shoulders, with the glowing hot magenta lens at its centre, a thin hot magenta rim and one thin curved hot magenta arc above it. Keep his lavender head, big black eyes looking over the top of the shield, glass bubble helmet, antenna, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Make the round chrome shield disc twice as big: it covers the whole bottom half of the image from edge to edge in front of his chest and shoulders, with the glowing hot magenta lens at its centre, a thin hot magenta rim and one thin curved hot magenta arc above it. Keep his lavender head, big black eyes looking over the top of the shield, glass bubble helmet, antenna, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "portrait-shield-projector-r5-edit-a",
+          "candidate": 0,
+          "sha256": "90cbe69ce9a74fc82a8f5ba1f8cd3f15dc3d20b040b791dad52850c7856be8f8"
+        }
+      },
+      "submittedAt": "2026-10-03T14:35:01.848Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/portrait-shield-projector-r5-edit-b.png",
+      "rawSheetSha256": "26b0d6e5f26416f2bad3c6961351d7c45aa85757728f41ce779fa2e685d92a9a",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:35:39.841Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-b5f.1: the bust of the new Shield Projector: a big round chrome shield disc with a magenta lens and a magenta rim fills the lower half in front of the chest, the eyes look over its top, the big round shoulder plates frame it; no weapon. Told from the Grunt's and the Ray Gunner's busts at a glance. Superseded by portrait-shield-projector-r5-edit-c.",
+        "reviewedAt": "2026-10-03T14:36:08.297Z"
+      }
+    },
+    "portrait-shield-projector-r5-edit-c": {
+      "id": "portrait-shield-projector-r5-edit-c",
+      "asset": "chibi-direction-portrait-martian-shield-projector",
+      "jobId": "5f6aadeb-68f1-43b2-89e0-68b78906c2f5",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-portrait-martian-shield-projector",
+        "subject": "PORTRAIT:MARTIAN:GUARD",
+        "faction": "MARTIAN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96313,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Add only one thing: a short dark gunmetal mast behind his left shoulder that holds one small round silver dish emitter with a glowing hot magenta centre beside the top left of his helmet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and rim, his head, eyes, helmet, antenna, shoulder plates, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-shield-projector-r5-edit-b",
+          "candidate": 0,
+          "sha256": "9de48943b60d8fae59e90494b6069fa5c14aaa134fadc833f7a4a7e1b7f2d0f7"
+        }
+      },
+      "submittedAt": "2026-10-03T14:44:01.376Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/portrait-shield-projector-r5-edit-c.png",
+      "rawSheetSha256": "5bf350e10c4cc1dccc820e37da7971b563efe9ea14e4171da972aedf04d3014f",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:44:53.902Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The Grunt's bust with shoulder plates and the dish emitter with a magenta centre and arc.",
-        "reviewedAt": "2026-10-02T21:02:43.683Z"
+        "notes": "Bead pulp_wars-b5f.1: the bust of the new Shield Projector: a big round chrome shield disc with a magenta lens and rim fills the lower half, the eyes look over it, big round shoulder plates frame it, and the small dish emitter on its mast sits at the top left of the helmet as on the map sprite; no weapon. Told from the Grunt's and the Ray Gunner's busts at a glance.",
+        "reviewedAt": "2026-10-03T14:45:07.043Z"
       }
     },
     "portrait-thrall-a": {
@@ -4130,10 +4680,164 @@
       ],
       "completedAt": "2026-10-02T20:10:08.280Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The Grunt with a huge finned rifle across the body and a big magenta emitter ball; the same head, helmet and suit. Superseded by ray-gunner-r5-edit-a.",
+        "reviewedAt": "2026-10-02T20:21:33.184Z"
+      }
+    },
+    "ray-gunner-r5-a": {
+      "id": "ray-gunner-r5-a",
+      "asset": "chibi-direction-martian-ray-gunner",
+      "jobId": "sync-571b33ba-1f8c-4fd4-b525-529a0b8dc167",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-ray-gunner",
+        "subject": "UNIT:MARTIAN:MARKSMAN",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96201,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/MARTIAN.md#prompt-fragment + docs/art/factions/MARTIAN.md#negative-fragment",
+            "text": "Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips.",
+            "negative": "green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: Ray Gunner, a chunky cute heavy alien gunner with a huge round head and a broad stocky body in a wide braced stance: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, inside a clear round glass bubble helmet with a dark gunmetal visor band across its brow and a tall polished chrome fin crest on top like a 1950s rocket fin, no antenna; a bulky silver-white space suit with dark gunmetal gloves and boots; a big boxy dark gunmetal power pack on his back with one thick coiled black cable looping round to the gun; he holds low at the hip in both hands one very long heavy two-handed silver ray rifle with big fins and ring coils that sticks far out to the right, longer than his body is wide, with a glowing hot magenta emitter tip; simple shapes and very few details; clearly a heavy gunner with a very big gun."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "sword, shield, bow, cape, cloak, hair, human face, green skin, antennae on the skin, tentacles, pistol, red, orange"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Ray Gunner, a chunky cute heavy alien gunner with a huge round head and a broad stocky body in a wide braced stance: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, inside a clear round glass bubble helmet with a dark gunmetal visor band across its brow and a tall polished chrome fin crest on top like a 1950s rocket fin, no antenna; a bulky silver-white space suit with dark gunmetal gloves and boots; a big boxy dark gunmetal power pack on his back with one thick coiled black cable looping round to the gun; he holds low at the hip in both hands one very long heavy two-handed silver ray rifle with big fins and ring coils that sticks far out to the right, longer than his body is wide, with a glowing hot magenta emitter tip; simple shapes and very few details; clearly a heavy gunner with a very big gun.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, cape, cloak, hair, human face, antennae on the skin, pistol, orange",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Ray Gunner, a chunky cute heavy alien gunner with a huge round head and a broad stocky body in a wide braced stance: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, inside a clear round glass bubble helmet with a dark gunmetal visor band across its brow and a tall polished chrome fin crest on top like a 1950s rocket fin, no antenna; a bulky silver-white space suit with dark gunmetal gloves and boots; a big boxy dark gunmetal power pack on his back with one thick coiled black cable looping round to the gun; he holds low at the hip in both hands one very long heavy two-handed silver ray rifle with big fins and ring coils that sticks far out to the right, longer than his body is wide, with a glowing hot magenta emitter tip; simple shapes and very few details; clearly a heavy gunner with a very big gun. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, shield, cape, cloak, hair, human face, antennae on the skin, pistol, orange."
+      },
+      "submittedAt": "2026-10-03T14:28:33.738Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/ray-gunner-r5-a.png",
+      "rawSheetSha256": "b7ca5a3a0863929ad6aa492e00cd17048b11a02b26a32fc4aaf4f34d29ef660f",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.92,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:29:07.766Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Good outline (crest, pack with a coiled cable, long rifle low to the right) but another alien: a grey robot-like face in an opaque visor, a thinner outline, and the figure fills only about 48 x 55 px. The same gear is added to the accepted Ray Gunner by an edit instead.",
+        "reviewedAt": "2026-10-03T14:31:56.494Z"
+      }
+    },
+    "ray-gunner-r5-edit-a": {
+      "id": "ray-gunner-r5-edit-a",
+      "asset": "chibi-direction-martian-ray-gunner",
+      "jobId": "8825e6a6-5f89-4e08-ae27-fe9c4b0a7ac0",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-ray-gunner",
+        "subject": "UNIT:MARTIAN:MARKSMAN",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96202,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make him a heavy gunner with a new outline: replace the helmet antenna with one tall chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; make his back pack much bigger and boxier, with one thick coiled black cable looping to the rifle; widen his stance. Keep the huge finned rifle with its magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Make him a heavy gunner with a new outline: replace the helmet antenna with one tall chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; make his back pack much bigger and boxier, with one thick coiled black cable looping to the rifle; widen his stance. Keep the huge finned rifle with its magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make him a heavy gunner with a new outline: replace the helmet antenna with one tall chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; make his back pack much bigger and boxier, with one thick coiled black cable looping to the rifle; widen his stance. Keep the huge finned rifle with its magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Make him a heavy gunner with a new outline: replace the helmet antenna with one tall chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; make his back pack much bigger and boxier, with one thick coiled black cable looping to the rifle; widen his stance. Keep the huge finned rifle with its magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "ray-gunner-b",
+          "candidate": 0,
+          "sha256": "09718d499571f6735bc101f977057ef43df965eb27d7d394021babcc3e322320"
+        }
+      },
+      "submittedAt": "2026-10-03T14:29:07.778Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/ray-gunner-r5-edit-a.png",
+      "rawSheetSha256": "f125e598e683118baeaf70052ad5863872e70997b678eca66ae57ccb44ca2cd2",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7857,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7857,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:29:52.390Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The Grunt with a huge finned rifle across the body and a big magenta emitter ball; the same head, helmet and suit.",
-        "reviewedAt": "2026-10-02T20:21:33.184Z"
+        "notes": "Bead pulp_wars-b5f.1: the heavy gunner. A tall chrome fin crest replaces the antenna and a dark gunmetal visor band crosses the helmet, so the head outline differs from both other aliens; a big boxy gunmetal power pack on the back with a coiled black cable to the huge finned rifle with its magenta emitter ball; wide stance, 56 px wide. The gun and the pack stretch the outline sideways.",
+        "reviewedAt": "2026-10-03T14:33:40.552Z"
       }
     },
     "saucer-a": {
@@ -4351,10 +5055,362 @@
       ],
       "completedAt": "2026-10-02T20:12:41.343Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The Grunt in heavier armour with big shoulder plates, a dish emitter with a magenta centre and a magenta arc in front of it. Superseded by shield-projector-r5-edit-a-2.",
+        "reviewedAt": "2026-10-02T20:21:33.614Z"
+      }
+    },
+    "shield-projector-r5-a": {
+      "id": "shield-projector-r5-a",
+      "asset": "chibi-direction-martian-shield-projector",
+      "jobId": "sync-9a809da2-13b2-454a-8f5d-23206d551c0d",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-shield-projector",
+        "subject": "UNIT:MARTIAN:GUARD",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96301,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/MARTIAN.md#prompt-fragment + docs/art/factions/MARTIAN.md#negative-fragment",
+            "text": "Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips.",
+            "negative": "green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+            "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/MARTIAN.json",
+            "text": "Subject: Shield Projector, a chunky cute broad heavy alien defender, the widest and sturdiest trooper: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, no nose and a tiny mouth, inside a clear round glass bubble helmet with one white highlight and a thick chrome rim; heavy dark gunmetal and silver armour with very big round shoulder plates and thick armoured legs in a wide braced stance; held in front of him in both hands one big round polished chrome energy shield disc that covers his body from chest to knees, with a glowing hot magenta lens at its centre and a thin hot magenta rim, and one faint thin curved magenta arc of energy in front of it; simple shapes and very few details; clearly a defender who holds the line, not a shooter."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "sword, bow, cape, cloak, hair, human face, green skin, antennae on the skin, tentacles, pistol, rifle, gun, red, orange, wooden shield, cross"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Shield Projector, a chunky cute broad heavy alien defender, the widest and sturdiest trooper: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, no nose and a tiny mouth, inside a clear round glass bubble helmet with one white highlight and a thick chrome rim; heavy dark gunmetal and silver armour with very big round shoulder plates and thick armoured legs in a wide braced stance; held in front of him in both hands one big round polished chrome energy shield disc that covers his body from chest to knees, with a glowing hot magenta lens at its centre and a thin hot magenta rim, and one faint thin curved magenta arc of energy in front of it; simple shapes and very few details; clearly a defender who holds the line, not a shooter.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, cape, cloak, hair, human face, antennae on the skin, pistol, rifle, gun, orange, wooden shield, cross",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: retro 1950s pulp science-fiction invaders, cheerful and toy-like. Their fixed colours: polished chrome and silver-white metal shaded with soft blue-grey, dark gunmetal joints and undersides, rivets and small fins, clear pale glass domes with one white highlight, and exactly one accent colour, a bright glowing hot magenta pink, only as small lights and glows: lamps, lenses, antenna tips, emitter tips. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Shield Projector, a chunky cute broad heavy alien defender, the widest and sturdiest trooper: a smooth bald pale lavender-grey head with two very big glossy black almond eyes, no nose and a tiny mouth, inside a clear round glass bubble helmet with one white highlight and a thick chrome rim; heavy dark gunmetal and silver armour with very big round shoulder plates and thick armoured legs in a wide braced stance; held in front of him in both hands one big round polished chrome energy shield disc that covers his body from chest to knees, with a glowing hot magenta lens at its centre and a thin hot magenta rim, and one faint thin curved magenta arc of energy in front of it; simple shapes and very few details; clearly a defender who holds the line, not a shooter. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, green skin, green alien, lime, slime, tentacles, blue glow, cyan glow, yellow lights, orange flames, fire, red, gold, brass, brown, wood, leather, rust, purple, violet, medieval, sword, bow, horse, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, cape, cloak, hair, human face, antennae on the skin, pistol, rifle, gun, orange, wooden shield, cross."
+      },
+      "submittedAt": "2026-10-03T14:28:33.883Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/shield-projector-r5-a.png",
+      "rawSheetSha256": "77b881f87dd3ec1971f0aa221df30c05c562b6bce2608c8cf1244f03c44cd1c5",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6481,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:29:29.711Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A spiked armoured knight with a pale grey blushing face: the spikes and the face are off the faction (no lavender skin, no bubble helmet). The big round shield idea is kept, made by editing the accepted Shield Projector.",
+        "reviewedAt": "2026-10-03T14:31:57.042Z"
+      }
+    },
+    "shield-projector-r5-edit-a": {
+      "id": "shield-projector-r5-edit-a",
+      "asset": "chibi-direction-martian-shield-projector",
+      "jobId": "739e72a8-7589-49fe-9d1f-0b4bdaa829bc",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-shield-projector",
+        "subject": "UNIT:MARTIAN:GUARD",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96302,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the dish emitter he holds much bigger: one big round polished chrome energy shield disc held in front of him that covers his body from the chest down to the knees and is wider than his body, with a glowing hot magenta lens at its centre and a thin hot magenta rim; one faint thin curved magenta arc in front of it. Keep his lavender head, big black eyes, glass bubble helmet, antenna, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Make the dish emitter he holds much bigger: one big round polished chrome energy shield disc held in front of him that covers his body from the chest down to the knees and is wider than his body, with a glowing hot magenta lens at its centre and a thin hot magenta rim; one faint thin curved magenta arc in front of it. Keep his lavender head, big black eyes, glass bubble helmet, antenna, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the dish emitter he holds much bigger: one big round polished chrome energy shield disc held in front of him that covers his body from the chest down to the knees and is wider than his body, with a glowing hot magenta lens at its centre and a thin hot magenta rim; one faint thin curved magenta arc in front of it. Keep his lavender head, big black eyes, glass bubble helmet, antenna, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Make the dish emitter he holds much bigger: one big round polished chrome energy shield disc held in front of him that covers his body from the chest down to the knees and is wider than his body, with a glowing hot magenta lens at its centre and a thin hot magenta rim; one faint thin curved magenta arc in front of it. Keep his lavender head, big black eyes, glass bubble helmet, antenna, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "shield-projector-a",
+          "candidate": 0,
+          "sha256": "1e0624c0b7508afe3b69ec1f2282aabb94fc0193a271e8be310330bdd238fcbc"
+        }
+      },
+      "submittedAt": "2026-10-03T14:29:29.723Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/shield-projector-r5-edit-a.png",
+      "rawSheetSha256": "4a1cc3bc1d5bcc303995cf19c71f5eaf34985f5e49bcab2097445983ea2fcb92",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:30:06.130Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The chosen design (a big round chrome shield disc in front of the body) but one stray opaque pixel at (1, 79), four rows below the feet, that would draw a speck under the unit; shield-projector-r5-edit-a-2 erases it.",
+        "reviewedAt": "2026-10-03T14:34:02.203Z"
+      }
+    },
+    "shield-projector-r5-edit-a-2": {
+      "id": "shield-projector-r5-edit-a-2",
+      "asset": "chibi-direction-martian-shield-projector",
+      "jobId": "df3074b3-4e73-4e24-a69e-edc2ed53aaa9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-shield-projector",
+        "subject": "UNIT:MARTIAN:GUARD",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96304,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the single stray dark pixel in the bottom-left corner of the image, far below and to the left of his feet, so nothing is drawn below the feet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the single stray dark pixel in the bottom-left corner of the image, far below and to the left of his feet, so nothing is drawn below the feet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the single stray dark pixel in the bottom-left corner of the image, far below and to the left of his feet, so nothing is drawn below the feet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the single stray dark pixel in the bottom-left corner of the image, far below and to the left of his feet, so nothing is drawn below the feet. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "shield-projector-r5-edit-a",
+          "candidate": 0,
+          "sha256": "e074b04aaa93f1ebf82b6ea48d0eebc69b2efdf1330358f24f3e1563dc2fe458"
+        }
+      },
+      "submittedAt": "2026-10-03T14:31:44.322Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/shield-projector-r5-edit-a-2.png",
+      "rawSheetSha256": "46a58d6654d8ce1674c94fcde7c0051bc549be486d63b5fa83a210fc8bcb1f56",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:32:06.264Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Bead pulp_wars-b5f.1: the line holder. One big round chrome shield disc with a magenta lens and a thin magenta arc covers him from the chest to the knees, wider than his body, between big round shoulder plates; the head and eyes show above the rim. The broadest and heaviest outline of the three (54 x 72 px, 2623 opaque pixels); the stray pixel of shield-projector-r5-edit-a is gone. Superseded by shield-projector-r5-edit-a-3.",
+        "reviewedAt": "2026-10-03T14:33:41.812Z"
+      }
+    },
+    "shield-projector-r5-edit-a-3": {
+      "id": "shield-projector-r5-edit-a-3",
+      "asset": "chibi-direction-martian-shield-projector",
+      "jobId": "65d762b6-dff8-4ff7-bca6-14afd2449ba8",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-shield-projector",
+        "subject": "UNIT:MARTIAN:GUARD",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96305,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add only one thing: a short dark gunmetal mast on his back that holds one small round silver dish emitter with a glowing hot magenta centre just above and behind the top left of his helmet, in place of the antenna. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Add only one thing: a short dark gunmetal mast on his back that holds one small round silver dish emitter with a glowing hot magenta centre just above and behind the top left of his helmet, in place of the antenna. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Add only one thing: a short dark gunmetal mast on his back that holds one small round silver dish emitter with a glowing hot magenta centre just above and behind the top left of his helmet, in place of the antenna. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Add only one thing: a short dark gunmetal mast on his back that holds one small round silver dish emitter with a glowing hot magenta centre just above and behind the top left of his helmet, in place of the antenna. Do not redraw anything else: keep the big round chrome shield with its magenta lens and arc, his head, helmet, shoulder plates, legs, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "shield-projector-r5-edit-a-2",
+          "candidate": 0,
+          "sha256": "0b1f0b759c311536486104fa3caa9339cb9197db460356b92b223d8f5aa09a77"
+        }
+      },
+      "submittedAt": "2026-10-03T14:41:50.206Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/shield-projector-r5-edit-a-3.png",
+      "rawSheetSha256": "f691d87c170d9264cb1ae499062399978d2db85c6a1a7b0e3c1330db2c2acf90",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7778,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:43:24.769Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The Grunt in heavier armour with big shoulder plates, a dish emitter with a magenta centre and a magenta arc in front of it.",
-        "reviewedAt": "2026-10-02T20:21:33.614Z"
+        "notes": "Bead pulp_wars-b5f.1: the line holder. One big round chrome shield disc with a magenta lens and a thin magenta arc covers him from the chest to the knees, wider than his body, between big round shoulder plates; an emitter rig on his back (a small dish with a magenta centre on a gunmetal mast left of the helmet, a rod on the right) frames the head, so the top of the outline differs from the Grunt's antenna and the Ray Gunner's crest. The broadest, heaviest outline of the three (54 x 73 px, 2849 opaque pixels); no pixel below the feet.",
+        "reviewedAt": "2026-10-03T14:43:45.875Z"
+      }
+    },
+    "shield-projector-r5-edit-b": {
+      "id": "shield-projector-r5-edit-b",
+      "asset": "chibi-direction-martian-shield-projector",
+      "jobId": "6351c12f-e131-47cb-8d52-c10c60d1e33b",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-martian",
+        "asset": "chibi-direction-martian-shield-projector",
+        "subject": "UNIT:MARTIAN:GUARD",
+        "faction": "MARTIAN",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 96303,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add a backpack frame: a tall dark gunmetal frame on his back that holds one big round silver radar dish above and behind his helmet, facing forward, with a glowing hot magenta emitter at its centre, so the dish rises above his head; replace the antenna with nothing. Keep the dish emitter and the magenta arc he holds in front, his lavender head, big black eyes, glass bubble helmet, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background."
+          }
+        ],
+        "prompt": "Add a backpack frame: a tall dark gunmetal frame on his back that holds one big round silver radar dish above and behind his helmet, facing forward, with a glowing hot magenta emitter at its centre, so the dish rises above his head; replace the antenna with nothing. Keep the dish emitter and the magenta arc he holds in front, his lavender head, big black eyes, glass bubble helmet, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Add a backpack frame: a tall dark gunmetal frame on his back that holds one big round silver radar dish above and behind his helmet, facing forward, with a glowing hot magenta emitter at its centre, so the dish rises above his head; replace the antenna with nothing. Keep the dish emitter and the magenta arc he holds in front, his lavender head, big black eyes, glass bubble helmet, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+        "editInstruction": "Add a backpack frame: a tall dark gunmetal frame on his back that holds one big round silver radar dish above and behind his helmet, facing forward, with a glowing hot magenta emitter at its centre, so the dish rises above his head; replace the antenna with nothing. Keep the dish emitter and the magenta arc he holds in front, his lavender head, big black eyes, glass bubble helmet, big shoulder plates, armoured legs, thick black outline and art style, on a transparent background.",
+        "source": {
+          "recipe": "shield-projector-a",
+          "candidate": 0,
+          "sha256": "1e0624c0b7508afe3b69ec1f2282aabb94fc0193a271e8be310330bdd238fcbc"
+        }
+      },
+      "submittedAt": "2026-10-03T14:28:33.947Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-martian/shield-projector-r5-edit-b.png",
+      "rawSheetSha256": "a4aa5dfee4cbf5663b7a433aef89b11221d11834e5d1f01de0a3f533e4d63484",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9149,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9149,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T14:29:33.272Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A strong alternative: a radar dish on a backpack frame rising above the helmet. Rejected for the big front shield (shield-projector-r5-edit-a-2): the body under the dish is still the old Shield Projector, so at 1:1 the lower half reads like the Grunt's, and the round dish over the head competes with the Brain's jar and the bubble helmets; the front shield changes the whole outline and says defender at a glance.",
+        "reviewedAt": "2026-10-03T14:34:03.509Z"
       }
     },
     "thrall-a": {
@@ -5814,13 +6870,13 @@
       "subject": "UNIT:MARTIAN:FIGHTER",
       "assetClass": "STANDARD_UNIT",
       "status": "ACCEPTED",
-      "recipe": "grunt-a",
+      "recipe": "grunt-r5-edit-b",
       "candidate": 0,
-      "candidateSha256": "cced8a83858cbafc8acdc02994fb4f7086a48b27d72063662c9385634c8df36d",
+      "candidateSha256": "a9d4605a4b7bb4138980ccfdd048361bd2ae8194ff8b387ecf5b4370698e9313",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-martian-grunt.png",
-        "sha256": "62ef28d6c7f98f9ec4b42e80f107b187978a4b0092f0547ef5c1b11ac917d180",
-        "pixelSha256": "cedf3339d3d9cca5ad3939126b0729d293287fac78e8e3181289df68c678ebd8",
+        "sha256": "016dd1020030d197e1a5c115d8790b23106bc70f8ddc7fda064ca98affe790d9",
+        "pixelSha256": "e14405672245c1bb7cd434abd034b9d0f4a528aa4de1eed7c33904a24cb0769a",
         "width": 56,
         "height": 80
       },
@@ -5839,7 +6895,7 @@
             "hue": 322,
             "hueSpread": 0.2
           },
-          "accentPixels": 330,
+          "accentPixels": 57,
           "trimPixels": 0
         }
       },
@@ -5856,7 +6912,7 @@
       "plateCheck": {
         "bandRows": 15,
         "groundShare": 0,
-        "footprintWidthShare": 0.537,
+        "footprintWidthShare": 0.5,
         "suspect": false
       },
       "reviewChecks": {
@@ -5866,8 +6922,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The style anchor of the faction: big-headed lavender-grey alien in a bubble helmet and silver suit, ray pistol, magenta lights; chibi proportions match the Human Fighter.",
-      "acceptedAt": "2026-10-02T20:08:24.627Z"
+      "notes": "Bead pulp_wars-b5f.1: the plainest of the three aliens. A slim small trooper (48 x 75 px against the Ray Gunner's 56 and the Shield Projector's 54) in a plain silver jumpsuit with gunmetal belt, gloves and boots, no armour and nothing on the back, a small pistol held out at arm's length; the same lavender head, black eyes and bubble helmet with a magenta-tipped antenna; 57 magenta pixels (antenna ball, chest light, muzzle). Reads as the basic soldier at 1:1 and zoom 0.75.",
+      "acceptedAt": "2026-10-03T14:33:39.147Z"
     },
     "chibi-direction-martian-mothership": {
       "id": "chibi-direction-martian-mothership",
@@ -5934,13 +6990,13 @@
       "subject": "UNIT:MARTIAN:MARKSMAN",
       "assetClass": "STANDARD_UNIT",
       "status": "ACCEPTED",
-      "recipe": "ray-gunner-b",
+      "recipe": "ray-gunner-r5-edit-a",
       "candidate": 0,
-      "candidateSha256": "09718d499571f6735bc101f977057ef43df965eb27d7d394021babcc3e322320",
+      "candidateSha256": "0c9d6e43cb309a01cbadd1a53cf384f5b998e60cd5d6072752446a978ebbee57",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-martian-ray-gunner.png",
-        "sha256": "022f5ed6272c395375d6e4cf740e0e08439593c814a9e24d10202166b2bca2f8",
-        "pixelSha256": "f3b445c0b5799baeddbcbbead237158e1360003f250d1990c4b14dd2f84b63af",
+        "sha256": "bc0d390802e02ab4c3538d0ac5fdd751cc2c070c1319e30b9c0ea0ab122b2e17",
+        "pixelSha256": "97b0a342b5ad5297a57d6ac2efed1a04c140f321ef16843992f84a061324d28a",
         "width": 56,
         "height": 80
       },
@@ -5959,7 +7015,7 @@
             "hue": 322,
             "hueSpread": 0.2
           },
-          "accentPixels": 271,
+          "accentPixels": 198,
           "trimPixels": 0
         }
       },
@@ -5976,7 +7032,7 @@
       "plateCheck": {
         "bandRows": 15,
         "groundShare": 0,
-        "footprintWidthShare": 0.5357,
+        "footprintWidthShare": 0.7857,
         "suspect": false
       },
       "reviewChecks": {
@@ -5986,8 +7042,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The Grunt with a huge finned rifle across the body and a big magenta emitter ball; the same head, helmet and suit.",
-      "acceptedAt": "2026-10-02T20:21:33.183Z"
+      "notes": "Bead pulp_wars-b5f.1: the heavy gunner. A tall chrome fin crest replaces the antenna and a dark gunmetal visor band crosses the helmet, so the head outline differs from both other aliens; a big boxy gunmetal power pack on the back with a coiled black cable to the huge finned rifle with its magenta emitter ball; wide stance, 56 px wide. The gun and the pack stretch the outline sideways.",
+      "acceptedAt": "2026-10-03T14:33:40.552Z"
     },
     "chibi-direction-martian-saucer": {
       "id": "chibi-direction-martian-saucer",
@@ -6054,13 +7110,13 @@
       "subject": "UNIT:MARTIAN:GUARD",
       "assetClass": "STANDARD_UNIT",
       "status": "ACCEPTED",
-      "recipe": "shield-projector-a",
+      "recipe": "shield-projector-r5-edit-a-3",
       "candidate": 0,
-      "candidateSha256": "1e0624c0b7508afe3b69ec1f2282aabb94fc0193a271e8be310330bdd238fcbc",
+      "candidateSha256": "6800105d5ec60aa39f342d9bd295ddf68b3aa511d12b1753f313319033292693",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-martian-shield-projector.png",
-        "sha256": "7d92a7773af79783547b2220b80e2be423ade26d39db977076fb20ae5bd6ca5d",
-        "pixelSha256": "35981f3e8307e9440be3587b94a1a09f3de8cb5c81a33946d1406fd986036241",
+        "sha256": "8f0265d1c0df89704d8038b714062ea84c22458f743b8031c258f7c3cef384d7",
+        "pixelSha256": "3f01769b222839c8e226e62c2a0013125a41a0a455974b2d5d50bf87996cf9d3",
         "width": 56,
         "height": 80
       },
@@ -6079,7 +7135,7 @@
             "hue": 322,
             "hueSpread": 0.2
           },
-          "accentPixels": 297,
+          "accentPixels": 371,
           "trimPixels": 0
         }
       },
@@ -6094,9 +7150,9 @@
         "down": 0
       },
       "plateCheck": {
-        "bandRows": 14,
-        "groundShare": 0.0026,
-        "footprintWidthShare": 0.6538,
+        "bandRows": 15,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7778,
         "suspect": false
       },
       "reviewChecks": {
@@ -6106,8 +7162,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The Grunt in heavier armour with big shoulder plates, a dish emitter with a magenta centre and a magenta arc in front of it.",
-      "acceptedAt": "2026-10-02T20:21:33.614Z"
+      "notes": "Bead pulp_wars-b5f.1: the line holder. One big round chrome shield disc with a magenta lens and a thin magenta arc covers him from the chest to the knees, wider than his body, between big round shoulder plates; an emitter rig on his back (a small dish with a magenta centre on a gunmetal mast left of the helmet, a rod on the right) frames the head, so the top of the outline differs from the Grunt's antenna and the Ray Gunner's crest. The broadest, heaviest outline of the three (54 x 73 px, 2849 opaque pixels); no pixel below the feet.",
+      "acceptedAt": "2026-10-03T14:43:45.875Z"
     },
     "chibi-direction-martian-thrall": {
       "id": "chibi-direction-martian-thrall",
@@ -6474,13 +7530,13 @@
       "subject": "PORTRAIT:MARTIAN:MARKSMAN",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-ray-gunner-b",
+      "recipe": "portrait-ray-gunner-r5-edit-a",
       "candidate": 0,
-      "candidateSha256": "13a4184cd5e51c016c08eb4bce06d80c69bdafb61f930cc58b44b6e75ae07b72",
+      "candidateSha256": "af1adc491af2834dd7b067cf13597876f2bd1d8cf84fe8d5ea014cab0ad54c15",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-martian-ray-gunner.png",
-        "sha256": "2b651b2969090931fe1a9ede548111792359beb9f6e88bb7ac50c6b3c27b4497",
-        "pixelSha256": "ec286e3b9127842f3432a0b601209557cce951822d8edad2938f1c1b565f047b",
+        "sha256": "27c199621fcf9888f60e59d2faca7ca073d4704a4e4443ce7aa75b0cf0e61995",
+        "pixelSha256": "4bc2911638bfe4f58c3da0da4f9e4a945a13278e76e667d35fd235b894773d2e",
         "width": 48,
         "height": 48
       },
@@ -6499,7 +7555,7 @@
             "hue": 322,
             "hueSpread": 0.2
           },
-          "accentPixels": 36,
+          "accentPixels": 34,
           "trimPixels": 0
         }
       },
@@ -6516,7 +7572,7 @@
       "plateCheck": {
         "bandRows": 9,
         "groundShare": 0,
-        "footprintWidthShare": 0.8478,
+        "footprintWidthShare": 0.8298,
         "suspect": false
       },
       "reviewChecks": {
@@ -6526,8 +7582,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The Grunt's bust with the big rifle across the chest and its magenta emitter ball.",
-      "acceptedAt": "2026-10-02T21:02:42.556Z"
+      "notes": "Bead pulp_wars-b5f.1: the bust of the new Ray Gunner: the chrome fin crest, the gunmetal visor band and the boxy power pack behind the shoulder, with the finned rifle and its magenta emitter ball; it is now told from the Grunt's bust by the crest and the visor.",
+      "acceptedAt": "2026-10-03T14:35:02.100Z"
     },
     "chibi-direction-portrait-martian-saucer": {
       "id": "chibi-direction-portrait-martian-saucer",
@@ -6594,13 +7650,13 @@
       "subject": "PORTRAIT:MARTIAN:GUARD",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-shield-projector-b",
+      "recipe": "portrait-shield-projector-r5-edit-c",
       "candidate": 0,
-      "candidateSha256": "8d9a979a5fa522b988aa0b2c83f3ca3626b91cb37183a53a0ffe145f2f6baa3a",
+      "candidateSha256": "245be1be122ac21bb3c88f9797a86ca00159b2c1c10736f44237e9de9b94c755",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-martian-shield-projector.png",
-        "sha256": "c3e20d7e8beafb1f2e1c65cee00b737261000eec1677858062dcb3a8a9a9a5d5",
-        "pixelSha256": "26e6f79e70729478d9876c29261017fe46d79dfc6af4702ce2db4a6ef961b87b",
+        "sha256": "3f55d990878d622c34b7d8a3a0149afb7f1a41789315178442850e616e2c99bb",
+        "pixelSha256": "fba434405a0413ac7cb38be8ab345620d743b683ae6aae689ef0abef50bd1fb9",
         "width": 48,
         "height": 48
       },
@@ -6619,7 +7675,7 @@
             "hue": 322,
             "hueSpread": 0.2
           },
-          "accentPixels": 73,
+          "accentPixels": 132,
           "trimPixels": 0
         }
       },
@@ -6636,7 +7692,7 @@
       "plateCheck": {
         "bandRows": 9,
         "groundShare": 0,
-        "footprintWidthShare": 0.875,
+        "footprintWidthShare": 0.6667,
         "suspect": false
       },
       "reviewChecks": {
@@ -6646,8 +7702,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The Grunt's bust with shoulder plates and the dish emitter with a magenta centre and arc.",
-      "acceptedAt": "2026-10-02T21:02:43.682Z"
+      "notes": "Bead pulp_wars-b5f.1: the bust of the new Shield Projector: a big round chrome shield disc with a magenta lens and rim fills the lower half, the eyes look over it, big round shoulder plates frame it, and the small dish emitter on its mast sits at the top left of the helmet as on the map sprite; no weapon. Told from the Grunt's and the Ray Gunner's busts at a glance.",
+      "acceptedAt": "2026-10-03T14:45:07.043Z"
     },
     "chibi-direction-portrait-martian-thrall": {
       "id": "chibi-direction-portrait-martian-thrall",

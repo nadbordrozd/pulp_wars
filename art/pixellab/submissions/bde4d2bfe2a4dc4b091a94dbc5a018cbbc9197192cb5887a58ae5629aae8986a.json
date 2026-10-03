@@ -1,0 +1,36 @@
+{
+  "id": "grunt-r5-edit-a",
+  "jobId": "82473b48-3a72-4fa1-b7f6-364679b5d569",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-grunt",
+    "subject": "UNIT:MARTIAN:FIGHTER",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 96102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make him a smaller, slimmer, plainer foot soldier: shrink the whole figure to about four fifths of its height, feet on the same bottom line; remove the pack on his back and the magenta ear pieces; a plain slim silver jumpsuit, no armour; he holds the small ray pistol low and forward, the other arm at his side. Keep his lavender head, big black eyes, glass bubble helmet and antenna, magenta muzzle and chest light, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Make him a smaller, slimmer, plainer foot soldier: shrink the whole figure to about four fifths of its height, feet on the same bottom line; remove the pack on his back and the magenta ear pieces; a plain slim silver jumpsuit, no armour; he holds the small ray pistol low and forward, the other arm at his side. Keep his lavender head, big black eyes, glass bubble helmet and antenna, magenta muzzle and chest light, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make him a smaller, slimmer, plainer foot soldier: shrink the whole figure to about four fifths of its height, feet on the same bottom line; remove the pack on his back and the magenta ear pieces; a plain slim silver jumpsuit, no armour; he holds the small ray pistol low and forward, the other arm at his side. Keep his lavender head, big black eyes, glass bubble helmet and antenna, magenta muzzle and chest light, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Make him a smaller, slimmer, plainer foot soldier: shrink the whole figure to about four fifths of its height, feet on the same bottom line; remove the pack on his back and the magenta ear pieces; a plain slim silver jumpsuit, no armour; he holds the small ray pistol low and forward, the other arm at his side. Keep his lavender head, big black eyes, glass bubble helmet and antenna, magenta muzzle and chest light, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "grunt-a",
+      "candidate": 0,
+      "sha256": "cced8a83858cbafc8acdc02994fb4f7086a48b27d72063662c9385634c8df36d"
+    }
+  }
+}

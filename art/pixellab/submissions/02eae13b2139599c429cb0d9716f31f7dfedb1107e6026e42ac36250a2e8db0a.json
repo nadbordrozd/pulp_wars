@@ -1,0 +1,36 @@
+{
+  "id": "portrait-shield-projector-r5-edit-a",
+  "jobId": "373899c2-ea8f-401a-9c2e-e94a367905cc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-portrait-martian-shield-projector",
+    "subject": "PORTRAIT:MARTIAN:GUARD",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96311,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the dish he holds much bigger: the top half of one big round polished chrome energy shield disc fills the bottom of the image in front of his chest, wider than his shoulders, with a glowing hot magenta lens at its centre and a thin hot magenta rim. Keep his lavender head, big black eyes above the shield, glass bubble helmet, antenna, big round shoulder plates, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Make the dish he holds much bigger: the top half of one big round polished chrome energy shield disc fills the bottom of the image in front of his chest, wider than his shoulders, with a glowing hot magenta lens at its centre and a thin hot magenta rim. Keep his lavender head, big black eyes above the shield, glass bubble helmet, antenna, big round shoulder plates, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the dish he holds much bigger: the top half of one big round polished chrome energy shield disc fills the bottom of the image in front of his chest, wider than his shoulders, with a glowing hot magenta lens at its centre and a thin hot magenta rim. Keep his lavender head, big black eyes above the shield, glass bubble helmet, antenna, big round shoulder plates, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Make the dish he holds much bigger: the top half of one big round polished chrome energy shield disc fills the bottom of the image in front of his chest, wider than his shoulders, with a glowing hot magenta lens at its centre and a thin hot magenta rim. Keep his lavender head, big black eyes above the shield, glass bubble helmet, antenna, big round shoulder plates, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-shield-projector-b",
+      "candidate": 0,
+      "sha256": "8d9a979a5fa522b988aa0b2c83f3ca3626b91cb37183a53a0ffe145f2f6baa3a"
+    }
+  }
+}

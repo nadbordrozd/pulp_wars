@@ -66,7 +66,13 @@ large glowing area
 
 Measured on the eight faction unit masters
 ([`palette.json`](../../../art/pixellab/reviews/chibi-batch-direction-martian/palette.json);
-the Thrall is left out, since its drab cloth is not the faction's).
+the Thrall is left out, since its drab cloth is not the faction's). The
+table is the measurement of bead `pulp_wars-t6s.6`; after the
+[redesign of the three aliens](#the-three-aliens-bead-pulp_wars-b5f1) the
+review measures the accent at lit `#ef0f93`, mean `#aa1671`, 8% of a unit,
+hue 323° (320° to 324° per unit), and 66, 50 and 56 from the Undead
+violet and the Coral and Violet plates; the other roles moved by a point
+or two.
 
 | Role               | Colours                                                   | Share of a unit | Used for                                                               |
 | ------------------ | --------------------------------------------------------- | --------------- | ---------------------------------------------------------------------- |
@@ -122,10 +128,15 @@ This guides the subject lines; it is not sent to PixelLab.
 - **Domes and bubbles.** Every head or hull ends in a round glass or chrome
   dome, against the Humans' crested helmets, the Undead's hoods and the
   Goblins' ears.
-- **Aliens are one design.** A smooth bald lavender-grey head about half the
-  figure's height, two very big black almond eyes, a bubble helmet with one
-  antenna, a silver suit. The Ray Gunner and the Shield Projector are the
-  Grunt with another tool, made as edits of the Grunt.
+- **Aliens share one head; their kit tells them apart.** A smooth bald
+  lavender-grey head about half the figure's height, two very big black
+  almond eyes and a glass bubble helmet are the same on every alien. Since
+  bead `pulp_wars-b5f.1` the outline says the job: the Grunt is slim and
+  plain (an antenna, a jumpsuit, a pistol held out), the Ray Gunner is wide
+  and boxy (a chrome fin crest and a visor band instead of the antenna, a
+  big power pack, a long rifle with a coiled cable) and the Shield
+  Projector is the broadest (a big round shield disc in front of the body,
+  big shoulder plates, an emitter dish on a mast beside the helmet).
 - **Machines have no crew on the ground.** The Saucer shows its pilot in the
   dome; the walkers are a head on legs.
 - **Small magenta lights** on every piece: never a large glowing area,
@@ -138,23 +149,26 @@ subject lines in
 [`subjects/MARTIAN.json`](../../../scripts/art/chibi/subjects/MARTIAN.json).
 The canvas follows the mechanical role, as for every faction.
 
-| Unit (role)                | Canvas   | Sprite   | Accepted recipe      | What it shows, and how its job reads                                                                  |
-| -------------------------- | -------- | -------- | -------------------- | ----------------------------------------------------------------------------------------------------- |
-| Grunt (`FIGHTER`)          | 56 x 80  | 54 x 73  | `grunt-a`            | the alien in a silver suit and bubble helmet with a small ray pistol: the basic trooper               |
-| Saucer (`RAIDER`)          | 72 x 88  | 63 x 56  | `saucer-a-edit`      | a small chrome saucer with a glass dome, its pilot, rim lights and a beam nozzle; no legs: it flies   |
-| Ray Gunner (`MARKSMAN`)    | 56 x 80  | 56 x 73  | `ray-gunner-b`       | the Grunt with a huge rifle across the body and a big magenta emitter ball, and a power tank          |
-| Shield Projector (`GUARD`) | 56 x 80  | 52 x 72  | `shield-projector-a` | the Grunt in heavy shoulder plates holding a dish emitter, with a magenta arc in front of it          |
-| Brain (`CAPTAIN`)          | 56 x 80  | 52 x 69  | `brain-b`            | a big brain with two eyes in a glass jar on a chrome base with spider legs                            |
-| Tripod (`CATAPULT`)        | 72 x 88  | 58 x 77  | `tripod-a-edit-3`    | a smooth chrome hood with one big magenta lens, a heat-ray arm, tall gunmetal legs: the tallest unit  |
-| Mothership (`KNIGHT`)      | 72 x 88  | 68 x 68  | `mothership-a`       | a wide two-tier chrome disc with fins, an antenna and a big magenta beam port: bigger than the Saucer |
-| Colossus (`JUGGERNAUT`)    | 88 x 104 | 83 x 89  | `colossus-b-edit`    | a huge chrome dome head with two magenta eyes, a heavy ray cannon and thick armoured legs             |
-| Thrall (as a `FIGHTER`)    | 56 x 80  | 36 x 70  | `thrall-b`           | a slumped drab grey soldier with a chrome control helmet, an antenna and one magenta light            |
-| Patrol Boat, Battleship    | shared   | (shared) | (unchanged)          | the shared ships with the player-coloured sail                                                        |
+| Unit (role)                | Canvas   | Sprite   | Accepted recipe                | What it shows, and how its job reads                                                                  |
+| -------------------------- | -------- | -------- | ------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Grunt (`FIGHTER`)          | 56 x 80  | 48 x 75  | `grunt-r5-edit-b`              | a slim alien in a plain silver jumpsuit, no armour, no pack, a small pistol held out: the basic one   |
+| Saucer (`RAIDER`)          | 72 x 88  | 63 x 56  | `saucer-a-edit`                | a small chrome saucer with a glass dome, its pilot, rim lights and a beam nozzle; no legs: it flies   |
+| Ray Gunner (`MARKSMAN`)    | 56 x 80  | 56 x 73  | `ray-gunner-r5-edit-a`         | a fin crest, a visor band, a big boxy power pack, a huge finned rifle on a coiled cable, wide stance  |
+| Shield Projector (`GUARD`) | 56 x 80  | 54 x 73  | `shield-projector-r5-edit-a-3` | heavy shoulder plates, a big round shield disc with a magenta lens and arc, a dish on a mast          |
+| Brain (`CAPTAIN`)          | 56 x 80  | 52 x 69  | `brain-b`                      | a big brain with two eyes in a glass jar on a chrome base with spider legs                            |
+| Tripod (`CATAPULT`)        | 72 x 88  | 58 x 77  | `tripod-a-edit-3`              | a smooth chrome hood with one big magenta lens, a heat-ray arm, tall gunmetal legs: the tallest unit  |
+| Mothership (`KNIGHT`)      | 72 x 88  | 68 x 68  | `mothership-a`                 | a wide two-tier chrome disc with fins, an antenna and a big magenta beam port: bigger than the Saucer |
+| Colossus (`JUGGERNAUT`)    | 88 x 104 | 83 x 89  | `colossus-b-edit`              | a huge chrome dome head with two magenta eyes, a heavy ray cannon and thick armoured legs             |
+| Thrall (as a `FIGHTER`)    | 56 x 80  | 36 x 70  | `thrall-b`                     | a slumped drab grey soldier with a chrome control helmet, an antenna and one magenta light            |
+| Patrol Boat, Battleship    | shared   | (shared) | (unchanged)                    | the shared ships with the player-coloured sail                                                        |
 
 Each unit has a 48 x 48 portrait (`chibi-direction-portrait-martian-<unit>`):
 busts for the Grunt, the Ray Gunner, the Shield Projector and the Thrall, and
 whole-object portraits for the machines and the Brain, as the Human Catapult
-has.
+has. The Ray Gunner's bust is `portrait-ray-gunner-r5-edit-a` and the
+Shield Projector's `portrait-shield-projector-r5-edit-c` since bead
+`pulp_wars-b5f.1`; the Grunt's (`portrait-grunt-b-edit`) already showed
+the plain trooper and was kept.
 
 How they were made (62 PixelLab calls in all: 39 creations and 23 edits):
 
@@ -177,6 +191,52 @@ How they were made (62 PixelLab calls in all: 39 creations and 23 edits):
 - **Stray horns.** PixelLab put a horn on the Tripod's and the Colossus's
   head (perhaps the "antenna"); "Change only one thing: erase the pointed
   horn …" removed each.
+
+### The three aliens (bead `pulp_wars-b5f.1`)
+
+The user (2026-10-03): "martian ray gunner, shield projector and grunt all
+look the same. they are individually cool but need to be differentiated
+more." The sibling edits had kept one head, helmet, suit and size, and
+only the tool in the hands changed, which a 56 px sprite does not show.
+The redesign varies the outline first and keeps the faction (lavender
+head, bubble helmet, chrome, one magenta accent), the asset ids, canvases
+and anchors, so the game picks the new masters up as they are. 15
+PixelLab calls (3 creations, 12 edits):
+
+- **Fresh creations from the new subject lines drew other aliens** again
+  (`grunt-r5-a`: a grey head; `ray-gunner-r5-a`: a grey robot face in an
+  opaque visor and a thin outline; `shield-projector-r5-a`: a spiked
+  knight with a blushing face); all three were rejected, and the designs
+  were made as edits of the accepted sprites.
+- **Grunt:** "Make him a smaller, slimmer, plainer foot soldier …" on
+  `grunt-a` gave a slim jumpsuit alien with long thin limbs and 20 magenta
+  pixels (`grunt-r5-edit-a`); a second edit made the limbs stubby and added
+  the antenna ball, the chest light and the muzzle glow (`grunt-r5-edit-b`,
+  48 x 75 px, 57 magenta pixels). An edit of `grunt-a` at its own size
+  (`grunt-r5-edit-c`) erased the bubble helmet.
+- **Ray Gunner:** one edit of `ray-gunner-b` replaced the antenna with a
+  chrome fin crest, added a gunmetal visor band, a much bigger power pack
+  and a coiled cable, and widened the stance.
+- **Shield Projector:** of two edits of `shield-projector-a`, the one that
+  grows the dish into a big round shield disc in front of the body
+  (`shield-projector-r5-edit-a`) read as a defender at a glance; the other
+  put a radar dish on a backpack frame above the head
+  (`shield-projector-r5-edit-b`) but left the lower body the old one.
+  "Change only one thing: erase the single stray dark pixel …" removed a
+  speck four rows below the feet (`-a-2`), and "Add only one thing: … a
+  small round silver dish emitter … above and behind the top left of his
+  helmet" (`-a-3`) gave the head an outline of its own.
+- **Portraits:** the Ray Gunner's bust got the crest, the visor and the
+  pack in one edit; the Shield Projector's needed three (the disc grew too
+  little, then twice as big, then the dish beside the helmet).
+
+The review measures the outlines (`aliens.json`, intersection over union
+of the opaque pixels on the shared canvas, lower is more different): the
+mean pairwise overlap fell from 0.74 to 0.65, Grunt and Ray Gunner from
+0.82 to 0.62 and Grunt and Shield Projector from 0.74 to 0.65; the Ray
+Gunner and the Shield Projector stay at 0.69 (0.66 before), as both are
+now wide and heavy, and are told apart by the crest, the pack and the gun
+against the round shield.
 
 ## The Thrall
 
@@ -378,6 +438,12 @@ Made in `pulp_wars-t6s.4` and recorded so that they can be overruled:
 
 ![City 1 to 3 with the pennant in the four player colours, beside the other factions' cities](../../../art/pixellab/reviews/chibi-batch-direction-martian/cities-x3.png)
 
+![The Grunt, the Ray Gunner and the Shield Projector before and after bead pulp_wars-b5f.1, beside the other Martian units](../../../art/pixellab/reviews/chibi-batch-direction-martian/aliens-before-after-x4.png)
+
+![Their silhouettes before and after, and the three overlaid](../../../art/pixellab/reviews/chibi-batch-direction-martian/aliens-silhouettes-x4.png)
+
+![The redesigned trio on the board in the live look (no plates), with the "before" trio in Violet](../../../art/pixellab/reviews/chibi-batch-direction-martian/scene-aliens-desktop-zoom-1.png)
+
 ## Decisions
 
 Decided in bead `pulp_wars-t6s.6` under the user's "make all the
@@ -389,8 +455,9 @@ decisions":
    preset; kept, because it measures 65 from the Undead violet and 52 and
    57 from the Coral and Violet plates. The lime-yellow fallback was not
    used.
-3. **Aliens are one design,** and the Ray Gunner and the Shield Projector
-   are the Grunt with another tool.
+3. **Aliens share one head,** and the Ray Gunner and the Shield Projector
+   began as the Grunt with another tool. Overruled by the user in bead
+   `pulp_wars-b5f.1`: the three now differ in outline (decision 15).
 4. **Shield Projector:** an alien carrying a dish, not a drone, so the
    `GUARD` reads as a trooper who holds the line.
 5. **Brain:** a brain with two eyes in a jar on spider legs, not a
@@ -416,6 +483,11 @@ decisions":
     as code-drawn.
 14. **Not registered** by this bead: the module was imported by nothing
     until `pulp_wars-t6s.4` registered it.
+15. **The three aliens differ in outline** (bead `pulp_wars-b5f.1`, see
+    [above](#the-three-aliens-bead-pulp_wars-b5f1)): the Grunt slim and
+    plain with a pistol, the Ray Gunner wide with a crest, a visor, a power
+    pack and a long rifle, the Shield Projector broadest behind a big round
+    shield disc with a dish beside the helmet. The Grunt's portrait is kept.
 
 ## Weak spots
 
@@ -438,3 +510,10 @@ decisions":
   the map, and the busts carry less magenta (the Grunt's 35 pixels).
 - **The Mind Control and Force Field icons** have a few cyan pixels.
 - **The review scenes use stand-in factions,** not a Martian match.
+- **The Grunt's jumpsuit is matte pale grey** (`#c8d7d6`), not polished
+  chrome, and its magenta is small (57 pixels against 198 and 371).
+- **The Ray Gunner and the Shield Projector** are both wide and heavy now
+  (outline overlap 0.69); they read apart by the crest, the pack and the
+  gun against the round shield, not by size.
+- **The Shield Projector's dish** sits beside the helmet as a small rig of
+  a mast and a rod; in the bust it overlaps the helmet glass.

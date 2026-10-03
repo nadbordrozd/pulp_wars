@@ -1,0 +1,36 @@
+{
+  "id": "grunt-r5-edit-c",
+  "jobId": "fd5fbf8a-0e58-42c0-9797-c52c7e4fe1a6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-grunt",
+    "subject": "UNIT:MARTIAN:FIGHTER",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 96104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make him plainer and lighter: remove the pack on his back and the magenta ear pieces on the helmet; a plain slim silver jumpsuit with no armour pieces; he holds the small ray pistol forward at arm's length, the other arm at his side. Keep his size, lavender head, big black eyes, glass bubble helmet with its antenna, hot magenta muzzle and chest light, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make him plainer and lighter: remove the pack on his back and the magenta ear pieces on the helmet; a plain slim silver jumpsuit with no armour pieces; he holds the small ray pistol forward at arm's length, the other arm at his side. Keep his size, lavender head, big black eyes, glass bubble helmet with its antenna, hot magenta muzzle and chest light, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make him plainer and lighter: remove the pack on his back and the magenta ear pieces on the helmet; a plain slim silver jumpsuit with no armour pieces; he holds the small ray pistol forward at arm's length, the other arm at his side. Keep his size, lavender head, big black eyes, glass bubble helmet with its antenna, hot magenta muzzle and chest light, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Make him plainer and lighter: remove the pack on his back and the magenta ear pieces on the helmet; a plain slim silver jumpsuit with no armour pieces; he holds the small ray pistol forward at arm's length, the other arm at his side. Keep his size, lavender head, big black eyes, glass bubble helmet with its antenna, hot magenta muzzle and chest light, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "grunt-a",
+      "candidate": 0,
+      "sha256": "cced8a83858cbafc8acdc02994fb4f7086a48b27d72063662c9385634c8df36d"
+    }
+  }
+}

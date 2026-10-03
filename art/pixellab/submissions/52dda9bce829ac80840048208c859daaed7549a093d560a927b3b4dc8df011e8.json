@@ -1,0 +1,36 @@
+{
+  "id": "ray-gunner-r5-edit-a",
+  "jobId": "8825e6a6-5f89-4e08-ae27-fe9c4b0a7ac0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-martian",
+    "asset": "chibi-direction-martian-ray-gunner",
+    "subject": "UNIT:MARTIAN:MARKSMAN",
+    "faction": "MARTIAN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 96202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make him a heavy gunner with a new outline: replace the helmet antenna with one tall chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; make his back pack much bigger and boxier, with one thick coiled black cable looping to the rifle; widen his stance. Keep the huge finned rifle with its magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Make him a heavy gunner with a new outline: replace the helmet antenna with one tall chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; make his back pack much bigger and boxier, with one thick coiled black cable looping to the rifle; widen his stance. Keep the huge finned rifle with its magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make him a heavy gunner with a new outline: replace the helmet antenna with one tall chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; make his back pack much bigger and boxier, with one thick coiled black cable looping to the rifle; widen his stance. Keep the huge finned rifle with its magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Make him a heavy gunner with a new outline: replace the helmet antenna with one tall chrome fin crest like a rocket fin; add a dark gunmetal visor band across the top front of the glass helmet; make his back pack much bigger and boxier, with one thick coiled black cable looping to the rifle; widen his stance. Keep the huge finned rifle with its magenta emitter ball, his lavender face, big black eyes, silver suit, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "ray-gunner-b",
+      "candidate": 0,
+      "sha256": "09718d499571f6735bc101f977057ef43df965eb27d7d394021babcc3e322320"
+    }
+  }
+}
