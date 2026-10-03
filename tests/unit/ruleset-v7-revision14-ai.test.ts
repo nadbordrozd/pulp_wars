@@ -374,6 +374,7 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
       factions: ["UNDEAD", "ORIGINAL"],
       mapType: "PANGEA",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      curiosities: false,
     };
     const first = runAiMatchV7(setup, { maxRounds: 40 });
     expect(first.errors).toEqual([]);
@@ -420,6 +421,7 @@ function setupWith(factions: readonly FactionIdV7[]): MatchSetupV7 {
     factions: [...factions],
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
 }
 

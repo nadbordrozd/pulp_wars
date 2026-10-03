@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r34" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r35" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -45,8 +45,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r31",
   "pulp-wars-poc-7r32",
   "pulp-wars-poc-7r33",
+  "pulp-wars-poc-7r34",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r34.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r35.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
@@ -231,6 +232,9 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "PLAGUE_SPREAD",
   "PLAGUE_EXPIRED",
   "WINDMILL_HEALING_RESOLVED",
+  // Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 5):
+  // a unit standing on a Fountain of Youth healed at its owner's Start Turn.
+  "FOUNTAIN_HEALED",
   "UNITS_REGENERATED",
   "SHIELDS_RECHARGED",
   "INCOME_AWARDED",
@@ -299,6 +303,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "PLUNDER_AWARDED",
   "UNIT_RECOVERED",
   "UNIT_WAITED",
+  // Map curiosities (section 6): a Move ended on a Shrine promoted the unit.
+  "SHRINE_CLAIMED",
   "UNIT_PROMOTED",
   "UNIT_GREW",
   "UNIT_DIED",
@@ -311,6 +317,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "PLAGUE_CLEARED",
   "CITY_CAPTURED",
   "TREASURE_CAPTURED",
+  // Map curiosities (section 7): an afloat unit salvaged a Sunken Wreck.
+  "WRECK_SALVAGED",
   "PLAYER_ELIMINATED",
   "MATCH_ENDED",
 ] as const);
@@ -391,6 +399,36 @@ export interface MatchSetupV7 {
    * 2.4): the registered mission whose definition builds the board.
    */
   readonly mission?: MissionRefV7;
+  /**
+   * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
+   * whether map generation places the rare neutral curiosities. A required
+   * key; the setup screen and the headless CLI default it to `true`. The
+   * Showcase and mission boards never have curiosities, and a `MISSION`
+   * setup always carries `false`.
+   */
+  readonly curiosities: boolean;
+}
+
+/**
+ * The static map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md
+ * sections 5 to 7), in the frozen kind order. The roaming Monster (section
+ * 8, a later revision) is a unit with its own list, not a tile marker.
+ */
+export const CURIOSITY_KINDS_V7 = Object.freeze([
+  "FOUNTAIN",
+  "SHRINE",
+  "WRECK",
+] as const);
+export type CuriosityKindV7 = (typeof CURIOSITY_KINDS_V7)[number];
+
+/**
+ * A curiosity on the board: a Fountain of Youth (Grass, permanent), a
+ * Shrine (Grass or Forest, gone once claimed), or a Sunken Wreck (water,
+ * gone once salvaged). It never changes its tile.
+ */
+export interface CuriosityV7 {
+  readonly kind: CuriosityKindV7;
+  readonly at: CoordV7;
 }
 
 export interface RandomStateV7 {
@@ -575,6 +613,13 @@ export interface GameStateV7 {
   readonly populationContributions: readonly PopulationContributionV7[];
   readonly units: readonly UnitStateV7[];
   readonly treasureChests: readonly CoordV7[];
+  /**
+   * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section
+   * 10.2): the Fountains, Shrines, and Wrecks on the board, sorted by
+   * (y, x). Always empty when `setup.curiosities` is false and on the
+   * Showcase and mission boards.
+   */
+  readonly curiosities: readonly CuriosityV7[];
   /**
    * Revision 13 Grave markers, sorted by (y, x) without duplicates. Always
    * empty in a match whose setup has no UNDEAD seat.

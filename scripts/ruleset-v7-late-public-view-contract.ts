@@ -138,12 +138,13 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r34",
+    rulesetId: "pulp-wars-poc-7r35",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r34",
+      rulesetId: "pulp-wars-poc-7r35",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      curiosities: false,
     },
     viewer,
     players: retained.players.map((player) => ({
@@ -225,6 +226,8 @@ export function upgradeRetainedPublicViewV7(
       seaRoutes: [],
       recoverableNavalUnitIds: [],
     },
+    // Map curiosities: the retained match was generated without any.
+    curiosities: [],
     // Revision 13: the retained all-Human match has no Graves.
     graves: [],
     // Revision 14: nor any Plague or Bitten status.

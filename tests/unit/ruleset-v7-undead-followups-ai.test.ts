@@ -272,6 +272,7 @@ describe("vkq.21 Normal AI: Liches and Vampires stay ashore", () => {
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      curiosities: false,
       seed: 29,
       width: 14,
       height: 14,
@@ -344,6 +345,7 @@ function setupWith(factions: readonly FactionIdV7[]): MatchSetupV7 {
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
 }
 

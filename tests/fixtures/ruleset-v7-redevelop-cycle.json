@@ -4,9 +4,9 @@
   "target": { "x": 10, "y": 5 },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r34",
+    "rulesetId": "pulp-wars-poc-7r35",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r34",
+      "rulesetId": "pulp-wars-poc-7r35",
       "seed": 9,
       "width": 14,
       "height": 14,
@@ -17,6 +17,7 @@
       "factions": ["MARTIAN", "MARTIAN"],
       "mapType": "DRY_LAND",
       "mapGenerationRevision": "REGIONAL_BIOMES_NAVAL_V2",
+      "curiosities": false,
       "allowDuplicateFactions": true
     },
     "random": { "algorithm": "MULBERRY32", "version": 1, "state": 2513691474 },
@@ -3528,6 +3529,7 @@
       }
     ],
     "treasureChests": [],
+    "curiosities": [],
     "graves": [],
     "plagued": [],
     "bitten": [],

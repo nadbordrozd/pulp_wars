@@ -2434,6 +2434,7 @@ describe("ruleset-7 revision-19 Eggs and city capture", () => {
     ...mirrorOptionV7(factions),
     mapType: "SHOWCASE",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   });
 
   it("destroys exactly the Eggs homed to the captured city, in ID order, with no credit or Plunder", () => {
@@ -2810,6 +2811,7 @@ describe("ruleset-7 revision-19 Showcase with a Dinosaur seat", () => {
       allowDuplicateFactions: true,
       mapType: "SHOWCASE",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      curiosities: false,
     });
     if (!created.ok) throw new Error(created.error.code);
     expect(created.state.eggs).toEqual([]);

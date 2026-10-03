@@ -554,6 +554,12 @@ interface DraftV7 {
   readonly seedText: string;
   readonly mapType: MapTypeV7;
   /**
+   * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
+   * the "Curiosities" checkbox, on by default. A Showcase launch always sends
+   * `false` (the Showcase never has curiosities).
+   */
+  readonly curiosities: boolean;
+  /**
    * Seat factions (seat 0 is the human), always four and always distinct
    * (docs/product/RULESET_7_UNIQUE_FACTIONS.md): Human, Undead, Goblin,
    * Dinosaur by default. Seats beyond the AI count keep their choice hidden.
@@ -588,6 +594,7 @@ export class Ruleset7DomAppView {
     seedMode: "NEW",
     seedText: "42",
     mapType: "CONTINENTS",
+    curiosities: true,
     factions: distinctFactionsV7(4),
   };
   #selection: BoardSelectionV7 | null = null;
@@ -1054,6 +1061,7 @@ export class Ruleset7DomAppView {
         mapTypeDescriptionV7(this.#draft.mapType),
         "v7-map-type-description",
       ),
+      this.#curiositiesChoice(),
       this.#seedChoice(),
     );
     form.append(this.#factionFields());
@@ -1084,6 +1092,12 @@ export class Ruleset7DomAppView {
       }
       const seed = form.querySelector<HTMLElement>(".v7-seed-choice");
       if (seed !== null) seed.hidden = showcase;
+      // The Showcase never has curiosities: the checkbox is hidden (its
+      // choice is kept for the next map).
+      const curiosities = form.querySelector<HTMLElement>(
+        ".v7-curiosities-choice",
+      );
+      if (curiosities !== null) curiosities.hidden = showcase;
     };
     syncShowcase();
     form.addEventListener("change", () => {
@@ -1126,6 +1140,22 @@ export class Ruleset7DomAppView {
     });
     main.append(form, this.#ruleset6Link());
     return main;
+  }
+
+  /**
+   * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
+   * one checkbox, "Curiosities", checked by default. Until the board draws
+   * them (`pulp_wars-737.6`) the curiosities are not shown on the board.
+   */
+  #curiositiesChoice(): HTMLElement {
+    const label = this.#document.createElement("label");
+    label.className = "v7-curiosities-choice";
+    const input = this.#document.createElement("input");
+    input.type = "checkbox";
+    input.id = "v7-curiosities";
+    input.checked = this.#draft.curiosities;
+    label.append(input, this.#document.createTextNode(" Curiosities"));
+    return label;
   }
 
   /**
@@ -4673,6 +4703,9 @@ export class Ruleset7DomAppView {
       mapType: MAP_TYPES.includes(value(form, "v7-map-type") as MapTypeV7)
         ? (value(form, "v7-map-type") as MapTypeV7)
         : "CONTINENTS",
+      curiosities:
+        form.querySelector<HTMLInputElement>("#v7-curiosities")?.checked ??
+        this.#draft.curiosities,
       // Seats keep their choice in seat order; a seat whose faction an
       // earlier seat now plays takes the first untaken faction, so the four
       // seats always play different factions (RULESET_7_UNIQUE_FACTIONS.md).
@@ -7098,7 +7131,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r34",
+    rulesetId: "pulp-wars-poc-7r35",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -7115,6 +7148,8 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
     ),
     mapType: draft.mapType,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    // The Showcase never has curiosities and launches with `false`.
+    curiosities: draft.mapType !== "SHOWCASE" && draft.curiosities,
   };
 }
 export function cityIncomeForViewerV7(

@@ -37,6 +37,7 @@ export const BOARD_PRESENTATION_BUSY_SETUP_V7: MatchSetupV7 = {
   factions: ["ORIGINAL", "UNDEAD"],
   mapType: "DRY_LAND",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  curiosities: false,
 };
 
 export const BOARD_PRESENTATION_BUSY_UNITS_V7 = 60;

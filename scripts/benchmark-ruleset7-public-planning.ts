@@ -255,6 +255,7 @@ function legalWorstCaseView(): PlayerViewV7 {
     factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
     mapType: "CONTINENTS",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
     // Human v Human: the headless and test only mirror option
     // (docs/architecture/HEADLESS_SIMULATION.md).
     allowDuplicateFactions: true,

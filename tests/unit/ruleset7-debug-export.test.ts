@@ -89,5 +89,6 @@ function setup(): MatchSetupV7 {
     factions: ["ORIGINAL", "UNDEAD"],
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
 }

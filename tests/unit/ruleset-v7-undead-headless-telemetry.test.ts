@@ -209,6 +209,7 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
   it("passes seat-ordered factions through the batch runner", async () => {
     const batch = await runAiBatchV7({
       seeds: [0],
+      curiosities: false,
       aiCounts: [1],
       mapTypes: ["DRY_LAND"],
       factions: ["UNDEAD", "ORIGINAL"],
@@ -223,6 +224,7 @@ describe("ruleset-7 revision-13 headless Undead telemetry", () => {
     await expect(
       runAiBatchV7({
         seeds: [0],
+        curiosities: false,
         aiCounts: [1, 2],
         factions: ["UNDEAD", "ORIGINAL"],
         maxCommands: 4,
@@ -302,6 +304,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
 }
 

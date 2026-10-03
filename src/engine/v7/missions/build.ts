@@ -505,6 +505,8 @@ export function buildMissionStateV7(
     populationContributions: ledger,
     units,
     treasureChests: chests,
+    // RULESET_7_MAP_CURIOSITIES.md section 3: never on an authored board.
+    curiosities: [],
     graves: sortedCoords(mission.graves ?? []),
     plagued: [],
     bitten: [],

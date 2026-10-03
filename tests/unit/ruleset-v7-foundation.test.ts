@@ -34,11 +34,12 @@ const setup: MatchSetupV7 = {
   factions: ["ORIGINAL", "UNDEAD"],
   mapType: "DRY_LAND",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  curiosities: false,
 };
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r34");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r35");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -110,7 +111,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     expect(COMMAND_KIND_ORDER_V7).toHaveLength(53);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(82);
+    // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
+    // and WRECK_SALVAGED (85 event kinds).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(85);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after
@@ -172,13 +175,15 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // Revision 14 inserts the Start Turn Plague events after TURN_STARTED;
     // revision 15 adds PLAGUE_EXPIRED after PLAGUE_SPREAD; revision 17 adds
     // Troll regeneration after Windmill healing; the Martian revision adds
-    // the Shield recharge after it.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 8)).toEqual([
+    // the Shield recharge after it; map curiosities (`pulp_wars-737.2`) add
+    // the Fountain heal between Windmill healing and Troll regeneration.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 9)).toEqual([
       "TURN_STARTED",
       "PLAGUE_DAMAGED",
       "PLAGUE_SPREAD",
       "PLAGUE_EXPIRED",
       "WINDMILL_HEALING_RESOLVED",
+      "FOUNTAIN_HEALED",
       "UNITS_REGENERATED",
       "SHIELDS_RECHARGED",
       "INCOME_AWARDED",

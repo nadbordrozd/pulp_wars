@@ -135,6 +135,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/afflictions.ts::recordBittenRisingV7": "BOARD",
     "src/engine/v7/combat.ts::calculateCombatPreviewV7": "BOARD",
     "src/engine/v7/combat.ts::requireUnit": "BOARD",
+    // `pulp_wars-737.2`: the Fountain heals a unit standing on its tile and
+    // a Shrine promotes the unit that just moved onto it (map curiosities).
+    "src/engine/v7/curiosities.ts::resolveCuriosityClaimV7": "BOARD",
+    "src/engine/v7/curiosities.ts::resolveFountainHealingV7": "BOARD",
     "src/engine/v7/dwarf-reducer.ts::applyAssembleV7": "BOARD",
     "src/engine/v7/dwarf-reducer.ts::applyBombRunV7": "BOARD",
     "src/engine/v7/dwarf-reducer.ts::applyTunnelV7": "BOARD",

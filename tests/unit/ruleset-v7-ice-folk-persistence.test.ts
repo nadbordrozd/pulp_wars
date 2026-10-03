@@ -36,6 +36,7 @@ const showcase: MatchSetupV7 = {
   factions: ["ICE_FOLK", "ORIGINAL", "UNDEAD", "GOBLIN"],
   mapType: "SHOWCASE",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  curiosities: false,
 };
 
 describe("Ice Folk persistence (section 15)", () => {

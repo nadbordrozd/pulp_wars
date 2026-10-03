@@ -246,6 +246,7 @@ function setupWith(seed = 2): MatchSetupV7 {
     allowDuplicateFactions: true,
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
 }
 

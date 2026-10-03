@@ -10,6 +10,7 @@ import {
 import { placeTreasureChestsV6 } from "../v6/map";
 import { initialAchievementEntitlementsV7 } from "./achievements";
 import { withFullShieldsV7 } from "./martian";
+import { placeCuriositiesV7 } from "./curiosities";
 import { placeRiftsV7 } from "./rift";
 import {
   missionBoardV7,
@@ -35,6 +36,7 @@ import {
   type BoardStateV7,
   type CityStateV7,
   type CoordV7,
+  type CuriosityV7,
   type GameStateV7,
   type FactionIdV7,
   type MatchSetupV7,
@@ -91,6 +93,12 @@ export interface GeneratedMapV7 {
   readonly capitalAssignments: readonly CoordV7[];
   readonly turnOrderSeats: readonly number[];
   readonly treasureChests: readonly CoordV7[];
+  /**
+   * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 4),
+   * sorted by (y, x): empty unless the setup's `curiosities` is true, the
+   * map is generated, and the rules are `CURIOSITIES`.
+   */
+  readonly curiosities: readonly CuriosityV7[];
   readonly random: RandomStateV7;
   readonly attempt: number;
   readonly attempts: readonly MapGenerationAttemptV7[];
@@ -199,7 +207,11 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   const setup = validated.setup;
   if (setup.mapType === "SHOWCASE") return showcaseMapV7(setup);
   if (setup.mapType === "MISSION") return missionMapV7(setup);
-  return generateMapWithVillageCountV7(setup, villageCount(setup), "RIFTS");
+  return generateMapWithVillageCountV7(
+    setup,
+    villageCount(setup),
+    "CURIOSITIES",
+  );
 }
 
 /**
@@ -226,6 +238,7 @@ function missionMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
       capitalAssignments: capitals,
       turnOrderSeats: capitals.map((_, seat) => seat),
       treasureChests: missionTreasureChestsV7(mission),
+      curiosities: [],
       random: randomState(mission.seed),
       attempt: 1,
       attempts: [],
@@ -251,6 +264,7 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
       capitalAssignments: capitals,
       turnOrderSeats: capitals.map((_, seat) => seat),
       treasureChests: [],
+      curiosities: [],
       random: randomState(setup.seed),
       attempt: 1,
       attempts: [],
@@ -260,8 +274,16 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
 }
 
 /**
- * Generation rules a parity call reproduces. `RIFTS` is the current
- * generator: the `PANGEA_COAST_RING` generator followed by Rift placement
+ * Generation rules a parity call reproduces. `CURIOSITIES` is the current
+ * generator: the `RIFTS` generator followed, when the setup's `curiosities`
+ * is true, by curiosity placement
+ * (docs/product/RULESET_7_MAP_CURIOSITIES.md section 4) on its accepted
+ * board. Curiosity placement draws only from its own stream and changes no
+ * tile, so every `CURIOSITIES` map has exactly the board, capitals,
+ * villages, chests, turn order, and match PRNG state of its `RIFTS` map;
+ * only `curiosities` differs (empty under `RIFTS` and with the option off).
+ * `RIFTS` is the generator before the curiosities:
+ * the `PANGEA_COAST_RING` generator followed by Rift placement
  * (docs/product/RULESET_7_RIFT.md section 5) on its accepted board. Rift
  * placement draws only from its own stream and changes only the terrain of
  * the Rift tiles, so a `RIFTS` map without a Rift (every 11 x 11 and
@@ -278,11 +300,18 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
  * `CAPITAL_GROWTH` invariant.
  */
 export type MapGenerationRulesV7 =
-  "REVISION_15" | "REVISION_16" | "PANGEA_COAST_RING" | "RIFTS";
+  "REVISION_15" | "REVISION_16" | "PANGEA_COAST_RING" | "RIFTS" | "CURIOSITIES";
 
-/** Whether `rules` keep the Pangea coast ring (`PANGEA_COAST_RING`, `RIFTS`). */
+/**
+ * Whether `rules` keep the Pangea coast ring (`PANGEA_COAST_RING`, `RIFTS`,
+ * `CURIOSITIES`).
+ */
 function coastRingRulesV7(rules: MapGenerationRulesV7): boolean {
-  return rules === "PANGEA_COAST_RING" || rules === "RIFTS";
+  return (
+    rules === "PANGEA_COAST_RING" ||
+    rules === "RIFTS" ||
+    rules === "CURIOSITIES"
+  );
 }
 
 /**
@@ -308,7 +337,7 @@ export function pangeaLandCountV7(width: number, height: number): number {
 export function generateInitialMapWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "RIFTS",
+  rules: MapGenerationRulesV7 = "CURIOSITIES",
 ): GenerateMapResultV7 {
   const validated = validateMatchSetupV7(input);
   if (!validated.ok) return validated;
@@ -323,7 +352,8 @@ export function generateInitialMapWithVillageCountV7(
     (rules !== "REVISION_15" &&
       rules !== "REVISION_16" &&
       rules !== "PANGEA_COAST_RING" &&
-      rules !== "RIFTS")
+      rules !== "RIFTS" &&
+      rules !== "CURIOSITIES")
   )
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   return generateMapWithVillageCountV7(setup, villages, rules);
@@ -369,7 +399,7 @@ function generateMapWithVillageCountV7(
       // RULESET_7_RIFT.md section 5: the Rifts go on the accepted board,
       // after the treasure chests, from their own stream.
       const board =
-        rules === "RIFTS"
+        rules === "RIFTS" || rules === "CURIOSITIES"
           ? placeRiftsV7(setup.seed, {
               board: candidate.board,
               capitals: candidate.capitals,
@@ -377,6 +407,19 @@ function generateMapWithVillageCountV7(
               treasureChests: treasure.treasureChests,
             }).board
           : candidate.board;
+      // RULESET_7_MAP_CURIOSITIES.md section 4: the curiosities go on the
+      // accepted board after the Rifts, from their own stream, only with
+      // the option on; they never change a tile.
+      const curiosities =
+        rules === "CURIOSITIES" && setup.curiosities
+          ? placeCuriositiesV7(setup.seed, {
+              board,
+              mapType: setup.mapType,
+              capitals: candidate.capitals,
+              villages: candidate.villages,
+              treasureChests: treasure.treasureChests,
+            })
+          : [];
       return {
         ok: true,
         map: deepFreeze({
@@ -386,6 +429,7 @@ function generateMapWithVillageCountV7(
           capitalAssignments: candidate.capitalAssignments,
           turnOrderSeats: candidate.turnOrderSeats,
           treasureChests: treasure.treasureChests,
+          curiosities,
           random: treasure.random,
           attempt,
           attempts,
@@ -2058,7 +2102,7 @@ export function createInitialMapStateV7(
 export function createInitialMapStateWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "RIFTS",
+  rules: MapGenerationRulesV7 = "CURIOSITIES",
 ): CreateInitialMapStateResultV7 {
   const validated = validateMatchSetupV7(input);
   if (!validated.ok) return validated;
@@ -2114,6 +2158,7 @@ function initialMapStateFromV7(
     populationContributions: [],
     units: entities.units,
     treasureChests: generated.map.treasureChests,
+    curiosities: generated.map.curiosities,
     graves: [],
     plagued: [],
     bitten: [],
@@ -2168,6 +2213,7 @@ function showcaseInitialStateV7(
     populationContributions: entities.populationContributions,
     units: entities.units,
     treasureChests: [],
+    curiosities: [],
     graves: [],
     plagued: [],
     bitten: [],

@@ -229,6 +229,20 @@ export type DomainEventV7 =
     }
   | {
       /**
+       * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section
+       * 5): at `playerId`'s Start Turn, after Windmill healing, its unit
+       * standing on the Fountain of Youth at `at` healed `amount` (at least
+       * 1, at most 12) to `hpAfter`.
+       */
+      readonly kind: "FOUNTAIN_HEALED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly amount: number;
+      readonly hpAfter: number;
+    }
+  | {
+      /**
        * Revision 17: Trolls of `playerId` regenerated at its Start Turn,
        * after Windmill healing; only Trolls that healed, in unit-ID order.
        */
@@ -805,6 +819,17 @@ export type DomainEventV7 =
       readonly unitId: UnitId;
     }
   | {
+      /**
+       * Map curiosities (section 6): `unitId` of `playerId` ended a Move on
+       * the Shrine at `at` and claimed it; the `UNIT_PROMOTED` of its
+       * Promotion follows, and the Shrine is gone.
+       */
+      readonly kind: "SHRINE_CLAIMED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
       readonly kind: "UNIT_PROMOTED";
       readonly unitId: UnitId;
       readonly maxHp: number;
@@ -930,6 +955,18 @@ export type DomainEventV7 =
       readonly spawnedUnitId: UnitId | null;
       readonly spawnedAt: CoordV7 | null;
       readonly homeCityId: CityId | null;
+    }
+  | {
+      /**
+       * Map curiosities (section 7): the afloat `unitId` of `playerId` ended
+       * a Move on the Sunken Wreck at `at`; its owner gained `coins` (8) and
+       * the Wreck is gone.
+       */
+      readonly kind: "WRECK_SALVAGED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+      readonly coins: 8;
     }
   | { readonly kind: "PLAYER_ELIMINATED"; readonly playerId: PlayerId }
   | { readonly kind: "MATCH_ENDED"; readonly outcome: MatchOutcomeV7 };

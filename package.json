@@ -112,6 +112,7 @@
     "validate:ruleset7-release": "tsx scripts/validate-ruleset7-current-release.ts",
     "validate:ruleset7-biome": "tsx scripts/validate-ruleset7-biome.ts",
     "validate:ruleset7-naval-maps": "tsx scripts/validate-ruleset7-naval-maps.ts",
+    "validate:ruleset7-curiosity-maps": "tsx scripts/validate-ruleset7-curiosity-maps.ts",
     "validate:ruleset7-growth-maps": "tsx scripts/validate-ruleset7-growth-maps.ts",
     "validate:ruleset7-naval-playable": "tsx scripts/validate-ruleset7-naval-playable.ts",
     "balance:ruleset7-undead": "tsx scripts/ruleset7-undead-balance-matrix.ts",

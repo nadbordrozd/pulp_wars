@@ -2,10 +2,12 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r34` (autosave
-`pulpWars.save.v7r34.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r33.current`; mission setups are described
-[below](#mission-setups-pulp_wars-68k2)), whose rules for all seven factions
+The current client runs `pulp-wars-poc-7r35` (autosave
+`pulpWars.save.v7r35.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r34.current`;
+[mission setups](#mission-setups-pulp_wars-68k2) and
+[map curiosities](#map-curiosities-pulp_wars-7372) are described below),
+whose rules for all seven factions
 the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk,
 and Dwarf, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
@@ -483,6 +485,38 @@ yet and the browser builds no mission setup.
   which the save-recovery screen shows with its Delete action; a replay of
   such a setup is `INCOMPATIBLE_REPLAY`. Adding a mission or bumping a
   mission's revision never changes the ruleset identity or the autosave key.
+  A mission setup always carries `curiosities: false`.
+
+## Map curiosities (`pulp_wars-737.2`)
+
+`pulp-wars-poc-7r35` adds engine step I of the
+[map curiosities spec](../product/RULESET_7_MAP_CURIOSITIES.md)
+([current rules section 2.7](../product/RULESET_7_CURRENT.md#27-map-curiosities)):
+the required setup field `MatchSetupV7.curiosities`, the Fountain of Youth,
+the Shrine, and the Sunken Wreck. `src/engine/v7/curiosities.ts` holds the
+placement (its own stream after the Rifts, called by `map.ts` under the
+`CURIOSITIES` generation rules; `RIFTS` is the parity generator before it)
+and the rule helpers that Start Turn (`startTurnEconomyV7`, the Fountain)
+and `MOVE` (`applyMove`, the Shrine and the Wreck) call.
+
+- **State and view.** `GameStateV7.curiosities` (`{ kind, at }[]`, sorted
+  by `(y, x)`) is parsed against the setup and the board; a Shrine veteran
+  may have fewer than three kills only when the option is on.
+  `PlayerViewV7.curiosities` is the explored subset. `FOUNTAIN_HEALED`,
+  `SHRINE_CLAIMED`, and `WRECK_SALVAGED` are projected by
+  `event-projection.ts` (the Wreck to its owner only).
+- **Setup screen.** The only UI of this step is the "Curiosities" checkbox
+  (`#v7-curiosities`, `.v7-curiosities-choice`) under the Map description:
+  checked by default, part of the draft like the other choices, hidden while
+  the Showcase is the map, and a Showcase launches with `false`
+  (`setupFrom`). The text is the one word, by the minimal-text rule of the
+  [screen flow](../ui/SCREEN_FLOW.md#no-coordinates-minimal-text-bead-pulp_wars-b5f8).
+- **Not drawn yet.** The board, the tile panel, the event log, and Help do
+  not show curiosities until the UI step (`pulp_wars-737.6`, after the
+  Monster engine `737.3` and the art `737.5`): a match with the option on
+  has them in its state and public view but they are invisible in the
+  browser, and their events have no log text. The Normal AI ignores them
+  until `pulp_wars-737.4`.
 
 ## 0. Ruleset-6 replacement boundary
 

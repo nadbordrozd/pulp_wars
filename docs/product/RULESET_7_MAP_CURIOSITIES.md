@@ -1,7 +1,12 @@
 # Ruleset 7: map curiosities
 
-**Status:** design spec (`pulp_wars-737.1`, epic `pulp_wars-737`); not
-implemented. It is an overlay over
+**Status:** design spec (`pulp_wars-737.1`, epic `pulp_wars-737`). Engine
+step I (bead 2 of section 15: the option, placement, the Fountain, the
+Shrine, and the Wreck) is implemented at `pulp-wars-poc-7r35`
+(`pulp_wars-737.2`) and folded into
+[current rules section 2.7](RULESET_7_CURRENT.md#27-map-curiosities), with
+the notes of [section 17](#17-implementation-notes-pulp_wars-7372); the
+Monster, the AI, the art, and the UI are pending. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r31`,
 with the pending [Dwarf overlay](RULESET_7_DWARVES.md) and the pending
 [Mind Control overlay](RULESET_7_MIND_CONTROL.md). Every rule this document
@@ -724,6 +729,56 @@ count table of section 4.2 by at most one step per size.
    giant ape, a giant crab)? Only the art and the name change.
 3. **Rarity.** About one curiosity on a 16 x 16 map, none on half of the
    small maps, two on 25 x 25. Rare enough?
+
+Root defaults applied by engine step I: the Fountain heals 12, the Monster
+is a Giant Spider, the rarity table of section 4.2 as written, and the
+option on by default.
+
+## 17. Implementation notes (`pulp_wars-737.2`)
+
+Engine step I landed at `pulp-wars-poc-7r35`. Where this spec was silent or
+predates the code, the implementation rules as follows:
+
+- **Missions.** The `MISSION` map type (`7r34`) postdates this spec. A
+  mission setup carries the key like every setup but must be `false`
+  (`INVALID_SETUP` otherwise; `missionMatchSetupV7` builds `false`), and a
+  mission board never has curiosities; the headless CLI refuses
+  `--curiosities` with `--map-type mission`. The Showcase accepts either
+  value and has none (section 3).
+- **Thralls.** Section 6's "not a Thrall" is moot since the Mind Control
+  revision (`7r33`): a controlled unit is Promoted by its kind's rules, so
+  it may claim a Shrine. Eligibility is `form === "LAND"`, not a veteran,
+  and not a growing role (`shrineEligibleV7`).
+- **Claims need a step onto the tile.** A Shrine or Wreck is claimed by a
+  `MOVE` whose traversed path is not empty and ends on it (a unit already
+  standing there, for example after a push, claims nothing until it leaves
+  and comes back).
+- **Shrine veterans.** The state schema's "a veteran has at least three
+  kills" holds unless the setup has the option on (on a generated map),
+  where a Shrine veteran may have none.
+- **Parsing** also rejects an entry on the edge ring and an unknown kind
+  (the Monster is never a tile marker).
+- **Land components** (section 4.3 rules 6 and 7) exclude Rift tiles, as
+  the Rift's own connectivity rule does.
+- **Weights without the Monster.** Until bead 3, the eligible kinds are
+  drawn with Fountain 3, Shrine 2, Wreck 2; the Monster's 3 (first in the
+  order) changes the draws when it lands, under its own identity.
+- **Headless.** `runAiBatchV7` requires `curiosities` (so every caller
+  states it), each batch entry records it, and the metrics gain
+  `curiosityKinds`. The generation rules gain `CURIOSITIES` (current) after
+  `RIFTS`.
+- **Previews.** Engine step I adds no preview: the curiosities are in the
+  public view (`PlayerViewV7.curiosities`); the Monster previews of section
+  10.4 belong to bead 3.
+- **Measured distribution** (seeds 0–31, every map type, size, and AI count;
+  `npm run validate:ruleset7-curiosity-maps`): the targets of section 4.2
+  hold where sites exist, but rule 3 (3 from every center) with rule 4
+  (between the capitals) leaves some village-dense boards with no legal
+  site: a third of the 16 x 16 Dry Land boards and 15–20% of the 20 x 20 and
+  25 x 25 Lakes boards get none. On Continents and Archipelago boards about
+  85% of the curiosities are Wrecks (land kinds stay off home islands), as
+  section 4.4 expected. Totals over the 1920 boards: Fountain 523, Shrine
+  520, Wreck 813.
 
 ## Appendix A. Draft, critique, and changes
 

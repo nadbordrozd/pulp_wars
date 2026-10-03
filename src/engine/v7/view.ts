@@ -26,6 +26,7 @@ import type {
   ChillStatusV7,
   CoolingStatusV7,
   CoordV7,
+  CuriosityV7,
   EggStatusV7,
   FactionIdV7,
   FactionTreeIdV7,
@@ -245,6 +246,12 @@ export interface PlayerViewV7 {
   readonly unitStats: readonly PublicUnitStatsV7[];
   readonly naval: PublicNavalFactsV7;
   readonly treasureChests: readonly CoordV7[];
+  /**
+   * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section
+   * 10.4): the curiosities on tiles the viewer has explored, sorted by
+   * (y, x). A curiosity is public on an explored tile.
+   */
+  readonly curiosities: readonly CuriosityV7[];
   /** Revision 13: the viewer-explored subset of the canonical Graves. */
   readonly graves: readonly CoordV7[];
   /**
@@ -729,6 +736,9 @@ export function viewForV7(
     treasureChests: state.treasureChests.filter((chest) =>
       explored.has(key(chest)),
     ),
+    curiosities: state.curiosities
+      .filter((curiosity) => explored.has(key(curiosity.at)))
+      .map((curiosity) => ({ kind: curiosity.kind, at: curiosity.at })),
     graves: state.graves.filter((grave) => explored.has(key(grave))),
     // Revision 14 statuses are public on every visible unit.
     plagued: state.plagued

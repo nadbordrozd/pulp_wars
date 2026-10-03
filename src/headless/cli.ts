@@ -47,12 +47,12 @@ if (mode === "replay") {
         : await headless.run(replay as ReplayFile);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-7r34") await runV7Match();
+  if (ruleset === "pulp-wars-poc-7r35") await runV7Match();
   else if (ruleset === "pulp-wars-poc-6") await runV6Match();
   else if (ruleset === "pulp-wars-poc-5") await runV5Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-7r34") await runV7Batch();
+  if (ruleset === "pulp-wars-poc-7r35") await runV7Batch();
   else if (ruleset === "pulp-wars-poc-6") await runV6Batch();
   else if (ruleset === "pulp-wars-poc-5") await runV5Batch();
   else invalidRuleset();
@@ -73,7 +73,7 @@ async function runV7Match(): Promise<void> {
   const aiCount = aiCountArg("--ai-count", 1);
   const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r34",
+    rulesetId: "pulp-wars-poc-7r35",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: numberArg("--seed", 0),
     width: size,
@@ -84,6 +84,7 @@ async function runV7Match(): Promise<void> {
     humanColor: "CORAL",
     factions: factionsArgV7(aiCount),
     mapType,
+    curiosities: curiositiesArgV7(),
     ...(allowDuplicateFactionsArgV7() ? { allowDuplicateFactions: true } : {}),
   };
   const result = await headlessV7.runAiMatch(setup, {
@@ -107,10 +108,11 @@ async function runV7MissionMatch(): Promise<void> {
     "--ai-count",
     "--cooperative",
     "--allow-duplicate-factions",
+    "--curiosities",
   ])
     if (args.includes(flag))
       throw new Error(
-        `${flag} does not apply to --map-type mission: the mission fixes its size, seats, seed, and mode`,
+        `${flag} does not apply to --map-type mission: the mission fixes its size, seats, seed, and mode, and has no curiosities`,
       );
   if (!args.includes("--mission"))
     throw new Error("--map-type mission requires --mission <ID>");
@@ -150,6 +152,7 @@ async function runV7Batch(): Promise<void> {
     maxRounds: numberArg("--max-rounds", V7_MATCH_MAX_ROUNDS_DEFAULT),
     ...v7BatchBoardSize(mapTypes),
     mapTypes,
+    curiosities: curiositiesArgV7(),
     ...(factions === null ? {} : { factions }),
     ...(allowDuplicateFactionsArgV7() ? { allowDuplicateFactions: true } : {}),
   });
@@ -407,6 +410,19 @@ function allowDuplicateFactionsArgV7(): boolean {
 }
 
 /**
+ * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
+ * `--curiosities on` or `--curiosities off`; on by default, as on the setup
+ * screen. The Showcase never has curiosities, whatever the value.
+ */
+function curiositiesArgV7(): boolean {
+  if (!args.includes("--curiosities")) return true;
+  const value = stringArg("--curiosities", "").toLowerCase();
+  if (value === "on") return true;
+  if (value === "off") return false;
+  throw new Error("--curiosities must be on or off");
+}
+
+/**
  * Ruleset 7 seat-ordered factions: `original` (alias `human`), `undead`,
  * `goblin`, `dinosaur`, `martian`, `ice` (alias `ice_folk`), or `dwarf`,
  * case-insensitive, exactly one value per seat (seat 0 first), no faction
@@ -499,6 +515,6 @@ function parseFactionValues(
 
 function invalidRuleset(): never {
   throw new Error(
-    "--ruleset must be pulp-wars-poc-7r34, pulp-wars-poc-6, or pulp-wars-poc-5",
+    "--ruleset must be pulp-wars-poc-7r35, pulp-wars-poc-6, or pulp-wars-poc-5",
   );
 }

@@ -378,6 +378,7 @@ export function runCell(cell: Cell): MatchPressure {
   const setup: MatchSetupV7 = {
     rulesetId: RULESET_7_ID,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
     seed: cell.seed,
     width: cell.size,
     height: cell.size,

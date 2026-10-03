@@ -66,6 +66,7 @@ function showcaseSetup(
     factions,
     mapType: "SHOWCASE",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
     // pulp_wars-w5j.1: the test only mirror option for repeated factions.
     ...mirrorOptionV7(factions),
     ...overrides,
@@ -175,9 +176,13 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         burrowed,
         surfacedThisTurn,
         bombedThisTurn,
+        // Map curiosities (`pulp_wars-737.2`): the empty list, and the
+        // setup's `curiosities: false` below.
+        curiosities,
         ...revision19State
       } = created.state;
       expect(eggs).toEqual([]);
+      expect(curiosities).toEqual([]);
       expect([
         shields,
         cooling,
@@ -214,8 +219,11 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         "PANGEA_COAST_RING",
       );
       if (!withoutRifts.ok) throw new Error(`${mapType} base rejected`);
+      const { curiosities: option, ...setupBefore } = revision19State.setup;
+      expect(option).toBe(false);
       const revision18State = {
         ...revision19State,
+        setup: setupBefore,
         board: {
           ...revision19State.board,
           tiles: revision19State.board.tiles.map((tile, index) =>

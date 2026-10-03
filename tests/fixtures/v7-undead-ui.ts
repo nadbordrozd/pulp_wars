@@ -64,6 +64,7 @@ export function undeadUiSetupV7(
     factions: [...factions],
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
     ...mirrorOptionV7(factions),
   };
 }

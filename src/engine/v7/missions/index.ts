@@ -89,5 +89,7 @@ export function missionMatchSetupV7(
     mapType: "MISSION",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     mission: { id: mission.id, revision: mission.revision },
+    // RULESET_7_MAP_CURIOSITIES.md section 3: never on an authored board.
+    curiosities: false,
   };
 }

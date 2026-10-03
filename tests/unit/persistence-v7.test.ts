@@ -40,13 +40,14 @@ const setup: MatchSetupV7 = {
   allowDuplicateFactions: true,
   mapType: "DRY_LAND",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  curiosities: false,
 };
 /** A one-city tier-3 technology (revision 16: 12 Coins, was 9). */
 const TIER_3_COST = technologyResearchCostV7(3, 1);
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r34.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r35.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);

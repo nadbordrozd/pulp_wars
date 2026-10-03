@@ -32,6 +32,7 @@ describe("ruleset-7 naval map contract", () => {
         allowDuplicateFactions: true as const,
         mapType,
         mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+        curiosities: false,
       };
       const first = generateInitialMapV7(setup);
       const second = generateInitialMapV7(setup);
@@ -74,6 +75,7 @@ describe("ruleset-7 naval map contract", () => {
           allowDuplicateFactions: true,
           mapType,
           mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+          curiosities: false,
         });
         expect(result.ok).toBe(true);
         if (result.ok)
@@ -101,6 +103,7 @@ describe("ruleset-7 naval map contract", () => {
       allowDuplicateFactions: true,
       mapType: "CONTINENTS",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      curiosities: false,
     });
     expect(result.ok).toBe(true);
     if (!result.ok) return;

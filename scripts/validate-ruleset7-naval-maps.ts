@@ -71,6 +71,7 @@ for (const mapType of mapTypes)
           allowDuplicateFactions: true as const,
           mapType,
           mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+          curiosities: false,
         };
         const first = generateInitialMapV7(setup);
         const second = generateInitialMapV7(setup);
@@ -145,6 +146,7 @@ for (const [width, aiCount] of setups)
       allowDuplicateFactions: true,
       mapType: "PANGEA" as const,
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+      curiosities: false,
     });
     assert(generated.ok, `PANGEA/${width}/${aiCount}/${seed} failed`);
     validate(generated.map.board.tiles, width, "PANGEA", aiCount + 1);
@@ -177,6 +179,7 @@ for (const mapType of mapTypes)
         allowDuplicateFactions: true as const,
         mapType,
         mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+        curiosities: false,
       };
       const current = generateInitialMapV7(setup);
       const base = generateInitialMapWithVillageCountV7(

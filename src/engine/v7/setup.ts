@@ -14,6 +14,8 @@ const SETUP_KEYS_V7 = [
   "aiCount",
   "aiDifficulty",
   "aiMode",
+  // Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3).
+  "curiosities",
   "factions",
   "height",
   "humanColor",
@@ -128,7 +130,10 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
  * `allowDuplicateFactions: true`. A `MISSION` setup carries exactly one
  * extra key, `mission: { id, revision }`, and never `allowDuplicateFactions`;
  * the pair must be registered (`UNKNOWN_MISSION`) and every other field must
- * match the definition (docs/product/CAMPAIGN.md section 2.4).
+ * match the definition (docs/product/CAMPAIGN.md section 2.4). The required
+ * `curiosities` boolean (docs/product/RULESET_7_MAP_CURIOSITIES.md section
+ * 3) is free on a generated map and the Showcase (which never has any) and
+ * always `false` on a mission.
  */
 export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
   const invalid = {
@@ -162,6 +167,7 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
     input.aiDifficulty !== "NORMAL" ||
     (input.aiMode !== "RIVAL" && input.aiMode !== "COOPERATIVE") ||
     !isColor(input.humanColor) ||
+    typeof input.curiosities !== "boolean" ||
     !isDenseArrayV7(input.factions) ||
     input.factions.length !== input.aiCount + 1 ||
     !input.factions.every((faction) =>
@@ -193,6 +199,7 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
       factions,
       mapType: input.mapType,
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      curiosities: input.curiosities,
       ...(mirror ? { allowDuplicateFactions: true as const } : {}),
     },
   };
@@ -227,6 +234,9 @@ function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
     input.aiDifficulty !== "NORMAL" ||
     (input.aiMode !== "RIVAL" && input.aiMode !== "COOPERATIVE") ||
     !isColor(input.humanColor) ||
+    // Map curiosities (RULESET_7_MAP_CURIOSITIES.md section 3): an authored
+    // mission board never has curiosities, so its setup is always `false`.
+    input.curiosities !== false ||
     !isDenseArrayV7(input.factions) ||
     !input.factions.every((faction) =>
       FACTION_IDS_V7.includes(faction as FactionIdV7),
@@ -274,6 +284,7 @@ function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
       mapType: "MISSION",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
       mission: ref,
+      curiosities: false,
     },
   };
 }

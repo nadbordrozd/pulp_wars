@@ -473,6 +473,19 @@ function eventVisible(
       );
     case "TREASURE_CAPTURED":
       return event.playerId === viewerId;
+    // Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md sections 5
+    // to 7): a Fountain heal like Windmill healing (the owner, and a viewer
+    // that sees the unit on the explored Fountain); a Shrine claim to every
+    // viewer that explored its tile (and sees the unit); a Wreck salvage,
+    // which pays Coins, to its owner only like a treasure chest.
+    case "FOUNTAIN_HEALED":
+    case "SHRINE_CLAIMED":
+      return (
+        event.playerId === viewerId ||
+        coordVisible(before, after, viewerId, event.at)
+      );
+    case "WRECK_SALVAGED":
+      return event.playerId === viewerId;
     // Revision 17: Plunder Coins are owner-private like Spoils.
     case "SPOILS_AWARDED":
     case "PLUNDER_AWARDED":

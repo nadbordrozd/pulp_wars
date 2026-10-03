@@ -49,6 +49,7 @@ function setup(
     allowDuplicateFactions: true,
     mapType,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+    curiosities: false,
   };
 }
 

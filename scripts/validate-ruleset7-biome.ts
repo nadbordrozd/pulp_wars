@@ -118,7 +118,7 @@ for (const [width, aiCount] of setups) {
     grandWorks: 0,
   };
   const setup = (seed: number, mode: "RIVAL" | "COOPERATIVE") => ({
-    rulesetId: "pulp-wars-poc-7r34" as const,
+    rulesetId: "pulp-wars-poc-7r35" as const,
     seed,
     width,
     height: width,
@@ -134,6 +134,7 @@ for (const [width, aiCount] of setups) {
     ),
     mapType: "DRY_LAND" as const,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+    curiosities: false,
   });
   for (let seed = 0; seed < 1000; seed += 1) {
     // Both modes must parse; map inputs are otherwise identical, so only Rival is generated.
@@ -371,7 +372,7 @@ for (const [width, aiCount] of setups) {
 console.log(
   JSON.stringify(
     {
-      rulesetId: "pulp-wars-poc-7r34",
+      rulesetId: "pulp-wars-poc-7r35",
       seeds: "0..999",
       setups: report,
       failures,

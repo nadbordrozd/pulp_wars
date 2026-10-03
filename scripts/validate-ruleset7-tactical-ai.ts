@@ -176,6 +176,7 @@ function runPairedGame(
     // (docs/architecture/HEADLESS_SIMULATION.md).
     allowDuplicateFactions: true,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   });
   if (!created.ok) throw new Error(`${mapType}/${seed}: ${created.error.code}`);
   let state = created.state;
@@ -510,6 +511,7 @@ function runNaturalGame(
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
     mapType: "CONTINENTS",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
     // Human v Human: the headless and test only mirror option
     // (docs/architecture/HEADLESS_SIMULATION.md).
     allowDuplicateFactions: true,

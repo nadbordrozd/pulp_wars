@@ -35,6 +35,7 @@ const setup: MatchSetupV7 = {
   factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
   allowDuplicateFactions: true,
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  curiosities: false,
 };
 const created = createInitialMapStateV7(setup);
 if (!created.ok) throw new Error(created.error.code);

@@ -70,6 +70,7 @@ import {
   type AchievementIdV7,
   type AiCountV7,
   type BoardSizeV7,
+  type CuriosityKindV7,
   type FactionIdV7,
   type GameStateV7,
   type ImprovementIdV7,
@@ -114,10 +115,15 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r34";
+  readonly rulesetId: "pulp-wars-poc-7r35";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
+  /**
+   * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 4):
+   * the kinds the board started with, in (y, x) order of their tiles.
+   */
+  readonly curiosityKinds: readonly CuriosityKindV7[];
   finalPrngHash: string;
   commandHash: string;
   eventHash: string;
@@ -479,6 +485,13 @@ export interface AiBatchOptionsV7 {
    * `allowDuplicateFactions: true` (docs/architecture/HEADLESS_SIMULATION.md).
    */
   readonly allowDuplicateFactions?: boolean;
+  /**
+   * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
+   * every setup of the batch carries this value. Required, so a caller
+   * always states it; the CLI defaults it to `true` like the setup screen,
+   * and the parity, balance, and validation tools pass `false`.
+   */
+  readonly curiosities: boolean;
   readonly maxCommands?: number;
   readonly maxRounds?: number;
 }
@@ -489,6 +502,11 @@ export interface AiBatchEntryV7 {
   readonly aiMode: MatchSetupV7["aiMode"];
   readonly mapType: MatchSetupV7["mapType"];
   readonly factions: readonly FactionIdV7[];
+  /**
+   * The setup's `curiosities` value (section 3); the placed kinds are
+   * `metrics.curiosityKinds`.
+   */
+  readonly curiosities: boolean;
   readonly outcome: MatchOutcomeV7 | null;
   readonly termination: AiMatchTerminationV7;
   readonly rounds: number;
@@ -961,7 +979,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r34",
+              rulesetId: "pulp-wars-poc-7r35",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -972,6 +990,7 @@ export async function runAiBatchV7(
               humanColor: "CORAL",
               factions,
               mapType,
+              curiosities: options.curiosities,
               ...(options.allowDuplicateFactions === true
                 ? { allowDuplicateFactions: true as const }
                 : {}),
@@ -992,6 +1011,7 @@ export async function runAiBatchV7(
             aiMode,
             mapType,
             factions,
+            curiosities: options.curiosities,
             outcome: result.outcome,
             termination: result.termination,
             rounds: result.rounds,
@@ -1074,13 +1094,14 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r34",
+    rulesetId: "pulp-wars-poc-7r35",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
       treasureChests: state.treasureChests,
     }),
     postGenerationPrngHash: canonicalHash(state.random),
+    curiosityKinds: state.curiosities.map((curiosity) => curiosity.kind),
     finalPrngHash: "",
     commandHash: "",
     eventHash: "",

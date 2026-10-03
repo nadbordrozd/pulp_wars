@@ -249,6 +249,7 @@ function alliedCityViews(): {
     allowDuplicateFactions: true,
     mapType: "CONTINENTS",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   });
   if (!created.ok) throw new Error(created.error.code);
   const actor = required(

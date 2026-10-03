@@ -557,6 +557,7 @@ function setupV7(seed: number, aiCount: 1 | 2 | 3): MatchSetupV7 {
     factions: distinctFactionsV7(aiCount + 1),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
 }
 

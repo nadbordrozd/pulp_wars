@@ -48,6 +48,7 @@ function setupOf(
     factions: [...factions],
     mapType,
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
 }
 
@@ -206,6 +207,7 @@ describe("ruleset-7 unique factions: the headless and test mirror option", () =>
   it("defaults a headless batch to distinct factions and gates mirrors", async () => {
     const batch = await runAiBatchV7({
       seeds: [0],
+      curiosities: false,
       aiCounts: [1, 3],
       maxCommands: 1,
     });
@@ -216,6 +218,7 @@ describe("ruleset-7 unique factions: the headless and test mirror option", () =>
     await expect(
       runAiBatchV7({
         seeds: [0],
+        curiosities: false,
         aiCounts: [1],
         factions: ["GOBLIN", "GOBLIN"],
         maxCommands: 1,
@@ -223,6 +226,7 @@ describe("ruleset-7 unique factions: the headless and test mirror option", () =>
     ).rejects.toThrow("CREATE_REJECTED:DUPLICATE_FACTION");
     const mirror = await runAiBatchV7({
       seeds: [0],
+      curiosities: false,
       aiCounts: [1],
       factions: ["GOBLIN", "GOBLIN"],
       allowDuplicateFactions: true,

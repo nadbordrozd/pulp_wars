@@ -168,7 +168,9 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "TUNNEL",
     ]);
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(82);
+    // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
+    // and WRECK_SALVAGED (85 event kinds).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(85);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
@@ -1100,6 +1102,7 @@ const showcase = (factions: readonly FactionIdV7[]): MatchSetupV7 => ({
   ...mirrorOptionV7(factions),
   mapType: "SHOWCASE",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  curiosities: false,
 });
 
 describe("Ice Folk Showcase (section 2.4)", () => {

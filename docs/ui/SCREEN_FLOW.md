@@ -1169,6 +1169,15 @@ both art sets. Where an older section below disagrees, this overlay wins.
   `pulp_wars-b5f.4`: each faction has its permanent colour). A Showcase match opens on the human's
   turn with the camera on the capital in the middle of the player's strip;
   the resume and results screens label the map "Showcase".
+- **Setup: Curiosities** (`pulp_wars-737.2`,
+  [map curiosities](../product/RULESET_7_CURRENT.md#27-map-curiosities)).
+  Right under the Map description, one checkbox labelled **Curiosities**,
+  checked by default; its value is the launched setup's `curiosities`. It
+  is hidden while Showcase is selected (a Showcase always launches with
+  curiosities off) and comes back with its earlier state. Like the seed
+  choice it lasts for the page session. Until the UI step
+  (`pulp_wars-737.6`) adds the board markers, the hint text, and Help, the
+  curiosities of a match are not drawn.
 - **Map seed.** Settings shows `Map seed: N` for the current match (selectable
   text), so a map can be replayed by choosing Use seed in a new game. Restart
   and Play again keep the current match's seed; a new game from the resume

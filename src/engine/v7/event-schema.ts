@@ -34,6 +34,7 @@ import {
   isSafeIntegerV7,
   parseCoordV7,
 } from "./schema";
+import { FOUNTAIN_HEAL_V7, WRECK_COINS_V7 } from "./curiosities";
 
 const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   TURN_STARTED: ["kind", "playerId", "coins"],
@@ -41,6 +42,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   PLAGUE_SPREAD: ["kind", "playerId", "results"],
   PLAGUE_EXPIRED: ["kind", "playerId", "unitIds"],
   WINDMILL_HEALING_RESOLVED: ["kind", "playerId", "cityId", "at", "results"],
+  FOUNTAIN_HEALED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
   UNITS_REGENERATED: ["kind", "playerId", "results"],
   SHIELDS_RECHARGED: ["kind", "playerId", "results"],
   INCOME_AWARDED: ["kind", "playerId", "totalCoins", "cities"],
@@ -330,6 +332,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   PLUNDER_AWARDED: ["kind", "playerId", "kills", "coins"],
   UNIT_RECOVERED: ["kind", "unitId", "amount", "automatic"],
   UNIT_WAITED: ["kind", "playerId", "unitId"],
+  SHRINE_CLAIMED: ["kind", "playerId", "unitId", "at"],
   UNIT_PROMOTED: ["kind", "unitId", "maxHp"],
   UNIT_GREW: ["kind", "unitId", "stage", "maxHp", "hp"],
   UNIT_DIED: ["kind", "unitId", "cause"],
@@ -384,6 +387,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "spawnedAt",
     "homeCityId",
   ],
+  WRECK_SALVAGED: ["kind", "playerId", "unitId", "at", "coins"],
   PLAYER_ELIMINATED: ["kind", "playerId"],
   MATCH_ENDED: ["kind", "outcome"],
 };
@@ -704,6 +708,17 @@ function validPayload(
         id(e.cityId) &&
         parseCoordV7(e.at) !== null &&
         healingResults(e.results)
+      );
+    // Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 5).
+    case "FOUNTAIN_HEALED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        pos(e.amount) &&
+        (e.amount as number) <= FOUNTAIN_HEAL_V7 &&
+        pos(e.hpAfter) &&
+        (e.hpAfter as number) > (e.amount as number)
       );
     case "UNITS_REGENERATED":
       return id(e.playerId) && healingResults(e.results);
@@ -1148,6 +1163,9 @@ function validPayload(
       return id(e.unitId) && pos(e.amount) && typeof e.automatic === "boolean";
     case "UNIT_WAITED":
       return id(e.playerId) && id(e.unitId);
+    // Map curiosities (section 6).
+    case "SHRINE_CLAIMED":
+      return id(e.playerId) && id(e.unitId) && parseCoordV7(e.at) !== null;
     case "UNIT_PROMOTED":
       return id(e.unitId) && pos(e.maxHp);
     case "UNIT_GREW":
@@ -1232,6 +1250,14 @@ function validPayload(
       return id(e.cityId) && (e.from === null || id(e.from)) && id(e.to);
     case "TREASURE_CAPTURED":
       return treasure(e);
+    // Map curiosities (section 7).
+    case "WRECK_SALVAGED":
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        parseCoordV7(e.at) !== null &&
+        e.coins === WRECK_COINS_V7
+      );
     case "MATCH_ENDED":
       return outcome(e.outcome);
   }

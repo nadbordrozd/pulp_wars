@@ -51,6 +51,7 @@ const showcase: MatchSetupV7 = {
   factions: ["DWARF", "ORIGINAL", "UNDEAD", "GOBLIN"],
   mapType: "SHOWCASE",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  curiosities: false,
 };
 
 function projected(

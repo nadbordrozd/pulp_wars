@@ -36,6 +36,7 @@ export function runShowcaseHeadlessMatchV7(
     factions: [faction, "ORIGINAL", "UNDEAD", "GOBLIN"],
     mapType: "SHOWCASE",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
   const match = runAiMatchV7(setup, {
     maxRounds: SHOWCASE_HEADLESS_ROUNDS_V7,

@@ -1135,6 +1135,7 @@ function setupWith(
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
 }
 

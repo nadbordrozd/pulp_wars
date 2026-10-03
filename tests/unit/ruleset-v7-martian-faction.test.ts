@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 34;
+const REVISION = 35;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -270,7 +270,9 @@ describe("Martian faction registration (sections 2 and 11)", () => {
       "TRACTOR_BEAM",
     ]);
     // The Mind Control revision adds UNIT_RELEASED after UNIT_MIND_CONTROLLED.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(82);
+    // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
+    // and WRECK_SALVAGED (85 event kinds).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(85);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1
@@ -1385,6 +1387,7 @@ const showcase = (factions: readonly FactionIdV7[]): MatchSetupV7 => ({
   ...mirrorOptionV7(factions),
   mapType: "SHOWCASE",
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  curiosities: false,
 });
 
 describe("Martian Showcase (section 2.4)", () => {

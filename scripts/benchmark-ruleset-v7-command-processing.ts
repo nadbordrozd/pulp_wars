@@ -59,6 +59,7 @@ function setup(seed: number): MatchSetupV7 {
     // (docs/product/RULESET_7_UNIQUE_FACTIONS.md).
     factions: ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"],
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    curiosities: false,
   };
 }
 

@@ -19,6 +19,7 @@ import { isEggActivationV7 } from "./eggs";
 import {
   ACHIEVEMENT_IDS_V7,
   BIOME_IDS_V7,
+  CURIOSITY_KINDS_V7,
   FACTION_IDS_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
@@ -38,6 +39,8 @@ import {
   type CityStateV7,
   type CoolingStatusV7,
   type CoordV7,
+  type CuriosityKindV7,
+  type CuriosityV7,
   type EggStatusV7,
   type FactionIdV7,
   type GameStateV7,
@@ -62,6 +65,11 @@ import {
   type UnitStateV7,
 } from "./types";
 import { PLAGUE_DURATION_TURNS_V7 } from "./afflictions";
+import {
+  CURIOSITY_CENTER_DISTANCE_V7,
+  curiosityTerrainLegalV7,
+  setupHasCuriositiesV7,
+} from "./curiosities";
 import { parseMatchSetupV7 } from "./setup";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { roadPopulationForCityV7 } from "./economy";
@@ -92,6 +100,7 @@ const STATE_KEYS = [
   "cities",
   "commandIndex",
   "cooling",
+  "curiosities",
   "eggs",
   "graves",
   "humanPlayerId",
@@ -155,11 +164,17 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   // The Mind Control revision (section 2.1): a unit's role rule resolves
   // through its kind, so the controlled list is read first.
   const mindControlled = parseMindControlled(input.mindControlled);
+  // Map curiosities (section 6): a Shrine promotes without the kills.
+  const shrinePromotions = setup !== null && setupHasCuriositiesV7(setup);
   const units =
     players === null || mindControlled === null
       ? null
-      : parseUnits(input.units, players, mindControlled);
+      : parseUnits(input.units, players, mindControlled, shrinePromotions);
   const treasureChests = parseSortedCoords(input.treasureChests);
+  const curiosities =
+    setup === null || board === null || treasureChests === null
+      ? null
+      : parseCuriosities(input.curiosities, setup, board, treasureChests);
   const graves = parseSortedCoords(input.graves);
   const plagued = parsePlagued(input.plagued);
   const bitten = parseBitten(input.bitten);
@@ -175,7 +190,12 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const burrowed =
     players === null || mindControlled === null
       ? null
-      : parseBurrowed(input.burrowed, players, mindControlled);
+      : parseBurrowed(
+          input.burrowed,
+          players,
+          mindControlled,
+          shrinePromotions,
+        );
   const surfacedThisTurn = parseSortedUnitIds(input.surfacedThisTurn);
   const bombedThisTurn = parseSortedUnitIds(input.bombedThisTurn);
   const choices = parseChoices(input.pendingChoices);
@@ -191,6 +211,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     contributions === null ||
     units === null ||
     treasureChests === null ||
+    curiosities === null ||
     graves === null ||
     plagued === null ||
     bitten === null ||
@@ -269,6 +290,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     populationContributions: contributions,
     units,
     treasureChests,
+    curiosities,
     graves,
     plagued,
     bitten,
@@ -738,21 +760,34 @@ function parseUnits(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
+  shrinePromotions: boolean,
 ): readonly UnitStateV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitStateV7[] = [];
   for (const candidate of input) {
-    const unit = parseUnit(candidate, players, mindControlled);
+    const unit = parseUnit(
+      candidate,
+      players,
+      mindControlled,
+      shrinePromotions,
+    );
     if (unit === null || (values.at(-1)?.id ?? 0) >= unit.id) return null;
     values.push(unit);
   }
   return values;
 }
 
+/**
+ * One unit. `shrinePromotions` (map curiosities,
+ * docs/product/RULESET_7_MAP_CURIOSITIES.md section 6): in a match whose
+ * board can carry a Shrine, a veteran may have fewer than
+ * `PROMOTION_KILLS_V7` kills (the Shrine promotes without them).
+ */
 function parseUnit(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
+  shrinePromotions: boolean,
 ): UnitStateV7 | null {
   if (
     !hasExactKeysV7(input, [
@@ -847,7 +882,7 @@ function parseUnit(
         input.maxHp !==
           rule.maxHp + GROWTH_HP_V7 * growthStageForKillsV7(input.kills)
       : input.maxHp !== rule.maxHp + (input.veteran ? PROMOTION_HP_V7 : 0)) ||
-    (input.veteran && input.kills < PROMOTION_KILLS_V7) ||
+    (input.veteran && !shrinePromotions && input.kills < PROMOTION_KILLS_V7) ||
     (input.captureEligible && !rule.abilities.includes("CAPTURE")) ||
     // The Dwarf revision section 7.3: an unmoved Clockwork Gunner fires
     // twice.
@@ -1202,12 +1237,18 @@ function parseBurrowed(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
+  shrinePromotions: boolean,
 ): readonly BurrowedEntryV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: BurrowedEntryV7[] = [];
   for (const candidate of input) {
     if (!hasExactKeysV7(candidate, ["moleUnitId", "unit"])) return null;
-    const unit = parseUnit(candidate.unit, players, mindControlled);
+    const unit = parseUnit(
+      candidate.unit,
+      players,
+      mindControlled,
+      shrinePromotions,
+    );
     const moleUnitId =
       candidate.moleUnitId === null
         ? null
@@ -1248,6 +1289,65 @@ function parseSortedCoords(input: unknown): readonly CoordV7[] | null {
     )
       return null;
     values.push(at);
+  }
+  return values;
+}
+
+/**
+ * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 10.2):
+ * the curiosity list, strictly ascending by (y, x) (so no tile holds two).
+ * It is empty unless the setup's `curiosities` is true on a generated map;
+ * every entry stands on its kind's terrain, on no settlement site, treasure
+ * chest, resource, improvement, or Rift, 3 or more from every settlement
+ * center (section 4.3 rules 2 and 3), and off the board's edge ring.
+ */
+function parseCuriosities(
+  input: unknown,
+  setup: MatchSetupV7,
+  board: BoardStateV7,
+  treasureChests: readonly CoordV7[],
+): readonly CuriosityV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  if (input.length > 0 && !setupHasCuriositiesV7(setup)) return null;
+  const centers = board.tiles
+    .filter((tile) => tile.site !== null)
+    .map((tile) => tile.at);
+  const values: CuriosityV7[] = [];
+  for (const candidate of input) {
+    if (
+      !hasExactKeysV7(candidate, ["at", "kind"]) ||
+      !CURIOSITY_KINDS_V7.includes(candidate.kind as CuriosityKindV7)
+    )
+      return null;
+    const kind = candidate.kind as CuriosityKindV7;
+    const at = parseCoordV7(candidate.at);
+    if (
+      at === null ||
+      at.x < 1 ||
+      at.y < 1 ||
+      at.x > board.width - 2 ||
+      at.y > board.height - 2 ||
+      (values.length > 0 &&
+        compareCoordsV7((values.at(-1) as CuriosityV7).at, at) >= 0)
+    )
+      return null;
+    const tile = board.tiles[at.y * board.width + at.x];
+    if (
+      tile === undefined ||
+      tile.site !== null ||
+      tile.resource !== null ||
+      tile.improvement !== null ||
+      tile.terrain === "RIFT" ||
+      !curiosityTerrainLegalV7(kind, tile.terrain) ||
+      treasureChests.some((chest) => sameCoordV7(chest, at)) ||
+      centers.some(
+        (center) =>
+          Math.max(Math.abs(center.x - at.x), Math.abs(center.y - at.y)) <
+          CURIOSITY_CENTER_DISTANCE_V7,
+      )
+    )
+      return null;
+    values.push({ kind, at });
   }
   return values;
 }

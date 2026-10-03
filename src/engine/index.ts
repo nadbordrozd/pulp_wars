@@ -58,6 +58,7 @@ export * from "./v7/events";
 export * from "./v7/event-schema";
 export * from "./v7/event-projection";
 export * from "./v7/explosions";
+export * from "./v7/curiosities";
 export * from "./v7/forbidden-technologies";
 export * from "./v7/graves";
 export * from "./v7/rift";

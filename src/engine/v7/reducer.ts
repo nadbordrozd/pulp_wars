@@ -2,6 +2,7 @@ import { allocateCityId, allocateUnitId, type PlayerId } from "../model/ids";
 import { deepFreeze } from "../model/freeze";
 import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
+import { resolveCuriosityClaimV7 } from "./curiosities";
 import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
@@ -3128,6 +3129,25 @@ function applyMove(
       players = setExplored(players, actor, sight.explored);
       treasure.extraRevealed.push(...sight.revealed);
     }
+    // Map curiosities (RULESET_7_MAP_CURIOSITIES.md sections 6 and 7): a
+    // unit that ends a Move on a Shrine or a Wreck (having moved onto it)
+    // claims it, read from its state after the Move (its form included).
+    const moved = units.find((candidate) => candidate.id === unit.id);
+    const claim =
+      moved === undefined ||
+      validation.traversedPath.length === 0 ||
+      state.curiosities.length === 0
+        ? null
+        : resolveCuriosityClaimV7(
+            { ...state, players, units },
+            actor,
+            moved,
+            validation.destination,
+          );
+    if (claim !== null) {
+      players = claim.state.players;
+      units = [...claim.state.units];
+    }
     const events: DomainEventV7[] = [];
     // The Martian revision: a flyer never destroys Field Defense by
     // entering a tile (it is not on the ground).
@@ -3172,6 +3192,7 @@ function applyMove(
         to: validation.destination,
       });
     if (treasure !== null) events.push(treasure.event);
+    if (claim !== null) events.push(...claim.events);
     if (validation.interruption !== null)
       events.push({
         kind: "UNIT_MOVE_INTERRUPTED",
@@ -3199,6 +3220,7 @@ function applyMove(
       random: treasure?.random ?? state.random,
       nextEntityId: treasure?.nextEntityId ?? state.nextEntityId,
       treasureChests: treasure?.treasureChests ?? state.treasureChests,
+      curiosities: claim?.state.curiosities ?? state.curiosities,
     };
     const economy = recomputeLiveEconomyV7(
       state,

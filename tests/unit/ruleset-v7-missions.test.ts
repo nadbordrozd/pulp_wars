@@ -69,11 +69,41 @@ const NAVAL: readonly TechnologyIdV7[] = [
  * already invalidates saves).
  */
 const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
+  // Re-pinned by map curiosities (`pulp_wars-737.2`): the setup's
+  // `curiosities: false` and the empty `curiosities` list.
+  "TEST_GROUNDS@1:ORIGINAL":
+    "cdd43baf94ec2b7c8961a1b0732a381b281e6ea080ac79f91942c0eaf6b634aa",
+  "TEST_GROUNDS@1:GOBLIN":
+    "ed51a42b3e6e2a758ff872658f2184685002d92cbe761958ee4a1914dd91c9bc",
+  // The AI-directive fixtures (`pulp_wars-68k.3`).
+  "TEST_RUSH@1:ORIGINAL":
+    "e441193ea8d2ba39b48b7e6bfe826898d8f9cf51722b2a9b890a3f17e271396c",
+  "TEST_HOLD@1:ORIGINAL":
+    "63f8feb4d5d7e1cb313b1c2bf4a09bee259ef73727773fdce351671ac4ed5925",
+  "TEST_GUARD@1:ORIGINAL":
+    "75569e71228d50c8bdf4977e655316676c8f0b626a657b8c6c00bf5cefc31a50",
+};
+
+function missionStateHash(state: GameStateV7): string {
+  return canonicalHash({
+    ...state,
+    rulesetId: "*",
+    setup: { ...state.setup, rulesetId: "*" },
+  });
+}
+
+/**
+ * The 7r34 pins (`pulp_wars-68k.2`), before map curiosities
+ * (`pulp_wars-737.2`) added the setup's `curiosities: false` and the empty
+ * `curiosities` list: a mission state without those two keys still hashes
+ * to them, so the curiosities changed nothing else in a mission.
+ */
+const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
   "TEST_GROUNDS@1:ORIGINAL":
     "2571d656f451581da64e24744b76489251536d04b7c06be06120cd79be7a6433",
   "TEST_GROUNDS@1:GOBLIN":
     "b82a6886fe8e938b35f21807277443e5a296d8bdf69284f59f65a5637917577b",
-  // The AI-directive fixtures (`pulp_wars-68k.3`).
+  // The AI-directive fixtures (`pulp_wars-68k.3`), pinned at 7r34.
   "TEST_RUSH@1:ORIGINAL":
     "243228c450a3067a06a06078af18ad3254c40fa43a723577d13b010903dc7f87",
   "TEST_HOLD@1:ORIGINAL":
@@ -82,11 +112,14 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "493749a981bcc06da8f1346adedfef54c1dd0d6a491e7167376f4a8cceb5432a",
 };
 
-function missionStateHash(state: GameStateV7): string {
+function preCuriosityMissionStateHash(state: GameStateV7): string {
+  const { curiosities, ...rest } = state;
+  const { curiosities: option, ...setup } = state.setup;
+  expect([curiosities, option]).toEqual([[], false]);
   return canonicalHash({
-    ...state,
+    ...rest,
     rulesetId: "*",
-    setup: { ...state.setup, rulesetId: "*" },
+    setup: { ...setup, rulesetId: "*" },
   });
 }
 
@@ -193,6 +226,7 @@ describe("the mission registry", () => {
 
   it("pins the initial state of every registered mission revision and faction choice", () => {
     const actual: Record<string, string> = {};
+    const preCuriosity: Record<string, string> = {};
     for (const mission of MISSION_REGISTRY_V7)
       for (const faction of missionSeatFactionsV7(
         mission.seats[0] as MissionDefinitionV7["seats"][number],
@@ -201,11 +235,13 @@ describe("the mission registry", () => {
         if (setup === null) throw new Error(`${mission.id} ${faction}`);
         const raw = createInitialMapStateV7(setup);
         if (!raw.ok) throw new Error(raw.error.code);
-        actual[`${mission.id}@${String(mission.revision)}:${faction}`] =
-          missionStateHash(raw.state);
+        const label = `${mission.id}@${String(mission.revision)}:${faction}`;
+        actual[label] = missionStateHash(raw.state);
+        preCuriosity[label] = preCuriosityMissionStateHash(raw.state);
       }
     // A mismatch: bump the edited mission's revision (section 2.4).
     expect(actual).toEqual(PINNED_MISSION_HASHES);
+    expect(preCuriosity).toEqual(PRE_CURIOSITY_MISSION_HASHES);
   });
 
   it("offers seat 0's choices through missionMatchSetupV7 and refuses others", () => {
@@ -222,6 +258,7 @@ describe("the mission registry", () => {
       factions: ["ORIGINAL", "UNDEAD"],
       mapType: "MISSION",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      curiosities: false,
       mission: { id: "TEST_GROUNDS", revision: 1 },
     });
     expect(missionMatchSetupV7(mission, "GOBLIN", "TEAL")).toMatchObject({

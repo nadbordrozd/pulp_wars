@@ -6,6 +6,7 @@ import {
   unitRoleMechanicsV7,
 } from "../rules/ruleset-v7";
 import { hasAcceptedStateCertificateV7 } from "./accepted-state-certificate";
+import { resolveFountainHealingV7 } from "./curiosities";
 import type { DomainEventV7 } from "./events";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { allOwnedUnitsV7, type UnitListsV7 } from "./units";
@@ -859,7 +860,10 @@ export function startTurnEconomyV7(
       ? { state: reset, events: [] }
       : beforeHealing(reset);
   const healing = resolveWindmillHealingV7(afflicted.state, player.id);
-  const regeneration = resolveRegenerationV7(healing.state, player.id);
+  // Map curiosities (RULESET_7_MAP_CURIOSITIES.md section 5): the Fountain
+  // of Youth heals after the Windmills and before Troll regeneration.
+  const fountain = resolveFountainHealingV7(healing.state, player.id);
+  const regeneration = resolveRegenerationV7(fountain.state, player.id);
   const income = playerIncomeV7(regeneration.state, player.id);
   // Revision 17: Plunder from a Start Turn chain may already have changed the
   // player's Coins, so income adds to the state's Coins, not the argument's.
@@ -880,6 +884,7 @@ export function startTurnEconomyV7(
       { kind: "TURN_STARTED", playerId: player.id, coins },
       ...afflicted.events,
       ...healing.events,
+      ...fountain.events,
       ...regeneration.events,
       {
         kind: "INCOME_AWARDED",
