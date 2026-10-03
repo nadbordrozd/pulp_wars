@@ -202,7 +202,7 @@ describe("Ruleset 7 browser smoke script", () => {
 
     expect(source).toContain("await probeDinosaurMatch(connection)");
     expect(source).toContain(
-      "; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Showcase ${showcase}.",
+      "; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}.",
     );
     // Setup: Dinosaur is offered, and chosen with three opponents on the
     // Showcase, the one setup with a turn-1 lane and lay-able Eggs.
@@ -332,21 +332,30 @@ describe("Ruleset 7 browser smoke script", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(
       source.indexOf("async function probeIceFolkMatch("),
-      source.indexOf("async function probeShowcaseMatch("),
+      source.indexOf("async function probeDwarfMatch("),
     );
 
     expect(source).toContain("await probeIceFolkMatch(connection)");
     expect(source).toContain(
-      "; Martian ${martian}; Ice Folk ${iceFolk}; Showcase ${showcase}.",
+      "; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}.",
     );
-    // The setup's six faction options, Ice Folk last (pulp_wars-7g3.6).
+    // The setup's seven faction options, Ice Folk sixth (pulp_wars-7g3.6)
+    // and Dwarf last (pulp_wars-78i.6).
     const options = source.slice(
       source.indexOf("const FACTION_OPTIONS_V7 = ["),
       source.indexOf("] as const;", source.indexOf("FACTION_OPTIONS_V7")),
     );
     expect(
       [...options.matchAll(/"([^"]+)"/g)].map((match) => match[1]),
-    ).toEqual(["Human", "Undead", "Goblin", "Dinosaur", "Martian", "Ice Folk"]);
+    ).toEqual([
+      "Human",
+      "Undead",
+      "Goblin",
+      "Dinosaur",
+      "Martian",
+      "Ice Folk",
+      "Dwarf",
+    ]);
     // Setup: Ice Folk is offered, and chosen with three opponents on the
     // Showcase.
     expect(probe).toContain("JSON.stringify(FACTION_OPTIONS_V7)");
@@ -381,6 +390,51 @@ describe("Ruleset 7 browser smoke script", () => {
     for (const name of [
       "ice-folk-bolas-desktop.png",
       "ice-folk-frozen-desktop.png",
+    ])
+      expect(probe).toContain(`await capture(connection, "${name}")`);
+    // No fixture import: the probe also runs against a deployed bundle.
+    expect(probe).not.toContain("/tests/fixtures/");
+  });
+  it("tunnels a Steam Mole with its eruption forecast and resumes as Dwarves", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = source.slice(
+      source.indexOf("async function probeDwarfMatch("),
+      source.indexOf("async function probeShowcaseMatch("),
+    );
+
+    expect(source).toContain("await probeDwarfMatch(connection)");
+    expect(source).toContain("; Dwarf ${dwarf}; Showcase ${showcase}.");
+    // Setup: Dwarf is offered and chosen by keyboard (the second "D") with
+    // three opponents on the Showcase; the seat that played Dinosaur moved
+    // to the freed Human.
+    expect(probe).toContain("JSON.stringify(FACTION_OPTIONS_V7)");
+    expect(probe).toContain(
+      "document.querySelector('#v7-faction-0')?.value === 'DWARF'",
+    );
+    expect(probe).toContain(
+      'JSON.stringify(["DWARF", "UNDEAD", "GOBLIN", "ORIGINAL"])',
+    );
+    expect(probe).not.toContain("launchWithFastForward");
+    // The Mole aims its Tunnel from the dock; the chosen destination shows
+    // the forecast, and the tunnel leaves a mound there.
+    const tunnel = probe.indexOf(
+      `await pointerClick(connection, '[data-action="dwarf-tunnel"]')`,
+    );
+    expect(tunnel).toBeGreaterThan(-1);
+    expect(probe).toContain('forecast.includes("If they stay:")');
+    expect(probe).toContain("includes('Steam Mole tunnelled')");
+    expect(probe).toContain("view.burrowed.find(");
+    // Save and resume on a fresh load with the Dwarf seat and the mound.
+    expect(tunnel).toBeLessThan(
+      probe.indexOf(`await touchClick(connection, '[data-action="resume"]')`),
+    );
+    expect(probe).toContain(`'["DWARF","UNDEAD","GOBLIN","ORIGINAL"]'`);
+    expect(probe).toContain(
+      "JSON.stringify(resumed) !== JSON.stringify(burrowed)",
+    );
+    for (const name of [
+      "dwarf-tunnel-preview-desktop.png",
+      "dwarf-mound-desktop.png",
     ])
       expect(probe).toContain(`await capture(connection, "${name}")`);
     // No fixture import: the probe also runs against a deployed bundle.
@@ -489,8 +543,9 @@ describe("Ruleset 7 browser smoke script", () => {
     // three revision-17 Goblin probe captures, four Dinosaur probe captures
     // (revision 20 adds the Charge! attack preview), two Martian probe
     // captures (pulp_wars-t6s.4), two Ice Folk probe captures
-    // (pulp_wars-7g3.6), and one revision-18 Showcase capture.
-    expect(source.match(/await capture\(/g)).toHaveLength(19);
+    // (pulp_wars-7g3.6), two Dwarf probe captures (pulp_wars-78i.6), and
+    // one revision-18 Showcase capture.
+    expect(source.match(/await capture\(/g)).toHaveLength(21);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");

@@ -146,8 +146,12 @@ const LIVE: readonly ChibiArtAssetV7[] = [
   ...CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7,
   ...CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7,
   ...CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7,
-  // Every faction's naval art, live since bead pulp_wars-w5j.3.
-  ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
+  // Every faction's naval art, live since bead pulp_wars-w5j.3. The Dwarf
+  // set joined the list in bead pulp_wars-78i.6; these scenes register it
+  // under stand-in subjects themselves (coastArt), so it is left out here.
+  ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.filter(
+    (entry) => entry.faction !== "DWARF",
+  ).map((entry) => entry.asset),
 ];
 
 function dwarfAsset(id: string): ChibiArtAssetV7 {

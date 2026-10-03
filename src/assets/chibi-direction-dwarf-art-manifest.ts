@@ -15,8 +15,12 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * command, ability, status and technology icons and four effect sprites;
  * and, apart, the Dwarf naval set.
  *
- * **Not registered yet.** No game module imports this file; the Dwarf UI
- * bead (pulp_wars-78i.6) wires it in (DWARF.md, "Wiring list").
+ * Since the Dwarf UI bead (pulp_wars-78i.6) this list is registered in the
+ * direction registry (chibiDirectionArtRegistryV7), the naval set is part of
+ * CHIBI_NAVAL_FACTION_ART_ASSETS_V7, DWARF_FLAG_ANCHORS_V7 is part of
+ * DIRECTION_FLAG_ANCHORS_V7, and the board draws the mounds, the Dig In
+ * earthwork and the eruption from chibi-direction-dwarf-presentation.ts
+ * (DWARF.md, "Wiring list").
  */
 export const CHIBI_DIRECTION_DWARF_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   {
@@ -386,10 +390,10 @@ export type DwarfNavalArtRoleV7 =
  * The subjects of the Dwarf naval art: `UNIT:DWARF:<ROLE>` and
  * `PORTRAIT:DWARF:<ROLE>`, exactly what the live generic naval wiring
  * (bead pulp_wars-w5j.3) resolves, `navalArtSubjectV7("DWARF", kind,
- * role)` in chibi-art-v7.ts, and members of NavalFactionArtSubjectV7 once
- * the engine bead (pulp_wars-78i.3) makes `DWARF` a FactionIdV7. Until then
- * `DWARF` is not a faction, so this module spells them out; it does not
- * import the faction naval manifest.
+ * role)` in chibi-art-v7.ts, and members of NavalFactionArtSubjectV7 since
+ * the engine bead (pulp_wars-78i.3) made `DWARF` a FactionIdV7. This module
+ * spells them out and does not import the faction naval manifest (that
+ * manifest imports this list).
  */
 export type DwarfNavalArtSubjectV7 =
   | `UNIT:DWARF:${DwarfNavalArtRoleV7}`
@@ -397,7 +401,7 @@ export type DwarfNavalArtSubjectV7 =
 
 /**
  * A Dwarf naval raster: a ChibiArtAssetV7 whose subject is a Dwarf naval
- * subject (a ChibiArtAssetV7 outright once `DWARF` is a FactionIdV7).
+ * subject.
  */
 export type ChibiDwarfNavalArtAssetV7 = Omit<ChibiArtAssetV7, "subject"> & {
   readonly subject: DwarfNavalArtSubjectV7;
@@ -414,10 +418,10 @@ export interface ChibiDwarfNavalArtV7 {
 /**
  * The Dwarf naval set (batch `naval-dwarf`): the entries of
  * CHIBI_NAVAL_FACTION_ART_ASSETS_V7's shape for the seventh faction, on the
- * shared ships' canvases, anchors and waterline (NAVAL_FACTIONS.md). Not
- * registered yet: once `DWARF` is a FactionIdV7 the UI bead appends these
- * entries to CHIBI_NAVAL_FACTION_ART_ASSETS_V7 (or registers their assets),
- * and the generic naval wiring draws them with no other change.
+ * shared ships' canvases, anchors and waterline (NAVAL_FACTIONS.md). The
+ * Dwarf UI bead (pulp_wars-78i.6) appended these entries to
+ * CHIBI_NAVAL_FACTION_ART_ASSETS_V7, so the generic naval wiring draws them
+ * with no other change.
  */
 export const CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7: readonly ChibiDwarfNavalArtV7[] =
   [

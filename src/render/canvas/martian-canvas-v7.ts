@@ -9,6 +9,7 @@
  * unless a name says CSS px.
  */
 
+import { DWARF_FLYER_PRESENTATION_V7 } from "../../assets/chibi-direction-dwarf-presentation";
 import {
   MARTIAN_FLYER_PRESENTATION_V7,
   MARTIAN_PALETTE_V7,
@@ -371,17 +372,30 @@ export const FLYER_LIFT_MASTER_PX_V7 = 4;
 /** LEGACY: lift of a flyer's stand-in sprite, in world units. */
 export const FLYER_LIFT_LEGACY_V7 = 8;
 
-/** The flyer presentation of a sprite asset, or null for every other one. */
-export function flyerPresentationV7(
-  assetId: string,
-):
-  | (typeof MARTIAN_FLYER_PRESENTATION_V7)[keyof typeof MARTIAN_FLYER_PRESENTATION_V7]
-  | null {
-  return assetId in MARTIAN_FLYER_PRESENTATION_V7
-    ? MARTIAN_FLYER_PRESENTATION_V7[
-        assetId as keyof typeof MARTIAN_FLYER_PRESENTATION_V7
-      ]
-    : null;
+/**
+ * The flyer presentation of a sprite asset, or null for every other one:
+ * the Martian flyers, and (bead pulp_wars-78i.6) the Dwarf Gyrocopter
+ * (DWARF_FLYER_PRESENTATION_V7, the same shape).
+ */
+export function flyerPresentationV7(assetId: string): {
+  readonly hullBottom: number;
+  readonly groundLine: number;
+  readonly shadow: {
+    readonly x: number;
+    readonly y: number;
+    readonly radiusX: number;
+    readonly radiusY: number;
+  };
+} | null {
+  if (assetId in MARTIAN_FLYER_PRESENTATION_V7)
+    return MARTIAN_FLYER_PRESENTATION_V7[
+      assetId as keyof typeof MARTIAN_FLYER_PRESENTATION_V7
+    ];
+  if (assetId in DWARF_FLYER_PRESENTATION_V7)
+    return DWARF_FLYER_PRESENTATION_V7[
+      assetId as keyof typeof DWARF_FLYER_PRESENTATION_V7
+    ];
+  return null;
 }
 
 /**

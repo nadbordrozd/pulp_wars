@@ -46,6 +46,16 @@ import {
   BLIZZARD_TOOLTIP_V7,
 } from "../ice-folk-presentation-v7";
 import {
+  DWARF_EFFECT_SUBJECTS_V7,
+  drawDwarfFeedbackV7,
+  dwarfReducedMotionProgressV7,
+  eruptionCueV7,
+  DWARF_EFFECT_DURATIONS_V7,
+  type DwarfFeedbackV7,
+} from "./dwarf-effects-v7";
+import { createDwarfBoardArtV7, type DwarfBoardArtV7 } from "./dwarf-canvas-v7";
+import { moundAtV7, moundInfoLinesV7 } from "../dwarf-presentation-v7";
+import {
   MAX_ZOOM,
   MIN_ZOOM,
   boardWorldBounds,
@@ -260,6 +270,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     readonly unitId: number;
     readonly elapsedMs: number;
   } | null = null;
+  /** The Dwarf cue playing on the effects overlay (bead pulp_wars-78i.6). */
+  #dwarfFeedback: DwarfFeedbackV7 | null = null;
+  /** Review tooling only (pinDwarfFeedback): cues frozen mid-animation. */
+  #pinnedDwarfFeedback: readonly DwarfFeedbackV7[] = [];
+  /** The Dig In earthwork rasters, built once per width. */
+  readonly #dwarfArt: DwarfBoardArtV7;
   /** Revision 19: this frame's unit sprite cues (growth, Egg, hatchling). */
   #unitPulses: readonly UnitPulseV7[] = [];
   /**
@@ -318,6 +334,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       browserChibiRasterEnvironmentV7(documentRoot),
     );
     this.#iceFolkArt = createIceFolkBoardArtV7(
+      browserChibiRasterEnvironmentV7(documentRoot),
+    );
+    this.#dwarfArt = createDwarfBoardArtV7(
       browserChibiRasterEnvironmentV7(documentRoot),
     );
     this.#chibiArt = createChibiArtResolverV7({
@@ -472,6 +491,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const martianPick = model.interaction.martianPick ?? null;
     // The Ice Folk revision: an aimed Bolas or Cold Snap likewise.
     const iceFolkPick = model.interaction.iceFolkPick ?? null;
+    // The Dwarf revision: an aimed Tunnel, Bomb Run or Assemble likewise,
+    // once per stage.
+    const dwarfPick = model.interaction.dwarfPick ?? null;
     const subject =
       unitId !== null
         ? String(unitId)
@@ -481,7 +503,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             ? `martian:${martianPick.kind}:${martianPick.unitId}:${martianPick.kind === "BEAM_DOWN" ? String(martianPick.passengerUnitId) : ""}`
             : iceFolkPick !== null
               ? `ice-folk:${iceFolkPick.kind}:${iceFolkPick.unitId}`
-              : null;
+              : dwarfPick !== null
+                ? `dwarf:${dwarfPick.kind}:${dwarfPick.unitId}:${dwarfPick.kind === "TUNNEL" ? (dwarfPick.to === null ? "" : `${dwarfPick.to.x},${dwarfPick.to.y}`) : dwarfPick.kind === "BOMB_RUN" ? String(dwarfPick.targetUnitId) : ""}`
+                : null;
     if (subject === null) {
       this.#kaboomFramedKey = null;
       return;
@@ -491,13 +515,14 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (key === this.#kaboomFramedKey) return;
     this.#kaboomFramedKey = key;
     const framed = this.#planFor(model.view, model.offeredCommands);
-    const pickUnitId = martianPick?.unitId ?? iceFolkPick?.unitId ?? null;
+    const pickUnitId =
+      martianPick?.unitId ?? iceFolkPick?.unitId ?? dwarfPick?.unitId ?? null;
     const pickUnit =
       pickUnitId === null
         ? undefined
         : model.view.units.find((unit) => unit.id === pickUnitId);
     const area = cellWorldBounds(
-      (martianPick !== null || iceFolkPick !== null) &&
+      (martianPick !== null || iceFolkPick !== null || dwarfPick !== null) &&
         unitId === null &&
         layEgg === null
         ? [
@@ -620,6 +645,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#iceFolkFeedback = null;
     this.#pinnedIceFolkFeedback = [];
     this.#iceFolkShatter = null;
+    this.#dwarfFeedback = null;
+    this.#pinnedDwarfFeedback = [];
     this.#unitPulses = [];
     this.#heldUnits = new Map();
     this.#drawSupportOverlay();
@@ -671,13 +698,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const dinosaurSteps = steps.filter((step) => step.kind === "DINOSAUR");
       const martianSteps = steps.filter((step) => step.kind === "MARTIAN");
       const iceFolkSteps = steps.filter((step) => step.kind === "ICE_FOLK");
+      const dwarfSteps = steps.filter((step) => step.kind === "DWARF");
       if (
         supportSteps.length > 0 ||
         windmillSteps.length > 0 ||
         explosionSteps.length > 0 ||
         dinosaurSteps.length > 0 ||
         martianSteps.length > 0 ||
-        iceFolkSteps.length > 0
+        iceFolkSteps.length > 0 ||
+        dwarfSteps.length > 0
       ) {
         this.#presentedView = after;
         this.#draw();
@@ -723,6 +752,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           await this.#animate(240 * durationScale, () => undefined);
           if (token !== this.#presentationToken) return;
           this.#iceFolkFeedback = null;
+          this.#drawSupportOverlay();
+        }
+        // The Dwarf revision: each Dwarf cue holds one frame (the eruption
+        // its peak) long enough to read.
+        for (const step of dwarfSteps) {
+          if (step.followCamera === true && step.cells[0] !== undefined)
+            this.#followCamera(step.cells[0]);
+          this.#dwarfFeedback = dwarfFeedbackOf(
+            step,
+            dwarfReducedMotionProgressV7(step.effect),
+          );
+          this.#drawSupportOverlay();
+          await this.#animate(240 * durationScale, () => undefined);
+          if (token !== this.#presentationToken) return;
+          this.#dwarfFeedback = null;
           this.#drawSupportOverlay();
         }
         // Revision 17: each explosion wave holds its midpoint burst, in
@@ -777,7 +821,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             explosionSteps.length +
             dinosaurSteps.length +
             martianSteps.length +
-            iceFolkSteps.length ===
+            iceFolkSteps.length +
+            dwarfSteps.length ===
           steps.length
         ) {
           this.#presentedView = null;
@@ -906,6 +951,34 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         if (token !== this.#presentationToken) return;
         this.#iceFolkShatter = null;
         this.#iceFolkFeedback = null;
+        this.#presentedView = after;
+        this.#draw();
+        this.#drawSupportOverlay();
+      } else if (step.kind === "DWARF") {
+        const first = step.cells[0];
+        if (first !== undefined && step.followCamera === true)
+          this.#followCamera(first);
+        // An eruption shows the mound until the Mole and its rider are back
+        // (DWARF_ERUPTION_TIMELINE_V7.surface); every other cue shows the
+        // result (the mound, the bombed target, the new Gunner).
+        const eruption = step.effect === "ERUPTION";
+        this.#presentedView = eruption ? before : after;
+        this.#draw();
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#dwarfFeedback = dwarfFeedbackOf(step, progress);
+          if (
+            eruption &&
+            this.#presentedView !== after &&
+            eruptionCueV7(progress * DWARF_EFFECT_DURATIONS_V7.ERUPTION)
+              .surfaced
+          ) {
+            this.#presentedView = after;
+            this.#draw();
+          }
+          this.#drawSupportOverlay();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#dwarfFeedback = null;
         this.#presentedView = after;
         this.#draw();
         this.#drawSupportOverlay();
@@ -1249,6 +1322,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         iceFolkArt: this.#iceFolkArt,
         blizzardTimeMs: model.motion === "REDUCED" ? 0 : now,
         iceFolkShatter: this.#iceFolkShatter,
+        // The Dwarf revision: the Dig In earthwork rasters.
+        dwarfArt: this.#dwarfArt,
         selectionJump:
           jump === null
             ? null
@@ -1391,6 +1466,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     for (const subject of SUPPORT_EFFECT_SUBJECTS_V7) art?.image(subject);
     for (const subject of MARTIAN_EFFECT_SUBJECTS_V7) art?.image(subject);
     for (const subject of ICE_FOLK_EFFECT_SUBJECTS_V7) art?.image(subject);
+    for (const subject of DWARF_EFFECT_SUBJECTS_V7) art?.image(subject);
   }
 
   /**
@@ -1469,6 +1545,31 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#drawSupportOverlay();
   }
 
+  /**
+   * Review tooling and tests: draws the given Dwarf cues at their fixed
+   * progress on the effects canvas until cleared with an empty list. A
+   * pinned eruption before its surfacing frame shows the view with the
+   * mound (`before`), after it the view the host shows. The game never
+   * calls it; presentations clear it.
+   */
+  pinDwarfFeedback(
+    feedback: readonly DwarfFeedbackV7[],
+    before: PlayerViewV7 | null = null,
+  ): void {
+    this.#pinnedDwarfFeedback = feedback;
+    const eruption = feedback.find((entry) => entry.effect === "ERUPTION");
+    this.#presentedView =
+      eruption !== undefined &&
+      before !== null &&
+      !eruptionCueV7(eruption.progress * DWARF_EFFECT_DURATIONS_V7.ERUPTION)
+        .surfaced
+        ? before
+        : null;
+    this.#requestEffectArt();
+    this.#draw();
+    this.#drawSupportOverlay();
+  }
+
   #drawSupportOverlay(): void {
     const context = this.#effectsContext;
     const canvas = this.#effectsCanvas;
@@ -1477,6 +1578,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
     context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
     const effectArt = this.#supportEffectArt();
+    for (const pinned of this.#pinnedDwarfFeedback)
+      drawDwarfFeedbackV7(context, this.#camera, pinned, effectArt);
+    const dwarf = this.#dwarfFeedback;
+    if (dwarf === null) {
+      delete canvas.dataset.dwarfEffect;
+      delete canvas.dataset.dwarfProgress;
+    } else {
+      canvas.dataset.dwarfEffect = dwarf.effect;
+      canvas.dataset.dwarfProgress = dwarf.progress.toFixed(3);
+      drawDwarfFeedbackV7(context, this.#camera, dwarf, effectArt);
+    }
     for (const pinned of this.#pinnedIceFolkFeedback)
       drawIceFolkFeedbackV7(context, this.#camera, pinned, effectArt);
     const iceFolk = this.#iceFolkFeedback;
@@ -1652,6 +1764,18 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         : "",
       tile.improvement === null ? "" : title(tile.improvement),
       model.view.graves.some((grave) => same(grave, at)) ? "Grave" : "",
+      // The Dwarf revision: a mound, its unit and its eruption.
+      ...(() => {
+        const mound = moundAtV7(model.view, at);
+        if (mound === undefined) return [];
+        const lines = moundInfoLinesV7(model.view, mound);
+        return [
+          `${lines.name}, ${mound.unit.hp} of ${mound.unit.maxHp} HP`,
+          lines.burrowed,
+          lines.eruption ?? "",
+          lines.rider ?? "",
+        ];
+      })(),
       city === undefined
         ? ""
         : `${city.isCapital ? "Capital" : "City"} level ${city.level}`,
@@ -2216,6 +2340,19 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #now(): number {
     return this.#document.defaultView?.performance.now() ?? Date.now();
   }
+}
+
+/** The effects-overlay cue of a Dwarf presentation step at `progress`. */
+function dwarfFeedbackOf(
+  step: Extract<CorePresentationStepV7, { readonly kind: "DWARF" }>,
+  progress: number,
+): DwarfFeedbackV7 {
+  return {
+    effect: step.effect,
+    cells: step.cells,
+    ...(step.from === undefined ? {} : { from: step.from }),
+    progress,
+  };
 }
 
 /** The effects-overlay cue of an Ice Folk presentation step at `progress`. */

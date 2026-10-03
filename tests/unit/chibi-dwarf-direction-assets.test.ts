@@ -1,10 +1,14 @@
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
 import {
   buildChibiArtRegistryV7,
   chibiAnchorV7,
+  chibiFallbackSubjectV7,
+  cityArtSubjectV7,
+  moundArtSubjectV7,
+  unitArtSubjectV7,
   navalArtRoleOfSubjectV7,
   navalArtSubjectV7,
   navalSharedSubjectV7,
@@ -20,6 +24,13 @@ import {
   CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7,
   DWARF_FLAG_ANCHORS_V7,
 } from "../../src/assets/chibi-direction-dwarf-art-manifest";
+import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-faction-art-manifest";
+import {
+  commandSubjectV7,
+  portraitSubjectV7,
+  technologySubjectV7,
+} from "../../src/assets/chibi-ui-art-v7";
+import { DIRECTION_FLAG_ANCHORS_V7 } from "../../src/render/canvas/visual-direction-v7";
 import {
   DWARF_BOMB_TIMELINE_V7,
   DWARF_ERUPTION_TIMELINE_V7,
@@ -28,7 +39,7 @@ import {
   dwarfDigInMarkerV7,
 } from "../../src/assets/chibi-direction-dwarf-presentation";
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-ice-folk-art-manifest";
-import type { FactionIdV7 } from "../../src/engine/index";
+import type { CommandV7, FactionIdV7 } from "../../src/engine/index";
 import { CHIBI_OVERLAY_FRAME_V7 } from "../../src/render/canvas/board-renderer-v7";
 import { RULESET7_PLAYER_COLORS } from "../../src/render/canvas/owner-recolour-v7";
 import {
@@ -67,6 +78,8 @@ import {
 } from "../../scripts/art/dwarf-direction/forge-palette";
 
 const ROOT = process.cwd();
+/** A Tend Wounded command (Repair for a Dwarf viewer). */
+const TEND = { kind: "TEND_WOUNDED", unitId: 1 } as unknown as CommandV7;
 const BATCH = "direction-dwarf";
 const NAVAL_BATCH = "naval-dwarf";
 
@@ -270,9 +283,12 @@ describe("Steampunk Dwarf production art (pulp_wars-78i.5)", () => {
     }
   });
 
-  // The Dwarf UI bead (pulp_wars-78i.6) wires this art in and turns this
-  // test round, as the Martian and Ice Folk UI beads did.
-  it("is not wired in: no game module imports it and no live registry holds it", async () => {
+  // Turned round by the Dwarf UI bead (pulp_wars-78i.6, DWARF.md wiring
+  // steps 1 to 7), as the Martian and Ice Folk UI beads did: the art is live
+  // in the direction registry, and only there. The default (classic)
+  // registry holds no Dwarf asset, so the classic look and LEGACY draw the
+  // Human stand-in with the cog badge and the code-drawn mound.
+  it("is wired into the live direction registry, and only there", () => {
     const ids = new Set(ALL_MASTERS.map((asset) => asset.id));
     for (const asset of [
       ...CHIBI_ART_ASSETS_V7,
@@ -283,15 +299,85 @@ describe("Steampunk Dwarf production art (pulp_wars-78i.5)", () => {
     }
     const live = chibiDirectionArtRegistryV7();
     for (const asset of CHIBI_DIRECTION_DWARF_ART_ASSETS_V7)
-      expect(live.variants(asset.subject), asset.subject).toEqual([]);
-    const files = (await readdir(path.join(ROOT, "src"), { recursive: true }))
-      .filter((file) => /\.tsx?$/.test(file))
-      .filter((file) => !/chibi-direction-dwarf-/.test(file));
-    for (const file of files) {
-      const text = await readFile(path.join(ROOT, "src", file), "utf8");
-      expect(/from "[^"]*chibi-direction-dwarf-/.test(text), file).toBe(false);
+      expect(
+        live.variants(asset.subject).map((entry) => entry.id),
+        asset.subject,
+      ).toEqual([asset.id]);
+    // Step 6: the naval set is part of the generic naval list, on the
+    // subjects the live naval wiring asks for.
+    for (const entry of CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7) {
+      expect(
+        CHIBI_NAVAL_FACTION_ART_ASSETS_V7.some(
+          (naval) => naval.asset.id === entry.asset.id,
+        ),
+        entry.asset.id,
+      ).toBe(true);
+      expect(
+        live.variants(entry.asset.subject).map((asset) => asset.id),
+        entry.asset.subject,
+      ).toEqual([entry.asset.id]);
     }
-    // It does not import the other factions' naval manifest either.
+    // Step 2: the game resolves the Dwarf subjects.
+    for (const [role] of UNITS) {
+      expect(unitArtSubjectV7({ role, form: "LAND", faction: "DWARF" })).toBe(
+        `UNIT:DWARF:${role}`,
+      );
+      expect(portraitSubjectV7(role, "DWARF")).toBe(`PORTRAIT:DWARF:${role}`);
+    }
+    expect(
+      unitArtSubjectV7({ role: "FIGHTER", form: "EMBARKED", faction: "DWARF" }),
+    ).toBe("UNIT:DWARF:EMBARKED_TRANSPORT");
+    expect(
+      unitArtSubjectV7({ role: "BATTLESHIP", form: "NAVAL", faction: "DWARF" }),
+    ).toBe("UNIT:DWARF:BATTLESHIP");
+    expect(moundArtSubjectV7(false)).toBe("UNIT:DWARF:MOUND");
+    expect(moundArtSubjectV7(true)).toBe("UNIT:DWARF:MOUND_RIDER");
+    for (const level of [1, 2, 3] as const)
+      expect(cityArtSubjectV7({ artLevel: level, faction: "DWARF" })).toBe(
+        `CITY:DWARF:${level}`,
+      );
+    expect(technologySubjectV7("FORTIFICATION", "DWARF")).toBe(
+      "ICON:TECH:DWARF:FORTIFICATION",
+    );
+    expect(technologySubjectV7("EXPLOSIVES", "DWARF")).toBe(
+      "ICON:TECH:DWARF:EXPLOSIVES",
+    );
+    expect(technologySubjectV7("DRILL", "DWARF")).toBe("UNIT:DWARF:GUARD");
+    expect(commandSubjectV7(TEND, "DWARF")).toBe(
+      "ICON:ACTION:DWARF:TEND_WOUNDED",
+    );
+    expect(commandSubjectV7(TEND, "ORIGINAL")).toBe("ICON:ACTION:TEND_WOUNDED");
+    for (const kind of ["TUNNEL", "BOMB_RUN", "ASSEMBLE"] as const)
+      expect(live.variants(`ICON:ACTION:${kind}`)).toHaveLength(1);
+    // Fallbacks: the Human art (with the cog badge), the Human
+    // Fortification and Explosives art; the mounds have none (code-drawn).
+    expect(chibiFallbackSubjectV7("UNIT:DWARF:GUARD")).toBe("UNIT:GUARD");
+    expect(chibiFallbackSubjectV7("PORTRAIT:DWARF:CAPTAIN")).toBe(
+      "PORTRAIT:CAPTAIN",
+    );
+    expect(chibiFallbackSubjectV7("CITY:DWARF:2")).toBe("CITY:2");
+    expect(chibiFallbackSubjectV7("ICON:ACTION:DWARF:TEND_WOUNDED")).toBe(
+      "ICON:ACTION:TEND_WOUNDED",
+    );
+    expect(chibiFallbackSubjectV7("ICON:TECH:DWARF:FORTIFICATION")).toBe(
+      "ICON:TECH:FORTIFICATION",
+    );
+    expect(chibiFallbackSubjectV7("ICON:TECH:DWARF:EXPLOSIVES")).toBe(
+      "ICON:ACTION:BLAST_MOUNTAIN",
+    );
+    expect(chibiFallbackSubjectV7("UNIT:DWARF:MOUND")).toBeNull();
+    expect(chibiFallbackSubjectV7("UNIT:DWARF:MOUND_RIDER")).toBeNull();
+    expect(chibiFallbackSubjectV7("UNIT:DWARF:PATROL_BOAT")).toBe(
+      "UNIT:PATROL_BOAT",
+    );
+    // Step 3: the anchors are part of the live pennant table.
+    for (const [id, anchor] of Object.entries(DWARF_FLAG_ANCHORS_V7))
+      expect(DIRECTION_FLAG_ANCHORS_V7[id], id).toEqual(anchor);
+    // It does not import the other factions' naval manifest (that one
+    // imports it).
+  });
+
+  it("keeps the Dwarf manifest free of the naval manifest import", async () => {
     const own = await readFile(
       path.join(ROOT, "src/assets/chibi-direction-dwarf-art-manifest.ts"),
       "utf8",

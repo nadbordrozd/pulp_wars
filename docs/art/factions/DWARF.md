@@ -1,9 +1,10 @@
 # Faction fragment: DWARF
 
 **Status:** direction and production art made in bead `pulp_wars-78i.5`
-(batches `direction-dwarf` and `naval-dwarf`), **not wired in yet**: the
-Dwarf UI bead `pulp_wars-78i.6` registers it (see the
-[wiring list](#wiring-list-for-pulp_wars-78i6)). The look is the root's
+(batches `direction-dwarf` and `naval-dwarf`), **wired in by the Dwarf UI
+bead `pulp_wars-78i.6`** (see the
+[wiring list](#wiring-list-for-pulp_wars-78i6), every step done, and the
+[UI bead's decisions](#wired-in-bead-pulp_wars-78i6)). The look is the root's
 decision 8 of the [Dwarf spec](../../product/RULESET_7_DWARVES.md)
 (section 16.4, with the copper lift of section 20.2 and 20.5): soot-black
 iron with a light rim, copper, dark leather, white steam, ginger-copper
@@ -365,6 +366,14 @@ fleets on Shallow and Deep Water.
 
 ## Wiring list for `pulp_wars-78i.6`
 
+**Done in bead `pulp_wars-78i.6`** (steps 1 to 7; step 8, the art review's
+re-run with a real Dwarf seat, was replaced by the UI review
+`npm run review:ruleset7-dwarf-ui`, which captures real Dwarf seats on the
+Showcase and on the Dwarf UI fixtures; the art review's scenes keep their
+stand-ins and now leave the Dwarf naval entries out of their live list,
+since they register them under stand-in subjects themselves). The list as
+it was planned:
+
 The art is in [`chibi-direction-dwarf-art-manifest.ts`](../../../src/assets/chibi-direction-dwarf-art-manifest.ts)
 (`CHIBI_DIRECTION_DWARF_ART_ASSETS_V7`, 35 entries;
 `CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7`, 5), which no game module
@@ -462,7 +471,39 @@ Decided in bead `pulp_wars-78i.5`:
    precedent); the constructs and dwarves have busts.
 9. **The Steam Cannon's carriage is copper**, not iron: the iron edit lost
    the barrel's copper bands and the rim.
-10. **Not registered** by this bead (the UI bead does it).
+10. **Not registered** by this bead (the UI bead did it: see below).
+
+## Wired in (bead `pulp_wars-78i.6`)
+
+How the UI bead drew the pieces (SCREEN_FLOW.md, "Current Ruleset 7 Dwarf
+overlay"); each decision can be overruled:
+
+1. **The mound is a unit-sized entry of its own** (`mound:<id>`), drawn by
+   the unit path (the art, the faint ground shadow, the HP bar) but never a
+   unit: no ready ring, no target, no selection jump, no orders cycle.
+   Choosing it selects its tile; the tile's dock describes the mound.
+2. **"Untouchable this turn"** is a small earth chip with an upward arrow
+   beside the heap (where the Egg's countdown sits), plus the dock and
+   cursor text "Burrowed: surfaces at the start of {owner}'s next turn. It
+   cannot be attacked". No label on the board.
+3. **The eruption ring** is drawn for the selected or hovered Mole mound and
+   for a focused Tunnel destination, from `DWARF_MOUND_V7.eruptionRing`,
+   with a dark casing under the dashes so it reads on Grass and Snow.
+4. **The eruption cue** follows `DWARF_ERUPTION_TIMELINE_V7` but leaves out
+   its two 1 px shakes (mound and board): the brief asks for calm.
+5. **The clockwork glyph on the board** sits at the HP bar's end only while
+   the bar shows (a damaged construct): a full-HP construct carries no
+   extra mark. The unit info and the dock chip always show it.
+6. **The Dig In earthwork** is the reviewed code-drawn ring (bank behind,
+   sandbags in front) on the ground rectangle, so it does not jump with a
+   selected unit; it is plain, as the art review found.
+7. **Calm targeting:** Tunnel destinations are labelled only where they
+   would erupt on someone; rider tiles and Assemble tiles carry no labels;
+   the shooter's lines (Clockwork, the second shot, "Cannot move after
+   firing") show on the focused target only.
+8. **The Classic look and LEGACY** draw the Human stand-in with the cog
+   badge (a copper cog on dark leather), and a code-drawn heap with a drill
+   tip (and a hammer head for the rider) for the mound.
 
 ## Weak spots
 
@@ -497,8 +538,9 @@ Decided in bead `pulp_wars-78i.5`:
   push.
 - **The rim is 8 from the Mountain rock**: on a Mountain the dark iron and
   the outline carry a machine.
-- **Review scenes use stand-ins** (the Human seat for the Dwarves, a
-  Dinosaur seat for the mounds); the Gyrocopter stands in for the Human
+- **The art review's scenes use stand-ins** (the Human seat for the
+  Dwarves, a Dinosaur seat for the mounds; the UI review uses real Dwarf
+  seats); the Gyrocopter stands in for the Human
   Raider and so has no flyer shadow in the scenes; in the COAST scene the
   Dwarf ships are land units on water (the other six fleets are real naval
   units from the live registry), so they get the live look's faint ground

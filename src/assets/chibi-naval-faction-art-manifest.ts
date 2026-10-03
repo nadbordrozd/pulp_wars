@@ -6,6 +6,7 @@ import {
   type NavalArtRoleV7,
 } from "./chibi-art-v7";
 import { chibiArtUrl } from "./chibi-art-manifest";
+import { CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7 } from "./chibi-direction-dwarf-art-manifest";
 
 export type {
   NavalArtRoleV7,
@@ -55,7 +56,12 @@ export function navalFactionArtSubjectV7(
   return navalArtSubjectV7(faction, kind, role);
 }
 
-/** Six factions x (three map sprites + two portraits) = 30 rasters. */
+/**
+ * Seven factions x (three map sprites + two portraits) = 35 rasters: the six
+ * sets of bead pulp_wars-w5j.2, then the Dwarf set of bead pulp_wars-78i.5
+ * (batch `naval-dwarf`, kept in the Dwarf manifest), appended by the Dwarf UI
+ * bead pulp_wars-78i.6.
+ */
 export const CHIBI_NAVAL_FACTION_ART_ASSETS_V7: readonly ChibiNavalFactionArtV7[] =
   [
     {
@@ -530,4 +536,6 @@ export const CHIBI_NAVAL_FACTION_ART_ASSETS_V7: readonly ChibiNavalFactionArtV7[
         fixedColours: true,
       },
     },
+    // --- Dwarf (pulp_wars-78i.5 art, wired in by pulp_wars-78i.6) ---
+    ...CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7,
   ];

@@ -43,7 +43,17 @@ export type AbilityPreviewStyleV7 =
    */
   | "SWEEP"
   | "CHILL"
-  | "COLD_SNAP";
+  | "COLD_SNAP"
+  /**
+   * The Dwarf revision (bead pulp_wars-78i.6): a Mole's chosen destination,
+   * an eruption ring and its victims "if they stay" (the earth tones of
+   * DWARF_PALETTE_V7), a bomb's target (lit copper), and a hostile unit
+   * already bombed this turn (grey).
+   */
+  | "TUNNEL"
+  | "ERUPTION"
+  | "BOMB"
+  | "BOMBED";
 
 /** Legacy and CHIBI Undead badge frames, relative to the cell centre. */
 export const UNDEAD_BADGE_FRAME_V7 = {
@@ -479,6 +489,11 @@ const STYLE_COLORS: Readonly<
   SWEEP: { fill: "rgba(127, 203, 255, 0.2)", stroke: "#7fcbff" },
   CHILL: { fill: "rgba(127, 203, 255, 0.24)", stroke: "#d6f0ff" },
   COLD_SNAP: { fill: "rgba(127, 203, 255, 0.1)", stroke: "#7fcbff" },
+  // The Dwarf revision: DWARF_PALETTE_V7's light earth and lit copper.
+  TUNNEL: { fill: "rgba(160, 122, 82, 0.3)", stroke: "#d8b58a" },
+  ERUPTION: { fill: "rgba(160, 122, 82, 0.16)", stroke: "#c99a66" },
+  BOMB: { fill: "rgba(222, 111, 42, 0.22)", stroke: "#f2a46a" },
+  BOMBED: { fill: "rgba(170, 179, 192, 0.16)", stroke: "#aab3c0" },
 };
 
 /** Dark stripes that turn the friendly-fire outline into a hazard band. */

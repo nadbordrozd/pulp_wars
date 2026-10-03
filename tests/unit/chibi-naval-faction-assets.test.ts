@@ -85,20 +85,28 @@ const asRegistered = (asset: { readonly subject: string }): ChibiArtAssetV7 =>
   asset as unknown as ChibiArtAssetV7;
 
 describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
-  it("lists every naval sprite and portrait of the six factions, once", () => {
-    const expected = FACTIONS.flatMap(([faction, slug]) =>
-      SPRITES.map(
-        ([kind, role, suffix]) =>
-          `${faction} ${kind} ${role} chibi-naval-${slug}-${suffix} ${navalFactionArtSubjectV7(faction, kind, role)}`,
-      ),
-    ).sort();
+  // The Dwarf UI bead (pulp_wars-78i.6) appended the seventh faction's set
+  // (batch `naval-dwarf` of bead pulp_wars-78i.5, checked by the Dwarf art
+  // test), so the list has 35 rasters.
+  it("lists every naval sprite and portrait of the seven factions, once", () => {
+    const expected = [
+      ...FACTIONS.map(([faction, slug]) => [faction, slug] as const),
+      ["DWARF", "dwarf"] as const,
+    ]
+      .flatMap(([faction, slug]) =>
+        SPRITES.map(
+          ([kind, role, suffix]) =>
+            `${faction} ${kind} ${role} chibi-naval-${slug}-${suffix} ${navalFactionArtSubjectV7(faction, kind, role)}`,
+        ),
+      )
+      .sort();
     expect(
       CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map(
         (entry) =>
           `${entry.faction} ${entry.kind} ${entry.role} ${entry.asset.id} ${entry.asset.subject}`,
       ).sort(),
     ).toEqual(expected);
-    expect(expected).toHaveLength(30);
+    expect(expected).toHaveLength(35);
     // The Humans keep the shared subjects; the others get their own.
     expect(navalFactionArtSubjectV7("ORIGINAL", "UNIT", "PATROL_BOAT")).toBe(
       "UNIT:PATROL_BOAT",

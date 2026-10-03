@@ -41,7 +41,12 @@ export type UiIconIdV7 =
   // The Ice Folk revision (bead pulp_wars-7g3.6).
   | "snowflake"
   | "bolas"
-  | "ice-peak";
+  | "ice-peak"
+  // The Dwarf revision (bead pulp_wars-78i.6).
+  | "gear"
+  | "drill"
+  | "bomb-run"
+  | "key";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   hp: "M12 20.5 4.2 12.8a4.6 4.6 0 0 1 6.5-6.5L12 7.6l1.3-1.3a4.6 4.6 0 0 1 6.5 6.5Z",
@@ -113,6 +118,16 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
     "M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 4.2 12 6.6l2.4-2.4M9.6 19.8 12 17.4l2.4 2.4M3.5 10.6l3.3.9-.9-3.3M20.5 13.4l-3.3-.9.9 3.3M5.9 16.5l.9-3.3-3.3.9M18.1 7.5l-.9 3.3 3.3-.9",
   bolas:
     "M7 15.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM17 15.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM8.6 16 12 4l3.4 12M12 4l-1.6-1.5M12 4l1.6-1.5",
+  // The Dwarf revision: a cog (the Dwarf badge and the clockwork glyph), a
+  // drill boring into the ground (Tunnel), a bomb under a rotor (Bomb Run)
+  // and a wind-up key (Assemble): LEGACY glyphs; CHIBI draws the PixelLab
+  // icons.
+  gear: "M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M5.5 18.5l2.1-2.1M16.4 7.6l2.1-2.1M12 6.2a5.8 5.8 0 1 0 0 11.6 5.8 5.8 0 0 0 0-11.6ZM12 9.6a2.4 2.4 0 1 0 0 4.8 2.4 2.4 0 0 0 0-4.8Z",
+  drill:
+    "M7.5 2.5h9L12 15.5ZM9.2 6.5h5.6M10.5 10.5h3M2.5 19.5c3-2.5 16-2.5 19 0M6 17.5l1.6 2.5M18 17.5l-1.6 2.5",
+  "bomb-run":
+    "M3.5 3.5h17M12 3.5v3.5M12 9.5a5.2 5.2 0 1 0 0 10.4 5.2 5.2 0 0 0 0-10.4ZM15.4 10.4l1.8-1.8",
+  key: "M12 10.5 7 6.2a2.6 2.6 0 1 0 0 8.6L12 10.5l5 4.3a2.6 2.6 0 1 0 0-8.6ZM12 10.5v10.5M9.5 18h5",
 };
 
 /** One shape of a multi-part icon; `fill` may be a fixed colour. */

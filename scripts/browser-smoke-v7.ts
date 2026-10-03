@@ -68,7 +68,8 @@ type Connection = {
 
 /**
  * The setup's faction options in order, for every faction probe (the Martian
- * UI added the fifth, the Ice Folk UI, pulp_wars-7g3.6, the sixth).
+ * UI added the fifth, the Ice Folk UI, pulp_wars-7g3.6, the sixth, the Dwarf
+ * UI, pulp_wars-78i.6, the seventh).
  */
 const FACTION_OPTIONS_V7 = [
   "Human",
@@ -77,6 +78,7 @@ const FACTION_OPTIONS_V7 = [
   "Dinosaur",
   "Martian",
   "Ice Folk",
+  "Dwarf",
 ] as const;
 const timingMode = browserTimingModeV7(process.argv);
 const deployed = process.argv.includes("--deployed");
@@ -620,6 +622,7 @@ try {
   const dinosaur = await probeDinosaurMatch(connection);
   const martian = await probeMartianMatch(connection);
   const iceFolk = await probeIceFolkMatch(connection);
+  const dwarf = await probeDwarfMatch(connection);
   const showcase = await probeShowcaseMatch(connection);
   await evaluate(
     connection,
@@ -703,7 +706,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -2074,6 +2077,198 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
   );
   await navigateFresh(freshSetup);
   return `Showcase launch as Ice Folk vs three Humans (${started.snow} Snow tiles), Sled moved to ${to.x},${to.y}, Bolas left the target Frozen, and resume`;
+}
+
+/**
+ * The Dwarves in the default route (pulp_wars-78i.6): setup offers Dwarf
+ * for every seat; a Showcase with a Dwarf seat and three opponents launches
+ * from the production setup (the human's "D" typeahead passes Dinosaur,
+ * whose seat then takes the freed Human); the Steam Mole is selected with
+ * the keyboard, its Tunnel button aims, the dock lists the destinations
+ * with the preview's eruption forecast ("If they stay: ..."), and the
+ * tunnel leaves a mound on the chosen tile (`view.burrowed`); and the save
+ * resumes with its Dwarf seat and the mound on a fresh default-route load.
+ * It uses no fixture, so it also runs against a deployed bundle.
+ */
+async function probeDwarfMatch(connection: Connection): Promise<string> {
+  const defaultUrl = (): string => {
+    const url = new URL(baseUrl);
+    url.searchParams.delete("art");
+    return url.href;
+  };
+  const navigateFresh = async (readiness: string): Promise<void> => {
+    await evaluate(connection, `globalThis.__V7_DWARF_PRIOR_DOCUMENT__ = true`);
+    await connection.send("Page.navigate", { url: defaultUrl() });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_DWARF_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
+    );
+  };
+  const typeahead = async (selector: string, letter: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `document.querySelector(${JSON.stringify(selector)}).focus()`,
+    );
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: letter,
+      code: `Key${letter}`,
+      text: letter,
+      windowsVirtualKeyCode: letter.charCodeAt(0),
+    });
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: letter,
+      code: `Key${letter}`,
+      windowsVirtualKeyCode: letter.charCodeAt(0),
+    });
+  };
+  const focusBoard = async (): Promise<void> => {
+    await evaluate(
+      connection,
+      `document.querySelector('canvas.board-canvas-v7').focus()`,
+    );
+  };
+  const arrows = async (dx: number, dy: number): Promise<void> => {
+    const horizontal = dx < 0 ? "ArrowLeft" : "ArrowRight";
+    const vertical = dy < 0 ? "ArrowUp" : "ArrowDown";
+    for (let step = 0; step < Math.abs(dx); step += 1)
+      await pressKey(connection, horizontal, horizontal);
+    for (let step = 0; step < Math.abs(dy); step += 1)
+      await pressKey(connection, vertical, vertical);
+  };
+  const saveKey = "pulpWars.save.v7r30.current";
+  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  const options = await evaluate<readonly string[]>(
+    connection,
+    `Array.from(document.querySelectorAll('#v7-faction-1 option')).map((option) => option.textContent ?? '')`,
+  );
+  if (JSON.stringify(options) !== JSON.stringify(FACTION_OPTIONS_V7))
+    throw new Error(`Dwarf faction option missing: ${JSON.stringify(options)}`);
+  // Three opponents, the Showcase map, and a Dwarf human seat, each chosen
+  // by keyboard on its focused, closed select: "D" picks Dinosaur (whose
+  // seat moves to the freed Human), a second "D" moves on to Dwarf.
+  await evaluate(connection, `document.querySelector('#v7-ai-count').focus()`);
+  await typeSelectValue(connection, "#v7-ai-count", "3");
+  await typeahead("#v7-map-type", "S");
+  await typeahead("#v7-faction-0", "D");
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-faction-0')?.value === 'DINOSAUR'`,
+  );
+  await typeahead("#v7-faction-0", "D");
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-map-type')?.value === 'SHOWCASE' && document.querySelector('#v7-faction-0')?.value === 'DWARF' && document.querySelectorAll('[data-v7-factions] select').length === 4 && document.querySelector('#v7-faction-3')?.value === 'ORIGINAL'`,
+  );
+  await pointerClick(connection, '[data-action="launch"]');
+  const settled = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId && v.pendingChoices.length === 0 && document.querySelector('[data-action="end-turn"]:not(:disabled)') !== null; })()`;
+  await waitForExpression(connection, settled, 900);
+  interface DwarfStartV7 {
+    readonly factions: readonly string[];
+    readonly viewer: string;
+    readonly capital: { readonly x: number; readonly y: number };
+    readonly mole: {
+      readonly id: number;
+      readonly x: number;
+      readonly y: number;
+    };
+    readonly tunnels: number;
+  }
+  const started = await evaluate<DwarfStartV7>(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const view = s.view; const mole = view.units.find((unit) => unit.ownerId === view.viewer.id && unit.role === 'GUARD' && unit.form === 'LAND'); return { factions: view.setup.factions, viewer: view.viewer.faction, capital: view.cities.find((city) => city.ownerId === view.viewer.id && city.isCapital).at, mole: { id: mole.id, x: mole.at.x, y: mole.at.y }, tunnels: s.offeredCommands.filter((command) => command.kind === 'TUNNEL' && command.unitId === mole.id).length }; })()`,
+  );
+  if (
+    JSON.stringify(started.factions) !==
+      JSON.stringify(["DWARF", "UNDEAD", "GOBLIN", "ORIGINAL"]) ||
+    started.viewer !== "DWARF" ||
+    started.tunnels === 0
+  )
+    throw new Error(`Dwarf setup launch failed: ${JSON.stringify(started)}`);
+  // The Steam Mole, selected with Enter from the capital, aims its Tunnel.
+  await focusBoard();
+  await arrows(
+    started.mole.x - started.capital.x,
+    started.mole.y - started.capital.y,
+  );
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock h2')?.textContent === 'Steam Mole' && document.querySelector('[data-action="dwarf-tunnel"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
+  );
+  await pointerClick(connection, '[data-action="dwarf-tunnel"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-dwarf-pick="tunnel"] [data-action^="tunnel-"]') !== null`,
+  );
+  const forecast = await evaluate<string>(
+    connection,
+    `document.querySelector('[data-v7-dwarf-pick="tunnel"] [data-action^="tunnel-"]')?.getAttribute('aria-label') ?? ''`,
+  );
+  if (!forecast.includes("If they stay:"))
+    throw new Error(`Tunnel forecast missing: ${forecast}`);
+  await capture(connection, "dwarf-tunnel-preview-desktop.png");
+  const destination = await evaluate<string>(
+    connection,
+    `document.querySelector('[data-v7-dwarf-pick="tunnel"] [data-action^="tunnel-"]')?.dataset.action ?? ''`,
+  );
+  const [toX, toY] = destination.slice("tunnel-".length).split("-").map(Number);
+  await pointerClick(
+    connection,
+    '[data-v7-dwarf-pick="tunnel"] [data-action^="tunnel-"]',
+  );
+  await waitForExpression(
+    connection,
+    `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 1 && (document.querySelector('#v7-live')?.textContent ?? '').includes('Steam Mole tunnelled') && ${settled}`,
+    300,
+  );
+  const moundExpression = `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const entry = view.burrowed.find((item) => item.unit.id === ${started.mole.id}); return { mound: entry === undefined ? null : { x: entry.unit.at.x, y: entry.unit.at.y, mole: entry.moleUnitId === null }, onBoard: view.units.some((unit) => unit.id === ${started.mole.id}), commandIndex: view.commandIndex, factions: view.setup.factions }; })()`;
+  interface DwarfMoundV7 {
+    readonly mound: {
+      readonly x: number;
+      readonly y: number;
+      readonly mole: boolean;
+    } | null;
+    readonly onBoard: boolean;
+    readonly commandIndex: number;
+    readonly factions: readonly string[];
+  }
+  const burrowed = await evaluate<DwarfMoundV7>(connection, moundExpression);
+  if (
+    burrowed.mound === null ||
+    burrowed.mound.x !== toX ||
+    burrowed.mound.y !== toY ||
+    !burrowed.mound.mole ||
+    burrowed.onBoard
+  )
+    throw new Error(`Tunnel left no mound: ${JSON.stringify(burrowed)}`);
+  await capture(connection, "dwarf-mound-desktop.png");
+  // The save resumes on a fresh default-route load with its Dwarf seat and
+  // the mound.
+  await navigateFresh(
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE'`,
+  );
+  await touchClick(connection, '[data-action="resume"]');
+  await waitForExpression(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); return s?.phase === 'ACTIVE' && !s.transitioning && JSON.stringify(s.view?.setup.factions) === '["DWARF","UNDEAD","GOBLIN","ORIGINAL"]' && s.view.commandIndex === ${burrowed.commandIndex}; })()`,
+    900,
+  );
+  const resumed = await evaluate<DwarfMoundV7>(connection, moundExpression);
+  if (JSON.stringify(resumed) !== JSON.stringify(burrowed))
+    throw new Error(`Dwarf save did not resume: ${JSON.stringify(resumed)}`);
+  await evaluate(
+    connection,
+    `localStorage.removeItem(${JSON.stringify(saveKey)})`,
+  );
+  await navigateFresh(freshSetup);
+  return `Showcase launch as Dwarves vs Undead, Goblins and Humans, Steam Mole tunnelled to ${toX},${toY} with its eruption forecast, mound kept on resume`;
 }
 
 /**

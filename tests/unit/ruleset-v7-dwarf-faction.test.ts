@@ -394,14 +394,16 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     }
   });
 
-  it("stays hidden from the setup screen until the UI bead", () => {
+  // Turned round by the Dwarf UI bead (pulp_wars-78i.6): the setup screen
+  // offers the Dwarves, last.
+  it("is offered by the setup screen since the UI bead", () => {
     const source = readFileSync("src/render/dom/app-view-v7.ts", "utf8");
     const factions = source.slice(
       source.indexOf("const FACTIONS: readonly FactionIdV7[] = ["),
       source.indexOf("];", source.indexOf("const FACTIONS:")),
     );
     expect(factions).toContain('"ICE_FOLK"');
-    expect(factions).not.toContain('"DWARF"');
+    expect(factions.trim().endsWith('"DWARF",')).toBe(true);
   });
 });
 

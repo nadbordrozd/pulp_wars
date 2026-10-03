@@ -1876,9 +1876,18 @@ export function previewTendWoundedV7(
   if (captain === undefined) return null;
   const plagued = new Set(view.plagued.map((entry) => entry.unitId));
   const bitten = new Set(view.bitten.map((entry) => entry.unitId));
+  // The Dwarf revision section 9.1: an Engineer's Repair heals a machine
+  // by its `repairMachineHeal` (4), as the reducer does; every other unit 2.
+  const machineHeal = unitRoleMechanicsV7(view, captain).repairMachineHeal;
   return {
     results: publicTendTargetsV7(view, captain).map((target) => {
-      const amount = Math.min(2, target.maxHp - target.hp);
+      const amount = Math.min(
+        machineHeal !== null &&
+          unitRoleMechanicsV7(view, target).repairsAsMachine
+          ? machineHeal
+          : 2,
+        target.maxHp - target.hp,
+      );
       return {
         unitId: target.id,
         amount,

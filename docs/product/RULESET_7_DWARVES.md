@@ -2,9 +2,11 @@
 
 **Status:** contract (`pulp_wars-78i.2`); **the engine is implemented**
 (`pulp_wars-78i.3`, identity `pulp-wars-poc-7r30`: every rule, command, event,
-query, and state shape of this document; the browser setup does not offer
-the faction yet). What the engine implementation changed or made precise is
-in [section 22](#22-implementation-notes-pulp_wars-78i3). **The Normal AI is
+query, and state shape of this document) and **the UI is implemented**
+(`pulp_wars-78i.6`: the browser setup offers the faction, with the production
+art wired in). What the engine implementation changed or made precise is
+in [section 22](#22-implementation-notes-pulp_wars-78i3), the UI's in
+[section 23](#23-ui-implementation-notes-pulp_wars-78i6). **The Normal AI is
 implemented** (`pulp_wars-78i.4`,
 [section 15.1](#151-implementation-status-pulp_wars-78i4)). The
 engine (`pulp_wars-78i.3`), the Normal AI (`pulp_wars-78i.4`), the art
@@ -2940,3 +2942,39 @@ rules (base `c6478ac`), after them, and again after the final rebase (base
 10. **Not done here:** the release corpus refresh
     (`npm run validate:ruleset7-release` and its reviewed refresh) is left to
     the root's release gate.
+
+## 23. UI implementation notes (`pulp_wars-78i.6`)
+
+The surfaces, labels, and Help of [section 16](#16-ui-requirements) are
+implemented as the
+[Screen Flow Dwarf overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-dwarf-overlay)
+describes, with the production art of `pulp_wars-78i.5` wired in
+([DWARF.md](../art/factions/DWARF.md#wired-in-bead-pulp_wars-78i6)).
+Precise readings:
+
+1. **A mound is selectable for information** by selecting its tile: the
+   tile's dock and the cursor describe it (owner, unit, HP, "Burrowed: ...",
+   and a Mole's "Eruption: ..."), and the Mole's eruption ring is outlined.
+   No command, target, or orders-cycle entry ever names it.
+2. **The rider prompt** opens when the chosen destination has an offered
+   ride; with more than one fresh Hammerer next to the Mole, the dock offers
+   a choice of rider ("Take the Hammerer at x, y"). "Tunnel alone" sends
+   the rider-less command.
+3. **Unavailable texts** beyond section 16.2: a Mole with no destination
+   says "No free tile within 3"; a Gyrocopter that moved (not Frozen) says
+   "It moved this turn"; the Assemble reasons name the home city ("Your
+   Capital is full").
+4. **Repair's preview** needed one engine correction: `previewTendWoundedV7`
+   previewed 2 for every target, while the reducer heals a machine by the
+   Engineer's `repairMachineHeal` (4); the preview now equals the
+   resolution (section 14, "every preview equals the resolution").
+5. **Calm board cues:** the eruption leaves out its timeline's 1 px shakes;
+   Tunnel destinations are labelled only where they would erupt; rider and
+   Assemble tiles carry no labels; the shooter's attack lines show on the
+   focused target only.
+6. **The smoke probe** launches a Showcase as Dwarves (the keyboard's "D"
+   typeahead passes Dinosaur, so that seat moves to the freed Human),
+   tunnels the Steam Mole from the dock with its forecast, and resumes with
+   the mound. The rest of the section 18 list (an eruption, a bomb, an
+   Assemble, a Repair, a dug-in unit, a Knockback) is exercised by the DOM
+   tests and the UI review (`npm run review:ruleset7-dwarf-ui`).

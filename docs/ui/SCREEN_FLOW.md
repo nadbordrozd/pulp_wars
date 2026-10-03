@@ -799,6 +799,153 @@ from the extra faction option.
   for every viewer of a match with an Ice Folk seat (numbers and names from
   the registry); an Ice Folk viewer is not told of the Raider's Escape.
 
+## Current Ruleset 7 Dwarf overlay
+
+This overlay implements
+[Dwarf spec section 16](../product/RULESET_7_DWARVES.md#16-ui-requirements)
+(`pulp_wars-78i.6`) with the production art of the
+[Dwarf art fragment](../art/factions/DWARF.md) (bead `pulp_wars-78i.5`) and
+its code-drawn pieces. Every cue reads only public views (`view.burrowed`,
+`view.surfacedThisTurn`, `view.bombedThisTurn`), the public unit stats'
+`dwarf` block and per-turn flags, the public previews (`previewTunnelV7`,
+`previewBombRunV7`, `previewAssembleV7`, `queryAssembleUnavailableReasonV7`,
+`previewTendWoundedV7`, `queryCombatPreviewV7`) and projected events;
+nothing recomputes a rule. A match without a Dwarf seat looks as before
+apart from the extra faction option.
+
+- **Setup.** Every seat's faction select offers Human, Undead, Goblin,
+  Dinosaur, Martian, Ice Folk and Dwarf, under the one-faction-per-player
+  rule (an opponent's select disables the factions the other shown seats
+  play; the human's choice moves an opponent who played it to a free
+  faction). Saves, resume and the Showcase keep Dwarf seats.
+- **Art and labels.** Units are named by their owner's registration
+  (Hammerer, Gyrocopter, Clockwork Gunner, Steam Mole, Engineer, Steam
+  Cannon, Steam Tank, Brass Titan). The default look paints the iron,
+  copper and steam sprites, portraits, icons, the forge holds (whose pennant
+  flies from their own iron pole) and the Dwarf fleet (riveted steam launch,
+  ironclad, steam barge) through the generic naval wiring. No plate is
+  drawn: the ginger beards, the white steam and the green machine lamps say
+  "Dwarf", the pennant and the border say whose. The Classic look and LEGACY
+  draw the Human sprite of the role with a **cog badge** (a copper cog on
+  dark leather, iron rim) in the corner of the other factions' badges, the
+  Human city, and a code-drawn mound. The dock shows a "Dwarf" faction chip.
+  Fortification is "Dig In" and Explosives "Blasting Charges" (their own
+  icons) in the tree, its detail and research; unit unlocks read "Train
+  Steam Cannon (Knockback)", "Train Clockwork Gunner (two shots standing
+  still)", "Train Steam Mole (Tunnel)", "Train Gyrocopter (Bomb Run)",
+  "Train Steam Tank (Plated)", "Train Engineer (Repair)", and the effects
+  "Engineers Repair adjacent units: +4 machines, +2 others", "Engineers
+  Assemble Clockwork Gunners", "Dive: bombs deal 5", "Hammerers and Moles
+  that stand still on or next to your city centers are dug in", "Eruptions
+  deal 3; Steam Cannons ignore Walls and Field Defense", all from the
+  registry and the constants. Rewards read "A free Hammerer" and "Brass
+  Titan: A giant clockwork unit".
+- **The mound** (spec 5.3): every mound of `view.burrowed` is drawn where
+  its unit would stand, bottom-centred like a unit, with the unit's HP bar:
+  `UNIT:DWARF:MOUND` for the Mole, `UNIT:DWARF:MOUND_RIDER` (a hammer head
+  beside the drill) for its rider. A small earth chip with an upward arrow
+  beside the heap says "surfaces next turn". A mound is never a unit of the
+  board: it has no ready ring, no actions, no target, and is never in the
+  orders cycle. Choosing its tile selects the tile, whose dock adds the
+  mound: "Your Steam Mole (burrowed) · 12/16 HP", "Burrowed: surfaces at the
+  start of your next turn. It cannot be attacked." (another owner's: "Player
+  2's"), and for a Mole "Eruption: 3 damage to enemies on the ground here"
+  (the rider's: it rides with the Mole and never erupts). The selected or
+  hovered Mole mound draws the **eruption ring**: a dashed earth-light
+  outline (on a dark casing) round its eight tiles. The cursor description
+  says the same.
+- **Dig In** (spec 8): a dug-in Hammerer or Mole (`dwarf.dugIn`) stands
+  inside the code-drawn earthwork (`dwarfDigInMarkerV7`): a bank of piled
+  earth behind it and a low wall of sandbags in front, on the ground (it
+  never jumps with the selection). The dock chip "Dug in" (with the dug-in
+  glyph) says "Dug in: +1 fortification (it has not moved; next to your
+  city)"; an own digger next to an own center that moved says "Not dug in:
+  it moved this turn" (or "arrived this turn"). The attack preview says
+  "Dug in".
+- **Clockwork** (spec 7): a construct's dock chip "Clockwork" (the cog
+  glyph) says "Clockwork: full strength when attacking; only an Engineer can
+  repair it"; on the board a copper cog sits at the HP bar's end whenever
+  the bar shows. A wounded own construct that could Recover shows a disabled
+  Recover: "Clockwork never recovers by itself". The Gunner's chip says "2
+  shots if it stands still", then "1 shot left", then "Fired: cannot move".
+  Plated units show "Plated 4"; a bombed unit "Bombed this turn"; a rider on
+  its surfacing turn "Just surfaced" ("Just surfaced: cannot enter a city or
+  village this turn").
+- **The Gyrocopter** flies: it casts the flyer's ground shadow and is drawn
+  lifted, like the Martian flyers; no neutral shadow is drawn under it.
+- **Abilities.** Tunnel (Mole), Bomb Run (Gyrocopter) and Assemble
+  (Engineer) are one button each (the offered commands are never buttons).
+  Without a legal choice the button is `aria-disabled` and names why: "It
+  surfaced this turn", "It moved this turn", "No free tile within 3"; "No
+  enemy within 2 tiles", "Frozen: it cannot bomb this turn"; "Needs
+  Marksmanship", "Your Capital is full", "Not enough Coins", "No free tile",
+  "No home city". A press aims it: the dock shows a compact prompt, the
+  board's only targets become the ability's and the camera frames them;
+  Escape steps back a stage (Back), Cancel leaves.
+  - **Tunnel**: every offered destination is outlined in light earth; only
+    a destination that would erupt on someone is labelled ("Erupt −6"), and
+    the focused one shows its forecast: the eruption ring, "−3" on each
+    visible hostile unit on the ground and the Field Defense it would
+    undermine. The dock lists the destinations, the erupting ones first
+    ("4, 2 · −6"), each chip carrying "If they stay: Catapult −3; Undermines
+    Field Defense", and "A forecast: enemies may move before the Mole
+    surfaces". Choosing a destination with a fresh Hammerer next to the Mole
+    opens the **rider prompt** "Take a Hammerer along?": the chosen tile
+    keeps its forecast, the Hammerer's possible tiles next to it are
+    outlined (no labels), the dock lists them ("Hammerer to 3, 1"), a chip
+    per other Hammerer that could ride, and "Tunnel alone"; otherwise it
+    tunnels at once.
+  - **Bomb Run**: the targets within 2 are outlined in copper and labelled
+    "Bomb −5" (or "Bomb −5 · Kills"); hostile units in range bombed this
+    turn are marked "Bombed this turn". Choosing a target outlines its
+    landing tiles beyond it, each labelled with the landing threat ("Land ·
+    up to 8", "Land · safe"; "Lands next to: up to 8 damage next turn"), the
+    target keeps its "Bomb −5" mark and a killed exploding target's blast
+    is shown; the dock says "Bomb: 5 damage, no reply".
+  - **Assemble**: the free tiles round the Engineer are outlined in steam
+    white (no labels) and the dock says "Assemble a Clockwork Gunner: 4
+    Coins, slot 2/3 in your Capital".
+  - **Repair** is the Engineer's Tend Wounded button, labelled "Repair" with
+    the chip "+4 machines, +2 others" and the tooltip "Heal adjacent units:
+    +4 machines, +2 others. Cures Plague, bites, and frost"; a selected
+    Engineer marks its targets "+4 HP" or "+2 HP" from the exact preview.
+  - A Hammerer or Mole where a Fighter or Guard would fortify shows a
+    disabled Fortify: "Dwarves dig in instead of building Field Defense".
+- **Attack preview** (own and enemy attacks; the cursor description carries
+  every line): notes "Dug in", "Plated: at most 4", "Ignores fortification"
+  (a Blasting Steam Cannon), and "Knocks back to 3, 6" or "Knockback
+  blocked"; while a Cannon target is focused, a short earth arrow points to
+  the tile it is knocked to (outlined), or ends in a cross when blocked. The
+  shooter's lines ("Clockwork: full strength", the Gunner's "Then 1 more
+  shot" and "Cannot move after firing") are drawn on the focused target
+  only, so a row of targets stays calm.
+- **Cues** (effects canvas; reduced motion holds a frame, the eruption its
+  peak): a **tunnel** throws up dirt and steam where the Mole and its rider
+  dive and draws a dotted dirt trail to each mound; the **eruption**
+  (`DWARF_ERUPTION_TIMELINE_V7`) shows the mound until the units are back
+  (120 ms), then the burst at the Mole's tile, smaller bursts on its eight
+  tiles clockwise from the north, a rising dust and steam puff, and each
+  victim's damage; the timeline's 1 px shakes are left out (calm). A **bomb
+  run** flies the Gyrocopter beyond its target, then the bomb falls 24 px
+  and blasts (`EFFECT:BOMB_BLAST`) and the target shows its damage. An
+  **Assemble** turns a copper key over the new Gunner and puffs steam; a
+  **Repair** throws wrench sparks on each repaired unit (after the Tend
+  ring); a **Knockback** slides the target one tile back (it waits where
+  the slide starts) with a puff of steam. Without the effect sprites
+  (Classic look, LEGACY) code shapes stand in.
+- **Log.** "Your Steam Mole tunnelled (with a Hammerer)", "Your Steam Mole
+  erupted: 2 units hit" (toast), "Your Gyrocopter bombed a Marksman for 5"
+  (toast), "Your Engineer assembled a Clockwork Gunner", "Your Engineer
+  repaired 2 units (+6 HP)", "Your Steam Cannon knocked back a Guard",
+  "Field Defense undermined".
+- **City panel.** A Dwarf viewer's city counts slots ("5/7 slots"; every
+  Dwarf unit takes one, and an Engineer's Assemble uses one of its home
+  city's) and every train card names its slot.
+- **Help.** A "Dwarves" section lists the twelve section-16.3 sentences for
+  every viewer of a match with a Dwarf seat (numbers and names from the
+  registry and the constants); a Dwarf viewer is not told of the Raider's
+  Escape.
+
 ## Current Ruleset 7 revision 21 achievements overlay
 
 Rules: [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md)

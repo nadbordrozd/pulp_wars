@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   effectiveRoleRuleV7,
-  previewBolasV7,
-  previewColdSnapV7,
+  previewAssembleV7,
+  previewTunnelV7,
   projectEventsV7,
   queryPlayerCommandsV7,
   viewForV7,
@@ -31,41 +31,51 @@ import {
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import {
-  BRITTLE_UNLOCK_TEXT_V7,
-  COLD_SNAP_NO_TARGET_V7,
-  DEEP_WINTER_UNLOCK_TEXT_V7,
-  FROZEN_MOVED_V7,
-  ICE_FOLK_HELP_RULES_V7,
-  SHATTERS_PREVIEW_V7,
-  bolasPreviewLinesV7,
-  chillChipV7,
-  coldSnapSummaryV7,
-  iceFolkRoleUnlockTextV7,
-  snowTooltipV7,
-} from "../../src/render/ice-folk-presentation-v7";
+  BLASTING_CHARGES_UNLOCK_TEXT_V7,
+  CLOCKWORK_INFO_V7,
+  CLOCKWORK_RECOVER_V7,
+  DIG_IN_UNLOCK_TEXT_V7,
+  DUG_IN_INFO_V7,
+  DWARF_FIELD_DEFENSE_EXPLANATION_V7,
+  DWARF_HELP_RULES_V7,
+  NOT_DUG_IN_MOVED_V7,
+  REPAIR_CHIP_V7,
+  REPAIR_TOOLTIP_V7,
+  RIDER_PROMPT_V7,
+  TUNNEL_ALONE_V7,
+  assembleSummaryV7,
+  burrowedInfoTextV7,
+  dwarfCityNameV7,
+  dwarfRoleUnlockTextV7,
+  tunnelPreviewLinesV7,
+} from "../../src/render/dwarf-presentation-v7";
 import {
-  ICE_FOLK_UI_V7,
-  ICE_FOLK_VICTIM_V7,
-  iceFolkUiFieldV7,
-  iceFolkUiFixtureV7,
-  iceFolkVictimFixtureV7,
-} from "../fixtures/v7-ice-folk-ui";
+  DWARF_UI_V7,
+  DWARF_VICTIM_V7,
+  dwarfUiFieldV7,
+  dwarfUiFixtureV7,
+  dwarfVictimFixtureV7,
+} from "../fixtures/v7-dwarf-ui";
 import { martianUiFixtureV7 } from "../fixtures/v7-martian-ui";
 
-// Every Ice Folk text and number expected below is read from the registry,
+// Every Dwarf text and number expected below is read from the registry,
 // the engine constants or a public preview of the same view: the balance
-// bead (`pulp_wars-7g3.7`) may retune the faction.
-const AT = ICE_FOLK_UI_V7;
+// bead (`pulp_wars-78i.7`) may retune the faction.
+const AT = DWARF_UI_V7;
 const label = (role: Parameters<typeof effectiveRoleRuleV7>[0]): string =>
-  effectiveRoleRuleV7(role, "ICE_FOLK").label;
+  effectiveRoleRuleV7(role, "DWARF").label;
+const same = (left: CoordV7, right: CoordV7): boolean =>
+  left.x === right.x && left.y === right.y;
+const live = (): string =>
+  document.querySelector("#v7-live")?.textContent ?? "";
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
   window.localStorage.clear();
 });
 
-describe("Ice Folk setup", () => {
-  it("offers Ice Folk for every seat and launches the chosen factions", async () => {
+describe("Dwarf setup", () => {
+  it("offers Dwarf for every seat and launches the chosen factions", async () => {
     const chosen = new SetupController();
     const app = mount(chosen, new RecordingBoardHost());
     const count = requiredElement<HTMLSelectElement>("#v7-ai-count");
@@ -73,7 +83,6 @@ describe("Ice Folk setup", () => {
     count.dispatchEvent(new Event("change", { bubbles: true }));
     for (const seat of [0, 1, 2, 3]) {
       const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
-      // The Dwarf UI (pulp_wars-78i.6) adds the seventh faction.
       expect([...field.options].map((option) => option.textContent)).toEqual([
         "Human",
         "Undead",
@@ -83,241 +92,272 @@ describe("Ice Folk setup", () => {
         "Ice Folk",
         "Dwarf",
       ]);
-      // pulp_wars-w5j.1: distinct defaults (Human, Undead, Goblin, Dinosaur).
-      expect(field.value).toBe(
-        ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"][seat],
-      );
     }
-    for (const seat of [0, 3]) {
-      const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
-      field.value = "ICE_FOLK";
-      field.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    // An opponent's Dwarf option is disabled while the human plays Dwarf.
+    const human = requiredElement<HTMLSelectElement>("#v7-faction-0");
+    human.value = "DWARF";
+    human.dispatchEvent(new Event("change", { bubbles: true }));
+    const opponent = requiredElement<HTMLSelectElement>("#v7-faction-2");
+    expect(
+      [...opponent.options].find((option) => option.value === "DWARF")
+        ?.disabled,
+    ).toBe(true);
     requiredButton("launch").click();
     await waitUntil(() => chosen.launched.length === 1);
-    // pulp_wars-w5j.1: a second Ice Folk seat is impossible; seat 3 takes
-    // the first untaken faction (Human).
     expect(chosen.launched[0]?.factions).toEqual([
-      "ICE_FOLK",
+      "DWARF",
       "UNDEAD",
       "GOBLIN",
-      "ORIGINAL",
+      "DINOSAUR",
     ]);
     app.destroy();
   });
 });
 
-describe("Ice Folk unit dock", () => {
-  it("shows Frozen, Frosted and Thawing on enemy units, with their status", () => {
-    const controller = new FixtureController(iceFolkUiFixtureV7());
+describe("Dwarf unit dock", () => {
+  it("shows Dug in, Not dug in, Clockwork and the Gunner's shots", () => {
+    const controller = new FixtureController(dwarfUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const view = required(controller.snapshot().view);
-    for (const at of [AT.frozenEnemy, AT.shatterTarget, AT.thawingEnemy]) {
-      const unit = selectUnitAt(controller, host, at);
-      const chip = required(chillChipV7(view, unit));
-      const cue = requiredElement<HTMLElement>(
-        '.v7-selection-dock [data-unit-status="chill"]',
-      );
-      expect(cue.textContent).toBe(chip.label);
-      expect(cue.title).toBe(chip.status);
-    }
-    // An unchilled enemy has no chill chip.
-    selectUnitAt(controller, host, AT.sweepTarget);
-    expect(chipText("chill")).toBeNull();
+    selectUnitAt(controller, host, AT.dugInHammerer);
+    expect(chipText("dug-in")).toBe("Dug in");
+    expect(chipTitle("dug-in")).toBe(DUG_IN_INFO_V7);
+    // Fortify is explained: Dwarves dig in instead.
+    const fortify = requiredButton("dwarf-field-defense");
+    expect(fortify.getAttribute("aria-disabled")).toBe("true");
+    expect(fortify.title).toBe(DWARF_FIELD_DEFENSE_EXPLANATION_V7);
+    selectUnitAt(controller, host, AT.movedHammerer);
+    expect(chipTitle("not-dug-in")).toBe(NOT_DUG_IN_MOVED_V7);
+    selectUnitAt(controller, host, AT.gunner);
+    expect(chipTitle("clockwork")).toBe(CLOCKWORK_INFO_V7);
+    expect(chipText("shots")).toBe("2 shots if it stands still");
+    // The wounded Gunner's Recover is absent, with the reason.
+    const recover = requiredButton("clockwork-recover");
+    expect(recover.getAttribute("aria-disabled")).toBe("true");
+    expect(recover.title).toBe(CLOCKWORK_RECOVER_V7);
+    selectUnitAt(controller, host, AT.woundedTank);
+    expect(chipText("plated")).toMatch(/^Plated \d+$/);
     app.destroy();
   });
 
-  it("names the Boulder Yeti's throw, the Witch's Blizzard and an Ice Folk unit's threshold", () => {
-    const controller = new FixtureController(iceFolkUiFixtureV7());
+  it("describes a mound on its tile, for its owner and for an enemy, and outlines its ring", () => {
+    const controller = new FixtureController(dwarfUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const view = required(controller.snapshot().view);
-    selectUnitAt(controller, host, AT.boulderYeti);
-    const stats = required(
-      view.unitStats.find(
-        (entry) => entry.unitId === unitAt(controller, AT.boulderYeti).id,
-      )?.iceFolk,
-    );
-    expect(chipText("planted")).toBe(
-      stats.planted === true ? "Planted: Attack 3" : "Moved: Attack 2",
-    );
+    host.callbacks?.onSelection({ kind: "TILE", at: AT.mound });
+    const info = requiredElement<HTMLElement>(".v7-dwarf-mound");
+    expect(info.dataset.dwarfMound).toBe("mole");
+    expect(info.textContent).toContain(`${burrowedInfoTextV7("your")}.`);
+    expect(info.textContent).toContain("Eruption:");
+    // A mound has no actions and is information only.
     expect(
-      requiredElement(".v7-selection-dock .v7-faction-chip").textContent,
-    ).toBe("Ice Folk");
-    selectUnitAt(controller, host, AT.witch);
-    expect(chipText("blizzard")).toBe("Blizzard");
-    requiredButton("unit-help").click();
+      document.querySelector('.v7-selection-dock [data-action^="dwarf-"]'),
+    ).toBe(null);
     expect(
-      requiredElement('[data-ice-folk-info="threshold"] strong').textContent,
-    ).toBe(`Shatters at ${stats.shatterThreshold} HP or less`);
-    app.destroy();
-  });
-
-  it("says why a Frozen unit that moved cannot act", () => {
-    const controller = new FixtureController(iceFolkVictimFixtureV7());
-    const host = new RecordingBoardHost();
-    const app = mount(controller, host);
-    selectUnitAt(controller, host, ICE_FOLK_VICTIM_V7.frozenFighter);
-    const act = requiredButton("ice-folk-frozen");
-    expect(act.getAttribute("aria-disabled")).toBe("true");
-    expect(act.title).toBe(FROZEN_MOVED_V7);
-    // The unit information says it too.
-    requiredButton("unit-help").click();
-    expect(requiredElement('[data-tactical-state="frozen"]').textContent).toBe(
-      FROZEN_MOVED_V7,
-    );
-    // The engine offers it no primary action.
-    expect(
-      queryPlayerCommandsV7(required(controller.snapshot().view))
-        .filter(
-          (command) =>
-            "unitId" in command &&
-            command.unitId ===
-              unitAt(controller, ICE_FOLK_VICTIM_V7.frozenFighter).id,
-        )
-        .map((command) => command.kind)
-        .sort(),
-    ).toEqual(["DISBAND", "WAIT"]);
-    app.destroy();
-  });
-
-  it("names Snow and the Blizzard on a tile for the viewer's faction", () => {
-    const controller = new FixtureController(iceFolkVictimFixtureV7());
-    const host = new RecordingBoardHost();
-    const app = mount(controller, host);
-    const view = required(controller.snapshot().view);
-    host.callbacks?.onSelection({
-      kind: "TILE",
-      at: { x: ICE_FOLK_VICTIM_V7.witch.x + 1, y: ICE_FOLK_VICTIM_V7.witch.y },
-    });
-    expect(requiredElement<HTMLElement>('[data-winter="snow"]').title).toBe(
-      snowTooltipV7(view),
-    );
-    expect(
-      requiredElement<HTMLElement>('[data-winter="blizzard"]').textContent,
-    ).toBe("Blizzard");
-    app.destroy();
-  });
-
-  it("counts an Ice Folk city in slots, one per unit", () => {
-    const controller = new FixtureController(
-      iceFolkUiFieldV7([{ seat: 0, role: "FIGHTER", at: { x: 7, y: 7 } }]),
-    );
-    const host = new RecordingBoardHost();
-    const app = mount(controller, host);
-    const view = required(controller.snapshot().view);
-    const capital = required(
-      view.cities.find((city) => city.ownerId === view.viewer.id),
-    );
-    host.callbacks?.onSelection({ kind: "CITY", cityId: capital.id });
-    expect(
-      requiredElement<HTMLElement>('[data-stat="units"]').dataset.capacity,
-    ).toBe("slots");
-    expect(
-      [...document.querySelectorAll('[data-egg-fact="slots"]')].every(
-        (node) => node.textContent === "1 slot",
-      ),
+      boardPlan(host).entries.find(
+        (entry) => entry.dwarfMound !== undefined && same(entry.at, AT.mound),
+      )?.dwarfMound?.ring,
     ).toBe(true);
     app.destroy();
+    document.body.innerHTML = '<div id="app"></div>';
+    const victim = new FixtureController(dwarfVictimFixtureV7());
+    const victimHost = new RecordingBoardHost();
+    const victimApp = mount(victim, victimHost);
+    victimHost.callbacks?.onSelection({
+      kind: "TILE",
+      at: DWARF_VICTIM_V7.mound,
+    });
+    expect(
+      requiredElement<HTMLElement>(".v7-dwarf-mound").textContent,
+    ).toContain(`${burrowedInfoTextV7("Player 2's")}.`);
+    victimApp.destroy();
   });
 });
 
-describe("Ice Folk abilities", () => {
-  it("throws a Bolas: the button, the targets with their hints, then a target", async () => {
-    const controller = new FixtureController(iceFolkUiFixtureV7());
+describe("Dwarf abilities through the dock and the board", () => {
+  it("tunnels with a rider: the destinations with their forecast, the rider prompt, the mounds", async () => {
+    const controller = new FixtureController(dwarfUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const sled = selectUnitAt(controller, host, AT.sled);
-    const target = unitAt(controller, AT.bolasTarget);
-    const button = requiredButton("ice-folk-bolas");
-    expect(button.getAttribute("aria-pressed")).toBe("false");
-    button.click();
-    expect(host.lastModel?.interaction.iceFolkPick).toEqual({
-      kind: "THROW_BOLAS",
-      unitId: sled.id,
+    const mole = selectUnitAt(controller, host, AT.mole);
+    const rider = unitAt(controller, AT.rider);
+    requiredButton("dwarf-tunnel").click();
+    expect(host.lastModel?.interaction.dwarfPick).toEqual({
+      kind: "TUNNEL",
+      unitId: mole.id,
+      to: null,
+      riderUnitId: null,
     });
     const view = required(controller.snapshot().view);
-    const offered = queryPlayerCommandsV7(view).filter(
-      (command) => command.kind === "THROW_BOLAS" && command.unitId === sled.id,
+    const alone = required(
+      queryPlayerCommandsV7(view).find(
+        (command): command is Extract<CommandV7, { kind: "TUNNEL" }> =>
+          command.kind === "TUNNEL" &&
+          same(command.to, AT.tunnelTo) &&
+          command.rider === null,
+      ),
     );
-    expect(boardPlan(host).targets.map((entry) => entry.family)).toEqual(
-      offered.map(() => "THROW_BOLAS"),
+    const chip = requiredButton(`tunnel-${AT.tunnelTo.x}-${AT.tunnelTo.y}`);
+    for (const line of tunnelPreviewLinesV7(
+      view,
+      required(previewTunnelV7(view, alone)),
+    ))
+      expect(chip.getAttribute("aria-label")).toContain(line);
+    // The erupting destinations come first.
+    expect(
+      document.querySelector('[data-v7-dwarf-pick] [data-action^="tunnel-"]')
+        ?.textContent,
+    ).toMatch(/· −\d+$/);
+    // The board: choosing the destination moves on to the rider prompt.
+    const destination = required(
+      boardPlan(host).targets.find((target) => same(target.at, AT.tunnelTo)),
     );
-    const preview = required(previewBolasV7(view, sled.id, target.id));
-    const choice = requiredButton(`bolas-${target.id}`);
-    for (const line of bolasPreviewLinesV7(view, preview))
-      expect(choice.getAttribute("aria-label")).toContain(line);
-    // Escape leaves the aiming; the button aims again.
+    expect(destination.family).toBe("TUNNEL_DESTINATION");
+    host.callbacks?.onCommand(destination);
+    await waitUntil(
+      () =>
+        document.querySelector("[data-v7-dwarf-pick] .v7-kaboom-summary")
+          ?.textContent === RIDER_PROMPT_V7,
+    );
+    expect(controller.accepted).toHaveLength(0);
+    expect(requiredButton("tunnel-alone").textContent).toBe(TUNNEL_ALONE_V7);
+    // Escape steps back to the destinations, then the rider is chosen.
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );
-    expect(host.lastModel?.interaction.iceFolkPick ?? null).toBe(null);
-    requiredButton("ice-folk-bolas").click();
-    requiredButton(`bolas-${target.id}`).click();
+    expect(host.lastModel?.interaction.dwarfPick).toMatchObject({ to: null });
+    host.callbacks?.onCommand(destination);
+    await waitUntil(() =>
+      boardPlan(host).targets.every(
+        (target) => target.family === "TUNNEL_RIDER",
+      ),
+    );
+    const riderTarget = required(boardPlan(host).targets[0]);
+    host.callbacks?.onCommand(riderTarget);
     await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toEqual({
-      kind: "THROW_BOLAS",
-      unitId: sled.id,
+    expect(controller.accepted[0]).toMatchObject({
+      kind: "TUNNEL",
+      unitId: mole.id,
+      to: AT.tunnelTo,
+      rider: { unitId: rider.id },
+    });
+    await waitUntil(() =>
+      live().includes("Your Steam Mole tunnelled (with a Hammerer)"),
+    );
+    expect(host.lastModel?.interaction.dwarfPick ?? null).toBe(null);
+    expect(
+      required(controller.snapshot().view).burrowed.map(
+        (entry) => entry.unit.id,
+      ),
+    ).toEqual(expect.arrayContaining([mole.id, rider.id]));
+    app.destroy();
+  });
+
+  it("bombs: the target, then a landing with its threat", async () => {
+    const controller = new FixtureController(dwarfUiFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const gyro = selectUnitAt(controller, host, AT.gyrocopter);
+    const target = unitAt(controller, AT.bombTarget);
+    requiredButton("dwarf-bomb-run").click();
+    requiredButton(`bomb-target-${target.id}`).click();
+    expect(host.lastModel?.interaction.dwarfPick).toEqual({
+      kind: "BOMB_RUN",
+      unitId: gyro.id,
+      targetUnitId: target.id,
+    });
+    const landing = required(
+      document.querySelector<HTMLButtonElement>(
+        '[data-v7-dwarf-pick] [data-action^="bomb-landing-"]',
+      ),
+    );
+    expect(landing.getAttribute("aria-label")).toMatch(/Lands next to:/);
+    expect(
+      requiredElement("[data-v7-dwarf-pick] .v7-martian-detail").textContent,
+    ).toMatch(/^Bomb: \d+ damage, no reply/);
+    landing.click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toMatchObject({
+      kind: "BOMB_RUN",
+      unitId: gyro.id,
       targetUnitId: target.id,
     });
     await waitUntil(() =>
-      (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your ${label("RAIDER")} chilled a Fighter`,
-      ),
+      live().includes(`Your ${label("RAIDER")} bombed a Marksman for`),
     );
-    expect(host.lastModel?.interaction.iceFolkPick ?? null).toBe(null);
+    // The bombed unit shows the mark for the rest of the turn.
+    selectUnitAt(controller, host, AT.bombTarget);
+    expect(chipText("bombed")).toBe("Bombed this turn");
     app.destroy();
   });
 
-  it("casts a Cold Snap with one confirm, from the board or the dock", async () => {
-    const controller = new FixtureController(iceFolkUiFixtureV7());
+  it("assembles a Gunner on a picked tile, and labels the Engineer's Repair", async () => {
+    const controller = new FixtureController(dwarfUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const witch = selectUnitAt(controller, host, AT.witch);
-    requiredButton("ice-folk-cold-snap").click();
-    const preview = required(
-      previewColdSnapV7(required(controller.snapshot().view), witch.id),
-    );
+    const engineer = selectUnitAt(controller, host, AT.engineer);
+    const repair = requiredButton("command-tend_wounded");
+    expect(repair.textContent).toContain("Repair");
+    expect(repair.textContent).toContain(REPAIR_CHIP_V7);
+    expect(repair.title).toBe(REPAIR_TOOLTIP_V7);
+    requiredButton("dwarf-assemble").click();
+    const view = required(controller.snapshot().view);
+    const preview = required(previewAssembleV7(view, engineer.id));
     expect(
-      requiredElement("[data-v7-ice-folk-pick] .v7-kaboom-summary").textContent,
-    ).toBe(coldSnapSummaryV7(preview));
-    const targets = boardPlan(host).targets;
-    expect(targets).toHaveLength(preview.targets.length);
-    // Choosing any highlighted unit casts it.
-    host.callbacks?.onCommand(required(targets[0]));
+      requiredElement("[data-v7-dwarf-pick] .v7-kaboom-summary").textContent,
+    ).toBe(assembleSummaryV7(preview, dwarfCityNameV7(view, preview.cityId)));
+    expect(boardPlan(host).targets.map((target) => target.at)).toEqual(
+      preview.tiles,
+    );
+    const tile = required(preview.tiles[0]);
+    requiredButton(`assemble-${tile.x}-${tile.y}`).click();
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
-      kind: "COLD_SNAP",
-      unitId: witch.id,
+      kind: "ASSEMBLE",
+      unitId: engineer.id,
+      to: tile,
     });
     await waitUntil(() =>
-      (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your ${label("CAPTAIN")} chilled ${preview.targets.length} units`,
-      ),
+      live().includes("Your Engineer assembled a Clockwork Gunner"),
     );
     app.destroy();
   });
 
-  it("names why a Witch without an enemy in reach cannot cast", () => {
+  it("names why an Engineer cannot Assemble, and a Mole that moved", () => {
     const controller = new FixtureController(
-      iceFolkUiFieldV7([{ seat: 0, role: "CAPTAIN", at: { x: 5, y: 3 } }]),
+      dwarfUiFieldV7(
+        [
+          { seat: 0, role: "CAPTAIN", at: { x: 5, y: 3 } },
+          {
+            seat: 0,
+            role: "GUARD",
+            at: { x: 7, y: 3 },
+            activation: { moved: true, movedPathLength: 1 },
+          },
+        ],
+        { coins: 0 },
+      ),
     );
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     selectUnitAt(controller, host, { x: 5, y: 3 });
-    const button = requiredButton("ice-folk-cold-snap");
-    expect(button.getAttribute("aria-disabled")).toBe("true");
-    expect(button.dataset.disabledReason).toBe(COLD_SNAP_NO_TARGET_V7);
+    const assemble = requiredButton("dwarf-assemble");
+    expect(assemble.getAttribute("aria-disabled")).toBe("true");
+    // Homeless (the fixture homes no unit unless asked).
+    expect(assemble.dataset.disabledReason).toBe("No home city");
+    selectUnitAt(controller, host, { x: 7, y: 3 });
+    expect(requiredButton("dwarf-tunnel").dataset.disabledReason).toBe(
+      "It moved this turn",
+    );
     app.destroy();
   });
 
-  it("previews a Shatter and shatters on the attack", async () => {
-    const controller = new FixtureController(iceFolkUiFixtureV7());
+  it("knocks a Guard back from the board", async () => {
+    const controller = new FixtureController(dwarfUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
-    const yeti = selectUnitAt(controller, host, AT.yeti);
-    const target = unitAt(controller, AT.shatterTarget);
+    selectUnitAt(controller, host, AT.cannon);
+    const target = unitAt(controller, AT.knockTarget);
     const attack = required(
       boardPlan(host).targets.find(
         (entry) =>
@@ -326,56 +366,47 @@ describe("Ice Folk abilities", () => {
           entry.command.targetUnitId === target.id,
       ),
     );
-    expect(attack.previewLabel).toBe(SHATTERS_PREVIEW_V7);
-    host.callbacks?.onCommand(attack);
-    await waitUntil(() => controller.accepted.length === 1);
-    await waitUntil(() =>
-      (document.querySelector("#v7-live")?.textContent ?? "").includes(
-        `Your ${label("FIGHTER")} shattered a Fighter`,
-      ),
+    expect(attack.previewNote).toContain(
+      `Knocks back to ${AT.knockTo.x}, ${AT.knockTo.y}`,
     );
-    expect(
-      required(controller.snapshot().view).units.some(
-        (unit) => unit.id === target.id,
-      ),
-    ).toBe(false);
-    expect(yeti.id).toBeGreaterThan(0);
+    host.callbacks?.onCommand(attack);
+    await waitUntil(() =>
+      live().includes(`Your ${label("CATAPULT")} knocked back a Guard`),
+    );
+    expect(unitAt(controller, AT.knockTo).id).toBe(target.id);
     app.destroy();
   });
 });
 
-describe("Ice Folk Help and technology", () => {
-  it("lists the Ice Folk rules for every viewer of a match with an Ice Folk seat", () => {
-    for (const fixture of [iceFolkUiFixtureV7, iceFolkVictimFixtureV7]) {
+describe("Dwarf Help and technology", () => {
+  it("lists the Dwarf rules for every viewer of a match with a Dwarf seat", () => {
+    for (const fixture of [dwarfUiFixtureV7, dwarfVictimFixtureV7]) {
       document.body.innerHTML = '<div id="app"></div>';
       const controller = new FixtureController(fixture());
       const app = mount(controller, new RecordingBoardHost());
       requiredButton("compact-menu").click();
       requiredButton("help").click();
       expect(
-        [...document.querySelectorAll(".v7-help-ice-folk li")].map(
+        [...document.querySelectorAll(".v7-help-dwarf li")].map(
           (node) => node.textContent,
         ),
       ).toEqual(
-        ICE_FOLK_HELP_RULES_V7.map(
-          ([name, sentence]) => `${name}: ${sentence}`,
-        ),
+        DWARF_HELP_RULES_V7.map(([name, sentence]) => `${name}: ${sentence}`),
       );
       app.destroy();
     }
-    // A match without an Ice Folk seat has no Ice Folk Help.
     document.body.innerHTML = '<div id="app"></div>';
     const martian = new FixtureController(martianUiFixtureV7());
     const app = mount(martian, new RecordingBoardHost());
     requiredButton("compact-menu").click();
     requiredButton("help").click();
-    expect(document.querySelector(".v7-help-ice-folk")).toBe(null);
+    expect(document.querySelector(".v7-help-dwarf")).toBe(null);
     app.destroy();
   });
 
-  it("names Deep Winter, Brittle and the Ice Folk units in the technology tree", () => {
+  it("names Dig In, Blasting Charges and the Dwarf units in the technology tree", () => {
     const app = mount(
-      new FixtureController(iceFolkUiFixtureV7()),
+      new FixtureController(dwarfUiFixtureV7()),
       new RecordingBoardHost(),
     );
     requiredButton("tech").click();
@@ -388,25 +419,26 @@ describe("Ice Folk Help and technology", () => {
     expect(
       requiredButton("tech-fortification").querySelector(".v7-tech-name")
         ?.textContent,
-    ).toBe("Deep Winter");
-    expect(unlocks("fortification")).toEqual([DEEP_WINTER_UNLOCK_TEXT_V7]);
+    ).toBe("Dig In");
+    expect(unlocks("fortification")).toEqual([DIG_IN_UNLOCK_TEXT_V7]);
     expect(
       requiredButton("tech-explosives").querySelector(".v7-tech-name")
         ?.textContent,
-    ).toBe("Brittle");
+    ).toBe("Blasting Charges");
     expect(unlocks("explosives")).toEqual(
-      expect.arrayContaining([BRITTLE_UNLOCK_TEXT_V7]),
+      expect.arrayContaining([BLASTING_CHARGES_UNLOCK_TEXT_V7]),
     );
-    expect(unlocks("administration")).toContain(
-      iceFolkRoleUnlockTextV7("CAPTAIN"),
-    );
-    expect(unlocks("drill")).toContain(iceFolkRoleUnlockTextV7("GUARD"));
+    expect(unlocks("sawmilling")).toContain(dwarfRoleUnlockTextV7("CATAPULT"));
+    expect(unlocks("drill")).toContain(dwarfRoleUnlockTextV7("GUARD"));
     app.destroy();
-    const witch = recruitmentRolePresentationV7("CAPTAIN", "ICE_FOLK");
-    expect(witch.label).toBe(label("CAPTAIN"));
-    expect(witch.abilities.some((line) => line.startsWith("Cold Snap:"))).toBe(
+    const engineer = recruitmentRolePresentationV7("CAPTAIN", "DWARF");
+    expect(engineer.label).toBe(label("CAPTAIN"));
+    expect(engineer.abilities.some((line) => line.startsWith("Repair:"))).toBe(
       true,
     );
+    expect(
+      engineer.abilities.some((line) => line.startsWith("Assemble:")),
+    ).toBe(true);
   });
 });
 
@@ -415,6 +447,14 @@ function chipText(status: string): string | null {
     document.querySelector(
       `.v7-selection-dock .v7-identity [data-unit-status="${status}"]`,
     )?.textContent ?? null
+  );
+}
+
+function chipTitle(status: string): string | null {
+  return (
+    document.querySelector<HTMLElement>(
+      `.v7-selection-dock .v7-identity [data-unit-status="${status}"]`,
+    )?.title ?? null
   );
 }
 
@@ -655,7 +695,7 @@ function requiredElement<T extends Element>(selector: string): T {
 
 function required<T>(value: T | null | undefined): T {
   if (value === null || value === undefined)
-    throw new Error("Required Ice Folk DOM fixture value missing");
+    throw new Error("Required Dwarf DOM fixture value missing");
   return value;
 }
 

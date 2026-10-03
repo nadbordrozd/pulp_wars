@@ -36,6 +36,10 @@ import {
   previewTractorBeamV7,
   previewBolasV7,
   previewColdSnapV7,
+  previewAssembleV7,
+  previewBombRunV7,
+  previewTunnelV7,
+  queryAssembleUnavailableReasonV7,
   queryLandingPreviewV7,
   unitCapacitySlotsV7,
   UNIT_ROLE_IDS_V7,
@@ -288,6 +292,62 @@ import {
   snowTooltipV7,
 } from "../ice-folk-presentation-v7";
 import type { IceFolkPickV7 } from "../canvas/ice-folk-board-plan-v7";
+import {
+  ASSEMBLE_LABEL_V7,
+  ASSEMBLE_PICK_V7,
+  ASSEMBLE_UNLOCK_TEXT_V7,
+  BLASTING_CHARGES_UNLOCK_TEXT_V7,
+  BOMBED_MARK_V7,
+  BOMB_RUN_LABEL_V7,
+  BOMB_RUN_PICK_LANDING_V7,
+  BOMB_RUN_PICK_TARGET_V7,
+  CLOCKWORK_INFO_V7,
+  CLOCKWORK_LABEL_V7,
+  CLOCKWORK_RECOVER_V7,
+  DIG_IN_UNLOCK_TEXT_V7,
+  DIVE_UNLOCK_TEXT_V7,
+  DWARF_FIELD_DEFENSE_EXPLANATION_V7,
+  DWARF_HELP_RULES_V7,
+  DWARF_SLOT_TOOLTIP_V7,
+  ENGINEER_SUPPORT_UNLOCK_TEXT_V7,
+  REPAIR_CHIP_V7,
+  REPAIR_TOOLTIP_V7,
+  RIDER_PICK_V7,
+  RIDER_PROMPT_V7,
+  RIDER_SURFACED_V7,
+  TUNNEL_ALONE_V7,
+  TUNNEL_FORECAST_V7,
+  TUNNEL_LABEL_V7,
+  TUNNEL_PICK_V7,
+  assembleSummaryV7,
+  assembleTooltipV7,
+  bombPreviewLinesV7,
+  bombRunTooltipV7,
+  clockworkRecoverBlockedV7,
+  digInChipV7,
+  dwarfAbilityDescriptionV7,
+  dwarfAbilityNameV7,
+  dwarfAbilityUnavailableTextV7,
+  dwarfBoundaryNoticeV7,
+  dwarfCityNameV7,
+  dwarfCommandLabelV7,
+  dwarfFieldDefenseBlockedV7,
+  dwarfLabelV7,
+  dwarfRecruitNotesV7,
+  dwarfRewardLabelV7,
+  dwarfRoleUnlockTextV7,
+  dwarfUnitInfoLinesV7,
+  gunnerShotsTextV7,
+  landingHintV7,
+  matchHasDwarfSeatV7,
+  moundAtV7,
+  moundInfoLinesV7,
+  tunnelPreviewLinesV7,
+  tunnelTooltipV7,
+  viewerBombDamageV7,
+  viewerEruptionDamageV7,
+} from "../dwarf-presentation-v7";
+import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
 /** The Rift (bead pulp_wars-9s0.5, RULESET_7_RIFT.md section 8). */
@@ -333,7 +393,7 @@ const COLOR_LABELS: Readonly<Record<string, string>> = {
 /**
  * The factions the setup screen offers: every registered faction. The
  * Martians joined with their UI bead (`pulp_wars-t6s.4`), the Ice Folk with
- * theirs (`pulp_wars-7g3.6`).
+ * theirs (`pulp_wars-7g3.6`), the Dwarves with theirs (`pulp_wars-78i.6`).
  */
 const FACTIONS: readonly FactionIdV7[] = [
   "ORIGINAL",
@@ -342,6 +402,7 @@ const FACTIONS: readonly FactionIdV7[] = [
   "DINOSAUR",
   "MARTIAN",
   "ICE_FOLK",
+  "DWARF",
 ];
 /** The setup's helper text under "Factions". */
 const FACTIONS_HINT_V7 =
@@ -375,25 +436,25 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   DINOSAUR: "Dinosaur",
   MARTIAN: "Martian",
   ICE_FOLK: "Ice Folk",
-  // The Dwarf revision: named for headless and test states; the setup
-  // screen offers the faction from its UI bead (`pulp_wars-78i.6`).
   DWARF: "Dwarf",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
 type FactionBadgeV7 =
-  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | null;
+  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF" | null;
 /**
  * The placeholder badge of a faction. Revision 19 (bead `pulp_wars-c87.7`):
  * Dinosaur units shown with Human art wear the footprint badge; Martian
  * units (bead `pulp_wars-t6s.4`) the saucer badge; Ice Folk units (bead
- * `pulp_wars-7g3.6`) the snow-capped peak badge.
+ * `pulp_wars-7g3.6`) the snow-capped peak badge; Dwarf units (bead
+ * `pulp_wars-78i.6`) the cog badge.
  */
 function factionBadgeV7(faction: FactionIdV7): FactionBadgeV7 {
   return faction === "UNDEAD" ||
     faction === "GOBLIN" ||
     faction === "DINOSAUR" ||
     faction === "MARTIAN" ||
-    faction === "ICE_FOLK"
+    faction === "ICE_FOLK" ||
+    faction === "DWARF"
     ? faction
     : null;
 }
@@ -417,6 +478,12 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // board.
   "THROW_BOLAS",
   "COLD_SNAP",
+  // The Dwarf revision: Tunnel, Bomb Run and Assemble have one button per
+  // unit each; the destination, target, landing and tile are picked on the
+  // board (a Mole's tunnels alone can be dozens of commands).
+  "TUNNEL",
+  "BOMB_RUN",
+  "ASSEMBLE",
 ]);
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
 export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
@@ -552,6 +619,12 @@ export class Ruleset7DomAppView {
    * aiming on the board (Escape, Cancel or another selection leaves).
    */
   #iceFolkPick: IceFolkPickV7 | null = null;
+  /**
+   * The Dwarf revision: the Tunnel, Bomb Run or Assemble the selected unit
+   * is aiming on the board (Escape first steps back from the rider prompt
+   * or the landing; Cancel or another selection leaves).
+   */
+  #dwarfPick: DwarfPickV7 | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
@@ -772,6 +845,10 @@ export class Ruleset7DomAppView {
       } else if (this.#iceFolkPick !== null) {
         // The Ice Folk revision: Escape first leaves the aiming.
         this.#cancelIceFolkPick();
+        return;
+      } else if (this.#dwarfPick !== null) {
+        // The Dwarf revision: Escape first steps back out of the aiming.
+        this.#cancelDwarfPick(true);
         return;
       } else this.#selection = null;
       this.#render();
@@ -1254,6 +1331,7 @@ export class Ruleset7DomAppView {
           this.#layEggPick = null;
           this.#martianPick = null;
           this.#iceFolkPick = null;
+          this.#dwarfPick = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -1580,6 +1658,11 @@ export class Ruleset7DomAppView {
         this.#iceFolkPick.unitId === selectedUnitId
           ? { iceFolkPick: this.#iceFolkPick }
           : {}),
+        // The Dwarf revision: the Tunnel, Bomb Run or Assemble being aimed.
+        ...(this.#dwarfPick !== null &&
+        this.#dwarfPick.unitId === selectedUnitId
+          ? { dwarfPick: this.#dwarfPick }
+          : {}),
       },
     };
   }
@@ -1597,6 +1680,7 @@ export class Ruleset7DomAppView {
       this.#layEggPick = null;
       this.#martianPick = null;
       this.#iceFolkPick = null;
+      this.#dwarfPick = null;
       this.#render();
       this.#queueBoardFocus();
     };
@@ -1967,6 +2051,78 @@ export class Ruleset7DomAppView {
           unitDetails.append(state);
         }
       }
+      // The Dwarf revision (section 16.1): Dig In, the clockwork status, the
+      // Gunner's shots, Plated, the rider's surfacing brake and "bombed this
+      // turn", from `stats.dwarf` and the per-turn flags.
+      if (matchHasDwarfSeatV7(view)) {
+        const dwarfChip = (
+          label: string,
+          status: string,
+          title: string,
+          icon: ArtSubjectV7 | null = null,
+        ): HTMLElement => {
+          const cue = el(this.#document, "span", "v7-chip v7-dwarf-chip");
+          const glyph =
+            icon === null
+              ? null
+              : this.#chibiArt(icon, CHIBI_DOM_BOXES_V7.action)?.element;
+          if (glyph !== null && glyph !== undefined) {
+            glyph.classList.add("v7-dwarf-chip-icon");
+            cue.append(glyph);
+          } else if (status === "clockwork")
+            cue.append(uiIconV7(this.#document, "gear"));
+          cue.append(text(this.#document, "span", label));
+          cue.dataset.unitStatus = status;
+          cue.title = title;
+          cue.setAttribute("aria-label", title);
+          identityColumn?.append(cue);
+          return cue;
+        };
+        const mechanics = stats?.dwarf;
+        if (stats?.bombedThisTurn === true)
+          dwarfChip(
+            BOMBED_MARK_V7,
+            "bombed",
+            `${BOMBED_MARK_V7}: no Gyrocopter can bomb it again this turn`,
+          );
+        const dig = digInChipV7(view, unit, stats);
+        if (dig !== null)
+          dwarfChip(
+            dig.label,
+            dig.dugIn ? "dug-in" : "not-dug-in",
+            dig.text,
+            dig.dugIn ? "ICON:STATUS:DUG_IN" : null,
+          );
+        if (mechanics?.construct === true && unit.form === "LAND")
+          dwarfChip(
+            CLOCKWORK_LABEL_V7,
+            "clockwork",
+            CLOCKWORK_INFO_V7,
+            "ICON:STATUS:CLOCKWORK",
+          );
+        const shots = gunnerShotsTextV7(view, unit, mechanics);
+        if (shots !== null) dwarfChip(shots, "shots", shots);
+        if (
+          mechanics !== undefined &&
+          mechanics.plated !== null &&
+          unit.form === "LAND"
+        )
+          dwarfChip(
+            `Plated ${mechanics.plated}`,
+            "plated",
+            `Plated: no single hit takes more than ${mechanics.plated} HP`,
+          );
+        if (
+          stats?.surfacedThisTurn === true &&
+          unitRoleRuleV7(view, unit).abilities.includes("RIDES_TUNNEL")
+        ) {
+          dwarfChip("Just surfaced", "surfaced", RIDER_SURFACED_V7);
+          const state = el(this.#document, "section", "v7-tactical-state");
+          state.dataset.tacticalState = "surfaced";
+          state.append(text(this.#document, "strong", RIDER_SURFACED_V7));
+          unitDetails.append(state);
+        }
+      }
       if (stats !== undefined) {
         if (stats.statuses.length > 0) {
           const cues = el(this.#document, "div", "v7-unit-status-cues");
@@ -2147,6 +2303,18 @@ export class Ruleset7DomAppView {
             );
             abilities.append(entry);
           }
+        // The Dwarf revision: Dig In, clockwork, the Gunner's shots,
+        // Plated, the rider's brake, the bomb and the eruption.
+        if (matchHasDwarfSeatV7(view))
+          for (const line of dwarfUnitInfoLinesV7(view, unit, stats)) {
+            const entry = el(this.#document, "p", "v7-unit-ability");
+            entry.dataset.dwarfInfo = line.id;
+            entry.append(
+              text(this.#document, "strong", line.name),
+              text(this.#document, "span", line.description),
+            );
+            abilities.append(entry);
+          }
         if (
           undeadUnit &&
           unit.role === "CATAPULT" &&
@@ -2233,6 +2401,15 @@ export class Ruleset7DomAppView {
           explanation: ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7,
           icon: null,
         });
+      // The Dwarf revision (section 16.2): Dwarves dig in instead.
+      if (dwarfFieldDefenseBlockedV7(view, unit.id))
+        dinosaurBlocked.push({
+          action: "dwarf-field-defense",
+          label: "Fortify",
+          reason: "dwarf-field-defense",
+          explanation: DWARF_FIELD_DEFENSE_EXPLANATION_V7,
+          icon: null,
+        });
       for (const entry of dinosaurBlocked) {
         const blocked = button(
           this.#document,
@@ -2277,9 +2454,11 @@ export class Ruleset7DomAppView {
       // reason, ahead of the other actions.
       // The Ice Folk revision: Bolas and Cold Snap likewise, and a Frozen
       // unit that moved names why it cannot act.
+      // The Dwarf revision: Tunnel, Bomb Run and Assemble likewise.
       for (const button of [
         ...this.#martianActionButtons(view, unit.id),
         ...this.#iceFolkActionButtons(view, unit.id),
+        ...this.#dwarfActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
@@ -2307,6 +2486,35 @@ export class Ruleset7DomAppView {
           `Fortify unavailable. ${GOBLIN_FIELD_DEFENSE_EXPLANATION_V7}`,
         );
         actions.append(fortify);
+      }
+      // The Dwarf revision (section 16.1): clockwork never recovers.
+      if (clockworkRecoverBlockedV7(view, unit)) {
+        const recover = button(
+          this.#document,
+          "",
+          "clockwork-recover",
+          "v7-context-action",
+        );
+        recover.append(
+          this.#chibiArt("ICON:ACTION:RECOVER", CHIBI_DOM_BOXES_V7.action)
+            ?.element ?? art(this.#document, "ui-action-recover", ""),
+          text(this.#document, "span", "Recover", "v7-action-label"),
+        );
+        // aria-disabled keeps the explanation reachable by keyboard.
+        recover.setAttribute("aria-disabled", "true");
+        recover.dataset.disabledReason = "clockwork";
+        recover.title = CLOCKWORK_RECOVER_V7;
+        recover.setAttribute(
+          "aria-label",
+          `Recover unavailable. ${CLOCKWORK_RECOVER_V7}`,
+        );
+        recover.onclick = () => {
+          this.#notice = `${CLOCKWORK_RECOVER_V7}.`;
+          this.#showToast(`${CLOCKWORK_RECOVER_V7}.`);
+          this.#pendingFocusAction = "clockwork-recover";
+          this.#render();
+        };
+        actions.append(recover);
       }
       if (restlessRecoverBlockedV7(view, unit)) {
         const recover = button(
@@ -2358,7 +2566,8 @@ export class Ruleset7DomAppView {
       // compact prompt instead of the actions, so the board stays in view.
       const martianPanel =
         this.#martianPickPanel(view, unit.id) ??
-        this.#iceFolkPickPanel(view, unit.id);
+        this.#iceFolkPickPanel(view, unit.id) ??
+        this.#dwarfPickPanel(view, unit.id);
       if (martianPanel !== null) {
         dock.dataset.hasActions = "true";
         dock.append(martianPanel);
@@ -2500,17 +2709,25 @@ export class Ruleset7DomAppView {
         // spec's production rows name them; every Ice Folk unit takes one).
         const eggLaying = view.viewer.faction === "DINOSAUR";
         const iceFolkSlots = view.viewer.faction === "ICE_FOLK";
+        // The Dwarf revision: a Dwarf viewer counts slots too (an
+        // Engineer's Assemble uses one of the home city's).
+        const dwarfSlots = view.viewer.faction === "DWARF";
         const slotCapacity =
-          eggLaying || view.viewer.faction === "MARTIAN" || iceFolkSlots;
+          eggLaying ||
+          view.viewer.faction === "MARTIAN" ||
+          iceFolkSlots ||
+          dwarfSlots;
         const units = el(this.#document, "div", "v7-city-stat");
         units.dataset.stat = "units";
         units.title = eggLaying
           ? slotCapacityTooltipV7()
           : iceFolkSlots
             ? "Unit slots used in this city; every Ice Folk unit takes 1"
-            : slotCapacity
-              ? martianSlotCapacityTooltipV7()
-              : "Units supported by this city";
+            : dwarfSlots
+              ? DWARF_SLOT_TOOLTIP_V7
+              : slotCapacity
+                ? martianSlotCapacityTooltipV7()
+                : "Units supported by this city";
         const unitsValue = el(this.#document, "dd", "v7-city-units");
         unitsValue.append(
           uiIconV7(this.#document, "units"),
@@ -2743,6 +2960,67 @@ export class Ruleset7DomAppView {
           grave.title = "A Necromancer can raise it; a Ghoul can devour it.";
           details.append(grave);
         }
+        // The Dwarf revision (section 16.1): a mound is selectable for
+        // information only: its unit, HP, when it surfaces, and its
+        // eruption. It has no actions and is never in the orders cycle.
+        const mound = moundAtV7(view, tile.at);
+        if (mound !== undefined) {
+          const lines = moundInfoLinesV7(view, mound);
+          const info = el(this.#document, "section", "v7-dwarf-mound");
+          info.dataset.dwarfMound =
+            mound.moleUnitId === null ? "mole" : "rider";
+          const heading = el(this.#document, "p", "v7-dwarf-mound-name");
+          const moundArt = this.#chibiArt(
+            mound.moleUnitId === null
+              ? "UNIT:DWARF:MOUND"
+              : "UNIT:DWARF:MOUND_RIDER",
+            CHIBI_DOM_BOXES_V7.action,
+          )?.element;
+          if (moundArt !== undefined) heading.append(moundArt);
+          heading.append(
+            text(this.#document, "strong", lines.name),
+            text(
+              this.#document,
+              "span",
+              `${mound.unit.hp}/${mound.unit.maxHp} HP`,
+              "v7-dwarf-mound-hp",
+            ),
+          );
+          info.append(
+            heading,
+            text(
+              this.#document,
+              "p",
+              `${lines.burrowed}.`,
+              "v7-dwarf-burrowed",
+            ),
+          );
+          if (lines.eruption !== null)
+            info.append(
+              text(
+                this.#document,
+                "p",
+                `${lines.eruption}.`,
+                "v7-dwarf-eruption",
+              ),
+            );
+          if (lines.rider !== null)
+            info.append(
+              text(this.#document, "p", `${lines.rider}.`, "v7-dwarf-rider"),
+            );
+          info.setAttribute(
+            "aria-label",
+            [
+              lines.name,
+              lines.burrowed,
+              lines.eruption ?? "",
+              lines.rider ?? "",
+            ]
+              .filter(Boolean)
+              .join(". "),
+          );
+          details.append(info);
+        }
         if (
           tile.improvement !== null &&
           tile.resource !== null &&
@@ -2889,6 +3167,18 @@ export class Ruleset7DomAppView {
       );
       action.append(text(this.#document, "span", label, "v7-action-label"));
       action.title = label;
+      // The Dwarf revision (section 16.1): a Dwarf Tend Wounded is Repair.
+      if (
+        command.kind === "TEND_WOUNDED" &&
+        this.#viewerFaction() === "DWARF"
+      ) {
+        action.title = REPAIR_TOOLTIP_V7;
+        action.setAttribute("aria-description", `${REPAIR_TOOLTIP_V7}.`);
+        action.dataset.dwarfRepair = "true";
+        action.append(
+          text(this.#document, "span", REPAIR_CHIP_V7, "v7-dwarf-repair-chip"),
+        );
+      }
       if (command.kind === "CULTIVATE_FOREST") {
         action.title =
           "Clear for farming · Removes Forest and creates Fertile Ground";
@@ -2954,7 +3244,8 @@ export class Ruleset7DomAppView {
           view !== null &&
           (this.#viewerFaction() === "DINOSAUR" ||
             this.#viewerFaction() === "MARTIAN" ||
-            this.#viewerFaction() === "ICE_FOLK")
+            this.#viewerFaction() === "ICE_FOLK" ||
+            this.#viewerFaction() === "DWARF")
         ) {
           const slots = unitCapacitySlotsV7(view, {
             ownerId: view.viewer.id,
@@ -3153,6 +3444,32 @@ export class Ruleset7DomAppView {
       this.#queueBoardFocus();
       return;
     }
+    // The Dwarf revision: choosing a Tunnel destination with a Hammerer next
+    // to the Mole moves on to the rider prompt, and choosing a bomb target
+    // moves on to its landing tiles; nothing is dispatched yet.
+    if (target.family === "TUNNEL_DESTINATION" && command.kind === "TUNNEL") {
+      this.#dwarfPick = {
+        kind: "TUNNEL",
+        unitId: command.unitId,
+        to: command.to,
+        riderUnitId: null,
+      };
+      this.#notice = `${RIDER_PROMPT_V7} ${RIDER_PICK_V7}, or ${TUNNEL_ALONE_V7.toLowerCase()}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
+    if (target.family === "BOMB_TARGET" && command.kind === "BOMB_RUN") {
+      this.#dwarfPick = {
+        kind: "BOMB_RUN",
+        unitId: command.unitId,
+        targetUnitId: command.targetUnitId,
+      };
+      this.#notice = `${BOMB_RUN_PICK_LANDING_V7}.`;
+      this.#render();
+      this.#queueBoardFocus();
+      return;
+    }
     const moved = await this.#dispatch(command);
     // Revision 16 two-step landing: land only when the one-cell Move reached
     // its water cell and the landing is still offered there.
@@ -3312,7 +3629,8 @@ export class Ruleset7DomAppView {
             ...(view?.viewer.faction === "GOBLIN" ||
             view?.viewer.faction === "DINOSAUR" ||
             view?.viewer.faction === "MARTIAN" ||
-            view?.viewer.faction === "ICE_FOLK"
+            view?.viewer.faction === "ICE_FOLK" ||
+            view?.viewer.faction === "DWARF"
               ? []
               : ["A Raider that survives an attack may move again (Escape)."]),
             ...(view !== null && matchHasUndeadV7(view)
@@ -3417,6 +3735,18 @@ export class Ruleset7DomAppView {
         rules.append(item);
       }
       section.append(text(this.#document, "h3", "Ice Folk"), rules);
+    }
+    // The Dwarf revision (section 16.3): one sentence per Dwarf rule, for
+    // every viewer of a match with a Dwarf seat.
+    if (view !== null && matchHasDwarfSeatV7(view)) {
+      const rules = this.#document.createElement("ul");
+      rules.className = "v7-help-tips v7-help-goblin v7-help-dwarf";
+      for (const [name, sentence] of DWARF_HELP_RULES_V7) {
+        const item = el(this.#document, "li", "v7-help-rule");
+        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
+        rules.append(item);
+      }
+      section.append(text(this.#document, "h3", "Dwarves"), rules);
     }
     section.append(text(this.#document, "h3", "Keyboard"), keys);
     return section;
@@ -4385,6 +4715,7 @@ export class Ruleset7DomAppView {
     this.#layEggPick = null;
     this.#martianPick = null;
     this.#iceFolkPick = null;
+    this.#dwarfPick = null;
     const restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -5722,6 +6053,455 @@ export class Ruleset7DomAppView {
     return panel;
   }
 
+  /**
+   * The Dwarf revision (section 16.1): the Tunnel button of an own Steam
+   * Mole, the Bomb Run button of an own Gyrocopter and the Assemble button
+   * of an own Engineer. With a legal choice it aims the ability on the
+   * board (pressed while aiming); without one it is disabled and names the
+   * reason ("It surfaced this turn", "No enemy within 2 tiles", "Needs
+   * Marksmanship", ...).
+   */
+  #dwarfActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      playerFactionV7(view, unit.ownerId) !== "DWARF" ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const abilities = unitRoleRuleV7(view, unit).abilities as readonly string[];
+    const city = dwarfCityNameV7(view, unit.homeCityId);
+    const assemble = previewAssembleV7(view, unit.id);
+    const entries: readonly {
+      readonly kind: "TUNNEL" | "BOMB_RUN" | "ASSEMBLE";
+      readonly label: string;
+      readonly tooltip: string;
+      readonly icon: "drill" | "bomb-run" | "key";
+    }[] = [
+      {
+        kind: "TUNNEL",
+        label: TUNNEL_LABEL_V7,
+        tooltip: tunnelTooltipV7(viewerEruptionDamageV7(view)),
+        icon: "drill",
+      },
+      {
+        kind: "BOMB_RUN",
+        label: BOMB_RUN_LABEL_V7,
+        tooltip: bombRunTooltipV7(viewerBombDamageV7(view)),
+        icon: "bomb-run",
+      },
+      {
+        kind: "ASSEMBLE",
+        label: ASSEMBLE_LABEL_V7,
+        tooltip: assembleTooltipV7(
+          assemble?.cost ?? effectiveRoleRuleV7("MARKSMAN", "DWARF").cost ?? 0,
+          city,
+        ),
+        icon: "key",
+      },
+    ];
+    const buttons: HTMLButtonElement[] = [];
+    for (const entry of entries) {
+      if (!abilities.includes(entry.kind)) continue;
+      const offered = this.#snapshot.offeredCommands.some(
+        (command) => command.kind === entry.kind && command.unitId === unit.id,
+      );
+      const reason = dwarfAbilityUnavailableTextV7(
+        view,
+        unit,
+        entry.kind,
+        offered,
+        entry.kind === "ASSEMBLE"
+          ? {
+              reason: queryAssembleUnavailableReasonV7(view, unit.id),
+              city: city.charAt(0).toUpperCase() + city.slice(1),
+            }
+          : undefined,
+      );
+      if (!offered && reason === null) continue;
+      const slug = entry.kind.toLowerCase().replaceAll("_", "-");
+      const action = button(
+        this.#document,
+        "",
+        `dwarf-${slug}`,
+        "v7-context-action",
+      );
+      action.append(
+        this.#chibiArt(`ICON:ACTION:${entry.kind}`, CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", entry.label, "v7-action-label"),
+      );
+      action.dataset.dwarfAbility = slug;
+      if (reason === null) {
+        const aiming = this.#dwarfPick?.kind === entry.kind;
+        action.title = entry.tooltip;
+        action.setAttribute("aria-label", `${entry.label}. ${entry.tooltip}`);
+        action.setAttribute("aria-pressed", String(aiming));
+        action.disabled = this.#localBusy();
+        action.onclick = () =>
+          aiming
+            ? this.#cancelDwarfPick(false)
+            : this.#startDwarfPick(entry.kind, unit.id);
+      } else {
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        action.setAttribute("aria-disabled", "true");
+        action.dataset.disabledReason = reason;
+        action.title = reason;
+        action.setAttribute(
+          "aria-label",
+          `${entry.label} unavailable. ${reason}`,
+        );
+        action.onclick = () => {
+          this.#notice = `${reason}.`;
+          this.#showToast(`${reason}.`);
+          this.#pendingFocusAction = action.dataset.action ?? null;
+          this.#render();
+        };
+      }
+      buttons.push(action);
+    }
+    return buttons;
+  }
+
+  /** Starts aiming a Tunnel, Bomb Run or Assemble of the selected unit. */
+  #startDwarfPick(
+    kind: "TUNNEL" | "BOMB_RUN" | "ASSEMBLE",
+    unitId: UnitId,
+  ): void {
+    if (this.#localBusy()) return;
+    this.#dwarfPick =
+      kind === "TUNNEL"
+        ? { kind, unitId, to: null, riderUnitId: null }
+        : kind === "BOMB_RUN"
+          ? { kind, unitId, targetUnitId: null }
+          : { kind, unitId };
+    this.#notice = `${
+      kind === "TUNNEL"
+        ? TUNNEL_PICK_V7
+        : kind === "BOMB_RUN"
+          ? BOMB_RUN_PICK_TARGET_V7
+          : ASSEMBLE_PICK_V7
+    }.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so the arrow keys and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /**
+   * Steps back out of the aiming: from the rider prompt to the
+   * destinations, from the landings to the targets (`stepBack`), or leaves
+   * it and returns focus to the ability's button.
+   */
+  #cancelDwarfPick(stepBack: boolean): void {
+    const pick = this.#dwarfPick;
+    if (stepBack && pick?.kind === "TUNNEL" && pick.to !== null) {
+      this.#dwarfPick = { ...pick, to: null, riderUnitId: null };
+      this.#notice = `${TUNNEL_PICK_V7}.`;
+      this.#render();
+      return;
+    }
+    if (stepBack && pick?.kind === "BOMB_RUN" && pick.targetUnitId !== null) {
+      this.#dwarfPick = { ...pick, targetUnitId: null };
+      this.#notice = `${BOMB_RUN_PICK_TARGET_V7}.`;
+      this.#render();
+      return;
+    }
+    this.#dwarfPick = null;
+    this.#pendingFocusAction =
+      pick === null
+        ? null
+        : `dwarf-${pick.kind.toLowerCase().replaceAll("_", "-")}`;
+    this.#render();
+  }
+
+  /**
+   * The Dwarf aiming panel in the dock: the prompt, every legal choice as a
+   * button with its preview (a keyboard path beside the board targets), the
+   * rider prompt ("Take a Hammerer along?" with "Tunnel alone"), Back and
+   * Cancel. Null (and the aiming ends) when nothing is offered any more.
+   */
+  #dwarfPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    const pick = this.#dwarfPick;
+    if (pick === null || pick.unitId !== unitId) return null;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === pick.kind && command.unitId === unitId,
+    );
+    if (commands.length === 0) {
+      this.#dwarfPick = null;
+      return null;
+    }
+    const unitById = (id: number) =>
+      view.units.find((candidate) => candidate.id === id);
+    const nameOf = (id: number): string => {
+      const target = unitById(id);
+      return target === undefined ? "unit" : unitRoleRuleV7(view, target).label;
+    };
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-dwarf-pick",
+    );
+    panel.dataset.v7DwarfPick = pick.kind.toLowerCase();
+    const lines = el(this.#document, "div", "v7-martian-choices");
+    const summaries: string[] = [];
+    const choice = (
+      action: string,
+      label: string,
+      details: readonly string[],
+      onclick: () => void,
+    ): void => {
+      const control = button(
+        this.#document,
+        label,
+        action,
+        "v7-martian-choice-button",
+      );
+      control.setAttribute(
+        "aria-label",
+        details.length === 0 ? label : `${label}. ${details.join(". ")}.`,
+      );
+      control.title = details.join(" · ");
+      control.disabled = this.#localBusy();
+      control.onclick = onclick;
+      lines.append(control);
+      summaries.push(details.join(" · "));
+    };
+    let prompt: string;
+    let detail: string | null = null;
+    let back = false;
+    if (pick.kind === "TUNNEL") {
+      const tunnels = commands.filter(
+        (command): command is Extract<CommandV7, { kind: "TUNNEL" }> =>
+          command.kind === "TUNNEL",
+      );
+      if (pick.to === null) {
+        prompt = TUNNEL_PICK_V7;
+        detail = TUNNEL_FORECAST_V7;
+        // The destinations that would erupt on someone come first, with
+        // their forecast damage on the chip.
+        const destinations = tunnels.flatMap((command) => {
+          if (command.rider !== null) return [];
+          const preview = previewTunnelV7(view, command);
+          return preview === null ? [] : [{ command, preview }];
+        });
+        const hit = (entry: (typeof destinations)[number]): number =>
+          entry.preview.eruptionTargets.reduce(
+            (sum, target) => sum + target.damage + target.shieldDamage,
+            0,
+          );
+        destinations.sort((left, right) => hit(right) - hit(left));
+        for (const { command, preview } of destinations) {
+          const withRider = tunnels.some(
+            (candidate) =>
+              candidate.rider !== null && same(candidate.to, command.to),
+          );
+          const damage = hit({ command, preview });
+          choice(
+            `tunnel-${command.to.x}-${command.to.y}`,
+            `${command.to.x}, ${command.to.y}${damage > 0 ? ` · −${damage}` : ""}`,
+            tunnelPreviewLinesV7(view, preview),
+            () => {
+              if (!withRider) {
+                void this.#dispatch(command);
+                return;
+              }
+              this.#dwarfPick = {
+                kind: "TUNNEL",
+                unitId,
+                to: command.to,
+                riderUnitId: null,
+              };
+              this.#notice = `${RIDER_PROMPT_V7} ${RIDER_PICK_V7}, or ${TUNNEL_ALONE_V7.toLowerCase()}.`;
+              this.#pendingFocusAction = null;
+              this.#render();
+              this.#queueBoardFocus();
+            },
+          );
+        }
+        // One choice per destination: the forecast is in each chip.
+        summaries.length = 0;
+      } else {
+        const to = pick.to;
+        back = true;
+        prompt = RIDER_PROMPT_V7;
+        const alone = tunnels.find(
+          (command) => command.rider === null && same(command.to, to),
+        );
+        const riders = [
+          ...new Set(
+            tunnels.flatMap((command) =>
+              command.rider !== null && same(command.to, to)
+                ? [command.rider.unitId]
+                : [],
+            ),
+          ),
+        ];
+        const riderUnitId = pick.riderUnitId ?? riders[0] ?? null;
+        for (const command of tunnels) {
+          if (
+            command.rider === null ||
+            !same(command.to, to) ||
+            command.rider.unitId !== riderUnitId
+          )
+            continue;
+          const riderTo = command.rider.to;
+          choice(
+            `tunnel-rider-${riderTo.x}-${riderTo.y}`,
+            `${nameOf(command.rider.unitId)} to ${riderTo.x}, ${riderTo.y}`,
+            [`It surfaces next to the Mole at ${to.x}, ${to.y}`],
+            () => void this.#dispatch(command),
+          );
+        }
+        // More than one Hammerer next to the Mole: choose which rides.
+        if (riders.length > 1)
+          for (const id of riders) {
+            if (id === riderUnitId) continue;
+            const rider = unitById(id);
+            choice(
+              `tunnel-rider-unit-${id}`,
+              `Take the ${nameOf(id)} at ${rider?.at.x ?? 0}, ${rider?.at.y ?? 0}`,
+              [],
+              () => {
+                this.#dwarfPick = {
+                  kind: "TUNNEL",
+                  unitId,
+                  to,
+                  riderUnitId: id,
+                };
+                this.#render();
+              },
+            );
+          }
+        if (alone !== undefined) {
+          const control = button(
+            this.#document,
+            TUNNEL_ALONE_V7,
+            "tunnel-alone",
+            "v7-martian-choice-button",
+          );
+          control.setAttribute(
+            "aria-label",
+            `${TUNNEL_ALONE_V7}: the Mole surfaces at ${to.x}, ${to.y}.`,
+          );
+          control.disabled = this.#localBusy();
+          control.onclick = () => void this.#dispatch(alone);
+          lines.append(control);
+        }
+        const preview =
+          alone === undefined ? null : previewTunnelV7(view, alone);
+        detail =
+          preview === null
+            ? null
+            : tunnelPreviewLinesV7(view, preview).join(" · ");
+        summaries.length = 0;
+      }
+    } else if (pick.kind === "BOMB_RUN") {
+      const runs = commands.filter(
+        (command): command is Extract<CommandV7, { kind: "BOMB_RUN" }> =>
+          command.kind === "BOMB_RUN",
+      );
+      if (pick.targetUnitId === null) {
+        prompt = BOMB_RUN_PICK_TARGET_V7;
+        const seen = new Set<number>();
+        for (const command of runs) {
+          if (seen.has(command.targetUnitId)) continue;
+          seen.add(command.targetUnitId);
+          const preview = previewBombRunV7(view, command);
+          const target = unitById(command.targetUnitId);
+          if (preview === null || target === undefined) continue;
+          choice(
+            `bomb-target-${command.targetUnitId}`,
+            `Bomb ${possessiveName(view, target.ownerId)} ${nameOf(target.id)} (${target.hp} HP)`,
+            bombPreviewLinesV7(preview),
+            () => {
+              this.#dwarfPick = {
+                kind: "BOMB_RUN",
+                unitId,
+                targetUnitId: command.targetUnitId,
+              };
+              this.#notice = `${BOMB_RUN_PICK_LANDING_V7}.`;
+              this.#pendingFocusAction = null;
+              this.#render();
+              this.#queueBoardFocus();
+            },
+          );
+        }
+      } else {
+        back = true;
+        const targetUnitId = pick.targetUnitId;
+        prompt = `${BOMB_RUN_PICK_LANDING_V7} after bombing the ${nameOf(targetUnitId)}`;
+        let first: ReturnType<typeof previewBombRunV7> = null;
+        for (const command of runs) {
+          if (command.targetUnitId !== targetUnitId) continue;
+          const preview = previewBombRunV7(view, command);
+          if (preview === null) continue;
+          first ??= preview;
+          choice(
+            `bomb-landing-${command.to.x}-${command.to.y}`,
+            `${command.to.x}, ${command.to.y}`,
+            [landingHintV7(preview)],
+            () => void this.#dispatch(command),
+          );
+        }
+        detail = first === null ? null : bombPreviewLinesV7(first).join(" · ");
+        summaries.length = 0;
+      }
+    } else {
+      const preview = previewAssembleV7(view, unitId);
+      prompt =
+        preview === null
+          ? ASSEMBLE_PICK_V7
+          : assembleSummaryV7(preview, dwarfCityNameV7(view, preview.cityId));
+      for (const command of commands) {
+        if (command.kind !== "ASSEMBLE") continue;
+        choice(
+          `assemble-${command.to.x}-${command.to.y}`,
+          `${command.to.x}, ${command.to.y}`,
+          [`The ${dwarfLabelV7("MARKSMAN")} arrives here, exhausted`],
+          () => void this.#dispatch(command),
+        );
+      }
+      detail = ASSEMBLE_PICK_V7;
+      summaries.length = 0;
+    }
+    panel.setAttribute("aria-label", prompt);
+    panel.append(text(this.#document, "p", prompt, "v7-kaboom-summary"));
+    if (lines.childElementCount > 0) panel.append(lines);
+    const shown =
+      detail ??
+      (summaries.length === 1 && summaries[0] !== "" ? summaries[0] : null);
+    if (shown !== null && shown !== undefined && shown !== "")
+      panel.append(text(this.#document, "p", shown, "v7-martian-detail"));
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    if (back) {
+      const backButton = button(
+        this.#document,
+        "Back",
+        "dwarf-pick-back",
+        "v7-kaboom-cancel",
+      );
+      backButton.onclick = () => this.#cancelDwarfPick(true);
+      buttons.append(backButton);
+    }
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "dwarf-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelDwarfPick(false);
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
   #syncBoard(): void {
     const view = this.#snapshot.view;
     if (view === null || this.#matchRoot === null || this.#destroyed) return;
@@ -6300,18 +7080,17 @@ function effectDescription(
       return DEEP_WINTER_UNLOCK_TEXT_V7;
     case "BRITTLE":
       return BRITTLE_UNLOCK_TEXT_V7;
-    // The Dwarf revision (section 4): the engine bead's unlock texts; the
-    // Dwarf UI (`pulp_wars-78i.6`) owns the full presentation.
+    // The Dwarf revision (section 4).
     case "ENGINEER_SUPPORT":
-      return "Engineers Repair adjacent units: +4 machines, +2 others";
+      return ENGINEER_SUPPORT_UNLOCK_TEXT_V7;
     case "ASSEMBLE":
-      return "Engineers Assemble Gunners";
+      return ASSEMBLE_UNLOCK_TEXT_V7;
     case "DIVE":
-      return "Dive: bombs deal 5";
+      return DIVE_UNLOCK_TEXT_V7;
     case "DIG_IN":
-      return "Hammerers and Moles that stand still on or next to your city centers are dug in";
+      return DIG_IN_UNLOCK_TEXT_V7;
     case "BLASTING_CHARGES":
-      return "Eruptions deal 3; Steam Cannons ignore Walls and Field Defense";
+      return BLASTING_CHARGES_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -6410,6 +7189,8 @@ function technologyRoleDescriptionsV7(
   if (faction === "MARTIAN") return [martianRoleUnlockTextV7(roleId)];
   // The Ice Folk revision (section 4): "Ice Witch (Blizzard, Cold Snap)".
   if (faction === "ICE_FOLK") return [iceFolkRoleUnlockTextV7(roleId)];
+  // The Dwarf revision (section 4): "Steam Cannon (Knockback)".
+  if (faction === "DWARF") return [dwarfRoleUnlockTextV7(roleId)];
   // Revision 19 (section 4): a Dinosaur egg-laid role is laid, not trained:
   // "Raptor Egg", "Triceratops Egg (Charge!)" (revision 20).
   if (isEggLaidRoleV7(roleId, faction))
@@ -6522,6 +7303,9 @@ export function recruitmentRolePresentationV7(
   // The Ice Folk revision: Mountain-born, Glide and the Field Defense
   // restriction from the Ice Folk registration.
   restrictions.push(...iceFolkRecruitNotesV7(roleId, faction));
+  // The Dwarf revision: clockwork, flight, machines and the Field Defense
+  // restriction from the Dwarf registration.
+  restrictions.push(...dwarfRecruitNotesV7(roleId, faction));
   return {
     label: role.label,
     stats: [
@@ -6577,6 +7361,8 @@ function abilityDescription(
   if (martian !== null) return martian;
   const iceFolk = iceFolkAbilityDescriptionV7(ability, faction);
   if (iceFolk !== null) return iceFolk;
+  const dwarf = dwarfAbilityDescriptionV7(ability, faction);
+  if (dwarf !== null) return dwarf;
   switch (ability) {
     case "ATTACK":
       return minimum > 1
@@ -6689,12 +7475,16 @@ function boundaryNoticeV7(
   const martian = martianBoundaryNoticeV7(events, before, after);
   // The Ice Folk revision: Bolas, Cold Snap, Cold Aura, Shatter, Trample.
   const iceFolk = iceFolkBoundaryNoticeV7(events, before, after);
+  // The Dwarf revision: a tunnel, an eruption, a bomb, an Assemble, a
+  // Repair, a Knockback, Undermined Field Defense.
+  const dwarf = dwarfBoundaryNoticeV7(events, before, after);
   const parts = [
     undead?.text ?? null,
     goblin?.text ?? null,
     dinosaur?.text ?? null,
     martian?.text ?? null,
     iceFolk?.text ?? null,
+    dwarf?.text ?? null,
     special,
   ].filter((part): part is string => part !== null);
   if (
@@ -6702,7 +7492,8 @@ function boundaryNoticeV7(
     goblin === null &&
     dinosaur === null &&
     martian === null &&
-    iceFolk === null
+    iceFolk === null &&
+    dwarf === null
   )
     return { text: special, toast: special !== null };
   return {
@@ -6713,7 +7504,8 @@ function boundaryNoticeV7(
       goblin?.toast === true ||
       dinosaur?.toast === true ||
       martian?.toast === true ||
-      iceFolk?.toast === true,
+      iceFolk?.toast === true ||
+      dwarf?.toast === true,
   };
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {
@@ -6746,6 +7538,9 @@ function rewardLabel(
   // The Ice Folk revision: Militia is a Yeti; the giant is a Frost Giant.
   const iceFolk = faction === "ICE_FOLK" ? iceFolkRewardLabelV7(reward) : null;
   if (iceFolk !== null) return iceFolk;
+  // The Dwarf revision: Militia is a Hammerer; the giant is a Brass Titan.
+  const dwarf = faction === "DWARF" ? dwarfRewardLabelV7(reward) : null;
+  if (dwarf !== null) return dwarf;
   if (reward === "SURVEY") return ["Survey", "Reveal the area"];
   if (reward === "STOCKPILE") return ["Stockpile", "+4 Coins"];
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
@@ -6801,6 +7596,8 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (martian !== null) return martian;
   const iceFolk = iceFolkCommandLabelV7(command.kind);
   if (iceFolk !== null) return iceFolk;
+  const dwarf = dwarfCommandLabelV7(command.kind, faction);
+  if (dwarf !== null) return dwarf;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
   return COMMAND_LABELS[command.kind] ?? title(command.kind);
 }
@@ -7132,6 +7929,8 @@ function abilityName(ability: string, faction: FactionIdV7): string {
   if (martian !== null) return martian;
   const iceFolk = iceFolkAbilityNameV7(ability, faction);
   if (iceFolk !== null) return iceFolk;
+  const dwarf = dwarfAbilityNameV7(ability, faction);
+  if (dwarf !== null) return dwarf;
   if (ability === "TEND_WOUNDED") return "Tend";
   return title(ability);
 }
@@ -7146,7 +7945,8 @@ function matchHasFactionsV7(view: PlayerViewV7): boolean {
     matchHasGoblinV7(view) ||
     matchHasDinosaurV7(view) ||
     matchHasMartianV7(view) ||
-    matchHasIceFolkSeatV7(view)
+    matchHasIceFolkSeatV7(view) ||
+    matchHasDwarfSeatV7(view)
   );
 }
 
@@ -7206,6 +8006,10 @@ const FACTION_COMMAND_ICONS: Partial<Record<CommandV7["kind"], UiIconIdV7>> = {
   // The Ice Folk revision: LEGACY glyphs of Bolas and Cold Snap.
   THROW_BOLAS: "bolas",
   COLD_SNAP: "snowflake",
+  // The Dwarf revision: LEGACY glyphs of Tunnel, Bomb Run and Assemble.
+  TUNNEL: "drill",
+  BOMB_RUN: "bomb-run",
+  ASSEMBLE: "key",
 };
 
 function undeadCommandPreview(
@@ -7256,13 +8060,18 @@ function factionBadgeArt<Image extends HTMLElement | SVGElement>(
   return frame;
 }
 
-/** The Undead skull, Goblin head, Dinosaur footprint or Martian saucer badge. */
+/**
+ * The Undead skull, Goblin head, Dinosaur footprint, Martian saucer, Ice
+ * Folk peak or Dwarf cog badge.
+ */
 function factionBadgeIcon(
   documentRoot: Document,
-  badge: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK",
+  badge: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF",
 ): SVGSVGElement {
   if (badge === "UNDEAD")
     return uiIconV7(documentRoot, "skull", "v7-undead-badge");
+  if (badge === "DWARF")
+    return uiIconV7(documentRoot, "gear", "v7-undead-badge v7-dwarf-badge");
   if (badge === "ICE_FOLK")
     return uiIconV7(
       documentRoot,

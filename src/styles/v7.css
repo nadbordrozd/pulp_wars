@@ -2785,3 +2785,115 @@
   cursor: not-allowed;
   opacity: 0.55;
 }
+
+/*
+ * The Dwarf revision (docs/art/factions/DWARF.md, bead pulp_wars-78i.6):
+ * the cog badge is copper on dark leather with an iron rim; the Dwarf
+ * chips, the mound information, the aiming panel and the ability glyphs use
+ * the faction's earth, copper and steam (DWARF_PALETTE_V7), apart from
+ * every owner colour.
+ */
+.v7-dwarf-badge {
+  border-color: #9c9c9d;
+  background: #4e2417;
+  color: #de6f2a;
+}
+
+.v7-faction-chip[data-faction="dwarf"] {
+  border: 1px solid #de6f2a55;
+  background: #2a1f1a;
+  color: #f0d2b4;
+}
+
+.v7-dwarf-chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  border: 1px solid #a07a5266;
+  background: #2a2019;
+  color: #f0e2cc;
+  white-space: nowrap;
+}
+
+.v7-dwarf-chip .v7-ui-icon,
+.v7-dwarf-chip .v7-dwarf-chip-icon,
+.v7-dwarf-chip .v7-dwarf-chip-icon > * {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  min-width: 0;
+  min-height: 0;
+  color: #de6f2a;
+}
+
+.v7-dwarf-chip[data-unit-status="dug-in"] {
+  border-color: #c99a66;
+  background: #3d2a1e;
+  font-weight: 800;
+}
+
+.v7-dwarf-chip[data-unit-status="not-dug-in"],
+.v7-dwarf-chip[data-unit-status="bombed"] {
+  border-color: #9aaec766;
+  color: #c9c2b6;
+}
+
+.v7-dwarf-repair-chip {
+  margin-left: 4px;
+  color: #f2a46a;
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+.v7-dwarf-mound {
+  display: grid;
+  flex: 1 1 100%;
+  grid-column: 1 / -1;
+  gap: 2px;
+  min-width: min(20rem, 100%);
+  max-width: 30rem;
+  margin-top: 4px;
+  padding: 6px 8px;
+  border: 1px solid #a07a5266;
+  border-radius: 8px;
+  background: #2a2019;
+  color: #f0e2cc;
+}
+
+.v7-dwarf-mound p {
+  margin: 0;
+}
+
+.v7-dwarf-mound-name {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.v7-dwarf-mound-hp {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.v7-command-icon[data-icon="drill"],
+.v7-command-icon[data-icon="bomb-run"],
+.v7-command-icon[data-icon="key"] {
+  color: #de6f2a;
+}
+
+.v7-dwarf-pick {
+  border-color: #c99a6666;
+}
+
+.v7-dwarf-pick .v7-martian-choice-button {
+  border-color: #c99a66;
+  background: #2a2019;
+  color: #f0e2cc;
+}
+
+.v7-context-action[data-disabled-reason="clockwork"],
+.v7-context-action[data-disabled-reason="dwarf-field-defense"],
+.v7-context-action[data-dwarf-ability][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

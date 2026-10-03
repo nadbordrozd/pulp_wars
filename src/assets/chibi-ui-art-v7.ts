@@ -10,6 +10,7 @@ import {
   navalArtSubjectV7,
   type ArtSubjectV7,
   type DinosaurArtRoleV7,
+  type DwarfArtRoleV7,
   type GoblinArtRoleV7,
   type IceFolkArtRoleV7,
   type MartianArtRoleV7,
@@ -35,8 +36,8 @@ const NAVAL_ROLES: readonly UnitRoleIdV7[] = ["PATROL_BOAT", "BATTLESHIP"];
 /**
  * The portrait of a role for a faction: Undead, (revision 17, bead
  * pulp_wars-0ao.8) Goblin, (revision 19, bead pulp_wars-c87.7) Dinosaur,
- * (bead pulp_wars-t6s.4) Martian and (bead pulp_wars-7g3.6) Ice Folk land
- * roles have their own; so does every faction's Patrol Boat and Battleship
+ * (bead pulp_wars-t6s.4) Martian, (bead pulp_wars-7g3.6) Ice Folk and (bead
+ * pulp_wars-78i.6) Dwarf land roles have their own; so does every faction's Patrol Boat and Battleship
  * (`PORTRAIT:<FACTION>:<ROLE>`, the Humans' `PORTRAIT:<ROLE>`, bead
  * pulp_wars-w5j.3). The Thrall's portrait, `PORTRAIT:MARTIAN:THRALL`, is
  * asked for by subject (the Mind Control preview).
@@ -55,6 +56,7 @@ export function portraitSubjectV7(
     return `PORTRAIT:MARTIAN:${role as MartianArtRoleV7}`;
   if (faction === "ICE_FOLK")
     return `PORTRAIT:ICE_FOLK:${role as IceFolkArtRoleV7}`;
+  if (faction === "DWARF") return `PORTRAIT:DWARF:${role as DwarfArtRoleV7}`;
   return `PORTRAIT:${role}`;
 }
 
@@ -109,7 +111,9 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
  * Drill the Shield Projector, an Ice Folk Drill the Mammoth). The Martian
  * Force Fields (`FORTIFICATION`) shows the Force Field icon of the Martian
  * art; the Ice Folk Deep Winter and Brittle (`FORTIFICATION`,
- * `EXPLOSIVES`) their own technology icons (bead pulp_wars-7g3.6).
+ * `EXPLOSIVES`) their own technology icons (bead pulp_wars-7g3.6), and so
+ * do the Dwarf Dig In and Blasting Charges (bead pulp_wars-78i.6); a Dwarf
+ * Drill shows the Steam Mole.
  */
 export function technologySubjectV7(
   tech: TechnologyIdV7,
@@ -124,6 +128,11 @@ export function technologySubjectV7(
     (tech === "FORTIFICATION" || tech === "EXPLOSIVES")
   )
     return `ICON:TECH:ICE_FOLK:${tech}`;
+  if (
+    faction === "DWARF" &&
+    (tech === "FORTIFICATION" || tech === "EXPLOSIVES")
+  )
+    return `ICON:TECH:DWARF:${tech}`;
   if (subject.startsWith("PORTRAIT:"))
     return portraitSubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,
@@ -135,6 +144,7 @@ export function technologySubjectV7(
     if (faction === "DINOSAUR") return `UNIT:DINOSAUR:${role}`;
     if (faction === "MARTIAN") return `UNIT:MARTIAN:${role}`;
     if (faction === "ICE_FOLK") return `UNIT:ICE_FOLK:${role}`;
+    if (faction === "DWARF") return `UNIT:DWARF:${role}`;
     return `UNIT:GOBLIN:${role}`;
   }
   // Naval Engineering shows the faction's own Battleship (bead
@@ -169,8 +179,11 @@ const RESOURCE_COMMANDS: Partial<Record<CommandV7["kind"], ArtSubjectV7>> = {
  * Rally is Psychic Command (`ICON:ACTION:MARTIAN:RALLY`); Beam Down, Mind
  * Control and Tractor Beam are `ICON:ACTION:<KIND>` (bead pulp_wars-t6s.4),
  * as are the Ice Folk Bolas and Cold Snap (`ICON:ACTION:THROW_BOLAS`,
- * `ICON:ACTION:COLD_SNAP`, bead pulp_wars-7g3.6). Disembark shows the
- * faction's transport (bead pulp_wars-w5j.3).
+ * `ICON:ACTION:COLD_SNAP`, bead pulp_wars-7g3.6), and the Dwarf Tunnel, Bomb
+ * Run and Assemble (`ICON:ACTION:TUNNEL`, `ICON:ACTION:BOMB_RUN`,
+ * `ICON:ACTION:ASSEMBLE`, bead pulp_wars-78i.6); the Dwarf Tend Wounded is
+ * Repair (`ICON:ACTION:DWARF:TEND_WOUNDED`). Disembark shows the faction's
+ * transport (bead pulp_wars-w5j.3).
  */
 export function commandSubjectV7(
   command: CommandV7,
@@ -197,6 +210,10 @@ export function commandSubjectV7(
       if (faction === "DINOSAUR") return "ICON:ACTION:DINOSAUR:RALLY";
       if (faction === "MARTIAN") return "ICON:ACTION:MARTIAN:RALLY";
       return "ICON:ACTION:RALLY";
+    case "TEND_WOUNDED":
+      return faction === "DWARF"
+        ? "ICON:ACTION:DWARF:TEND_WOUNDED"
+        : "ICON:ACTION:TEND_WOUNDED";
     default:
       break;
   }

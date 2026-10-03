@@ -243,8 +243,9 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
   it("records a pennant anchor inside the art of City 1-3, the Port and the Shipyard only", () => {
     // The Human and shared pieces of this batch; a converted faction's
     // cities (Goblin, Undead, Dinosaur, the Martians since bead
-    // pulp_wars-t6s.4, and the Ice Folk since bead pulp_wars-7g3.6) have
-    // anchors and tests of their own.
+    // pulp_wars-t6s.4, the Ice Folk since bead pulp_wars-7g3.6, and the
+    // Dwarves since bead pulp_wars-78i.6) have anchors and tests of their
+    // own.
     const anchored = Object.keys(DIRECTION_FLAG_ANCHORS_V7).filter(
       (id) =>
         id.startsWith("chibi-direction-") &&
@@ -252,7 +253,8 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
         !id.startsWith("chibi-direction-undead-") &&
         !id.startsWith("chibi-direction-dinosaur-") &&
         !id.startsWith("chibi-direction-martian-") &&
-        !id.startsWith("chibi-direction-ice-folk-"),
+        !id.startsWith("chibi-direction-ice-folk-") &&
+        !id.startsWith("chibi-direction-dwarf-"),
     );
     expect(anchored.sort()).toEqual([
       "chibi-direction-city-1",

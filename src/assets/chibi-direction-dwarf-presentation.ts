@@ -5,8 +5,9 @@
  * lift and shadow, the tunnel mound and the eruption timeline, the bomb
  * timeline, and the code-drawn Dig In earthwork. This module imports
  * nothing, so the game, the review scenes and the tests draw the same
- * bytes. **Nothing imports it yet**: the Dwarf UI bead (pulp_wars-78i.6)
- * wires it in (DWARF.md, "Wiring list").
+ * bytes. Wired in by the Dwarf UI bead (pulp_wars-78i.6; DWARF.md, "Wiring
+ * list"): src/render/canvas/dwarf-canvas-v7.ts and dwarf-effects-v7.ts draw
+ * from it, and visual-direction-v7.ts holds the flag anchors.
  */
 
 /**

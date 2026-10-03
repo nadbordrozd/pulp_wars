@@ -147,12 +147,11 @@ export function navalSharedSubjectV7(
  * would stand), their portraits, the forge-hold City 1-3, the command,
  * ability, status and technology icons (`ICON:ACTION:DWARF:TEND_WOUNDED` is
  * Repair; `ICON:TECH:DWARF:*` are Dig In and Blasting Charges, the Dwarf
- * names of Fortification and Explosives) and the effect sprites. The art
- * exists before the faction is wired in: nothing resolves these subjects
- * until the UI bead (pulp_wars-78i.6) registers them. The Dwarf naval
- * subjects need no type here: they are NavalFactionArtSubjectV7
- * (`UNIT:DWARF:<ROLE>`, `PORTRAIT:DWARF:<ROLE>`, what navalArtSubjectV7
- * returns) as soon as the engine bead makes `DWARF` a FactionIdV7.
+ * names of Fortification and Explosives) and the effect sprites,
+ * registered in the direction registry since the UI bead (pulp_wars-78i.6).
+ * The Dwarf naval subjects need no type here: they are
+ * NavalFactionArtSubjectV7 (`UNIT:DWARF:<ROLE>`, `PORTRAIT:DWARF:<ROLE>`,
+ * what navalArtSubjectV7 returns).
  */
 export type DwarfArtSubjectV7 =
   | `UNIT:DWARF:${DwarfArtRoleV7 | "MOUND" | "MOUND_RIDER"}`
@@ -306,7 +305,7 @@ export type MartianArtRoleV7 = UndeadArtRoleV7;
 
 /** Factions with their own city art; every other faction uses `CITY:<level>`. */
 export type CityArtFactionV7 =
-  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK";
+  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF";
 
 /**
  * The art subject of a city on the map or in the interface: the owner
@@ -323,7 +322,8 @@ export function cityArtSubjectV7(city: {
     city.faction === "GOBLIN" ||
     city.faction === "DINOSAUR" ||
     city.faction === "MARTIAN" ||
-    city.faction === "ICE_FOLK"
+    city.faction === "ICE_FOLK" ||
+    city.faction === "DWARF"
   )
     return `CITY:${city.faction}:${city.artLevel}`;
   return `CITY:${city.artLevel}`;
@@ -385,7 +385,19 @@ export function unitArtSubjectV7(unit: {
   // The Ice Folk (bead pulp_wars-7g3.6): every land role has its own art.
   if (unit.faction === "ICE_FOLK")
     return `UNIT:ICE_FOLK:${unit.role as IceFolkArtRoleV7}`;
+  // The Dwarves (bead pulp_wars-78i.6): every land role has its own art.
+  if (unit.faction === "DWARF")
+    return `UNIT:DWARF:${unit.role as DwarfArtRoleV7}`;
   return `UNIT:${unit.role}`;
+}
+
+/**
+ * The Dwarf revision (bead pulp_wars-78i.6): the subject of a mound, the
+ * heap a burrowed unit leaves on its tile (the Mole's, or its rider's with
+ * a hammer head beside the drill).
+ */
+export function moundArtSubjectV7(rider: boolean): ArtSubjectV7 {
+  return rider ? "UNIT:DWARF:MOUND_RIDER" : "UNIT:DWARF:MOUND";
 }
 
 /**
@@ -408,23 +420,37 @@ export function unitArtSubjectV7(unit: {
  * (bead pulp_wars-7g3.6): `UNIT:ICE_FOLK:<ROLE>`, `PORTRAIT:ICE_FOLK:<ROLE>`
  * and `CITY:ICE_FOLK:<level>` fall back like the other factions'; Deep
  * Winter and Brittle (`ICON:TECH:ICE_FOLK:*`) to the Human Fortification
- * and Explosives art. A faction's naval subject (`UNIT:<FACTION>:<ROLE>`
+ * and Explosives art. The Dwarves (bead pulp_wars-78i.6) likewise:
+ * `UNIT:DWARF:<ROLE>`, `PORTRAIT:DWARF:<ROLE>`, `CITY:DWARF:<level>` and
+ * `ICON:ACTION:DWARF:TEND_WOUNDED` (Repair, to the Human Tend Wounded),
+ * Dig In and Blasting Charges (`ICON:TECH:DWARF:*`) to the Human
+ * Fortification and Explosives art; the two mounds have no Human
+ * counterpart (code-drawn, like the Egg's legacy stand-in). A faction's
+ * naval subject (`UNIT:<FACTION>:<ROLE>`
  * or `PORTRAIT:<FACTION>:<ROLE>` of a ship or the transport, bead
  * pulp_wars-w5j.3) falls back to the shared ship, for any faction. Every
- * other subject (the Martian and Ice Folk ability, status and effect icons
- * included) has no fallback.
+ * other subject (the Martian, Ice Folk and Dwarf ability, status and
+ * effect icons included) has no fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {
   if (subject === "UNIT:DINOSAUR:EGG") return null;
+  if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
+    return null;
   const naval = navalSharedSubjectV7(subject);
   if (naval !== null) return naval;
   if (subject === "UNIT:MARTIAN:THRALL") return "UNIT:FIGHTER";
   if (subject === "PORTRAIT:MARTIAN:THRALL") return "PORTRAIT:FIGHTER";
-  if (subject === "ICON:TECH:ICE_FOLK:FORTIFICATION")
+  if (
+    subject === "ICON:TECH:ICE_FOLK:FORTIFICATION" ||
+    subject === "ICON:TECH:DWARF:FORTIFICATION"
+  )
     return "ICON:TECH:FORTIFICATION";
-  if (subject === "ICON:TECH:ICE_FOLK:EXPLOSIVES")
+  if (
+    subject === "ICON:TECH:ICE_FOLK:EXPLOSIVES" ||
+    subject === "ICON:TECH:DWARF:EXPLOSIVES"
+  )
     return "ICON:ACTION:BLAST_MOUNTAIN";
   for (const faction of [
     ":UNDEAD:",
@@ -432,6 +458,7 @@ export function chibiFallbackSubjectV7(
     ":DINOSAUR:",
     ":MARTIAN:",
     ":ICE_FOLK:",
+    ":DWARF:",
   ])
     if (subject.includes(faction))
       return subject.replace(faction, ":") as ArtSubjectV7;

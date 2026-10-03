@@ -13,6 +13,7 @@ import type {
 } from "../../src/assets/chibi-art-v7";
 import { CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-art-manifest";
 import { CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-dinosaur-art-manifest";
+import { CHIBI_DIRECTION_DWARF_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-dwarf-art-manifest";
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-ice-folk-art-manifest";
 import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-martian-art-manifest";
 import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-undead-art-manifest";
@@ -737,8 +738,9 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
     // successor (bead pulp_wars-3tq.5), to a Goblin city (bead
     // pulp_wars-3tq.9), to an Undead city (bead pulp_wars-3tq.12), to a
     // Dinosaur city (bead pulp_wars-3tq.13), to a Martian colony (wired
-    // in by bead pulp_wars-t6s.4) or to an Ice Folk camp (wired in by bead
-    // pulp_wars-7g3.6), and lies inside it.
+    // in by bead pulp_wars-t6s.4), to an Ice Folk camp (wired in by bead
+    // pulp_wars-7g3.6) or to a Dwarf hold (wired in by bead
+    // pulp_wars-78i.6), and lies inside it.
     const anchors = Object.entries(DIRECTION_FLAG_ANCHORS_V7);
     expect(anchors.length).toBeGreaterThan(0);
     for (const [id, anchor] of anchors) {
@@ -750,6 +752,7 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
         ...CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7,
         ...CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7,
         ...CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7,
+        ...CHIBI_DIRECTION_DWARF_ART_ASSETS_V7,
       ].find((candidate) => candidate.id === id);
       expect(asset, id).toBeDefined();
       if (asset === undefined) continue;

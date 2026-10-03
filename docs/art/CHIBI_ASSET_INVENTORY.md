@@ -655,11 +655,12 @@ Martian machine afloat stays drawn as itself and has no naval sprite.
 
 ## Steampunk Dwarf production art: batches `direction-dwarf` and `naval-dwarf` (bead `pulp_wars-78i.5`)
 
-A seventh faction's art, made before the faction is in the game and **not
-registered**: the entries are in
-[`chibi-direction-dwarf-art-manifest.ts`](../../src/assets/chibi-direction-dwarf-art-manifest.ts),
-which nothing imports until bead `pulp_wars-78i.6` (the review scenes
-excepted). Fixed faction colours (soot-black iron with a light rim, red
+A seventh faction's art, made before the faction was in the game and
+**registered in the direction registry by the Dwarf UI bead
+`pulp_wars-78i.6`** (live in the default look; the naval set through
+`CHIBI_NAVAL_FACTION_ART_ASSETS_V7`; the Classic look and LEGACY draw the
+Human stand-in with a cog badge and a code-drawn mound): the entries are in
+[`chibi-direction-dwarf-art-manifest.ts`](../../src/assets/chibi-direction-dwarf-art-manifest.ts). Fixed faction colours (soot-black iron with a light rim, red
 copper, dark leather, white steam, ginger-copper beards, the signal-green
 lamp on every machine), no owner mask. See [DWARF.md](factions/DWARF.md).
 

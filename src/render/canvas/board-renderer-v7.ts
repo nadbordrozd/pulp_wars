@@ -116,6 +116,27 @@ import {
 } from "./ice-folk-board-plan-v7";
 import { shatterBoardCueV7 } from "./ice-folk-effects-v7";
 import {
+  addDwarfPickEntriesV7,
+  dwarfAttackTargetExtrasV7,
+  dwarfEngineerSelectedV7,
+  dwarfMoundEntriesV7,
+  dwarfPickTargetsV7,
+  dwarfUnitMarkersV7,
+  type DwarfMoundMarkerV7,
+  type DwarfPickV7,
+  type DwarfUnitMarkersV7,
+} from "./dwarf-board-plan-v7";
+import {
+  drawClockworkGearV7,
+  drawCodeMoundV7,
+  drawDigInEarthworkV7,
+  drawDwarfBadgeV7,
+  drawEruptionRingV7,
+  drawMoundChipV7,
+  type DwarfBoardArtV7,
+} from "./dwarf-canvas-v7";
+import { matchHasDwarfSeatV7 } from "../dwarf-presentation-v7";
+import {
   SHATTERS_PREVIEW_V7,
   matchHasIceFolkSeatV7,
 } from "../ice-folk-presentation-v7";
@@ -237,6 +258,12 @@ export interface BoardRenderInteractionV7 {
    * targets; null or omitted aims none.
    */
   readonly iceFolkPick?: IceFolkPickV7 | null;
+  /**
+   * The Dwarf revision (bead pulp_wars-78i.6): the Tunnel, Bomb Run or
+   * Assemble being aimed by the selected unit. Its targets become the only
+   * map targets; null or omitted aims none.
+   */
+  readonly dwarfPick?: DwarfPickV7 | null;
 }
 
 /** Revision 19: the ID of the legacy code-drawn Egg (no raster exists). */
@@ -276,7 +303,20 @@ export interface MapCommandTargetV7 {
      * one carries the same command, so choosing any of them casts it).
      */
     | "THROW_BOLAS"
-    | "COLD_SNAP";
+    | "COLD_SNAP"
+    /**
+     * The Dwarf revision: a Tunnel destination (TUNNEL dispatches the
+     * Mole alone; TUNNEL_DESTINATION, with a Hammerer next to the Mole,
+     * moves on to the rider prompt), a rider tile (TUNNEL_RIDER), a bomb
+     * target (BOMB_TARGET moves on to the landing tiles), a landing
+     * (BOMB_RUN) and an Assemble tile.
+     */
+    | "TUNNEL"
+    | "TUNNEL_DESTINATION"
+    | "TUNNEL_RIDER"
+    | "BOMB_TARGET"
+    | "BOMB_RUN"
+    | "ASSEMBLE";
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -342,6 +382,25 @@ export interface MapCommandTargetV7 {
     readonly label: string;
     readonly lethal: boolean;
   }[];
+  /**
+   * The Dwarf revision: a Tunnel destination's eruption forecast (the ring
+   * and each visible hostile unit on the ground "if they stay"), shown
+   * while the destination is focused.
+   */
+  readonly eruption?: {
+    readonly at: CoordV7;
+    readonly targets: readonly {
+      readonly at: CoordV7;
+      readonly label: string;
+      readonly lethal: boolean;
+    }[];
+    readonly undermines: readonly CoordV7[];
+  };
+  /**
+   * The Dwarf revision: where a Steam Cannon's shot knocks its target back
+   * (or that the push is blocked), shown while the target is focused.
+   */
+  readonly knockback?: { readonly to: CoordV7; readonly blocked: boolean };
   /** Revision 13: public splash entries of this attack (Undead matches only). */
   readonly splash?: readonly {
     readonly at: CoordV7;
@@ -425,7 +484,8 @@ export interface BoardRenderPlanEntryV7 {
    * with its faction badge unless the CHIBI art set shows its own faction
    * raster.
    */
-  readonly faction?: "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK";
+  readonly faction?:
+    "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF";
   /**
    * UNIT only, revision 14: the public Plague and Bitten statuses, drawn as
    * small markers in the piece's overlay frame (absent when there are none).
@@ -466,6 +526,16 @@ export interface BoardRenderPlanEntryV7 {
   readonly iceFolk?: IceFolkUnitMarkersV7;
   /** UNIT only, the Ice Folk revision: the selected Witch's outline. */
   readonly blizzardRing?: true;
+  /**
+   * UNIT only, the Dwarf revision: the Dig In earthwork, the clockwork gear
+   * and the Gyrocopter's flight of a visible Dwarf unit.
+   */
+  readonly dwarf?: DwarfUnitMarkersV7;
+  /**
+   * UNIT only, the Dwarf revision: this entry is a mound (`mound:<id>`), a
+   * burrowed Mole or its rider, drawn where the unit would stand.
+   */
+  readonly dwarfMound?: DwarfMoundMarkerV7;
 }
 
 export interface BoardRenderPlanV7 {
@@ -712,6 +782,7 @@ export function buildBoardRenderPlanV7(
     view.eggs.map((entry) => [entry.unitId, entry.turnsRemaining] as const),
   );
   const martianMatch = matchHasMartianV7(view);
+  const dwarfMatch = matchHasDwarfSeatV7(view);
   const ringWitch = iceFolkMatch
     ? selectedWitchV7(view, interaction.selectedUnitId)
     : undefined;
@@ -722,7 +793,10 @@ export function buildBoardRenderPlanV7(
       faction === "GOBLIN" ||
       faction === "DINOSAUR" ||
       faction === "MARTIAN" ||
-      faction === "ICE_FOLK";
+      faction === "ICE_FOLK" ||
+      faction === "DWARF";
+    // The Dwarf revision: Dig In, clockwork and the Gyrocopter's flight.
+    const dwarf = dwarfMatch ? dwarfUnitMarkersV7(view, unit) : undefined;
     // The Ice Folk revision: Chill markers on units of any owner.
     const iceFolk = iceFolkMatch ? iceFolkUnitMarkersV7(view, unit) : undefined;
     // The Martian revision: a Thrall is labelled "Thrall", and a machine
@@ -779,8 +853,21 @@ export function buildBoardRenderPlanV7(
       ...(martian === undefined ? {} : { martian }),
       ...(iceFolk === undefined ? {} : { iceFolk }),
       ...(ringWitch?.id === unit.id ? { blizzardRing: true as const } : {}),
+      ...(dwarf === undefined ? {} : { dwarf }),
     });
   }
+  // The Dwarf revision (section 5.3): every visible mound, where its unit
+  // would stand, with its HP bar; a selected mound tile outlines its ring.
+  if (dwarfMatch)
+    entries.push(
+      ...dwarfMoundEntriesV7(
+        view,
+        (ownerId) => ownerPresentation(view, ownerId),
+        interaction.selection?.kind === "TILE"
+          ? interaction.selection.at
+          : null,
+      ),
+    );
   for (const value of view.improvementValues)
     entries.push({
       key: `value:${value.at.x},${value.at.y}`,
@@ -887,7 +974,14 @@ export function buildBoardRenderPlanV7(
   }
   addTerritoryBoundaries(entries, view, interaction.selection);
   if (selectedUnitId !== null) {
-    addAbilityPreviews(entries, view, commands, selectedUnitId);
+    // The Dwarf revision: while an ability is aimed, the selected unit's
+    // other previews (an Engineer's Repair targets) step aside.
+    if (
+      interaction.dwarfPick === undefined ||
+      interaction.dwarfPick === null ||
+      interaction.dwarfPick.unitId !== selectedUnitId
+    )
+      addAbilityPreviews(entries, view, commands, selectedUnitId);
     // The Martian revision: the Force Field of a selected Shield Projector
     // and the Thrall-Brain link.
     if (martianMatch)
@@ -927,6 +1021,14 @@ export function buildBoardRenderPlanV7(
     interaction.iceFolkPick.unitId === interaction.selectedUnitId
       ? interaction.iceFolkPick
       : null;
+  // The Dwarf revision: likewise while a Tunnel, Bomb Run or Assemble is
+  // aimed.
+  const dwarfPick =
+    interaction.dwarfPick !== undefined &&
+    interaction.dwarfPick !== null &&
+    interaction.dwarfPick.unitId === interaction.selectedUnitId
+      ? interaction.dwarfPick
+      : null;
   const targets = kaboomPreview
     ? []
     : layEgg !== null
@@ -935,12 +1037,16 @@ export function buildBoardRenderPlanV7(
         ? martianPickTargetsV7(view, commands, martianPick)
         : iceFolkPick !== null
           ? iceFolkPickTargetsV7(view, commands, iceFolkPick)
-          : dedupeMapTargets(
-              mapTargets(view, commands, interaction.selectedUnitId),
-            );
+          : dwarfPick !== null
+            ? dwarfPickTargetsV7(view, commands, dwarfPick)
+            : dedupeMapTargets(
+                mapTargets(view, commands, interaction.selectedUnitId),
+              );
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
+  if (dwarfPick !== null)
+    addDwarfPickEntriesV7(entries, view, commands, dwarfPick);
   for (const target of targets) {
     if (target.family === "LAY_EGG")
       entries.push({
@@ -1297,6 +1403,11 @@ export function drawBoardV7(input: {
     readonly unitId: number;
     readonly elapsedMs: number;
   } | null;
+  /**
+   * The Dwarf revision (bead pulp_wars-78i.6): the cached Dig In earthwork
+   * rasters. Omitted, the earthwork is a plain code-drawn stand-in.
+   */
+  readonly dwarfArt?: DwarfBoardArtV7;
 }): void {
   const { context, viewport, devicePixelRatio } = input;
   const saturationOf = (entry: BoardRenderPlanEntryV7): number => {
@@ -1880,6 +1991,10 @@ export function drawBoardV7(input: {
                     devicePixelRatio,
                   );
           let alpha = 1;
+          // The Dwarf revision: the Dig In earthwork stays on the ground
+          // (it never jumps or lifts with the sprite).
+          const groundRect = rect;
+          const earthworkScale = chibiMasterScale(camera);
           if (
             direction !== undefined &&
             entry.kind === "UNIT" &&
@@ -1894,7 +2009,11 @@ export function drawBoardV7(input: {
             );
           // The Martian revision: a flyer casts a ground shadow (over land
           // or water) and is drawn lifted above it; the ground cue stays put.
-          if (entry.kind === "UNIT" && entry.martian?.flyer === true) {
+          // The Dwarf revision: the Gyrocopter flies the same way.
+          if (
+            entry.kind === "UNIT" &&
+            (entry.martian?.flyer === true || entry.dwarf?.flyer === true)
+          ) {
             drawFlyerShadowV7(
               context,
               rect,
@@ -1990,6 +2109,16 @@ export function drawBoardV7(input: {
                 context.restore();
               }
           }
+          // The Dwarf revision (section 8): a dug-in unit stands inside a
+          // low ring of earth: the bank behind it before the sprite.
+          if (entry.kind === "UNIT" && entry.dwarf?.dugIn === true)
+            drawDigInEarthworkV7(
+              context,
+              input.dwarfArt,
+              groundRect,
+              earthworkScale,
+              "back",
+            );
           context.save();
           context.globalAlpha = alpha * sceneAlpha;
           if (chibiReady !== null) {
@@ -2021,6 +2150,15 @@ export function drawBoardV7(input: {
               rect.height,
             );
           context.restore();
+          // The Dwarf revision: the sandbags in front of a dug-in unit.
+          if (entry.kind === "UNIT" && entry.dwarf?.dugIn === true)
+            drawDigInEarthworkV7(
+              context,
+              input.dwarfArt,
+              groundRect,
+              earthworkScale,
+              "front",
+            );
           // The Ice Folk revision (section 13.1): a Frozen unit is cased in
           // ice to the waist, a Frosted one has a thin rime on its top edges;
           // a unit being shattered is cased to the top, then cracks.
@@ -2067,6 +2205,17 @@ export function drawBoardV7(input: {
             scale: unitPulse?.scale ?? 1,
           },
         );
+      // The Dwarf revision: LEGACY and the classic look have no mound
+      // raster, so the mound is drawn in code.
+      if (
+        entry.kind === "UNIT" &&
+        entry.dwarfMound !== undefined &&
+        !chibiPiece
+      )
+        drawCodeMoundV7(context, x, y, camera.zoom, {
+          rider: entry.dwarfMound.rider,
+          highContrast: input.highContrast ?? false,
+        });
       const drawPieceOverlays = (): void => {
         const directed =
           direction === undefined || !chibiPiece
@@ -2139,6 +2288,21 @@ export function drawBoardV7(input: {
           !factionArt
         )
           drawIceFolkBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        // The Dwarf revision: the copper cog badge over Human stand-in art
+        // (LEGACY and the classic look); a mound is the Dwarves' own.
+        if (
+          entry.kind === "UNIT" &&
+          entry.faction === "DWARF" &&
+          !factionArt &&
+          entry.dwarfMound === undefined
+        )
+          drawDwarfBadgeV7(context, x, y, camera.zoom, chibiPiece);
+        // The Dwarf revision (section 5.3): the mound's surfacing chip.
+        if (entry.kind === "UNIT" && entry.dwarfMound !== undefined)
+          drawMoundChipV7(context, x, y, camera.zoom, {
+            chibi: chibiPiece,
+            highContrast: input.highContrast ?? false,
+          });
         if (entry.kind === "UNIT" && entry.martian !== undefined) {
           if (entry.martian.thrall)
             drawThrallCollarV7(context, x, y, camera.zoom, {
@@ -2400,6 +2564,44 @@ export function drawBoardV7(input: {
             highContrast: input.highContrast ?? false,
           });
         }
+        // The Dwarf revision (DWARF.md "Clockwork glyph"): a construct's
+        // gear at its HP bar's end, whenever the bar shows.
+        if (
+          entry.kind === "UNIT" &&
+          entry.dwarf?.clockwork === true &&
+          entry.hp !== undefined &&
+          entry.maxHp !== undefined &&
+          (entry.hp < entry.maxHp || direction?.chrome.hp === "ALWAYS")
+        ) {
+          const zoom = camera.zoom;
+          const radius = Math.max(4.5, 6.5 * zoom);
+          let gear: { readonly x: number; readonly y: number };
+          if (
+            directed?.hp === true &&
+            direction !== undefined &&
+            direction.chrome.hpPlacement === "BASE"
+          ) {
+            const width = (directedGarrison ? 40 : 54) * zoom;
+            const left = x + (directedGarrison ? 20 : 0) * zoom - width / 2;
+            gear = {
+              x: left + width + radius * 0.9,
+              y: y + (DIRECTED_BASE_HP_BAR_TOP_V7 + 4) * zoom,
+            };
+          } else if (chibiPiece) {
+            const bar = CHIBI_OVERLAY_FRAME_V7.hpBar;
+            gear = {
+              x: x + (bar.left + bar.width / 2) * zoom,
+              y: y + bar.top * zoom - radius * 0.9,
+            };
+          } else gear = { x: x + 25 * zoom + radius * 0.9, y: y + 28.5 * zoom };
+          drawClockworkGearV7(
+            context,
+            gear.x,
+            gear.y,
+            radius,
+            input.highContrast ?? false,
+          );
+        }
       };
       if (chibiPiece) deferredChibiOverlays.push(drawPieceOverlays);
       else drawPieceOverlays();
@@ -2439,6 +2641,27 @@ export function drawBoardV7(input: {
           same(input.previewFocus, entry.at)))
     )
       drawBlizzardRingV7(
+        context,
+        {
+          x: camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
+          y: camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom,
+        },
+        TILE_WIDTH * camera.zoom,
+        input.highContrast ?? false,
+      );
+  // The Dwarf revision (section 16.1): the selected (or hovered) Mole
+  // mound's eruption ring round its eight tiles.
+  for (const entry of input.plan.entries)
+    if (
+      entry.kind === "UNIT" &&
+      entry.dwarfMound !== undefined &&
+      !entry.dwarfMound.rider &&
+      (entry.dwarfMound.ring ||
+        (input.previewFocus !== undefined &&
+          input.previewFocus !== null &&
+          same(input.previewFocus, entry.at)))
+    )
+      drawEruptionRingV7(
         context,
         {
           x: camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
@@ -2623,6 +2846,14 @@ export function drawBoardV7(input: {
       defer,
     );
     drawIceFolkFocusPreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      placer,
+      defer,
+    );
+    drawDwarfFocusPreviewV7(
       context,
       camera,
       input.plan,
@@ -2853,6 +3084,16 @@ function targetStroke(
     return "#ff8fd6";
   // The Ice Folk revision: the pale ice of ICE_FOLK_PALETTE_V7.
   if (family === "THROW_BOLAS" || family === "COLD_SNAP") return "#d6f0ff";
+  // The Dwarf revision: light earth for the tunnel, lit copper for the
+  // bomb, steam white for the Assemble tiles (DWARF_PALETTE_V7).
+  if (
+    family === "TUNNEL" ||
+    family === "TUNNEL_DESTINATION" ||
+    family === "TUNNEL_RIDER"
+  )
+    return "#d8b58a";
+  if (family === "BOMB_TARGET" || family === "BOMB_RUN") return "#f2a46a";
+  if (family === "ASSEMBLE") return "#f0f1ee";
   return "#64e6cf";
 }
 
@@ -3188,6 +3429,115 @@ function drawIceFolkFocusPreviewV7(
       placer,
       defer,
     );
+}
+
+/**
+ * The Dwarf revision: the focused (or only) attack target's Knockback
+ * destination (an arrow to it, or a cross when the push is blocked), and the
+ * focused Tunnel destination's eruption forecast (the ring, each visible
+ * hostile unit on the ground "if they stay", and the Field Defense it will
+ * undermine).
+ */
+function drawDwarfFocusPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  placer: PreviewLabelPlacerV7,
+  defer: (draw: () => void) => void,
+): void {
+  const pick = <Target extends MapCommandTargetV7>(
+    targets: readonly Target[],
+  ): Target | undefined =>
+    (focus === null
+      ? undefined
+      : targets.find((candidate) => same(candidate.at, focus))) ??
+    (targets.length === 1 ? targets[0] : undefined);
+  const x = (at: CoordV7): number =>
+    camera.offsetX + at.x * TILE_WIDTH * camera.zoom;
+  const y = (at: CoordV7): number =>
+    camera.offsetY + at.y * TILE_HEIGHT * camera.zoom;
+  const knock = pick(
+    plan.targets.filter(
+      (target) => target.family === "ATTACK" && target.knockback !== undefined,
+    ),
+  );
+  if (knock?.knockback !== undefined) {
+    const to = knock.knockback.to;
+    const blocked = knock.knockback.blocked;
+    context.save();
+    context.strokeStyle = abilityAreaStrokeV7(blocked ? "BOMBED" : "TUNNEL");
+    context.lineCap = "round";
+    if (!blocked) {
+      drawAbilityAreaCellV7(context, x(to), y(to), camera.zoom, "TUNNEL");
+      context.lineWidth = 3 * camera.zoom;
+      context.setLineDash([6 * camera.zoom, 4 * camera.zoom]);
+      for (const edge of TILE_EDGES) strokeTileEdge(context, camera, to, edge);
+      context.setLineDash([]);
+    }
+    // A short arrow from the target toward where it is knocked.
+    context.lineWidth = 4 * camera.zoom;
+    const fromX = x(knock.at);
+    const fromY = y(knock.at);
+    const length = Math.hypot(x(to) - fromX, y(to) - fromY) || 1;
+    const ux = (x(to) - fromX) / length;
+    const uy = (y(to) - fromY) / length;
+    const reach = blocked ? 52 * camera.zoom : length - 24 * camera.zoom;
+    const tipX = fromX + ux * Math.max(30 * camera.zoom, reach);
+    const tipY = fromY + uy * Math.max(30 * camera.zoom, reach);
+    context.beginPath();
+    context.moveTo(
+      fromX + ux * 30 * camera.zoom,
+      fromY + uy * 30 * camera.zoom,
+    );
+    context.lineTo(tipX, tipY);
+    if (blocked) {
+      // A cross at the arrow's end: the push is blocked.
+      const s = 8 * camera.zoom;
+      context.moveTo(tipX - s, tipY - s);
+      context.lineTo(tipX + s, tipY + s);
+      context.moveTo(tipX + s, tipY - s);
+      context.lineTo(tipX - s, tipY + s);
+    } else {
+      context.moveTo(tipX, tipY);
+      context.lineTo(
+        tipX - ux * 14 * camera.zoom - uy * 10 * camera.zoom,
+        tipY - uy * 14 * camera.zoom + ux * 10 * camera.zoom,
+      );
+      context.moveTo(tipX, tipY);
+      context.lineTo(
+        tipX - ux * 14 * camera.zoom + uy * 10 * camera.zoom,
+        tipY - uy * 14 * camera.zoom - ux * 10 * camera.zoom,
+      );
+    }
+    context.stroke();
+    context.restore();
+  }
+  const tunnel = pick(
+    plan.targets.filter((target) => target.eruption !== undefined),
+  );
+  const eruption = tunnel?.eruption;
+  if (eruption !== undefined) {
+    drawEruptionRingV7(
+      context,
+      { x: x(eruption.at), y: y(eruption.at) },
+      TILE_WIDTH * camera.zoom,
+    );
+    for (const at of eruption.undermines)
+      drawAbilityAreaCellV7(context, x(at), y(at), camera.zoom, "ERUPTION");
+    for (const target of eruption.targets)
+      drawAbilityTargetV7(
+        context,
+        x(target.at),
+        y(target.at),
+        camera.zoom,
+        "ERUPTION",
+        target.label,
+        target.lethal,
+        placer,
+        defer,
+      );
+  }
 }
 
 /**
@@ -3641,7 +3991,12 @@ function addAbilityPreviews(
   }
   // Revision 14: Tend Wounded heals and cures, shown in Undead matches only
   // (a Human-only match keeps its revision-12 board).
-  if (offered("TEND_WOUNDED") && matchHasUndeadV7(view)) {
+  // The Dwarf revision: an Engineer's Repair shows its targets too (+4 on
+  // machines, +2 on the others).
+  if (
+    offered("TEND_WOUNDED") &&
+    (matchHasUndeadV7(view) || dwarfEngineerSelectedV7(view, unitId))
+  ) {
     const preview = previewTendWoundedV7(view, unitId);
     for (const result of preview?.results ?? []) {
       const target = view.units.find((unit) => unit.id === result.unitId);
@@ -3805,6 +4160,7 @@ function commandMapTargets(
   const dinosaurMatch = matchHasDinosaurV7(view);
   const martianMatch = matchHasMartianV7(view);
   const iceFolkMatch = matchHasIceFolkSeatV7(view);
+  const dwarfMatch = matchHasDwarfSeatV7(view);
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
     // Revision 19: an adjacent own Egg the selected Shaman may hatch.
@@ -3906,12 +4262,18 @@ function commandMapTargets(
       const iceFolk = iceFolkMatch
         ? iceFolkAttackTargetExtrasV7(view, preview)
         : null;
+      // The Dwarf revision (Dwarf matches only): Dug in, Clockwork,
+      // Plated, Blasting Charges, the Gunner's shots and Knockback.
+      const dwarf = dwarfMatch
+        ? dwarfAttackTargetExtrasV7(view, preview)
+        : null;
       const noteParts = [
         undeadNote,
         goblin?.gangUp ?? null,
         dinosaurNote,
         ...(martian?.notes ?? []),
         ...(iceFolk?.notes ?? []),
+        ...(dwarf?.notes ?? []),
       ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [
@@ -3957,12 +4319,20 @@ function commandMapTargets(
           ...(preview === null
             ? {}
             : {
-                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined && iceFolk?.sweep === undefined ? splashSentence : martian?.pierce === undefined ? "" : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}${iceFolk === null || iceFolk.semantic === null ? "" : ` ${iceFolk.semantic}`}`,
+                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined && iceFolk?.sweep === undefined ? splashSentence : martian?.pierce === undefined ? "" : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}${iceFolk === null || iceFolk.semantic === null ? "" : ` ${iceFolk.semantic}`}${dwarf === null || dwarf.semantic === null ? "" : ` ${dwarf.semantic}`}`,
               }),
           ...(note === null ? {} : { previewNote: note }),
-          ...(martian === null || martian.shooter.length === 0
+          // The Dwarf revision: the Gunner's and a construct's shooter
+          // lines likewise.
+          ...([...(martian?.shooter ?? []), ...(dwarf?.shooter ?? [])]
+            .length === 0
             ? {}
-            : { previewFocusNote: martian.shooter.join(" · ") }),
+            : {
+                previewFocusNote: [
+                  ...(martian?.shooter ?? []),
+                  ...(dwarf?.shooter ?? []),
+                ].join(" · "),
+              }),
           ...(warnings === null ? {} : { previewWarnings: warnings }),
           ...(warnings === null || goblin === null || goblin.summary === null
             ? {}
@@ -3970,6 +4340,9 @@ function commandMapTargets(
           ...(blast === null ? {} : { blast }),
           ...(martian?.pierce === undefined ? {} : { pierce: martian.pierce }),
           ...(iceFolk?.sweep === undefined ? {} : { sweep: iceFolk.sweep }),
+          ...(dwarf?.knockback === undefined
+            ? {}
+            : { knockback: dwarf.knockback }),
           ...((undeadMatch || goblinMatch) &&
           martian?.pierce === undefined &&
           iceFolk?.sweep === undefined &&

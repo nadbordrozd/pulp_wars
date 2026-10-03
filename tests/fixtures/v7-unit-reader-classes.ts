@@ -277,6 +277,12 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/board-renderer-v7.ts::commandMapTargets": "BOARD",
     "src/render/canvas/board-renderer-v7.ts::landingAfterMoveTargets": "BOARD",
     "src/render/canvas/board-renderer-v7.ts::selectionCoord": "BOARD",
+    // The Dwarf UI (pulp_wars-78i.6) reads the board; mounds only through
+    // the view's `burrowed` list.
+    "src/render/canvas/dwarf-board-plan-v7.ts::addDwarfPickEntriesV7": "BOARD",
+    "src/render/canvas/dwarf-board-plan-v7.ts::dwarfEngineerSelectedV7":
+      "BOARD",
+    "src/render/canvas/dwarf-board-plan-v7.ts::dwarfPickTargetsV7": "BOARD",
     "src/render/canvas/ice-folk-board-plan-v7.ts::addIceFolkPickEntriesV7":
       "BOARD",
     "src/render/canvas/ice-folk-board-plan-v7.ts::iceFolkPickTargetsV7":
@@ -298,6 +304,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
       "BOARD",
     "src/render/dinosaur-presentation-v7.ts::hatchBlockedEggsV7": "BOARD",
     "src/render/dom/app-view-v7.ts::<module>": "BOARD",
+    "src/render/dwarf-presentation-v7.ts::dwarfBoundaryNoticeV7": "BOARD",
+    "src/render/dwarf-presentation-v7.ts::dwarfCombatLinesV7": "BOARD",
+    "src/render/dwarf-presentation-v7.ts::dwarfFieldDefenseBlockedV7": "BOARD",
+    "src/render/dwarf-presentation-v7.ts::tunnelPreviewLinesV7": "BOARD",
     "src/render/dom/app-view-v7.ts::cityIncomeForViewerV7": "BOARD",
     "src/render/goblin-presentation-v7.ts::blastPreviewPresentationV7": "BOARD",
     "src/render/goblin-presentation-v7.ts::goblinAttackPreviewTextV7": "BOARD",

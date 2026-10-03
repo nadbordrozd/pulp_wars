@@ -310,10 +310,13 @@ fifteen times a second for the flakes (full motion only).
 
 The engine registers a seventh faction, `DWARF`
 ([Dwarf overlay](../product/RULESET_7_DWARVES.md)), with every rule of that
-document, under `pulp-wars-poc-7r30`. The setup screen does not offer it
-yet (`FACTIONS` in `src/render/dom/app-view-v7.ts` leaves it out until the
-Dwarf UI bead `pulp_wars-78i.6`); `FACTION_LABELS` names it "Dwarf" so that
-a headless or test state renders its seat.
+document, under `pulp-wars-poc-7r30`. Since the Dwarf UI bead
+(`pulp_wars-78i.6`) the setup screen offers it for every seat (`FACTIONS`
+in `src/render/dom/app-view-v7.ts`), and the client draws and plays it as
+the
+[Screen Flow Dwarf overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-dwarf-overlay)
+describes (see [Dwarf presentation](#dwarf-presentation-pulp_wars-78i6)
+below).
 
 **The off-board list.** A burrowed unit (a Steam Mole that tunnelled and
 its rider) is not in `units`: it lives in `GameStateV7.burrowed` as
@@ -369,6 +372,64 @@ What the Dwarf UI reads, all from `PlayerViewV7` and the public queries:
 In a match without a Dwarf seat the three lists are empty, the two
 per-unit flags and the `dwarf` block are absent, and the three
 combat-preview fields are `false`, so every existing screen is unchanged.
+
+### Dwarf presentation (`pulp_wars-78i.6`)
+
+The Dwarf UI reads only the sources above, in the pattern of the Martian
+and Ice Folk presentation (one engine query was corrected for it:
+`previewTendWoundedV7` now previews an Engineer's Repair of a machine as
+the reducer resolves it, `repairMachineHeal`, 4, instead of 2):
+
+- `src/render/dwarf-presentation-v7.ts`: every Dwarf text (section 16.2
+  labels, the twelve Help sentences, the mound's information, Dig In, the
+  clockwork status, the Gunner's shots, Plated, the rider's surfacing
+  brake, the attack preview's Dug in, Plated, Blasting and Knockback notes
+  and the shooter's lines (Clockwork, the second shot, "Cannot move after
+  firing"), the Tunnel forecast, the bomb and landing lines, the Assemble
+  summary, why an ability is unavailable, log lines, unlock and recruit
+  texts), with names and numbers from the registry and the engine
+  constants;
+- `src/render/canvas/dwarf-board-plan-v7.ts`: the Dwarf part of the board
+  plan: the mounds (UNIT entries keyed `mound:<id>`, so no unit lookup,
+  selection jump, ready cue or command ever finds them, with
+  `BoardRenderPlanEntryV7.dwarfMound` and the ring of a selected Mole
+  mound), the unit markers (`BoardRenderPlanEntryV7.dwarf`: Dig In,
+  clockwork, the flying Gyrocopter), the three aimed abilities
+  (`BoardRenderInteractionV7.dwarfPick`; target families `TUNNEL`,
+  `TUNNEL_DESTINATION`, `TUNNEL_RIDER`, `BOMB_TARGET`, `BOMB_RUN`,
+  `ASSEMBLE`; the forecast and bomb marks as ability entries), and an
+  attack target's Dwarf lines (`MapCommandTargetV7.knockback`, the shooter
+  lines in `previewFocusNote`) and a Tunnel destination's forecast
+  (`MapCommandTargetV7.eruption`, drawn while focused);
+- `src/render/canvas/dwarf-canvas-v7.ts`: the code-drawn pieces: the cog
+  badge, the Dig In earthwork from `dwarfDigInMarkerV7` (cached per width by
+  `DwarfBoardArtV7`, `createDwarfBoardArtV7`, the board host's; the bank
+  before the sprite, the sandbags after it, on the ground rectangle), the
+  clockwork cog at the HP bar's end, the mound for LEGACY and the classic
+  look, the mound's surfacing chip, and the eruption ring
+  (`DWARF_MOUND_V7.eruptionRing`). `drawBoardV7` takes `dwarfArt`;
+- `src/render/canvas/dwarf-effects-v7.ts`: the cues of the `DWARF`
+  presentation step (TUNNEL, ERUPTION on `DWARF_ERUPTION_TIMELINE_V7`, BOMB
+  on `DWARF_BOMB_TIMELINE_V7`, ASSEMBLE, REPAIR, KNOCKBACK) with the four
+  effect sprites through the support effect art of the effects canvas. An
+  eruption step shows the view before it (the mound) until the timeline's
+  surfacing frame; a bomb run is a `MOVE` of the Gyrocopter, the `DWARF`
+  bomb, then the target's `DAMAGE`; a Knockback is a one-tile `pushSlide`
+  `MOVE` and a puff; the flyer's shadow and lift reuse the Martian flyer
+  code (`flyerPresentationV7` knows the Gyrocopter);
+- art: the Dwarf module of the direction registry
+  (`chibi-direction-dwarf-art-manifest.ts`; its naval set is appended to
+  `CHIBI_NAVAL_FACTION_ART_ASSETS_V7`, so the generic naval wiring draws
+  the Dwarf fleet), resolved by `unitArtSubjectV7`, `moundArtSubjectV7`,
+  `cityArtSubjectV7`, `portraitSubjectV7`, `technologySubjectV7` (Dig In
+  and Blasting Charges: `ICON:TECH:DWARF:*`) and `commandSubjectV7` (Repair:
+  `ICON:ACTION:DWARF:TEND_WOUNDED`), with `chibiFallbackSubjectV7` falling
+  back to the Human subject (the mounds have none: code-drawn);
+  `DWARF_FLAG_ANCHORS_V7` is part of `DIRECTION_FLAG_ANCHORS_V7`.
+
+The Classic look and LEGACY have no Dwarf art: a Dwarf unit is the Human
+sprite of its role with the cog badge, a Dwarf city the Human city, and a
+mound a code-drawn heap; every marker is code-drawn in both.
 
 ## 0. Ruleset-6 replacement boundary
 

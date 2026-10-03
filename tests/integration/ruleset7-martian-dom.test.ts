@@ -72,7 +72,8 @@ describe("Martian setup", () => {
     count.dispatchEvent(new Event("change", { bubbles: true }));
     for (const seat of [0, 1, 2, 3]) {
       const field = requiredElement<HTMLSelectElement>(`#v7-faction-${seat}`);
-      // The Ice Folk UI (pulp_wars-7g3.6) adds the sixth faction.
+      // The Ice Folk UI (pulp_wars-7g3.6) adds the sixth faction, the Dwarf
+      // UI (pulp_wars-78i.6) the seventh.
       expect([...field.options].map((option) => option.textContent)).toEqual([
         "Human",
         "Undead",
@@ -80,6 +81,7 @@ describe("Martian setup", () => {
         "Dinosaur",
         "Martian",
         "Ice Folk",
+        "Dwarf",
       ]);
       // pulp_wars-w5j.1: distinct defaults (Human, Undead, Goblin, Dinosaur).
       expect(field.value).toBe(

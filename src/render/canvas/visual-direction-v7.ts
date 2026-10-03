@@ -3,6 +3,7 @@ import {
   navalSharedSubjectV7,
   type ArtSubjectV7,
 } from "../../assets/chibi-art-v7";
+import { DWARF_FLAG_ANCHORS_V7 } from "../../assets/chibi-direction-dwarf-presentation";
 import { ICE_FOLK_FLAG_ANCHORS_V7 } from "../../assets/chibi-direction-ice-folk-presentation";
 import { MARTIAN_FLAG_ANCHORS_V7 } from "../../assets/chibi-direction-martian-presentation";
 import type { BoardRenderPlanEntryV7 } from "./board-renderer-v7";
@@ -373,6 +374,9 @@ export const DIRECTION_FLAG_ANCHORS_V7: Readonly<
   // --- Ice Folk (art of bead pulp_wars-7g3.5, wired in by pulp_wars-7g3.6):
   // the tips of the camps' own bone poles, so no pole is drawn.
   ...ICE_FOLK_FLAG_ANCHORS_V7,
+  // --- Dwarf (art of bead pulp_wars-78i.5, wired in by pulp_wars-78i.6):
+  // the tops of the holds' own dark iron poles, so no pole is drawn.
+  ...DWARF_FLAG_ANCHORS_V7,
 };
 
 const clampPercent = (value: unknown, low: number, high: number): number =>
@@ -1033,7 +1037,8 @@ function drawDirectedGroundV7(
   zoom: number,
 ): void {
   const ground = directedUnitGroundV7(entry, sprite, 1);
-  const flyer = entry.martian?.flyer === true;
+  // The Dwarf revision: the Gyrocopter casts its own shadow too.
+  const flyer = entry.martian?.flyer === true || entry.dwarf?.flyer === true;
   const shadowed = direction.unit.base === "SHADOW" && !ground.afloat && !flyer;
   const ring = entry.ready === true && direction.chrome.ready !== "GLOW";
   // Nothing to draw: leave the context untouched (the baseline direction

@@ -1,5 +1,6 @@
 import {
   attackIsChargeV7,
+  unitRoleRuleV7,
   type CoordV7,
   type PlayerEventEnvelopeV7,
   type PlayerViewV7,
@@ -12,6 +13,10 @@ import {
   ICE_FOLK_EFFECT_DURATIONS_V7,
   type IceFolkFeedbackEffectV7,
 } from "./ice-folk-effects-v7";
+import {
+  DWARF_EFFECT_DURATIONS_V7,
+  type DwarfFeedbackEffectV7,
+} from "./dwarf-effects-v7";
 
 export type CorePresentationStepV7 =
   | {
@@ -70,6 +75,23 @@ export type CorePresentationStepV7 =
        */
       readonly kind: "ICE_FOLK";
       readonly effect: IceFolkFeedbackEffectV7;
+      readonly cells: readonly CoordV7[];
+      readonly from?: CoordV7;
+      readonly unitId?: number;
+      readonly durationMs: number;
+      /** Another player's cue: the camera frames it, like enemy moves. */
+      readonly followCamera?: true;
+    }
+  | {
+      /**
+       * The Dwarf cues (bead pulp_wars-78i.6, dwarf-effects-v7): a Mole
+       * diving into its tunnel, a surfacing's eruption (`unitId` is the Mole;
+       * the board shows its mound until the units are back), a Gyrocopter's
+       * bomb falling, an Engineer's Assemble and Repair, and a Steam
+       * Cannon's Knockback puff.
+       */
+      readonly kind: "DWARF";
+      readonly effect: DwarfFeedbackEffectV7;
       readonly cells: readonly CoordV7[];
       readonly from?: CoordV7;
       readonly unitId?: number;
@@ -307,6 +329,35 @@ export function corePresentationPlanV7(
       ...(enemyTurn ? { followCamera: true as const } : {}),
     });
   };
+  /** Adds a Dwarf cue at its DWARF_EFFECT_DURATIONS_V7 duration. */
+  const pushDwarf = (
+    step: Omit<
+      Extract<CorePresentationStepV7, { readonly kind: "DWARF" }>,
+      "kind" | "followCamera" | "durationMs"
+    >,
+  ): void => {
+    steps.push({
+      kind: "DWARF",
+      ...step,
+      durationMs: DWARF_EFFECT_DURATIONS_V7[step.effect],
+      ...(enemyTurn ? { followCamera: true as const } : {}),
+    });
+  };
+  // The Dwarf revision: a Steam Cannon's Knockback slides its target back
+  // like a Charge! push (the target waits where its slide starts).
+  const knockbackSources = new Set(
+    envelope.events.flatMap((event) => {
+      if (event.kind !== "COMBAT_RESOLVED") return [];
+      const attacker = before.units.find(
+        (unit) => unit.id === event.preview.attackerId,
+      );
+      return attacker !== undefined &&
+        attacker.form === "LAND" &&
+        knocksBack(before, attacker)
+        ? [attacker.id]
+        : [];
+    }),
+  );
   const unitAnywhere = (id: number) =>
     before.units.find((unit) => unit.id === id) ??
     after.units.find((unit) => unit.id === id);
@@ -369,6 +420,24 @@ export function corePresentationPlanV7(
         });
       const destination = event.path.at(-1);
       if (destination !== undefined) origins.set(event.unitId, destination);
+    } else if (
+      event.kind === "UNIT_PUSHED" &&
+      knockbackSources.has(event.sourceUnitId)
+    ) {
+      // The Dwarf revision: a Knockback slides the target one tile straight
+      // back, with a puff of steam where it lands.
+      if (isExplored(event.from) && isExplored(event.to)) {
+        steps.push({
+          kind: "MOVE",
+          unitId: event.targetUnitId,
+          path: [event.from, event.to],
+          durationMs: 160,
+          pushSlide: true,
+          ...(enemyTurn ? { followCamera: true as const } : {}),
+        });
+        pushDwarf({ effect: "KNOCKBACK", cells: [event.to] });
+      }
+      origins.set(event.targetUnitId, event.to);
     } else if (event.kind === "UNIT_PUSHED") {
       // Revision 20: the survivor of a Charge! slides one tile back before
       // the Triceratops follows. Other pushes keep their revision-18 cut.
@@ -475,6 +544,77 @@ export function corePresentationPlanV7(
           ...(source === undefined || !isExplored(source.at)
             ? {}
             : { from: source.at }),
+        });
+    } else if (event.kind === "UNIT_TUNNELLED") {
+      // The Dwarf revision: the Mole (and its rider) dive in and a dirt
+      // trail runs to the mound. A projection hides the tiles a viewer has
+      // not explored (null); a pair with one hidden end shows only the
+      // known one.
+      const known = (at: CoordV7 | null): CoordV7 | null =>
+        at !== null && isExplored(at) ? at : null;
+      const cells: CoordV7[] = [];
+      for (const [start, end] of [
+        [known(event.from), known(event.to)],
+        [known(event.riderFrom), known(event.riderTo)],
+      ] as const) {
+        const a = start ?? end;
+        const b = end ?? start;
+        if (a !== null && b !== null) cells.push(a, b);
+      }
+      if (cells.length > 0) pushDwarf({ effect: "TUNNEL", cells });
+    } else if (event.kind === "UNIT_SURFACED") {
+      // The Dwarf revision: the faction's "wow" moment. The ground bursts
+      // at the mound, smaller bursts ring its eight tiles, the victims show
+      // their damage.
+      if (event.at !== null && isExplored(event.at))
+        pushDwarf({
+          effect: "ERUPTION",
+          cells: [event.at],
+          ...(event.unitId === null ? {} : { unitId: event.unitId }),
+        });
+      for (const result of event.results)
+        if (isExplored(result.at))
+          steps.push({
+            kind: "DAMAGE",
+            unitId: result.unitId,
+            at: result.at,
+            damage: result.damage + result.shieldDamage,
+            lethal: result.dies,
+            durationMs: 100,
+          });
+    } else if (event.kind === "UNIT_BOMBED") {
+      // The Dwarf revision: the Gyrocopter flies over its target and lands
+      // beyond it, then the bomb falls and blasts; the target shows its
+      // damage.
+      if (isExplored(event.from) && isExplored(event.to))
+        steps.push({
+          kind: "MOVE",
+          unitId: event.unitId,
+          path: [event.from, event.to],
+          durationMs: 360,
+          ...(enemyTurn ? { followCamera: true as const } : {}),
+        });
+      origins.set(event.unitId, event.to);
+      if (isExplored(event.at)) {
+        pushDwarf({ effect: "BOMB", cells: [event.at], from: event.to });
+        steps.push({
+          kind: "DAMAGE",
+          unitId: event.targetUnitId,
+          at: event.at,
+          damage: event.damage + event.shieldDamage,
+          lethal: event.killed,
+          durationMs: 100,
+        });
+      }
+    } else if (event.kind === "UNIT_ASSEMBLED") {
+      // The Dwarf revision: a key turns and steam puffs as the Gunner is
+      // wound up next to its Engineer.
+      const engineer = unitAnywhere(event.unitId);
+      if (isExplored(event.at))
+        pushDwarf({
+          effect: "ASSEMBLE",
+          cells: [event.at],
+          ...(engineer === undefined ? {} : { from: engineer.at }),
         });
     } else if (event.kind === "UNIT_DIED") {
       // Revision 19: a destroyed Egg scatters its shell.
@@ -751,6 +891,16 @@ export function corePresentationPlanV7(
           recipients,
           durationMs: 320,
         });
+      // The Dwarf revision: an Engineer's Repair throws wrench sparks.
+      if (
+        event.kind === "WOUNDED_TENDED" &&
+        recipients.length > 0 &&
+        factionOf(before, actor.ownerId) === "DWARF"
+      )
+        pushDwarf({
+          effect: "REPAIR",
+          cells: recipients.map((recipient) => recipient.at),
+        });
       // Revision 14: Tend also cures Plague and bites; the cured sparkle.
       if (event.kind === "WOUNDED_TENDED") {
         const [first, ...rest] = event.results.flatMap((result) => {
@@ -933,6 +1083,16 @@ function factionOf(
   playerId: PlayerViewV7["players"][number]["id"],
 ): PlayerViewV7["players"][number]["faction"] | undefined {
   return view.players.find((player) => player.id === playerId)?.faction;
+}
+
+/** The Dwarf revision: an attacker whose role knocks back (Steam Cannon). */
+function knocksBack(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): boolean {
+  return (unitRoleRuleV7(view, unit).abilities as readonly string[]).includes(
+    "KNOCKBACK",
+  );
 }
 
 function same(left: CoordV7, right: CoordV7): boolean {
