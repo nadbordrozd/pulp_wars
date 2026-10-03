@@ -3255,6 +3255,10 @@ const PUBLIC_REDEVELOPMENT_CHANGES = new WeakMap<
   PlayerViewV7,
   Map<string, boolean>
 >();
+const PUBLIC_PLANNED_IMPROVEMENTS = new WeakMap<
+  PlayerViewV7,
+  Map<string, PublicPlannedImprovementV7 | null>
+>();
 const PUBLIC_ECONOMIC_POTENTIALS = new WeakMap<
   PlayerViewV7,
   readonly PublicEconomicPotentialV7[]
@@ -4199,6 +4203,78 @@ export function queryPublicRedevelopmentChangesImprovementV7(
       ? replacement.placement
       : undefined,
   );
+}
+
+/** The public one-step plan's best improvement placement at one target. */
+export interface PublicPlannedImprovementV7 {
+  /** The command that would build it (Coin and technology gates ignored). */
+  readonly kind: CommandV7["kind"];
+  readonly improvement: ImprovementIdV7;
+  readonly score: number;
+}
+
+/**
+ * pulp_wars-9s0.9: the improvement the public one-step plan would place at
+ * `at`, under the same gate-ignoring placement enumeration and score as
+ * `scorePublicSpatialPlanV7`. `CURRENT` reads the board as it is (an empty
+ * target); `AFTER_REDEVELOP` first removes the target's improvement, exactly
+ * as a Redevelop candidate is planned. Null when the plan is not exact or no
+ * improvement placement there scores above zero. Roads and terrain changes
+ * are not improvements and are never returned.
+ */
+export function queryPublicPlannedImprovementV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+  mode: "CURRENT" | "AFTER_REDEVELOP",
+): PublicPlannedImprovementV7 | null {
+  let cachedForView = PUBLIC_PLANNED_IMPROVEMENTS.get(view);
+  if (cachedForView === undefined) {
+    cachedForView = new Map();
+    PUBLIC_PLANNED_IMPROVEMENTS.set(view, cachedForView);
+  }
+  const key = `${mode}:${coordKeyV7(at)}`;
+  const cached = cachedForView.get(key);
+  if (cached !== undefined) return cached;
+  const result = plannedImprovementAtV7(view, at, mode);
+  cachedForView.set(key, result);
+  return result;
+}
+
+function plannedImprovementAtV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+  mode: "CURRENT" | "AFTER_REDEVELOP",
+): PublicPlannedImprovementV7 | null {
+  if (!publicPlanningGraphExact(view)) return null;
+  const before = publicEconomyGraph(view);
+  const graph =
+    mode === "AFTER_REDEVELOP"
+      ? graphAfterPublicCandidateV7(view, before, { kind: "REDEVELOP", at })
+      : before;
+  if (graph === null) return null;
+  const tile = graph.board.tiles.find((candidate) => same(candidate.at, at));
+  if (tile === undefined) return null;
+  const enumeration = createPublicPlacementEnumerationV7(view, graph);
+  appendPublicPlacementsForTileV7(enumeration, tile);
+  const best = enumeration.placements
+    .filter(
+      (placement) =>
+        same(placement.at, at) &&
+        publicPlacementImprovementV7(placement) !== null,
+    )
+    .map((placement) => ({
+      placement,
+      score: scorePublicPlacementV7(view, graph, placement),
+    }))
+    .sort(
+      (left, right) =>
+        right.score - left.score ||
+        comparePublicPlacementV7(left.placement, right.placement),
+    )[0];
+  if (best === undefined || best.score <= 0) return null;
+  const improvement = publicPlacementImprovementV7(best.placement);
+  if (improvement === null) return null;
+  return { kind: best.placement.kind, improvement, score: best.score };
 }
 
 export interface PublicRedevelopmentChangePossibilityV7 {

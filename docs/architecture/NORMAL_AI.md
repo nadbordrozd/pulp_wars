@@ -85,8 +85,10 @@ Markets, and Monuments. Public one-step planning intentionally ignores current
 technology, Coin, and offer gates, so it cannot safely justify demolishing a
 one-per-city building for an immediate replacement. The policy may still
 Redevelop a Farm, Lumber Camp, or Mine when the public plan identifies a useful
-different result. This policy limitation does not change Redevelop legality:
-Normal does not relocate established one-per-city buildings.
+different result that the seat can build now (see
+[the Redevelop and rebuild cycle](#the-redevelop-and-rebuild-cycle-pulp_wars-9s09)).
+This policy limitation does not change Redevelop legality: Normal does not
+relocate established one-per-city buildings.
 
 Road planning selects one public original-capital-to-city corridor with at most
 eight missing Roads and builds the next tile from the connected side. Target
@@ -1399,7 +1401,8 @@ matches was 10.4 ms and the longest decision 48 ms; no turn reached the
 128-command cap through a Martian rule. (Two Martian-mirror turns did reach
 it through the generic economy: a `REDEVELOP` and `BUILD_LUMBER_CAMP` pair
 repeated on one tile by a rich seat, a generic-policy issue this bead
-does not change.)
+did not change; `pulp_wars-9s0.9` fixed it, see
+[the Redevelop and rebuild cycle](#the-redevelop-and-rebuild-cycle-pulp_wars-9s09).)
 
 ### Martian ranged play (`pulp_wars-b5f.2`)
 
@@ -1937,7 +1940,8 @@ longest decision was 189 ms. No Dwarf rule brought a turn to the
 128-command cap; one 14 x 14 Dwarf-Human match (seed 3) reached it in rounds
 71 and 72, on both seats, through the generic `REDEVELOP` and
 `BUILD_LUMBER_CAMP` pair repeated on one tile (the issue noted under the
-[Martian measurements](#martian-measurements)).
+[Martian measurements](#martian-measurements), since fixed by
+[`pulp_wars-9s0.9`](#the-redevelop-and-rebuild-cycle-pulp_wars-9s09)).
 
 ## The Rift (`pulp_wars-9s0.5`)
 
@@ -1951,6 +1955,86 @@ over one, the threat estimate lets only a hostile flyer move over or end
 on a Rift, and no hostile Kaboom is expected from a Rift tile. Flyers are
 not sent to Rifts on purpose; they end there only when an ordinary move
 choice does.
+
+## The Redevelop and rebuild cycle (`pulp_wars-9s0.9`)
+
+**Defect.** A seat could `REDEVELOP` a tile and then build the same
+improvement back on it, over and over in one turn. In the Martian measurements
+a rich seat did this 54 times in one turn, until the 128-command cap. At
+`pulp-wars-poc-7r32` the turn cap was no longer reached, but the cycle still
+cost Coins: in a 14 x 14 Dry Land Martian mirror (seed 9, round 28) player 1
+redeveloped the Lumber Camp at (10, 5) and rebuilt it four times, until its
+Coins ran out.
+
+**Cause.** A Redevelop's `futureValue` is the plan's best next placement once
+the target is empty, minus the baseline. Like the rest of the public spatial
+plan, this ignores technology and Coin gates. At (10, 5) the plan's
+replacement was a Windmill worth 43. The seat could not build it because it
+had not researched Milling. So the Redevelop scored +43 and passed the
+existing check that the replacement differs from the current improvement.
+Once the tile was empty, the only legal improvement there was the old Lumber
+Camp. The economic tier ranks a build by its immediate Population and income
+(priority 1200 here) whatever its `futureValue` (-43), so the policy rebuilt
+the camp. The board was then the same as before, three Coins poorer, and the
+Redevelop scored +43 again.
+
+**Fix.** Two candidate rules in `isPolicyCandidate` (`src/ai/v7.ts`) read the
+same public query, `queryPublicPlannedImprovementV7(view, at, mode)`
+(`src/engine/v7/query.ts`). The query uses the same gate-ignoring placement
+enumeration and placement score as the spatial plan, and returns the plan's
+best improvement for one target. With `CURRENT` it reads the board as it is;
+with `AFTER_REDEVELOP` it first removes the target's improvement.
+
+1. **Root cause.** A Redevelop is a candidate only when its planned
+   replacement (`AFTER_REDEVELOP`) can be built now: the technology is
+   researched and the seat has the Coins for it. Redevelop itself is free. A
+   Monument is planned only with an unspent entitlement and costs nothing.
+2. **Undo/redo guard.** A building command (a Farm, Lumber Camp, Mine,
+   processor, Market, or Monument) is not a candidate when two things hold:
+   its `futureValue` is negative, and the plan reserves the target
+   (`CURRENT`) for a different improvement whose technology the seat already
+   has. After a Redevelop the policy took, the target is reserved for its
+   replacement, so the policy never rebuilds what it just removed. It builds
+   the replacement, or leaves the target empty until it can.
+
+The policy remains a pure function of the public view. It keeps no record of
+the turn's commands, so cold and incremental decisions still match and a
+resumed turn decides the same way. For that reason the guard is a rule on the
+plan and the target rather than a log of the turn. One case remains: another
+build in the same turn could change the plan so that the target's
+reservation becomes the removed improvement again, for example by taking the
+replacement's one-per-city slot. The policy may then rebuild the removed
+improvement once. It cannot repeat this, because the Redevelop no longer has
+a different replacement.
+
+**Measurements.** These games ran on Dry Land, Normal against Normal, Rival
+mode, at `pulp-wars-poc-7r32`. The runs used a scratch harness that loads this
+policy and the `4ac6069` policy over the same engine and gives each seat its
+own policy. A "cycle" is a Redevelop followed, in the same turn, by a build on
+that tile that restores the removed improvement.
+
+| Run                                                             | Games | Policy before           | This policy |
+| --------------------------------------------------------------- | ----: | ----------------------- | ----------- |
+| Head to head, ORIGINAL, MARTIAN, DWARF, GOBLIN mirrors, 14 x 14 |    64 | 31 wins                 | 31 wins     |
+| Head to head, the same mirrors, 11 x 11                         |    64 | 32 wins                 | 32 wins     |
+| Cycles, seven mirrors (every faction), 14 x 14, seeds 0-9       |    70 | 29 in 13 turns (12/140) | 0           |
+| Cycles, Martian mirror, 14 x 14, seeds 0-39                     |    40 | 18 in 8 turns (6/80)    | 0           |
+
+The head-to-head games used seeds 0-7, with every seed played in both seat
+orders. Of the 128 games, 126 were decided, 63 for each policy. This is no
+regression for a bug fix: the result follows the seat order, as it does
+between identical policies. The base seats of those games also cycled 17
+times, and the new seats never did. In the cycle runs, both seats in a game
+used the same policy; the counts in brackets are the seat-games with at least
+one cycle. With the fix, Redevelops fell from 68 to 22 in the seven-mirror
+run. No run reached the 128-command turn cap under either policy. The
+longest turn was 81 commands.
+
+The regression tests are in `tests/unit/ruleset-v7-normal-policy.test.ts`.
+One is a synthetic two-Lumber-Camp fixture where the planned Market lacks
+Administration. The other is the recorded seed-9 turn
+(`tests/fixtures/ruleset-v7-redevelop-cycle.json`). Both fail with the policy
+before the fix.
 
 ## Revision-8 merged industry and processor adjacency
 

@@ -1,5 +1,6 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
+  BASIC_ECONOMIC_ACTIONS_V7,
   EGG_DEFENSE2_V7,
   EGG_HP_V7,
   EMBARKED_LANDING_MAX_SPENT_V7,
@@ -28,6 +29,9 @@ import {
   unitMayEnterMountainV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
+  SPATIAL_ECONOMIC_ACTIONS_V7,
+  type BasicEconomicCommandKindV7,
+  type SpatialEconomicCommandKindV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { knockbackDestinationV7 } from "../engine/v7/dwarf";
@@ -55,9 +59,11 @@ import {
   queryAiReadyCommandsV7,
   queryCombatPreviewV7,
   queryPublicEconomicPotentialsV7,
+  queryPublicPlannedImprovementV7,
   queryPublicRedevelopmentChangesImprovementV7,
   queryTechnologyTreeV7,
   scorePublicSpatialPlanV7,
+  type PublicPlannedImprovementV7,
 } from "../engine/v7/query";
 import {
   COMMAND_KIND_ORDER_V7,
@@ -3214,9 +3220,15 @@ function isPolicyCandidate(
       queryPublicRedevelopmentChangesImprovementV7(context.view, {
         kind: "REDEVELOP",
         at: command.at,
-      })
+      }) &&
+      // pulp_wars-9s0.9: the plan's replacement must be buildable now.
+      redevelopmentReplacementBuildableV7(context.view, command.at)
     );
   }
+  // pulp_wars-9s0.9: never fill a target the plan reserves for a different
+  // improvement the viewer can already build (the rebuild half of a
+  // Redevelop/rebuild cycle).
+  if (fillsReservedTargetV7(context.view, command)) return false;
   if (command.kind === "DISBAND") {
     // Revision 19: an Egg is abandoned only to free capacity in an emergency.
     const disbanded = context.lookup.unitsById.get(command.unitId);
@@ -3269,6 +3281,83 @@ function isPlanningCandidateV7(
         false
     );
   return true;
+}
+
+/**
+ * pulp_wars-9s0.9: the improvement a building command places, or null for a
+ * command that places none (harvests, terrain changes, Roads, and the rest).
+ */
+function builtImprovementV7(command: CommandV7): ImprovementIdV7 | null {
+  if (command.kind === "BUILD_MONUMENT") return "MONUMENT";
+  const basic =
+    BASIC_ECONOMIC_ACTIONS_V7[command.kind as BasicEconomicCommandKindV7];
+  if (basic !== undefined) return basic.improvement;
+  return (
+    SPATIAL_ECONOMIC_ACTIONS_V7[command.kind as SpatialEconomicCommandKindV7]
+      ?.improvement ?? null
+  );
+}
+
+/**
+ * pulp_wars-9s0.9: whether the viewer has the technology for a planned
+ * placement and, when `coins` is set, the Coins for it. The public plan
+ * ignores both gates; a Monument is offered to it only with an unspent
+ * entitlement and costs nothing.
+ */
+function plannedImprovementBuildableV7(
+  view: PlayerViewV7,
+  planned: PublicPlannedImprovementV7,
+  coins: boolean,
+): boolean {
+  if (planned.kind === "BUILD_MONUMENT") return true;
+  const rule =
+    BASIC_ECONOMIC_ACTIONS_V7[planned.kind as BasicEconomicCommandKindV7] ??
+    SPATIAL_ECONOMIC_ACTIONS_V7[planned.kind as SpatialEconomicCommandKindV7];
+  if (rule === undefined) return false;
+  if (!view.viewer.researchedTechs.includes(rule.technology)) return false;
+  return !coins || view.viewer.coins >= rule.cost;
+}
+
+/**
+ * pulp_wars-9s0.9 (root cause of the Redevelop/rebuild cycle): a Redevelop's
+ * positive future value comes from the plan's best replacement at the
+ * target, which ignores technology and Coin gates. When that replacement
+ * cannot be built now, the only legal follow-up is the old fallback (the
+ * same Lumber Camp, Farm, or Mine), which restores the identical board, so
+ * the Redevelop scored positive again on every repetition. A Redevelop is
+ * therefore taken only when its replacement is researched and affordable
+ * (Redevelop itself is free).
+ */
+function redevelopmentReplacementBuildableV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+): boolean {
+  const planned = queryPublicPlannedImprovementV7(view, at, "AFTER_REDEVELOP");
+  return planned !== null && plannedImprovementBuildableV7(view, planned, true);
+}
+
+/**
+ * pulp_wars-9s0.9 (the undo/redo guard): a build is not a candidate when it
+ * consumes the plan's reservation (negative future value) at a target the
+ * plan reserves for a different improvement whose technology the viewer
+ * already has. This is the same plan and target a Redevelop of the result
+ * would read, so after a Redevelop the policy builds the planned replacement
+ * or leaves the target empty; it never rebuilds what it just removed.
+ */
+function fillsReservedTargetV7(
+  view: PlayerViewV7,
+  command: CommandV7,
+): boolean {
+  if (!("at" in command)) return false;
+  const built = builtImprovementV7(command);
+  if (built === null) return false;
+  if (scorePublicSpatialPlanV7(view, command) >= 0) return false;
+  const planned = queryPublicPlannedImprovementV7(view, command.at, "CURRENT");
+  return (
+    planned !== null &&
+    planned.improvement !== built &&
+    plannedImprovementBuildableV7(view, planned, false)
+  );
 }
 
 function preservesEstablishedImprovementV7(

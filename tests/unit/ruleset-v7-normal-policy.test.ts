@@ -27,6 +27,7 @@ import {
   previewEconomicV7,
   queryCombatPreviewV7,
   queryPlayerCommandsV7,
+  queryPublicPlannedImprovementV7,
   queryPublicRedevelopmentChangesImprovementV7,
   scorePublicSpatialPlanV7,
   unitId,
@@ -371,6 +372,159 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       upgraded.state.board.tiles.find((tile) => same(tile.at, basic.target))
         ?.improvement,
     ).toBe("SAWMILL");
+  });
+
+  it("never loops Redevelop and the same rebuild on one tile within a turn (pulp_wars-9s0.9)", () => {
+    // The two-Lumber-Camp fixture researched only up to Forestry and
+    // Engineering (which unlocks Redevelop): the public plan, which ignores
+    // technology gates, still reserves the first camp for a Market the seat
+    // cannot build without Administration.
+    const basic = usefulBasicRedevelopmentState();
+    const start = withResearchV7(basic.state, [
+      "GATHERING",
+      "HUNTING",
+      "FORESTRY",
+      "DRILL",
+      "ENGINEERING",
+    ]);
+    const redevelop = { kind: "REDEVELOP" as const, at: basic.target };
+    const rebuild = { kind: "BUILD_LUMBER_CAMP" as const, at: basic.target };
+    const startView = viewForV7(start, start.humanPlayerId);
+    expect(queryPlayerCommandsV7(startView)).toContainEqual(redevelop);
+    expect(scorePublicSpatialPlanV7(startView, redevelop)).toBeGreaterThan(0);
+    expect(
+      queryPublicRedevelopmentChangesImprovementV7(startView, redevelop),
+    ).toBe(true);
+    const planned = queryPublicPlannedImprovementV7(
+      startView,
+      basic.target,
+      "AFTER_REDEVELOP",
+    );
+    expect(planned?.improvement).toBe("MARKET");
+
+    // The cycle the policy used to repeat: after the Redevelop the only
+    // legal improvement there is the same Lumber Camp, and the rebuilt board
+    // is the starting board (less three Coins), so Redevelop scored again.
+    const removed = applyFixtureCommand(start, redevelop);
+    const removedKinds = queryPlayerCommandsV7(
+      viewForV7(removed, removed.humanPlayerId),
+    )
+      .filter((command) => "at" in command && same(command.at, basic.target))
+      .map((command) => command.kind);
+    expect(removedKinds).toContain("BUILD_LUMBER_CAMP");
+    expect(removedKinds).not.toContain("BUILD_MARKET");
+    const rebuilt = applyFixtureCommand(removed, rebuild);
+    expect(canonicalHash(rebuilt.board)).toBe(canonicalHash(start.board));
+    expect(
+      scorePublicSpatialPlanV7(
+        viewForV7(rebuilt, rebuilt.humanPlayerId),
+        redevelop,
+      ),
+    ).toBeGreaterThan(0);
+
+    // Root cause: a Redevelop whose replacement cannot be built now is not a
+    // candidate, so the policy never starts that cycle.
+    expect(
+      chooseNormalCommandV7(startView).candidates.some(
+        ({ command }) => canonicalJson(command) === canonicalJson(redevelop),
+      ),
+    ).toBe(false);
+
+    // A whole Normal turn from the start: no tile is redeveloped and then
+    // given back the improvement it lost (before the fix this repeated
+    // Redevelop and the Lumber Camp until the 128-command turn cap).
+    let state = start;
+    const removedAt = new Map<string, string | null>();
+    let commands = 0;
+    for (;;) {
+      const view = viewForV7(state, state.humanPlayerId);
+      const command = chooseNormalTurnCommandV7(view, commands);
+      expect(command).not.toBeNull();
+      if (command === null) break;
+      if (command.kind === "REDEVELOP")
+        removedAt.set(
+          key(command.at),
+          state.board.tiles.find((tile) => same(tile.at, command.at))
+            ?.improvement ?? null,
+        );
+      state = applyFixtureCommand(state, command);
+      commands += 1;
+      if (
+        "at" in command &&
+        command.kind !== "REDEVELOP" &&
+        removedAt.has(key(command.at))
+      )
+        expect(
+          state.board.tiles.find((tile) => same(tile.at, command.at))
+            ?.improvement ?? null,
+        ).not.toBe(removedAt.get(key(command.at)));
+      if (command.kind === "END_TURN") break;
+    }
+    expect(commands).toBeLessThan(64);
+
+    // The undo/redo guard: with every technology the Redevelop is taken,
+    // and afterwards the planned replacement, never the removed Lumber
+    // Camp, is the build on that target.
+    const full = applyFixtureCommand(basic.state, redevelop);
+    const fullView = viewForV7(full, full.humanPlayerId);
+    expect(queryPlayerCommandsV7(fullView)).toContainEqual(rebuild);
+    const fullCandidates = chooseNormalCommandV7(fullView).candidates.map(
+      ({ command }) => canonicalJson(command),
+    );
+    expect(fullCandidates).toContain(
+      canonicalJson({ kind: "BUILD_MARKET", at: basic.target }),
+    );
+    expect(fullCandidates).not.toContain(canonicalJson(rebuild));
+  });
+
+  it("plays the recorded Martian-mirror turn without the Redevelop/Lumber Camp loop (pulp_wars-9s0.9)", () => {
+    // Before the fix this turn redeveloped (10, 5) and rebuilt its Lumber
+    // Camp four times, until the seat's Coins ran out; a Windmill (Milling
+    // not researched) was the plan's replacement.
+    const fixture = JSON.parse(
+      readFileSync("tests/fixtures/ruleset-v7-redevelop-cycle.json", "utf8"),
+    ) as {
+      readonly playerId: GameStateV7["humanPlayerId"];
+      readonly target: CoordV7;
+      readonly state: GameStateV7;
+    };
+    let state = checkedV7(fixture.state);
+    const actor = fixture.playerId;
+    const turnRound = state.round;
+    const redevelopedAt = new Map<string, string | null>();
+    const kinds: string[] = [];
+    let commands = 0;
+    while (
+      state.outcome === null &&
+      state.round === turnRound &&
+      state.turnOrder[state.activeSeatIndex] === actor
+    ) {
+      const command = chooseNormalTurnCommandV7(
+        viewForV7(state, actor),
+        commands,
+      );
+      expect(command).not.toBeNull();
+      if (command === null) break;
+      const before = state;
+      const applied = applyCommandV7(state, actor, command);
+      expect(applied.accepted).toBe(true);
+      if (!applied.accepted) break;
+      state = applied.state;
+      commands += 1;
+      kinds.push(command.kind);
+      if (!("at" in command)) continue;
+      const tileKey = key(command.at);
+      const improvementAt = (source: GameStateV7) =>
+        source.board.tiles.find((tile) => same(tile.at, command.at))
+          ?.improvement ?? null;
+      if (command.kind === "REDEVELOP")
+        redevelopedAt.set(tileKey, improvementAt(before));
+      else if (redevelopedAt.has(tileKey))
+        expect(improvementAt(state)).not.toBe(redevelopedAt.get(tileKey));
+    }
+    expect(kinds.at(-1)).toBe("END_TURN");
+    expect(redevelopedAt.has(key(fixture.target))).toBe(false);
+    expect(commands).toBeLessThan(40);
   });
 
   it("does not value a processor through a fogged Land Grant ring and keeps equal-view policy parity", () => {
@@ -1753,6 +1907,32 @@ function usefulBasicRedevelopmentState(): {
     throw new Error("Adjacent Lumber Camp missing");
   state = settleFixtureChoices(applyFixtureCommand(state, second));
   return { state, target: first.at };
+}
+
+function withResearchV7(
+  state: GameStateV7,
+  technologies: readonly string[],
+): GameStateV7 {
+  return checkedV7({
+    ...state,
+    players: state.players.map((player) =>
+      player.id === state.humanPlayerId
+        ? {
+            ...player,
+            researchedTechs: player.researchedTechs.filter((technology) =>
+              technologies.includes(technology),
+            ),
+            achievementEntitlements: player.achievementEntitlements.map(
+              (entitlement) => ({
+                ...entitlement,
+                unlocked: false,
+                spent: false,
+              }),
+            ),
+          }
+        : player,
+    ),
+  });
 }
 
 function richFixture(seed: number): GameStateV7 {
