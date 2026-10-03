@@ -279,9 +279,17 @@ describe("Ice Folk abilities", () => {
     const preview = required(
       previewColdSnapV7(required(controller.snapshot().view), witch.id),
     );
+    // Bead pulp_wars-b5f.8: the panel shows the ability's name; the
+    // summary is its accessible name, its "?" and the cast button's name.
     expect(
       requiredElement("[data-v7-ice-folk-pick] .v7-kaboom-summary").textContent,
+    ).toBe("Cold Snap");
+    expect(
+      requiredElement("[data-v7-ice-folk-pick]").getAttribute("aria-label"),
     ).toBe(coldSnapSummaryV7(preview));
+    expect(
+      requiredButton("cold-snap-cast").getAttribute("aria-label"),
+    ).toContain(coldSnapSummaryV7(preview));
     const targets = boardPlan(host).targets;
     expect(targets).toHaveLength(preview.targets.length);
     // Choosing any highlighted unit casts it.

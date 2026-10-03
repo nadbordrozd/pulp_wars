@@ -300,17 +300,24 @@ describe("Ruleset 7 browser smoke script", () => {
       `rayPreview.includes("Leaves it Cooling next turn")`,
     );
     expect(probe).toContain("entry.firedThisTurn");
-    // Beam Down through the dock: the button, the passenger, a tile.
+    // Beam Down: the button and the passenger in the dock, then a tile on
+    // the board with Tab and Enter (bead pulp_wars-b5f.8: the dock names
+    // no tile, and the board's targets are named without coordinates).
     const beam = probe.indexOf(
       `await pointerClick(connection, '[data-action="martian-beam-down"]')`,
     );
     expect(beam).toBeGreaterThan(preview);
-    expect(probe).toContain(
+    const passenger = probe.indexOf(
       `await pointerClick(connection, '[data-action^="beam-passenger-"]')`,
     );
-    expect(probe).toContain(
+    expect(passenger).toBeGreaterThan(beam);
+    expect(probe).not.toContain(
       `await pointerClick(connection, '[data-action^="beam-tile-"]')`,
     );
+    expect(probe).toContain(`throw new Error(\`Beam Down dock names a tile:`);
+    const tab = probe.indexOf(`await pressKey(connection, "Tab", "Tab")`);
+    expect(tab).toBeGreaterThan(passenger);
+    expect(probe.indexOf(`.startsWith('Beam the ')`, tab)).toBeGreaterThan(tab);
     expect(probe).toContain("includes('Saucer beamed down a')");
     // Save and resume on a fresh load with the Martian seat.
     expect(beam).toBeLessThan(
@@ -415,13 +422,23 @@ describe("Ruleset 7 browser smoke script", () => {
       'JSON.stringify(["DWARF", "UNDEAD", "GOBLIN", "ORIGINAL"])',
     );
     expect(probe).not.toContain("launchWithFastForward");
-    // The Mole aims its Tunnel from the dock; the chosen destination shows
-    // the forecast, and the tunnel leaves a mound there.
+    // The Mole aims its Tunnel from the dock; a destination is chosen on
+    // the board with Tab (its coordinate-free description carries the
+    // forecast) and Enter, and the tunnel leaves a mound there. The dock
+    // names no tile and has no destination chips (bead pulp_wars-b5f.8).
     const tunnel = probe.indexOf(
       `await pointerClick(connection, '[data-action="dwarf-tunnel"]')`,
     );
     expect(tunnel).toBeGreaterThan(-1);
-    expect(probe).toContain('forecast.includes("If they stay:")');
+    expect(probe).not.toContain(".v7-martian-choice-button");
+    expect(probe).toContain("throw new Error(`Tunnel dock names a tile:");
+    const tab = probe.indexOf(`await pressKey(connection, "Tab", "Tab")`);
+    expect(tab).toBeGreaterThan(tunnel);
+    expect(probe).toContain('forecast.startsWith("Surface next to")');
+    expect(probe).toContain("/erupts for \\d+/.test(forecast)");
+    expect(
+      probe.indexOf(`await pressKey(connection, "Enter", "Enter")`, tab),
+    ).toBeGreaterThan(tab);
     expect(probe).toContain("includes('Steam Mole tunnelled')");
     expect(probe).toContain("view.burrowed.find(");
     // Save and resume on a fresh load with the Dwarf seat and the mound.

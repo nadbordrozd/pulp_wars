@@ -275,11 +275,12 @@ describe("Martian abilities", () => {
     expect(boardPlan(host).targets.map((target) => target.at)).toEqual(
       preview.destinations,
     );
+    // Bead pulp_wars-b5f.8: the tiles are chosen on the board only; the
+    // dock names no tile.
+    expect(document.querySelector('[data-action^="beam-tile-"]')).toBe(null);
     expect(
-      [...document.querySelectorAll('[data-action^="beam-tile-"]')].map(
-        (node) => node.textContent,
-      ),
-    ).toEqual(preview.destinations.map((at) => `${at.x}, ${at.y}`));
+      requiredElement("[data-v7-martian-pick] .v7-kaboom-summary").textContent,
+    ).toBe("Beam Down");
     // Escape steps back to the passenger, then a second one leaves.
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
@@ -291,7 +292,13 @@ describe("Martian abilities", () => {
     });
     requiredButton(`beam-passenger-${passenger.id}`).click();
     const first = required(preview.destinations[0]);
-    requiredButton(`beam-tile-${first.x}-${first.y}`).click();
+    host.callbacks?.onCommand(
+      required(
+        boardPlan(host).targets.find(
+          (target) => target.at.x === first.x && target.at.y === first.y,
+        ),
+      ),
+    );
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
       kind: "BEAM_DOWN",

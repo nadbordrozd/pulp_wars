@@ -1856,7 +1856,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             ? target.family
             : `${target.family}: ${target.previewLabel}`,
       );
+    // While an ability is aimed its target's name is read first (bead
+    // pulp_wars-b5f.8), so Tab through the targets speaks what each does.
+    const interaction = model.interaction;
+    const aimed =
+      actions.length > 0 &&
+      ((interaction.dwarfPick ?? null) !== null ||
+        (interaction.martianPick ?? null) !== null ||
+        (interaction.iceFolkPick ?? null) !== null ||
+        (interaction.layEgg ?? null) !== null);
     this.#description.textContent = [
+      aimed ? actions.join(", ") : "",
       title(tile.terrain),
       // The Ice Folk revision: what Snow and a Blizzard do for the viewer.
       tile.snow === true ? snowTooltipV7(model.view) : "",
@@ -1889,7 +1899,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           ]
             .filter(Boolean)
             .join(", "),
-      actions.length === 0 ? "" : `Available: ${actions.join(", ")}`,
+      actions.length === 0 || aimed ? "" : `Available: ${actions.join(", ")}`,
     ]
       .filter(Boolean)
       .join(". ");
@@ -2077,6 +2087,29 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     );
     this.#draw();
   };
+  /**
+   * The tiles of the aimed ability's targets (a Tunnel, Bomb Run,
+   * Assemble, Beam Down, Mind Control, Tractor Beam, Bolas, Cold Snap or
+   * nest tile), once each in reading order; empty when nothing is aimed.
+   */
+  #aimedTargetCells(model: BoardHostModelV7): CoordV7[] {
+    const interaction = model.interaction;
+    if (
+      (interaction.dwarfPick ?? null) === null &&
+      (interaction.martianPick ?? null) === null &&
+      (interaction.iceFolkPick ?? null) === null &&
+      (interaction.layEgg ?? null) === null
+    )
+      return [];
+    const cells = new Map<string, CoordV7>();
+    for (const target of this.#planFor(model.view, model.offeredCommands)
+      .targets)
+      cells.set(`${target.at.x},${target.at.y}`, target.at);
+    return [...cells.values()].sort(
+      (left, right) => left.y - right.y || left.x - right.x,
+    );
+  }
+
   readonly #onKeyDown = (event: KeyboardEvent): void => {
     const model = this.#model;
     if (model === null) return;
@@ -2097,6 +2130,35 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       if (this.#focused !== null) this.#activate(this.#focused);
+      return;
+    }
+    if (
+      event.key === "Tab" &&
+      !event.altKey &&
+      !event.ctrlKey &&
+      !event.metaKey
+    ) {
+      // Bead pulp_wars-b5f.8: while an ability is aimed, Tab and Shift+Tab
+      // step through its targets in reading order (the dock lists no
+      // tiles); past the last one Tab leaves the board for the dock.
+      const cells = this.#aimedTargetCells(model);
+      if (cells.length === 0) return;
+      const focused = this.#focused;
+      const index =
+        focused === null ? -1 : cells.findIndex((cell) => same(cell, focused));
+      const next = event.shiftKey
+        ? index === -1
+          ? cells.length - 1
+          : index - 1
+        : index + 1;
+      const cell = cells[next];
+      if (cell === undefined) return;
+      event.preventDefault();
+      this.#cameraFollowAllowed = false;
+      this.#focused = cell;
+      this.#keepFocusedOnscreen();
+      this.#describe();
+      this.#draw();
       return;
     }
     const directions: Record<string, readonly [number, number]> = {

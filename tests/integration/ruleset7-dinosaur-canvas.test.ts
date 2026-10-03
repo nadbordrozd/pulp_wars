@@ -189,6 +189,79 @@ describe("Revision 19 board targets on the board host", () => {
     rig.host.destroy();
   });
 
+  it("steps through the nest tiles with Tab, names each without coordinates, and leaves after the last", () => {
+    // Bead pulp_wars-b5f.8: the aiming dock lists no tiles, so the board
+    // is the keyboard path to an aimed ability's targets.
+    const state = dinosaurCityFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const city = view.cities.find((entry) => entry.ownerId === view.viewer.id);
+    if (city === undefined) throw new Error("city missing");
+    const callbacks = { onSelection: vi.fn(), onCommand: vi.fn() };
+    const rig = hostRig(view, "REDUCED", callbacks);
+    const base = {
+      matchInstanceId: 1,
+      view,
+      offeredCommands: queryPlayerCommandsV7(view),
+      interactive: true,
+      motion: "REDUCED" as const,
+      animationSpeed: "NORMAL" as const,
+      presentationPaused: false,
+      highContrast: false,
+    };
+    const selected = {
+      selection: { kind: "CITY" as const, cityId: city.id },
+      selectedUnitId: null,
+      selectedAchievement: null,
+    };
+    const tab = (shiftKey = false): boolean => {
+      const event = new KeyboardEvent("keydown", {
+        key: "Tab",
+        shiftKey,
+        bubbles: true,
+        cancelable: true,
+      });
+      rig.canvas.dispatchEvent(event);
+      return event.defaultPrevented;
+    };
+    const description = (): string =>
+      document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? "";
+    // Nothing aimed: Tab leaves the board as usual.
+    rig.host.update({ ...base, interaction: selected });
+    expect(tab()).toBe(false);
+    rig.host.update({
+      ...base,
+      interaction: { ...selected, layEgg: { cityId: city.id, role: "KNIGHT" } },
+    });
+    // The eight nest tiles around the capital, in reading order.
+    const nest = [
+      { x: 7, y: 7 },
+      { x: 8, y: 7 },
+      { x: 9, y: 7 },
+      { x: 7, y: 8 },
+      { x: 9, y: 8 },
+      { x: 7, y: 9 },
+      { x: 8, y: 9 },
+      { x: 9, y: 9 },
+    ];
+    for (const tile of nest) {
+      expect(tab(), `${tile.x}/${tile.y}`).toBe(true);
+      expect(description()).toMatch(/^Lay the T-Rex Egg here\. /);
+      expect(description()).not.toMatch(/\d+, ?\d+/);
+    }
+    // Past the last one Tab leaves the board; Shift+Tab steps back.
+    expect(tab()).toBe(false);
+    expect(tab(true)).toBe(true);
+    rig.canvas.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+    );
+    expect(callbacks.onCommand).toHaveBeenCalledTimes(1);
+    expect(callbacks.onCommand.mock.calls[0]?.[0]).toMatchObject({
+      family: "LAY_EGG",
+      command: { kind: "LAY_EGG", at: nest[6] },
+    });
+    rig.host.destroy();
+  });
+
   it("lays the Egg on an activated nest tile and frames the nest tiles", async () => {
     const state = dinosaurCityFixtureV7();
     const view = viewForV7(state, state.humanPlayerId);

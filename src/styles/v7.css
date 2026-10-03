@@ -2414,6 +2414,46 @@
   font-weight: 800;
 }
 
+/*
+ * Bead pulp_wars-b5f.8: an aiming panel's head is the ability's icon and
+ * name with a small "?" (its instruction and caveat); no sentence is body
+ * text and no text names a tile.
+ */
+.v7-pick-head {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.v7-pick-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.v7-pick-title > img,
+.v7-pick-title > .v7-ui-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.v7-pick-info {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  margin: -0.5rem 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.v7-pick-info:hover:not(:disabled) .v7-unit-help-glyph {
+  border-color: var(--paper);
+}
+
 .v7-kaboom-lines {
   display: grid;
   gap: 0.25rem;
@@ -2882,12 +2922,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem;
-}
-
-.v7-dwarf-passengers-label {
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 800;
 }
 
 .v7-dwarf-passenger {

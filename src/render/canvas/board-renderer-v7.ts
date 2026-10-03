@@ -29,7 +29,6 @@ import {
   WAIL_RADIUS_V7,
 } from "../../engine/index";
 import {
-  LAY_EGG_PROMPT_V7,
   dinosaurCombatNoteV7,
   dinosaurCombatSemanticNoteV7,
   hatchBlockedEggsV7,
@@ -4296,7 +4295,7 @@ function layEggTargets(
             at: command.at,
             command,
             family: "LAY_EGG",
-            semanticLabel: `Nest tile: lay the ${label} Egg here. ${LAY_EGG_PROMPT_V7}.`,
+            semanticLabel: `Lay the ${label} Egg here`,
           },
         ]
       : [],
@@ -4313,17 +4312,16 @@ function landingAfterMoveTargets(
   if (unit === undefined) return [];
   const preview = queryLandingPreviewV7(view, unit.id, commands);
   if (preview === null) return [];
-  return preview.afterMove.map((landing) => {
-    const via = landing.move.path[0] as CoordV7;
-    return {
-      at: landing.at,
-      command: landing.move,
-      followUp: landing.disembark,
-      family: "LANDING_AFTER_MOVE",
-      previewLabel: LANDING_AFTER_MOVE_LABEL_V7,
-      semanticLabel: `Landing after one water step: moves to ${via.x}, ${via.y}, then lands here. Landing ends this unit's activation; capture is available after the ordinary wait.`,
-    };
-  });
+  return preview.afterMove.map((landing) => ({
+    at: landing.at,
+    command: landing.move,
+    followUp: landing.disembark,
+    family: "LANDING_AFTER_MOVE",
+    previewLabel: LANDING_AFTER_MOVE_LABEL_V7,
+    // No text names a tile (bead pulp_wars-b5f.8).
+    semanticLabel:
+      "Landing after one water step: moves one step on the water, then lands here. Landing ends this unit's activation; capture is available after the ordinary wait.",
+  }));
 }
 
 function commandMapTargets(
@@ -4471,8 +4469,8 @@ function commandMapTargets(
         preview === null || preview.splash.length === 0
           ? ""
           : friendlySplash.size > 0
-            ? ` Splash affects ${preview.splash.length} adjacent ${preview.splash.length === 1 ? "unit" : "units"} (${friendlySplash.size} yours) for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(", ")}.`
-            : ` Splash affects ${preview.splash.length} adjacent hostile units for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(", ")}.`;
+            ? ` Splash affects ${preview.splash.length} adjacent ${preview.splash.length === 1 ? "unit" : "units"} (${friendlySplash.size} yours) for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(" and ")}.`
+            : ` Splash affects ${preview.splash.length} adjacent hostile units for ${preview.splash.map((item) => `${item.damage}${item.dies ? " lethal" : ""}`).join(" and ")}.`;
       return [
         {
           at: target.at,

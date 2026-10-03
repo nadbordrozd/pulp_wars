@@ -41,16 +41,17 @@ import {
   NOT_DUG_IN_MOVED_V7,
   REPAIR_CHIP_V7,
   REPAIR_TOOLTIP_V7,
-  TUNNEL_PICK_CHIP_LIMIT_V7,
+  TUNNEL_CONFIRM_INFO_V7,
+  TUNNEL_PASSENGER_V7,
+  TUNNEL_PICK_INFO_V7,
+  TUNNEL_PICK_V7,
+  assembleCostLineV7,
   assembleSummaryV7,
   burrowedInfoTextV7,
   dwarfCityNameV7,
   dwarfRoleUnlockTextV7,
   passengerAccessibleNameV7,
-  riderLandingTextV7,
-  tunnelBoardHintV7,
-  tunnelConfirmPromptV7,
-  tunnelPreviewLinesV7,
+  tunnelDestinationNameV7,
 } from "../../src/render/dwarf-presentation-v7";
 import { tunnelDestinationsV7 } from "../../src/render/dwarf-tunnel-v7";
 import {
@@ -204,30 +205,28 @@ describe("Dwarf abilities through the dock and the board", () => {
     expect(
       requiredButton("tunnel-passenger-none").getAttribute("aria-pressed"),
     ).toBe("false");
-    // The dock lists a few destinations, the erupting ones first, and
-    // sends the rest to the board.
+    // Bead pulp_wars-b5f.8: the dock is the ability's icon and name, its
+    // "?", the passenger buttons and Cancel; no destination chips, no
+    // sentences, no tile coordinates. Every destination is on the board,
+    // named by what it would erupt on.
     const view = required(controller.snapshot().view);
     const destinations = tunnelDestinationsV7(
       controller.snapshot().offeredCommands,
       mole.id,
     );
-    const chips = [
-      ...document.querySelectorAll<HTMLButtonElement>(
-        "[data-v7-dwarf-pick] .v7-martian-choice-button",
-      ),
-    ];
-    expect(destinations.length).toBeGreaterThan(TUNNEL_PICK_CHIP_LIMIT_V7);
-    expect(chips.length).toBeGreaterThan(0);
-    expect(chips.length).toBeLessThanOrEqual(TUNNEL_PICK_CHIP_LIMIT_V7);
-    for (const chip of chips) expect(chip.textContent).toMatch(/· −\d+$/);
-    const damages = chips.map((chip) =>
-      Number(/−(\d+)$/.exec(chip.textContent ?? "")?.[1]),
-    );
-    expect([...damages].sort((left, right) => right - left)).toEqual(damages);
+    const panel = requiredElement<HTMLElement>("[data-v7-dwarf-pick]");
     expect(
-      requiredElement<HTMLElement>("[data-v7-dwarf-pick] .v7-dwarf-pick-hint")
-        .textContent,
-    ).toBe(tunnelBoardHintV7(destinations.length, true));
+      panel.querySelectorAll(
+        ".v7-martian-choice-button, p:not(.v7-pick-title)",
+      ),
+    ).toHaveLength(0);
+    expect(
+      requiredElement("[data-v7-dwarf-pick] .v7-kaboom-summary").textContent,
+    ).toBe("Tunnel");
+    expect(panel.getAttribute("aria-label")).toBe(TUNNEL_PICK_V7);
+    expect(requiredButton("pick-info").title).toBe(TUNNEL_PICK_INFO_V7);
+    expect(panel.textContent).not.toMatch(/\d+, ?\d+/);
+    expect(panel.textContent).not.toContain(TUNNEL_PASSENGER_V7);
     const alone = required(
       queryPlayerCommandsV7(view).find(
         (command): command is Extract<CommandV7, { kind: "TUNNEL" }> =>
@@ -236,13 +235,16 @@ describe("Dwarf abilities through the dock and the board", () => {
           command.rider === null,
       ),
     );
-    const chip = requiredButton(`tunnel-${AT.tunnelTo.x}-${AT.tunnelTo.y}`);
-    for (const line of tunnelPreviewLinesV7(
+    const destinationName = tunnelDestinationNameV7(
       view,
       required(previewTunnelV7(view, alone)),
-    ))
-      expect(chip.getAttribute("aria-label")).toContain(line);
-    // Every destination is still on the board; the Hammerer wears its badge.
+    );
+    expect(destinationName).toMatch(/^Surface next to .+, erupts for \d+/);
+    expect(
+      boardPlan(host).targets.find((target) => same(target.at, AT.tunnelTo))
+        ?.semanticLabel,
+    ).toBe(destinationName);
+    // Every destination is on the board; the Hammerer wears its badge.
     expect(
       boardPlan(host).targets.filter(
         (target) => target.family === "TUNNEL_DESTINATION",
@@ -282,15 +284,37 @@ describe("Dwarf abilities through the dock and the board", () => {
     const landing = required(destination.tunnel?.landing ?? undefined);
     host.callbacks?.onCommand(destination);
     await waitUntil(
-      () =>
-        document.querySelector("[data-v7-dwarf-pick] .v7-kaboom-summary")
-          ?.textContent === tunnelConfirmPromptV7(AT.tunnelTo),
+      () => document.querySelector("[data-action='tunnel-confirm']") !== null,
     );
     expect(controller.accepted).toHaveLength(0);
+    // The chosen tunnel is on the board (the Hammerer's ghost on its
+    // landing); the dock only confirms.
     expect(
-      requiredElement<HTMLElement>("[data-v7-dwarf-pick]").textContent,
-    ).toContain(riderLandingTextV7(label("FIGHTER"), landing));
+      boardPlan(host).targets.find((target) => same(target.at, AT.tunnelTo))
+        ?.tunnel?.landing,
+    ).toEqual(landing);
+    const chosen = requiredElement<HTMLElement>("[data-v7-dwarf-pick]");
+    expect(chosen.getAttribute("aria-label")).toBe(
+      `Tunnel: ${destinationName}`,
+    );
+    expect(chosen.textContent).not.toMatch(/\d+, ?\d+/);
+    expect(requiredButton("pick-info").title).toBe(TUNNEL_CONFIRM_INFO_V7);
+    expect(
+      [...chosen.querySelectorAll("button")].map(
+        (control) => control.dataset.action,
+      ),
+    ).toEqual([
+      "pick-info",
+      `tunnel-passenger-${rider.id}`,
+      "tunnel-passenger-none",
+      "tunnel-confirm",
+      "dwarf-pick-back",
+      "dwarf-pick-cancel",
+    ]);
     expect(requiredButton("tunnel-confirm").textContent).toBe("Tunnel");
+    expect(requiredButton("tunnel-confirm").getAttribute("aria-label")).toBe(
+      `Tunnel. ${destinationName}`,
+    );
     // Escape steps back to the destinations with the passenger still seated.
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
@@ -311,12 +335,18 @@ describe("Dwarf abilities through the dock and the board", () => {
         (target) => target.family === "TUNNEL_RIDER",
       ),
     );
-    host.callbacks?.onCommand(dot);
-    await waitUntil(() =>
-      (
-        requiredElement<HTMLElement>("[data-v7-dwarf-pick]").textContent ?? ""
-      ).includes(riderLandingTextV7(label("FIGHTER"), dot.at)),
+    expect(dot.semanticLabel).toBe(
+      `The ${label("FIGHTER")} lands here instead`,
     );
+    host.callbacks?.onCommand(dot);
+    await waitUntil(() => {
+      const pick = host.lastModel?.interaction.dwarfPick;
+      return (
+        pick?.kind === "TUNNEL" &&
+        pick.riderTo !== null &&
+        same(pick.riderTo, dot.at)
+      );
+    });
     expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
       to: AT.tunnelTo,
       riderTo: dot.at,
@@ -380,24 +410,25 @@ describe("Dwarf abilities through the dock and the board", () => {
     expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
       riderUnitId: null,
     });
-    // Choose the first listed destination from the dock, then confirm.
-    const chip = required(
-      document.querySelector<HTMLButtonElement>(
-        "[data-v7-dwarf-pick] .v7-martian-choice-button",
+    // "Alone" is the no-passenger button.
+    expect(requiredButton("tunnel-passenger-none").textContent).toBe("Alone");
+    // Choose a destination on the board, then confirm in the dock.
+    const destination = required(
+      boardPlan(host).targets.find(
+        (target) => target.family === "TUNNEL_DESTINATION",
       ),
     );
-    const [x, y] = (chip.dataset.action ?? "")
-      .slice("tunnel-".length)
-      .split("-")
-      .map(Number);
-    chip.click();
+    host.callbacks?.onCommand(destination);
+    await waitUntil(
+      () => document.querySelector('[data-action="tunnel-confirm"]') !== null,
+    );
     expect(controller.accepted).toHaveLength(0);
     requiredButton("tunnel-confirm").click();
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
       kind: "TUNNEL",
       unitId: mole.id,
-      to: { x, y },
+      to: destination.at,
       rider: null,
     });
     app.destroy();
@@ -416,16 +447,21 @@ describe("Dwarf abilities through the dock and the board", () => {
       unitId: gyro.id,
       targetUnitId: target.id,
     });
-    const landing = required(
-      document.querySelector<HTMLButtonElement>(
+    // Bead pulp_wars-b5f.8: the landings are chosen on the board only,
+    // each named by its threat; the dock names no tile.
+    expect(
+      document.querySelector(
         '[data-v7-dwarf-pick] [data-action^="bomb-landing-"]',
       ),
-    );
-    expect(landing.getAttribute("aria-label")).toMatch(/Lands next to:/);
+    ).toBe(null);
     expect(
-      requiredElement("[data-v7-dwarf-pick] .v7-martian-detail").textContent,
-    ).toMatch(/^Bomb: \d+ damage, no reply/);
-    landing.click();
+      requiredElement("[data-v7-dwarf-pick] .v7-kaboom-summary").textContent,
+    ).toBe("Bomb Run");
+    const landing = required(
+      boardPlan(host).targets.find((target) => target.family === "BOMB_RUN"),
+    );
+    expect(landing.semanticLabel).toMatch(/^Land here\. Lands next to:/);
+    host.callbacks?.onCommand(landing);
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toMatchObject({
       kind: "BOMB_RUN",
@@ -453,14 +489,27 @@ describe("Dwarf abilities through the dock and the board", () => {
     requiredButton("dwarf-assemble").click();
     const view = required(controller.snapshot().view);
     const preview = required(previewAssembleV7(view, engineer.id));
+    // Bead pulp_wars-b5f.8: the ability's name and one cost line; the
+    // tiles are chosen on the board only.
     expect(
       requiredElement("[data-v7-dwarf-pick] .v7-kaboom-summary").textContent,
-    ).toBe(assembleSummaryV7(preview, dwarfCityNameV7(view, preview.cityId)));
+    ).toBe("Assemble");
+    expect(
+      requiredElement("[data-v7-dwarf-pick] .v7-martian-detail").textContent,
+    ).toBe(assembleCostLineV7(preview));
+    expect(
+      requiredElement("[data-v7-dwarf-pick]").getAttribute("aria-label"),
+    ).toContain(
+      assembleSummaryV7(preview, dwarfCityNameV7(view, preview.cityId)),
+    );
+    expect(document.querySelector('[data-action^="assemble-"]')).toBe(null);
     expect(boardPlan(host).targets.map((target) => target.at)).toEqual(
       preview.tiles,
     );
     const tile = required(preview.tiles[0]);
-    requiredButton(`assemble-${tile.x}-${tile.y}`).click();
+    host.callbacks?.onCommand(
+      required(boardPlan(host).targets.find((target) => same(target.at, tile))),
+    );
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
       kind: "ASSEMBLE",
@@ -516,9 +565,9 @@ describe("Dwarf abilities through the dock and the board", () => {
           entry.command.targetUnitId === target.id,
       ),
     );
-    expect(attack.previewNote).toContain(
-      `Knocks back to ${AT.knockTo.x}, ${AT.knockTo.y}`,
-    );
+    // The note names no tile; the board's arrow shows where.
+    expect(attack.previewNote).toContain("Knocks back");
+    expect(attack.previewNote).not.toMatch(/\d+, ?\d+/);
     host.callbacks?.onCommand(attack);
     await waitUntil(() =>
       live().includes(`Your ${label("CATAPULT")} knocked back a Guard`),

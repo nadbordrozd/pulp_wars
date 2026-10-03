@@ -412,9 +412,7 @@ describe("Revision 19 board plan", () => {
       role: "KNIGHT",
       at: { x: 7, y: 7 },
     });
-    expect(plan.targets[0]?.semanticLabel).toBe(
-      "Nest tile: lay the T-Rex Egg here. Choose a tile next to the city for the Egg.",
-    );
+    expect(plan.targets[0]?.semanticLabel).toBe("Lay the T-Rex Egg here");
     expect(
       plan.entries
         .filter((entry) => entry.abilityStyle === "NEST")

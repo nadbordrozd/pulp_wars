@@ -22,6 +22,36 @@ tech-detail views, not spelled out in the HUD or dock. Where later sections
 require specific verbose labels, formula prose, or `+N/turn` wording for
 Ruleset 7, this overlay wins. Ruleset 6 and legacy routes are unchanged.
 
+### No coordinates, minimal text (bead `pulp_wars-b5f.8`)
+
+This rule binds every Ruleset 7 player-facing string: dock prompts and
+chips, board labels, tooltips, the log, Help, notices, the cursor
+description and every accessible name, shown or spoken. Legacy
+Ruleset 5 and 6 interfaces are unchanged.
+
+- **No tile coordinates, ever.** No text says "4, 2", "Tunnel to 5, 11?",
+  "now at 3, 1" or "Windmill (2, 7)". A place is picked on the board, or
+  named by its unit or building, or in relative words ("your Capital",
+  "its home city", "next to the Catapult"). Where a list of places is
+  unavoidable it shows names or icons, never "x, y". Data attributes for
+  tests and tooling may keep coordinates; they are never read out.
+- **As little text as possible while aiming an ability.** The aiming
+  panel in the dock is the ability's icon and name, a small `?` info
+  button, the buttons that choose a unit (portraits or names) and the
+  actions (the ability's confirmation, Back, Cancel). It has no
+  instruction sentences, no forecast sentences and no tile chips: the
+  board carries the targets, their numbers, ghosts and dots. The `?`
+  button's tooltip (and its toast when pressed, for touch) holds the
+  instruction and any caveat ("Damage is a forecast: enemies may move
+  first"); the panel's accessible name holds the instruction too.
+- **Keyboard and screen readers.** While an ability is aimed, Tab and
+  Shift+Tab on the board step through its targets in reading order (past
+  the last one Tab leaves the board for the dock's buttons); the arrow
+  keys still move the cursor and Enter or Space chooses. Each target's
+  description names it without coordinates ("Surface next to Catapult
+  and Captain, erupts for 6", "Surface in the open", "Land here, safe",
+  "Assemble here", "Beam the Grunt here").
+
 ## Current CHIBI board look (visual direction, October 2026)
 
 This overlay applies to the CHIBI art set of the current Ruleset 7 route
@@ -455,9 +485,12 @@ seat looks as in revision 18 apart from the extra faction option.
   here." The up to 40 offered `LAY_EGG` commands of a city are never buttons,
   and a selected tile never lists them.
 - **Nest-tile picking.** Choosing a Lay Egg card enters picking for that
-  role: the dock replaces the cards with the prompt "Choose a tile next to
-  the city for the Egg", the row text with the number of highlighted tiles,
-  and Cancel; the board highlights exactly the legal nest tiles (cream fill
+  role: the dock replaces the cards with the aiming panel of the
+  [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8)
+  (the egg icon and "Lay Egg" with its `?` "Choose a tile next to the city
+  for the Egg", the row text "T-Rex Egg: 14 Coins, 2 slots, hatches in 4
+  turns", and Cancel; each nest tile is named "Lay the T-Rex Egg here");
+  the board highlights exactly the legal nest tiles (cream fill
   and dashed outline) as its only targets, pans the least distance to show
   them above the dock (as for a Kaboom! preview), and takes keyboard focus.
   A click, tap, or Enter on a highlighted tile lays the Egg: one command, no
@@ -633,15 +666,19 @@ without a Martian seat looks as before apart from the extra faction option.
   or next to one of your city centers", "No free tile next to this Saucer";
   "Recovering: ready in N turns", "Controls two Thralls already", "No
   weakened enemy within reach"; "No unit two tiles away can be pulled". A
-  press aims the ability: the dock replaces the actions with a compact
-  prompt (choices as chips, each carrying its whole preview in its
-  accessible name, Back and Cancel), the board's only targets become the
+  press aims the ability: the dock replaces the actions with the aiming
+  panel of the [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8)
+  (the ability's icon and name with its `?`, unit choices as chips, each
+  carrying its whole preview in its accessible name, Back and Cancel; no
+  tile chips and no detail sentences), the board's only targets become the
   ability's (magenta dashed outlines) and the camera frames them above the
   dock. Escape steps back (a Beam Down tile to its passenger) and then
   leaves.
-  - **Beam Down**: first the passengers (on or next to own city centers),
-    then the legal tiles around the Saucer ("Beam here", "destroys Field
-    Defense"); a tile performs it.
+  - **Beam Down**: first the passengers (on or next to own city centers;
+    chips "Beam Grunt", accessible name adding "8 of 8 HP"), then the
+    legal tiles around the Saucer on the board only ("Beam here",
+    "destroys Field Defense"; named "Beam the Grunt here"); the `?` adds
+    "The unit cannot act this turn"; a tile performs it.
   - **Mind Control**: the legal targets ("Thrall · 5 HP", with "Thralls 2 /
     2 after · Mind Control recovers for 2 turns" and any collapse or Plague
     it ends); a hostile unit in reach that cannot be taken is marked grey
@@ -650,7 +687,8 @@ without a Martian seat looks as before apart from the extra faction option.
   - **Tractor Beam**: the targets two tiles away; the focused one shows its
     destination (magenta tile and an arrow) and "Pulled out of Walls",
     "Pulled off Field Defense", "Empties Player 2's City", "Lifts the siege
-    of your City".
+    of your City" (named "Pull the Fighter one tile closer"; no text names
+    the tile it lands on).
 - **Moves.** A machine's Move onto water is a dotted pale-blue "Launch"
   outline (no label box); the dock's legend reads "Launch: crosses water as
   a transport" and the cursor description says it ends the turn afloat.
@@ -773,9 +811,14 @@ from the extra faction option.
     accessible name carrying "Will be Frozen" or "Will be Frosted" and
     "Yeti can then shatter it" (`shatterSetups`); a chip or a board target
     throws it.
-  - **Cold Snap**: the summary "Chills 2 units: 1 Frozen, 1 Frosted", each
-    target named, the Witch's two-tile reach tinted with an outer dashed
-    edge, and one "Cast Cold Snap"; a board target casts it too.
+  - **Cold Snap**: the dock is "Cold Snap" with its `?` (the summary
+    "Chills 2 units: 1 Frozen, 1 Frosted") and one "Cast Cold Snap", whose
+    accessible name carries the summary and each target; the Witch's
+    two-tile reach is tinted with an outer dashed edge; a board target
+    casts it too.
+  - Both panels follow the
+    [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8):
+    the ability's icon and name with its `?`, no detail sentences.
 - **Attack preview** (own and enemy attacks; the cursor description carries
   every line): "Shatters" replaces the damage label when the preview
   shatters; notes "Chilled", "Rockfall: Attack 1.5 from the Mountain",
@@ -891,21 +934,26 @@ apart from the extra faction option.
   surfaced this turn", "It moved this turn", "No free tile within 3"; "No
   enemy within 2 tiles", "Frozen: it cannot bomb this turn"; "Needs
   Marksmanship", "Your Capital is full", "Not enough Coins", "No free tile",
-  "No home city". A press aims it: the dock shows a compact prompt, the
-  board's only targets become the ability's and the camera frames them;
-  Escape steps back a stage (Back), Cancel leaves.
-  - **Tunnel** (passenger first, bead `pulp_wars-78i.9`). When fresh
-    Hammerers next to the Mole could ride, the best one (the most HP, then
-    the lowest ID) is **seated** at once: a short rope runs from it to the
-    Mole, with a hammer-head pip at the Mole's end, and it wears a "Riding"
-    badge; every other Hammerer that could ride wears "Ride". Choosing a
-    badge on the board seats that Hammerer (one at a time); choosing the
-    seated one unseats it, and the Mole tunnels alone. The dock mirrors the
-    board with a compact **Passenger** control: one button per Hammerer
-    (its portrait and "12/12"; accessible name "Passenger Hammerer, 12 of
-    12 HP, selected") and "None" ("No passenger: the Steam Mole tunnels
-    alone"), never coordinate chips. With no Hammerer that could ride, none
-    of this appears.
+  "No home city". A press aims it: the dock shows the aiming panel of the
+  [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8)
+  (the ability's icon and name, its `?`, any unit buttons, and the
+  actions), the board's only targets become the ability's and the camera
+  frames them; Escape steps back a stage (Back), Cancel leaves.
+  - **Tunnel** (passenger first, bead `pulp_wars-78i.9`; trimmed by bead
+    `pulp_wars-b5f.8`). When fresh Hammerers next to the Mole could ride,
+    the best one (the most HP, then the lowest ID) is **seated** at once: a
+    short rope runs from it to the Mole, with a hammer-head pip at the
+    Mole's end, and it wears a "Riding" badge; every other Hammerer that
+    could ride wears "Ride". Choosing a badge on the board seats that
+    Hammerer (one at a time); choosing the seated one unseats it, and the
+    Mole tunnels alone. The dock is the drill icon and "Tunnel" with its
+    `?` ("Choose where the Mole surfaces. Tap a Hammerer to seat or unseat
+    it. Damage is a forecast: enemies may move before the Mole surfaces"),
+    the **passenger buttons**, one per Hammerer (its portrait and "12/12";
+    accessible name "Hammerer, 12 of 12 HP, riding") and "Alone"
+    (accessible name "Tunnel alone"), and Cancel. No word "Passenger", no
+    destination chips, no sentences. With no Hammerer that could ride, the
+    passenger buttons do not appear.
   - Every offered **destination** is outlined in light earth; only one that
     would erupt on someone is labelled ("Erupt −6"). The focused one shows
     its forecast (the eruption ring, "−3" on each visible hostile unit on
@@ -913,38 +961,42 @@ apart from the extra faction option.
     translucent Mole on it and, with a passenger seated, a translucent
     Hammerer on its default landing next to it: the free tile closest to the
     visible enemy unit or village nearest to the destination, else the tile
-    continuing the tunnel's direction, ties in offered order. Where no tile
-    next to it is free, it says "Hammerer stays behind". The dock lists at
-    most four destinations, those that would erupt on the most ("4, 2 ·
-    −6"), each chip carrying "If they stay: Catapult −3; Undermines Field
-    Defense", then "Or choose any of the 34 highlighted tiles on the board"
-    and "A forecast: enemies may move before the Mole surfaces". With no
-    erupting destination there are no chips and the line reads "Choose one
-    of the 34 highlighted tiles on the board".
-  - Choosing a destination (on the board or as a chip) **chooses** it, as a
-    Bomb Run target is chosen before its landing: the tile is outlined
-    solid and keeps its ghosts and forecast, and the seated Hammerer's other
-    legal landings next to it are small dots; choosing a dot moves the
-    Hammerer's ghost there. The dock asks "Tunnel to 4, 2?", says "Tap the
-    tile again or press Tunnel. Tap a dot to move the Hammerer", lists the
-    forecast and "Hammerer surfaces at 3, 1" (or "Hammerer stays behind"),
-    and offers **Tunnel** (primary), Back and Cancel. Choosing the
-    destination again, or Tunnel, sends the one TUNNEL command, with the
-    rider and its landing or alone. Escape (Back) returns to the
-    destinations with the passenger still seated; another destination can be
-    chosen at once. The common case is Tunnel, the destination, the
-    destination again. Without a Hammerer that could ride, choosing a
-    destination tunnels at once.
+    continuing the tunnel's direction, ties in offered order. A destination
+    is named, for the cursor and Tab, by what it would erupt on: "Surface
+    next to Catapult and Captain, erupts for 6, undermines Field Defense",
+    "Surface in the open", with ". Hammerer stays behind" where no tile
+    next to it is free.
+  - Choosing a destination on the board **chooses** it, as a Bomb Run
+    target is chosen before its landing: the tile is outlined solid and
+    keeps its ghosts and forecast, and the seated Hammerer's other legal
+    landings next to it are small dots ("The Hammerer lands here instead");
+    choosing a dot moves the Hammerer's ghost there. The dock keeps its head
+    (the `?` now says "Tap the tile again or press Tunnel. Tap a dot to move
+    the Hammerer. Damage is a forecast: ...") and the passenger buttons, and
+    offers **Tunnel** (primary; accessible name "Tunnel. Surface next to
+    ..."), Back and Cancel. Choosing the destination again, or Tunnel,
+    sends the one TUNNEL command, with the rider and its landing or alone.
+    Escape (Back) returns to the destinations with the passenger still
+    seated; another destination can be chosen at once. The common case is
+    Tunnel, the destination, the destination again. Without a Hammerer that
+    could ride, choosing a destination tunnels at once.
   - **Bomb Run**: the targets within 2 are outlined in copper and labelled
     "Bomb −5" (or "Bomb −5 · Kills"); hostile units in range bombed this
-    turn are marked "Bombed this turn". Choosing a target outlines its
-    landing tiles beyond it, each labelled with the landing threat ("Land ·
-    up to 8", "Land · safe"; "Lands next to: up to 8 damage next turn"), the
-    target keeps its "Bomb −5" mark and a killed exploding target's blast
-    is shown; the dock says "Bomb: 5 damage, no reply".
+    turn are marked "Bombed this turn". The dock is "Bomb Run" with its `?`,
+    one button per target ("Player 2's Marksman (10 HP)"), and Cancel.
+    Choosing a target outlines its landing tiles beyond it, each labelled
+    with the landing threat ("Land · up to 8", "Land · safe"; named "Land
+    here. Lands next to: up to 8 damage next turn"), the target keeps its
+    "Bomb −5" mark and a killed exploding target's blast is shown; the dock
+    keeps only its head, Back and Cancel. Landings are chosen on the board.
   - **Assemble**: the free tiles round the Engineer are outlined in steam
-    white (no labels) and the dock says "Assemble a Clockwork Gunner: 4
-    Coins, slot 2/3 in your Capital".
+    white (no labels; named "Assemble here: ..."), and the dock is
+    "Assemble" with its `?` ("Choose a tile next to the Engineer. The
+    Clockwork Gunner arrives exhausted"), one line "4 Coins · slot 2/3",
+    and Cancel; its accessible name adds "Assemble a Clockwork Gunner: 4
+    Coins, slot 2/3 in your Capital" (a home city that is not the Capital
+    is "its home city").
+
   - **Repair** is the Engineer's Tend Wounded button, labelled "Repair" with
     the chip "+4 machines, +2 others" and the tooltip "Heal adjacent units:
     +4 machines, +2 others. Cures Plague, bites, and frost"; a selected
@@ -953,9 +1005,10 @@ apart from the extra faction option.
     disabled Fortify: "Dwarves dig in instead of building Field Defense".
 - **Attack preview** (own and enemy attacks; the cursor description carries
   every line): notes "Dug in", "Plated: at most 4", "Ignores fortification"
-  (a Blasting Steam Cannon), and "Knocks back to 3, 6" or "Knockback
-  blocked"; while a Cannon target is focused, a short earth arrow points to
-  the tile it is knocked to (outlined), or ends in a cross when blocked. The
+  (a Blasting Steam Cannon), and "Knocks back" or "Knockback blocked" (no
+  tile is named); while a Cannon target is focused, a short earth arrow
+  points to the tile it is knocked to (outlined), or ends in a cross when
+  blocked. The
   shooter's lines ("Clockwork: full strength", the Gunner's "Then 1 more
   shot" and "Cannot move after firing") are drawn on the focused target
   only, so a row of targets stays calm.

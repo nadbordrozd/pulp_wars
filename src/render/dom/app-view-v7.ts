@@ -32,7 +32,6 @@ import {
   isEggLaidRoleV7,
   previewHatchV7,
   previewLayEggV7,
-  previewBeamDownV7,
   previewMindControlV7,
   previewTractorBeamV7,
   previewBolasV7,
@@ -181,6 +180,7 @@ import {
   HATCH_LABEL_V7,
   HATCH_NEW_EGG_V7,
   HATCH_TOOLTIP_V7,
+  LAY_EGG_LABEL_V7,
   LAY_EGG_PROMPT_V7,
   PROMOTE_TOOLTIP_V7,
   PROMOTION_HELP_TIP_V7,
@@ -314,20 +314,18 @@ import {
   ENGINEER_SUPPORT_UNLOCK_TEXT_V7,
   REPAIR_CHIP_V7,
   REPAIR_TOOLTIP_V7,
-  RIDER_MOVE_HINT_V7,
-  STAYS_BEHIND_V7,
+  TUNNEL_ALONE_V7,
   TUNNEL_CONFIRM_HINT_V7,
+  TUNNEL_CONFIRM_INFO_V7,
   TUNNEL_NO_PASSENGER_V7,
   TUNNEL_PASSENGER_V7,
+  TUNNEL_PICK_INFO_V7,
   noPassengerAccessibleNameV7,
   passengerAccessibleNameV7,
-  riderLandingTextV7,
-  tunnelConfirmPromptV7,
   RIDER_SURFACED_V7,
-  TUNNEL_FORECAST_V7,
   TUNNEL_LABEL_V7,
-  TUNNEL_PICK_CHIP_LIMIT_V7,
   TUNNEL_PICK_V7,
+  assembleCostLineV7,
   assembleSummaryV7,
   assembleTooltipV7,
   bombPreviewLinesV7,
@@ -347,12 +345,10 @@ import {
   dwarfRoleUnlockTextV7,
   dwarfUnitInfoLinesV7,
   gunnerShotsTextV7,
-  landingHintV7,
   matchHasDwarfSeatV7,
   moundAtV7,
   moundInfoLinesV7,
-  tunnelBoardHintV7,
-  tunnelPreviewLinesV7,
+  tunnelDestinationNameV7,
   tunnelTooltipV7,
   viewerBombDamageV7,
   viewerEruptionDamageV7,
@@ -3474,7 +3470,7 @@ export class Ruleset7DomAppView {
         return;
       } else {
         this.#dwarfPick = { ...tunnelPick, to: command.to, riderTo: null };
-        this.#notice = `${tunnelConfirmPromptV7(command.to)} ${TUNNEL_CONFIRM_HINT_V7}.`;
+        this.#notice = `${target.semanticLabel ?? TUNNEL_LABEL_V7}. ${TUNNEL_CONFIRM_HINT_V7}.`;
       }
       this.#render();
       this.#queueBoardFocus();
@@ -5405,14 +5401,24 @@ export class Ruleset7DomAppView {
     panel.dataset.layEggRole = pick.role;
     // The legal nest tiles in (y, x) order, for assistive tooling and tests.
     panel.dataset.nestTiles = tiles.map((at) => `${at.x},${at.y}`).join(" ");
-    panel.setAttribute("aria-label", "Lay Egg: choose a tile");
+    // Bead pulp_wars-b5f.8: the ability's icon and name, the Egg's one
+    // line, and Cancel; the nest tiles are chosen on the board.
+    panel.setAttribute(
+      "aria-label",
+      `${LAY_EGG_LABEL_V7}: ${LAY_EGG_PROMPT_V7}`,
+    );
     panel.append(
-      text(this.#document, "p", LAY_EGG_PROMPT_V7, "v7-kaboom-summary"),
+      this.#pickHead(
+        "ICON:ACTION:LAY_EGG",
+        "egg",
+        LAY_EGG_LABEL_V7,
+        LAY_EGG_PROMPT_V7,
+      ),
       text(
         this.#document,
         "p",
-        `${layEggRowTextV7(label, preview)}. ${tiles.length === 1 ? "1 tile is" : `${tiles.length} tiles are`} highlighted.`,
-        "v7-lay-egg-detail",
+        layEggRowTextV7(label, preview),
+        "v7-martian-detail v7-lay-egg-detail",
       ),
     );
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
@@ -5650,11 +5656,10 @@ export class Ruleset7DomAppView {
       "v7-kaboom-preview v7-martian-pick",
     );
     panel.dataset.v7MartianPick = pick.kind.toLowerCase();
-    // The choices are compact chips (the board shows each preview on its
-    // target); each chip carries its whole preview in its accessible name,
-    // and a lone choice spells it out under the prompt.
+    // The choices are compact unit chips (the board shows each preview on
+    // its target); each chip carries its whole preview in its accessible
+    // name and tooltip. Tiles are chosen on the board only.
     const lines = el(this.#document, "div", "v7-martian-choices");
-    const summaries: string[] = [];
     const choice = (
       action: string,
       label: string,
@@ -5675,7 +5680,6 @@ export class Ruleset7DomAppView {
       control.disabled = this.#localBusy();
       control.onclick = onclick;
       lines.append(control);
-      summaries.push(details.join(" · "));
     };
     let prompt: string;
     if (pick.kind === "BEAM_DOWN") {
@@ -5695,7 +5699,7 @@ export class Ruleset7DomAppView {
             `Beam ${nameOf(command.passengerUnitId)}`,
             passenger === undefined
               ? []
-              : [`now at ${passenger.at.x}, ${passenger.at.y}`],
+              : [`${passenger.hp} of ${passenger.maxHp} HP`],
             () => {
               this.#martianPick = {
                 kind: "BEAM_DOWN",
@@ -5710,25 +5714,9 @@ export class Ruleset7DomAppView {
           );
         }
       } else {
-        const passengerUnitId = pick.passengerUnitId;
-        const preview = previewBeamDownV7(view, unitId, passengerUnitId);
-        prompt = `${BEAM_DOWN_PICK_TILE_V7} for the ${nameOf(passengerUnitId)}`;
-        for (const command of beams) {
-          if (command.passengerUnitId !== passengerUnitId) continue;
-          const destroys =
-            preview?.fieldDefenseDestroyed.some(
-              (at) => at.x === command.to.x && at.y === command.to.y,
-            ) === true;
-          choice(
-            `beam-tile-${command.to.x}-${command.to.y}`,
-            `${command.to.x}, ${command.to.y}`,
-            [
-              `Tile ${command.to.x}, ${command.to.y}`,
-              ...(destroys ? ["destroys Field Defense"] : []),
-            ],
-            () => void this.#dispatch(command),
-          );
-        }
+        // The tiles are chosen on the board only (bead pulp_wars-b5f.8: no
+        // text names a tile).
+        prompt = `${BEAM_DOWN_PICK_TILE_V7} for the ${nameOf(pick.passengerUnitId)}`;
       }
     } else if (pick.kind === "MIND_CONTROL") {
       prompt = MIND_CONTROL_PICK_V7;
@@ -5762,10 +5750,7 @@ export class Ruleset7DomAppView {
         choice(
           `tractor-beam-${command.targetUnitId}`,
           `Pull ${target === undefined ? "unit" : `${possessiveName(view, target.ownerId)} ${nameOf(target.id)}`}`,
-          [
-            `to ${preview.to.x}, ${preview.to.y}`,
-            ...tractorBeamPreviewLinesV7(view, preview),
-          ],
+          tractorBeamPreviewLinesV7(view, preview),
           () => void this.#dispatch(command),
         );
       }
@@ -5774,17 +5759,30 @@ export class Ruleset7DomAppView {
       this.#martianPick = null;
       return null;
     }
-    panel.setAttribute("aria-label", prompt);
-    panel.append(text(this.#document, "p", prompt, "v7-kaboom-summary"));
-    if (lines.childElementCount > 0) panel.append(lines);
-    const detail =
+    // Bead pulp_wars-b5f.8: the ability's icon and name; the instruction
+    // and caveat are in the "?" and the panel's accessible name.
+    const info =
       pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null
-        ? "The unit cannot act this turn."
-        : summaries.length === 1 && summaries[0] !== ""
-          ? summaries[0]
-          : null;
-    if (detail !== undefined && detail !== null)
-      panel.append(text(this.#document, "p", detail, "v7-martian-detail"));
+        ? `${prompt}. The unit cannot act this turn`
+        : prompt;
+    panel.setAttribute("aria-label", prompt);
+    panel.append(
+      this.#pickHead(
+        `ICON:ACTION:${pick.kind}`,
+        pick.kind === "BEAM_DOWN"
+          ? "beam-down"
+          : pick.kind === "MIND_CONTROL"
+            ? "mind-control"
+            : "tractor-beam",
+        pick.kind === "BEAM_DOWN"
+          ? BEAM_DOWN_LABEL_V7
+          : pick.kind === "MIND_CONTROL"
+            ? MIND_CONTROL_LABEL_V7
+            : TRACTOR_BEAM_LABEL_V7,
+        info,
+      ),
+    );
+    if (lines.childElementCount > 0) panel.append(lines);
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
     if (pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null) {
       const back = button(
@@ -5997,10 +5995,8 @@ export class Ruleset7DomAppView {
       pick.kind === "THROW_BOLAS" ? "bolas" : "cold_snap";
     const lines = el(this.#document, "div", "v7-martian-choices");
     let prompt: string;
-    let detail: string | null = null;
     if (pick.kind === "THROW_BOLAS") {
       prompt = BOLAS_PICK_V7;
-      const summaries: string[] = [];
       for (const command of commands) {
         if (command.kind !== "THROW_BOLAS") continue;
         const preview = previewBolasV7(
@@ -6026,9 +6022,7 @@ export class Ruleset7DomAppView {
         control.disabled = this.#localBusy();
         control.onclick = () => void this.#dispatch(command);
         lines.append(control);
-        summaries.push(details.join(" · "));
       }
-      if (summaries.length === 1) detail = summaries[0] ?? null;
     } else {
       const command = commands[0];
       const preview =
@@ -6038,29 +6032,41 @@ export class Ruleset7DomAppView {
         return null;
       }
       prompt = coldSnapSummaryV7(preview);
-      detail = preview.targets
+      // Each target is labelled Frozen or Frosted on the board; the cast
+      // button names them for assistive technology.
+      const targets = preview.targets
         .map(
           (target) =>
             `${nameOf(target.unitId)}: ${target.becomesSluggish ? "Will be Frozen" : "Will be Frosted"}`,
         )
-        .join(" · ");
+        .join(". ");
       const cast = button(
         this.#document,
         COLD_SNAP_CAST_V7,
         "cold-snap-cast",
         "v7-martian-choice-button",
       );
-      cast.setAttribute("aria-label", `${COLD_SNAP_CAST_V7}. ${prompt}.`);
+      cast.setAttribute(
+        "aria-label",
+        `${COLD_SNAP_CAST_V7}. ${prompt}.${targets === "" ? "" : ` ${targets}.`}`,
+      );
       cast.title = COLD_SNAP_TOOLTIP_V7;
       cast.disabled = this.#localBusy();
       cast.onclick = () => void this.#dispatch(command);
       lines.append(cast);
     }
+    // Bead pulp_wars-b5f.8: the ability's icon and name; the instruction
+    // (or the Cold Snap summary) is in the "?" and the accessible name.
     panel.setAttribute("aria-label", prompt);
-    panel.append(text(this.#document, "p", prompt, "v7-kaboom-summary"));
+    panel.append(
+      this.#pickHead(
+        `ICON:ACTION:${pick.kind}`,
+        pick.kind === "THROW_BOLAS" ? "bolas" : "snowflake",
+        pick.kind === "THROW_BOLAS" ? BOLAS_LABEL_V7 : COLD_SNAP_LABEL_V7,
+        prompt,
+      ),
+    );
     if (lines.childElementCount > 0) panel.append(lines);
-    if (detail !== null && detail !== "")
-      panel.append(text(this.#document, "p", detail, "v7-martian-detail"));
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
     const cancel = button(
       this.#document,
@@ -6258,11 +6264,45 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The Dwarf aiming panel in the dock: the prompt, the legal choices as
-   * buttons with their previews (a keyboard path beside the board targets;
-   * for a Tunnel the passenger control and the best few destinations, then
-   * the chosen tunnel and its confirmation), Back and Cancel. Null (and the
-   * aiming ends) when nothing is offered any more.
+   * Bead pulp_wars-b5f.8 (no coordinates, minimal text): the head of an
+   * ability's aiming panel, its icon and name and a small "?" whose
+   * tooltip (and toast, for touch) holds the instruction and any caveat.
+   * The panel never says where; the board does.
+   */
+  #pickHead(
+    subject: ArtSubjectV7 | null,
+    icon: UiIconIdV7,
+    title: string,
+    info: string,
+  ): HTMLElement {
+    const head = el(this.#document, "div", "v7-pick-head");
+    const heading = el(this.#document, "p", "v7-kaboom-summary v7-pick-title");
+    heading.append(
+      this.#chibiArt(subject, CHIBI_DOM_BOXES_V7.passenger)?.element ??
+        uiIconV7(this.#document, icon, "v7-ui-icon v7-command-icon"),
+      text(this.#document, "span", title, "v7-pick-title-text"),
+    );
+    const help = button(this.#document, "", "pick-info", "v7-pick-info");
+    help.append(text(this.#document, "span", "?", "v7-unit-help-glyph"));
+    help.title = info;
+    help.setAttribute("aria-label", `About ${title}: ${info}`);
+    help.onclick = () => {
+      this.#notice = `${info}.`;
+      this.#showToast(`${info}.`);
+      this.#pendingFocusAction = "pick-info";
+      this.#render();
+    };
+    head.append(heading, help);
+    return head;
+  }
+
+  /**
+   * The Dwarf aiming panel in the dock (trimmed by bead pulp_wars-b5f.8):
+   * the ability's icon and name with its "?" info, for a Tunnel the
+   * passenger buttons (a portrait and HP each, and "Alone"), for a Bomb
+   * Run the targets by name, and the actions (Tunnel, Back, Cancel). Every
+   * tile is chosen on the board, which carries the forecast; no text names
+   * a tile. Null (and the aiming ends) when nothing is offered any more.
    */
   #dwarfPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
     const pick = this.#dwarfPick;
@@ -6287,54 +6327,23 @@ export class Ruleset7DomAppView {
     );
     panel.dataset.v7DwarfPick = pick.kind.toLowerCase();
     const lines = el(this.#document, "div", "v7-martian-choices");
-    const summaries: string[] = [];
-    const choice = (
-      action: string,
-      label: string,
-      details: readonly string[],
-      onclick: () => void,
-    ): void => {
-      const control = button(
-        this.#document,
-        label,
-        action,
-        "v7-martian-choice-button",
-      );
-      control.setAttribute(
-        "aria-label",
-        details.length === 0 ? label : `${label}. ${details.join(". ")}.`,
-      );
-      control.title = details.join(" · ");
-      control.disabled = this.#localBusy();
-      control.onclick = onclick;
-      lines.append(control);
-      summaries.push(details.join(" · "));
-    };
     let prompt: string;
+    let info: string;
     let detail: string | null = null;
-    let hint: string | null = null;
     let back = false;
     // The Tunnel's passenger control and its confirmation.
     let passengers: HTMLElement | null = null;
     let confirm: HTMLButtonElement | null = null;
     if (pick.kind === "TUNNEL") {
       // Passenger first (bead pulp_wars-78i.9): the Hammerers that can ride
-      // as a compact control mirroring the board's badges, then the
-      // destination; with one chosen, the whole tunnel and its confirmation.
+      // as portrait buttons mirroring the board's badges; the destination
+      // is chosen on the board, then confirmed here.
       const offered = this.#snapshot.offeredCommands;
       const riders = tunnelRidersV7(view, offered, unitId);
       if (riders.length > 0) {
         passengers = el(this.#document, "div", "v7-dwarf-passengers");
         passengers.setAttribute("role", "group");
         passengers.setAttribute("aria-label", TUNNEL_PASSENGER_V7);
-        passengers.append(
-          text(
-            this.#document,
-            "span",
-            `${TUNNEL_PASSENGER_V7}:`,
-            "v7-dwarf-passengers-label",
-          ),
-        );
         const seat = (riderUnitId: UnitId | null): void => {
           if (pick.riderUnitId === riderUnitId) return;
           this.#dwarfPick = { ...pick, riderUnitId, riderTo: null };
@@ -6373,16 +6382,14 @@ export class Ruleset7DomAppView {
             ),
           );
           control.setAttribute("aria-pressed", String(selected));
-          control.setAttribute(
-            "aria-label",
-            passengerAccessibleNameV7(
-              rider.label,
-              rider.hp,
-              rider.maxHp,
-              selected,
-            ),
+          const name = passengerAccessibleNameV7(
+            rider.label,
+            rider.hp,
+            rider.maxHp,
+            selected,
           );
-          control.title = `${rider.label} at ${rider.at.x}, ${rider.at.y}`;
+          control.setAttribute("aria-label", name);
+          control.title = name;
           control.disabled = this.#localBusy();
           control.onclick = () => seat(rider.unitId);
           passengers.append(control);
@@ -6398,82 +6405,36 @@ export class Ruleset7DomAppView {
           "aria-label",
           noPassengerAccessibleNameV7(pick.riderUnitId === null),
         );
+        none.title = TUNNEL_ALONE_V7;
         none.disabled = this.#localBusy();
         none.onclick = () => seat(null);
         passengers.append(none);
       }
-      const destinations = tunnelDestinationsV7(offered, unitId);
-      panel.dataset.destinations = String(destinations.length);
+      panel.dataset.destinations = String(
+        tunnelDestinationsV7(offered, unitId).length,
+      );
       if (pick.to === null) {
         prompt = TUNNEL_PICK_V7;
-        // A Mole reaches dozens of tiles, so only the destinations that
-        // would erupt on the most are chips, with their forecast damage;
-        // every destination is highlighted and picked on the board.
-        const scored = destinations.flatMap((to) => {
-          const outcome = tunnelOutcomeV7(view, offered, pick, to);
-          const alone = tunnelCommandsV7(offered, unitId).find(
-            (command) => command.rider === null && same(command.to, to),
-          );
-          const preview =
-            alone === undefined ? null : previewTunnelV7(view, alone);
-          if (outcome === null || preview === null) return [];
-          const hit = preview.eruptionTargets.reduce(
-            (sum, target) => sum + target.damage + target.shieldDamage,
-            0,
-          );
-          return hit > 0 ? [{ to, outcome, preview, hit }] : [];
-        });
-        const best = scored
-          .sort((left, right) => right.hit - left.hit)
-          .slice(0, TUNNEL_PICK_CHIP_LIMIT_V7);
-        hint = tunnelBoardHintV7(destinations.length, best.length > 0);
-        detail = best.length > 0 ? TUNNEL_FORECAST_V7 : null;
-        for (const { to, outcome, preview, hit } of best)
-          choice(
-            `tunnel-${to.x}-${to.y}`,
-            `${to.x}, ${to.y} · −${hit}`,
-            tunnelPreviewLinesV7(view, preview),
-            () => {
-              if (riders.length === 0) {
-                void this.#dispatch(outcome.command);
-                return;
-              }
-              this.#dwarfPick = { ...pick, to, riderTo: null };
-              this.#notice = `${tunnelConfirmPromptV7(to)} ${TUNNEL_CONFIRM_HINT_V7}.`;
-              this.#pendingFocusAction = "tunnel-confirm";
-              this.#render();
-            },
-          );
-        // The forecast is in each chip.
-        summaries.length = 0;
+        info = TUNNEL_PICK_INFO_V7;
       } else {
         const to = pick.to;
         back = true;
-        prompt = tunnelConfirmPromptV7(to);
+        info = TUNNEL_CONFIRM_INFO_V7;
         const outcome = tunnelOutcomeV7(view, offered, pick, to);
         const alone = tunnelCommandsV7(offered, unitId).find(
           (command) => command.rider === null && same(command.to, to),
         );
         const preview =
           alone === undefined ? null : previewTunnelV7(view, alone);
-        const seated =
-          riders.find((rider) => rider.unitId === pick.riderUnitId) ?? null;
-        detail = [
-          ...(preview === null ? [] : tunnelPreviewLinesV7(view, preview)),
-          ...(seated === null || outcome === null
-            ? []
-            : [
-                outcome.landing === null
-                  ? STAYS_BEHIND_V7
-                  : riderLandingTextV7(seated.label, outcome.landing),
-              ]),
-        ].join(" · ");
-        hint = [
-          TUNNEL_CONFIRM_HINT_V7,
-          ...(outcome !== null && outcome.otherLandings.length > 0
-            ? [RIDER_MOVE_HINT_V7]
-            : []),
-        ].join(". ");
+        const name =
+          preview === null
+            ? TUNNEL_LABEL_V7
+            : tunnelDestinationNameV7(
+                view,
+                preview,
+                pick.riderUnitId !== null && outcome?.staysBehind === true,
+              );
+        prompt = `${TUNNEL_LABEL_V7}: ${name}`;
         if (outcome !== null) {
           confirm = button(
             this.#document,
@@ -6481,15 +6442,11 @@ export class Ruleset7DomAppView {
             "tunnel-confirm",
             "primary-action v7-dwarf-confirm",
           );
-          confirm.setAttribute(
-            "aria-label",
-            `${TUNNEL_LABEL_V7} to ${to.x}, ${to.y}${detail === "" ? "" : `. ${detail}`}.`,
-          );
+          confirm.setAttribute("aria-label", `${TUNNEL_LABEL_V7}. ${name}`);
           confirm.disabled = this.#localBusy();
           const command = outcome.command;
           confirm.onclick = () => void this.#dispatch(command);
         }
-        summaries.length = 0;
       }
     } else if (pick.kind === "BOMB_RUN") {
       const runs = commands.filter(
@@ -6498,6 +6455,7 @@ export class Ruleset7DomAppView {
       );
       if (pick.targetUnitId === null) {
         prompt = BOMB_RUN_PICK_TARGET_V7;
+        info = BOMB_RUN_PICK_TARGET_V7;
         const seen = new Set<number>();
         for (const command of runs) {
           if (seen.has(command.targetUnitId)) continue;
@@ -6505,74 +6463,69 @@ export class Ruleset7DomAppView {
           const preview = previewBombRunV7(view, command);
           const target = unitById(command.targetUnitId);
           if (preview === null || target === undefined) continue;
-          choice(
+          const label = `${possessiveName(view, target.ownerId)} ${nameOf(target.id)} (${target.hp} HP)`;
+          const control = button(
+            this.#document,
+            label,
             `bomb-target-${command.targetUnitId}`,
-            `Bomb ${possessiveName(view, target.ownerId)} ${nameOf(target.id)} (${target.hp} HP)`,
-            bombPreviewLinesV7(preview),
-            () => {
-              this.#dwarfPick = {
-                kind: "BOMB_RUN",
-                unitId,
-                targetUnitId: command.targetUnitId,
-              };
-              this.#notice = `${BOMB_RUN_PICK_LANDING_V7}.`;
-              this.#pendingFocusAction = null;
-              this.#render();
-              this.#queueBoardFocus();
-            },
+            "v7-martian-choice-button",
           );
+          control.setAttribute(
+            "aria-label",
+            `Bomb ${label}. ${bombPreviewLinesV7(preview).join(". ")}.`,
+          );
+          control.title = bombPreviewLinesV7(preview).join(" · ");
+          control.disabled = this.#localBusy();
+          control.onclick = () => {
+            this.#dwarfPick = {
+              kind: "BOMB_RUN",
+              unitId,
+              targetUnitId: command.targetUnitId,
+            };
+            this.#notice = `${BOMB_RUN_PICK_LANDING_V7}.`;
+            this.#pendingFocusAction = null;
+            this.#render();
+            this.#queueBoardFocus();
+          };
+          lines.append(control);
         }
       } else {
         back = true;
-        const targetUnitId = pick.targetUnitId;
-        prompt = `${BOMB_RUN_PICK_LANDING_V7} after bombing the ${nameOf(targetUnitId)}`;
-        let first: ReturnType<typeof previewBombRunV7> = null;
-        for (const command of runs) {
-          if (command.targetUnitId !== targetUnitId) continue;
-          const preview = previewBombRunV7(view, command);
-          if (preview === null) continue;
-          first ??= preview;
-          choice(
-            `bomb-landing-${command.to.x}-${command.to.y}`,
-            `${command.to.x}, ${command.to.y}`,
-            [landingHintV7(preview)],
-            () => void this.#dispatch(command),
-          );
-        }
-        detail = first === null ? null : bombPreviewLinesV7(first).join(" · ");
-        summaries.length = 0;
+        prompt = `${BOMB_RUN_PICK_LANDING_V7} after bombing the ${nameOf(pick.targetUnitId)}`;
+        info = BOMB_RUN_PICK_LANDING_V7;
       }
     } else {
       const preview = previewAssembleV7(view, unitId);
       prompt =
         preview === null
           ? ASSEMBLE_PICK_V7
-          : assembleSummaryV7(preview, dwarfCityNameV7(view, preview.cityId));
-      for (const command of commands) {
-        if (command.kind !== "ASSEMBLE") continue;
-        choice(
-          `assemble-${command.to.x}-${command.to.y}`,
-          `${command.to.x}, ${command.to.y}`,
-          [`The ${dwarfLabelV7("MARKSMAN")} arrives here, exhausted`],
-          () => void this.#dispatch(command),
-        );
-      }
-      detail = ASSEMBLE_PICK_V7;
-      summaries.length = 0;
+          : `${ASSEMBLE_PICK_V7}. ${assembleSummaryV7(preview, dwarfCityNameV7(view, preview.cityId))}`;
+      info = `${ASSEMBLE_PICK_V7}. The ${dwarfLabelV7("MARKSMAN")} arrives exhausted`;
+      detail = preview === null ? null : assembleCostLineV7(preview);
     }
+    const kindTitle =
+      pick.kind === "TUNNEL"
+        ? TUNNEL_LABEL_V7
+        : pick.kind === "BOMB_RUN"
+          ? BOMB_RUN_LABEL_V7
+          : ASSEMBLE_LABEL_V7;
     panel.setAttribute("aria-label", prompt);
-    panel.append(text(this.#document, "p", prompt, "v7-kaboom-summary"));
+    panel.append(
+      this.#pickHead(
+        `ICON:ACTION:${pick.kind}`,
+        pick.kind === "TUNNEL"
+          ? "drill"
+          : pick.kind === "BOMB_RUN"
+            ? "bomb-run"
+            : "key",
+        kindTitle,
+        info,
+      ),
+    );
     if (passengers !== null) panel.append(passengers);
     if (lines.childElementCount > 0) panel.append(lines);
-    if (hint !== null)
-      panel.append(
-        text(this.#document, "p", hint, "v7-martian-detail v7-dwarf-pick-hint"),
-      );
-    const shown =
-      detail ??
-      (summaries.length === 1 && summaries[0] !== "" ? summaries[0] : null);
-    if (shown !== null && shown !== undefined && shown !== "")
-      panel.append(text(this.#document, "p", shown, "v7-martian-detail"));
+    if (detail !== null)
+      panel.append(text(this.#document, "p", detail, "v7-martian-detail"));
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
     if (confirm !== null) buttons.append(confirm);
     if (back) {
@@ -7530,14 +7483,19 @@ export function specialBoundaryNoticeV7(
     (event) => event.kind === "WINDMILL_HEALING_RESOLVED",
   );
   if (healing.length > 0)
-    return healing
-      .map(
-        (event) =>
-          `Windmill (${event.at.x}, ${event.at.y}) healed ${event.results
-            .map((result) => `unit ${result.unitId} +${result.amount} HP`)
-            .join(", ")}`,
-      )
-      .join(" · ");
+    return (
+      healing
+        // No text names a tile or a unit ID (bead pulp_wars-b5f.8).
+        .map((event) => {
+          const total = event.results.reduce(
+            (sum, result) => sum + result.amount,
+            0,
+          );
+          const units = event.results.length;
+          return `Windmill healed ${units} ${units === 1 ? "unit" : "units"} +${total} HP`;
+        })
+        .join(" · ")
+    );
   const treasury = events.find(
     (event) =>
       event.kind === "CITY_REWARD_AUTOMATICALLY_GRANTED" &&

@@ -42,11 +42,15 @@ import {
   RIDER_MOVE_HINT_V7,
   STAYS_BEHIND_V7,
   TUNNEL_CONFIRM_HINT_V7,
+  KNOCKBACK_V7,
+  TUNNEL_ALONE_V7,
+  TUNNEL_CONFIRM_INFO_V7,
+  TUNNEL_FORECAST_V7,
+  TUNNEL_NO_PASSENGER_V7,
+  TUNNEL_PICK_INFO_V7,
+  assembleCostLineV7,
   noPassengerAccessibleNameV7,
   passengerAccessibleNameV7,
-  riderLandingTextV7,
-  tunnelBoardHintV7,
-  tunnelConfirmPromptV7,
   TUNNEL_MOVED_V7,
   TUNNEL_SURFACED_V7,
   UNFLINCHING_PREVIEW_V7,
@@ -68,12 +72,11 @@ import {
   dwarfUnitInfoLinesV7,
   eruptionRingTextV7,
   gunnerShotsTextV7,
-  knockbackToTextV7,
   landingHintV7,
   matchHasDwarfSeatV7,
   moundAtV7,
   moundInfoLinesV7,
-  tunnelPreviewLinesV7,
+  tunnelDestinationNameV7,
   tunnelTooltipV7,
 } from "../../src/render/dwarf-presentation-v7";
 import {
@@ -214,26 +217,32 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
       `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for 5, and land beyond it. No reply`,
     );
     expect(STAYS_BEHIND_V7).toBe("Hammerer stays behind");
-    expect(tunnelConfirmPromptV7({ x: 4, y: 2 })).toBe("Tunnel to 4, 2?");
+    // Bead pulp_wars-b5f.8: no text names a tile; the hints and the
+    // forecast caveat live in the "?" info only.
     expect(TUNNEL_CONFIRM_HINT_V7).toBe("Tap the tile again or press Tunnel");
     expect(RIDER_MOVE_HINT_V7).toBe("Tap a dot to move the Hammerer");
-    expect(riderLandingTextV7("Hammerer", { x: 3, y: 1 })).toBe(
-      "Hammerer surfaces at 3, 1",
+    expect(TUNNEL_FORECAST_V7).toBe(
+      "Damage is a forecast: enemies may move before the Mole surfaces",
+    );
+    expect(TUNNEL_PICK_INFO_V7).toBe(
+      `Choose where the Mole surfaces. Tap a Hammerer to seat or unseat it. ${TUNNEL_FORECAST_V7}`,
+    );
+    expect(TUNNEL_CONFIRM_INFO_V7).toBe(
+      `Tap the tile again or press Tunnel. Tap a dot to move the Hammerer. ${TUNNEL_FORECAST_V7}`,
     );
     expect(passengerAccessibleNameV7("Hammerer", 12, 14, true)).toBe(
-      "Passenger Hammerer, 12 of 14 HP, selected",
+      "Hammerer, 12 of 14 HP, riding",
     );
-    expect(noPassengerAccessibleNameV7(false)).toBe(
-      "No passenger: the Steam Mole tunnels alone",
+    expect(passengerAccessibleNameV7("Hammerer", 12, 14, false)).toBe(
+      "Hammerer, 12 of 14 HP",
     );
-    expect(tunnelBoardHintV7(34, true)).toBe(
-      "Or choose any of the 34 highlighted tiles on the board",
-    );
-    expect(tunnelBoardHintV7(34, false)).toBe(
-      "Choose one of the 34 highlighted tiles on the board",
-    );
-    expect(tunnelBoardHintV7(1, false)).toBe(
-      "Choose the highlighted tile on the board",
+    expect(TUNNEL_NO_PASSENGER_V7).toBe("Alone");
+    expect(TUNNEL_ALONE_V7).toBe("Tunnel alone");
+    expect(noPassengerAccessibleNameV7(false)).toBe("Tunnel alone");
+    expect(noPassengerAccessibleNameV7(true)).toBe("Tunnel alone, selected");
+    expect(KNOCKBACK_V7).toBe("Knocks back");
+    expect(assembleCostLineV7({ cost: 4, usedSlots: 1, capacity: 3 })).toBe(
+      "4 Coins · slot 2/3",
     );
     expect(eruptionRingTextV7(2)).toBe(
       "Eruption: 2 damage to enemies on the ground here",
@@ -341,14 +350,39 @@ describe("Dwarf previews (section 16.1)", () => {
     if (tunnel === undefined) throw new Error("tunnel");
     const preview = previewTunnelV7(view, tunnel);
     if (preview === null) throw new Error("tunnel preview");
-    const lines = tunnelPreviewLinesV7(view, preview);
-    expect(lines).toEqual([
-      ...preview.eruptionTargets.map(
-        (target) =>
-          `If they stay: ${view.units.find((unit) => unit.id === target.unitId)?.role === "CATAPULT" ? "Catapult" : "Captain"} −${target.damage}`,
-      ),
-      "Undermines Field Defense",
-    ]);
+    // Bead pulp_wars-b5f.8: the destination is named by what it erupts
+    // on, never by its tile.
+    const names = preview.eruptionTargets.map((target) =>
+      view.units.find((unit) => unit.id === target.unitId)?.role === "CATAPULT"
+        ? "Catapult"
+        : "Captain",
+    );
+    const total = preview.eruptionTargets.reduce(
+      (sum, target) => sum + target.damage + target.shieldDamage,
+      0,
+    );
+    expect(names).toHaveLength(2);
+    expect(tunnelDestinationNameV7(view, preview)).toBe(
+      `Surface next to ${names.join(" and ")}, erupts for ${total}, undermines Field Defense`,
+    );
+    expect(tunnelDestinationNameV7(view, preview, true)).toBe(
+      `Surface next to ${names.join(" and ")}, erupts for ${total}, undermines Field Defense. Hammerer stays behind`,
+    );
+    const open = commands.find(
+      (command): command is Extract<CommandV7, { kind: "TUNNEL" }> => {
+        if (command.kind !== "TUNNEL" || command.rider !== null) return false;
+        const candidate = previewTunnelV7(view, command);
+        return (
+          candidate !== null &&
+          candidate.eruptionTargets.length === 0 &&
+          candidate.undermines.length === 0
+        );
+      },
+    );
+    if (open === undefined) throw new Error("open tunnel");
+    const quiet = previewTunnelV7(view, open);
+    if (quiet === null) throw new Error("open tunnel preview");
+    expect(tunnelDestinationNameV7(view, quiet)).toBe("Surface in the open");
     const bomb = commands.find(
       (command): command is Extract<CommandV7, { kind: "BOMB_RUN" }> =>
         command.kind === "BOMB_RUN" &&
@@ -392,7 +426,7 @@ describe("Dwarf previews (section 16.1)", () => {
     expect(dwarfCombatLinesV7(view, pushed).knockback).toEqual({
       to: AT.knockTo,
       blocked: false,
-      text: knockbackToTextV7(AT.knockTo),
+      text: KNOCKBACK_V7,
     });
     const blocked = queryCombatPreviewV7(
       view,

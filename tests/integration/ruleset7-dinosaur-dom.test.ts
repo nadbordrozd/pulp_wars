@@ -529,11 +529,19 @@ describe("Revision 19 Dinosaur city panel", () => {
     const panel = requiredElement<HTMLElement>('[data-v7-lay-egg="picking"]');
     expect(panel.dataset.layEggRole).toBe("KNIGHT");
     expect(panel.dataset.nestTiles).toBe("7,7 8,7 9,7 7,8 9,8 7,9 8,9 9,9");
+    // Bead pulp_wars-b5f.8: the ability's name, the Egg's one line, and
+    // the instruction in the "?" and the accessible name only.
     expect(panel.querySelector(".v7-kaboom-summary")?.textContent).toBe(
-      "Choose a tile next to the city for the Egg",
+      "Lay Egg",
     );
+    expect(panel.getAttribute("aria-label")).toBe(
+      "Lay Egg: Choose a tile next to the city for the Egg",
+    );
+    expect(
+      panel.querySelector<HTMLElement>('[data-action="pick-info"]')?.title,
+    ).toBe("Choose a tile next to the city for the Egg");
     expect(panel.querySelector(".v7-lay-egg-detail")?.textContent).toBe(
-      `${layEggRowTextV7("T-Rex", tRex)}. 8 tiles are highlighted.`,
+      layEggRowTextV7("T-Rex", tRex),
     );
     expect(document.querySelector("#v7-live")?.textContent).toBe(
       "Choose a tile next to the city for the Egg.",

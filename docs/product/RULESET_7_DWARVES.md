@@ -2214,8 +2214,9 @@ The browser UI (`pulp_wars-78i.6`) must, at requirement level:
   animation is a Gunner wound up with a key and a puff of steam;
 - **Repair:** the Engineer's Tend Wounded chip is labelled Repair, with
   "+4 machines, +2 others" and the targets highlighted;
-- **Knockback:** the attack preview shows "Knocks back to {tile}" or
-  "Knockback blocked", and the animation slides the target back;
+- **Knockback:** the attack preview shows "Knocks back" or "Knockback
+  blocked" (no text names a tile; the board's arrow shows where), and the
+  animation slides the target back;
 - **Plated:** the attack preview shows "Plated: at most 4";
 - **Help** in the viewer's faction text ([section 16.3](#163-help-text));
 - **city panel:** Dwarf production rows with cost and slots; no Field
@@ -2227,43 +2228,44 @@ The browser UI (`pulp_wars-78i.6`) must, at requirement level:
 
 ### 16.2 Labels and text
 
-| Surface                         | Text                                                                                 |
-| ------------------------------- | ------------------------------------------------------------------------------------ |
-| Faction option                  | Dwarf                                                                                |
-| Mound (unit info)               | Burrowed: surfaces at the start of {owner}'s next turn. It cannot be attacked        |
-| Eruption ring                   | Eruption: {n} damage to enemies on the ground here                                   |
-| Tunnel command                  | Tunnel                                                                               |
-| Tunnel tooltip                  | Dig up to 3 tiles under anything. Enemies next to the Mole take {n} when it surfaces |
-| Tunnel destination hint         | If they stay: {unit} −{n}; Undermines Field Defense                                  |
-| Tunnel passenger                | Passenger; None; Hammerer stays behind; Tunnel to {x}, {y}?                          |
-| Tunnel unavailable              | It surfaced this turn; It moved this turn                                            |
-| Rider on its surfacing turn     | Just surfaced: cannot enter a city or village this turn                              |
-| Bomb Run command                | Bomb Run                                                                             |
-| Bomb Run tooltip                | Fly over an enemy within 2 tiles, bomb it for {n}, and land beyond it. No reply      |
-| Bomb preview                    | Bomb: {n} damage, no reply; Kills                                                    |
-| Landing hint                    | Lands next to: up to {n} damage next turn                                            |
-| Already bombed (target mark)    | Bombed this turn                                                                     |
-| Bomb Run unavailable            | No enemy within 2 tiles; Frozen: it cannot bomb this turn                            |
-| Dig In (unit info)              | Dug in: +1 fortification (it has not moved; next to your city)                       |
-| Not dug in (unit info)          | Not dug in: it moved this turn; Not dug in: arrived this turn                        |
-| Attack preview (Dig In)         | Dug in                                                                               |
-| Clockwork (unit info)           | Clockwork: full strength when attacking; only an Engineer can repair it              |
-| Recover unavailable (construct) | Clockwork never recovers by itself                                                   |
-| Gunner shots                    | 2 shots if it stands still; 1 shot left; Fired: cannot move                          |
-| Assemble command                | Assemble                                                                             |
-| Assemble tooltip                | Build a Clockwork Gunner next to the Engineer: {cost} Coins, uses a slot in {city}   |
-| Assemble unavailable            | Needs Marksmanship; {city} is full; Not enough Coins; No free tile; No home city     |
-| Repair command                  | Repair                                                                               |
-| Repair tooltip                  | Heal adjacent units: +4 machines, +2 others. Cures Plague, bites, and frost          |
-| Attack preview (Knockback)      | Knocks back to {tile}; Knockback blocked                                             |
-| Attack preview (Plated)         | Plated: at most 4                                                                    |
-| Attack preview (Blasting)       | Ignores fortification                                                                |
-| Field Defense unavailable       | Dwarves dig in instead of building Field Defense                                     |
-| Log (tunnel)                    | {owner} Steam Mole tunnelled (with a Hammerer)                                       |
-| Log (surfacing)                 | {owner} Steam Mole erupted: {n} unit(s) hit                                          |
-| Log (bomb)                      | {owner} Gyrocopter bombed a {unit} for {n}                                           |
-| Log (Assemble)                  | {owner} Engineer assembled a Clockwork Gunner                                        |
-| Log (Undermined)                | Field Defense undermined                                                             |
+| Surface                         | Text                                                                                   |
+| ------------------------------- | -------------------------------------------------------------------------------------- |
+| Faction option                  | Dwarf                                                                                  |
+| Mound (unit info)               | Burrowed: surfaces at the start of {owner}'s next turn. It cannot be attacked          |
+| Eruption ring                   | Eruption: {n} damage to enemies on the ground here                                     |
+| Tunnel command                  | Tunnel                                                                                 |
+| Tunnel tooltip                  | Dig up to 3 tiles under anything. Enemies next to the Mole take {n} when it surfaces   |
+| Tunnel destination (name)       | Surface next to {units}, erupts for {n}, undermines Field Defense; Surface in the open |
+| Tunnel passenger                | {unit}, {hp} of {max} HP, riding; Alone (Tunnel alone); Hammerer stays behind          |
+| Tunnel `?` info                 | Damage is a forecast: enemies may move before the Mole surfaces                        |
+| Tunnel unavailable              | It surfaced this turn; It moved this turn                                              |
+| Rider on its surfacing turn     | Just surfaced: cannot enter a city or village this turn                                |
+| Bomb Run command                | Bomb Run                                                                               |
+| Bomb Run tooltip                | Fly over an enemy within 2 tiles, bomb it for {n}, and land beyond it. No reply        |
+| Bomb preview                    | Bomb: {n} damage, no reply; Kills                                                      |
+| Landing hint                    | Lands next to: up to {n} damage next turn                                              |
+| Already bombed (target mark)    | Bombed this turn                                                                       |
+| Bomb Run unavailable            | No enemy within 2 tiles; Frozen: it cannot bomb this turn                              |
+| Dig In (unit info)              | Dug in: +1 fortification (it has not moved; next to your city)                         |
+| Not dug in (unit info)          | Not dug in: it moved this turn; Not dug in: arrived this turn                          |
+| Attack preview (Dig In)         | Dug in                                                                                 |
+| Clockwork (unit info)           | Clockwork: full strength when attacking; only an Engineer can repair it                |
+| Recover unavailable (construct) | Clockwork never recovers by itself                                                     |
+| Gunner shots                    | 2 shots if it stands still; 1 shot left; Fired: cannot move                            |
+| Assemble command                | Assemble                                                                               |
+| Assemble tooltip                | Build a Clockwork Gunner next to the Engineer: {cost} Coins, uses a slot in {city}     |
+| Assemble unavailable            | Needs Marksmanship; {city} is full; Not enough Coins; No free tile; No home city       |
+| Repair command                  | Repair                                                                                 |
+| Repair tooltip                  | Heal adjacent units: +4 machines, +2 others. Cures Plague, bites, and frost            |
+| Attack preview (Knockback)      | Knocks back; Knockback blocked                                                         |
+| Attack preview (Plated)         | Plated: at most 4                                                                      |
+| Attack preview (Blasting)       | Ignores fortification                                                                  |
+| Field Defense unavailable       | Dwarves dig in instead of building Field Defense                                       |
+| Log (tunnel)                    | {owner} Steam Mole tunnelled (with a Hammerer)                                         |
+| Log (surfacing)                 | {owner} Steam Mole erupted: {n} unit(s) hit                                            |
+| Log (bomb)                      | {owner} Gyrocopter bombed a {unit} for {n}                                             |
+| Log (Assemble)                  | {owner} Engineer assembled a Clockwork Gunner                                          |
+| Log (Undermined)                | Field Defense undermined                                                               |
 
 ### 16.3 Help text
 
@@ -3012,8 +3014,10 @@ Precise readings:
    No command, target, or orders-cycle entry ever names it.
 2. **The rider prompt** opens when the chosen destination has an offered
    ride; with more than one fresh Hammerer next to the Mole, the dock offers
-   a choice of rider ("Take the Hammerer at x, y"). "Tunnel alone" sends
-   the rider-less command.
+   a choice of rider. "Tunnel alone" sends the rider-less command. (Since
+   bead `pulp_wars-b5f.8` no text names a tile: the riders are portrait
+   buttons, "Hammerer, 12 of 12 HP, riding", and "Alone"; see
+   [SCREEN_FLOW](../ui/SCREEN_FLOW.md#no-coordinates-minimal-text-bead-pulp_wars-b5f8).)
 3. **Unavailable texts** beyond section 16.2: a Mole with no destination
    says "No free tile within 3"; a Gyrocopter that moved (not Frozen) says
    "It moved this turn"; the Assemble reasons name the home city ("Your

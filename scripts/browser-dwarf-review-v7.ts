@@ -289,7 +289,7 @@ async function polishTour(
   const panel = async (name: string): Promise<void> => {
     evidence[`polish-${size}-${name}`] = await evaluate(
       connection,
-      `(() => { const panel = document.querySelector('[data-v7-dwarf-pick]'); return panel === null ? null : { passengers: Array.from(panel.querySelectorAll('.v7-dwarf-passenger')).map((node) => node.getAttribute('aria-label')), chips: Array.from(panel.querySelectorAll('[data-action^="tunnel-"]:not(.v7-dwarf-passenger)')).map((node) => node.textContent), text: Array.from(panel.querySelectorAll('p')).map((node) => node.textContent) }; })()`,
+      `(() => { const panel = document.querySelector('[data-v7-dwarf-pick]'); return panel === null ? null : { passengers: Array.from(panel.querySelectorAll('.v7-dwarf-passenger')).map((node) => node.getAttribute('aria-label')), buttons: Array.from(panel.querySelectorAll('button')).map((node) => node.getAttribute('aria-label') ?? node.textContent), name: panel.getAttribute('aria-label'), text: Array.from(panel.querySelectorAll('p')).map((node) => node.textContent) }; })()`,
     );
   };
   const both = async (name: string): Promise<void> => {
@@ -321,32 +321,25 @@ async function polishTour(
   await delay(600);
   await panel("3-chosen");
   await both("tunnel-3-chosen");
-  // Move the Hammerer to a dot next to the destination.
-  const landing = (await evaluate(
-    connection,
-    `(() => { const match = /surfaces at (\\d+), (\\d+)/.exec(document.querySelector('[data-v7-dwarf-pick]')?.textContent ?? ''); return match === null ? null : { x: Number(match[1]), y: Number(match[2]) }; })()`,
-  )) as Coord | null;
+  // Move the Hammerer to a dot next to the destination, with the keyboard:
+  // Tab steps through the aimed targets (bead pulp_wars-b5f.8; the dock
+  // names no tile) until a dot's description, then Enter.
   const to = at.tunnelTo as Coord;
-  const occupied = (await evaluate(
+  await evaluate(
     connection,
-    `${REVIEW}.snapshotView().units.map((unit) => unit.at.x + ',' + unit.at.y)`,
-  )) as string[];
-  const dot = [
-    { x: to.x + 1, y: to.y + 1 },
-    { x: to.x - 1, y: to.y + 1 },
-    { x: to.x + 1, y: to.y - 1 },
-    { x: to.x - 1, y: to.y - 1 },
-  ].find(
-    (cell) =>
-      !occupied.includes(`${cell.x},${cell.y}`) &&
-      (landing === null || cell.x !== landing.x || cell.y !== landing.y),
+    `document.querySelector('canvas.board-canvas-v7')?.focus()`,
   );
-  evidence[`polish-${size}-4-dot`] = { landing, dot };
-  if (dot !== undefined) {
-    await evaluate(
-      connection,
-      `${REVIEW}.boardHost.activate(${JSON.stringify(dot)})`,
-    );
+  const tabbed: unknown[] = [];
+  let dot = false;
+  for (let step = 0; step < 48 && !dot; step += 1) {
+    await keys(connection, ["Tab"]);
+    const described = await cursorText(connection);
+    tabbed.push(described);
+    dot = String(described).startsWith("The Hammerer lands here instead");
+  }
+  evidence[`polish-${size}-4-dot`] = { dot, tabbed: tabbed.slice(0, 6) };
+  if (dot) {
+    await keys(connection, ["Enter"]);
     await delay(600);
     await panel("4-dot");
     await capture(connection, `polish-tunnel-4-dot-${size}-zoom-1.png`);
@@ -938,6 +931,7 @@ async function keys(
   names: readonly string[],
 ): Promise<void> {
   const codes: Readonly<Record<string, number>> = {
+    Tab: 9,
     Enter: 13,
     Escape: 27,
     ArrowLeft: 37,

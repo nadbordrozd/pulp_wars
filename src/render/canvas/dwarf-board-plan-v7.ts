@@ -11,18 +11,10 @@ import {
   type UnitId,
 } from "../../engine/index";
 import {
-  ASSEMBLE_PICK_V7,
   BOMBED_MARK_V7,
-  BOMB_RUN_PICK_LANDING_V7,
-  BOMB_RUN_PICK_TARGET_V7,
   RIDE_BADGE_V7,
   RIDING_BADGE_V7,
-  STAYS_BEHIND_V7,
-  TUNNEL_CONFIRM_HINT_V7,
-  TUNNEL_FORECAST_V7,
-  TUNNEL_PICK_V7,
   passengerAccessibleNameV7,
-  riderLandingTextV7,
   assembleSummaryV7,
   bombPreviewLinesV7,
   bombTargetLabelV7,
@@ -34,7 +26,7 @@ import {
   landingHintV7,
   landingLabelV7,
   matchHasDwarfSeatV7,
-  tunnelPreviewLinesV7,
+  tunnelDestinationNameV7,
   tunnelTargetLabelV7,
 } from "../dwarf-presentation-v7";
 import {
@@ -223,7 +215,7 @@ export function dwarfPickTargetsV7(
             at,
             command,
             family: "TUNNEL_RIDER",
-            semanticLabel: `Move the ${seated.label}'s landing here, next to the Mole. ${TUNNEL_CONFIRM_HINT_V7}.`,
+            semanticLabel: `The ${seated.label} lands here instead`,
           });
       }
     // The Hammerers that can ride: a badge each; choosing one seats it,
@@ -240,8 +232,8 @@ export function dwarfPickTargetsV7(
         family: "TUNNEL_PASSENGER",
         previewLabel: isSeated ? RIDING_BADGE_V7 : RIDE_BADGE_V7,
         semanticLabel: isSeated
-          ? `${passengerAccessibleNameV7(rider.label, rider.hp, rider.maxHp, true)}. Choose it again to tunnel alone.`
-          : `Seat this ${rider.label} as the passenger (${rider.hp} of ${rider.maxHp} HP).`,
+          ? `${passengerAccessibleNameV7(rider.label, rider.hp, rider.maxHp, true)}. Choose again to tunnel alone`
+          : `${passengerAccessibleNameV7(rider.label, rider.hp, rider.maxHp, false)}. Choose to ride along`,
       });
     }
     for (const to of tunnelDestinationsV7(commands, pick.unitId)) {
@@ -254,16 +246,12 @@ export function dwarfPickTargetsV7(
       );
       const preview = alone === undefined ? null : previewTunnelV7(view, alone);
       if (outcome === null || preview === null) continue;
-      const lines = tunnelPreviewLinesV7(view, preview);
       const isChosen = pick.to !== null && same(pick.to, to);
-      const passenger =
-        seated === null
-          ? []
-          : [
-              outcome.landing === null
-                ? STAYS_BEHIND_V7
-                : riderLandingTextV7(seated.label, outcome.landing),
-            ];
+      const name = tunnelDestinationNameV7(
+        view,
+        preview,
+        seated !== null && outcome.staysBehind,
+      );
       targets.push({
         at: to,
         command: outcome.command,
@@ -293,7 +281,9 @@ export function dwarfPickTargetsV7(
           staysBehind: outcome.staysBehind,
           chosen: isChosen,
         },
-        semanticLabel: `Tunnel: the Mole surfaces here at the start of your next turn. ${[...lines, ...passenger].join(". ")}. ${TUNNEL_FORECAST_V7}. ${isChosen ? `${TUNNEL_CONFIRM_HINT_V7}.` : riders.length === 0 ? `${TUNNEL_PICK_V7}.` : `${TUNNEL_PICK_V7}, then confirm.`}`,
+        semanticLabel: isChosen
+          ? `${name}. Chosen: choose again to tunnel`
+          : name,
       });
     }
     return targets;
@@ -318,7 +308,7 @@ export function dwarfPickTargetsV7(
             command,
             family: "BOMB_TARGET",
             previewLabel: bombTargetLabelV7(preview),
-            semanticLabel: `Bomb Run: bomb this ${name}. ${bombPreviewLinesV7(preview).join(". ")}. ${BOMB_RUN_PICK_TARGET_V7}.`,
+            semanticLabel: `Bomb the ${name}: ${bombPreviewLinesV7(preview).join(", ")}`,
           },
         ];
       });
@@ -333,7 +323,7 @@ export function dwarfPickTargetsV7(
           command,
           family: "BOMB_RUN",
           previewLabel: landingLabelV7(preview),
-          semanticLabel: `Bomb Run: land here after the bomb. ${bombPreviewLinesV7(preview).join(". ")}. ${landingHintV7(preview)}. ${BOMB_RUN_PICK_LANDING_V7}.`,
+          semanticLabel: `Land here. ${landingHintV7(preview)}`,
         },
       ];
     });
@@ -350,7 +340,7 @@ export function dwarfPickTargetsV7(
     command,
     family: "ASSEMBLE" as const,
     // No label per tile: the dock's prompt names the cost and the slot.
-    semanticLabel: `Assemble: ${assembleSummaryV7(preview, city)}. It arrives exhausted. ${ASSEMBLE_PICK_V7}.`,
+    semanticLabel: `Assemble here: ${assembleSummaryV7(preview, city)}`,
   }));
 }
 

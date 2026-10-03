@@ -1806,8 +1806,9 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
   );
   if (!cooling) throw new Error("The full-power ray left no Cooling entry");
   // Beam Down: Escape clears the selection (the cursor stays on the ray's
-  // target); the Saucer is selected, its Beam Down button aims, and the
-  // passenger and the first tile are picked in the dock.
+  // target); the Saucer is selected, its Beam Down button aims, the
+  // passenger is picked in the dock, and the first tile on the board with
+  // Tab and Enter (bead pulp_wars-b5f.8: the dock names no tile).
   await focusBoard();
   await pressKey(connection, "Escape", "Escape");
   await arrows(
@@ -1827,10 +1828,22 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
   await pointerClick(connection, '[data-action^="beam-passenger-"]');
   await waitForExpression(
     connection,
-    `document.querySelector('[data-v7-martian-pick="beam_down"] [data-action^="beam-tile-"]') !== null`,
+    `(document.querySelector('[data-v7-martian-pick="beam_down"]')?.getAttribute('aria-label') ?? '').startsWith('Choose a tile next to the Saucer') && document.querySelector('[data-v7-martian-pick="beam_down"] [data-action^="beam-tile-"]') === null`,
   );
   await capture(connection, "martian-beam-down-desktop.png");
-  await pointerClick(connection, '[data-action^="beam-tile-"]');
+  const beamPanelText = await evaluate<string>(
+    connection,
+    `document.querySelector('[data-v7-martian-pick="beam_down"]')?.textContent ?? ''`,
+  );
+  if (/\d+, ?\d+/.test(beamPanelText))
+    throw new Error(`Beam Down dock names a tile: ${beamPanelText}`);
+  await focusBoard();
+  await pressKey(connection, "Tab", "Tab");
+  await waitForExpression(
+    connection,
+    `(document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? '').startsWith('Beam the ')`,
+  );
+  await pressKey(connection, "Enter", "Enter");
   await waitForExpression(
     connection,
     `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 2 && (document.querySelector('#v7-live')?.textContent ?? '').includes('Saucer beamed down a') && ${settled}`,
@@ -2093,9 +2106,10 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
  * for every seat; a Showcase with a Dwarf seat and three opponents launches
  * from the production setup (the human's "D" typeahead passes Dinosaur,
  * whose seat then takes the freed Human); the Steam Mole is selected with
- * the keyboard, its Tunnel button aims, the dock lists the destinations
- * with the preview's eruption forecast ("If they stay: ..."), and the
- * tunnel leaves a mound on the chosen tile (`view.burrowed`); and the save
+ * the keyboard, its Tunnel button aims, Tab on the board reaches an
+ * erupting destination whose description carries the forecast ("Surface
+ * next to ..., erupts for N"; no text names a tile), Enter chooses it, and
+ * the tunnel leaves a mound on the chosen tile (`view.burrowed`); and the save
  * resumes with its Dwarf seat and the mound on a fresh default-route load.
  * It uses no fixture, so it also runs against a deployed bundle.
  */
@@ -2212,28 +2226,54 @@ async function probeDwarfMatch(connection: Connection): Promise<string> {
     `document.querySelector('.v7-selection-dock h2')?.textContent === 'Steam Mole' && document.querySelector('[data-action="dwarf-tunnel"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
   );
   await pointerClick(connection, '[data-action="dwarf-tunnel"]');
-  // The dock lists the best few destinations (bead pulp_wars-78i.9); a
-  // Hammerer next to the Mole is seated first, and a chosen destination is
-  // then confirmed with the dock's Tunnel button.
-  const chip =
-    '[data-v7-dwarf-pick="tunnel"] .v7-martian-choice-button[data-action^="tunnel-"]';
+  // The dock is the ability's head, any passenger buttons and Cancel; it
+  // names no tile (bead pulp_wars-b5f.8). A destination is chosen on the
+  // board: Tab steps through the aimed targets in reading order (the
+  // offered destinations and the tiles of the Hammerers that can ride),
+  // each described without coordinates, until an erupting one ("Surface
+  // next to ..., erupts for N"); Enter chooses it and the dock's Tunnel (or
+  // a second Enter) digs it.
   await waitForExpression(
     connection,
-    `document.querySelector('${chip}') !== null`,
+    `document.querySelector('[data-v7-dwarf-pick="tunnel"]')?.getAttribute('aria-label') === 'Choose where the Mole surfaces'`,
   );
-  const forecast = await evaluate<string>(
+  const tunnelDock = await evaluate<string>(
     connection,
-    `document.querySelector('${chip}')?.getAttribute('aria-label') ?? ''`,
+    `document.querySelector('[data-v7-dwarf-pick="tunnel"]')?.textContent ?? ''`,
   );
-  if (!forecast.includes("If they stay:"))
+  if (/\d+, ?\d+/.test(tunnelDock))
+    throw new Error(`Tunnel dock names a tile: ${tunnelDock}`);
+  const tunnelCells = await evaluate<
+    readonly { readonly x: number; readonly y: number }[]
+  >(
+    connection,
+    `(() => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const cells = new Map(); for (const command of s.offeredCommands) { if (command.kind !== 'TUNNEL' || command.unitId !== ${started.mole.id}) continue; cells.set(command.to.x + ',' + command.to.y, command.to); if (command.rider !== null) { const rider = s.view.units.find((unit) => unit.id === command.rider.unitId); if (rider !== undefined) cells.set(rider.at.x + ',' + rider.at.y, rider.at); } } return [...cells.values()].sort((left, right) => left.y - right.y || left.x - right.x); })()`,
+  );
+  const cursorDescription = `document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? ''`;
+  await focusBoard();
+  let forecast = "";
+  let tabs = 0;
+  while (tabs < tunnelCells.length && !forecast.startsWith("Surface next to")) {
+    await pressKey(connection, "Tab", "Tab");
+    tabs += 1;
+    forecast = await evaluate<string>(connection, cursorDescription);
+  }
+  if (
+    !forecast.startsWith("Surface next to") ||
+    !/erupts for \d+/.test(forecast) ||
+    /\d+, ?\d+/.test(forecast)
+  )
     throw new Error(`Tunnel forecast missing: ${forecast}`);
+  const destination = tunnelCells[tabs - 1];
+  if (destination === undefined)
+    throw new Error(`Tunnel destination missing after ${tabs} Tabs`);
+  const [toX, toY] = [destination.x, destination.y];
   await capture(connection, "dwarf-tunnel-preview-desktop.png");
-  const destination = await evaluate<string>(
+  await pressKey(connection, "Enter", "Enter");
+  await waitForExpression(
     connection,
-    `document.querySelector('${chip}')?.dataset.action ?? ''`,
+    `document.querySelector('[data-action="tunnel-confirm"]') !== null || globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 1`,
   );
-  const [toX, toY] = destination.slice("tunnel-".length).split("-").map(Number);
-  await pointerClick(connection, chip);
   if (
     await evaluate<boolean>(
       connection,

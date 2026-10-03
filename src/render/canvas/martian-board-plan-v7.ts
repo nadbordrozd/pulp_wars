@@ -13,11 +13,7 @@ import {
   type UnitId,
 } from "../../engine/index";
 import {
-  BEAM_DOWN_PICK_PASSENGER_V7,
-  BEAM_DOWN_PICK_TILE_V7,
   LAUNCH_LABEL_V7,
-  MIND_CONTROL_PICK_V7,
-  TRACTOR_BEAM_PICK_V7,
   beamDownTileLabelV7,
   martianCombatLinesV7,
   martianStatsV7,
@@ -135,7 +131,7 @@ export function martianPickTargetsV7(
             command,
             family: "BEAM_DOWN_PASSENGER",
             previewLabel: `Beam ${name}`,
-            semanticLabel: `Beam Down passenger: choose this ${name}. ${BEAM_DOWN_PICK_PASSENGER_V7}.`,
+            semanticLabel: `Beam the ${name} down`,
           },
         ];
       });
@@ -153,7 +149,7 @@ export function martianPickTargetsV7(
               command,
               family: "BEAM_DOWN",
               previewLabel: beamDownTileLabelV7(preview, command.to),
-              semanticLabel: `Beam Down: the ${name} arrives here and cannot act this turn. ${BEAM_DOWN_PICK_TILE_V7}.`,
+              semanticLabel: `Beam the ${name} here${beamDownTileLabelV7(preview, command.to).includes("Field Defense") ? ", destroys Field Defense" : ""}`,
             },
           ]
         : [],
@@ -177,7 +173,7 @@ export function martianPickTargetsV7(
           family: "MIND_CONTROL",
           previewLabel: mindControlTargetLabelV7(preview),
           previewNote: lines.slice(1).join(" · "),
-          semanticLabel: `Mind Control: ${lines.join(". ")}. ${MIND_CONTROL_PICK_V7}.`,
+          semanticLabel: `Take it: ${lines.join(". ")}`,
         },
       ];
     });
@@ -204,7 +200,7 @@ export function martianPickTargetsV7(
           ? { previewNote: lines.slice(1).join(" · ") }
           : {}),
         pullTo: preview.to,
-        semanticLabel: `Tractor Beam: pulls the ${name} to ${preview.to.x}, ${preview.to.y}.${lines.length === 0 ? "" : ` ${lines.join(". ")}.`} ${TRACTOR_BEAM_PICK_V7}.`,
+        semanticLabel: `Pull the ${name} one tile closer${lines.length === 0 ? "" : `. ${lines.join(". ")}`}`,
       },
     ];
   });

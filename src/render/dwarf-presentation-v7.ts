@@ -121,72 +121,43 @@ export function tunnelTooltipV7(eruptionDamage: number): string {
   return `Dig up to ${TUNNEL_RANGE_V7} tiles under anything. Enemies next to the Mole take ${eruptionDamage} when it surfaces`;
 }
 export const TUNNEL_PICK_V7 = "Choose where the Mole surfaces";
-/** "If they stay: {unit} −{n}". */
-export function tunnelHintTextV7(unit: string, damage: number): string {
-  return `If they stay: ${unit} −${damage}`;
-}
-export const UNDERMINES_V7 = "Undermines Field Defense";
+/**
+ * The Tunnel's caveat (bead pulp_wars-b5f.8: only in the `?` info button,
+ * never as body text).
+ */
 export const TUNNEL_FORECAST_V7 =
-  "A forecast: enemies may move before the Mole surfaces";
-/**
- * The Tunnel prompt lists at most this many destinations (bead
- * pulp_wars-78i.9): the ones that would erupt on the most, as chips; every
- * destination is picked on the board, where all of them are highlighted.
- */
-export const TUNNEL_PICK_CHIP_LIMIT_V7 = 4;
-/**
- * The board hint under the Tunnel prompt: "Or choose any of the 34
- * highlighted tiles on the board" beside chips, "Choose one of …" without.
- */
-export function tunnelBoardHintV7(tiles: number, withChips: boolean): string {
-  const which =
-    tiles === 1 ? "the highlighted tile" : `the ${tiles} highlighted tiles`;
-  if (tiles === 1)
-    return `${withChips ? "Or choose" : "Choose"} ${which} on the board`;
-  return withChips
-    ? `Or choose any of ${which} on the board`
-    : `Choose one of ${which} on the board`;
-}
+  "Damage is a forecast: enemies may move before the Mole surfaces";
+/** The `?` info of the Tunnel's first stage: the instruction and caveat. */
+export const TUNNEL_PICK_INFO_V7 = `${TUNNEL_PICK_V7}. Tap a Hammerer to seat or unseat it. ${TUNNEL_FORECAST_V7}`;
 export const TUNNEL_ALONE_V7 = "Tunnel alone";
 /**
- * The passenger-first Tunnel (bead pulp_wars-78i.9): the dock's passenger
- * control, the board badges of the Hammerers that can ride, and the
- * confirmation of a chosen destination.
+ * The passenger-first Tunnel (bead pulp_wars-78i.9, trimmed by bead
+ * pulp_wars-b5f.8): the dock's passenger buttons (a portrait each, and
+ * "Alone"), the board badges of the Hammerers that can ride, and the
+ * confirmation of a chosen destination. No text names a tile.
  */
 export const TUNNEL_PASSENGER_V7 = "Passenger";
-export const TUNNEL_NO_PASSENGER_V7 = "None";
+export const TUNNEL_NO_PASSENGER_V7 = "Alone";
 export const RIDE_BADGE_V7 = "Ride";
 export const RIDING_BADGE_V7 = "Riding";
 /** "Hammerer stays behind": no tile next to the destination is free. */
 export const STAYS_BEHIND_V7 = `${HAMMERER()} stays behind`;
-/** "Tunnel to 4, 2?" */
-export function tunnelConfirmPromptV7(to: {
-  readonly x: number;
-  readonly y: number;
-}): string {
-  return `Tunnel to ${to.x}, ${to.y}?`;
-}
 export const TUNNEL_CONFIRM_HINT_V7 = `Tap the tile again or press ${TUNNEL_LABEL_V7}`;
 export const RIDER_MOVE_HINT_V7 = `Tap a dot to move the ${HAMMERER()}`;
-/** "Hammerer surfaces at 3, 1". */
-export function riderLandingTextV7(
-  label: string,
-  at: { readonly x: number; readonly y: number },
-): string {
-  return `${label} surfaces at ${at.x}, ${at.y}`;
-}
-/** "Passenger Hammerer, 12 of 14 HP, selected". */
+/** The `?` info of a chosen Tunnel destination. */
+export const TUNNEL_CONFIRM_INFO_V7 = `${TUNNEL_CONFIRM_HINT_V7}. ${RIDER_MOVE_HINT_V7}. ${TUNNEL_FORECAST_V7}`;
+/** "Hammerer, 12 of 14 HP, riding". */
 export function passengerAccessibleNameV7(
   label: string,
   hp: number,
   maxHp: number,
   selected: boolean,
 ): string {
-  return `${TUNNEL_PASSENGER_V7} ${label}, ${hp} of ${maxHp} HP${selected ? ", selected" : ""}`;
+  return `${label}, ${hp} of ${maxHp} HP${selected ? ", riding" : ""}`;
 }
-/** "No passenger: the Mole tunnels alone, selected". */
+/** "Tunnel alone, selected". */
 export function noPassengerAccessibleNameV7(selected: boolean): string {
-  return `No passenger: the ${MOLE()} tunnels alone${selected ? ", selected" : ""}`;
+  return `${TUNNEL_ALONE_V7}${selected ? ", selected" : ""}`;
 }
 export const TUNNEL_SURFACED_V7 = "It surfaced this turn";
 export const TUNNEL_MOVED_V7 = "It moved this turn";
@@ -243,6 +214,12 @@ export function assembleSummaryV7(
   return `Assemble a ${GUNNER()}: ${preview.cost} Coins, slot ${preview.usedSlots + 1}/${preview.capacity} in ${city}`;
 }
 export const ASSEMBLE_PICK_V7 = "Choose a tile next to the Engineer";
+/** The Assemble panel's one line: "4 Coins · slot 2/3". */
+export function assembleCostLineV7(
+  preview: Pick<AssemblePreviewV7, "cost" | "usedSlots" | "capacity">,
+): string {
+  return `${preview.cost} Coins · slot ${preview.usedSlots + 1}/${preview.capacity}`;
+}
 export const ASSEMBLE_NEEDS_TECH_V7 = "Needs Marksmanship";
 /** "{city} is full". */
 export function assembleCityFullV7(city: string): string {
@@ -254,10 +231,8 @@ export const ASSEMBLE_NO_HOME_V7 = "No home city";
 export const REPAIR_LABEL_V7 = "Repair";
 export const REPAIR_CHIP_V7 = `+${REPAIR_MACHINE_V7} machines, +2 others`;
 export const REPAIR_TOOLTIP_V7 = `Heal adjacent units: ${REPAIR_CHIP_V7}. Cures Plague, bites, and frost`;
-/** "Knocks back to {tile}". */
-export function knockbackToTextV7(at: CoordV7): string {
-  return `Knocks back to ${at.x}, ${at.y}`;
-}
+/** The attack preview's Knockback note; the board's arrow shows where. */
+export const KNOCKBACK_V7 = "Knocks back";
 export const KNOCKBACK_BLOCKED_V7 = "Knockback blocked";
 export const PLATED_PREVIEW_V7 = `Plated: at most ${PLATED_CAP_V7}`;
 export const BLASTING_PREVIEW_V7 = "Ignores fortification";
@@ -817,7 +792,7 @@ export function dwarfCombatLinesV7(
     knockback = {
       to,
       blocked,
-      text: blocked ? KNOCKBACK_BLOCKED_V7 : knockbackToTextV7(to),
+      text: blocked ? KNOCKBACK_BLOCKED_V7 : KNOCKBACK_V7,
     };
     notes.push(knockback.text);
   }
@@ -825,22 +800,6 @@ export function dwarfCombatLinesV7(
 }
 
 // -------------------------------------------------------- ability previews
-
-/** The eruption forecast lines of a Tunnel destination. */
-export function tunnelPreviewLinesV7(
-  view: PlayerViewV7,
-  preview: TunnelPreviewV7,
-): readonly string[] {
-  const hits = preview.eruptionTargets.map((target) => {
-    const unit = view.units.find((candidate) => candidate.id === target.unitId);
-    const name = unit === undefined ? "unit" : unitName(view, unit);
-    return `${tunnelHintTextV7(name, target.damage + target.shieldDamage)}${target.dies ? ", lethal" : ""}`;
-  });
-  return [
-    ...(hits.length === 0 ? ["No enemy next to it now"] : hits),
-    ...(preview.undermines.length > 0 ? [UNDERMINES_V7] : []),
-  ];
-}
 
 /** The short board label of a Tunnel destination. */
 export function tunnelTargetLabelV7(preview: TunnelPreviewV7): string {
@@ -850,6 +809,35 @@ export function tunnelTargetLabelV7(preview: TunnelPreviewV7): string {
     0,
   );
   return `Erupt −${total}`;
+}
+
+/**
+ * The accessible name of a Tunnel destination (bead pulp_wars-b5f.8): what
+ * the Mole would erupt on, never where: "Surface next to Catapult and
+ * Captain, erupts for 6", "Surface in the open", with ", lethal",
+ * ", undermines Field Defense" and ". Hammerer stays behind".
+ */
+export function tunnelDestinationNameV7(
+  view: PlayerViewV7,
+  preview: TunnelPreviewV7,
+  staysBehind = false,
+): string {
+  const names = preview.eruptionTargets.map((target) => {
+    const unit = view.units.find((candidate) => candidate.id === target.unitId);
+    return unit === undefined ? "a unit" : unitName(view, unit);
+  });
+  const total = preview.eruptionTargets.reduce(
+    (sum, target) => sum + target.damage + target.shieldDamage,
+    0,
+  );
+  const lethal = preview.eruptionTargets.some((target) => target.dies);
+  const parts = [
+    names.length === 0
+      ? "Surface in the open"
+      : `Surface next to ${joinAnd(names)}, erupts for ${total}${lethal ? ", lethal" : ""}`,
+    ...(preview.undermines.length > 0 ? ["undermines Field Defense"] : []),
+  ];
+  return `${parts.join(", ")}${staysBehind ? `. ${STAYS_BEHIND_V7}` : ""}`;
 }
 
 /** The bomb's preview lines (section 16.2). */
@@ -1114,19 +1102,17 @@ export function dwarfFieldDefenseBlockedV7(
 }
 
 /**
- * A city as the Assemble texts name it: "your Capital", or "your city at
- * x, y" (cities have no names); "its home city" when it is unknown.
+ * The Engineer's home city as the Assemble texts name it: "your Capital",
+ * else "its home city" (cities have no names, and no text names a tile).
  */
 export function dwarfCityNameV7(
   view: PlayerViewV7,
   cityId: number | null,
 ): string {
   const city = view.cities.find((candidate) => candidate.id === cityId);
-  if (city === undefined) return "its home city";
-  const owner = dwarfPossessiveV7(view, city.ownerId);
-  return city.isCapital
-    ? `${owner} Capital`
-    : `${owner} city at ${city.at.x}, ${city.at.y}`;
+  return city?.isCapital === true
+    ? `${dwarfPossessiveV7(view, city.ownerId)} Capital`
+    : "its home city";
 }
 
 /** Section 16.1 "city panel": the Dwarf slot tooltip. */

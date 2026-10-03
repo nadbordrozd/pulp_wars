@@ -101,7 +101,7 @@ describe("Ruleset 7 public presentation", () => {
         ],
         before.viewer.id,
       ),
-    ).toBe(`Windmill (1, 1) healed unit ${recipient.id} +2 HP`);
+    ).toBe("Windmill healed 1 unit +2 HP");
   });
 
   it("installs local recruitment directly without a whole-board presentation step", () => {
