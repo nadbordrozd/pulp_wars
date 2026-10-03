@@ -1,0 +1,36 @@
+{
+  "id": "goblin-battleship-crew-edit-a",
+  "jobId": "3fbb170d-5ace-4075-9911-3111539aae29",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-battleship",
+    "subject": "UNIT:GOBLIN:BATTLESHIP",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 96313,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing in the scrap iron lookout tower and shouting. Keep the dark planks, scrap plates, brown leather sails, pennants, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing in the scrap iron lookout tower and shouting. Keep the dark planks, scrap plates, brown leather sails, pennants, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing in the scrap iron lookout tower and shouting. Keep the dark planks, scrap plates, brown leather sails, pennants, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing in the scrap iron lookout tower and shouting. Keep the dark planks, scrap plates, brown leather sails, pennants, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "goblin-battleship-saddle-edit-a",
+      "candidate": 0,
+      "sha256": "366221101bc8a7fdc6c982b17d97095765e7ff3c9493b95e22703bd50992cd3c"
+    }
+  }
+}

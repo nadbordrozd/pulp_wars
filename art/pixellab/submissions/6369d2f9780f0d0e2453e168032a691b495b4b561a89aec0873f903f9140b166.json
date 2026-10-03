@@ -1,0 +1,37 @@
+{
+  "id": "dinosaur-transport-primal-a",
+  "jobId": "30514d5c-c1e4-44a5-8ce6-7fd74e25670f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-transport",
+    "subject": "UNIT:DINOSAUR:EMBARKED_TRANSPORT",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96421,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a stone-age log raft: the pale hull becomes tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows; a small carved plesiosaur head painted deep blue #205794 with orange stripes at the front; the red tarp becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a stone-age log raft: the pale hull becomes tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows; a small carved plesiosaur head painted deep blue #205794 with orange stripes at the front; the red tarp becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a stone-age log raft: the pale hull becomes tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows; a small carved plesiosaur head painted deep blue #205794 with orange stripes at the front; the red tarp becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a stone-age log raft: the pale hull becomes tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows; a small carved plesiosaur head painted deep blue #205794 with orange stripes at the front; the red tarp becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "embarked-transport-a-edit",
+      "candidate": 0,
+      "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+    }
+  }
+}

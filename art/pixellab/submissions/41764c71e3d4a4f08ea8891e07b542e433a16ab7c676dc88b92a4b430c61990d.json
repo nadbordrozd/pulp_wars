@@ -1,0 +1,37 @@
+{
+  "id": "undead-battleship-ghost-a",
+  "jobId": "97f59123-dc8c-4fe4-bcfe-6b8abddceedc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-undead",
+    "asset": "chibi-naval-undead-battleship",
+    "subject": "UNIT:UNDEAD:BATTLESHIP",
+    "faction": "UNDEAD",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 96211,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a spooky ghost galleon: the pale hull becomes near-black charcoal wood, colour #2a2a30, with pale ivory bone ribs along its side and a pale ivory skull figurehead; the grey stone tower becomes black wood; the red sails become tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennants become black rags; two small lanterns glow bright violet. Keep the ship shape, size, thick black outline and style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a spooky ghost galleon: the pale hull becomes near-black charcoal wood, colour #2a2a30, with pale ivory bone ribs along its side and a pale ivory skull figurehead; the grey stone tower becomes black wood; the red sails become tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennants become black rags; two small lanterns glow bright violet. Keep the ship shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a spooky ghost galleon: the pale hull becomes near-black charcoal wood, colour #2a2a30, with pale ivory bone ribs along its side and a pale ivory skull figurehead; the grey stone tower becomes black wood; the red sails become tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennants become black rags; two small lanterns glow bright violet. Keep the ship shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a spooky ghost galleon: the pale hull becomes near-black charcoal wood, colour #2a2a30, with pale ivory bone ribs along its side and a pale ivory skull figurehead; the grey stone tower becomes black wood; the red sails become tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennants become black rags; two small lanterns glow bright violet. Keep the ship shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "battleship-d-edit",
+      "candidate": 1,
+      "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+    }
+  }
+}

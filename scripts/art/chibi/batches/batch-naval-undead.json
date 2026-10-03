@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-undead",
+  "title": "Naval units in the Undead look: black ghost ships with tattered sails, bone figureheads and violet ghost-lanterns, and their portraits",
+  "bead": "pulp_wars-w5j.2",
+  "faction": "UNDEAD",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-naval-undead-patrol-boat",
+      "subject": "UNIT:UNDEAD:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-naval-undead-battleship",
+      "subject": "UNIT:UNDEAD:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false,
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-naval-undead-transport",
+      "subject": "UNIT:UNDEAD:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-naval-undead-portrait-patrol-boat",
+      "subject": "PORTRAIT:UNDEAD:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-naval-undead-portrait-battleship",
+      "subject": "PORTRAIT:UNDEAD:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "undead-violet"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "undead-patrol-boat-ghost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "patrol-boat-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a spooky ghost ship: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a big pale ivory skull figurehead on the bow; the red sail becomes tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennant becomes a torn black rag; one small lantern glowing bright violet hangs from the mast. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 cog as a ghost ship: black wood, bone rail and skull, tattered sail, one violet lantern.",
+      "asset": "chibi-naval-undead-patrol-boat"
+    },
+    {
+      "id": "undead-battleship-ghost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96211,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "battleship-d-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Turn it into a spooky ghost galleon: the pale hull becomes near-black charcoal wood, colour #2a2a30, with pale ivory bone ribs along its side and a pale ivory skull figurehead; the grey stone tower becomes black wood; the red sails become tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennants become black rags; two small lanterns glow bright violet. Keep the ship shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 carrack as a ghost galleon.",
+      "asset": "chibi-naval-undead-battleship"
+    },
+    {
+      "id": "undead-transport-ghost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96221,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "embarked-transport-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a spooky funeral barge: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a small skull on the prow; the red tarp becomes a tattered warm ash grey shroud, colour #948884, tied with bone-white rope; the pennant becomes one small lantern glowing bright violet on the pole. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 barge as a black funeral barge; the shroud is ash grey (the Undead flesh tone) so the cargo reads on the black hull.",
+      "asset": "chibi-naval-undead-transport"
+    },
+    {
+      "id": "undead-portrait-patrol-boat-ghost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96231,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a spooky ghost ship: the hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a small skull on the bow; the red sail becomes tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennant becomes a torn black rag; one small lantern glows bright violet. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+      "asset": "chibi-naval-undead-portrait-patrol-boat"
+    },
+    {
+      "id": "undead-portrait-battleship-ghost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96241,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-battleship-b",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a spooky ghost galleon: the hull becomes near-black charcoal wood, colour #2a2a30, with pale ivory bone ribs and a skull on the bow; the grey castles become black wood; the red sails become tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennants become black rags; small lanterns glow bright violet. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+      "asset": "chibi-naval-undead-portrait-battleship"
+    }
+  ]
+}

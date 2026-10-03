@@ -1,0 +1,37 @@
+{
+  "id": "martian-patrol-boat-chrome-a",
+  "jobId": "fbf4ca1f-9581-454c-93de-61cf5d515fda",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-martian",
+    "asset": "chibi-naval-martian-patrol-boat",
+    "subject": "UNIT:MARTIAN:PATROL_BOAT",
+    "faction": "MARTIAN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96501,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and two small fins; the mast and sail become one tall swept-back chrome fin; on the deck a clear pale glass dome cockpit with one white highlight; a row of small glowing hot magenta lights along the rim. Keep the size, thick black outline and style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and two small fins; the mast and sail become one tall swept-back chrome fin; on the deck a clear pale glass dome cockpit with one white highlight; a row of small glowing hot magenta lights along the rim. Keep the size, thick black outline and style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and two small fins; the mast and sail become one tall swept-back chrome fin; on the deck a clear pale glass dome cockpit with one white highlight; a row of small glowing hot magenta lights along the rim. Keep the size, thick black outline and style exactly the same, with nothing under the hull.",
+    "editInstruction": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and two small fins; the mast and sail become one tall swept-back chrome fin; on the deck a clear pale glass dome cockpit with one white highlight; a row of small glowing hot magenta lights along the rim. Keep the size, thick black outline and style exactly the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "patrol-boat-a-edit",
+      "candidate": 0,
+      "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+    }
+  }
+}

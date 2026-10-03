@@ -1,0 +1,943 @@
+{
+  "bead": "pulp_wars-w5j.2",
+  "measure": "CIE76 colour difference (about 10 is clear at a glance, 20 and more are different colours) and the WCAG luminance contrast. A sprite's body is its opaque pixels brighter than value 0.14 (the rest is the outline); its swatches are its colours binned to 4 bits a channel, the bins covering 90% of the body. Palette distance: each swatch of one sprite to the nearest swatch of the other, weighted by area, both ways, averaged; under deuteranopia (Machado 2009) as well.",
+  "water": {
+    "shallow": "#8fd3dc",
+    "deep": "#4277a5",
+    "shallowToDeep": 40.6
+  },
+  "factions": [
+    {
+      "faction": "ORIGINAL",
+      "label": "Human",
+      "ships": [
+        {
+          "role": "PATROL_BOAT",
+          "opaquePixels": 2593,
+          "outlineShare": 17.1,
+          "bodyMean": "#b56e3a",
+          "mainColours": [
+            "#c50d25 12.8%",
+            "#850621 6.5%",
+            "#aa6b27 6.1%",
+            "#fddb21 5%",
+            "#fdd275 4.7%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 72.2,
+              "bodyMeanContrast": 2.4,
+              "nearestSwatchDeltaE": 40.3,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 75.3,
+              "bodyMeanContrast": 1.2,
+              "nearestSwatchDeltaE": 13.2,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "BATTLESHIP",
+          "opaquePixels": 3519,
+          "outlineShare": 16.3,
+          "bodyMean": "#986237",
+          "mainColours": [
+            "#6b021b 15.4%",
+            "#530117 7.9%",
+            "#b87a18 6.5%",
+            "#ffdb6a 5%",
+            "#4c0215 3.9%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 66.7,
+              "bodyMeanContrast": 3,
+              "nearestSwatchDeltaE": 19.4,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 66.5,
+              "bodyMeanContrast": 1.1,
+              "nearestSwatchDeltaE": 22.1,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "EMBARKED_TRANSPORT",
+          "opaquePixels": 1482,
+          "outlineShare": 13.6,
+          "bodyMean": "#a86536",
+          "mainColours": [
+            "#d98429 7.1%",
+            "#9f1524 5.9%",
+            "#fed169 5.8%",
+            "#72131f 5.4%",
+            "#fdc053 5.2%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 71.6,
+              "bodyMeanContrast": 2.7,
+              "nearestSwatchDeltaE": 11.9,
+              "bodyShareWithin12": 1.6
+            },
+            "deep": {
+              "bodyMeanDeltaE": 72.6,
+              "bodyMeanContrast": 1,
+              "nearestSwatchDeltaE": 17,
+              "bodyShareWithin12": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "faction": "UNDEAD",
+      "label": "Undead",
+      "ships": [
+        {
+          "role": "PATROL_BOAT",
+          "opaquePixels": 2591,
+          "outlineShare": 50.1,
+          "bodyMean": "#6d6357",
+          "mainColours": [
+            "#737473 21.2%",
+            "#535353 14.7%",
+            "#272525 13.7%",
+            "#3a3a3a 12.5%",
+            "#484848 9.4%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 47.6,
+              "bodyMeanContrast": 3.5,
+              "nearestSwatchDeltaE": 38.6,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 39.4,
+              "bodyMeanContrast": 1.2,
+              "nearestSwatchDeltaE": 30.7,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "BATTLESHIP",
+          "opaquePixels": 3502,
+          "outlineShare": 50.5,
+          "bodyMean": "#494747",
+          "mainColours": [
+            "#4f5352 31.2%",
+            "#373838 28.4%",
+            "#29282a 19.6%",
+            "#434545 8.2%",
+            "#5b5d5d 2.2%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 55.1,
+              "bodyMeanContrast": 5.5,
+              "nearestSwatchDeltaE": 46.4,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 35.5,
+              "bodyMeanContrast": 1.9,
+              "nearestSwatchDeltaE": 31.3,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "EMBARKED_TRANSPORT",
+          "opaquePixels": 1467,
+          "outlineShare": 42.4,
+          "bodyMean": "#6d6257",
+          "mainColours": [
+            "#25242b 13.4%",
+            "#827c6b 11.4%",
+            "#9c937f 9.6%",
+            "#181827 9.3%",
+            "#736d5d 7.1%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 47.8,
+              "bodyMeanContrast": 3.5,
+              "nearestSwatchDeltaE": 35.6,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 38.9,
+              "bodyMeanContrast": 1.2,
+              "nearestSwatchDeltaE": 33.7,
+              "bodyShareWithin12": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "faction": "GOBLIN",
+      "label": "Goblin",
+      "ships": [
+        {
+          "role": "PATROL_BOAT",
+          "opaquePixels": 2594,
+          "outlineShare": 35.8,
+          "bodyMean": "#5e4130",
+          "mainColours": [
+            "#80573f 12.7%",
+            "#573627 11.2%",
+            "#351611 11.1%",
+            "#280e0c 7.1%",
+            "#2d110e 4.3%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 63.8,
+              "bodyMeanContrast": 5.5,
+              "nearestSwatchDeltaE": 43.1,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 50.8,
+              "bodyMeanContrast": 1.9,
+              "nearestSwatchDeltaE": 25.9,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "BATTLESHIP",
+          "opaquePixels": 3535,
+          "outlineShare": 42.3,
+          "bodyMean": "#60341d",
+          "mainColours": [
+            "#9c5224 13.1%",
+            "#632b13 9.4%",
+            "#3b1815 8.1%",
+            "#551d0a 6.9%",
+            "#582516 4.7%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 73.2,
+              "bodyMeanContrast": 6.2,
+              "nearestSwatchDeltaE": 36.2,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 60.7,
+              "bodyMeanContrast": 2.2,
+              "nearestSwatchDeltaE": 29.4,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "EMBARKED_TRANSPORT",
+          "opaquePixels": 1696,
+          "outlineShare": 51.5,
+          "bodyMean": "#483a28",
+          "mainColours": [
+            "#736935 15.2%",
+            "#351b0c 13.7%",
+            "#3c2111 8.4%",
+            "#281409 7.3%",
+            "#441d0d 6.7%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 64.4,
+              "bodyMeanContrast": 6.5,
+              "nearestSwatchDeltaE": 30.5,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 49.9,
+              "bodyMeanContrast": 2.3,
+              "nearestSwatchDeltaE": 24,
+              "bodyShareWithin12": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "faction": "DINOSAUR",
+      "label": "Dinosaur",
+      "ships": [
+        {
+          "role": "PATROL_BOAT",
+          "opaquePixels": 2363,
+          "outlineShare": 21.7,
+          "bodyMean": "#996335",
+          "mainColours": [
+            "#cda461 15.2%",
+            "#ab8344 9.7%",
+            "#5d351b 9.6%",
+            "#7f401a 7%",
+            "#7d592e 6.6%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 67.5,
+              "bodyMeanContrast": 3,
+              "nearestSwatchDeltaE": 52.5,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 68.2,
+              "bodyMeanContrast": 1,
+              "nearestSwatchDeltaE": 17.6,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "BATTLESHIP",
+          "opaquePixels": 3342,
+          "outlineShare": 9.7,
+          "bodyMean": "#94683a",
+          "mainColours": [
+            "#debb78 14.3%",
+            "#451c09 8.4%",
+            "#b89155 8.2%",
+            "#674522 5.8%",
+            "#b56e31 3.7%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 63.1,
+              "bodyMeanContrast": 2.9,
+              "nearestSwatchDeltaE": 49.8,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 64.5,
+              "bodyMeanContrast": 1,
+              "nearestSwatchDeltaE": 22.1,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "EMBARKED_TRANSPORT",
+          "opaquePixels": 1846,
+          "outlineShare": 17.8,
+          "bodyMean": "#9a6d42",
+          "mainColours": [
+            "#2c4b66 9.9%",
+            "#bb8f54 8.5%",
+            "#ecbf72 7.9%",
+            "#fde196 6.9%",
+            "#512815 6.5%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 61.2,
+              "bodyMeanContrast": 2.7,
+              "nearestSwatchDeltaE": 53.1,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 63.3,
+              "bodyMeanContrast": 1.1,
+              "nearestSwatchDeltaE": 20.8,
+              "bodyShareWithin12": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "faction": "MARTIAN",
+      "label": "Martian",
+      "ships": [
+        {
+          "role": "PATROL_BOAT",
+          "opaquePixels": 1553,
+          "outlineShare": 17.8,
+          "bodyMean": "#8b96a7",
+          "mainColours": [
+            "#ccd8e0 20.5%",
+            "#3d4c61 12.2%",
+            "#222f45 12%",
+            "#fffffe 9.2%",
+            "#acf1ec 8.5%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 26.9,
+              "bodyMeanContrast": 1.8,
+              "nearestSwatchDeltaE": 9.5,
+              "bodyShareWithin12": 2.8
+            },
+            "deep": {
+              "bodyMeanDeltaE": 24.2,
+              "bodyMeanContrast": 1.6,
+              "nearestSwatchDeltaE": 17.5,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "BATTLESHIP",
+          "opaquePixels": 2839,
+          "outlineShare": 15,
+          "bodyMean": "#7a8093",
+          "mainColours": [
+            "#b6c9da 22.3%",
+            "#3d4058 5.6%",
+            "#6c7591 5.4%",
+            "#fefffe 5.1%",
+            "#b5e3e3 5%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 34.3,
+              "bodyMeanContrast": 2.4,
+              "nearestSwatchDeltaE": 10.1,
+              "bodyShareWithin12": 5
+            },
+            "deep": {
+              "bodyMeanDeltaE": 20.5,
+              "bodyMeanContrast": 1.2,
+              "nearestSwatchDeltaE": 15.3,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "EMBARKED_TRANSPORT",
+          "opaquePixels": 1487,
+          "outlineShare": 26,
+          "bodyMean": "#72737e",
+          "mainColours": [
+            "#555b64 8.3%",
+            "#777780 6.8%",
+            "#c1c5ca 5.9%",
+            "#2c263d 5.9%",
+            "#454154 5.8%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 38.4,
+              "bodyMeanContrast": 2.8,
+              "nearestSwatchDeltaE": 9.4,
+              "bodyShareWithin12": 7.1
+            },
+            "deep": {
+              "bodyMeanDeltaE": 24.9,
+              "bodyMeanContrast": 1,
+              "nearestSwatchDeltaE": 25.8,
+              "bodyShareWithin12": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "faction": "ICE_FOLK",
+      "label": "Ice Folk",
+      "ships": [
+        {
+          "role": "PATROL_BOAT",
+          "opaquePixels": 2666,
+          "outlineShare": 20.3,
+          "bodyMean": "#96a3a2",
+          "mainColours": [
+            "#feffe6 17.3%",
+            "#dcd4b6 14%",
+            "#fefefe 9.2%",
+            "#3a2a2a 7%",
+            "#0da8fa 5.3%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 22.7,
+              "bodyMeanContrast": 1.6,
+              "nearestSwatchDeltaE": 23,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 34.1,
+              "bodyMeanContrast": 1.8,
+              "nearestSwatchDeltaE": 9.5,
+              "bodyShareWithin12": 3.2
+            }
+          }
+        },
+        {
+          "role": "BATTLESHIP",
+          "opaquePixels": 3648,
+          "outlineShare": 21.4,
+          "bodyMean": "#a79b87",
+          "mainColours": [
+            "#fef5d1 11.5%",
+            "#e4cba1 9.8%",
+            "#fef5cf 8.3%",
+            "#554040 4%",
+            "#e1c69d 3.7%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 34.8,
+              "bodyMeanContrast": 1.6,
+              "nearestSwatchDeltaE": 23.3,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 45.5,
+              "bodyMeanContrast": 1.7,
+              "nearestSwatchDeltaE": 18.8,
+              "bodyShareWithin12": 0
+            }
+          }
+        },
+        {
+          "role": "EMBARKED_TRANSPORT",
+          "opaquePixels": 1461,
+          "outlineShare": 29.8,
+          "bodyMean": "#7e7260",
+          "mainColours": [
+            "#eadcb3 10.4%",
+            "#2b2322 9.2%",
+            "#fef7da 8.9%",
+            "#3d2a1d 8%",
+            "#65544c 6.1%"
+          ],
+          "water": {
+            "shallow": {
+              "bodyMeanDeltaE": 44.6,
+              "bodyMeanContrast": 2.8,
+              "nearestSwatchDeltaE": 35.1,
+              "bodyShareWithin12": 0
+            },
+            "deep": {
+              "bodyMeanDeltaE": 42.3,
+              "bodyMeanContrast": 1,
+              "nearestSwatchDeltaE": 40,
+              "bodyShareWithin12": 0
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "distinguishability": {
+    "PATROL_BOAT": {
+      "Human": {
+        "Undead": {
+          "normal": 20.6,
+          "deuteranopia": 15.9
+        },
+        "Goblin": {
+          "normal": 22.9,
+          "deuteranopia": 12
+        },
+        "Dinosaur": {
+          "normal": 18.3,
+          "deuteranopia": 7.9
+        },
+        "Martian": {
+          "normal": 43.7,
+          "deuteranopia": 39.6
+        },
+        "Ice Folk": {
+          "normal": 37.5,
+          "deuteranopia": 32.8
+        }
+      },
+      "Undead": {
+        "Human": {
+          "normal": 20.6,
+          "deuteranopia": 15.9
+        },
+        "Goblin": {
+          "normal": 11.5,
+          "deuteranopia": 9.1
+        },
+        "Dinosaur": {
+          "normal": 19.3,
+          "deuteranopia": 17.4
+        },
+        "Martian": {
+          "normal": 23.2,
+          "deuteranopia": 23.4
+        },
+        "Ice Folk": {
+          "normal": 19.8,
+          "deuteranopia": 18
+        }
+      },
+      "Goblin": {
+        "Human": {
+          "normal": 22.9,
+          "deuteranopia": 12
+        },
+        "Undead": {
+          "normal": 11.5,
+          "deuteranopia": 9.1
+        },
+        "Dinosaur": {
+          "normal": 13.2,
+          "deuteranopia": 9.2
+        },
+        "Martian": {
+          "normal": 30,
+          "deuteranopia": 29.1
+        },
+        "Ice Folk": {
+          "normal": 19.7,
+          "deuteranopia": 18
+        }
+      },
+      "Dinosaur": {
+        "Human": {
+          "normal": 18.3,
+          "deuteranopia": 7.9
+        },
+        "Undead": {
+          "normal": 19.3,
+          "deuteranopia": 17.4
+        },
+        "Goblin": {
+          "normal": 13.2,
+          "deuteranopia": 9.2
+        },
+        "Martian": {
+          "normal": 42.3,
+          "deuteranopia": 40.3
+        },
+        "Ice Folk": {
+          "normal": 31,
+          "deuteranopia": 28.7
+        }
+      },
+      "Martian": {
+        "Human": {
+          "normal": 43.7,
+          "deuteranopia": 39.6
+        },
+        "Undead": {
+          "normal": 23.2,
+          "deuteranopia": 23.4
+        },
+        "Goblin": {
+          "normal": 30,
+          "deuteranopia": 29.1
+        },
+        "Dinosaur": {
+          "normal": 42.3,
+          "deuteranopia": 40.3
+        },
+        "Ice Folk": {
+          "normal": 17.6,
+          "deuteranopia": 16.6
+        }
+      },
+      "Ice Folk": {
+        "Human": {
+          "normal": 37.5,
+          "deuteranopia": 32.8
+        },
+        "Undead": {
+          "normal": 19.8,
+          "deuteranopia": 18
+        },
+        "Goblin": {
+          "normal": 19.7,
+          "deuteranopia": 18
+        },
+        "Dinosaur": {
+          "normal": 31,
+          "deuteranopia": 28.7
+        },
+        "Martian": {
+          "normal": 17.6,
+          "deuteranopia": 16.6
+        }
+      }
+    },
+    "BATTLESHIP": {
+      "Human": {
+        "Undead": {
+          "normal": 23.8,
+          "deuteranopia": 19.5
+        },
+        "Goblin": {
+          "normal": 16.9,
+          "deuteranopia": 10.6
+        },
+        "Dinosaur": {
+          "normal": 16.3,
+          "deuteranopia": 11.4
+        },
+        "Martian": {
+          "normal": 28.4,
+          "deuteranopia": 25.2
+        },
+        "Ice Folk": {
+          "normal": 22.7,
+          "deuteranopia": 18.7
+        }
+      },
+      "Undead": {
+        "Human": {
+          "normal": 23.8,
+          "deuteranopia": 19.5
+        },
+        "Goblin": {
+          "normal": 23.9,
+          "deuteranopia": 19.9
+        },
+        "Dinosaur": {
+          "normal": 22.9,
+          "deuteranopia": 20.9
+        },
+        "Martian": {
+          "normal": 19.5,
+          "deuteranopia": 19
+        },
+        "Ice Folk": {
+          "normal": 12.4,
+          "deuteranopia": 9.9
+        }
+      },
+      "Goblin": {
+        "Human": {
+          "normal": 16.9,
+          "deuteranopia": 10.6
+        },
+        "Undead": {
+          "normal": 23.9,
+          "deuteranopia": 19.9
+        },
+        "Dinosaur": {
+          "normal": 11.6,
+          "deuteranopia": 8.6
+        },
+        "Martian": {
+          "normal": 31.5,
+          "deuteranopia": 29.6
+        },
+        "Ice Folk": {
+          "normal": 21.7,
+          "deuteranopia": 18.9
+        }
+      },
+      "Dinosaur": {
+        "Human": {
+          "normal": 16.3,
+          "deuteranopia": 11.4
+        },
+        "Undead": {
+          "normal": 22.9,
+          "deuteranopia": 20.9
+        },
+        "Goblin": {
+          "normal": 11.6,
+          "deuteranopia": 8.6
+        },
+        "Martian": {
+          "normal": 32.9,
+          "deuteranopia": 32.3
+        },
+        "Ice Folk": {
+          "normal": 13.7,
+          "deuteranopia": 12.2
+        }
+      },
+      "Martian": {
+        "Human": {
+          "normal": 28.4,
+          "deuteranopia": 25.2
+        },
+        "Undead": {
+          "normal": 19.5,
+          "deuteranopia": 19
+        },
+        "Goblin": {
+          "normal": 31.5,
+          "deuteranopia": 29.6
+        },
+        "Dinosaur": {
+          "normal": 32.9,
+          "deuteranopia": 32.3
+        },
+        "Ice Folk": {
+          "normal": 15.7,
+          "deuteranopia": 15.2
+        }
+      },
+      "Ice Folk": {
+        "Human": {
+          "normal": 22.7,
+          "deuteranopia": 18.7
+        },
+        "Undead": {
+          "normal": 12.4,
+          "deuteranopia": 9.9
+        },
+        "Goblin": {
+          "normal": 21.7,
+          "deuteranopia": 18.9
+        },
+        "Dinosaur": {
+          "normal": 13.7,
+          "deuteranopia": 12.2
+        },
+        "Martian": {
+          "normal": 15.7,
+          "deuteranopia": 15.2
+        }
+      }
+    },
+    "EMBARKED_TRANSPORT": {
+      "Human": {
+        "Undead": {
+          "normal": 25.8,
+          "deuteranopia": 19.7
+        },
+        "Goblin": {
+          "normal": 25.3,
+          "deuteranopia": 15.1
+        },
+        "Dinosaur": {
+          "normal": 11.2,
+          "deuteranopia": 6.1
+        },
+        "Martian": {
+          "normal": 33.8,
+          "deuteranopia": 28.6
+        },
+        "Ice Folk": {
+          "normal": 31.5,
+          "deuteranopia": 22.3
+        }
+      },
+      "Undead": {
+        "Human": {
+          "normal": 25.8,
+          "deuteranopia": 19.7
+        },
+        "Goblin": {
+          "normal": 17.7,
+          "deuteranopia": 16
+        },
+        "Dinosaur": {
+          "normal": 18.1,
+          "deuteranopia": 15
+        },
+        "Martian": {
+          "normal": 15.8,
+          "deuteranopia": 14.7
+        },
+        "Ice Folk": {
+          "normal": 10.4,
+          "deuteranopia": 9.3
+        }
+      },
+      "Goblin": {
+        "Human": {
+          "normal": 25.3,
+          "deuteranopia": 15.1
+        },
+        "Undead": {
+          "normal": 17.7,
+          "deuteranopia": 16
+        },
+        "Dinosaur": {
+          "normal": 19.8,
+          "deuteranopia": 15.1
+        },
+        "Martian": {
+          "normal": 18.7,
+          "deuteranopia": 16.7
+        },
+        "Ice Folk": {
+          "normal": 16.7,
+          "deuteranopia": 14.5
+        }
+      },
+      "Dinosaur": {
+        "Human": {
+          "normal": 11.2,
+          "deuteranopia": 6.1
+        },
+        "Undead": {
+          "normal": 18.1,
+          "deuteranopia": 15
+        },
+        "Goblin": {
+          "normal": 19.8,
+          "deuteranopia": 15.1
+        },
+        "Martian": {
+          "normal": 33.6,
+          "deuteranopia": 31.3
+        },
+        "Ice Folk": {
+          "normal": 21.7,
+          "deuteranopia": 18.6
+        }
+      },
+      "Martian": {
+        "Human": {
+          "normal": 33.8,
+          "deuteranopia": 28.6
+        },
+        "Undead": {
+          "normal": 15.8,
+          "deuteranopia": 14.7
+        },
+        "Goblin": {
+          "normal": 18.7,
+          "deuteranopia": 16.7
+        },
+        "Dinosaur": {
+          "normal": 33.6,
+          "deuteranopia": 31.3
+        },
+        "Ice Folk": {
+          "normal": 16.8,
+          "deuteranopia": 16.4
+        }
+      },
+      "Ice Folk": {
+        "Human": {
+          "normal": 31.5,
+          "deuteranopia": 22.3
+        },
+        "Undead": {
+          "normal": 10.4,
+          "deuteranopia": 9.3
+        },
+        "Goblin": {
+          "normal": 16.7,
+          "deuteranopia": 14.5
+        },
+        "Dinosaur": {
+          "normal": 21.7,
+          "deuteranopia": 18.6
+        },
+        "Martian": {
+          "normal": 16.8,
+          "deuteranopia": 16.4
+        }
+      }
+    }
+  },
+  "weakestPair": {
+    "pair": "Ice Folk / Undead",
+    "role": "EMBARKED_TRANSPORT",
+    "normal": 10.4,
+    "deuteranopia": 9.3
+  }
+}

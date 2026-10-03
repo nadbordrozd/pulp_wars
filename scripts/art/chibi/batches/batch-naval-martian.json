@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-martian",
+  "title": "Naval units in the Martian look: chrome hover-boats with glass domes and magenta lights, and their portraits",
+  "bead": "pulp_wars-w5j.2",
+  "faction": "MARTIAN",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-naval-martian-patrol-boat",
+      "subject": "UNIT:MARTIAN:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-naval-martian-battleship",
+      "subject": "UNIT:MARTIAN:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-naval-martian-transport",
+      "subject": "UNIT:MARTIAN:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-naval-martian-portrait-patrol-boat",
+      "subject": "PORTRAIT:MARTIAN:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-naval-martian-portrait-battleship",
+      "subject": "PORTRAIT:MARTIAN:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "martian-patrol-boat-chrome-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96501,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "patrol-boat-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and two small fins; the mast and sail become one tall swept-back chrome fin; on the deck a clear pale glass dome cockpit with one white highlight; a row of small glowing hot magenta lights along the rim. Keep the size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 cog rebuilt in chrome: a fin where the sail was, a glass dome, magenta lights.",
+      "asset": "chibi-naval-martian-patrol-boat"
+    },
+    {
+      "id": "martian-battleship-chrome-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96511,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "battleship-d-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Rebuild it as a big retro sci-fi hover-cruiser: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and fins; the masts and sails are removed; the stone tower becomes a tall chrome bridge tower under a clear pale glass dome; two chunky chrome ray turrets with glowing hot magenta tips; small glowing hot magenta lights. Keep the size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 carrack rebuilt as a chrome cruiser.",
+      "asset": "chibi-naval-martian-battleship"
+    },
+    {
+      "id": "martian-transport-chrome-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96521,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "embarked-transport-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Rebuild it as a retro sci-fi hover-barge: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the oars and the pole are removed; the red tarp becomes a long clear pale glass canopy dome over the cargo with one white highlight; small glowing hot magenta lights at the bow and stern. Keep the boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 barge rebuilt as a chrome hover-barge with a glass canopy.",
+      "asset": "chibi-naval-martian-transport"
+    },
+    {
+      "id": "martian-patrol-boat-create-a",
+      "endpoint": "create-image-pixen",
+      "seed": 96502,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The boat is drawn large and fills most of the image; no wood anywhere.",
+      "negativeAddendum": "wood, planks, sail, mast, oars, rope, flag",
+      "notes": "A fresh creation beside the edit, in case the edit keeps the cog's shape.",
+      "asset": "chibi-naval-martian-patrol-boat"
+    },
+    {
+      "id": "martian-portrait-patrol-boat-chrome-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96531,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the mast and sail become one tall swept-back chrome fin; a clear pale glass dome cockpit with one white highlight; small glowing hot magenta lights along the rim. Keep the size, thick black outline and art style exactly the same, on a transparent background.",
+      "asset": "chibi-naval-martian-portrait-patrol-boat"
+    },
+    {
+      "id": "martian-portrait-battleship-chrome-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96541,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-battleship-b",
+        "candidate": 0
+      },
+      "editInstruction": "Rebuild it as a big retro sci-fi hover-cruiser: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the masts and sails are removed; a tall chrome bridge tower under a clear pale glass dome; chrome ray turrets with glowing hot magenta tips; small glowing hot magenta lights. Keep the size, thick black outline and art style exactly the same, on a transparent background.",
+      "asset": "chibi-naval-martian-portrait-battleship"
+    },
+    {
+      "id": "martian-patrol-boat-create-a-edit",
+      "endpoint": "edit-image-pixen",
+      "seed": 96503,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "martian-patrol-boat-create-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the whole boat a little smaller and move it down and slightly to the right, so the bottom of its dark gunmetal underside is about 8 pixels above the bottom edge of the image and its left fins stay about 8 pixels clear of the left edge. Keep the chrome hull, glass dome, fins, turret, magenta lights, thick black outline and art style exactly the same, with nothing under the hull.",
+      "notes": "martian-patrol-boat-create-a is the best Martian boat (chrome saucer hull, big glass dome, fins, a turret with a magenta lens, magenta rim lights) but it floats 9 px above the cog's waterline (bottom row 70 of 88) and its left fin reaches the HP bar strip (x 3).",
+      "asset": "chibi-naval-martian-patrol-boat"
+    },
+    {
+      "id": "martian-patrol-boat-chrome-a-edit",
+      "endpoint": "edit-image-pixen",
+      "seed": 96504,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "martian-patrol-boat-chrome-a",
+        "candidate": 0
+      },
+      "editInstruction": "Replace only the tall curved chrome fin on top: it becomes a short chrome antenna mast, about half as tall, with a small glowing hot magenta orb on its tip. Keep the chrome hull, glass dome, side fins, magenta lights, size, thick black outline and art style exactly the same, with nothing under the hull.",
+      "notes": "martian-patrol-boat-chrome-a keeps the cog's footprint but its tall curved fin reads as a horn; a fallback if the creation cannot be moved.",
+      "asset": "chibi-naval-martian-patrol-boat"
+    },
+    {
+      "id": "martian-transport-cargo-edit-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96522,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "martian-transport-chrome-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the red cargo under the glass canopy: it becomes stacked dark gunmetal crates, colour #34354e, with a few small glowing hot magenta lights, with no red anywhere. Keep the chrome hull, the glass canopy, the magenta rim lights, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+      "notes": "martian-transport-chrome-a is a good chrome hover-barge with a glass canopy, but the red tarp of the source shows under the glass: the owner key colour.",
+      "asset": "chibi-naval-martian-transport"
+    },
+    {
+      "id": "martian-portrait-patrol-boat-antenna-edit-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96532,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "martian-portrait-patrol-boat-chrome-a",
+        "candidate": 0
+      },
+      "editInstruction": "Replace only the tall curved chrome fin on top: it becomes a thin chrome antenna mast with a small glowing hot magenta orb on its tip. Keep the chrome hull, the glass dome, the magenta lights, size, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "martian-portrait-patrol-boat-chrome-a has the curved fin the map sprite no longer has; the map sprite carries an antenna with a magenta orb.",
+      "asset": "chibi-naval-martian-portrait-patrol-boat"
+    }
+  ]
+}

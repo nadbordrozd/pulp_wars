@@ -1,0 +1,36 @@
+{
+  "id": "goblin-transport-crew-edit-a",
+  "jobId": "103beb9d-b216-49c9-961c-e4a64290a916",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-transport",
+    "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96323,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, sitting on top of the brown leather tarp over the cargo. Keep the dark planks, oars, barrels, the tarp, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, sitting on top of the brown leather tarp over the cargo. Keep the dark planks, oars, barrels, the tarp, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, sitting on top of the brown leather tarp over the cargo. Keep the dark planks, oars, barrels, the tarp, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, sitting on top of the brown leather tarp over the cargo. Keep the dark planks, oars, barrels, the tarp, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "goblin-transport-saddle-edit-a",
+      "candidate": 0,
+      "sha256": "f730733410a06f48e9ee6c49c17ec8c7435de5d90386d1e80e600fce1bc3e8bc"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "martian-transport-chrome-a",
+  "jobId": "17de2816-9b92-47f6-a9a3-b7a950060a2d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-martian",
+    "asset": "chibi-naval-martian-transport",
+    "subject": "UNIT:MARTIAN:EMBARKED_TRANSPORT",
+    "faction": "MARTIAN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96521,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Rebuild it as a retro sci-fi hover-barge: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the oars and the pole are removed; the red tarp becomes a long clear pale glass canopy dome over the cargo with one white highlight; small glowing hot magenta lights at the bow and stern. Keep the boat shape, size, thick black outline and style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Rebuild it as a retro sci-fi hover-barge: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the oars and the pole are removed; the red tarp becomes a long clear pale glass canopy dome over the cargo with one white highlight; small glowing hot magenta lights at the bow and stern. Keep the boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Rebuild it as a retro sci-fi hover-barge: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the oars and the pole are removed; the red tarp becomes a long clear pale glass canopy dome over the cargo with one white highlight; small glowing hot magenta lights at the bow and stern. Keep the boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "editInstruction": "Rebuild it as a retro sci-fi hover-barge: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the oars and the pole are removed; the red tarp becomes a long clear pale glass canopy dome over the cargo with one white highlight; small glowing hot magenta lights at the bow and stern. Keep the boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "embarked-transport-a-edit",
+      "candidate": 0,
+      "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+    }
+  }
+}

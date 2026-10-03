@@ -3109,3 +3109,5 @@ The Martian faction's production art in this direction (bead
 [factions/MARTIAN.md](factions/MARTIAN.md).
 
 The Ice Folk faction's direction and production art (bead `pulp_wars-7g3.5`, not live yet) is described in [factions/ICE_FOLK.md](factions/ICE_FOLK.md).
+
+The faction-styled naval units of every faction (bead `pulp_wars-w5j.2`, not live yet: the ships keep the shared art until `pulp_wars-w5j.3`) are described in [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md).

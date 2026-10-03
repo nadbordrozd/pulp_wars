@@ -1,0 +1,37 @@
+{
+  "id": "martian-portrait-patrol-boat-chrome-a",
+  "jobId": "c0ae044c-001b-4ead-811a-9d798c06aeb8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-martian",
+    "asset": "chibi-naval-martian-portrait-patrol-boat",
+    "subject": "PORTRAIT:MARTIAN:PATROL_BOAT",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96531,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the mast and sail become one tall swept-back chrome fin; a clear pale glass dome cockpit with one white highlight; small glowing hot magenta lights along the rim. Keep the size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the mast and sail become one tall swept-back chrome fin; a clear pale glass dome cockpit with one white highlight; small glowing hot magenta lights along the rim. Keep the size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the mast and sail become one tall swept-back chrome fin; a clear pale glass dome cockpit with one white highlight; small glowing hot magenta lights along the rim. Keep the size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Rebuild it as a sleek retro sci-fi hover-boat: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside; the mast and sail become one tall swept-back chrome fin; a clear pale glass dome cockpit with one white highlight; small glowing hot magenta lights along the rim. Keep the size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-patrol-boat-a",
+      "candidate": 0,
+      "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+    }
+  }
+}

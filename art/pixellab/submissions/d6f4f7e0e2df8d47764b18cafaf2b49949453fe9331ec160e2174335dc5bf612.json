@@ -1,0 +1,36 @@
+{
+  "id": "goblin-transport-saddle-edit-a",
+  "jobId": "334424a3-0000-40a8-9008-89006bc8a202",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-transport",
+    "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96322,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange tarp over the cargo: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+      }
+    ],
+    "prompt": "Recolour only the orange tarp over the cargo: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange tarp over the cargo: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "editInstruction": "Recolour only the orange tarp over the cargo: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "source": {
+      "recipe": "goblin-transport-scrap-a",
+      "candidate": 0,
+      "sha256": "9c9da8bf6cedd497c3d9c4773e036ba85e3e723d29334068c0f2307cd4298f0d"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "martian-patrol-boat-create-a-edit",
+  "jobId": "bb3ca1e9-dbd1-46f1-a0a7-e493bca577cb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-martian",
+    "asset": "chibi-naval-martian-patrol-boat",
+    "subject": "UNIT:MARTIAN:PATROL_BOAT",
+    "faction": "MARTIAN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96503,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the whole boat a little smaller and move it down and slightly to the right, so the bottom of its dark gunmetal underside is about 8 pixels above the bottom edge of the image and its left fins stay about 8 pixels clear of the left edge. Keep the chrome hull, glass dome, fins, turret, magenta lights, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Make the whole boat a little smaller and move it down and slightly to the right, so the bottom of its dark gunmetal underside is about 8 pixels above the bottom edge of the image and its left fins stay about 8 pixels clear of the left edge. Keep the chrome hull, glass dome, fins, turret, magenta lights, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Make the whole boat a little smaller and move it down and slightly to the right, so the bottom of its dark gunmetal underside is about 8 pixels above the bottom edge of the image and its left fins stay about 8 pixels clear of the left edge. Keep the chrome hull, glass dome, fins, turret, magenta lights, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Make the whole boat a little smaller and move it down and slightly to the right, so the bottom of its dark gunmetal underside is about 8 pixels above the bottom edge of the image and its left fins stay about 8 pixels clear of the left edge. Keep the chrome hull, glass dome, fins, turret, magenta lights, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "martian-patrol-boat-create-a",
+      "candidate": 0,
+      "sha256": "3fca3f13a36f61415edb000f432255dae9246ff79e6d4692c8a42bedc52e4527"
+    }
+  }
+}

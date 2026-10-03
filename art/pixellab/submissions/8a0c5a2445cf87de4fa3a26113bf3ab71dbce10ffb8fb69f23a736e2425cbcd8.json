@@ -1,0 +1,37 @@
+{
+  "id": "undead-transport-ghost-a",
+  "jobId": "0caed358-2710-4436-8995-69fa6cf2ba27",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-undead",
+    "asset": "chibi-naval-undead-transport",
+    "subject": "UNIT:UNDEAD:EMBARKED_TRANSPORT",
+    "faction": "UNDEAD",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96221,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a spooky funeral barge: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a small skull on the prow; the red tarp becomes a tattered warm ash grey shroud, colour #948884, tied with bone-white rope; the pennant becomes one small lantern glowing bright violet on the pole. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a spooky funeral barge: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a small skull on the prow; the red tarp becomes a tattered warm ash grey shroud, colour #948884, tied with bone-white rope; the pennant becomes one small lantern glowing bright violet on the pole. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a spooky funeral barge: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a small skull on the prow; the red tarp becomes a tattered warm ash grey shroud, colour #948884, tied with bone-white rope; the pennant becomes one small lantern glowing bright violet on the pole. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a spooky funeral barge: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a small skull on the prow; the red tarp becomes a tattered warm ash grey shroud, colour #948884, tied with bone-white rope; the pennant becomes one small lantern glowing bright violet on the pole. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "embarked-transport-a-edit",
+      "candidate": 0,
+      "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+    }
+  }
+}

@@ -1,0 +1,695 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-dinosaur",
+  "recipes": {
+    "dinosaur-battleship-primal-a": {
+      "id": "dinosaur-battleship-primal-a",
+      "asset": "chibi-naval-dinosaur-battleship",
+      "jobId": "35dd9197-70f9-4b12-8565-f323c851c5bc",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-battleship",
+        "subject": "UNIT:DINOSAUR:BATTLESHIP",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 96411,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a stone-age war raft: the pale hull becomes big tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows, with cream bone fittings; the bow becomes a big carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes; the grey tower becomes a hide hut; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a stone-age war raft: the pale hull becomes big tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows, with cream bone fittings; the bow becomes a big carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes; the grey tower becomes a hide hut; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a stone-age war raft: the pale hull becomes big tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows, with cream bone fittings; the bow becomes a big carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes; the grey tower becomes a hide hut; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, with nothing under the hull.",
+        "editInstruction": "Turn it into a stone-age war raft: the pale hull becomes big tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows, with cream bone fittings; the bow becomes a big carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes; the grey tower becomes a hide hut; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "battleship-d-edit",
+          "candidate": 1,
+          "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+        }
+      },
+      "submittedAt": "2026-10-03T08:00:05.106Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-battleship-primal-a.png",
+      "rawSheetSha256": "3b115062ac0132c41ee451e2e869967ec5ff052c85cfe5de30827cec452785ff",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.6928,
+          "footprintWidthShare": 0.8289,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.6928,
+          "footprintWidthShare": 0.8289,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T08:00:41.707Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A log war raft with cream bone fittings, three spotted sandy hide sails, orange feather pennants and a big deep blue plesiosaur-head prow with orange stripes and a cream throat. The plate hint is the raft's flat log deck, not ground.",
+        "reviewedAt": "2026-10-03T08:03:02.485Z"
+      }
+    },
+    "dinosaur-patrol-boat-primal-a": {
+      "id": "dinosaur-patrol-boat-primal-a",
+      "asset": "chibi-naval-dinosaur-patrol-boat",
+      "jobId": "20615f08-955d-45e7-81e6-9cd9557dd14e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-patrol-boat",
+        "subject": "UNIT:DINOSAUR:PATROL_BOAT",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 96401,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a stone-age dugout canoe: the pale hull becomes one hollowed log of warm tawny wood, colour #a2804b; the bow becomes a carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes and a cream jaw; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a stone-age dugout canoe: the pale hull becomes one hollowed log of warm tawny wood, colour #a2804b; the bow becomes a carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes and a cream jaw; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a stone-age dugout canoe: the pale hull becomes one hollowed log of warm tawny wood, colour #a2804b; the bow becomes a carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes and a cream jaw; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+        "editInstruction": "Turn it into a stone-age dugout canoe: the pale hull becomes one hollowed log of warm tawny wood, colour #a2804b; the bow becomes a carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes and a cream jaw; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "patrol-boat-a-edit",
+          "candidate": 0,
+          "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+        }
+      },
+      "submittedAt": "2026-10-03T07:59:23.062Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-patrol-boat-primal-a.png",
+      "rawSheetSha256": "4e39a471343a0627f66478d87ae9749182123ed692e7bbde23827db6a63b68eb",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.4406,
+          "footprintWidthShare": 0.9649,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.4406,
+          "footprintWidthShare": 0.9649,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T08:00:05.082Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A dugout canoe whose bow is a carved deep blue plesiosaur head with orange stripes and a cream jaw, a sandy hide sail with big dark brown spots, orange feathers on the mast. The log hull came out a warm orange-brown, lighter than the Goblin planks. The plate hint is a false positive: nothing is drawn under the hull.",
+        "reviewedAt": "2026-10-03T08:03:00.358Z"
+      }
+    },
+    "dinosaur-portrait-battleship-log-edit-a": {
+      "id": "dinosaur-portrait-battleship-log-edit-a",
+      "asset": "chibi-naval-dinosaur-portrait-battleship",
+      "jobId": "997fd667-4d1e-418b-9d40-c89223ee28bb",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-portrait-battleship",
+        "subject": "PORTRAIT:DINOSAUR:BATTLESHIP",
+        "faction": "DINOSAUR",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96442,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "dinosaur-portrait-battleship-primal-a",
+          "candidate": 0,
+          "sha256": "f70323674ee990b768033c3e8a34e970ec5425a498ac40e9be75dffcae3efe12"
+        }
+      },
+      "submittedAt": "2026-10-03T08:17:41.440Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-portrait-battleship-log-edit-a.png",
+      "rawSheetSha256": "c8b4c750455a41061524c6430de38df6ce019c1ab0acfca19ec08b586ea3a707",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.4218,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.4218,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T08:18:07.659Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The log war raft portrait with dark brown log lines in place of the maroon ones: 5 pixels (0.5%) left in the owner key's band, was 8.4%. Sails, plesiosaur head and feathers unchanged.",
+        "reviewedAt": "2026-10-03T08:18:34.024Z"
+      }
+    },
+    "dinosaur-portrait-battleship-primal-a": {
+      "id": "dinosaur-portrait-battleship-primal-a",
+      "asset": "chibi-naval-dinosaur-portrait-battleship",
+      "jobId": "9b4ffcf3-8b8b-45db-b1bf-61bb78351ba9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-portrait-battleship",
+        "subject": "PORTRAIT:DINOSAUR:BATTLESHIP",
+        "faction": "DINOSAUR",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96441,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a stone-age war raft: the hull becomes tied logs of warm tawny wood, colour #a2804b; the bow becomes a plesiosaur head painted deep blue #205794 with bold orange stripes; the grey castles become hide huts; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a stone-age war raft: the hull becomes tied logs of warm tawny wood, colour #a2804b; the bow becomes a plesiosaur head painted deep blue #205794 with bold orange stripes; the grey castles become hide huts; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a stone-age war raft: the hull becomes tied logs of warm tawny wood, colour #a2804b; the bow becomes a plesiosaur head painted deep blue #205794 with bold orange stripes; the grey castles become hide huts; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Turn it into a stone-age war raft: the hull becomes tied logs of warm tawny wood, colour #a2804b; the bow becomes a plesiosaur head painted deep blue #205794 with bold orange stripes; the grey castles become hide huts; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-battleship-b",
+          "candidate": 0,
+          "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+        }
+      },
+      "submittedAt": "2026-10-03T08:01:59.552Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-portrait-battleship-primal-a.png",
+      "rawSheetSha256": "c1751fe236a9aefd9e7068eb8743395c380bfcc41778dbbeb1a70956387de614",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.327,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.327,
+          "footprintWidthShare": 0.8,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T08:02:20.602Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The carrack portrait as a log war raft: two spotted hide sails, an orange pennant and a blue plesiosaur head with orange stripes. Superseded by dinosaur-portrait-battleship-log-edit-a.",
+        "reviewedAt": "2026-10-03T08:03:07.978Z"
+      }
+    },
+    "dinosaur-portrait-patrol-boat-primal-a": {
+      "id": "dinosaur-portrait-patrol-boat-primal-a",
+      "asset": "chibi-naval-dinosaur-portrait-patrol-boat",
+      "jobId": "1831d168-b8e3-4a20-aa93-746644383086",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-portrait-patrol-boat",
+        "subject": "PORTRAIT:DINOSAUR:PATROL_BOAT",
+        "faction": "DINOSAUR",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96431,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a stone-age dugout canoe: the hull becomes a log of warm tawny wood, colour #a2804b; the bow becomes a small plesiosaur head painted deep blue #205794 with bold orange stripes; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes orange feathers. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a stone-age dugout canoe: the hull becomes a log of warm tawny wood, colour #a2804b; the bow becomes a small plesiosaur head painted deep blue #205794 with bold orange stripes; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes orange feathers. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a stone-age dugout canoe: the hull becomes a log of warm tawny wood, colour #a2804b; the bow becomes a small plesiosaur head painted deep blue #205794 with bold orange stripes; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes orange feathers. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Turn it into a stone-age dugout canoe: the hull becomes a log of warm tawny wood, colour #a2804b; the bow becomes a small plesiosaur head painted deep blue #205794 with bold orange stripes; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes orange feathers. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-patrol-boat-a",
+          "candidate": 0,
+          "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+        }
+      },
+      "submittedAt": "2026-10-03T08:01:18.192Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-portrait-patrol-boat-primal-a.png",
+      "rawSheetSha256": "951183671ffec803e01e2d509ed34a11c6c3e6b35717a0a03c047afe56e244f6",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.4233,
+          "footprintWidthShare": 0.9355,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.4233,
+          "footprintWidthShare": 0.9355,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T08:01:59.538Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The cog portrait as a dugout: spotted sandy hide sail, blue plesiosaur head with orange stripes at the bow, an orange feather pennant.",
+        "reviewedAt": "2026-10-03T08:03:06.172Z"
+      }
+    },
+    "dinosaur-transport-neck-edit-a": {
+      "id": "dinosaur-transport-neck-edit-a",
+      "asset": "chibi-naval-dinosaur-transport",
+      "jobId": "0155d928-f6e6-4c7a-a202-f14296f7a15e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-transport",
+        "subject": "UNIT:DINOSAUR:EMBARKED_TRANSPORT",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 96422,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the small blue plesiosaur head at the front of the boat much bigger: a long curved neck rises from the bow, as tall as the pole, with a big friendly head, deep blue #205794 with bold orange #fe7500 stripes and a cream jaw. Keep the tawny log hull, the spotted hide over the cargo, the oars, the orange feathers, size, thick black outline and art style exactly the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Make the small blue plesiosaur head at the front of the boat much bigger: a long curved neck rises from the bow, as tall as the pole, with a big friendly head, deep blue #205794 with bold orange #fe7500 stripes and a cream jaw. Keep the tawny log hull, the spotted hide over the cargo, the oars, the orange feathers, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Make the small blue plesiosaur head at the front of the boat much bigger: a long curved neck rises from the bow, as tall as the pole, with a big friendly head, deep blue #205794 with bold orange #fe7500 stripes and a cream jaw. Keep the tawny log hull, the spotted hide over the cargo, the oars, the orange feathers, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "editInstruction": "Make the small blue plesiosaur head at the front of the boat much bigger: a long curved neck rises from the bow, as tall as the pole, with a big friendly head, deep blue #205794 with bold orange #fe7500 stripes and a cream jaw. Keep the tawny log hull, the spotted hide over the cargo, the oars, the orange feathers, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "source": {
+          "recipe": "dinosaur-transport-primal-a",
+          "candidate": 0,
+          "sha256": "794c9cbcf14133a81d968d1173b1531e83546f972f689dc16a914a133e1556e0"
+        }
+      },
+      "submittedAt": "2026-10-03T08:15:27.419Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-transport-neck-edit-a.png",
+      "rawSheetSha256": "d610aabed22742f47ff943a1cb827a78db45a87b3930674ceba658739b8fe925",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.5928,
+          "footprintWidthShare": 0.8361,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.5928,
+          "footprintWidthShare": 0.8361,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T08:15:58.679Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The log boat with a tall deep blue plesiosaur neck and head at the bow, orange stripes and a cream throat, the cargo under the spotted hide, orange feathers on the pole. It replaces dinosaur-transport-primal-a, which shared the Human barge's silhouette and warm hull (palette distance 9.9, 4.8 for a deuteranope). The plate hint is a false positive.",
+        "reviewedAt": "2026-10-03T08:16:20.993Z"
+      }
+    },
+    "dinosaur-transport-primal-a": {
+      "id": "dinosaur-transport-primal-a",
+      "asset": "chibi-naval-dinosaur-transport",
+      "jobId": "30514d5c-c1e4-44a5-8ce6-7fd74e25670f",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-transport",
+        "subject": "UNIT:DINOSAUR:EMBARKED_TRANSPORT",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 96421,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a stone-age log raft: the pale hull becomes tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows; a small carved plesiosaur head painted deep blue #205794 with orange stripes at the front; the red tarp becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a stone-age log raft: the pale hull becomes tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows; a small carved plesiosaur head painted deep blue #205794 with orange stripes at the front; the red tarp becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a stone-age log raft: the pale hull becomes tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows; a small carved plesiosaur head painted deep blue #205794 with orange stripes at the front; the red tarp becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+        "editInstruction": "Turn it into a stone-age log raft: the pale hull becomes tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows; a small carved plesiosaur head painted deep blue #205794 with orange stripes at the front; the red tarp becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "embarked-transport-a-edit",
+          "candidate": 0,
+          "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+        }
+      },
+      "submittedAt": "2026-10-03T08:00:41.717Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-transport-primal-a.png",
+      "rawSheetSha256": "94f33958205ed8b35ec7795fb9143f0b7aa0690c7d6d1b61a8ff8b29371d848d",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.4832,
+          "footprintWidthShare": 0.85,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.4832,
+          "footprintWidthShare": 0.85,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T08:01:18.184Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The barge as a tawny log boat with the cargo under a spotted sandy hide, a small blue plesiosaur head with orange stripes at the bow and orange feathers on the pole; oars kept. No ground under the hull. Superseded by dinosaur-transport-neck-edit-a.",
+        "reviewedAt": "2026-10-03T08:03:04.333Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-naval-dinosaur-battleship": {
+      "id": "chibi-naval-dinosaur-battleship",
+      "subject": "UNIT:DINOSAUR:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-battleship-primal-a",
+      "candidate": 0,
+      "candidateSha256": "028650e84beb027aea9c5c033e35b0a284881047adef677b0165bf40cabb67e1",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-dinosaur-battleship.png",
+        "sha256": "028650e84beb027aea9c5c033e35b0a284881047adef677b0165bf40cabb67e1",
+        "pixelSha256": "3188b567636b088d3151bd7c92c9422c3d2ec2313abcdea7edd020f26a9537c6",
+        "width": 88,
+        "height": 96
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 44,
+        "y": 56
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 16,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.6928,
+        "footprintWidthShare": 0.8289,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A log war raft with cream bone fittings, three spotted sandy hide sails, orange feather pennants and a big deep blue plesiosaur-head prow with orange stripes and a cream throat. The plate hint is the raft's flat log deck, not ground.",
+      "acceptedAt": "2026-10-03T08:03:02.485Z"
+    },
+    "chibi-naval-dinosaur-patrol-boat": {
+      "id": "chibi-naval-dinosaur-patrol-boat",
+      "subject": "UNIT:DINOSAUR:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-patrol-boat-primal-a",
+      "candidate": 0,
+      "candidateSha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-dinosaur-patrol-boat.png",
+        "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff",
+        "pixelSha256": "5ba35df29f900fd20c63fab8fa2f685b4a2b8fed91b04516bd1ca337e8632eae",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.4406,
+        "footprintWidthShare": 0.9649,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A dugout canoe whose bow is a carved deep blue plesiosaur head with orange stripes and a cream jaw, a sandy hide sail with big dark brown spots, orange feathers on the mast. The log hull came out a warm orange-brown, lighter than the Goblin planks. The plate hint is a false positive: nothing is drawn under the hull.",
+      "acceptedAt": "2026-10-03T08:03:00.358Z"
+    },
+    "chibi-naval-dinosaur-portrait-battleship": {
+      "id": "chibi-naval-dinosaur-portrait-battleship",
+      "subject": "PORTRAIT:DINOSAUR:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-portrait-battleship-log-edit-a",
+      "candidate": 0,
+      "candidateSha256": "8a66d799a75675775dea649ee44a43bfedd0c2d6f99b58006936ae2cd358d726",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-dinosaur-portrait-battleship.png",
+        "sha256": "8a66d799a75675775dea649ee44a43bfedd0c2d6f99b58006936ae2cd358d726",
+        "pixelSha256": "974567e6633b1c0755025bedbe3a44e96829439cb318e1da2d36b2948b2c3017",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.4218,
+        "footprintWidthShare": 0.8,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The log war raft portrait with dark brown log lines in place of the maroon ones: 5 pixels (0.5%) left in the owner key's band, was 8.4%. Sails, plesiosaur head and feathers unchanged.",
+      "acceptedAt": "2026-10-03T08:18:34.024Z"
+    },
+    "chibi-naval-dinosaur-portrait-patrol-boat": {
+      "id": "chibi-naval-dinosaur-portrait-patrol-boat",
+      "subject": "PORTRAIT:DINOSAUR:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-portrait-patrol-boat-primal-a",
+      "candidate": 0,
+      "candidateSha256": "3a3164c2d31fe47dc84b30a5019dfa083873aef2586ef52b462849eb03261883",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-dinosaur-portrait-patrol-boat.png",
+        "sha256": "3a3164c2d31fe47dc84b30a5019dfa083873aef2586ef52b462849eb03261883",
+        "pixelSha256": "ca7327f95525f61b9afb18e0b056baf6992d21ca26ab75e3c2c6e810eecc8f80",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.4233,
+        "footprintWidthShare": 0.9355,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The cog portrait as a dugout: spotted sandy hide sail, blue plesiosaur head with orange stripes at the bow, an orange feather pennant.",
+      "acceptedAt": "2026-10-03T08:03:06.172Z"
+    },
+    "chibi-naval-dinosaur-transport": {
+      "id": "chibi-naval-dinosaur-transport",
+      "subject": "UNIT:DINOSAUR:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-transport-neck-edit-a",
+      "candidate": 0,
+      "candidateSha256": "95fd3fe5d4c2ae0eec466e69b6d70867ac84784813d9b1602462f4de68da6da4",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-dinosaur-transport.png",
+        "sha256": "95fd3fe5d4c2ae0eec466e69b6d70867ac84784813d9b1602462f4de68da6da4",
+        "pixelSha256": "a5eabc4ab5ee2a4c94cf6ea03176bee42b5e7e9d229756a28150433aba2ad122",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0.5928,
+        "footprintWidthShare": 0.8361,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The log boat with a tall deep blue plesiosaur neck and head at the bow, orange stripes and a cream throat, the cargo under the spotted hide, orange feathers on the pole. It replaces dinosaur-transport-primal-a, which shared the Human barge's silhouette and warm hull (palette distance 9.9, 4.8 for a deuteranope). The plate hint is a false positive.",
+      "acceptedAt": "2026-10-03T08:16:20.993Z"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "goblin-transport-scrap-a",
+  "jobId": "3642bf3a-4303-426b-9549-65702b3b900d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-transport",
+    "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96321,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a ramshackle goblin raft: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows lashed with rope and a gunmetal scrap plate; the red tarp becomes patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; two small wooden barrels sit beside the cargo; the pennant becomes a brown rag. Keep the oars, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a ramshackle goblin raft: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows lashed with rope and a gunmetal scrap plate; the red tarp becomes patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; two small wooden barrels sit beside the cargo; the pennant becomes a brown rag. Keep the oars, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a ramshackle goblin raft: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows lashed with rope and a gunmetal scrap plate; the red tarp becomes patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; two small wooden barrels sit beside the cargo; the pennant becomes a brown rag. Keep the oars, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "editInstruction": "Turn it into a ramshackle goblin raft: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows lashed with rope and a gunmetal scrap plate; the red tarp becomes patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; two small wooden barrels sit beside the cargo; the pennant becomes a brown rag. Keep the oars, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "embarked-transport-a-edit",
+      "candidate": 0,
+      "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "undead-patrol-boat-ghost-a",
+  "jobId": "313a08db-dd4e-41fe-9332-9bae366b40a8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-undead",
+    "asset": "chibi-naval-undead-patrol-boat",
+    "subject": "UNIT:UNDEAD:PATROL_BOAT",
+    "faction": "UNDEAD",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96201,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a spooky ghost ship: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a big pale ivory skull figurehead on the bow; the red sail becomes tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennant becomes a torn black rag; one small lantern glowing bright violet hangs from the mast. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a spooky ghost ship: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a big pale ivory skull figurehead on the bow; the red sail becomes tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennant becomes a torn black rag; one small lantern glowing bright violet hangs from the mast. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a spooky ghost ship: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a big pale ivory skull figurehead on the bow; the red sail becomes tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennant becomes a torn black rag; one small lantern glowing bright violet hangs from the mast. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a spooky ghost ship: the pale hull becomes near-black charcoal wood, colour #2a2a30, with a pale ivory bone rail and a big pale ivory skull figurehead on the bow; the red sail becomes tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennant becomes a torn black rag; one small lantern glowing bright violet hangs from the mast. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "patrol-boat-a-edit",
+      "candidate": 0,
+      "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+    }
+  }
+}

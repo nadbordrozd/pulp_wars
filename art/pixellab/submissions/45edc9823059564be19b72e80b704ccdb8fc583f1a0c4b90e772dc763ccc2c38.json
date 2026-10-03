@@ -1,0 +1,37 @@
+{
+  "id": "human-portrait-battleship-heraldic-a",
+  "jobId": "2dde6919-cd6e-4492-9424-a779a29d2e45",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-human",
+    "asset": "chibi-naval-human-portrait-battleship",
+    "subject": "PORTRAIT:BATTLESHIP",
+    "faction": "ORIGINAL",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96141,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours of the sails and pennants: the red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with one big gold-yellow cross in its middle; the pennants become crimson with gold-yellow tips. Keep the hull, the grey castles, masts, ship shape, size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours of the sails and pennants: the red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with one big gold-yellow cross in its middle; the pennants become crimson with gold-yellow tips. Keep the hull, the grey castles, masts, ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours of the sails and pennants: the red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with one big gold-yellow cross in its middle; the pennants become crimson with gold-yellow tips. Keep the hull, the grey castles, masts, ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours of the sails and pennants: the red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with one big gold-yellow cross in its middle; the pennants become crimson with gold-yellow tips. Keep the hull, the grey castles, masts, ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-battleship-b",
+      "candidate": 0,
+      "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+    }
+  }
+}

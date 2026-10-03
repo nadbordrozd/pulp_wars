@@ -1,0 +1,36 @@
+{
+  "id": "martian-patrol-boat-chrome-a-edit",
+  "jobId": "768cf45c-43a3-4ae1-bec4-da0aa466c2a8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-martian",
+    "asset": "chibi-naval-martian-patrol-boat",
+    "subject": "UNIT:MARTIAN:PATROL_BOAT",
+    "faction": "MARTIAN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96504,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace only the tall curved chrome fin on top: it becomes a short chrome antenna mast, about half as tall, with a small glowing hot magenta orb on its tip. Keep the chrome hull, glass dome, side fins, magenta lights, size, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Replace only the tall curved chrome fin on top: it becomes a short chrome antenna mast, about half as tall, with a small glowing hot magenta orb on its tip. Keep the chrome hull, glass dome, side fins, magenta lights, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Replace only the tall curved chrome fin on top: it becomes a short chrome antenna mast, about half as tall, with a small glowing hot magenta orb on its tip. Keep the chrome hull, glass dome, side fins, magenta lights, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Replace only the tall curved chrome fin on top: it becomes a short chrome antenna mast, about half as tall, with a small glowing hot magenta orb on its tip. Keep the chrome hull, glass dome, side fins, magenta lights, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "martian-patrol-boat-chrome-a",
+      "candidate": 0,
+      "sha256": "d286789ec5fae27787263d696251b102fe5fa2ba4f63cf3f7b87e7daf98144e0"
+    }
+  }
+}

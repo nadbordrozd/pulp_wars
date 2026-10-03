@@ -1,0 +1,563 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-human",
+  "recipes": {
+    "human-battleship-heraldic-a": {
+      "id": "human-battleship-heraldic-a",
+      "asset": "chibi-naval-human-battleship",
+      "jobId": "a3e17ff5-aca1-4e32-9234-a62cc116baf1",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-human",
+        "asset": "chibi-naval-human-battleship",
+        "subject": "UNIT:BATTLESHIP",
+        "faction": "ORIGINAL",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 96111,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of the sails and pennants: both big red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with a thin gold-yellow border and one big gold-yellow cross in its middle; the red pennants become crimson with gold-yellow tips. Keep the pale wooden hull, the grey stone tower and rails, ship shape, size, the empty space at the left and right edges, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+          }
+        ],
+        "prompt": "Change only the colours of the sails and pennants: both big red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with a thin gold-yellow border and one big gold-yellow cross in its middle; the red pennants become crimson with gold-yellow tips. Keep the pale wooden hull, the grey stone tower and rails, ship shape, size, the empty space at the left and right edges, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Change only the colours of the sails and pennants: both big red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with a thin gold-yellow border and one big gold-yellow cross in its middle; the red pennants become crimson with gold-yellow tips. Keep the pale wooden hull, the grey stone tower and rails, ship shape, size, the empty space at the left and right edges, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "editInstruction": "Change only the colours of the sails and pennants: both big red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with a thin gold-yellow border and one big gold-yellow cross in its middle; the red pennants become crimson with gold-yellow tips. Keep the pale wooden hull, the grey stone tower and rails, ship shape, size, the empty space at the left and right edges, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "battleship-d-edit",
+          "candidate": 1,
+          "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+        }
+      },
+      "submittedAt": "2026-10-03T07:51:55.501Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-human/human-battleship-heraldic-a.png",
+      "rawSheetSha256": "355a779a3cded5091f18e83a574d2a4a75cd9bf5cfb84c8efbc3fd2c5426c63c",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.2317,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.2317,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T07:52:37.063Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The carrack keeps the batch-4 hull, stone tower, rails and side margins; three crimson sails with gold borders and gold crosses, crimson pennants with gold tips. The sails are a darker crimson than the cog's; the crosses read at native size.",
+        "reviewedAt": "2026-10-03T07:55:47.089Z"
+      }
+    },
+    "human-patrol-boat-heraldic-a": {
+      "id": "human-patrol-boat-heraldic-a",
+      "asset": "chibi-naval-human-patrol-boat",
+      "jobId": "72a70987-52b2-45da-a0ce-63ca384f7240",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-human",
+        "asset": "chibi-naval-human-patrol-boat",
+        "subject": "UNIT:PATROL_BOAT",
+        "faction": "ORIGINAL",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 96101,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of the sail and pennant: the big red sail becomes deep crimson cloth, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross in its middle; the red pennant becomes crimson with a gold-yellow tip; add a thin gold-yellow trim along the top rail. Keep the pale wooden hull, mast, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+          }
+        ],
+        "prompt": "Change only the colours of the sail and pennant: the big red sail becomes deep crimson cloth, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross in its middle; the red pennant becomes crimson with a gold-yellow tip; add a thin gold-yellow trim along the top rail. Keep the pale wooden hull, mast, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Change only the colours of the sail and pennant: the big red sail becomes deep crimson cloth, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross in its middle; the red pennant becomes crimson with a gold-yellow tip; add a thin gold-yellow trim along the top rail. Keep the pale wooden hull, mast, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "editInstruction": "Change only the colours of the sail and pennant: the big red sail becomes deep crimson cloth, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross in its middle; the red pennant becomes crimson with a gold-yellow tip; add a thin gold-yellow trim along the top rail. Keep the pale wooden hull, mast, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "patrol-boat-a-edit",
+          "candidate": 0,
+          "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+        }
+      },
+      "submittedAt": "2026-10-03T07:50:48.083Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-human/human-patrol-boat-heraldic-a.png",
+      "rawSheetSha256": "094b4f80cc0206c67c514996ce036b89b671ce30fea408ad492c32869c99c916",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.2574,
+          "footprintWidthShare": 0.8214,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.2574,
+          "footprintWidthShare": 0.8214,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T07:51:55.483Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The cog keeps the batch-4 hull, mast and outline; the sail is deep crimson with a gold border and a big gold cross, the pennant crimson with a gold tip, a gold rail trim. Reads as Human at native size on Shallow and Deep Water; candidate 1 is near-identical.",
+        "reviewedAt": "2026-10-03T07:55:34.984Z"
+      }
+    },
+    "human-portrait-battleship-heraldic-a": {
+      "id": "human-portrait-battleship-heraldic-a",
+      "asset": "chibi-naval-human-portrait-battleship",
+      "jobId": "2dde6919-cd6e-4492-9424-a779a29d2e45",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-human",
+        "asset": "chibi-naval-human-portrait-battleship",
+        "subject": "PORTRAIT:BATTLESHIP",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96141,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of the sails and pennants: the red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with one big gold-yellow cross in its middle; the pennants become crimson with gold-yellow tips. Keep the hull, the grey castles, masts, ship shape, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colours of the sails and pennants: the red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with one big gold-yellow cross in its middle; the pennants become crimson with gold-yellow tips. Keep the hull, the grey castles, masts, ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colours of the sails and pennants: the red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with one big gold-yellow cross in its middle; the pennants become crimson with gold-yellow tips. Keep the hull, the grey castles, masts, ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colours of the sails and pennants: the red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with one big gold-yellow cross in its middle; the pennants become crimson with gold-yellow tips. Keep the hull, the grey castles, masts, ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-battleship-b",
+          "candidate": 0,
+          "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+        }
+      },
+      "submittedAt": "2026-10-03T07:54:05.465Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-human/human-portrait-battleship-heraldic-a.png",
+      "rawSheetSha256": "0295f0a9c150b0c25989b06a5079eee79626a8492705713380f3e6bbcb04fd0c",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.3524,
+          "footprintWidthShare": 0.8235,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.3524,
+          "footprintWidthShare": 0.8235,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T07:54:51.812Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The batch-5 carrack portrait with two crimson sails, each with a gold cross, and a crimson pennant with a gold tip; hull and castles unchanged.",
+        "reviewedAt": "2026-10-03T07:55:51.037Z"
+      }
+    },
+    "human-portrait-patrol-boat-heraldic-a": {
+      "id": "human-portrait-patrol-boat-heraldic-a",
+      "asset": "chibi-naval-human-portrait-patrol-boat",
+      "jobId": "5f19a862-b5c5-427a-85c1-f74bc7bf0e6f",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-human",
+        "asset": "chibi-naval-human-portrait-patrol-boat",
+        "subject": "PORTRAIT:PATROL_BOAT",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96131,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of the sail and pennant: the red sail becomes deep crimson cloth, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross in its middle; the pennant becomes crimson with a gold-yellow tip. Keep the hull, mast, boat shape, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colours of the sail and pennant: the red sail becomes deep crimson cloth, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross in its middle; the pennant becomes crimson with a gold-yellow tip. Keep the hull, mast, boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colours of the sail and pennant: the red sail becomes deep crimson cloth, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross in its middle; the pennant becomes crimson with a gold-yellow tip. Keep the hull, mast, boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colours of the sail and pennant: the red sail becomes deep crimson cloth, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross in its middle; the pennant becomes crimson with a gold-yellow tip. Keep the hull, mast, boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-patrol-boat-a",
+          "candidate": 0,
+          "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+        }
+      },
+      "submittedAt": "2026-10-03T07:53:18.634Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-human/human-portrait-patrol-boat-heraldic-a.png",
+      "rawSheetSha256": "0122f753b36c6836defe87a0e774f153bebabc389b2268a4d0553e86ee741fef",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.2512,
+          "footprintWidthShare": 0.9355,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.2512,
+          "footprintWidthShare": 0.9355,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T07:54:05.454Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The batch-5 cog portrait with a crimson sail, a gold cross and gold border, a crimson pennant; hull and outline unchanged.",
+        "reviewedAt": "2026-10-03T07:55:49.723Z"
+      }
+    },
+    "human-transport-heraldic-a": {
+      "id": "human-transport-heraldic-a",
+      "asset": "chibi-naval-human-transport",
+      "jobId": "b49a0b99-3593-47f2-baaa-4d60b9a54ddb",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-human",
+        "asset": "chibi-naval-human-transport",
+        "subject": "UNIT:EMBARKED_TRANSPORT",
+        "faction": "ORIGINAL",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 96121,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of the tarp and pennant: the big red tarp over the cargo becomes deep crimson canvas, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross on top; the red pennant becomes crimson with a gold-yellow tip. Keep the pale wooden hull, oars, ropes, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+          }
+        ],
+        "prompt": "Change only the colours of the tarp and pennant: the big red tarp over the cargo becomes deep crimson canvas, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross on top; the red pennant becomes crimson with a gold-yellow tip. Keep the pale wooden hull, oars, ropes, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Change only the colours of the tarp and pennant: the big red tarp over the cargo becomes deep crimson canvas, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross on top; the red pennant becomes crimson with a gold-yellow tip. Keep the pale wooden hull, oars, ropes, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "editInstruction": "Change only the colours of the tarp and pennant: the big red tarp over the cargo becomes deep crimson canvas, colour #a8202c with #6e1018 shadows, with a thin gold-yellow border and one big gold-yellow cross on top; the red pennant becomes crimson with a gold-yellow tip. Keep the pale wooden hull, oars, ropes, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "embarked-transport-a-edit",
+          "candidate": 0,
+          "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+        }
+      },
+      "submittedAt": "2026-10-03T07:52:37.069Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-human/human-transport-heraldic-a.png",
+      "rawSheetSha256": "212ce95bf7e4348a7f46d2136f06c4e193e4dca95aa112afe734a28b726a266c",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.2541,
+          "footprintWidthShare": 0.85,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.2541,
+          "footprintWidthShare": 0.85,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T07:53:18.615Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The rowing barge keeps the batch-4 hull, oars and ropes; the tarp is deep crimson with a gold border and a gold cross, the pennant crimson with a gold tip.",
+        "reviewedAt": "2026-10-03T07:55:48.325Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-naval-human-battleship": {
+      "id": "chibi-naval-human-battleship",
+      "subject": "UNIT:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "human-battleship-heraldic-a",
+      "candidate": 0,
+      "candidateSha256": "2c12768b110fcb9adb156a4a3daab36dc3ef89c118c74a45f0821411fef42409",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-human-battleship.png",
+        "sha256": "2c12768b110fcb9adb156a4a3daab36dc3ef89c118c74a45f0821411fef42409",
+        "pixelSha256": "d8fbe3d3701a378a036ec69d8a8ba0a6918430479df93b76afa030956b29a741",
+        "width": 88,
+        "height": 96
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 44,
+        "y": 56
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 16,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0.2317,
+        "footprintWidthShare": 0.7714,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The carrack keeps the batch-4 hull, stone tower, rails and side margins; three crimson sails with gold borders and gold crosses, crimson pennants with gold tips. The sails are a darker crimson than the cog's; the crosses read at native size.",
+      "acceptedAt": "2026-10-03T07:55:47.089Z"
+    },
+    "chibi-naval-human-patrol-boat": {
+      "id": "chibi-naval-human-patrol-boat",
+      "subject": "UNIT:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "human-patrol-boat-heraldic-a",
+      "candidate": 0,
+      "candidateSha256": "e997a491a3e6cb65c9afca3ea7c01be7a9b97a0458ab78dac9db452d31f85c51",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-human-patrol-boat.png",
+        "sha256": "e997a491a3e6cb65c9afca3ea7c01be7a9b97a0458ab78dac9db452d31f85c51",
+        "pixelSha256": "4056087d23436c537bb08f3615861dcf4e8a70965383c954c9161cdbcc4da956",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.2574,
+        "footprintWidthShare": 0.8214,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The cog keeps the batch-4 hull, mast and outline; the sail is deep crimson with a gold border and a big gold cross, the pennant crimson with a gold tip, a gold rail trim. Reads as Human at native size on Shallow and Deep Water; candidate 1 is near-identical.",
+      "acceptedAt": "2026-10-03T07:55:34.984Z"
+    },
+    "chibi-naval-human-portrait-battleship": {
+      "id": "chibi-naval-human-portrait-battleship",
+      "subject": "PORTRAIT:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "human-portrait-battleship-heraldic-a",
+      "candidate": 0,
+      "candidateSha256": "036ecc4e491dfa6eb44ea83a3937f3c067ad09232e036e5ae41e26ce22699c73",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-human-portrait-battleship.png",
+        "sha256": "036ecc4e491dfa6eb44ea83a3937f3c067ad09232e036e5ae41e26ce22699c73",
+        "pixelSha256": "33e791b1d34886a8ade9586ad0b60fc5b160be0fd53fc86b30cfa97c60b59e83",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.3524,
+        "footprintWidthShare": 0.8235,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The batch-5 carrack portrait with two crimson sails, each with a gold cross, and a crimson pennant with a gold tip; hull and castles unchanged.",
+      "acceptedAt": "2026-10-03T07:55:51.037Z"
+    },
+    "chibi-naval-human-portrait-patrol-boat": {
+      "id": "chibi-naval-human-portrait-patrol-boat",
+      "subject": "PORTRAIT:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "human-portrait-patrol-boat-heraldic-a",
+      "candidate": 0,
+      "candidateSha256": "cde69ff7e0a0d6e1d22263268ddbee9937f3e9a1962762ce78dbc433ada7e423",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-human-portrait-patrol-boat.png",
+        "sha256": "cde69ff7e0a0d6e1d22263268ddbee9937f3e9a1962762ce78dbc433ada7e423",
+        "pixelSha256": "bc3b68361ccbe878b1681a6d45df58d7d6ffc76b2ab11ee3db8e328adcbc872a",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.2512,
+        "footprintWidthShare": 0.9355,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The batch-5 cog portrait with a crimson sail, a gold cross and gold border, a crimson pennant; hull and outline unchanged.",
+      "acceptedAt": "2026-10-03T07:55:49.723Z"
+    },
+    "chibi-naval-human-transport": {
+      "id": "chibi-naval-human-transport",
+      "subject": "UNIT:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "human-transport-heraldic-a",
+      "candidate": 0,
+      "candidateSha256": "4356fa20c40e9ecb516d80f62b5f0a985127f6383547239f5be267b31adc9c03",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-human-transport.png",
+        "sha256": "4356fa20c40e9ecb516d80f62b5f0a985127f6383547239f5be267b31adc9c03",
+        "pixelSha256": "bc45ebd7dfcc3714c07b5a70c7f2b4402806fc5609611af71c017cc923933e00",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0.2541,
+        "footprintWidthShare": 0.85,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The rowing barge keeps the batch-4 hull, oars and ropes; the tarp is deep crimson with a gold border and a gold cross, the pennant crimson with a gold tip.",
+      "acceptedAt": "2026-10-03T07:55:48.325Z"
+    }
+  }
+}

@@ -1,0 +1,1157 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-goblin",
+  "recipes": {
+    "goblin-battleship-crew-edit-a": {
+      "id": "goblin-battleship-crew-edit-a",
+      "asset": "chibi-naval-goblin-battleship",
+      "jobId": "3fbb170d-5ace-4075-9911-3111539aae29",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-battleship",
+        "subject": "UNIT:GOBLIN:BATTLESHIP",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 96313,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing in the scrap iron lookout tower and shouting. Keep the dark planks, scrap plates, brown leather sails, pennants, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing in the scrap iron lookout tower and shouting. Keep the dark planks, scrap plates, brown leather sails, pennants, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing in the scrap iron lookout tower and shouting. Keep the dark planks, scrap plates, brown leather sails, pennants, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "editInstruction": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing in the scrap iron lookout tower and shouting. Keep the dark planks, scrap plates, brown leather sails, pennants, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "source": {
+          "recipe": "goblin-battleship-saddle-edit-a",
+          "candidate": 0,
+          "sha256": "366221101bc8a7fdc6c982b17d97095765e7ff3c9493b95e22703bd50992cd3c"
+        }
+      },
+      "submittedAt": "2026-10-03T08:10:08.868Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-battleship-crew-edit-a.png",
+      "rawSheetSha256": "56aa165bfe3d2e06ae509a7a1bfed2f180ad780aef400cb5a7acdc3b4df61992",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0476,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0476,
+          "footprintWidthShare": 0.75,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T08:11:01.210Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The scrap warship: dark planks and gunmetal scrap, the brown leather sails of the Goblin leather (#9d5629), rag pennants, and a big olive goblin with sideways ears shouting at the bow. The goblin is large for the ship; it reads at native size.",
+        "reviewedAt": "2026-10-03T08:12:43.268Z"
+      }
+    },
+    "goblin-battleship-saddle-edit-a": {
+      "id": "goblin-battleship-saddle-edit-a",
+      "asset": "chibi-naval-goblin-battleship",
+      "jobId": "6c28b363-8221-43d2-b637-d1b6000c82a7",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-battleship",
+        "subject": "UNIT:GOBLIN:BATTLESHIP",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 96312,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their stitched patches stay darker brown. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+          }
+        ],
+        "prompt": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their stitched patches stay darker brown. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their stitched patches stay darker brown. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "editInstruction": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their stitched patches stay darker brown. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "source": {
+          "recipe": "goblin-battleship-scrap-a",
+          "candidate": 0,
+          "sha256": "1594dae9d9e11a9a19b5e1885d655adf082ebffbef65bba1a4606a3b220f2066"
+        }
+      },
+      "submittedAt": "2026-10-03T08:03:42.151Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-battleship-saddle-edit-a.png",
+      "rawSheetSha256": "5649ad294367d6f958a9744854fd1cdc2c9f6b49e61aced74054037be5167aa6",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0508,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0508,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T08:05:30.497Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A step: brown sails as asked; goblin-battleship-crew-edit-a adds the olive goblin.",
+        "reviewedAt": "2026-10-03T08:13:12.337Z"
+      }
+    },
+    "goblin-battleship-scrap-a": {
+      "id": "goblin-battleship-scrap-a",
+      "asset": "chibi-naval-goblin-battleship",
+      "jobId": "34c94ab5-afa8-4edc-8cfd-c51643b03e74",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-battleship",
+        "subject": "UNIT:GOBLIN:BATTLESHIP",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 96311,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a ramshackle goblin scrap warship: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey stone tower becomes rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a ramshackle goblin scrap warship: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey stone tower becomes rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a ramshackle goblin scrap warship: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey stone tower becomes rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "editInstruction": "Turn it into a ramshackle goblin scrap warship: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey stone tower becomes rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "battleship-d-edit",
+          "candidate": 1,
+          "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+        }
+      },
+      "submittedAt": "2026-10-03T07:57:08.113Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-battleship-scrap-a.png",
+      "rawSheetSha256": "8cefd4223f4f2828030476528926bb2e584a7139d2af02ceb04b2262db881400",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0524,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0524,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T07:58:06.160Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right scrap warship but ochre-orange sails; recoloured by goblin-battleship-saddle-edit-a.",
+        "reviewedAt": "2026-10-03T08:13:07.966Z"
+      }
+    },
+    "goblin-patrol-boat-crew-edit-a": {
+      "id": "goblin-patrol-boat-crew-edit-a",
+      "asset": "chibi-naval-goblin-patrol-boat",
+      "jobId": "2043fe6e-2ff5-49bb-b1f3-068cd7c2b965",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-patrol-boat",
+        "subject": "UNIT:GOBLIN:PATROL_BOAT",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 96303,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing on the deck in front of the mast and leaning over the rail, waving. Keep the dark planks, the scrap plates, the brown leather sail with its patches, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing on the deck in front of the mast and leaning over the rail, waving. Keep the dark planks, the scrap plates, the brown leather sail with its patches, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing on the deck in front of the mast and leaning over the rail, waving. Keep the dark planks, the scrap plates, the brown leather sail with its patches, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "editInstruction": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing on the deck in front of the mast and leaning over the rail, waving. Keep the dark planks, the scrap plates, the brown leather sail with its patches, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "source": {
+          "recipe": "goblin-patrol-boat-saddle-edit-a",
+          "candidate": 0,
+          "sha256": "0cc8534240eed0c80d8be796b2e8c4ee6ee8141407e4c804bbf269cb1709b836"
+        }
+      },
+      "submittedAt": "2026-10-03T08:09:32.235Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-patrol-boat-crew-edit-a.png",
+      "rawSheetSha256": "6fabb1a9b12539426847fe4d598ae01c9b05d9f65a09d60243cf6a58bce8f872",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.013,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.013,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T08:10:08.866Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The junk-boat: dark planks with gunmetal scrap plates, a dull brown leather sail with patches, a brown rag pennant, and an olive goblin with sideways ears waving over the rail. The goblin is what says Goblin at native size.",
+        "reviewedAt": "2026-10-03T08:12:42.003Z"
+      }
+    },
+    "goblin-patrol-boat-saddle-edit-a": {
+      "id": "goblin-patrol-boat-saddle-edit-a",
+      "asset": "chibi-naval-goblin-patrol-boat",
+      "jobId": "ae305c26-40fa-44f2-9337-8debca8ac817",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-patrol-boat",
+        "subject": "UNIT:GOBLIN:PATROL_BOAT",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 96302,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched square patches stay pale hide. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+          }
+        ],
+        "prompt": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched square patches stay pale hide. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched square patches stay pale hide. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "editInstruction": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched square patches stay pale hide. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "source": {
+          "recipe": "goblin-patrol-boat-scrap-a",
+          "candidate": 0,
+          "sha256": "c6b0bf69280fb147fa7f0213231377a8910fb784e03006aeb7a884183aa97217"
+        }
+      },
+      "submittedAt": "2026-10-03T08:02:39.712Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-patrol-boat-saddle-edit-a.png",
+      "rawSheetSha256": "b29f26b67cb157c480acac553f8433c003e314e425e51a200198edcb311ba426",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0111,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0111,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T08:03:42.142Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A step: brown leather sail as asked, but nothing on the boat says Goblin at native size; goblin-patrol-boat-crew-edit-a adds the olive goblin.",
+        "reviewedAt": "2026-10-03T08:13:11.457Z"
+      }
+    },
+    "goblin-patrol-boat-scrap-a": {
+      "id": "goblin-patrol-boat-scrap-a",
+      "asset": "chibi-naval-goblin-patrol-boat",
+      "jobId": "b079d747-59ed-4e83-b6e2-b96eb099eb0d",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-patrol-boat",
+        "subject": "UNIT:GOBLIN:PATROL_BOAT",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 96301,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a ramshackle goblin junk-boat: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with two riveted gunmetal grey scrap iron plates; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with three stitched square patches of pale hide; the red pennant becomes a torn brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a ramshackle goblin junk-boat: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with two riveted gunmetal grey scrap iron plates; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with three stitched square patches of pale hide; the red pennant becomes a torn brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a ramshackle goblin junk-boat: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with two riveted gunmetal grey scrap iron plates; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with three stitched square patches of pale hide; the red pennant becomes a torn brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "editInstruction": "Turn it into a ramshackle goblin junk-boat: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with two riveted gunmetal grey scrap iron plates; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with three stitched square patches of pale hide; the red pennant becomes a torn brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "patrol-boat-a-edit",
+          "candidate": 0,
+          "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+        }
+      },
+      "submittedAt": "2026-10-03T07:56:36.671Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-patrol-boat-scrap-a.png",
+      "rawSheetSha256": "c337b9161a555f79df4e5a00222888fa60969b7a269508890a3e6e739fa47830",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.0019,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.0019,
+          "footprintWidthShare": 0.8214,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T07:57:08.076Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right junk-boat (dark planks, scrap plates, patched sail) but the sail came out ochre-orange (about #d08a40), the Dinosaur accent's family; recoloured by goblin-patrol-boat-saddle-edit-a.",
+        "reviewedAt": "2026-10-03T08:13:07.062Z"
+      }
+    },
+    "goblin-portrait-battleship-saddle-edit-a": {
+      "id": "goblin-portrait-battleship-saddle-edit-a",
+      "asset": "chibi-naval-goblin-portrait-battleship",
+      "jobId": "c5ceaa87-530f-47bb-aa58-d8956477c131",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-portrait-battleship",
+        "subject": "PORTRAIT:GOBLIN:BATTLESHIP",
+        "faction": "GOBLIN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96342,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "goblin-portrait-battleship-scrap-a",
+          "candidate": 0,
+          "sha256": "115d89434dd2f64563d60f361025977baaa0b6c4d6b3022a5fbf1856479e7f98"
+        }
+      },
+      "submittedAt": "2026-10-03T08:08:12.599Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-portrait-battleship-saddle-edit-a.png",
+      "rawSheetSha256": "2bbef73392d20cc0c38751bcdb32e7b739e71344cabe5016df51b093f43d5f2a",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0526,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.0526,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T08:09:00.699Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The scrap warship portrait: two dull brown leather sails with patches, brown rag pennants, a hull of dark planks and gunmetal scrap. The orange of the first edit is gone.",
+        "reviewedAt": "2026-10-03T08:09:40.073Z"
+      }
+    },
+    "goblin-portrait-battleship-scrap-a": {
+      "id": "goblin-portrait-battleship-scrap-a",
+      "asset": "chibi-naval-goblin-portrait-battleship",
+      "jobId": "0d29a0f5-7616-49d5-a428-e46f90050f18",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-portrait-battleship",
+        "subject": "PORTRAIT:GOBLIN:BATTLESHIP",
+        "faction": "GOBLIN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96341,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a ramshackle goblin scrap warship: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey castles become rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched pale hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a ramshackle goblin scrap warship: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey castles become rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched pale hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a ramshackle goblin scrap warship: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey castles become rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched pale hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Turn it into a ramshackle goblin scrap warship: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey castles become rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched pale hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-battleship-b",
+          "candidate": 0,
+          "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+        }
+      },
+      "submittedAt": "2026-10-03T07:59:34.906Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-portrait-battleship-scrap-a.png",
+      "rawSheetSha256": "fe2107b23ec0132a15d351243d659301f69de38c3d60a6b54807b6375f567126",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.0574,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.0574,
+          "footprintWidthShare": 0.8235,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T08:00:37.018Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Orange sails; recoloured by goblin-portrait-battleship-saddle-edit-a.",
+        "reviewedAt": "2026-10-03T08:13:10.622Z"
+      }
+    },
+    "goblin-portrait-patrol-boat-saddle-edit-a": {
+      "id": "goblin-portrait-patrol-boat-saddle-edit-a",
+      "asset": "chibi-naval-goblin-portrait-patrol-boat",
+      "jobId": "d775afca-9bea-4fe4-b89f-4fa9c70982c3",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-portrait-patrol-boat",
+        "subject": "PORTRAIT:GOBLIN:PATROL_BOAT",
+        "faction": "GOBLIN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96332,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its pale patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its pale patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its pale patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its pale patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "goblin-portrait-patrol-boat-scrap-a",
+          "candidate": 0,
+          "sha256": "8480ac7cc6a024921a47094800a0a41924f924daf19700a295002ebb5572e8f4"
+        }
+      },
+      "submittedAt": "2026-10-03T08:07:13.885Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-portrait-patrol-boat-saddle-edit-a.png",
+      "rawSheetSha256": "4787662963917bcddb73b6cb92954aea08bbba58906857855bc24ce1e35068a2",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.3023,
+          "footprintWidthShare": 0.9355,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.3023,
+          "footprintWidthShare": 0.9355,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T08:08:12.595Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The junk-boat portrait: dark planks with a gunmetal patch, a dull brown leather sail with pale hide patches, a brown rag pennant. The orange of the first edit is gone.",
+        "reviewedAt": "2026-10-03T08:09:05.027Z"
+      }
+    },
+    "goblin-portrait-patrol-boat-scrap-a": {
+      "id": "goblin-portrait-patrol-boat-scrap-a",
+      "asset": "chibi-naval-goblin-portrait-patrol-boat",
+      "jobId": "4bd6b5e4-a158-4c18-a022-6fc1ac6d3aa3",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-portrait-patrol-boat",
+        "subject": "PORTRAIT:GOBLIN:PATROL_BOAT",
+        "faction": "GOBLIN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 96331,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a ramshackle goblin junk-boat: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with a riveted gunmetal scrap plate; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with two stitched pale hide patches; the pennant becomes a brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a ramshackle goblin junk-boat: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with a riveted gunmetal scrap plate; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with two stitched pale hide patches; the pennant becomes a brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a ramshackle goblin junk-boat: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with a riveted gunmetal scrap plate; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with two stitched pale hide patches; the pennant becomes a brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Turn it into a ramshackle goblin junk-boat: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with a riveted gunmetal scrap plate; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with two stitched pale hide patches; the pennant becomes a brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-patrol-boat-a",
+          "candidate": 0,
+          "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+        }
+      },
+      "submittedAt": "2026-10-03T07:58:48.085Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-portrait-patrol-boat-scrap-a.png",
+      "rawSheetSha256": "4ce35aff5ab217828e51f17d9bed54164662f084625f79713802324ced0f1f67",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.3163,
+          "footprintWidthShare": 0.9355,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.3163,
+          "footprintWidthShare": 0.9355,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-03T07:59:34.883Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Orange sail; recoloured by goblin-portrait-patrol-boat-saddle-edit-a.",
+        "reviewedAt": "2026-10-03T08:13:09.784Z"
+      }
+    },
+    "goblin-transport-crew-edit-a": {
+      "id": "goblin-transport-crew-edit-a",
+      "asset": "chibi-naval-goblin-transport",
+      "jobId": "103beb9d-b216-49c9-961c-e4a64290a916",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-transport",
+        "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 96323,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, sitting on top of the brown leather tarp over the cargo. Keep the dark planks, oars, barrels, the tarp, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, sitting on top of the brown leather tarp over the cargo. Keep the dark planks, oars, barrels, the tarp, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, sitting on top of the brown leather tarp over the cargo. Keep the dark planks, oars, barrels, the tarp, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "editInstruction": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, sitting on top of the brown leather tarp over the cargo. Keep the dark planks, oars, barrels, the tarp, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "source": {
+          "recipe": "goblin-transport-saddle-edit-a",
+          "candidate": 0,
+          "sha256": "f730733410a06f48e9ee6c49c17ec8c7435de5d90386d1e80e600fce1bc3e8bc"
+        }
+      },
+      "submittedAt": "2026-10-03T08:11:01.215Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-transport-crew-edit-a.png",
+      "rawSheetSha256": "900bd60058516ee40a1563781a4711543a4942f3e38da5b4e9691ba2b82ecd67",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.013,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.013,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T08:11:32.449Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "The raft: dark planks, oars, barrels, a rag on the pole, and an olive goblin with sideways ears sitting on the cargo; the goblin covers most of the brown tarp. A passenger in the boat suits the transport. Superseded by goblin-transport-plank-edit-a.",
+        "reviewedAt": "2026-10-03T08:12:44.663Z"
+      }
+    },
+    "goblin-transport-plank-edit-a": {
+      "id": "goblin-transport-plank-edit-a",
+      "asset": "chibi-naval-goblin-transport",
+      "jobId": "0a00c32b-5bd4-4705-92ca-1ac8546fa990",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-transport",
+        "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 96324,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the dark maroon red hull planks and oars: they become dark brown wood, colour #4a2c14 with #2a1608 shadows, not red and not maroon. Keep the olive goblin, the barrels, the scrap plates, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Recolour only the dark maroon red hull planks and oars: they become dark brown wood, colour #4a2c14 with #2a1608 shadows, not red and not maroon. Keep the olive goblin, the barrels, the scrap plates, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Recolour only the dark maroon red hull planks and oars: they become dark brown wood, colour #4a2c14 with #2a1608 shadows, not red and not maroon. Keep the olive goblin, the barrels, the scrap plates, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "editInstruction": "Recolour only the dark maroon red hull planks and oars: they become dark brown wood, colour #4a2c14 with #2a1608 shadows, not red and not maroon. Keep the olive goblin, the barrels, the scrap plates, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+        "source": {
+          "recipe": "goblin-transport-crew-edit-a",
+          "candidate": 0,
+          "sha256": "2ad996d6f943ae246d39488d2b82851b3dd8f95bdae3e8b0e0e766bda08fd7a5"
+        }
+      },
+      "submittedAt": "2026-10-03T08:17:13.989Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-transport-plank-edit-a.png",
+      "rawSheetSha256": "2ff17b088540d57aa9794f7b8a1402e41f76af7af93a11cdb0ad3d090fe0a553",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.0033,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.0033,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T08:17:40.083Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The raft with the olive goblin on the cargo, barrels, scrap plates and oars; the hull is now dark brown wood, so no pixel is in the owner key's band (was 6.8%).",
+        "reviewedAt": "2026-10-03T08:18:33.108Z"
+      }
+    },
+    "goblin-transport-saddle-edit-a": {
+      "id": "goblin-transport-saddle-edit-a",
+      "asset": "chibi-naval-goblin-transport",
+      "jobId": "334424a3-0000-40a8-9008-89006bc8a202",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-transport",
+        "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 96322,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the orange tarp over the cargo: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+          }
+        ],
+        "prompt": "Recolour only the orange tarp over the cargo: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Recolour only the orange tarp over the cargo: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "editInstruction": "Recolour only the orange tarp over the cargo: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "source": {
+          "recipe": "goblin-transport-scrap-a",
+          "candidate": 0,
+          "sha256": "9c9da8bf6cedd497c3d9c4773e036ba85e3e723d29334068c0f2307cd4298f0d"
+        }
+      },
+      "submittedAt": "2026-10-03T08:05:30.503Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-transport-saddle-edit-a.png",
+      "rawSheetSha256": "2b321d832e63b1d1d067cc1ca5892d3bdd234b8cedf19c314105d45f00d3b083",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.013,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.013,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T08:07:13.874Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A step: brown tarp as asked; goblin-transport-crew-edit-a adds the olive goblin.",
+        "reviewedAt": "2026-10-03T08:13:13.194Z"
+      }
+    },
+    "goblin-transport-scrap-a": {
+      "id": "goblin-transport-scrap-a",
+      "asset": "chibi-naval-goblin-transport",
+      "jobId": "3642bf3a-4303-426b-9549-65702b3b900d",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-transport",
+        "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 96321,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a ramshackle goblin raft: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows lashed with rope and a gunmetal scrap plate; the red tarp becomes patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; two small wooden barrels sit beside the cargo; the pennant becomes a brown rag. Keep the oars, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a ramshackle goblin raft: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows lashed with rope and a gunmetal scrap plate; the red tarp becomes patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; two small wooden barrels sit beside the cargo; the pennant becomes a brown rag. Keep the oars, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a ramshackle goblin raft: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows lashed with rope and a gunmetal scrap plate; the red tarp becomes patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; two small wooden barrels sit beside the cargo; the pennant becomes a brown rag. Keep the oars, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "editInstruction": "Turn it into a ramshackle goblin raft: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows lashed with rope and a gunmetal scrap plate; the red tarp becomes patched warm brown leather, colour #955627 with #562a0c shadows, with stitched hide patches; two small wooden barrels sit beside the cargo; the pennant becomes a brown rag. Keep the oars, boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "embarked-transport-a-edit",
+          "candidate": 0,
+          "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+        }
+      },
+      "submittedAt": "2026-10-03T07:58:06.169Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-transport-scrap-a.png",
+      "rawSheetSha256": "71b303f588c92562e42faa173705150eaa9545f6bac65cb27f266211f1cec032",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.013,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.013,
+          "footprintWidthShare": 0.85,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-03T07:58:48.076Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Right raft with barrels but an ochre-orange tarp; recoloured by goblin-transport-saddle-edit-a.",
+        "reviewedAt": "2026-10-03T08:13:08.876Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-naval-goblin-battleship": {
+      "id": "chibi-naval-goblin-battleship",
+      "subject": "UNIT:GOBLIN:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "goblin-battleship-crew-edit-a",
+      "candidate": 0,
+      "candidateSha256": "8dd839c860916490f3ba963e0aafed6aa1c56b47018e844a72956fa846b46249",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-goblin-battleship.png",
+        "sha256": "8dd839c860916490f3ba963e0aafed6aa1c56b47018e844a72956fa846b46249",
+        "pixelSha256": "adc5d27cd2cb398c7aeb8a3422990642d9cff5398bcf76060b385a45a9376085",
+        "width": 88,
+        "height": 96
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 44,
+        "y": 56
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 16,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0.0476,
+        "footprintWidthShare": 0.75,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The scrap warship: dark planks and gunmetal scrap, the brown leather sails of the Goblin leather (#9d5629), rag pennants, and a big olive goblin with sideways ears shouting at the bow. The goblin is large for the ship; it reads at native size.",
+      "acceptedAt": "2026-10-03T08:12:43.268Z"
+    },
+    "chibi-naval-goblin-patrol-boat": {
+      "id": "chibi-naval-goblin-patrol-boat",
+      "subject": "UNIT:GOBLIN:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "goblin-patrol-boat-crew-edit-a",
+      "candidate": 0,
+      "candidateSha256": "74aa9931ef2d2c100919fdf57305dd4b3f24dd6191ce2a5a4d9457caccc4435b",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-goblin-patrol-boat.png",
+        "sha256": "74aa9931ef2d2c100919fdf57305dd4b3f24dd6191ce2a5a4d9457caccc4435b",
+        "pixelSha256": "04cfc625fee31a9a50f3ed0215f25a3b9c3ec514a1f8e128074092d1ace3b57a",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.013,
+        "footprintWidthShare": 0.8214,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The junk-boat: dark planks with gunmetal scrap plates, a dull brown leather sail with patches, a brown rag pennant, and an olive goblin with sideways ears waving over the rail. The goblin is what says Goblin at native size.",
+      "acceptedAt": "2026-10-03T08:12:42.003Z"
+    },
+    "chibi-naval-goblin-portrait-battleship": {
+      "id": "chibi-naval-goblin-portrait-battleship",
+      "subject": "PORTRAIT:GOBLIN:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "goblin-portrait-battleship-saddle-edit-a",
+      "candidate": 0,
+      "candidateSha256": "86ac0329cc3b260ef38a1fb141486e276798db99673ef15970631535e26d9e33",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-goblin-portrait-battleship.png",
+        "sha256": "86ac0329cc3b260ef38a1fb141486e276798db99673ef15970631535e26d9e33",
+        "pixelSha256": "670f96baa312632ba8f70d905aa8e7d0937b1e3ec327f30b3215c6ccd6e0bac4",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.0526,
+        "footprintWidthShare": 0.8235,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The scrap warship portrait: two dull brown leather sails with patches, brown rag pennants, a hull of dark planks and gunmetal scrap. The orange of the first edit is gone.",
+      "acceptedAt": "2026-10-03T08:09:40.073Z"
+    },
+    "chibi-naval-goblin-portrait-patrol-boat": {
+      "id": "chibi-naval-goblin-portrait-patrol-boat",
+      "subject": "PORTRAIT:GOBLIN:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "goblin-portrait-patrol-boat-saddle-edit-a",
+      "candidate": 0,
+      "candidateSha256": "7f5d707da9673f26e4ff43e75e93af4c297b21aeb8ce0c7e66564319b68e46d4",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-goblin-portrait-patrol-boat.png",
+        "sha256": "7f5d707da9673f26e4ff43e75e93af4c297b21aeb8ce0c7e66564319b68e46d4",
+        "pixelSha256": "962ef77af56989e0e919cbeb55df837ede62f8b2bec7eae771bed4ff0f15c54a",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.3023,
+        "footprintWidthShare": 0.9355,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The junk-boat portrait: dark planks with a gunmetal patch, a dull brown leather sail with pale hide patches, a brown rag pennant. The orange of the first edit is gone.",
+      "acceptedAt": "2026-10-03T08:09:05.027Z"
+    },
+    "chibi-naval-goblin-transport": {
+      "id": "chibi-naval-goblin-transport",
+      "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "goblin-transport-plank-edit-a",
+      "candidate": 0,
+      "candidateSha256": "48d6bfee0e292231d5bc96d8380450fee207ae9001db2d648e6cfd5603c4e63a",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-goblin-transport.png",
+        "sha256": "48d6bfee0e292231d5bc96d8380450fee207ae9001db2d648e6cfd5603c4e63a",
+        "pixelSha256": "d98ae06505acafe6a465093e83c5b500fe230ee6adf86df89e9b42ba83867e12",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0.0033,
+        "footprintWidthShare": 0.85,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The raft with the olive goblin on the cargo, barrels, scrap plates and oars; the hull is now dark brown wood, so no pixel is in the owner key's band (was 6.8%).",
+      "acceptedAt": "2026-10-03T08:18:33.108Z"
+    }
+  }
+}

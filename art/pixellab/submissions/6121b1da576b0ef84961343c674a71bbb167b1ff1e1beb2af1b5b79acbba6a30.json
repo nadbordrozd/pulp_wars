@@ -1,0 +1,36 @@
+{
+  "id": "ice-folk-patrol-boat-icicle-edit-a",
+  "jobId": "992f6511-3fba-4f9c-b12c-30aee67fabfe",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-ice-folk",
+    "asset": "chibi-naval-ice-folk-patrol-boat",
+    "subject": "UNIT:ICE_FOLK:PATROL_BOAT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96602,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add a row of small clear bright ice-blue icicles hanging from the white fur rail along the side, and make the ice-blue crystal figurehead at the bow twice as big. Keep the dark hide hull, the white sail, mast, pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Add a row of small clear bright ice-blue icicles hanging from the white fur rail along the side, and make the ice-blue crystal figurehead at the bow twice as big. Keep the dark hide hull, the white sail, mast, pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Add a row of small clear bright ice-blue icicles hanging from the white fur rail along the side, and make the ice-blue crystal figurehead at the bow twice as big. Keep the dark hide hull, the white sail, mast, pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Add a row of small clear bright ice-blue icicles hanging from the white fur rail along the side, and make the ice-blue crystal figurehead at the bow twice as big. Keep the dark hide hull, the white sail, mast, pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "ice-folk-patrol-boat-frost-a",
+      "candidate": 0,
+      "sha256": "1262a4d95b9fdc80ea0a2f23647bf5e333e0d1490d977408ae7627025c4a7195"
+    }
+  }
+}

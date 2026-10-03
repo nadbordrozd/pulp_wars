@@ -1,0 +1,36 @@
+{
+  "id": "dinosaur-transport-neck-edit-a",
+  "jobId": "0155d928-f6e6-4c7a-a202-f14296f7a15e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-transport",
+    "subject": "UNIT:DINOSAUR:EMBARKED_TRANSPORT",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96422,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the small blue plesiosaur head at the front of the boat much bigger: a long curved neck rises from the bow, as tall as the pole, with a big friendly head, deep blue #205794 with bold orange #fe7500 stripes and a cream jaw. Keep the tawny log hull, the spotted hide over the cargo, the oars, the orange feathers, size, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Make the small blue plesiosaur head at the front of the boat much bigger: a long curved neck rises from the bow, as tall as the pole, with a big friendly head, deep blue #205794 with bold orange #fe7500 stripes and a cream jaw. Keep the tawny log hull, the spotted hide over the cargo, the oars, the orange feathers, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Make the small blue plesiosaur head at the front of the boat much bigger: a long curved neck rises from the bow, as tall as the pole, with a big friendly head, deep blue #205794 with bold orange #fe7500 stripes and a cream jaw. Keep the tawny log hull, the spotted hide over the cargo, the oars, the orange feathers, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Make the small blue plesiosaur head at the front of the boat much bigger: a long curved neck rises from the bow, as tall as the pole, with a big friendly head, deep blue #205794 with bold orange #fe7500 stripes and a cream jaw. Keep the tawny log hull, the spotted hide over the cargo, the oars, the orange feathers, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "dinosaur-transport-primal-a",
+      "candidate": 0,
+      "sha256": "794c9cbcf14133a81d968d1173b1531e83546f972f689dc16a914a133e1556e0"
+    }
+  }
+}

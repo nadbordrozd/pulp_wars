@@ -1,0 +1,36 @@
+{
+  "id": "goblin-battleship-saddle-edit-a",
+  "jobId": "6c28b363-8221-43d2-b637-d1b6000c82a7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-battleship",
+    "subject": "UNIT:GOBLIN:BATTLESHIP",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 96312,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their stitched patches stay darker brown. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+      }
+    ],
+    "prompt": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their stitched patches stay darker brown. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their stitched patches stay darker brown. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "editInstruction": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their stitched patches stay darker brown. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "source": {
+      "recipe": "goblin-battleship-scrap-a",
+      "candidate": 0,
+      "sha256": "1594dae9d9e11a9a19b5e1885d655adf082ebffbef65bba1a4606a3b220f2066"
+    }
+  }
+}

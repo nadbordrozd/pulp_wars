@@ -1,0 +1,37 @@
+{
+  "id": "ice-folk-portrait-patrol-boat-frost-a",
+  "jobId": "ada60a8e-6129-4bda-89ab-faf171ddd43e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-ice-folk",
+    "asset": "chibi-naval-ice-folk-portrait-patrol-boat",
+    "subject": "PORTRAIT:ICE_FOLK:PATROL_BOAT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96631,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into an ice-age longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows; a bright ice-blue crystal figurehead on the bow; the red sail becomes a sail of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey; the pennant becomes a white fur tail. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into an ice-age longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows; a bright ice-blue crystal figurehead on the bow; the red sail becomes a sail of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey; the pennant becomes a white fur tail. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into an ice-age longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows; a bright ice-blue crystal figurehead on the bow; the red sail becomes a sail of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey; the pennant becomes a white fur tail. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Turn it into an ice-age longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows; a bright ice-blue crystal figurehead on the bow; the red sail becomes a sail of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey; the pennant becomes a white fur tail. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-patrol-boat-a",
+      "candidate": 0,
+      "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+    }
+  }
+}

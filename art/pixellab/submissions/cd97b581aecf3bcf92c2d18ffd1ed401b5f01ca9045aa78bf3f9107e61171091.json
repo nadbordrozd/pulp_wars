@@ -1,0 +1,36 @@
+{
+  "id": "ice-folk-battleship-pennant-edit-a",
+  "jobId": "476429c1-bd32-401b-bbe5-b8bb473ff16e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-ice-folk",
+    "asset": "chibi-naval-ice-folk-battleship",
+    "subject": "UNIT:ICE_FOLK:BATTLESHIP",
+    "faction": "ICE_FOLK",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 96612,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the three small red pennants at the mast tops: they become shaggy warm white fur tails, with no red anywhere. Keep everything else, the white sails, ice shields, crystal figurehead, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Recolour only the three small red pennants at the mast tops: they become shaggy warm white fur tails, with no red anywhere. Keep everything else, the white sails, ice shields, crystal figurehead, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Recolour only the three small red pennants at the mast tops: they become shaggy warm white fur tails, with no red anywhere. Keep everything else, the white sails, ice shields, crystal figurehead, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Recolour only the three small red pennants at the mast tops: they become shaggy warm white fur tails, with no red anywhere. Keep everything else, the white sails, ice shields, crystal figurehead, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "ice-folk-battleship-frost-a",
+      "candidate": 0,
+      "sha256": "52ded6f9de162497ac51c2d4237de8b7bdeb4ded325c1e20d012957f95316de0"
+    }
+  }
+}

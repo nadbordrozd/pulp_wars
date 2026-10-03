@@ -1,0 +1,37 @@
+{
+  "id": "goblin-patrol-boat-scrap-a",
+  "jobId": "b079d747-59ed-4e83-b6e2-b96eb099eb0d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-patrol-boat",
+    "subject": "UNIT:GOBLIN:PATROL_BOAT",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96301,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a ramshackle goblin junk-boat: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with two riveted gunmetal grey scrap iron plates; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with three stitched square patches of pale hide; the red pennant becomes a torn brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a ramshackle goblin junk-boat: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with two riveted gunmetal grey scrap iron plates; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with three stitched square patches of pale hide; the red pennant becomes a torn brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a ramshackle goblin junk-boat: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with two riveted gunmetal grey scrap iron plates; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with three stitched square patches of pale hide; the red pennant becomes a torn brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "editInstruction": "Turn it into a ramshackle goblin junk-boat: the pale hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with two riveted gunmetal grey scrap iron plates; the red sail becomes patched warm brown leather, colour #955627 with #562a0c shadows, with three stitched square patches of pale hide; the red pennant becomes a torn brown rag. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "patrol-boat-a-edit",
+      "candidate": 0,
+      "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+    }
+  }
+}

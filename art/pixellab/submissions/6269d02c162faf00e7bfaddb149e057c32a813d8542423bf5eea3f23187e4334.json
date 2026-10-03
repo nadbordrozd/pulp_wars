@@ -1,0 +1,36 @@
+{
+  "id": "dinosaur-portrait-battleship-log-edit-a",
+  "jobId": "997fd667-4d1e-418b-9d40-c89223ee28bb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-portrait-battleship",
+    "subject": "PORTRAIT:DINOSAUR:BATTLESHIP",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96442,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "dinosaur-portrait-battleship-primal-a",
+      "candidate": 0,
+      "sha256": "f70323674ee990b768033c3e8a34e970ec5425a498ac40e9be75dffcae3efe12"
+    }
+  }
+}

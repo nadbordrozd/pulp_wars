@@ -1,0 +1,36 @@
+{
+  "id": "goblin-patrol-boat-crew-edit-a",
+  "jobId": "2043fe6e-2ff5-49bb-b1f3-068cd7c2b965",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-patrol-boat",
+    "subject": "UNIT:GOBLIN:PATROL_BOAT",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing on the deck in front of the mast and leaning over the rail, waving. Keep the dark planks, the scrap plates, the brown leather sail with its patches, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing on the deck in front of the mast and leaning over the rail, waving. Keep the dark planks, the scrap plates, the brown leather sail with its patches, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing on the deck in front of the mast and leaning over the rail, waving. Keep the dark planks, the scrap plates, the brown leather sail with its patches, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Add one little olive-green goblin, skin colour #8a952f, with long pointed ears sticking out sideways and a big cheeky grin, standing on the deck in front of the mast and leaning over the rail, waving. Keep the dark planks, the scrap plates, the brown leather sail with its patches, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "goblin-patrol-boat-saddle-edit-a",
+      "candidate": 0,
+      "sha256": "0cc8534240eed0c80d8be796b2e8c4ee6ee8141407e4c804bbf269cb1709b836"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "ice-folk-portrait-battleship-frost-a",
+  "jobId": "c3ee4a6a-b4cc-43e5-ad3a-7f0063bd6d7d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-ice-folk",
+    "asset": "chibi-naval-ice-folk-portrait-battleship",
+    "subject": "PORTRAIT:ICE_FOLK:BATTLESHIP",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96641,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into an ice-age war longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows, with round ice-blue ice shields; the grey castles become hide tents; an ice-blue crystal figurehead; the red sails become sails of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into an ice-age war longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows, with round ice-blue ice shields; the grey castles become hide tents; an ice-blue crystal figurehead; the red sails become sails of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into an ice-age war longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows, with round ice-blue ice shields; the grey castles become hide tents; an ice-blue crystal figurehead; the red sails become sails of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Turn it into an ice-age war longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows, with round ice-blue ice shields; the grey castles become hide tents; an ice-blue crystal figurehead; the red sails become sails of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-battleship-b",
+      "candidate": 0,
+      "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+    }
+  }
+}

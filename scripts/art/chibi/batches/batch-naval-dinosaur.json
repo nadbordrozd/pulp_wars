@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-dinosaur",
+  "title": "Naval units in the Dinosaur look: log dugouts with spotted hide sails and a blue, orange-striped plesiosaur prow, and their portraits",
+  "bead": "pulp_wars-w5j.2",
+  "faction": "DINOSAUR",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-naval-dinosaur-patrol-boat",
+      "subject": "UNIT:DINOSAUR:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-naval-dinosaur-battleship",
+      "subject": "UNIT:DINOSAUR:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-naval-dinosaur-transport",
+      "subject": "UNIT:DINOSAUR:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-naval-dinosaur-portrait-patrol-boat",
+      "subject": "PORTRAIT:DINOSAUR:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-naval-dinosaur-portrait-battleship",
+      "subject": "PORTRAIT:DINOSAUR:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "dinosaur-patrol-boat-primal-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96401,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "patrol-boat-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a stone-age dugout canoe: the pale hull becomes one hollowed log of warm tawny wood, colour #a2804b; the bow becomes a carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes and a cream jaw; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 cog as a dugout with a plesiosaur prow and a spotted hide sail (the Caveman pelt's colours).",
+      "asset": "chibi-naval-dinosaur-patrol-boat"
+    },
+    {
+      "id": "dinosaur-battleship-primal-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96411,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "battleship-d-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Turn it into a stone-age war raft: the pale hull becomes big tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows, with cream bone fittings; the bow becomes a big carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes; the grey tower becomes a hide hut; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, with nothing under the hull.",
+      "notes": "The batch-4 carrack as a log war raft with a plesiosaur prow.",
+      "asset": "chibi-naval-dinosaur-battleship"
+    },
+    {
+      "id": "dinosaur-transport-primal-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96421,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "embarked-transport-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a stone-age log raft: the pale hull becomes tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows; a small carved plesiosaur head painted deep blue #205794 with orange stripes at the front; the red tarp becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes three orange feathers. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 barge as a log raft with a spotted hide over the cargo.",
+      "asset": "chibi-naval-dinosaur-transport"
+    },
+    {
+      "id": "dinosaur-portrait-patrol-boat-primal-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96431,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a stone-age dugout canoe: the hull becomes a log of warm tawny wood, colour #a2804b; the bow becomes a small plesiosaur head painted deep blue #205794 with bold orange stripes; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes orange feathers. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+      "asset": "chibi-naval-dinosaur-portrait-patrol-boat"
+    },
+    {
+      "id": "dinosaur-portrait-battleship-primal-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96441,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-battleship-b",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a stone-age war raft: the hull becomes tied logs of warm tawny wood, colour #a2804b; the bow becomes a plesiosaur head painted deep blue #205794 with bold orange stripes; the grey castles become hide huts; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+      "asset": "chibi-naval-dinosaur-portrait-battleship"
+    },
+    {
+      "id": "dinosaur-transport-neck-edit-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96422,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "dinosaur-transport-primal-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the small blue plesiosaur head at the front of the boat much bigger: a long curved neck rises from the bow, as tall as the pole, with a big friendly head, deep blue #205794 with bold orange #fe7500 stripes and a cream jaw. Keep the tawny log hull, the spotted hide over the cargo, the oars, the orange feathers, size, thick black outline and art style exactly the same, with nothing under the hull.",
+      "notes": "dinosaur-transport-primal-a is the closest pair of the six fleets: the same barge silhouette and warm wood hull as the Human transport (palette distance 9.9, 4.8 for a deuteranope). A tall blue plesiosaur neck at the bow gives it a colour and a shape the Human barge has not.",
+      "asset": "chibi-naval-dinosaur-transport"
+    },
+    {
+      "id": "dinosaur-portrait-battleship-log-edit-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96442,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "dinosaur-portrait-battleship-primal-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "dinosaur-portrait-battleship-primal-a is right, but the hull's dark lines are maroon (hue 353): 8.4% of its pixels fall in the owner key's band.",
+      "asset": "chibi-naval-dinosaur-portrait-battleship"
+    }
+  ]
+}

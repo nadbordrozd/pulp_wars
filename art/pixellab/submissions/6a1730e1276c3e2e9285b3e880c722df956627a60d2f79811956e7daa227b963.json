@@ -1,0 +1,36 @@
+{
+  "id": "goblin-portrait-battleship-saddle-edit-a",
+  "jobId": "c5ceaa87-530f-47bb-aa58-d8956477c131",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-portrait-battleship",
+    "subject": "PORTRAIT:GOBLIN:BATTLESHIP",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96342,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the orange sails: they become dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; their patches stay. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-portrait-battleship-scrap-a",
+      "candidate": 0,
+      "sha256": "115d89434dd2f64563d60f361025977baaa0b6c4d6b3022a5fbf1856479e7f98"
+    }
+  }
+}

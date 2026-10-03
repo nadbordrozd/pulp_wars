@@ -996,3 +996,52 @@ land), `palette.{png,json}`, `readability.json` and the scenes
 the Ice Folk (and Martian) rasters under stand-in factions as the Martian
 review does. Captures start Vite on port 6513 unless `--port` says
 otherwise and need `CHROME_PATH`; `--copy-to DIR` copies the key sheets.
+
+## The naval batches (bead `pulp_wars-w5j.2`)
+
+Batches `naval-human`, `naval-undead`, `naval-goblin`, `naval-dinosaur`,
+`naval-martian` and `naval-ice-folk` hold the
+[faction-styled naval units](NAVAL_FACTIONS.md): each faction's Patrol Boat,
+Battleship and embarked transport (`ship` class, the shared ships' canvases)
+and the two warship portraits (`portrait` class), `fixedFactionColours`,
+every asset `ownerColour: false`. 30 assets from 48 recipes, all new
+PixelLab calls. A batch is one faction, so the six factions are six
+batches. **Nothing registers them yet:** the entries are in
+[`chibi-naval-faction-art-manifest.ts`](../../src/assets/chibi-naval-faction-art-manifest.ts),
+which no game module imports until bead `pulp_wars-w5j.3`. They added no
+pipeline piece:
+
+- **Every accepted recipe is an `edit-image-pixen` edit** of the accepted
+  batch-4 ships (`"source": { "batch": "4", … }`) or batch-5 portraits, or
+  of an earlier step of its own chain, so canvas, anchor and waterline are
+  the shared ship's.
+- **Subjects:** the Humans keep the shared subjects with `subjectKey`
+  `<subject>/HERALDIC`; the other factions use `UNIT:<FACTION>:<ROLE>` and
+  `PORTRAIT:<FACTION>:<ROLE>` (the manifest's existing subject pattern
+  accepts them). These are not members of `ArtSubjectV7` yet; the manifest
+  module types them as `NavalFactionArtSubjectV7`.
+- **Accents:** the Undead, Martian and Ice Folk assets name the existing
+  presets (`undead-violet`, `martian-magenta`, `ice-folk-blue`).
+
+What worked is in [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md#how-it-was-made):
+"Turn it into …" keeps the hull; edits never move a sprite; brown leather
+drifts orange and dark brown drifts maroon until a hex value and "not
+orange", "not red and not maroon" are named; every red part of the source
+must be named or it stays key red.
+
+`npm run art:chibi-naval-faction-review` writes
+`art/pixellab/reviews/chibi-batch-naval-factions/`: `naval-sheet-{x4,1x}.png`
+and `naval-sheet-zoom-0.75.png` (rows: each naval sprite on Shallow and on
+Deep Water, and the portraits on the dock panel; columns: today's shared
+sprite for a Coral and a Teal player through the runtime recolour, then the
+six factions), `readability.json` (each fleet against both waters, and a
+palette distance for every pair of factions per role, also under
+deuteranopia), `scene-{coast,mixed}-{desktop,phone}-zoom-{1,0.75}.png` (the
+scenes of [`scene.ts`](../../scripts/art/naval-factions/scene.ts) drawn by
+the real board host in the live look with `unit.base: "NONE"`, so no
+plates and no rings; the ships are registered under three land subjects of
+their faction until the naval subjects exist) and `index.json`. The
+review finds the masters by asset id, because the manifest module needs
+Vite's `import.meta.env`. Its captures start Vite on port 6530 unless
+`--port` says otherwise and need `CHROME_PATH`; `--copy-to DIR` copies the
+key sheets and captures.

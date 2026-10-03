@@ -628,3 +628,26 @@ Blizzard, the Frozen and Frosted markers and the Shatter window on the HP
 bar are code-drawn; their pure drawing functions and colours are in
 [`chibi-direction-ice-folk-presentation.ts`](../../src/assets/chibi-direction-ice-folk-presentation.ts)
 and described in [ICE_FOLK.md](factions/ICE_FOLK.md#code-drawn-pieces).
+
+## Faction naval art: batches `naval-<faction>` (bead `pulp_wars-w5j.2`)
+
+Each faction's own Patrol Boat, Battleship, embarked transport and the two
+warship portraits, in fixed faction colours with no owner mask, on the
+canvases and anchors of the shared ships. **Not registered yet** (bead
+`pulp_wars-w5j.3` wires them in and removes the ships' rings): the entries
+are in
+[`chibi-naval-faction-art-manifest.ts`](../../src/assets/chibi-naval-faction-art-manifest.ts).
+See [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md).
+
+| Subjects (Humans: the shared subject; others: `<KIND>:<FACTION>:<ROLE>`) | Assets                                       | Class and canvas      |
+| ------------------------------------------------------------------------ | -------------------------------------------- | --------------------- |
+| `UNIT:PATROL_BOAT`, `UNIT:<FACTION>:PATROL_BOAT`                         | `chibi-naval-<faction>-patrol-boat`          | `LARGE_UNIT`, 72 x 88 |
+| `UNIT:BATTLESHIP`, `UNIT:<FACTION>:BATTLESHIP`                           | `chibi-naval-<faction>-battleship`           | `GIANT_UNIT`, 88 x 96 |
+| `UNIT:EMBARKED_TRANSPORT`, `UNIT:<FACTION>:EMBARKED_TRANSPORT`           | `chibi-naval-<faction>-transport`            | `LARGE_UNIT`, 72 x 72 |
+| `PORTRAIT:PATROL_BOAT`, `PORTRAIT:<FACTION>:PATROL_BOAT`                 | `chibi-naval-<faction>-portrait-patrol-boat` | `PORTRAIT`, 48 x 48   |
+| `PORTRAIT:BATTLESHIP`, `PORTRAIT:<FACTION>:BATTLESHIP`                   | `chibi-naval-<faction>-portrait-battleship`  | `PORTRAIT`, 48 x 48   |
+
+`<faction>` is `human`, `undead`, `goblin`, `dinosaur`, `martian` or
+`ice-folk`; `<FACTION>` is `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN` or
+`ICE_FOLK`. 30 assets from 48 recipes (48 PixelLab calls). A self-launched
+Martian machine afloat stays drawn as itself and has no naval sprite.

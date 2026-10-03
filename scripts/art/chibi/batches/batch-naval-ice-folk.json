@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-ice-folk",
+  "title": "Naval units in the Ice Folk look: hide longships with white fur sails, ice-blue trim and an ice figurehead, and their portraits",
+  "bead": "pulp_wars-w5j.2",
+  "faction": "ICE_FOLK",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-naval-ice-folk-patrol-boat",
+      "subject": "UNIT:ICE_FOLK:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-naval-ice-folk-battleship",
+      "subject": "UNIT:ICE_FOLK:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-naval-ice-folk-transport",
+      "subject": "UNIT:ICE_FOLK:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-naval-ice-folk-portrait-patrol-boat",
+      "subject": "PORTRAIT:ICE_FOLK:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-naval-ice-folk-portrait-battleship",
+      "subject": "PORTRAIT:ICE_FOLK:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "ice-folk-patrol-boat-frost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96601,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "patrol-boat-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into an ice-age longship: the pale hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows, with a white fur trim along the rail; the bow rises into a tall clear bright ice-blue crystal figurehead; the red sail becomes a sail of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey; the pennant becomes a white fur tail. Keep the mast, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 cog as a hide longship with a white fur sail and an ice figurehead.",
+      "asset": "chibi-naval-ice-folk-patrol-boat"
+    },
+    {
+      "id": "ice-folk-battleship-frost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96611,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "battleship-d-edit",
+        "candidate": 1
+      },
+      "editInstruction": "Turn it into an ice-age war longship: the pale hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows, with a row of round shields of clear ice-blue ice along the side; the grey tower becomes a hide tent; a big ice-blue crystal figurehead on the bow; the red sails become sails of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey. Keep the ship shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 carrack as a war longship with ice shields.",
+      "asset": "chibi-naval-ice-folk-battleship"
+    },
+    {
+      "id": "ice-folk-transport-frost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96621,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "embarked-transport-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into an ice-age hide boat: the pale hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows; the red tarp becomes heaped blankets of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey; the pennant becomes a clear bright ice-blue crystal on top of the pole. Keep the oars, boat shape, size, thick black outline and style exactly the same, with nothing under the hull.",
+      "notes": "The batch-4 barge as a hide boat with fur blankets over the cargo.",
+      "asset": "chibi-naval-ice-folk-transport"
+    },
+    {
+      "id": "ice-folk-portrait-patrol-boat-frost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96631,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into an ice-age longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows; a bright ice-blue crystal figurehead on the bow; the red sail becomes a sail of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey; the pennant becomes a white fur tail. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+      "asset": "chibi-naval-ice-folk-portrait-patrol-boat"
+    },
+    {
+      "id": "ice-folk-portrait-battleship-frost-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96641,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-battleship-b",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into an ice-age war longship: the hull becomes dark brown-grey hide over wood, colour #493736 with #2d2b2b shadows, with round ice-blue ice shields; the grey castles become hide tents; an ice-blue crystal figurehead; the red sails become sails of shaggy warm white fur, colour #e3d5b7 shaded warm taupe #8c7667, never blue-grey. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+      "asset": "chibi-naval-ice-folk-portrait-battleship"
+    },
+    {
+      "id": "ice-folk-patrol-boat-icicle-edit-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96602,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "ice-folk-patrol-boat-frost-a",
+        "candidate": 0
+      },
+      "editInstruction": "Add a row of small clear bright ice-blue icicles hanging from the white fur rail along the side, and make the ice-blue crystal figurehead at the bow twice as big. Keep the dark hide hull, the white sail, mast, pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+      "notes": "ice-folk-patrol-boat-frost-a is a hide longship with a white sail, but its only ice is a small crystal at the bow: at native size it reads as a plain ship.",
+      "asset": "chibi-naval-ice-folk-patrol-boat"
+    },
+    {
+      "id": "ice-folk-battleship-pennant-edit-a",
+      "endpoint": "edit-image-pixen",
+      "seed": 96612,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "ice-folk-battleship-frost-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the three small red pennants at the mast tops: they become shaggy warm white fur tails, with no red anywhere. Keep everything else, the white sails, ice shields, crystal figurehead, ship shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+      "notes": "ice-folk-battleship-frost-a is right (hide hull, ice shields, white sails, crystal figurehead) but kept the three red pennants: the owner key colour.",
+      "asset": "chibi-naval-ice-folk-battleship"
+    }
+  ]
+}

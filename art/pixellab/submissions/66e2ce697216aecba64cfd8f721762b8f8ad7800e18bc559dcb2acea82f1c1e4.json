@@ -1,0 +1,37 @@
+{
+  "id": "dinosaur-portrait-patrol-boat-primal-a",
+  "jobId": "1831d168-b8e3-4a20-aa93-746644383086",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-portrait-patrol-boat",
+    "subject": "PORTRAIT:DINOSAUR:PATROL_BOAT",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96431,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a stone-age dugout canoe: the hull becomes a log of warm tawny wood, colour #a2804b; the bow becomes a small plesiosaur head painted deep blue #205794 with bold orange stripes; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes orange feathers. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a stone-age dugout canoe: the hull becomes a log of warm tawny wood, colour #a2804b; the bow becomes a small plesiosaur head painted deep blue #205794 with bold orange stripes; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes orange feathers. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a stone-age dugout canoe: the hull becomes a log of warm tawny wood, colour #a2804b; the bow becomes a small plesiosaur head painted deep blue #205794 with bold orange stripes; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes orange feathers. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Turn it into a stone-age dugout canoe: the hull becomes a log of warm tawny wood, colour #a2804b; the bow becomes a small plesiosaur head painted deep blue #205794 with bold orange stripes; the red sail becomes dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennant becomes orange feathers. Keep the boat shape, mast, size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-patrol-boat-a",
+      "candidate": 0,
+      "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+    }
+  }
+}

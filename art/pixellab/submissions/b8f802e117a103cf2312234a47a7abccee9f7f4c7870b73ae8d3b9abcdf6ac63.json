@@ -1,0 +1,37 @@
+{
+  "id": "dinosaur-portrait-battleship-primal-a",
+  "jobId": "9b4ffcf3-8b8b-45db-b1bf-61bb78351ba9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-portrait-battleship",
+    "subject": "PORTRAIT:DINOSAUR:BATTLESHIP",
+    "faction": "DINOSAUR",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96441,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a stone-age war raft: the hull becomes tied logs of warm tawny wood, colour #a2804b; the bow becomes a plesiosaur head painted deep blue #205794 with bold orange stripes; the grey castles become hide huts; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a stone-age war raft: the hull becomes tied logs of warm tawny wood, colour #a2804b; the bow becomes a plesiosaur head painted deep blue #205794 with bold orange stripes; the grey castles become hide huts; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a stone-age war raft: the hull becomes tied logs of warm tawny wood, colour #a2804b; the bow becomes a plesiosaur head painted deep blue #205794 with bold orange stripes; the grey castles become hide huts; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Turn it into a stone-age war raft: the hull becomes tied logs of warm tawny wood, colour #a2804b; the bow becomes a plesiosaur head painted deep blue #205794 with bold orange stripes; the grey castles become hide huts; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-battleship-b",
+      "candidate": 0,
+      "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "goblin-portrait-battleship-scrap-a",
+  "jobId": "0d29a0f5-7616-49d5-a428-e46f90050f18",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-portrait-battleship",
+    "subject": "PORTRAIT:GOBLIN:BATTLESHIP",
+    "faction": "GOBLIN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 96341,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a ramshackle goblin scrap warship: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey castles become rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched pale hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a ramshackle goblin scrap warship: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey castles become rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched pale hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a ramshackle goblin scrap warship: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey castles become rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched pale hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Turn it into a ramshackle goblin scrap warship: the hull becomes dark brown planks, colour #5a3414 with #391501 shadows, patched with riveted gunmetal scrap plates; the grey castles become rusty scrap iron; the red sails become patched warm brown leather, colour #955627 with #562a0c shadows, with stitched pale hide patches; the pennants become brown rags. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-battleship-b",
+      "candidate": 0,
+      "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "goblin-patrol-boat-saddle-edit-a",
+  "jobId": "ae305c26-40fa-44f2-9337-8debca8ac817",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-patrol-boat",
+    "subject": "UNIT:GOBLIN:PATROL_BOAT",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 96302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched square patches stay pale hide. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull."
+      }
+    ],
+    "prompt": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched square patches stay pale hide. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched square patches stay pale hide. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "editInstruction": "Recolour only the orange sail: it becomes dull desaturated mid-brown leather like an old saddle, colour #8a4a1c with #5a2e10 shadows, not orange; its stitched square patches stay pale hide. Keep everything else, the boat shape, size, thick black outline and art style exactly the same, on a transparent background with nothing under the hull.",
+    "source": {
+      "recipe": "goblin-patrol-boat-scrap-a",
+      "candidate": 0,
+      "sha256": "c6b0bf69280fb147fa7f0213231377a8910fb784e03006aeb7a884183aa97217"
+    }
+  }
+}

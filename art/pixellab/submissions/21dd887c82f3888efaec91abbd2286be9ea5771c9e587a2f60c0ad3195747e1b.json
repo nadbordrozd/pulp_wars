@@ -1,0 +1,36 @@
+{
+  "id": "goblin-transport-plank-edit-a",
+  "jobId": "0a00c32b-5bd4-4705-92ca-1ac8546fa990",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-transport",
+    "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96324,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dark maroon red hull planks and oars: they become dark brown wood, colour #4a2c14 with #2a1608 shadows, not red and not maroon. Keep the olive goblin, the barrels, the scrap plates, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Recolour only the dark maroon red hull planks and oars: they become dark brown wood, colour #4a2c14 with #2a1608 shadows, not red and not maroon. Keep the olive goblin, the barrels, the scrap plates, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Recolour only the dark maroon red hull planks and oars: they become dark brown wood, colour #4a2c14 with #2a1608 shadows, not red and not maroon. Keep the olive goblin, the barrels, the scrap plates, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Recolour only the dark maroon red hull planks and oars: they become dark brown wood, colour #4a2c14 with #2a1608 shadows, not red and not maroon. Keep the olive goblin, the barrels, the scrap plates, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "goblin-transport-crew-edit-a",
+      "candidate": 0,
+      "sha256": "2ad996d6f943ae246d39488d2b82851b3dd8f95bdae3e8b0e0e766bda08fd7a5"
+    }
+  }
+}

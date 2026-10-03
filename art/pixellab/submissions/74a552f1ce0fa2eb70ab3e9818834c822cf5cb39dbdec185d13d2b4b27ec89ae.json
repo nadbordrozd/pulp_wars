@@ -1,0 +1,37 @@
+{
+  "id": "dinosaur-battleship-primal-a",
+  "jobId": "35dd9197-70f9-4b12-8565-f323c851c5bc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-battleship",
+    "subject": "UNIT:DINOSAUR:BATTLESHIP",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 96411,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a stone-age war raft: the pale hull becomes big tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows, with cream bone fittings; the bow becomes a big carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes; the grey tower becomes a hide hut; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a stone-age war raft: the pale hull becomes big tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows, with cream bone fittings; the bow becomes a big carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes; the grey tower becomes a hide hut; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a stone-age war raft: the pale hull becomes big tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows, with cream bone fittings; the bow becomes a big carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes; the grey tower becomes a hide hut; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, with nothing under the hull.",
+    "editInstruction": "Turn it into a stone-age war raft: the pale hull becomes big tied logs of warm tawny wood, colour #a2804b with #6e4f26 shadows, with cream bone fittings; the bow becomes a big carved plesiosaur head painted deep blue #205794 with bold orange #fe7500 stripes; the grey tower becomes a hide hut; the red sails become dull sandy brown animal hide, colour #a67c3d, with big bold dark brown spots; the pennants become orange feathers. Keep the ship shape, size, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "battleship-d-edit",
+      "candidate": 1,
+      "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+    }
+  }
+}

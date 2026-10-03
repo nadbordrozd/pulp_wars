@@ -1,0 +1,37 @@
+{
+  "id": "martian-battleship-chrome-a",
+  "jobId": "292df5b4-b84b-4e12-a9bd-e3211f0fcbb6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-martian",
+    "asset": "chibi-naval-martian-battleship",
+    "subject": "UNIT:MARTIAN:BATTLESHIP",
+    "faction": "MARTIAN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 96511,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Rebuild it as a big retro sci-fi hover-cruiser: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and fins; the masts and sails are removed; the stone tower becomes a tall chrome bridge tower under a clear pale glass dome; two chunky chrome ray turrets with glowing hot magenta tips; small glowing hot magenta lights. Keep the size, thick black outline and style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Rebuild it as a big retro sci-fi hover-cruiser: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and fins; the masts and sails are removed; the stone tower becomes a tall chrome bridge tower under a clear pale glass dome; two chunky chrome ray turrets with glowing hot magenta tips; small glowing hot magenta lights. Keep the size, thick black outline and style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Rebuild it as a big retro sci-fi hover-cruiser: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and fins; the masts and sails are removed; the stone tower becomes a tall chrome bridge tower under a clear pale glass dome; two chunky chrome ray turrets with glowing hot magenta tips; small glowing hot magenta lights. Keep the size, thick black outline and style exactly the same, with nothing under the hull.",
+    "editInstruction": "Rebuild it as a big retro sci-fi hover-cruiser: the wooden hull becomes smooth rounded polished chrome and silver-white metal shaded soft blue-grey, with a dark gunmetal underside and fins; the masts and sails are removed; the stone tower becomes a tall chrome bridge tower under a clear pale glass dome; two chunky chrome ray turrets with glowing hot magenta tips; small glowing hot magenta lights. Keep the size, thick black outline and style exactly the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "battleship-d-edit",
+      "candidate": 1,
+      "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+    }
+  }
+}

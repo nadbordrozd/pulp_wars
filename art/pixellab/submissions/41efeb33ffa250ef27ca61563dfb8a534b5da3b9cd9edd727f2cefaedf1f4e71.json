@@ -1,0 +1,36 @@
+{
+  "id": "martian-transport-cargo-edit-a",
+  "jobId": "2257f4b6-f8ad-4c7c-9bcc-48682f0b401a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-martian",
+    "asset": "chibi-naval-martian-transport",
+    "subject": "UNIT:MARTIAN:EMBARKED_TRANSPORT",
+    "faction": "MARTIAN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 96522,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the red cargo under the glass canopy: it becomes stacked dark gunmetal crates, colour #34354e, with a few small glowing hot magenta lights, with no red anywhere. Keep the chrome hull, the glass canopy, the magenta rim lights, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Recolour only the red cargo under the glass canopy: it becomes stacked dark gunmetal crates, colour #34354e, with a few small glowing hot magenta lights, with no red anywhere. Keep the chrome hull, the glass canopy, the magenta rim lights, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Recolour only the red cargo under the glass canopy: it becomes stacked dark gunmetal crates, colour #34354e, with a few small glowing hot magenta lights, with no red anywhere. Keep the chrome hull, the glass canopy, the magenta rim lights, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "editInstruction": "Recolour only the red cargo under the glass canopy: it becomes stacked dark gunmetal crates, colour #34354e, with a few small glowing hot magenta lights, with no red anywhere. Keep the chrome hull, the glass canopy, the magenta rim lights, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
+    "source": {
+      "recipe": "martian-transport-chrome-a",
+      "candidate": 0,
+      "sha256": "efb80dd491e5dbf4d036bf7d2170158ff84cd879cda54d52601104a876684e0c"
+    }
+  }
+}
