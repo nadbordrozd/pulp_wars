@@ -334,12 +334,19 @@ which imports nothing:
 - `DWARF_FLYER_PRESENTATION_V7` and `DWARF_FLYER_SHADOW_V7`: the
   Gyrocopter's hull bottom (row 69), ground line (82) and the ground shadow
   the interface draws, as for the Martian flyers;
-- **`dwarfDigInMarkerV7(width)`**: the Dig In earthwork (spec 8), a bank of
-  piled earth behind the unit (`back`, drawn before it) and a low wall of
-  sandbags in front (`front`, drawn after it), so the unit stands inside
-  it; deterministic, the two layers never overlap (tests). Shown on every
-  terrain, on Snow and on a city centre in `mound-x3.png` and
-  `terrain-x2.png`.
+- **`dwarfDigInMarkerV7(width)`**: the Dig In earthwork (spec 8). Since
+  bead `pulp_wars-78i.9` a parapet on the front half, not a ring (a ring of
+  sandbags beside the cream ready ring read as a double ring): a low wall
+  of separate pillow-shaped sandbags in front of the unit's feet, two
+  courses in the middle and bowed back at its ends onto clods of earth
+  (`front`, drawn after the unit), and two small heaps of dug earth behind
+  the wall's ends (`back`, drawn before it); `width` is the wall's width,
+  `DWARF_DIG_IN_WALL_SHARE_V7` of the unit's shadow width, and the board
+  stands its foot on the front edge of the unit's measured shadow
+  (`unit-shadows-v7.ts`). Deterministic, the two layers never overlap, and
+  nothing is drawn behind the middle of the unit (tests). The art review's
+  `mound-x3.png` and `terrain-x2.png` still show the first, ring-shaped
+  earthwork until they are regenerated.
 
 ## Naval set
 
@@ -494,12 +501,14 @@ overlay"); each decision can be overruled:
 5. **The clockwork glyph on the board** sits at the HP bar's end only while
    the bar shows (a damaged construct): a full-HP construct carries no
    extra mark. The unit info and the dock chip always show it.
-6. **The Dig In earthwork** is the reviewed code-drawn ring (bank behind,
-   sandbags in front) on the ground rectangle, so it does not jump with a
-   selected unit; it is plain, as the art review found.
+6. **The Dig In earthwork** is code-drawn on the ground, so it does not jump
+   with a selected unit; since bead `pulp_wars-78i.9` it is a sandbag wall
+   in front of the feet on the unit's measured shadow anchor (heaps of
+   earth behind its ends), not the first review's ring.
 7. **Calm targeting:** Tunnel destinations are labelled only where they
-   would erupt on someone; rider tiles and Assemble tiles carry no labels;
-   the shooter's lines (Clockwork, the second shot, "Cannot move after
+   would erupt on someone; a passenger's other landings (small dots since
+   bead `pulp_wars-78i.9`) and Assemble tiles carry no labels; the shooter's
+   lines (Clockwork, the second shot, "Cannot move after
    firing") show on the focused target only.
 8. **The Classic look and LEGACY** draw the Human stand-in with the cog
    badge (a copper cog on dark leather), and a code-drawn heap with a drill
@@ -529,8 +538,9 @@ overlay"); each decision can be overruled:
   outline help.
 - **The eruption ring over eight tiles is reused bursts**, not a raster of
   its own; the burst sprite is speckled once palette-mapped.
-- **The Dig In earthwork is code-drawn and plain** (pale sandbags on a
-  thin bank); it reads on every terrain but is weakest on Snow.
+- **The Dig In earthwork is code-drawn and plain** (pale sandbags and clods
+  of earth); it is small at zoom 0.75, where the sandbags blur into a pale
+  lumpy wall, and the first, ring-shaped version was weakest on Snow.
 - **Icons are of two families**: creations (plated, knockback, blasting,
   dig in, dug in, clockwork, bomb run) and sibling edits of the Bomb Run
   icon (tunnel, assemble, repair), which are flatter. The Dig In icon is

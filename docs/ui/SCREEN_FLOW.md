@@ -861,9 +861,15 @@ apart from the extra faction option.
   outline (on a dark casing) round its eight tiles. The cursor description
   says the same.
 - **Dig In** (spec 8): a dug-in Hammerer or Mole (`dwarf.dugIn`) stands
-  inside the code-drawn earthwork (`dwarfDigInMarkerV7`): a bank of piled
-  earth behind it and a low wall of sandbags in front, on the ground (it
-  never jumps with the selection). The dock chip "Dug in" (with the dug-in
+  behind the code-drawn earthwork (`dwarfDigInMarkerV7`): a low wall of
+  separate sandbags in front of its feet (two courses in the middle, its
+  ends bowed back onto clods of earth) and small heaps of dug earth behind
+  the wall's ends. Since bead `pulp_wars-78i.9` it covers the front half
+  only, so it never reads as a second ring beside the cream ready ring. It
+  stands on the unit's measured shadow anchor (`unit-shadows-v7.ts`): as
+  wide as the shadow, centred on it, its foot on the shadow's front edge,
+  so the ready ring's ends and front arc still show round it. It stays on
+  the ground (it never jumps with the selection). The dock chip "Dug in" (with the dug-in
   glyph) says "Dug in: +1 fortification (it has not moved; next to your
   city)"; an own digger next to an own center that moved says "Not dug in:
   it moved this turn" (or "arrived this turn"). The attack preview says
@@ -888,19 +894,47 @@ apart from the extra faction option.
   "No home city". A press aims it: the dock shows a compact prompt, the
   board's only targets become the ability's and the camera frames them;
   Escape steps back a stage (Back), Cancel leaves.
-  - **Tunnel**: every offered destination is outlined in light earth; only
-    a destination that would erupt on someone is labelled ("Erupt −6"), and
-    the focused one shows its forecast: the eruption ring, "−3" on each
-    visible hostile unit on the ground and the Field Defense it would
-    undermine. The dock lists the destinations, the erupting ones first
-    ("4, 2 · −6"), each chip carrying "If they stay: Catapult −3; Undermines
-    Field Defense", and "A forecast: enemies may move before the Mole
-    surfaces". Choosing a destination with a fresh Hammerer next to the Mole
-    opens the **rider prompt** "Take a Hammerer along?": the chosen tile
-    keeps its forecast, the Hammerer's possible tiles next to it are
-    outlined (no labels), the dock lists them ("Hammerer to 3, 1"), a chip
-    per other Hammerer that could ride, and "Tunnel alone"; otherwise it
-    tunnels at once.
+  - **Tunnel** (passenger first, bead `pulp_wars-78i.9`). When fresh
+    Hammerers next to the Mole could ride, the best one (the most HP, then
+    the lowest ID) is **seated** at once: a short rope runs from it to the
+    Mole, with a hammer-head pip at the Mole's end, and it wears a "Riding"
+    badge; every other Hammerer that could ride wears "Ride". Choosing a
+    badge on the board seats that Hammerer (one at a time); choosing the
+    seated one unseats it, and the Mole tunnels alone. The dock mirrors the
+    board with a compact **Passenger** control: one button per Hammerer
+    (its portrait and "12/12"; accessible name "Passenger Hammerer, 12 of
+    12 HP, selected") and "None" ("No passenger: the Steam Mole tunnels
+    alone"), never coordinate chips. With no Hammerer that could ride, none
+    of this appears.
+  - Every offered **destination** is outlined in light earth; only one that
+    would erupt on someone is labelled ("Erupt −6"). The focused one shows
+    its forecast (the eruption ring, "−3" on each visible hostile unit on
+    the ground, the Field Defense it would undermine) and its **ghosts**: a
+    translucent Mole on it and, with a passenger seated, a translucent
+    Hammerer on its default landing next to it: the free tile closest to the
+    visible enemy unit or village nearest to the destination, else the tile
+    continuing the tunnel's direction, ties in offered order. Where no tile
+    next to it is free, it says "Hammerer stays behind". The dock lists at
+    most four destinations, those that would erupt on the most ("4, 2 ·
+    −6"), each chip carrying "If they stay: Catapult −3; Undermines Field
+    Defense", then "Or choose any of the 34 highlighted tiles on the board"
+    and "A forecast: enemies may move before the Mole surfaces". With no
+    erupting destination there are no chips and the line reads "Choose one
+    of the 34 highlighted tiles on the board".
+  - Choosing a destination (on the board or as a chip) **chooses** it, as a
+    Bomb Run target is chosen before its landing: the tile is outlined
+    solid and keeps its ghosts and forecast, and the seated Hammerer's other
+    legal landings next to it are small dots; choosing a dot moves the
+    Hammerer's ghost there. The dock asks "Tunnel to 4, 2?", says "Tap the
+    tile again or press Tunnel. Tap a dot to move the Hammerer", lists the
+    forecast and "Hammerer surfaces at 3, 1" (or "Hammerer stays behind"),
+    and offers **Tunnel** (primary), Back and Cancel. Choosing the
+    destination again, or Tunnel, sends the one TUNNEL command, with the
+    rider and its landing or alone. Escape (Back) returns to the
+    destinations with the passenger still seated; another destination can be
+    chosen at once. The common case is Tunnel, the destination, the
+    destination again. Without a Hammerer that could ride, choosing a
+    destination tunnels at once.
   - **Bomb Run**: the targets within 2 are outlined in copper and labelled
     "Bomb −5" (or "Bomb −5 · Kills"); hostile units in range bombed this
     turn are marked "Bombed this turn". Choosing a target outlines its

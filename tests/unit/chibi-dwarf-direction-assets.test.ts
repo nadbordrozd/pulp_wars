@@ -791,8 +791,8 @@ describe("the Dwarf effects, presentation and pipeline pieces (pulp_wars-78i.5)"
     expect(covered).toEqual([]);
   });
 
-  it("draws the Dig In earthwork deterministically, in two layers round the unit", () => {
-    for (const width of [48, 64, 80]) {
+  it("draws the Dig In earthwork deterministically: a sandbag wall in front, earth heaps behind, never a ring", () => {
+    for (const width of [36, 44, 56]) {
       const first = dwarfDigInMarkerV7(width);
       const second = dwarfDigInMarkerV7(width);
       expect(sameBytes(first.front, second.front)).toBe(true);
@@ -801,15 +801,36 @@ describe("the Dwarf effects, presentation and pipeline pieces (pulp_wars-78i.5)"
         width,
         first.height,
       ]);
+      const opaqueAt = (
+        raster: { width: number; data: Uint8ClampedArray },
+        x: number,
+        y: number,
+      ): boolean => (raster.data[(y * raster.width + x) * 4 + 3] ?? 0) > 0;
       const opaque = (raster: { data: Uint8ClampedArray }): number =>
         raster.data.filter(
           (_, index) => index % 4 === 3 && raster.data[index] === 255,
         ).length;
       expect(opaque(first.front)).toBeGreaterThan(width * 4);
-      expect(opaque(first.back)).toBeGreaterThan(width * 2);
-      // The near wall is in front: its lowest row is the raster's.
+      expect(opaque(first.back)).toBeGreaterThan(20);
+      // The wall is in front: its lowest row is the raster's.
       const rows = opaqueRows(first.front as unknown as RgbaRaster);
       expect(rows.bottom).toBe(first.height - 1);
+      // Bead pulp_wars-78i.9: not a ring beside the ready ring. Nothing is
+      // drawn behind the middle of the unit, and down the middle the wall
+      // is one solid run of rows (no far arc above it).
+      for (let x = Math.ceil(width * 0.3); x < Math.floor(width * 0.7); x += 1)
+        for (let y = 0; y < first.height; y += 1)
+          expect(opaqueAt(first.back, x, y)).toBe(false);
+      const middle = Math.floor(width / 2);
+      const column = Array.from({ length: first.height }, (_, y) =>
+        opaqueAt(first.front, middle, y),
+      );
+      const firstRow = column.indexOf(true);
+      expect(firstRow).toBeGreaterThanOrEqual(0);
+      // (The seams between the bags may notch its bottom two rows.)
+      expect(column.slice(firstRow, first.height - 2).every(Boolean)).toBe(
+        true,
+      );
       // No pixel overlaps between the two layers.
       for (let index = 3; index < first.front.data.length; index += 4)
         expect(

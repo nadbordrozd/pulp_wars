@@ -2209,26 +2209,35 @@ async function probeDwarfMatch(connection: Connection): Promise<string> {
     `document.querySelector('.v7-selection-dock h2')?.textContent === 'Steam Mole' && document.querySelector('[data-action="dwarf-tunnel"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
   );
   await pointerClick(connection, '[data-action="dwarf-tunnel"]');
+  // The dock lists the best few destinations (bead pulp_wars-78i.9); a
+  // Hammerer next to the Mole is seated first, and a chosen destination is
+  // then confirmed with the dock's Tunnel button.
+  const chip =
+    '[data-v7-dwarf-pick="tunnel"] .v7-martian-choice-button[data-action^="tunnel-"]';
   await waitForExpression(
     connection,
-    `document.querySelector('[data-v7-dwarf-pick="tunnel"] [data-action^="tunnel-"]') !== null`,
+    `document.querySelector('${chip}') !== null`,
   );
   const forecast = await evaluate<string>(
     connection,
-    `document.querySelector('[data-v7-dwarf-pick="tunnel"] [data-action^="tunnel-"]')?.getAttribute('aria-label') ?? ''`,
+    `document.querySelector('${chip}')?.getAttribute('aria-label') ?? ''`,
   );
   if (!forecast.includes("If they stay:"))
     throw new Error(`Tunnel forecast missing: ${forecast}`);
   await capture(connection, "dwarf-tunnel-preview-desktop.png");
   const destination = await evaluate<string>(
     connection,
-    `document.querySelector('[data-v7-dwarf-pick="tunnel"] [data-action^="tunnel-"]')?.dataset.action ?? ''`,
+    `document.querySelector('${chip}')?.dataset.action ?? ''`,
   );
   const [toX, toY] = destination.slice("tunnel-".length).split("-").map(Number);
-  await pointerClick(
-    connection,
-    '[data-v7-dwarf-pick="tunnel"] [data-action^="tunnel-"]',
-  );
+  await pointerClick(connection, chip);
+  if (
+    await evaluate<boolean>(
+      connection,
+      `document.querySelector('[data-action="tunnel-confirm"]') !== null`,
+    )
+  )
+    await pointerClick(connection, '[data-action="tunnel-confirm"]');
   await waitForExpression(
     connection,
     `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 1 && (document.querySelector('#v7-live')?.textContent ?? '').includes('Steam Mole tunnelled') && ${settled}`,

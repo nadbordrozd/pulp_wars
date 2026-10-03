@@ -11,7 +11,8 @@ export type DwarfUiFixtureNameV7 =
   | "dwarfUiFixtureV7"
   | "dwarfVictimFixtureV7"
   | "dwarfEruptionAfterFixtureV7"
-  | "dwarfFleetFixtureV7";
+  | "dwarfFleetFixtureV7"
+  | "dwarfDigInFixtureV7";
 
 export function dwarfFixtureMountExpressionV7(
   fixture: DwarfUiFixtureNameV7,
@@ -23,6 +24,6 @@ export function dwarfFixtureMountExpressionV7(
     artSet,
     global: "__DWARF_REVIEW__",
     extras:
-      "at: fixtures.DWARF_UI_V7, victim: fixtures.DWARF_VICTIM_V7, fleet: fixtures.DWARF_FLEET_V7",
+      "at: fixtures.DWARF_UI_V7, victim: fixtures.DWARF_VICTIM_V7, fleet: fixtures.DWARF_FLEET_V7, digIn: fixtures.DWARF_DIG_IN_V7",
   });
 }

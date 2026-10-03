@@ -2876,6 +2876,43 @@
   color: #f0e2cc;
 }
 
+/* Bead pulp_wars-78i.9: the Tunnel's passenger control and confirmation. */
+.v7-dwarf-passengers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.v7-dwarf-passengers-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.v7-dwarf-passenger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.6rem;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid #c99a66;
+  border-radius: 8px;
+  background: #2a2019;
+  color: #f0e2cc;
+  font-weight: 700;
+}
+
+.v7-dwarf-passenger[aria-pressed="true"] {
+  border-color: #ffd9a0;
+  background: #5a3d24;
+  box-shadow: inset 0 0 0 1px #ffd9a0;
+}
+
+.v7-dwarf-passenger-hp {
+  font-variant-numeric: tabular-nums;
+}
+
 .v7-context-action[data-disabled-reason="clockwork"],
 .v7-context-action[data-disabled-reason="dwarf-field-defense"],
 .v7-context-action[data-dwarf-ability][aria-disabled="true"] {

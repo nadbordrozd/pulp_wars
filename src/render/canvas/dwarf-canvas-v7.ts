@@ -2,8 +2,9 @@
  * Code-drawn Dwarf board cues (docs/product/RULESET_7_DWARVES.md section
  * 16.1, docs/art/factions/DWARF.md "Code-drawn pieces", bead
  * pulp_wars-78i.6): the gear badge over Human stand-in art (LEGACY and the
- * classic look), the Dig In earthwork (dwarfDigInMarkerV7, a bank of earth
- * behind the unit and sandbags in front of it), the clockwork gear at the HP
+ * classic look), the Dig In earthwork (dwarfDigInMarkerV7, a sandbag wall
+ * in front of the unit's feet and heaps of dug earth behind it, on the
+ * unit's shadow anchor since bead pulp_wars-78i.9), the clockwork gear at the HP
  * bar's end, the mound for LEGACY and the classic look (no raster there),
  * the mound's surfacing chip, and the eruption ring round a Mole's eight
  * tiles (DWARF_MOUND_V7). The earthwork rasters come from the pure function
@@ -13,6 +14,8 @@
  */
 
 import {
+  DWARF_DIG_IN_HEAP_RISE_V7,
+  DWARF_DIG_IN_WALL_SHARE_V7,
   DWARF_MOUND_V7,
   DWARF_PALETTE_V7,
   dwarfDigInMarkerV7,
@@ -33,13 +36,6 @@ export const MOUND_CHIP_FRAME_V7 = {
 export const MOUND_CHIP_MIN_RADIUS_CSS_PX_V7 = 7;
 
 const INK = "#171722";
-
-interface Rect {
-  readonly x: number;
-  readonly y: number;
-  readonly width: number;
-  readonly height: number;
-}
 
 /** A cog of `teeth` teeth centred on (cx, cy), filled and outlined. */
 function cogPath(
@@ -121,7 +117,7 @@ export function drawClockworkGearV7(
   context.restore();
 }
 
-/** The cached Dig In earthwork rasters, one pair per ring width. */
+/** The cached Dig In earthwork rasters, one pair per wall width. */
 export interface DwarfBoardArtV7 {
   /** The two layers of the earthwork of `width` master px, or null. */
   earthwork(width: number): {
@@ -161,30 +157,42 @@ export function createDwarfBoardArtV7(
   };
 }
 
+/** A unit's ground shadow in CSS px (directedUnitShadowGeometryV7). */
+export interface DigInGroundV7 {
+  readonly centreX: number;
+  readonly centreY: number;
+  readonly radiusX: number;
+  readonly radiusY: number;
+}
+
 /**
- * The Dig In earthwork round a unit: `back` (drawn before the sprite) or
- * `front` (after it). `rect` is the sprite rectangle, `masterScale` CSS px
- * per master px; the ring is the sprite's width minus 8 master px wide and
- * sits on its foot line (1 master px above the canvas bottom), as in the
- * art review. Without the cached art (tests without a canvas) a plain
- * code-drawn bank and wall stand in.
+ * The Dig In earthwork of a unit (bead pulp_wars-78i.9): `back` (drawn
+ * before the sprite: heaps of dug earth) or `front` (after it: the sandbag
+ * wall). `ground` is the unit's ground shadow in CSS px, from the measured
+ * anchor the shadow and the ready ring use (unit-shadows-v7.ts), and
+ * `pixelScale` the CSS px per master px of the drawn sprite. The wall is
+ * DWARF_DIG_IN_WALL_SHARE_V7 of the shadow's width, centred on it, with its
+ * foot on the shadow's front edge, so it covers the feet while the ready
+ * ring's ends and front arc still show. Without the cached art (tests
+ * without a canvas) a plain code-drawn wall and heaps stand in.
  */
 export function drawDigInEarthworkV7(
   context: CanvasRenderingContext2D,
   art: DwarfBoardArtV7 | undefined,
-  rect: Rect,
-  masterScale: number,
+  ground: DigInGroundV7,
+  pixelScale: number,
   layer: "back" | "front",
 ): void {
-  const masterWidth = Math.max(16, Math.round(rect.width / masterScale) - 8);
-  const footFromBottom = 1;
+  const masterWidth = Math.max(
+    16,
+    Math.round((2 * ground.radiusX * DWARF_DIG_IN_WALL_SHARE_V7) / pixelScale),
+  );
   const pieces = art?.earthwork(masterWidth);
   const image = pieces === undefined ? null : pieces[layer];
-  const width = masterWidth * masterScale;
-  const height =
-    (pieces?.height ?? Math.round(masterWidth * 0.38) * 2 + 9) * masterScale;
-  const left = rect.x + (rect.width - width) / 2;
-  const top = rect.y + rect.height - height - footFromBottom * masterScale;
+  const width = masterWidth * pixelScale;
+  const height = (pieces?.height ?? 10) * pixelScale;
+  const left = Math.round(ground.centreX - width / 2);
+  const top = Math.round(ground.centreY + ground.radiusY - height);
   context.save();
   if (image !== null && image !== undefined) {
     context.imageSmoothingEnabled = false;
@@ -192,24 +200,31 @@ export function drawDigInEarthworkV7(
     context.restore();
     return;
   }
-  // Code stand-in: an earth arc behind, a sandbag arc in front.
-  const cx = left + width / 2;
-  const cy = top + height * 0.55;
-  context.lineCap = "round";
+  // Code stand-in: two earth heaps behind, a low sandbag wall in front.
+  context.lineJoin = "round";
+  context.strokeStyle = DWARF_PALETTE_V7.outline;
+  context.lineWidth = Math.max(1, pixelScale);
   if (layer === "back") {
-    context.strokeStyle = DWARF_PALETTE_V7.earth;
-    context.lineWidth = Math.max(1.5, 3 * masterScale);
-    context.beginPath();
-    context.ellipse(cx, cy, width / 2 - 2, height * 0.3, 0, Math.PI, 0);
-    context.stroke();
+    context.fillStyle = DWARF_PALETTE_V7.earth;
+    const foot = top + height - DWARF_DIG_IN_HEAP_RISE_V7 * pixelScale;
+    for (const cx of [left + 3 * pixelScale, left + width - 3 * pixelScale]) {
+      context.beginPath();
+      context.ellipse(cx, foot, 5 * pixelScale, 3 * pixelScale, 0, Math.PI, 0);
+      context.closePath();
+      context.fill();
+      context.stroke();
+    }
   } else {
-    context.strokeStyle = DWARF_PALETTE_V7.outline;
-    context.lineWidth = Math.max(2.5, 6 * masterScale);
+    const wallTop = top + height * 0.3;
+    context.fillStyle = DWARF_PALETTE_V7.sandbag;
     context.beginPath();
-    context.ellipse(cx, cy, width / 2 - 2, height * 0.3, 0, 0, Math.PI);
-    context.stroke();
-    context.strokeStyle = DWARF_PALETTE_V7.sandbag;
-    context.lineWidth = Math.max(1.5, 4 * masterScale);
+    context.roundRect(left, wallTop, width, top + height - wallTop, [
+      3 * pixelScale,
+      3 * pixelScale,
+      pixelScale,
+      pixelScale,
+    ]);
+    context.fill();
     context.stroke();
   }
   context.restore();
@@ -405,6 +420,96 @@ export function drawEruptionRingV7(
   context.strokeStyle = highContrast ? "#ffffff" : ring.colour;
   context.lineWidth = ring.width * scale;
   context.setLineDash(ring.dash.map((value) => value * scale));
+  context.stroke();
+  context.restore();
+}
+
+/**
+ * Bead pulp_wars-78i.9: the rope from a seated Tunnel passenger to its
+ * Mole (cell centres `from` and `to`, CSS px), sagging between their
+ * lower bodies, with a hammer-head pip on the Mole's end of the rope.
+ */
+export function drawTunnelTetherV7(
+  context: CanvasRenderingContext2D,
+  from: { readonly x: number; readonly y: number },
+  to: { readonly x: number; readonly y: number },
+  zoom: number,
+  highContrast = false,
+): void {
+  const lift = 18 * zoom;
+  const ax = from.x;
+  const ay = from.y + lift;
+  const bx = to.x;
+  const by = to.y + lift;
+  const sag = 16 * zoom;
+  const cx = (ax + bx) / 2;
+  const cy = (ay + by) / 2 + sag;
+  const rope = (): void => {
+    context.beginPath();
+    context.moveTo(ax, ay);
+    context.quadraticCurveTo(cx, cy, bx, by);
+  };
+  context.save();
+  context.lineCap = "round";
+  rope();
+  context.strokeStyle = DWARF_PALETTE_V7.outline;
+  context.lineWidth = Math.max(2.5, 6 * zoom);
+  context.stroke();
+  rope();
+  context.strokeStyle = highContrast ? "#ffffff" : DWARF_PALETTE_V7.sandbag;
+  context.lineWidth = Math.max(1.5, 3.5 * zoom);
+  context.stroke();
+  // The twist of the rope.
+  rope();
+  context.strokeStyle = DWARF_PALETTE_V7.sandbagShade;
+  context.lineWidth = Math.max(1, 2 * zoom);
+  context.setLineDash([3 * zoom, 4 * zoom]);
+  context.stroke();
+  context.restore();
+  // The pip: a hammer head on the Mole's end of the rope.
+  const t = 0.8;
+  const px = (1 - t) ** 2 * ax + 2 * (1 - t) * t * cx + t * t * bx;
+  const py = (1 - t) ** 2 * ay + 2 * (1 - t) * t * cy + t * t * by;
+  drawPassengerPipV7(context, px, py, zoom, highContrast);
+}
+
+/** The passenger pip: a small hammer head on a leather disc at (x, y). */
+export function drawPassengerPipV7(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  zoom: number,
+  highContrast = false,
+): void {
+  const radius = Math.max(6, 11 * zoom);
+  context.save();
+  context.lineJoin = "round";
+  context.fillStyle = highContrast ? "#000000" : DWARF_PALETTE_V7.leather;
+  context.strokeStyle = highContrast ? "#ffffff" : DWARF_PALETTE_V7.copper;
+  context.lineWidth = Math.max(1.2, radius * 0.18);
+  context.beginPath();
+  context.arc(x, y, radius, 0, Math.PI * 2);
+  context.fill();
+  context.stroke();
+  // The handle, then the iron head across its top.
+  context.fillStyle = DWARF_PALETTE_V7.earthLight;
+  context.fillRect(
+    x - radius * 0.12,
+    y - radius * 0.2,
+    radius * 0.24,
+    radius * 0.75,
+  );
+  context.fillStyle = highContrast ? "#ffffff" : DWARF_PALETTE_V7.ironRim;
+  context.strokeStyle = DWARF_PALETTE_V7.outline;
+  context.lineWidth = Math.max(0.8, radius * 0.1);
+  context.beginPath();
+  context.rect(
+    x - radius * 0.55,
+    y - radius * 0.55,
+    radius * 1.1,
+    radius * 0.45,
+  );
+  context.fill();
   context.stroke();
   context.restore();
 }

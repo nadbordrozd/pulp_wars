@@ -308,6 +308,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/dwarf-presentation-v7.ts::dwarfCombatLinesV7": "BOARD",
     "src/render/dwarf-presentation-v7.ts::dwarfFieldDefenseBlockedV7": "BOARD",
     "src/render/dwarf-presentation-v7.ts::tunnelPreviewLinesV7": "BOARD",
+    // `pulp_wars-78i.9`: the Tunnel's riders, landing and outcome read the
+    // board (a burrowed Hammerer is never a passenger or a landmark).
+    "src/render/dwarf-tunnel-v7.ts::tunnelAutoLandingV7": "BOARD",
+    "src/render/dwarf-tunnel-v7.ts::tunnelOutcomeV7": "BOARD",
+    "src/render/dwarf-tunnel-v7.ts::tunnelRidersV7": "BOARD",
     "src/render/dom/app-view-v7.ts::cityIncomeForViewerV7": "BOARD",
     "src/render/goblin-presentation-v7.ts::blastPreviewPresentationV7": "BOARD",
     "src/render/goblin-presentation-v7.ts::goblinAttackPreviewTextV7": "BOARD",

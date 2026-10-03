@@ -15,9 +15,14 @@ import {
   BOMBED_MARK_V7,
   BOMB_RUN_PICK_LANDING_V7,
   BOMB_RUN_PICK_TARGET_V7,
-  RIDER_PICK_V7,
+  RIDE_BADGE_V7,
+  RIDING_BADGE_V7,
+  STAYS_BEHIND_V7,
+  TUNNEL_CONFIRM_HINT_V7,
   TUNNEL_FORECAST_V7,
   TUNNEL_PICK_V7,
+  passengerAccessibleNameV7,
+  riderLandingTextV7,
   assembleSummaryV7,
   bombPreviewLinesV7,
   bombTargetLabelV7,
@@ -32,6 +37,13 @@ import {
   tunnelPreviewLinesV7,
   tunnelTargetLabelV7,
 } from "../dwarf-presentation-v7";
+import {
+  tunnelCommandsV7,
+  tunnelDestinationsV7,
+  tunnelOutcomeV7,
+  tunnelRidersV7,
+  type TunnelChoiceStateV7,
+} from "../dwarf-tunnel-v7";
 import type {
   BoardRenderPlanEntryV7,
   MapCommandTargetV7,
@@ -48,20 +60,21 @@ import type {
  * commands and the public previews; nothing is recomputed.
  */
 
+/** The LINK label of the rope from a seated passenger to its Mole. */
+export const TUNNEL_TETHER_LINK_V7 = "TUNNEL_TETHER";
+
 /**
  * A Dwarf ability being aimed on the board. While one is active its
  * targets are the only map targets of the selected unit.
- * TUNNEL: first the destination (`to` null), then the rider prompt (the
- * rider tiles of `riderUnitId` next to `to`, or "Tunnel alone").
+ * TUNNEL (passenger first, bead pulp_wars-78i.9): `riderUnitId` is the
+ * seated Hammerer (the best one is seated when the Tunnel is aimed; null:
+ * the Mole tunnels alone). Choosing a destination (`to`) shows the whole
+ * tunnel, the Hammerer's ghost on its default landing or on `riderTo`
+ * when the player moved it; choosing `to` again digs it.
  * BOMB_RUN: first the target (`targetUnitId` null), then the landing.
  */
 export type DwarfPickV7 =
-  | {
-      readonly kind: "TUNNEL";
-      readonly unitId: UnitId;
-      readonly to: CoordV7 | null;
-      readonly riderUnitId: UnitId | null;
-    }
+  | ({ readonly kind: "TUNNEL" } & TunnelChoiceStateV7)
   | {
       readonly kind: "BOMB_RUN";
       readonly unitId: UnitId;
@@ -181,72 +194,109 @@ export function dwarfPickTargetsV7(
 ): MapCommandTargetV7[] {
   const unitById = (id: number) => view.units.find((unit) => unit.id === id);
   if (pick.kind === "TUNNEL") {
-    const tunnels = commands.filter(
-      (command): command is Extract<CommandV7, { kind: "TUNNEL" }> =>
-        command.kind === "TUNNEL" && command.unitId === pick.unitId,
+    const riders = tunnelRidersV7(view, commands, pick.unitId);
+    const seated =
+      riders.find((rider) => rider.unitId === pick.riderUnitId) ?? null;
+    const targets: MapCommandTargetV7[] = [];
+    // The chosen destination's landing and the other legal landings of the
+    // seated Hammerer: the landing is the Hammerer's ghost, the others
+    // small dots that move it (bead pulp_wars-78i.9).
+    const chosen =
+      pick.to === null ? null : tunnelOutcomeV7(view, commands, pick, pick.to);
+    const landingCells = new Set(
+      chosen === null || chosen.landing === null
+        ? []
+        : [chosen.landing, ...chosen.otherLandings].map(key),
     );
-    if (pick.to === null) {
-      const seen = new Set<string>();
-      return tunnels.flatMap((command): MapCommandTargetV7[] => {
-        if (command.rider !== null || seen.has(key(command.to))) return [];
-        seen.add(key(command.to));
-        const preview = previewTunnelV7(view, command);
-        if (preview === null) return [];
-        const lines = tunnelPreviewLinesV7(view, preview);
-        const withRider = tunnels.some(
+    if (chosen !== null && seated !== null)
+      for (const at of chosen.otherLandings) {
+        const command = tunnelCommandsV7(commands, pick.unitId).find(
           (candidate) =>
-            candidate.rider !== null && same(candidate.to, command.to),
+            candidate.rider !== null &&
+            candidate.rider.unitId === seated.unitId &&
+            pick.to !== null &&
+            same(candidate.to, pick.to) &&
+            same(candidate.rider.to, at),
         );
-        return [
-          {
-            at: command.to,
+        if (command !== undefined)
+          targets.push({
+            at,
             command,
-            family: withRider ? "TUNNEL_DESTINATION" : "TUNNEL",
-            // Calm: only a destination that would erupt on someone has a
-            // label; the others are the plain dashed outline.
-            ...(preview.eruptionTargets.length === 0
-              ? {}
-              : { previewLabel: tunnelTargetLabelV7(preview) }),
-            eruption: {
-              at: command.to,
-              targets: preview.eruptionTargets.map((target) => ({
-                at: target.at,
-                label: `−${target.damage + target.shieldDamage}`,
-                lethal: target.dies,
-              })),
-              undermines: preview.undermines,
-            },
-            semanticLabel: `Tunnel: the Mole surfaces here at the start of your next turn. ${lines.join(". ")}. ${TUNNEL_FORECAST_V7}. ${TUNNEL_PICK_V7}.`,
-          },
-        ];
+            family: "TUNNEL_RIDER",
+            semanticLabel: `Move the ${seated.label}'s landing here, next to the Mole. ${TUNNEL_CONFIRM_HINT_V7}.`,
+          });
+      }
+    // The Hammerers that can ride: a badge each; choosing one seats it,
+    // choosing the seated one leaves the Mole to tunnel alone.
+    for (const rider of riders) {
+      const command = tunnelCommandsV7(commands, pick.unitId).find(
+        (candidate) => candidate.rider?.unitId === rider.unitId,
+      );
+      if (command === undefined) continue;
+      const isSeated = rider.unitId === seated?.unitId;
+      targets.push({
+        at: rider.at,
+        command,
+        family: "TUNNEL_PASSENGER",
+        previewLabel: isSeated ? RIDING_BADGE_V7 : RIDE_BADGE_V7,
+        semanticLabel: isSeated
+          ? `${passengerAccessibleNameV7(rider.label, rider.hp, rider.maxHp, true)}. Choose it again to tunnel alone.`
+          : `Seat this ${rider.label} as the passenger (${rider.hp} of ${rider.maxHp} HP).`,
       });
     }
-    const to = pick.to;
-    const riders = tunnels.filter(
-      (command) =>
-        command.rider !== null &&
-        same(command.to, to) &&
-        (pick.riderUnitId === null ||
-          command.rider.unitId === pick.riderUnitId),
-    );
-    const riderUnitId = pick.riderUnitId ?? riders[0]?.rider?.unitId ?? null;
-    return riders.flatMap((command): MapCommandTargetV7[] => {
-      if (command.rider === null || command.rider.unitId !== riderUnitId)
-        return [];
-      const rider = unitById(command.rider.unitId);
-      const name =
-        rider === undefined ? "unit" : unitRoleRuleV7(view, rider).label;
-      return [
-        {
-          at: command.rider.to,
-          command,
-          family: "TUNNEL_RIDER",
-          // No label per rider tile (up to eight around the Mole): the
-          // outline, the dock's prompt and the cursor name it.
-          semanticLabel: `Tunnel with the ${name}: it surfaces here, next to the Mole. ${RIDER_PICK_V7}.`,
+    for (const to of tunnelDestinationsV7(commands, pick.unitId)) {
+      // A landing tile of the chosen destination is the Hammerer's, not
+      // another destination.
+      if (landingCells.has(key(to))) continue;
+      const outcome = tunnelOutcomeV7(view, commands, pick, to);
+      const alone = tunnelCommandsV7(commands, pick.unitId).find(
+        (command) => command.rider === null && same(command.to, to),
+      );
+      const preview = alone === undefined ? null : previewTunnelV7(view, alone);
+      if (outcome === null || preview === null) continue;
+      const lines = tunnelPreviewLinesV7(view, preview);
+      const isChosen = pick.to !== null && same(pick.to, to);
+      const passenger =
+        seated === null
+          ? []
+          : [
+              outcome.landing === null
+                ? STAYS_BEHIND_V7
+                : riderLandingTextV7(seated.label, outcome.landing),
+            ];
+      targets.push({
+        at: to,
+        command: outcome.command,
+        // With a Hammerer that could ride, choosing a destination shows the
+        // whole tunnel and a second choice digs it; without one the first
+        // choice digs at once.
+        family: riders.length === 0 ? "TUNNEL" : "TUNNEL_DESTINATION",
+        // Calm: only a destination that would erupt on someone has a
+        // label; the others are the plain dashed outline.
+        ...(preview.eruptionTargets.length === 0
+          ? {}
+          : { previewLabel: tunnelTargetLabelV7(preview) }),
+        eruption: {
+          at: to,
+          targets: preview.eruptionTargets.map((target) => ({
+            at: target.at,
+            label: `−${target.damage + target.shieldDamage}`,
+            lethal: target.dies,
+          })),
+          undermines: preview.undermines,
         },
-      ];
-    });
+        tunnel: {
+          moleUnitId: pick.unitId,
+          riderUnitId:
+            outcome.landing === null ? null : (seated?.unitId ?? null),
+          landing: outcome.landing,
+          staysBehind: outcome.staysBehind,
+          chosen: isChosen,
+        },
+        semanticLabel: `Tunnel: the Mole surfaces here at the start of your next turn. ${[...lines, ...passenger].join(". ")}. ${TUNNEL_FORECAST_V7}. ${isChosen ? `${TUNNEL_CONFIRM_HINT_V7}.` : riders.length === 0 ? `${TUNNEL_PICK_V7}.` : `${TUNNEL_PICK_V7}, then confirm.`}`,
+      });
+    }
+    return targets;
   }
   if (pick.kind === "BOMB_RUN") {
     const runs = commands.filter(
@@ -305,9 +355,8 @@ export function dwarfPickTargetsV7(
 }
 
 /**
- * Preview entries of an active pick that are not targets: the Mole's
- * chosen destination and its eruption forecast (the rider prompt), the
- * chosen bomb target with its damage (the landing step), the blast of an
+ * Preview entries of an active pick that are not targets: the rope from a
+ * seated Tunnel passenger to its Mole, the chosen bomb target with its damage (the landing step), the blast of an
  * exploding target, and the hostile units in range that were bombed this
  * turn ("Bombed this turn").
  */
@@ -319,28 +368,22 @@ export function addDwarfPickEntriesV7(
 ): void {
   const actor = view.units.find((unit) => unit.id === pick.unitId);
   if (actor === undefined) return;
-  if (pick.kind === "TUNNEL" && pick.to !== null) {
-    const to = pick.to;
-    const command = commands.find(
-      (candidate): candidate is Extract<CommandV7, { kind: "TUNNEL" }> =>
-        candidate.kind === "TUNNEL" &&
-        candidate.unitId === pick.unitId &&
-        candidate.rider === null &&
-        same(candidate.to, to),
-    );
-    entries.push({
-      key: `ability-target:TUNNEL_TO:${key(to)}`,
-      kind: "ABILITY_TARGET",
-      layer: 7.5,
-      at: to,
-      abilityStyle: "TUNNEL",
-      label: "Mole",
-    });
-    const preview =
-      command === undefined ? null : previewTunnelV7(view, command);
-    if (preview !== null)
-      addEruptionForecastEntriesV7(entries, view, to, preview);
+  // The seated passenger is tied to the Mole by a short rope, with a
+  // hammer-head pip on the Mole (bead pulp_wars-78i.9).
+  if (pick.kind === "TUNNEL" && pick.riderUnitId !== null) {
+    const rider = view.units.find((unit) => unit.id === pick.riderUnitId);
+    if (rider !== undefined)
+      entries.push({
+        key: `tunnel-tether:${rider.id}:${actor.id}`,
+        kind: "LINK",
+        layer: 6,
+        at: rider.at,
+        linkTo: actor.at,
+        label: TUNNEL_TETHER_LINK_V7,
+      });
   }
+  // A chosen destination is still a target: its forecast and ghosts are
+  // drawn from it while nothing else is focused.
   if (pick.kind === "BOMB_RUN") {
     if (pick.targetUnitId !== null) {
       const command = commands.find(
@@ -395,47 +438,6 @@ export function addDwarfPickEntriesV7(
         });
       }
   }
-}
-
-/**
- * The eruption forecast around a Mole's destination: the eight-tile ring
- * (an area outlined at its edge) and each visible hostile unit on the
- * ground with its damage "if they stay", from previewTunnelV7.
- */
-function addEruptionForecastEntriesV7(
-  entries: BoardRenderPlanEntryV7[],
-  view: PlayerViewV7,
-  at: CoordV7,
-  preview: NonNullable<ReturnType<typeof previewTunnelV7>>,
-): void {
-  const ring = eruptionRingCellsV7(view, at);
-  const inRing = (cell: CoordV7): boolean =>
-    ring.some((candidate) => same(candidate, cell)) || same(cell, at);
-  for (const cell of ring)
-    entries.push({
-      key: `ability-area:ERUPTION:${key(cell)}`,
-      kind: "ABILITY_AREA",
-      layer: 7,
-      at: cell,
-      abilityStyle: "ERUPTION",
-      targetEdges: (["NORTH", "EAST", "SOUTH", "WEST"] as const).filter(
-        (edge) =>
-          !inRing({
-            x: cell.x + (edge === "EAST" ? 1 : edge === "WEST" ? -1 : 0),
-            y: cell.y + (edge === "SOUTH" ? 1 : edge === "NORTH" ? -1 : 0),
-          }),
-      ),
-    });
-  for (const target of preview.eruptionTargets)
-    entries.push({
-      key: `ability-target:ERUPTION:${target.unitId}`,
-      kind: "ABILITY_TARGET",
-      layer: 7.5,
-      at: target.at,
-      abilityStyle: "ERUPTION",
-      label: `If they stay −${target.damage + target.shieldDamage}`,
-      lethal: target.dies,
-    });
 }
 
 /**

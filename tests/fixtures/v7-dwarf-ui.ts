@@ -173,7 +173,7 @@ export const DWARF_UI_V7 = {
  * Seat 0 (Dwarf) with every ability ready, against seat 1 (Human by
  * default; `enemy` picks another faction). Every technology is researched,
  * so Dig In, Blasting Charges (eruption 3, the Cannon ignores
- * fortification), Dive (bomb 5) and Assemble apply.
+ * fortification), Dive (bomb 6) and Assemble apply.
  */
 export function dwarfUiFixtureV7(enemy: FactionIdV7 = "ORIGINAL"): GameStateV7 {
   const at = DWARF_UI_V7;
@@ -314,4 +314,42 @@ export function dwarfFleetFixtureV7(): GameStateV7 {
     ],
     { water: at.water },
   );
+}
+
+/**
+ * The Dig In earthwork beside the ready ring (bead pulp_wars-78i.9): round
+ * the Dwarf capital (8, 8), a ready dug-in Hammerer and Mole, the same two
+ * spent (they attacked without moving: still dug in, no ready ring), a
+ * ready Hammerer garrisoned on the capital (dug in on the center) and a
+ * Hammerer that moved (not dug in). The ready Mole has two Hammerers that
+ * can ride its tunnel: the wounded one beside it and the garrisoned one
+ * (full HP, so it is seated first); an enemy Fighter stands to the west.
+ */
+export const DWARF_DIG_IN_V7 = {
+  readyHammerer: { x: 7, y: 8 },
+  spentHammerer: { x: 9, y: 8 },
+  readyMole: { x: 7, y: 7 },
+  spentMole: { x: 9, y: 9 },
+  garrisoned: { x: 8, y: 8 },
+  movedHammerer: { x: 7, y: 9 },
+  enemy: { x: 4, y: 7 },
+} as const;
+
+export function dwarfDigInFixtureV7(): GameStateV7 {
+  const at = DWARF_DIG_IN_V7;
+  const spent = { attacked: true, attacksUsed: 1, handled: true } as const;
+  return dwarfUiFieldV7([
+    { seat: 0, role: "FIGHTER", at: at.readyHammerer, hp: 7 },
+    { seat: 0, role: "FIGHTER", at: at.spentHammerer, activation: spent },
+    { seat: 0, role: "GUARD", at: at.readyMole },
+    { seat: 0, role: "GUARD", at: at.spentMole, activation: spent },
+    { seat: 0, role: "FIGHTER", at: at.garrisoned },
+    {
+      seat: 0,
+      role: "FIGHTER",
+      at: at.movedHammerer,
+      activation: { moved: true, movedPathLength: 1 },
+    },
+    { seat: 1, role: "FIGHTER", at: at.enemy },
+  ]);
 }

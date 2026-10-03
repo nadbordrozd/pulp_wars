@@ -170,31 +170,70 @@ const rgb = (hex: string): readonly [number, number, number] => [
 ];
 
 /**
- * The Dig In marker (spec 8 and 16.1): a low ring of piled earth and
- * sandbags at the unit's base, "this unit is dug in". It is drawn in two
- * layers: `back` (a bank of piled earth behind the unit) before the unit,
- * and `front` (a low wall of sandbags on a bank of earth in front of it)
- * after it, so the unit stands inside the earthwork. `width` is the ring's
- * outer width in master pixels (the unit canvas width minus 8: 48 for a
- * 56 px unit, 64 for 72, 80 for 88); the raster is `width` x `height`, the
- * ring's centre is its middle, and its bottom row is the earthwork's
- * lowest point (place it on the unit's foot line).
+ * The Dig In wall's width as a share of the unit's ground-shadow width
+ * (unit-shadows-v7.ts): the wall stands in front of the feet and the ready
+ * ring still shows round its ends.
+ */
+export const DWARF_DIG_IN_WALL_SHARE_V7 = 1;
+/**
+ * Rows from the marker raster's bottom (the shadow's front edge) up to the
+ * foot of the earth heaps behind the wall (about the shadow's centre).
+ */
+export const DWARF_DIG_IN_HEAP_RISE_V7 = 6;
+
+/**
+ * The Dig In marker (spec 8 and 16.1): piled earth and sandbags at the
+ * unit's base, "this unit is dug in". Since bead pulp_wars-78i.9 it is a
+ * parapet on the front half, not a ring: a ring of sandbags beside the
+ * cream GROUND ready ring read as a double ring. It is drawn in two layers:
+ * `front` (after the unit) is a short wall of separate sandbags, two
+ * courses high in the middle and bowed back at its ends, on clods of earth,
+ * in front of the unit's feet; `back` (before the unit) is two small heaps
+ * of dug earth behind the ends of the wall. `width` is the wall's width in
+ * master pixels (DWARF_DIG_IN_WALL_SHARE_V7 of the unit's shadow width);
+ * the raster is `width` x `height`, centred on the shadow, and its bottom
+ * row is the wall's lowest point: place it on the front edge of the unit's
+ * ground shadow, so the ready ring's front arc still shows below the wall.
  */
 export function dwarfDigInMarkerV7(width: number): {
   readonly back: DwarfRasterV7;
   readonly front: DwarfRasterV7;
   readonly height: number;
 } {
-  const rx = Math.floor(width / 2) - 1;
-  const ry = Math.max(5, Math.round(rx * 0.38));
-  const wall = 6;
-  const bagWidth = 8;
-  const height = ry * 2 + wall + 3;
-  const cx = (width - 1) / 2;
-  const cy = height - ry - 2;
+  const bagWidth = 11;
+  const bagHeight = 6;
+  // Neighbouring bags share their outline column.
+  const pitch = bagWidth - 1;
+  // The upper course sits this far above the lower one.
+  const course = 4;
+  // The ends of the wall bow back (up the raster) this far.
+  const bow = 2;
+  const heapHeight = 4;
+  // The wall leaves room at its ends for the heaps of earth.
+  const lower = Math.max(2, Math.floor((width - 10) / pitch));
+  const wallLeft = Math.floor((width - (lower * pitch + 1)) / 2);
+  const middle = width / 2;
+  /** How far a bag whose left edge is `left` bows back. */
+  const bowAt = (left: number): number =>
+    Math.round(bow * ((left + bagWidth / 2 - middle) / middle) ** 2);
+  // Each bag's left edge and its rise above the raster's bottom row.
+  const lowerBags = Array.from({ length: lower }, (_, index) => {
+    const left = wallLeft + index * pitch;
+    return { left, rise: bowAt(left) };
+  });
+  const upperBags = Array.from({ length: lower - 1 }, (_, index) => {
+    const left = Math.round(wallLeft + pitch / 2 + index * pitch);
+    return { left, rise: course + bowAt(left) };
+  });
+  const height = Math.max(
+    bagHeight + Math.max(...lowerBags.map((entry) => entry.rise)),
+    bagHeight + Math.max(...upperBags.map((entry) => entry.rise)),
+    DWARF_DIG_IN_HEAP_RISE_V7 + heapHeight,
+  );
   const back = new Uint8ClampedArray(width * height * 4);
   const front = new Uint8ClampedArray(width * height * 4);
   const colour = {
+    outline: rgb(DWARF_PALETTE_V7.outline),
     earth: rgb(DWARF_PALETTE_V7.earth),
     earthDark: rgb(DWARF_PALETTE_V7.earthDark),
     earthLight: rgb(DWARF_PALETTE_V7.earthLight),
@@ -204,78 +243,90 @@ export function dwarfDigInMarkerV7(width: number): {
   type Colour = keyof typeof colour;
   const backPaint = new Array<Colour | null>(width * height).fill(null);
   const frontPaint = new Array<Colour | null>(width * height).fill(null);
-  for (let x = 0; x < width; x += 1) {
-    const dx = (x - cx) / rx;
-    if (Math.abs(dx) > 1) continue;
-    const half = ry * Math.sqrt(1 - dx * dx);
-    // The far bank: a ridge of earth 3 px high on the back arc.
-    const far = Math.round(cy - half);
-    for (let y = far - 3; y <= far; y += 1)
-      if (y >= 0)
-        backPaint[y * width + x] = y === far - 3 ? "earthLight" : "earth";
-    // The near wall: sandbags stacked on the front arc, lumpy on top.
-    const near = Math.round(cy + half);
-    const slot = (x + Math.round(rx)) % bagWidth;
-    const seam = slot === 0;
-    const lump = Math.round(Math.sin((Math.PI * slot) / bagWidth) * 2);
-    const top = near - (wall - 2) - lump;
-    for (let y = top; y <= near + 1 && y < height; y += 1) {
-      if (y < 0) continue;
-      const fromTop = y - top;
-      frontPaint[y * width + x] =
-        y >= near
-          ? "earthDark"
-          : seam
-            ? "bagShade"
-            : fromTop === 0
-              ? "bag"
-              : y >= near - 1
-                ? "bagShade"
-                : "bag";
+  const inside = (x: number, y: number): boolean =>
+    x >= 0 && y >= 0 && x < width && y < height;
+  /** A heap of earth (a half ellipse on `foot`), outlined where it is open. */
+  const heap = (
+    shape: (Colour | null)[],
+    cx: number,
+    foot: number,
+    rx: number,
+    ry: number,
+  ): void => {
+    const cells: [number, number][] = [];
+    for (let y = foot - ry; y <= foot; y += 1)
+      for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x += 1) {
+        const dx = (x - cx) / (rx + 0.5);
+        const dy = (foot - y) / (ry + 0.5);
+        if (dx * dx + dy * dy <= 1 && inside(x, y)) cells.push([x, y]);
+      }
+    const filled = new Set(cells.map(([x, y]) => `${x},${y}`));
+    const has = (x: number, y: number): boolean => filled.has(`${x},${y}`);
+    for (const [x, y] of cells) {
+      const open =
+        !has(x - 1, y) || !has(x + 1, y) || !has(x, y - 1) || !has(x, y + 1);
+      shape[y * width + x] = open
+        ? "outline"
+        : !has(x, y - 2)
+          ? "earthLight"
+          : (x + y) % 5 === 0
+            ? "earthDark"
+            : "earth";
     }
-    // Earth spilling at the ends of the wall, where it meets the far bank.
-    if (Math.abs(dx) > 0.85)
-      for (let y = Math.round(cy - 2); y <= Math.round(cy + 2); y += 1)
-        if (
-          frontPaint[y * width + x] === null &&
-          backPaint[y * width + x] === null
-        )
-          frontPaint[y * width + x] = "earth";
-  }
-  // The near wall wins where the two meet at the ends of the ring.
+  };
+  /** One sandbag: a pillow with rounded ends, shaded along its foot. */
+  const bag = (left: number, top: number): void => {
+    for (let dy = 0; dy < bagHeight; dy += 1) {
+      // The rows next to the top and bottom edges are 1 px narrower, those
+      // edges 2 px: the ends are round, the seams between bags notched.
+      const rim = dy === 0 || dy === bagHeight - 1;
+      const inset = rim ? 2 : dy === 1 || dy === bagHeight - 2 ? 1 : 0;
+      for (let dx = inset; dx < bagWidth - inset; dx += 1) {
+        const x = left + dx;
+        const y = top + dy;
+        if (!inside(x, y)) continue;
+        frontPaint[y * width + x] =
+          rim || dx === inset || dx === bagWidth - 1 - inset
+            ? "outline"
+            : dy === bagHeight - 2
+              ? "bagShade"
+              : "bag";
+      }
+    }
+  };
+  // Behind: two heaps of dug earth behind the ends of the wall.
+  const heapFoot = height - 1 - DWARF_DIG_IN_HEAP_RISE_V7;
+  heap(backPaint, 4, heapFoot, 5, heapHeight - 1);
+  heap(backPaint, width - 5, heapFoot, 5, heapHeight - 1);
+  // In front: clods of earth at the foot of the wall's ends, then the bags,
+  // the ends first so the middle ones overlap them.
+  heap(frontPaint, wallLeft, height - 2, 5, 3);
+  heap(frontPaint, width - 1 - wallLeft, height - 2, 5, 3);
+  const endsFirst = (
+    left: { readonly left: number },
+    right: { readonly left: number },
+  ): number =>
+    Math.abs(right.left + bagWidth / 2 - middle) -
+    Math.abs(left.left + bagWidth / 2 - middle);
+  for (const bags of [lowerBags, upperBags])
+    for (const { left, rise } of [...bags].sort(endsFirst))
+      bag(left, height - bagHeight - rise);
+  // The wall wins where it meets the heaps behind it.
   for (let index = 0; index < width * height; index += 1)
     if (frontPaint[index] !== null) backPaint[index] = null;
-  // Paint, with a 1 px dark outline round each layer's shape.
   const paint = (
     target: Uint8ClampedArray,
     shape: readonly (Colour | null)[],
   ): void => {
-    const outline = rgb(DWARF_PALETTE_V7.outline);
-    const filled = (x: number, y: number): boolean =>
-      x >= 0 &&
-      y >= 0 &&
-      x < width &&
-      y < height &&
-      shape[y * width + x] !== null;
-    for (let y = 0; y < height; y += 1)
-      for (let x = 0; x < width; x += 1) {
-        const offset = (y * width + x) * 4;
-        const name = shape[y * width + x];
-        let value: readonly [number, number, number] | null = null;
-        if (name !== null && name !== undefined) {
-          const edge =
-            !filled(x - 1, y) ||
-            !filled(x + 1, y) ||
-            !filled(x, y - 1) ||
-            !filled(x, y + 1);
-          value = edge ? outline : colour[name];
-        }
-        if (value === null) continue;
-        target[offset] = value[0];
-        target[offset + 1] = value[1];
-        target[offset + 2] = value[2];
-        target[offset + 3] = 255;
-      }
+    for (let index = 0; index < width * height; index += 1) {
+      const name = shape[index];
+      if (name === null || name === undefined) continue;
+      const value = colour[name];
+      target[index * 4] = value[0];
+      target[index * 4 + 1] = value[1];
+      target[index * 4 + 2] = value[2];
+      target[index * 4 + 3] = 255;
+    }
   };
   paint(back, backPaint);
   paint(front, frontPaint);

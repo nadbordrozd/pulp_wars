@@ -41,17 +41,23 @@ import {
   NOT_DUG_IN_MOVED_V7,
   REPAIR_CHIP_V7,
   REPAIR_TOOLTIP_V7,
-  RIDER_PROMPT_V7,
-  TUNNEL_ALONE_V7,
+  TUNNEL_PICK_CHIP_LIMIT_V7,
   assembleSummaryV7,
   burrowedInfoTextV7,
   dwarfCityNameV7,
   dwarfRoleUnlockTextV7,
+  passengerAccessibleNameV7,
+  riderLandingTextV7,
+  tunnelBoardHintV7,
+  tunnelConfirmPromptV7,
   tunnelPreviewLinesV7,
 } from "../../src/render/dwarf-presentation-v7";
+import { tunnelDestinationsV7 } from "../../src/render/dwarf-tunnel-v7";
 import {
+  DWARF_DIG_IN_V7,
   DWARF_UI_V7,
   DWARF_VICTIM_V7,
+  dwarfDigInFixtureV7,
   dwarfUiFieldV7,
   dwarfUiFixtureV7,
   dwarfVictimFixtureV7,
@@ -175,20 +181,53 @@ describe("Dwarf unit dock", () => {
 });
 
 describe("Dwarf abilities through the dock and the board", () => {
-  it("tunnels with a rider: the destinations with their forecast, the rider prompt, the mounds", async () => {
+  it("tunnels passenger first: the Hammerer seated, a short destination list, choose, move the landing, confirm", async () => {
     const controller = new FixtureController(dwarfUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const mole = selectUnitAt(controller, host, AT.mole);
     const rider = unitAt(controller, AT.rider);
     requiredButton("dwarf-tunnel").click();
+    // The only Hammerer that can ride is seated at once.
     expect(host.lastModel?.interaction.dwarfPick).toEqual({
       kind: "TUNNEL",
       unitId: mole.id,
       to: null,
-      riderUnitId: null,
+      riderUnitId: rider.id,
+      riderTo: null,
     });
+    const seated = requiredButton(`tunnel-passenger-${rider.id}`);
+    expect(seated.getAttribute("aria-pressed")).toBe("true");
+    expect(seated.getAttribute("aria-label")).toBe(
+      passengerAccessibleNameV7(label("FIGHTER"), rider.hp, rider.maxHp, true),
+    );
+    expect(
+      requiredButton("tunnel-passenger-none").getAttribute("aria-pressed"),
+    ).toBe("false");
+    // The dock lists a few destinations, the erupting ones first, and
+    // sends the rest to the board.
     const view = required(controller.snapshot().view);
+    const destinations = tunnelDestinationsV7(
+      controller.snapshot().offeredCommands,
+      mole.id,
+    );
+    const chips = [
+      ...document.querySelectorAll<HTMLButtonElement>(
+        "[data-v7-dwarf-pick] .v7-martian-choice-button",
+      ),
+    ];
+    expect(destinations.length).toBeGreaterThan(TUNNEL_PICK_CHIP_LIMIT_V7);
+    expect(chips.length).toBeGreaterThan(0);
+    expect(chips.length).toBeLessThanOrEqual(TUNNEL_PICK_CHIP_LIMIT_V7);
+    for (const chip of chips) expect(chip.textContent).toMatch(/· −\d+$/);
+    const damages = chips.map((chip) =>
+      Number(/−(\d+)$/.exec(chip.textContent ?? "")?.[1]),
+    );
+    expect([...damages].sort((left, right) => right - left)).toEqual(damages);
+    expect(
+      requiredElement<HTMLElement>("[data-v7-dwarf-pick] .v7-dwarf-pick-hint")
+        .textContent,
+    ).toBe(tunnelBoardHintV7(destinations.length, true));
     const alone = required(
       queryPlayerCommandsV7(view).find(
         (command): command is Extract<CommandV7, { kind: "TUNNEL" }> =>
@@ -203,43 +242,97 @@ describe("Dwarf abilities through the dock and the board", () => {
       required(previewTunnelV7(view, alone)),
     ))
       expect(chip.getAttribute("aria-label")).toContain(line);
-    // The erupting destinations come first.
+    // Every destination is still on the board; the Hammerer wears its badge.
     expect(
-      document.querySelector('[data-v7-dwarf-pick] [data-action^="tunnel-"]')
-        ?.textContent,
-    ).toMatch(/· −\d+$/);
-    // The board: choosing the destination moves on to the rider prompt.
+      boardPlan(host).targets.filter(
+        (target) => target.family === "TUNNEL_DESTINATION",
+      ),
+    ).toHaveLength(destinations.length);
+    const badge = required(
+      boardPlan(host).targets.find((target) => same(target.at, AT.rider)),
+    );
+    expect(badge.family).toBe("TUNNEL_PASSENGER");
+    // Unseat on the board, then seat again.
+    host.callbacks?.onCommand(badge);
+    await waitUntil(
+      () =>
+        requiredButton("tunnel-passenger-none").getAttribute("aria-pressed") ===
+        "true",
+    );
+    expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
+      riderUnitId: null,
+    });
+    host.callbacks?.onCommand(
+      required(
+        boardPlan(host).targets.find((target) => same(target.at, AT.rider)),
+      ),
+    );
+    await waitUntil(
+      () =>
+        requiredButton(`tunnel-passenger-${rider.id}`).getAttribute(
+          "aria-pressed",
+        ) === "true",
+    );
+    // Choosing the destination on the board shows the whole tunnel; nothing
+    // is sent yet.
     const destination = required(
       boardPlan(host).targets.find((target) => same(target.at, AT.tunnelTo)),
     );
     expect(destination.family).toBe("TUNNEL_DESTINATION");
+    const landing = required(destination.tunnel?.landing ?? undefined);
     host.callbacks?.onCommand(destination);
     await waitUntil(
       () =>
         document.querySelector("[data-v7-dwarf-pick] .v7-kaboom-summary")
-          ?.textContent === RIDER_PROMPT_V7,
+          ?.textContent === tunnelConfirmPromptV7(AT.tunnelTo),
     );
     expect(controller.accepted).toHaveLength(0);
-    expect(requiredButton("tunnel-alone").textContent).toBe(TUNNEL_ALONE_V7);
-    // Escape steps back to the destinations, then the rider is chosen.
+    expect(
+      requiredElement<HTMLElement>("[data-v7-dwarf-pick]").textContent,
+    ).toContain(riderLandingTextV7(label("FIGHTER"), landing));
+    expect(requiredButton("tunnel-confirm").textContent).toBe("Tunnel");
+    // Escape steps back to the destinations with the passenger still seated.
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );
-    expect(host.lastModel?.interaction.dwarfPick).toMatchObject({ to: null });
+    expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
+      to: null,
+      riderUnitId: rider.id,
+    });
     host.callbacks?.onCommand(destination);
     await waitUntil(() =>
-      boardPlan(host).targets.every(
+      boardPlan(host).targets.some(
         (target) => target.family === "TUNNEL_RIDER",
       ),
     );
-    const riderTarget = required(boardPlan(host).targets[0]);
-    host.callbacks?.onCommand(riderTarget);
+    // A dot moves the Hammerer's landing.
+    const dot = required(
+      boardPlan(host).targets.find(
+        (target) => target.family === "TUNNEL_RIDER",
+      ),
+    );
+    host.callbacks?.onCommand(dot);
+    await waitUntil(() =>
+      (
+        requiredElement<HTMLElement>("[data-v7-dwarf-pick]").textContent ?? ""
+      ).includes(riderLandingTextV7(label("FIGHTER"), dot.at)),
+    );
+    expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
+      to: AT.tunnelTo,
+      riderTo: dot.at,
+    });
+    // Choosing the destination again digs the whole tunnel.
+    host.callbacks?.onCommand(
+      required(
+        boardPlan(host).targets.find((target) => same(target.at, AT.tunnelTo)),
+      ),
+    );
     await waitUntil(() => controller.accepted.length === 1);
-    expect(controller.accepted[0]).toMatchObject({
+    expect(controller.accepted[0]).toEqual({
       kind: "TUNNEL",
       unitId: mole.id,
       to: AT.tunnelTo,
-      rider: { unitId: rider.id },
+      rider: { unitId: rider.id, to: dot.at },
     });
     await waitUntil(() =>
       live().includes("Your Steam Mole tunnelled (with a Hammerer)"),
@@ -250,6 +343,63 @@ describe("Dwarf abilities through the dock and the board", () => {
         (entry) => entry.unit.id,
       ),
     ).toEqual(expect.arrayContaining([mole.id, rider.id]));
+    app.destroy();
+  });
+
+  it("re-seats among two Hammerers from the dock and tunnels alone with None, confirmed by the dock's Tunnel", async () => {
+    const controller = new FixtureController(dwarfDigInFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const mole = selectUnitAt(controller, host, DWARF_DIG_IN_V7.readyMole);
+    const wounded = unitAt(controller, DWARF_DIG_IN_V7.readyHammerer);
+    const healthy = unitAt(controller, DWARF_DIG_IN_V7.garrisoned);
+    requiredButton("dwarf-tunnel").click();
+    // The healthier Hammerer is seated first, though its ID is higher.
+    expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
+      riderUnitId: healthy.id,
+    });
+    expect(
+      [
+        ...document.querySelectorAll<HTMLButtonElement>(".v7-dwarf-passenger"),
+      ].map((control) => control.dataset.action),
+    ).toEqual([
+      `tunnel-passenger-${healthy.id}`,
+      `tunnel-passenger-${wounded.id}`,
+      "tunnel-passenger-none",
+    ]);
+    requiredButton(`tunnel-passenger-${wounded.id}`).click();
+    expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
+      riderUnitId: wounded.id,
+    });
+    expect(
+      boardPlan(host).entries.find(
+        (entry) => entry.kind === "LINK" && same(entry.at, wounded.at),
+      )?.linkTo,
+    ).toEqual(mole.at);
+    requiredButton("tunnel-passenger-none").click();
+    expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
+      riderUnitId: null,
+    });
+    // Choose the first listed destination from the dock, then confirm.
+    const chip = required(
+      document.querySelector<HTMLButtonElement>(
+        "[data-v7-dwarf-pick] .v7-martian-choice-button",
+      ),
+    );
+    const [x, y] = (chip.dataset.action ?? "")
+      .slice("tunnel-".length)
+      .split("-")
+      .map(Number);
+    chip.click();
+    expect(controller.accepted).toHaveLength(0);
+    requiredButton("tunnel-confirm").click();
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "TUNNEL",
+      unitId: mole.id,
+      to: { x, y },
+      rider: null,
+    });
     app.destroy();
   });
 

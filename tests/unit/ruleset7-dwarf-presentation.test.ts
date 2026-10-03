@@ -39,7 +39,14 @@ import {
   KNOCKBACK_BLOCKED_V7,
   NOT_DUG_IN_MOVED_V7,
   PLATED_PREVIEW_V7,
-  RIDER_PROMPT_V7,
+  RIDER_MOVE_HINT_V7,
+  STAYS_BEHIND_V7,
+  TUNNEL_CONFIRM_HINT_V7,
+  noPassengerAccessibleNameV7,
+  passengerAccessibleNameV7,
+  riderLandingTextV7,
+  tunnelBoardHintV7,
+  tunnelConfirmPromptV7,
   TUNNEL_MOVED_V7,
   TUNNEL_SURFACED_V7,
   UNFLINCHING_PREVIEW_V7,
@@ -206,7 +213,28 @@ describe("Dwarf texts (RULESET_7_DWARVES.md section 16)", () => {
     expect(bombRunTooltipV7(5)).toBe(
       `Fly over an enemy within ${BOMB_RANGE_V7} tiles, bomb it for 5, and land beyond it. No reply`,
     );
-    expect(RIDER_PROMPT_V7).toBe("Take a Hammerer along?");
+    expect(STAYS_BEHIND_V7).toBe("Hammerer stays behind");
+    expect(tunnelConfirmPromptV7({ x: 4, y: 2 })).toBe("Tunnel to 4, 2?");
+    expect(TUNNEL_CONFIRM_HINT_V7).toBe("Tap the tile again or press Tunnel");
+    expect(RIDER_MOVE_HINT_V7).toBe("Tap a dot to move the Hammerer");
+    expect(riderLandingTextV7("Hammerer", { x: 3, y: 1 })).toBe(
+      "Hammerer surfaces at 3, 1",
+    );
+    expect(passengerAccessibleNameV7("Hammerer", 12, 14, true)).toBe(
+      "Passenger Hammerer, 12 of 14 HP, selected",
+    );
+    expect(noPassengerAccessibleNameV7(false)).toBe(
+      "No passenger: the Steam Mole tunnels alone",
+    );
+    expect(tunnelBoardHintV7(34, true)).toBe(
+      "Or choose any of the 34 highlighted tiles on the board",
+    );
+    expect(tunnelBoardHintV7(34, false)).toBe(
+      "Choose one of the 34 highlighted tiles on the board",
+    );
+    expect(tunnelBoardHintV7(1, false)).toBe(
+      "Choose the highlighted tile on the board",
+    );
     expect(eruptionRingTextV7(2)).toBe(
       "Eruption: 2 damage to enemies on the ground here",
     );

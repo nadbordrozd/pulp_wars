@@ -127,10 +127,66 @@ export function tunnelHintTextV7(unit: string, damage: number): string {
 export const UNDERMINES_V7 = "Undermines Field Defense";
 export const TUNNEL_FORECAST_V7 =
   "A forecast: enemies may move before the Mole surfaces";
-/** "Take a Hammerer along?" */
-export const RIDER_PROMPT_V7 = `Take a ${HAMMERER()} along?`;
+/**
+ * The Tunnel prompt lists at most this many destinations (bead
+ * pulp_wars-78i.9): the ones that would erupt on the most, as chips; every
+ * destination is picked on the board, where all of them are highlighted.
+ */
+export const TUNNEL_PICK_CHIP_LIMIT_V7 = 4;
+/**
+ * The board hint under the Tunnel prompt: "Or choose any of the 34
+ * highlighted tiles on the board" beside chips, "Choose one of …" without.
+ */
+export function tunnelBoardHintV7(tiles: number, withChips: boolean): string {
+  const which =
+    tiles === 1 ? "the highlighted tile" : `the ${tiles} highlighted tiles`;
+  if (tiles === 1)
+    return `${withChips ? "Or choose" : "Choose"} ${which} on the board`;
+  return withChips
+    ? `Or choose any of ${which} on the board`
+    : `Choose one of ${which} on the board`;
+}
 export const TUNNEL_ALONE_V7 = "Tunnel alone";
-export const RIDER_PICK_V7 = `Choose where the ${HAMMERER()} surfaces`;
+/**
+ * The passenger-first Tunnel (bead pulp_wars-78i.9): the dock's passenger
+ * control, the board badges of the Hammerers that can ride, and the
+ * confirmation of a chosen destination.
+ */
+export const TUNNEL_PASSENGER_V7 = "Passenger";
+export const TUNNEL_NO_PASSENGER_V7 = "None";
+export const RIDE_BADGE_V7 = "Ride";
+export const RIDING_BADGE_V7 = "Riding";
+/** "Hammerer stays behind": no tile next to the destination is free. */
+export const STAYS_BEHIND_V7 = `${HAMMERER()} stays behind`;
+/** "Tunnel to 4, 2?" */
+export function tunnelConfirmPromptV7(to: {
+  readonly x: number;
+  readonly y: number;
+}): string {
+  return `Tunnel to ${to.x}, ${to.y}?`;
+}
+export const TUNNEL_CONFIRM_HINT_V7 = `Tap the tile again or press ${TUNNEL_LABEL_V7}`;
+export const RIDER_MOVE_HINT_V7 = `Tap a dot to move the ${HAMMERER()}`;
+/** "Hammerer surfaces at 3, 1". */
+export function riderLandingTextV7(
+  label: string,
+  at: { readonly x: number; readonly y: number },
+): string {
+  return `${label} surfaces at ${at.x}, ${at.y}`;
+}
+/** "Passenger Hammerer, 12 of 14 HP, selected". */
+export function passengerAccessibleNameV7(
+  label: string,
+  hp: number,
+  maxHp: number,
+  selected: boolean,
+): string {
+  return `${TUNNEL_PASSENGER_V7} ${label}, ${hp} of ${maxHp} HP${selected ? ", selected" : ""}`;
+}
+/** "No passenger: the Mole tunnels alone, selected". */
+export function noPassengerAccessibleNameV7(selected: boolean): string {
+  return `No passenger: the ${MOLE()} tunnels alone${selected ? ", selected" : ""}`;
+}
 export const TUNNEL_SURFACED_V7 = "It surfaced this turn";
 export const TUNNEL_MOVED_V7 = "It moved this turn";
 export const TUNNEL_NO_TILE_V7 = `No free tile within ${TUNNEL_RANGE_V7}`;

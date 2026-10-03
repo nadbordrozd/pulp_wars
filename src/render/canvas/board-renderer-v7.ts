@@ -123,6 +123,7 @@ import {
   dwarfMoundEntriesV7,
   dwarfPickTargetsV7,
   dwarfUnitMarkersV7,
+  TUNNEL_TETHER_LINK_V7,
   type DwarfMoundMarkerV7,
   type DwarfPickV7,
   type DwarfUnitMarkersV7,
@@ -134,9 +135,10 @@ import {
   drawDwarfBadgeV7,
   drawEruptionRingV7,
   drawMoundChipV7,
+  drawTunnelTetherV7,
   type DwarfBoardArtV7,
 } from "./dwarf-canvas-v7";
-import { matchHasDwarfSeatV7 } from "../dwarf-presentation-v7";
+import { STAYS_BEHIND_V7, matchHasDwarfSeatV7 } from "../dwarf-presentation-v7";
 import {
   SHATTERS_PREVIEW_V7,
   matchHasIceFolkSeatV7,
@@ -219,6 +221,7 @@ import {
   drawDirectedPieceChromeV7,
   drawDirectedTerritoryBoundaryV7,
   drawDirectedUnitBaseV7,
+  directedUnitShadowGeometryV7,
   type BoardDirectionRuntimeV7,
 } from "./visual-direction-v7";
 
@@ -306,14 +309,17 @@ export interface MapCommandTargetV7 {
     | "THROW_BOLAS"
     | "COLD_SNAP"
     /**
-     * The Dwarf revision: a Tunnel destination (TUNNEL dispatches the
-     * Mole alone; TUNNEL_DESTINATION, with a Hammerer next to the Mole,
-     * moves on to the rider prompt), a rider tile (TUNNEL_RIDER), a bomb
-     * target (BOMB_TARGET moves on to the landing tiles), a landing
-     * (BOMB_RUN) and an Assemble tile.
+     * The Dwarf revision: a Tunnel destination (TUNNEL digs at once, the
+     * Mole having no Hammerer that could ride; TUNNEL_DESTINATION is
+     * chosen first, then a second choice digs it), a Hammerer that can
+     * ride (TUNNEL_PASSENGER seats or unseats it), another landing of the
+     * seated Hammerer next to the chosen destination (TUNNEL_RIDER, a
+     * dot), a bomb target (BOMB_TARGET moves on to the landing tiles), a
+     * landing (BOMB_RUN) and an Assemble tile.
      */
     | "TUNNEL"
     | "TUNNEL_DESTINATION"
+    | "TUNNEL_PASSENGER"
     | "TUNNEL_RIDER"
     | "BOMB_TARGET"
     | "BOMB_RUN"
@@ -396,6 +402,20 @@ export interface MapCommandTargetV7 {
       readonly lethal: boolean;
     }[];
     readonly undermines: readonly CoordV7[];
+  };
+  /**
+   * Bead pulp_wars-78i.9: a Tunnel destination's ghosts, drawn while it is
+   * focused or chosen: the Mole on the destination and the seated
+   * Hammerer on its landing ("Hammerer stays behind" when no tile is
+   * free).
+   */
+  readonly tunnel?: {
+    readonly moleUnitId: number;
+    readonly riderUnitId: number | null;
+    readonly landing: CoordV7 | null;
+    readonly staysBehind: boolean;
+    /** The destination chosen in the dock or on the board. */
+    readonly chosen: boolean;
   };
   /**
    * The Dwarf revision: where a Steam Cannon's shot knocks its target back
@@ -1455,6 +1475,85 @@ export function drawBoardV7(input: {
     entry: BoardRenderPlanEntryV7,
   ): ChibiResolutionV7 | null => resolveChibiEntry(entry)?.resolution ?? null;
   const sceneAlpha = input.sceneAlpha ?? 1;
+  /**
+   * Bead pulp_wars-78i.9: the ghosts of the focused Tunnel destination (or
+   * of the chosen one): the Mole on it and the seated Hammerer on its
+   * landing, each drawn from its unit's own art at half strength, or the
+   * label "Hammerer stays behind" when no tile next to it is free.
+   */
+  const drawTunnelGhosts = (
+    placer: PreviewLabelPlacerV7,
+    defer: (draw: () => void) => void,
+  ): void => {
+    const focus = input.previewFocus ?? null;
+    const destinations = input.plan.targets.filter(
+      (target) => target.tunnel !== undefined,
+    );
+    const shown =
+      (focus === null
+        ? undefined
+        : destinations.find((target) => same(target.at, focus))) ??
+      destinations.find((target) => target.tunnel?.chosen === true);
+    const tunnel = shown?.tunnel;
+    if (shown === undefined || tunnel === undefined) return;
+    const ghost = (unitId: number, at: CoordV7): void => {
+      const source = input.plan.entries.find(
+        (entry) => entry.kind === "UNIT" && entry.key === `unit:${unitId}`,
+      );
+      if (source === undefined || source.assetId === undefined) return;
+      const x = camera.offsetX + at.x * TILE_WIDTH * camera.zoom;
+      const y = camera.offsetY + at.y * TILE_HEIGHT * camera.zoom;
+      const chibi = resolveChibiEntry({ ...source, at })?.resolution ?? null;
+      const ready = chibi?.kind === "READY" ? chibi : null;
+      const image =
+        ready?.image ??
+        (chibi === null || chibi.kind === "MISSING"
+          ? input.images.resolve(source.assetId)
+          : null);
+      if (image === null || image === undefined) return;
+      const rect =
+        ready === null
+          ? anchoredDestinationRect({ x, y }, camera.zoom, geometryFor(source))
+          : chibiDestinationRect(
+              { x, y },
+              camera,
+              ready.asset,
+              devicePixelRatio,
+            );
+      context.save();
+      context.globalAlpha = TUNNEL_GHOST_ALPHA_V7 * sceneAlpha;
+      context.imageSmoothingEnabled = ready?.smoothing ?? true;
+      context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+      context.restore();
+    };
+    ghost(tunnel.moleUnitId, shown.at);
+    if (tunnel.riderUnitId !== null && tunnel.landing !== null)
+      ghost(tunnel.riderUnitId, tunnel.landing);
+    if (tunnel.staysBehind) {
+      const x = camera.offsetX + shown.at.x * TILE_WIDTH * camera.zoom;
+      const y = camera.offsetY + shown.at.y * TILE_HEIGHT * camera.zoom;
+      defer(() => {
+        drawPreviewTextStackV7(
+          context,
+          x,
+          y,
+          camera.zoom,
+          [
+            [
+              {
+                text: STAYS_BEHIND_V7,
+                fill: "#4d3500f2",
+                color: "#ffe9a8",
+                lineBox: 1.6,
+                baseline: 1.2,
+              },
+            ],
+          ],
+          placer,
+        );
+      });
+    }
+  };
   context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
   if (input.clear !== false) {
     context.clearRect(0, 0, viewport.width, viewport.height);
@@ -1990,34 +2089,50 @@ export function drawBoardV7(input: {
                     devicePixelRatio,
                   );
           let alpha = 1;
-          // The Dwarf revision: the Dig In earthwork stays on the ground
-          // (it never jumps or lifts with the sprite).
-          const groundRect = rect;
-          const earthworkScale = chibiMasterScale(camera);
+          // Bead pulp_wars-jg1: the shadow and the ready ring sit under the
+          // unit's own measured feet, grown with a Big or Alpha sprite
+          // (which grows about its canvas bottom, below).
+          const growth =
+            chibiReady === null
+              ? 1
+              : growthSpriteScaleV7(entry.growthStage, chibiReady.asset.width);
+          const groundRect =
+            growth === 1
+              ? rect
+              : {
+                  x: rect.x - (rect.width * (growth - 1)) / 2,
+                  y: rect.y - rect.height * (growth - 1),
+                  width: rect.width * growth,
+                  height: rect.height * growth,
+                };
+          // The Dwarf revision: the Dig In earthwork stays on the ground (it
+          // never jumps or lifts with the sprite) and, since bead
+          // pulp_wars-78i.9, stands on the same measured shadow anchor as
+          // the shadow and the ready ring.
+          const digIn =
+            entry.kind === "UNIT" && entry.dwarf?.dugIn === true
+              ? {
+                  ground: directedUnitShadowGeometryV7(
+                    entry,
+                    groundRect,
+                    chibiReady?.asset.id,
+                  ).shadow,
+                  pixelScale:
+                    chibiReady === null
+                      ? chibiMasterScale(camera)
+                      : groundRect.width / chibiReady.asset.width,
+                }
+              : null;
           if (
             direction !== undefined &&
             entry.kind === "UNIT" &&
             chibiReady !== null
           ) {
-            // Bead pulp_wars-jg1: the shadow and the ready ring sit under
-            // the unit's own measured feet, grown with a Big or Alpha
-            // sprite (which grows about its canvas bottom, below).
-            const growth = growthSpriteScaleV7(
-              entry.growthStage,
-              chibiReady.asset.width,
-            );
             drawDirectedUnitBaseV7(
               context,
               direction,
               entry,
-              growth === 1
-                ? rect
-                : {
-                    x: rect.x - (rect.width * (growth - 1)) / 2,
-                    y: rect.y - rect.height * (growth - 1),
-                    width: rect.width * growth,
-                    height: rect.height * growth,
-                  },
+              groundRect,
               camera.zoom,
               chibiReady.asset.id,
             );
@@ -2124,14 +2239,14 @@ export function drawBoardV7(input: {
                 context.restore();
               }
           }
-          // The Dwarf revision (section 8): a dug-in unit stands inside a
-          // low ring of earth: the bank behind it before the sprite.
-          if (entry.kind === "UNIT" && entry.dwarf?.dugIn === true)
+          // The Dwarf revision (section 8): a dug-in unit stands behind a
+          // low sandbag wall: the heaps of dug earth behind it first.
+          if (digIn !== null)
             drawDigInEarthworkV7(
               context,
               input.dwarfArt,
-              groundRect,
-              earthworkScale,
+              digIn.ground,
+              digIn.pixelScale,
               "back",
             );
           context.save();
@@ -2166,12 +2281,12 @@ export function drawBoardV7(input: {
             );
           context.restore();
           // The Dwarf revision: the sandbags in front of a dug-in unit.
-          if (entry.kind === "UNIT" && entry.dwarf?.dugIn === true)
+          if (digIn !== null)
             drawDigInEarthworkV7(
               context,
               input.dwarfArt,
-              groundRect,
-              earthworkScale,
+              digIn.ground,
+              digIn.pixelScale,
               "front",
             );
           // The Ice Folk revision (section 13.1): a Frozen unit is cased in
@@ -2771,7 +2886,8 @@ export function drawBoardV7(input: {
     (entry) =>
       entry.kind === "LINK" &&
       entry.linkTo !== undefined &&
-      entry.label !== "THRALL_LINK",
+      entry.label !== "THRALL_LINK" &&
+      entry.label !== TUNNEL_TETHER_LINK_V7,
   );
   if (publicLinks.length > 0) {
     context.save();
@@ -2795,6 +2911,27 @@ export function drawBoardV7(input: {
       entry.linkTo !== undefined
     )
       drawThrallLinkV7(
+        context,
+        {
+          x: camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
+          y: camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom,
+        },
+        {
+          x: camera.offsetX + entry.linkTo.x * TILE_WIDTH * camera.zoom,
+          y: camera.offsetY + entry.linkTo.y * TILE_HEIGHT * camera.zoom,
+        },
+        camera.zoom,
+        input.highContrast ?? false,
+      );
+  // Bead pulp_wars-78i.9: the rope from a seated Tunnel passenger to its
+  // Mole, over the pieces.
+  for (const entry of input.plan.entries)
+    if (
+      entry.kind === "LINK" &&
+      entry.label === TUNNEL_TETHER_LINK_V7 &&
+      entry.linkTo !== undefined
+    )
+      drawTunnelTetherV7(
         context,
         {
           x: camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
@@ -2919,6 +3056,7 @@ export function drawBoardV7(input: {
       defer,
     );
   }
+  drawTunnelGhosts(placer, defer);
   for (const draw of labels) draw();
   for (const paint of paints) paint();
   const statusPulse = input.statusPulse;
@@ -3079,6 +3217,9 @@ function targetPriority(family: MapCommandTargetV7["family"]): number {
   return 1;
 }
 
+/** Bead pulp_wars-78i.9: the strength of a Tunnel destination's ghosts. */
+export const TUNNEL_GHOST_ALPHA_V7 = 0.62;
+
 /** The Martian revision: the outline of a machine's Launch tile. */
 export const LAUNCH_TARGET_STROKE_V7 = "#c7e7f5";
 
@@ -3104,6 +3245,7 @@ function targetStroke(
   if (
     family === "TUNNEL" ||
     family === "TUNNEL_DESTINATION" ||
+    family === "TUNNEL_PASSENGER" ||
     family === "TUNNEL_RIDER"
   )
     return "#d8b58a";
@@ -3158,6 +3300,7 @@ function drawMapTarget(
 ): void {
   const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
   const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
+  const family = entry.target?.family;
   context.save();
   context.lineWidth = 4 * camera.zoom;
   // The Martian revision: a Launch tile is dotted in the pale glass blue.
@@ -3167,8 +3310,27 @@ function drawMapTarget(
     : targetStroke(entry.target?.family);
   const [dash, gap] = launch ? [3, 5] : targetDash(entry.target?.family);
   context.setLineDash([dash * camera.zoom, gap * camera.zoom]);
-  for (const edge of entry.targetEdges ?? TILE_EDGES)
-    strokeTileEdge(context, camera, entry.at, edge);
+  if (family === "TUNNEL_RIDER") {
+    // Bead pulp_wars-78i.9: another landing of the seated Hammerer is a
+    // small dot, not a tile: the destinations stay the outlined tiles.
+    context.setLineDash([]);
+    context.fillStyle = targetStroke(family);
+    context.strokeStyle = "#171722";
+    context.lineWidth = 2 * camera.zoom;
+    context.beginPath();
+    context.arc(x, y + 6 * camera.zoom, 9 * camera.zoom, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+  } else if (family === "TUNNEL_PASSENGER") {
+    // A Hammerer that can ride wears its "Ride" badge alone (below); its
+    // own tile keeps the unit in view.
+  } else {
+    // A chosen Tunnel destination is a whole solid tile.
+    const chosen = entry.target?.tunnel?.chosen === true;
+    if (chosen) context.setLineDash([]);
+    for (const edge of chosen ? TILE_EDGES : (entry.targetEdges ?? TILE_EDGES))
+      strokeTileEdge(context, camera, entry.at, edge);
+  }
   context.restore();
   const target = entry.target;
   const labelBox = (text: string): PreviewTextBoxV7 => ({
@@ -3528,9 +3690,11 @@ function drawDwarfFocusPreviewV7(
     context.stroke();
     context.restore();
   }
-  const tunnel = pick(
-    plan.targets.filter((target) => target.eruption !== undefined),
-  );
+  // The focused Tunnel destination's forecast, else the chosen one's
+  // (bead pulp_wars-78i.9).
+  const tunnel =
+    pick(plan.targets.filter((target) => target.eruption !== undefined)) ??
+    plan.targets.find((target) => target.tunnel?.chosen === true);
   const eruption = tunnel?.eruption;
   if (eruption !== undefined) {
     drawEruptionRingV7(

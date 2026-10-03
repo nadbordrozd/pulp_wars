@@ -314,12 +314,19 @@ import {
   ENGINEER_SUPPORT_UNLOCK_TEXT_V7,
   REPAIR_CHIP_V7,
   REPAIR_TOOLTIP_V7,
-  RIDER_PICK_V7,
-  RIDER_PROMPT_V7,
+  RIDER_MOVE_HINT_V7,
+  STAYS_BEHIND_V7,
+  TUNNEL_CONFIRM_HINT_V7,
+  TUNNEL_NO_PASSENGER_V7,
+  TUNNEL_PASSENGER_V7,
+  noPassengerAccessibleNameV7,
+  passengerAccessibleNameV7,
+  riderLandingTextV7,
+  tunnelConfirmPromptV7,
   RIDER_SURFACED_V7,
-  TUNNEL_ALONE_V7,
   TUNNEL_FORECAST_V7,
   TUNNEL_LABEL_V7,
+  TUNNEL_PICK_CHIP_LIMIT_V7,
   TUNNEL_PICK_V7,
   assembleSummaryV7,
   assembleTooltipV7,
@@ -344,11 +351,18 @@ import {
   matchHasDwarfSeatV7,
   moundAtV7,
   moundInfoLinesV7,
+  tunnelBoardHintV7,
   tunnelPreviewLinesV7,
   tunnelTooltipV7,
   viewerBombDamageV7,
   viewerEruptionDamageV7,
 } from "../dwarf-presentation-v7";
+import {
+  tunnelCommandsV7,
+  tunnelDestinationsV7,
+  tunnelOutcomeV7,
+  tunnelRidersV7,
+} from "../dwarf-tunnel-v7";
 import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
@@ -3427,17 +3441,35 @@ export class Ruleset7DomAppView {
       this.#queueBoardFocus();
       return;
     }
-    // The Dwarf revision: choosing a Tunnel destination with a Hammerer next
-    // to the Mole moves on to the rider prompt, and choosing a bomb target
-    // moves on to its landing tiles; nothing is dispatched yet.
-    if (target.family === "TUNNEL_DESTINATION" && command.kind === "TUNNEL") {
-      this.#dwarfPick = {
-        kind: "TUNNEL",
-        unitId: command.unitId,
-        to: command.to,
-        riderUnitId: null,
-      };
-      this.#notice = `${RIDER_PROMPT_V7} ${RIDER_PICK_V7}, or ${TUNNEL_ALONE_V7.toLowerCase()}.`;
+    // The Dwarf revision (passenger first, bead pulp_wars-78i.9): a
+    // Hammerer's badge seats or unseats it, a dot moves the seated
+    // Hammerer's landing, and a destination is chosen first and dug when
+    // chosen again; choosing a bomb target moves on to its landing tiles.
+    const tunnelPick =
+      this.#dwarfPick?.kind === "TUNNEL" ? this.#dwarfPick : null;
+    if (
+      tunnelPick !== null &&
+      command.kind === "TUNNEL" &&
+      (target.family === "TUNNEL_PASSENGER" ||
+        target.family === "TUNNEL_RIDER" ||
+        target.family === "TUNNEL_DESTINATION")
+    ) {
+      if (target.family === "TUNNEL_PASSENGER") {
+        const id = command.rider?.unitId ?? null;
+        this.#dwarfPick = {
+          ...tunnelPick,
+          riderUnitId: tunnelPick.riderUnitId === id ? null : id,
+          riderTo: null,
+        };
+      } else if (target.family === "TUNNEL_RIDER")
+        this.#dwarfPick = { ...tunnelPick, riderTo: command.rider?.to ?? null };
+      else if (tunnelPick.to !== null && same(tunnelPick.to, command.to)) {
+        void this.#dispatch(command);
+        return;
+      } else {
+        this.#dwarfPick = { ...tunnelPick, to: command.to, riderTo: null };
+        this.#notice = `${tunnelConfirmPromptV7(command.to)} ${TUNNEL_CONFIRM_HINT_V7}.`;
+      }
       this.#render();
       this.#queueBoardFocus();
       return;
@@ -6160,7 +6192,21 @@ export class Ruleset7DomAppView {
     if (this.#localBusy()) return;
     this.#dwarfPick =
       kind === "TUNNEL"
-        ? { kind, unitId, to: null, riderUnitId: null }
+        ? {
+            kind,
+            unitId,
+            to: null,
+            // The best Hammerer that can ride is seated at once.
+            riderUnitId:
+              this.#snapshot.view === null
+                ? null
+                : (tunnelRidersV7(
+                    this.#snapshot.view,
+                    this.#snapshot.offeredCommands,
+                    unitId,
+                  )[0]?.unitId ?? null),
+            riderTo: null,
+          }
         : kind === "BOMB_RUN"
           ? { kind, unitId, targetUnitId: null }
           : { kind, unitId };
@@ -6178,14 +6224,15 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * Steps back out of the aiming: from the rider prompt to the
-   * destinations, from the landings to the targets (`stepBack`), or leaves
-   * it and returns focus to the ability's button.
+   * Steps back out of the aiming: from a chosen Tunnel destination to the
+   * destinations (the passenger stays seated), from the landings to the
+   * targets (`stepBack`), or leaves it and returns focus to the ability's
+   * button.
    */
   #cancelDwarfPick(stepBack: boolean): void {
     const pick = this.#dwarfPick;
     if (stepBack && pick?.kind === "TUNNEL" && pick.to !== null) {
-      this.#dwarfPick = { ...pick, to: null, riderUnitId: null };
+      this.#dwarfPick = { ...pick, to: null, riderTo: null };
       this.#notice = `${TUNNEL_PICK_V7}.`;
       this.#render();
       return;
@@ -6205,10 +6252,11 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The Dwarf aiming panel in the dock: the prompt, every legal choice as a
-   * button with its preview (a keyboard path beside the board targets), the
-   * rider prompt ("Take a Hammerer along?" with "Tunnel alone"), Back and
-   * Cancel. Null (and the aiming ends) when nothing is offered any more.
+   * The Dwarf aiming panel in the dock: the prompt, the legal choices as
+   * buttons with their previews (a keyboard path beside the board targets;
+   * for a Tunnel the passenger control and the best few destinations, then
+   * the chosen tunnel and its confirmation), Back and Cancel. Null (and the
+   * aiming ends) when nothing is offered any more.
    */
   #dwarfPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
     const pick = this.#dwarfPick;
@@ -6258,131 +6306,182 @@ export class Ruleset7DomAppView {
     };
     let prompt: string;
     let detail: string | null = null;
+    let hint: string | null = null;
     let back = false;
+    // The Tunnel's passenger control and its confirmation.
+    let passengers: HTMLElement | null = null;
+    let confirm: HTMLButtonElement | null = null;
     if (pick.kind === "TUNNEL") {
-      const tunnels = commands.filter(
-        (command): command is Extract<CommandV7, { kind: "TUNNEL" }> =>
-          command.kind === "TUNNEL",
-      );
+      // Passenger first (bead pulp_wars-78i.9): the Hammerers that can ride
+      // as a compact control mirroring the board's badges, then the
+      // destination; with one chosen, the whole tunnel and its confirmation.
+      const offered = this.#snapshot.offeredCommands;
+      const riders = tunnelRidersV7(view, offered, unitId);
+      if (riders.length > 0) {
+        passengers = el(this.#document, "div", "v7-dwarf-passengers");
+        passengers.setAttribute("role", "group");
+        passengers.setAttribute("aria-label", TUNNEL_PASSENGER_V7);
+        passengers.append(
+          text(
+            this.#document,
+            "span",
+            `${TUNNEL_PASSENGER_V7}:`,
+            "v7-dwarf-passengers-label",
+          ),
+        );
+        const seat = (riderUnitId: UnitId | null): void => {
+          if (pick.riderUnitId === riderUnitId) return;
+          this.#dwarfPick = { ...pick, riderUnitId, riderTo: null };
+          this.#pendingFocusAction =
+            riderUnitId === null
+              ? "tunnel-passenger-none"
+              : `tunnel-passenger-${riderUnitId}`;
+          this.#render();
+        };
+        for (const rider of riders) {
+          const selected = pick.riderUnitId === rider.unitId;
+          const control = button(
+            this.#document,
+            "",
+            `tunnel-passenger-${rider.unitId}`,
+            "v7-dwarf-passenger",
+          );
+          const unit = unitById(rider.unitId);
+          const portrait =
+            unit === undefined
+              ? null
+              : this.#chibiArt(
+                  portraitSubjectV7(unit.role, view.viewer.faction),
+                  CHIBI_DOM_BOXES_V7.passenger,
+                  this.#viewerColour(),
+                );
+          control.append(
+            portrait?.element ??
+              uiIconV7(this.#document, "drill", "v7-ui-icon v7-command-icon"),
+            text(
+              this.#document,
+              "span",
+              `${rider.hp}/${rider.maxHp}`,
+              "v7-dwarf-passenger-hp",
+            ),
+          );
+          control.setAttribute("aria-pressed", String(selected));
+          control.setAttribute(
+            "aria-label",
+            passengerAccessibleNameV7(
+              rider.label,
+              rider.hp,
+              rider.maxHp,
+              selected,
+            ),
+          );
+          control.title = `${rider.label} at ${rider.at.x}, ${rider.at.y}`;
+          control.disabled = this.#localBusy();
+          control.onclick = () => seat(rider.unitId);
+          passengers.append(control);
+        }
+        const none = button(
+          this.#document,
+          TUNNEL_NO_PASSENGER_V7,
+          "tunnel-passenger-none",
+          "v7-dwarf-passenger",
+        );
+        none.setAttribute("aria-pressed", String(pick.riderUnitId === null));
+        none.setAttribute(
+          "aria-label",
+          noPassengerAccessibleNameV7(pick.riderUnitId === null),
+        );
+        none.disabled = this.#localBusy();
+        none.onclick = () => seat(null);
+        passengers.append(none);
+      }
+      const destinations = tunnelDestinationsV7(offered, unitId);
+      panel.dataset.destinations = String(destinations.length);
       if (pick.to === null) {
         prompt = TUNNEL_PICK_V7;
-        detail = TUNNEL_FORECAST_V7;
-        // The destinations that would erupt on someone come first, with
-        // their forecast damage on the chip.
-        const destinations = tunnels.flatMap((command) => {
-          if (command.rider !== null) return [];
-          const preview = previewTunnelV7(view, command);
-          return preview === null ? [] : [{ command, preview }];
-        });
-        const hit = (entry: (typeof destinations)[number]): number =>
-          entry.preview.eruptionTargets.reduce(
+        // A Mole reaches dozens of tiles, so only the destinations that
+        // would erupt on the most are chips, with their forecast damage;
+        // every destination is highlighted and picked on the board.
+        const scored = destinations.flatMap((to) => {
+          const outcome = tunnelOutcomeV7(view, offered, pick, to);
+          const alone = tunnelCommandsV7(offered, unitId).find(
+            (command) => command.rider === null && same(command.to, to),
+          );
+          const preview =
+            alone === undefined ? null : previewTunnelV7(view, alone);
+          if (outcome === null || preview === null) return [];
+          const hit = preview.eruptionTargets.reduce(
             (sum, target) => sum + target.damage + target.shieldDamage,
             0,
           );
-        destinations.sort((left, right) => hit(right) - hit(left));
-        for (const { command, preview } of destinations) {
-          const withRider = tunnels.some(
-            (candidate) =>
-              candidate.rider !== null && same(candidate.to, command.to),
-          );
-          const damage = hit({ command, preview });
+          return hit > 0 ? [{ to, outcome, preview, hit }] : [];
+        });
+        const best = scored
+          .sort((left, right) => right.hit - left.hit)
+          .slice(0, TUNNEL_PICK_CHIP_LIMIT_V7);
+        hint = tunnelBoardHintV7(destinations.length, best.length > 0);
+        detail = best.length > 0 ? TUNNEL_FORECAST_V7 : null;
+        for (const { to, outcome, preview, hit } of best)
           choice(
-            `tunnel-${command.to.x}-${command.to.y}`,
-            `${command.to.x}, ${command.to.y}${damage > 0 ? ` · −${damage}` : ""}`,
+            `tunnel-${to.x}-${to.y}`,
+            `${to.x}, ${to.y} · −${hit}`,
             tunnelPreviewLinesV7(view, preview),
             () => {
-              if (!withRider) {
-                void this.#dispatch(command);
+              if (riders.length === 0) {
+                void this.#dispatch(outcome.command);
                 return;
               }
-              this.#dwarfPick = {
-                kind: "TUNNEL",
-                unitId,
-                to: command.to,
-                riderUnitId: null,
-              };
-              this.#notice = `${RIDER_PROMPT_V7} ${RIDER_PICK_V7}, or ${TUNNEL_ALONE_V7.toLowerCase()}.`;
-              this.#pendingFocusAction = null;
+              this.#dwarfPick = { ...pick, to, riderTo: null };
+              this.#notice = `${tunnelConfirmPromptV7(to)} ${TUNNEL_CONFIRM_HINT_V7}.`;
+              this.#pendingFocusAction = "tunnel-confirm";
               this.#render();
-              this.#queueBoardFocus();
             },
           );
-        }
-        // One choice per destination: the forecast is in each chip.
+        // The forecast is in each chip.
         summaries.length = 0;
       } else {
         const to = pick.to;
         back = true;
-        prompt = RIDER_PROMPT_V7;
-        const alone = tunnels.find(
+        prompt = tunnelConfirmPromptV7(to);
+        const outcome = tunnelOutcomeV7(view, offered, pick, to);
+        const alone = tunnelCommandsV7(offered, unitId).find(
           (command) => command.rider === null && same(command.to, to),
         );
-        const riders = [
-          ...new Set(
-            tunnels.flatMap((command) =>
-              command.rider !== null && same(command.to, to)
-                ? [command.rider.unitId]
-                : [],
-            ),
-          ),
-        ];
-        const riderUnitId = pick.riderUnitId ?? riders[0] ?? null;
-        for (const command of tunnels) {
-          if (
-            command.rider === null ||
-            !same(command.to, to) ||
-            command.rider.unitId !== riderUnitId
-          )
-            continue;
-          const riderTo = command.rider.to;
-          choice(
-            `tunnel-rider-${riderTo.x}-${riderTo.y}`,
-            `${nameOf(command.rider.unitId)} to ${riderTo.x}, ${riderTo.y}`,
-            [`It surfaces next to the Mole at ${to.x}, ${to.y}`],
-            () => void this.#dispatch(command),
-          );
-        }
-        // More than one Hammerer next to the Mole: choose which rides.
-        if (riders.length > 1)
-          for (const id of riders) {
-            if (id === riderUnitId) continue;
-            const rider = unitById(id);
-            choice(
-              `tunnel-rider-unit-${id}`,
-              `Take the ${nameOf(id)} at ${rider?.at.x ?? 0}, ${rider?.at.y ?? 0}`,
-              [],
-              () => {
-                this.#dwarfPick = {
-                  kind: "TUNNEL",
-                  unitId,
-                  to,
-                  riderUnitId: id,
-                };
-                this.#render();
-              },
-            );
-          }
-        if (alone !== undefined) {
-          const control = button(
-            this.#document,
-            TUNNEL_ALONE_V7,
-            "tunnel-alone",
-            "v7-martian-choice-button",
-          );
-          control.setAttribute(
-            "aria-label",
-            `${TUNNEL_ALONE_V7}: the Mole surfaces at ${to.x}, ${to.y}.`,
-          );
-          control.disabled = this.#localBusy();
-          control.onclick = () => void this.#dispatch(alone);
-          lines.append(control);
-        }
         const preview =
           alone === undefined ? null : previewTunnelV7(view, alone);
-        detail =
-          preview === null
-            ? null
-            : tunnelPreviewLinesV7(view, preview).join(" · ");
+        const seated =
+          riders.find((rider) => rider.unitId === pick.riderUnitId) ?? null;
+        detail = [
+          ...(preview === null ? [] : tunnelPreviewLinesV7(view, preview)),
+          ...(seated === null || outcome === null
+            ? []
+            : [
+                outcome.landing === null
+                  ? STAYS_BEHIND_V7
+                  : riderLandingTextV7(seated.label, outcome.landing),
+              ]),
+        ].join(" · ");
+        hint = [
+          TUNNEL_CONFIRM_HINT_V7,
+          ...(outcome !== null && outcome.otherLandings.length > 0
+            ? [RIDER_MOVE_HINT_V7]
+            : []),
+        ].join(". ");
+        if (outcome !== null) {
+          confirm = button(
+            this.#document,
+            TUNNEL_LABEL_V7,
+            "tunnel-confirm",
+            "primary-action v7-dwarf-confirm",
+          );
+          confirm.setAttribute(
+            "aria-label",
+            `${TUNNEL_LABEL_V7} to ${to.x}, ${to.y}${detail === "" ? "" : `. ${detail}`}.`,
+          );
+          confirm.disabled = this.#localBusy();
+          const command = outcome.command;
+          confirm.onclick = () => void this.#dispatch(command);
+        }
         summaries.length = 0;
       }
     } else if (pick.kind === "BOMB_RUN") {
@@ -6456,13 +6555,19 @@ export class Ruleset7DomAppView {
     }
     panel.setAttribute("aria-label", prompt);
     panel.append(text(this.#document, "p", prompt, "v7-kaboom-summary"));
+    if (passengers !== null) panel.append(passengers);
     if (lines.childElementCount > 0) panel.append(lines);
+    if (hint !== null)
+      panel.append(
+        text(this.#document, "p", hint, "v7-martian-detail v7-dwarf-pick-hint"),
+      );
     const shown =
       detail ??
       (summaries.length === 1 && summaries[0] !== "" ? summaries[0] : null);
     if (shown !== null && shown !== undefined && shown !== "")
       panel.append(text(this.#document, "p", shown, "v7-martian-detail"));
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    if (confirm !== null) buttons.append(confirm);
     if (back) {
       const backButton = button(
         this.#document,

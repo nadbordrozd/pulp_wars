@@ -157,7 +157,7 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "ENGINEER_SUPPORT" }
   /** The Dwarf revision: Engineers Assemble Gunners (`MARKSMANSHIP`). */
   | { readonly kind: "ASSEMBLE" }
-  /** The Dwarf revision: Dive, a bomb deals 5 (the Dwarf `RAIDING`). */
+  /** The Dwarf revision: Dive, a bomb deals 6 instead of 5 (the Dwarf `RAIDING`). */
   | { readonly kind: "DIVE" }
   /** The Dwarf revision: Dig In (the Dwarf `FORTIFICATION`). */
   | { readonly kind: "DIG_IN" }

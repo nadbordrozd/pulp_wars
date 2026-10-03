@@ -2171,11 +2171,18 @@ The browser UI (`pulp_wars-78i.6`) must, at requirement level:
 - **Tunnel flow:** a Mole command; choosing it highlights every offered
   destination (within 3, never water, a Rift, a unit, a mound, or a center);
   hovering one shows the eruption forecast from `previewTunnelV7` ("If they
-  stay: {unit} −{n}") and the Field Defense it will undermine; a click picks
-  the destination; **the rider prompt** follows when a fresh Hammerer stands
-  next to the Mole: "Take a Hammerer along?" with the offered rider tiles
-  highlighted next to the destination, a click on one to confirm, and "Tunnel
-  alone" as the other choice. The tunnel animates as a drill diving into the
+  stay: {unit} −{n}") and the Field Defense it will undermine. **The
+  passenger comes first** (bead `pulp_wars-78i.9`, replacing the original
+  "Take a Hammerer along?" prompt after the destination): when fresh
+  Hammerers stand next to the Mole, the best one is seated when Tunnel is
+  chosen (tied to the Mole on the board, with a passenger control in the
+  dock: each Hammerer and "None"); tapping a Hammerer seats or unseats it.
+  Hovering a destination also shows the Mole's ghost there and the seated
+  Hammerer's ghost on a default landing next to it ("Hammerer stays behind"
+  when none is free); a click chooses the destination, the other landings
+  show as dots that move the Hammerer, and a second click (or the dock's
+  Tunnel) confirms. With no fresh Hammerer next to the Mole, a click on a
+  destination tunnels at once. The tunnel animates as a drill diving into the
   ground and a dirt trail;
 - **the surfacing** at the owner's Start Turn: the ground bursts at each
   mound, a dirt ring over the eight tiles, damage numbers on the victims,
@@ -2188,8 +2195,10 @@ The browser UI (`pulp_wars-78i.6`) must, at requirement level:
   "Kills" when it does, and the blast of an exploding target; a click on a
   landing confirms. The animation is a flight over the target, a falling bomb,
   and the landing;
-- **Dig In:** a dug-in unit shows a small earthwork marker at its base (a ring
-  of piled earth and sandbags); unit info says "Dug in: +1 fortification (it
+- **Dig In:** a dug-in unit shows a small earthwork marker at its base (piled
+  earth and sandbags; since bead `pulp_wars-78i.9` a low sandbag wall in
+  front of its feet rather than a ring, which read as a second ready ring);
+  unit info says "Dug in: +1 fortification (it
   has not moved; next to your city)"; a Hammerer or Mole within 1 of an own
   center that has moved shows "Not dug in: it moved this turn" (or "arrived
   this turn"); the attack preview shows "Dug in" next to the fortification;
@@ -2226,7 +2235,7 @@ The browser UI (`pulp_wars-78i.6`) must, at requirement level:
 | Tunnel command                  | Tunnel                                                                               |
 | Tunnel tooltip                  | Dig up to 3 tiles under anything. Enemies next to the Mole take {n} when it surfaces |
 | Tunnel destination hint         | If they stay: {unit} −{n}; Undermines Field Defense                                  |
-| Rider prompt                    | Take a Hammerer along?; Tunnel alone                                                 |
+| Tunnel passenger                | Passenger; None; Hammerer stays behind; Tunnel to {x}, {y}?                          |
 | Tunnel unavailable              | It surfaced this turn; It moved this turn                                            |
 | Rider on its surfacing turn     | Just surfaced: cannot enter a city or village this turn                              |
 | Bomb Run command                | Bomb Run                                                                             |
@@ -2353,7 +2362,7 @@ sprite of its role with a Dwarf badge, and the markers below are code-drawn.
 | Faction emblem and badge                                | A hammer crossed with a cog, for the faction select, the leaderboard, and the fallback badge.                                                                                                                                                                       |
 | Technology icons                                        | Dig In (a shovel in a ring of earth) and Blasting Charges (a copper-cased drill charge, not a Goblin firework).                                                                                                                                                     |
 | Command icons                                           | Tunnel (a drill), Bomb Run (a bomb under a rotor), Assemble (a wind-up key and a cog), Repair (a wrench).                                                                                                                                                           |
-| Dig In marker                                           | A low ring of piled earth and sandbags at the unit's base: "this unit is dug in". Must read on Grass, Forest, Mountain, Snow, and a center.                                                                                                                         |
+| Dig In marker                                           | A low wall of piled earth and sandbags at the unit's base: "this unit is dug in". Must read on Grass, Forest, Mountain, Snow, and a center.                                                                                                                         |
 | Clockwork glyph                                         | A small gear on the unit info and the HP bar end: "this unit is clockwork".                                                                                                                                                                                         |
 | Effects                                                 | Tunnel (drill diving in, dirt trail); eruption (ground bursting, dirt ring over eight tiles); bomb (a falling bomb and a puff); Assemble (a key turning, steam); Repair (wrench sparks); Knockback (a slide and a puff); Undermined Field Defense (collapsing).     |
 

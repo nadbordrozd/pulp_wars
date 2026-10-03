@@ -11,10 +11,20 @@ import {
   type PlayerViewV7,
 } from "../../src/engine/index";
 import {
+  RIDE_BADGE_V7,
+  RIDING_BADGE_V7,
+} from "../../src/render/dwarf-presentation-v7";
+import {
+  DWARF_DIG_IN_WALL_SHARE_V7,
   DWARF_ERUPTION_TIMELINE_V7,
   DWARF_FLAG_ANCHORS_V7,
 } from "../../src/assets/chibi-direction-dwarf-presentation";
+import type { ChibiBoardArtV7 } from "../../src/render/canvas/chibi-art-resolver-v7";
+import { chibiCameraZoom } from "../../src/render/canvas/chibi-geometry-v7";
+import { LIVE_DIRECTION_ART_REGISTRY_V7 } from "../../src/render/canvas/live-board-look-v7";
+import { unitShadowAnchorV7 } from "../../src/render/canvas/unit-shadows-v7";
 import {
+  TUNNEL_GHOST_ALPHA_V7,
   buildBoardRenderPlanV7,
   drawBoardV7,
   type BoardRenderInteractionV7,
@@ -22,6 +32,7 @@ import {
 } from "../../src/render/canvas/board-renderer-v7";
 import {
   MOUND_CODE_ART_ID_V7,
+  TUNNEL_TETHER_LINK_V7,
   type DwarfPickV7,
 } from "../../src/render/canvas/dwarf-board-plan-v7";
 import {
@@ -39,9 +50,16 @@ import {
 } from "../../src/render/canvas/dwarf-effects-v7";
 import { flyerPresentationV7 } from "../../src/render/canvas/martian-canvas-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
-import { DIRECTION_FLAG_ANCHORS_V7 } from "../../src/render/canvas/visual-direction-v7";
 import {
+  DIRECTED_READY_RING_COLOUR_V7,
+  DIRECTION_FLAG_ANCHORS_V7,
+  LIVE_DIRECTION_V7,
+  createDirectedChibiArtV7,
+} from "../../src/render/canvas/visual-direction-v7";
+import {
+  DWARF_DIG_IN_V7,
   DWARF_UI_V7,
+  dwarfDigInFixtureV7,
   dwarfEruptionBeforeFixtureV7,
   dwarfUiFixtureV7,
 } from "../fixtures/v7-dwarf-ui";
@@ -299,11 +317,147 @@ describe("Dwarf markers (section 16.1)", () => {
     drawDigInEarthworkV7(
       context,
       undefined,
-      { x: 0, y: 0, width: 56, height: 80 },
+      { centreX: 28, centreY: 70, radiusX: 22, radiusY: 7.5 },
       1,
       "front",
     );
     expect(plain.some((call) => call[0] === "stroke")).toBe(true);
+  });
+
+  it("stands the sandbag wall on the unit's shadow anchor, inside the ready ring (bead pulp_wars-78i.9)", () => {
+    const art: ChibiBoardArtV7 = {
+      resolve: (request) => {
+        const resolved = LIVE_DIRECTION_ART_REGISTRY_V7.variants(
+          request.subject,
+        )[0];
+        return resolved === undefined
+          ? { kind: "MISSING" }
+          : {
+              kind: "READY",
+              asset: resolved,
+              image: { id: resolved.id } as unknown as CanvasImageSource,
+              density: 1,
+              smoothing: false,
+              cacheKey: resolved.id,
+            };
+      },
+    };
+    const digIn = humanView(dwarfDigInFixtureV7());
+    const dugIn = buildBoardRenderPlanV7(digIn, queryPlayerCommandsV7(digIn), {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    });
+    for (const [at, ready] of [
+      [DWARF_DIG_IN_V7.readyHammerer, true],
+      [DWARF_DIG_IN_V7.spentHammerer, false],
+      [DWARF_DIG_IN_V7.readyMole, true],
+      [DWARF_DIG_IN_V7.spentMole, false],
+    ] as const) {
+      const entry = dugIn.entries.find(
+        (candidate) =>
+          candidate.kind === "UNIT" &&
+          candidate.key.startsWith("unit:") &&
+          same(candidate.at, at),
+      );
+      if (entry === undefined) throw new Error(`${at.x},${at.y}`);
+      expect(entry.dwarf?.dugIn).toBe(true);
+      expect(entry.ready === true).toBe(ready);
+      const asset = LIVE_DIRECTION_ART_REGISTRY_V7.variants(
+        entry.artSubject ?? "UNIT:DWARF:FIGHTER",
+      )[0];
+      if (asset === undefined) throw new Error("no live asset");
+      const anchor = unitShadowAnchorV7(entry.artSubject, asset.id);
+      if (anchor?.shadow == null || anchor.ring === null)
+        throw new Error("no anchor");
+      const { context, log } = recordingContext();
+      const camera = { zoom: chibiCameraZoom(1), offsetX: 0, offsetY: 0 };
+      drawBoardV7({
+        context,
+        viewport: { width: 1600, height: 1600 },
+        devicePixelRatio: 1,
+        camera,
+        plan: { ...dugIn, entries: [entry], targets: [] },
+        images: { resolve: () => null },
+        artSet: "CHIBI",
+        chibiArt: art,
+        reducedMotion: true,
+        dwarfArt: fakeDwarfArt(),
+        direction: {
+          spec: LIVE_DIRECTION_V7,
+          art: createDirectedChibiArtV7({
+            base: art,
+            direction: LIVE_DIRECTION_V7,
+            environment: {
+              readPixels: (_image, width, height) =>
+                new Uint8ClampedArray(width * height * 4).fill(200),
+              createSurface: (pixels, width, height) =>
+                ({ pixels, width, height }) as unknown as CanvasImageSource,
+            },
+          }),
+        },
+      });
+      const sprite = log.find(
+        (call) =>
+          call[0] === "drawImage" &&
+          (call[1] as { id?: string }).id === asset.id,
+      );
+      const front = log.find(
+        (call) =>
+          call[0] === "drawImage" &&
+          (call[1] as { earthwork?: string }).earthwork === "front",
+      );
+      if (sprite === undefined || front === undefined)
+        throw new Error("not drawn");
+      const [, , spriteX, spriteY, spriteWidth] = sprite as [
+        string,
+        unknown,
+        number,
+        number,
+        number,
+      ];
+      const [, image, left, top, width, height] = front as [
+        string,
+        { width: number },
+        number,
+        number,
+        number,
+        number,
+      ];
+      // Master px of the drawn sprite; the wall is DWARF_DIG_IN_WALL_SHARE_V7
+      // of the measured shadow's width, centred on it, its foot on the
+      // shadow's front edge.
+      const scale = spriteWidth / asset.width;
+      expect(image.width).toBe(
+        Math.round(2 * anchor.shadow.radiusX * DWARF_DIG_IN_WALL_SHARE_V7),
+      );
+      expect(left + width / 2).toBeCloseTo(
+        spriteX + anchor.shadow.x * scale,
+        -0.5,
+      );
+      const foot = top + height;
+      expect(foot).toBeCloseTo(
+        spriteY + (anchor.shadow.y + anchor.shadow.radiusY) * scale,
+        -0.5,
+      );
+      // The ready ring's front arc shows below the wall, its ends beside it.
+      const ringFront = spriteY + (anchor.ring.y + anchor.ring.radiusY) * scale;
+      expect(foot).toBeLessThan(ringFront);
+      expect(width).toBeLessThan(2 * anchor.ring.radiusX * scale);
+      const rings = log.filter(
+        (call, index) =>
+          call[0] === "stroke" &&
+          log
+            .slice(0, index)
+            .some(
+              (earlier) =>
+                earlier[0] === "set" &&
+                earlier[1] === "strokeStyle" &&
+                earlier[2] === DIRECTED_READY_RING_COLOUR_V7,
+            ),
+      );
+      expect(rings.length > 0).toBe(ready);
+    }
   });
 });
 
@@ -314,58 +468,186 @@ describe("Dwarf targets and previews on the board (section 16.1)", () => {
   const aim = (selected: CoordV7, pick: DwarfPickV7) =>
     planFor(view, selected, { dwarfPick: pick });
 
-  it("aims a Tunnel: the destinations (labelled only where they erupt), then the rider prompt", () => {
-    const destinations = aim(AT.mole, {
+  it("aims a Tunnel passenger first: the seated Hammerer, the destinations with their ghosts, then the chosen one with its dots", () => {
+    const mole = id(AT.mole);
+    const rider = id(AT.rider);
+    const stage = aim(AT.mole, {
       kind: "TUNNEL",
-      unitId: id(AT.mole),
+      unitId: mole,
       to: null,
-      riderUnitId: null,
+      riderUnitId: rider,
+      riderTo: null,
     });
+    // The Hammerer that can ride wears its badge; nothing else but the
+    // destinations is a target.
+    const badge = stage.targets.find((target) => same(target.at, AT.rider));
+    expect(badge?.family).toBe("TUNNEL_PASSENGER");
+    expect(badge?.previewLabel).toBe(RIDING_BADGE_V7);
     expect(
-      destinations.targets.every(
+      stage.targets.every(
         (target) =>
-          target.family === "TUNNEL" || target.family === "TUNNEL_DESTINATION",
+          target.family === "TUNNEL_PASSENGER" ||
+          target.family === "TUNNEL_DESTINATION",
       ),
     ).toBe(true);
-    const chosen = destinations.targets.find((target) =>
+    // The rope from the seated Hammerer to the Mole.
+    expect(
+      stage.entries.find(
+        (entry) =>
+          entry.kind === "LINK" && entry.label === TUNNEL_TETHER_LINK_V7,
+      ),
+    ).toMatchObject({ at: AT.rider, linkTo: AT.mole });
+    const destination = stage.targets.find((target) =>
       same(target.at, AT.tunnelTo),
     );
-    expect(chosen?.family).toBe("TUNNEL_DESTINATION");
-    expect(chosen?.previewLabel).toBe("Erupt −6");
-    expect(chosen?.eruption?.targets.map((target) => target.at)).toEqual([
+    expect(destination?.family).toBe("TUNNEL_DESTINATION");
+    expect(destination?.previewLabel).toBe("Erupt −6");
+    expect(destination?.eruption?.targets.map((target) => target.at)).toEqual([
       AT.tunnelCatapult,
       AT.tunnelCaptain,
     ]);
-    expect(chosen?.eruption?.undermines).toEqual([AT.tunnelCaptain]);
+    expect(destination?.eruption?.undermines).toEqual([AT.tunnelCaptain]);
     expect(
-      destinations.targets.some(
+      stage.targets.some(
         (target) =>
           target.eruption?.targets.length === 0 &&
           target.previewLabel !== undefined,
       ),
     ).toBe(false);
-    const riders = aim(AT.mole, {
-      kind: "TUNNEL",
-      unitId: id(AT.mole),
-      to: AT.tunnelTo,
-      riderUnitId: null,
+    // Its ghosts: the Mole there, the Hammerer on the default landing, and
+    // the command that would be dug.
+    const landing = destination?.tunnel?.landing ?? null;
+    expect(destination?.tunnel).toMatchObject({
+      moleUnitId: mole,
+      riderUnitId: rider,
+      staysBehind: false,
+      chosen: false,
     });
-    expect(riders.targets.length).toBeGreaterThan(0);
-    for (const target of riders.targets) {
-      expect(target.family).toBe("TUNNEL_RIDER");
+    expect(landing).not.toBeNull();
+    expect(destination?.command).toEqual({
+      kind: "TUNNEL",
+      unitId: mole,
+      to: AT.tunnelTo,
+      rider: { unitId: rider, to: landing },
+    });
+    // Chosen: the other landings are dots (each the command with the rider
+    // there), and no destination sits under the Hammerer's tiles.
+    const chosen = aim(AT.mole, {
+      kind: "TUNNEL",
+      unitId: mole,
+      to: AT.tunnelTo,
+      riderUnitId: rider,
+      riderTo: null,
+    });
+    const dots = chosen.targets.filter(
+      (target) => target.family === "TUNNEL_RIDER",
+    );
+    expect(dots.length).toBeGreaterThan(0);
+    for (const dot of dots) {
       expect(
         Math.max(
-          Math.abs(target.at.x - AT.tunnelTo.x),
-          Math.abs(target.at.y - AT.tunnelTo.y),
+          Math.abs(dot.at.x - AT.tunnelTo.x),
+          Math.abs(dot.at.y - AT.tunnelTo.y),
         ),
       ).toBe(1);
+      expect(same(dot.at, landing as CoordV7)).toBe(false);
+      expect(dot.command).toMatchObject({ rider: { to: dot.at } });
+      expect(
+        chosen.targets.filter((target) => same(target.at, dot.at)),
+      ).toHaveLength(1);
     }
-    // The chosen destination and its forecast stay drawn.
     expect(
-      riders.entries
-        .filter((entry) => entry.abilityStyle === "ERUPTION")
-        .some((entry) => entry.kind === "ABILITY_TARGET"),
-    ).toBe(true);
+      chosen.targets.find((target) => target.tunnel?.chosen === true)?.at,
+    ).toEqual(AT.tunnelTo);
+    // A dot moves the landing; the chosen destination then digs with it.
+    const moved = aim(AT.mole, {
+      kind: "TUNNEL",
+      unitId: mole,
+      to: AT.tunnelTo,
+      riderUnitId: rider,
+      riderTo: dots[0]?.at ?? null,
+    });
+    expect(
+      moved.targets.find((target) => target.tunnel?.chosen === true)?.command,
+    ).toMatchObject({ rider: { unitId: rider, to: dots[0]?.at } });
+    // Nobody seated: no rope, no ghost Hammerer, the Mole digs alone.
+    const alone = aim(AT.mole, {
+      kind: "TUNNEL",
+      unitId: mole,
+      to: null,
+      riderUnitId: null,
+      riderTo: null,
+    });
+    expect(
+      alone.targets.find((target) => same(target.at, AT.rider))?.previewLabel,
+    ).toBe(RIDE_BADGE_V7);
+    expect(alone.entries.some((entry) => entry.kind === "LINK")).toBe(false);
+    expect(
+      alone.targets.find((target) => same(target.at, AT.tunnelTo))?.command,
+    ).toEqual({ kind: "TUNNEL", unitId: mole, to: AT.tunnelTo, rider: null });
+  });
+
+  it("draws the focused destination's ghosts at the ghost strength, and the chosen one's without focus", () => {
+    const art: ChibiBoardArtV7 = {
+      resolve: (request) => {
+        const resolved = LIVE_DIRECTION_ART_REGISTRY_V7.variants(
+          request.subject,
+        )[0];
+        return resolved === undefined
+          ? { kind: "MISSING" }
+          : {
+              kind: "READY",
+              asset: resolved,
+              image: { id: resolved.id } as unknown as CanvasImageSource,
+              density: 1,
+              smoothing: false,
+              cacheKey: resolved.id,
+            };
+      },
+    };
+    const ghosts = (
+      plan: BoardRenderPlanV7,
+      focus: CoordV7 | null,
+    ): LogEntry[] => {
+      const { context, log } = recordingContext();
+      drawBoardV7({
+        context,
+        viewport: { width: 1600, height: 1600 },
+        devicePixelRatio: 1,
+        camera: { zoom: chibiCameraZoom(1), offsetX: 0, offsetY: 0 },
+        plan,
+        images: { resolve: () => null },
+        artSet: "CHIBI",
+        chibiArt: art,
+        reducedMotion: true,
+        previewFocus: focus,
+      });
+      // The drawImage calls made at the ghost strength.
+      let alpha = 1;
+      return log.filter((call) => {
+        if (call[0] === "set" && call[1] === "globalAlpha")
+          alpha = call[2] as number;
+        return (
+          call[0] === "drawImage" &&
+          Math.abs(alpha - TUNNEL_GHOST_ALPHA_V7) < 1e-9
+        );
+      });
+    };
+    const pick = {
+      kind: "TUNNEL" as const,
+      unitId: id(AT.mole),
+      to: null,
+      riderUnitId: id(AT.rider),
+      riderTo: null,
+    };
+    const stage = aim(AT.mole, pick);
+    expect(ghosts(stage, null)).toHaveLength(0);
+    expect(ghosts(stage, AT.tunnelTo)).toHaveLength(2);
+    const chosen = aim(AT.mole, { ...pick, to: AT.tunnelTo });
+    expect(ghosts(chosen, null)).toHaveLength(2);
+    expect(
+      ghosts(aim(AT.mole, { ...pick, riderUnitId: null }), AT.tunnelTo),
+    ).toHaveLength(1);
   });
 
   it("aims a Bomb Run: the targets, then the landings with their threat", () => {

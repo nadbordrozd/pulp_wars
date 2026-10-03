@@ -48,9 +48,12 @@ import sharp from "sharp";
 import {
   DWARF_ERUPTION_TIMELINE_V7,
   DWARF_FLAG_ANCHORS_V7,
+  DWARF_DIG_IN_WALL_SHARE_V7,
   DWARF_PALETTE_V7,
   dwarfDigInMarkerV7,
 } from "../../src/assets/chibi-direction-dwarf-presentation";
+import type { ArtSubjectV7 } from "../../src/assets/chibi-art-v7";
+import { UNIT_SHADOW_TABLE_V7 } from "../../src/render/canvas/unit-shadows-v7";
 import {
   iceFolkSnowCapsV7,
   iceFolkSnowTileV7,
@@ -264,13 +267,27 @@ function boardCell(
   return out;
 }
 
-/** The Dig In earthwork around a unit: back ring, unit, front ring. */
+/**
+ * The Dig In earthwork at a unit: back heaps, unit, front wall, on the
+ * unit's measured shadow anchor as the board draws it (bead
+ * pulp_wars-78i.9); without a subject, a standard unit's shadow.
+ */
 function dugIn(
   unit: RgbaRaster,
-  footFromBottom = 1,
+  subject?: ArtSubjectV7,
 ): readonly (RgbaRaster | Canvas)[] {
-  const marker = dwarfDigInMarkerV7(unit.width - 8);
-  // The ring sits at the unit's base: its bottom `footFromBottom` px up.
+  const shadow = (subject === undefined
+    ? null
+    : UNIT_SHADOW_TABLE_V7[subject]?.shadow) ?? {
+    x: unit.width / 2,
+    y: unit.height - 6,
+    radiusX: 21.84,
+    radiusY: 21.84 * 0.34,
+  };
+  const marker = dwarfDigInMarkerV7(
+    Math.max(16, Math.round(2 * shadow.radiusX * DWARF_DIG_IN_WALL_SHARE_V7)),
+  );
+  // The wall's foot on the shadow's front edge, centred on the shadow.
   const pad = (layer: {
     width: number;
     height: number;
@@ -279,8 +296,8 @@ function dugIn(
     // Copied with its alpha (blit keeps the target's alpha).
     const out = blank(unit.width, unit.height, [0, 0, 0]);
     out.data.fill(0);
-    const left = Math.round((unit.width - layer.width) / 2);
-    const top = Math.round(unit.height - layer.height - footFromBottom);
+    const left = Math.round(shadow.x - layer.width / 2);
+    const top = Math.round(shadow.y + shadow.radiusY - layer.height);
     for (let y = 0; y < layer.height; y += 1)
       for (let x = 0; x < layer.width; x += 1) {
         const tx = left + x;
@@ -379,8 +396,14 @@ async function terrainSheet(): Promise<void> {
   for (const [, id, title] of UNITS) rows.push([title, [await dwarfUnit(id)]]);
   rows.push(["Mound", [await dwarfUnit("mound")]]);
   rows.push(["Rider's mound", [await dwarfUnit("mound-rider")]]);
-  rows.push(["Hammerer dug in", dugIn(await dwarfUnit("hammerer"))]);
-  rows.push(["Steam Mole dug in", dugIn(await dwarfUnit("steam-mole"), 10)]);
+  rows.push([
+    "Hammerer dug in",
+    dugIn(await dwarfUnit("hammerer"), "UNIT:DWARF:FIGHTER"),
+  ]);
+  rows.push([
+    "Steam Mole dug in",
+    dugIn(await dwarfUnit("steam-mole"), "UNIT:DWARF:GUARD"),
+  ]);
   const out = blank(
     labelW + keys.length * (CELL_W * scale + GAP) + GAP,
     LABEL_H + rows.length * (CELL_H * scale + GAP) + GAP,
@@ -642,8 +665,8 @@ async function moundSheet(): Promise<void> {
   const rows: [string, readonly (RgbaRaster | Canvas)[]][] = [
     ["Mound", [await dwarfUnit("mound")]],
     ["Rider's mound", [await dwarfUnit("mound-rider")]],
-    ["Dug in: Hammerer", dugIn(hammerer)],
-    ["Dug in: Steam Mole", dugIn(mole, 10)],
+    ["Dug in: Hammerer", dugIn(hammerer, "UNIT:DWARF:FIGHTER")],
+    ["Dug in: Steam Mole", dugIn(mole, "UNIT:DWARF:GUARD")],
     [
       "Earthwork alone",
       dugIn({ width: 56, height: 80, data: new Uint8Array(56 * 80 * 4) }),

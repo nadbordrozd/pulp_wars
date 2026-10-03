@@ -17,17 +17,19 @@ import {
  * with the Showcase Mole's Tunnel; and, on the Dwarf UI fixtures, a mound
  * next to enemies with its eruption ring (selected and hovered), the
  * eruption frame by frame and a real one, the Tunnel with its forecast and
- * the rider prompt, a Bomb Run with its targets, landings and result,
+ * its passenger, a Bomb Run with its targets, landings and result,
  * Assemble, Repair, Dig In units, the Gunner's two-shot preview, Knockback
  * (and a blocked one with Blasting Charges), the Steam Tank's Plated and a
  * dug-in Hammerer from the other side, the docks, Help, the technology
  * tree, the Dwarf fleet at sea and the Classic look, in the CHIBI art set
  * (the default look; the board scenes also in LEGACY) at desktop and phone
  * widths. It needs the Vite dev server, because the fixtures are imported
- * from `tests/fixtures`.
+ * from `tests/fixtures`. The `polish` part (bead pulp_wars-78i.9) captures
+ * the passenger-first Tunnel step by step and the Dig In earthwork on ready
+ * and spent units.
  *
  * Usage: tsx scripts/browser-dwarf-review-v7.ts http://localhost:6173/
- *   [--output-dir=<new-dir>] [--only=setup,showcase,fixtures,legacy]
+ *   [--output-dir=<new-dir>] [--only=setup,showcase,fixtures,legacy,polish]
  */
 
 interface DebugTarget {
@@ -154,6 +156,9 @@ try {
   if (want("legacy"))
     for (const size of ["desktop", "phone"] as const)
       await boardTour(connection, "legacy", size);
+  if (want("polish"))
+    for (const size of ["desktop", "phone"] as const)
+      await polishTour(connection, size);
 
   if (errors.length > 0)
     throw new Error(`Browser errors: ${errors.join("\n")}`);
@@ -259,6 +264,150 @@ async function showcaseTour(
   );
   await capture(connection, `showcase-tunnel-pick-${size}.png`);
   await deselect(connection);
+}
+
+/**
+ * Bead pulp_wars-78i.9: the passenger-first Tunnel and the Dig In
+ * earthwork. On the Dwarf UI fixture: Tunnel pressed (the Hammerer
+ * seated, its rope and badge, the short destination list), a destination
+ * focused (the Mole's and the Hammerer's ghosts), chosen (the solid tile,
+ * the other landings as dots, the confirmation), the Hammerer moved to a
+ * dot, and the dig. On the Dig In fixture: two Hammerers that can ride
+ * (re-seat, unseat), then the earthwork on ready and spent units. Board
+ * scenes at zoom steps 1 and 0.75.
+ */
+async function polishTour(
+  connection: Connection,
+  size: ScreenSize,
+): Promise<void> {
+  await viewport(connection, size);
+  await mount(connection, "chibi", "dwarfUiFixtureV7");
+  const at = (await evaluate(connection, `${REVIEW}.at`)) as Record<
+    string,
+    Coord
+  >;
+  const panel = async (name: string): Promise<void> => {
+    evidence[`polish-${size}-${name}`] = await evaluate(
+      connection,
+      `(() => { const panel = document.querySelector('[data-v7-dwarf-pick]'); return panel === null ? null : { passengers: Array.from(panel.querySelectorAll('.v7-dwarf-passenger')).map((node) => node.getAttribute('aria-label')), chips: Array.from(panel.querySelectorAll('[data-action^="tunnel-"]:not(.v7-dwarf-passenger)')).map((node) => node.textContent), text: Array.from(panel.querySelectorAll('p')).map((node) => node.textContent) }; })()`,
+    );
+  };
+  const both = async (name: string): Promise<void> => {
+    await zoomStep(connection, 1);
+    await capture(connection, `polish-${name}-${size}-zoom-1.png`);
+    await zoomStep(connection, 0.75);
+    await capture(connection, `polish-${name}-${size}-zoom-0.75.png`);
+    await zoomStep(connection, 1);
+  };
+  await zoomStep(connection, 1);
+  await activate(connection, at.mole as Coord);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="dwarf-tunnel"]')?.click()`,
+  );
+  await delay(800);
+  await panel("1-passenger");
+  await both("tunnel-1-passenger");
+  // Focus the erupting destination three tiles west: the ghosts.
+  await evaluate(
+    connection,
+    `document.querySelector('canvas.board-canvas-v7')?.focus()`,
+  );
+  await keys(connection, ["ArrowLeft", "ArrowLeft", "ArrowLeft"]);
+  evidence[`polish-${size}-2-focus-cursor`] = await cursorText(connection);
+  await capture(connection, `polish-tunnel-2-focus-${size}-zoom-1.png`);
+  // Choose it: the solid tile, the dots, the confirmation.
+  await keys(connection, ["Enter"]);
+  await delay(600);
+  await panel("3-chosen");
+  await both("tunnel-3-chosen");
+  // Move the Hammerer to a dot next to the destination.
+  const landing = (await evaluate(
+    connection,
+    `(() => { const match = /surfaces at (\\d+), (\\d+)/.exec(document.querySelector('[data-v7-dwarf-pick]')?.textContent ?? ''); return match === null ? null : { x: Number(match[1]), y: Number(match[2]) }; })()`,
+  )) as Coord | null;
+  const to = at.tunnelTo as Coord;
+  const occupied = (await evaluate(
+    connection,
+    `${REVIEW}.snapshotView().units.map((unit) => unit.at.x + ',' + unit.at.y)`,
+  )) as string[];
+  const dot = [
+    { x: to.x + 1, y: to.y + 1 },
+    { x: to.x - 1, y: to.y + 1 },
+    { x: to.x + 1, y: to.y - 1 },
+    { x: to.x - 1, y: to.y - 1 },
+  ].find(
+    (cell) =>
+      !occupied.includes(`${cell.x},${cell.y}`) &&
+      (landing === null || cell.x !== landing.x || cell.y !== landing.y),
+  );
+  evidence[`polish-${size}-4-dot`] = { landing, dot };
+  if (dot !== undefined) {
+    await evaluate(
+      connection,
+      `${REVIEW}.boardHost.activate(${JSON.stringify(dot)})`,
+    );
+    await delay(600);
+    await panel("4-dot");
+    await capture(connection, `polish-tunnel-4-dot-${size}-zoom-1.png`);
+  }
+  // Dig: tap the chosen destination again.
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(to)})`,
+  );
+  await waitFor(
+    connection,
+    `${REVIEW}.traces.some((trace) => trace.command.kind === 'TUNNEL')`,
+  );
+  evidence[`polish-${size}-5-command`] = await evaluate(
+    connection,
+    `${REVIEW}.traces.find((trace) => trace.command.kind === 'TUNNEL').command`,
+  );
+  await delay(250);
+  await capture(connection, `polish-tunnel-5-dig-${size}-zoom-1.png`);
+  await delay(1_200);
+  await deselect(connection);
+  // Two Hammerers that can ride: re-seat, then unseat.
+  await mount(connection, "chibi", "dwarfDigInFixtureV7");
+  const digIn = (await evaluate(connection, `${REVIEW}.digIn`)) as Record<
+    string,
+    Coord
+  >;
+  await zoomStep(connection, 1);
+  await activate(connection, digIn.readyMole as Coord);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="dwarf-tunnel"]')?.click()`,
+  );
+  await delay(800);
+  await panel("6-two-riders");
+  await both("tunnel-6-two-riders");
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(digIn.readyHammerer)})`,
+  );
+  await delay(600);
+  await panel("7-reseated");
+  await capture(connection, `polish-tunnel-7-reseated-${size}-zoom-1.png`);
+  await evaluate(
+    connection,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(digIn.readyHammerer)})`,
+  );
+  await delay(600);
+  await panel("8-alone");
+  await capture(connection, `polish-tunnel-8-alone-${size}-zoom-1.png`);
+  await deselect(connection);
+  await deselect(connection);
+  // The Dig In earthwork on ready and spent units.
+  await mount(connection, "chibi", "dwarfDigInFixtureV7");
+  await focusCell(connection, digIn.movedHammerer as Coord);
+  await deselect(connection);
+  for (const step of [1, 0.75]) {
+    await zoomStep(connection, step);
+    await capture(connection, `polish-dig-in-${size}-zoom-${step}.png`);
+  }
+  await zoomStep(connection, 1);
 }
 
 /** Zooms the CHIBI board to the given step with the zoom buttons. */
@@ -398,8 +547,8 @@ async function fixtureTour(
     `({ notice: document.querySelector('#v7-live')?.textContent, events: ${REVIEW}.traces.at(-1).eventKinds })`,
   );
   await deselect(connection);
-  // Tunnel: the destinations, the forecast on a focused one, the rider
-  // prompt, and the mounds after.
+  // Tunnel: the destinations, the forecast on a focused one, the chosen
+  // destination with its seated Hammerer, the dig, and the mounds after.
   await activate(connection, at.mole as Coord);
   await evaluate(
     connection,
@@ -430,7 +579,7 @@ async function fixtureTour(
   await capture(connection, `tunnel-rider-prompt-${suffix}.png`);
   await evaluate(
     connection,
-    `document.querySelector('[data-v7-dwarf-pick] [data-action^="tunnel-rider-"]')?.click()`,
+    `document.querySelector('[data-v7-dwarf-pick] [data-action="tunnel-confirm"]')?.click()`,
   );
   await waitFor(
     connection,

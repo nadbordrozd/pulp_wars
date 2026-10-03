@@ -44,6 +44,8 @@ export const CHIBI_DOM_BOXES_V7 = {
   reward: { width: 80, height: 80 },
   /** Leaderboard city count. */
   leaderboard: { width: 26, height: 26 },
+  /** The Tunnel's passenger control (bead pulp_wars-78i.9). */
+  passenger: { width: 32, height: 32 },
 } as const satisfies Readonly<Record<string, ChibiDomBoxV7>>;
 
 /**
