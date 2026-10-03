@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r31`. Role facts resolve through the owner's
+previews under `pulp-wars-poc-7r32`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
 duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
@@ -1226,7 +1226,8 @@ Shared estimates (every match; all neutral without a Martian unit):
 As Martians:
 
 - **Production.** The role value gains two per Shield point
-  (`HP + 2 x Shield`). In a threatened city the Grunt gains 12 and the
+  (`HP + 2 x Shield`). In a threatened city the Grunt gains 14 (12 before
+  `pulp_wars-b5f.2` raised its cost to 3) and the
   Projector, Saucer, and Brain cost 30 (bodies first; the Projector loses the
   Guard's threatened bonus too). In the preferred role the Grunt's repetition
   costs 5 a unit instead of 8; the Ray Gunner gains 10 (the main damage, about
@@ -1399,6 +1400,61 @@ matches was 10.4 ms and the longest decision 48 ms; no turn reached the
 it through the generic economy: a `REDEVELOP` and `BUILD_LUMBER_CAMP` pair
 repeated on one tile by a rich seat, a generic-policy issue this bead
 does not change.)
+
+### Martian ranged play (`pulp_wars-b5f.2`)
+
+The Grunt's ray pistol (range 1–2) and the Tripod's range-2-only ray
+(minimum range 2, Sight 2) are registry facts, so the generic policy already
+shoots from two tiles: it reads every unit's range from the public combat
+facts, and the Tripod has no adjacent shot to take. One rule is added, in
+`martianRangedStepBackV7` (`src/ai/v7.ts`) behind the switch
+`MartianPolicyOptionsV7.rangedStepBack` (`setMartianPolicyOptionsV7`, for the
+head-to-head and the tests only):
+
+- **Step back** (904, above the chips and below the kills). A Martian
+  shooter with range 2 that can still attack after a Move, standing next to
+  a hostile land unit that cannot shoot at range 2 (or, for the Tripod,
+  inside its minimum range of any hostile unit) and not on a settlement
+  center, moves to a tile with no such unit that close, from which a
+  visible hostile land unit is in range, outside visible lethal reach;
+  value 6 plus the targets in range minus half the danger. A ready ray unit
+  with a full-power shot where it stands keeps it. A Tripod with a hostile
+  unit inside its minimum range no longer holds its tile for an approaching
+  unit.
+- In a threatened city the Grunt's production bias is 14 (was 12): it
+  cancels the Grunt's third Coin in the role value's "minus twice the cost"
+  term, so threatened cities still train Grunts (the existing test failed
+  with a Ray Gunner at 12). It is not behind the switch.
+
+**Head-to-head, Martian mirror** (the policy with the step back on one seat
+and without it on the other, every seed in both seat orders, Dry Land
+11 x 11, round cap 120, `allowDuplicateFactions`, the `pulp_wars-b5f.2`
+rules): seeds 0–29, 60 decided games, **29 to 31**. Neutral. A second rule,
+walking a shooter with no target in range to a tile two tiles from one
+(760, the ray siege tier), lost: 23 to 37 in its first form and 26 to 34 with
+the step back corrected (a hostile Grunt or Marksman next to a shooter is
+not a reason to step back, since it answers at two tiles), so it was
+dropped. Against the six factions (seeds 0–13 in both orders, 168 games)
+Martians with the step back won 98, and with the `7r30` Martian policy on the
+same rules 96. The rule is kept although it is neutral on wins, by the
+second-pass precedent, because it moves the measured problem: Grunt attacks
+from two tiles rose from 84% (5,232 of 6,262) to 88% (6,313 of 7,172) and
+the share drawing retaliation fell from 10% to 7%; and the Tripod, which
+cannot fire at an adjacent unit, needs it to shoot at all when the enemy
+closes in.
+
+**Tripod diagnosis** (at `7r30`, before the change: 168 coarse games and a
+40-game mirror). Tripods fired 262 times, 87% from two tiles and 13% from
+the next tile (18% of all shots drew retaliation); every hostile unit two
+tiles from a Tripod at the start of its owner's turn was visible (88 of 88
+in a sample). The AI used the range; the rule allowed the adjacent shot,
+which is what a player with a lone Sight-1 Tripod sees as melee play. After
+the change all 307 Tripod shots in the 168 coarse games came from two tiles
+and none drew retaliation. Details and the coarse matchups are in the
+[Martian tuning record](../product/RULESET_7_MARTIANS.md#165-tuning-record).
+
+**Parity.** The rule and the bias are Martian-only (`viewerMartian`), so
+matches without a Martian seat are unchanged.
 
 ## Ice Folk play (`pulp_wars-7g3.4`)
 

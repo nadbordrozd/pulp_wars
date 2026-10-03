@@ -28,12 +28,13 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // 7r26, the Ice Folk coarse balance (`pulp_wars-7g3.7`, Yeti 9 HP and
 // Defense 1.5) to 7r27, the Rift (`pulp_wars-9s0.5`) to 7r28, and the
 // unique-factions rule (`pulp_wars-w5j.1`) to 7r29, the Dwarf faction
-// engine (`pulp_wars-78i.3`) to 7r30, and the Dwarf coarse balance
-// (`pulp_wars-78i.7`, bomb 5 and Dive 6) to 7r31, so these pins follow the
+// engine (`pulp_wars-78i.3`) to 7r30, the Dwarf coarse balance
+// (`pulp_wars-78i.7`, bomb 5 and Dive 6) to 7r31, and the Martian Grunt and
+// Tripod ranges (`pulp_wars-b5f.2`) to 7r32, so these pins follow the
 // current identity.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 31;
+const REVISION = 32;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

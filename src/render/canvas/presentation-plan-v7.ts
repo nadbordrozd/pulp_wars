@@ -686,11 +686,18 @@ export function corePresentationPlanV7(
       // The Martian revision: a heat ray is a beam from the shooter (with a
       // thinner beam on to a Pierce victim), not a projectile or a lunge.
       const ray = event.preview.rayPower !== "NONE";
+      // `pulp_wars-b5f.2`: a Grunt's (or Thrall's) ray pistol is a plain
+      // shot shown as the thin beam, at range 1 or 2.
+      const pistol =
+        !ray &&
+        attackerFaction === "MARTIAN" &&
+        attacker.role === "FIGHTER" &&
+        attacker.form === "LAND";
       const pierced =
         ray && attackerFaction === "MARTIAN"
           ? event.preview.splash[0]
           : undefined;
-      if (ray)
+      if (ray || pistol)
         pushMartian({
           effect: "HEAT_RAY",
           cells: [defender.at],

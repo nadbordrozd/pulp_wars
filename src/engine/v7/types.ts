@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r31" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r32" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -42,8 +42,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r28",
   "pulp-wars-poc-7r29",
   "pulp-wars-poc-7r30",
+  "pulp-wars-poc-7r31",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r31.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r32.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",

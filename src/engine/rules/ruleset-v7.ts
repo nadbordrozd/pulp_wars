@@ -1708,12 +1708,14 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     role: "FIGHTER",
     label: "Grunt",
     tacticalRole: "LINE",
-    cost: 2,
+    cost: 3,
     maxHp: 10,
-    attack2: 4,
+    attack2: 3,
     defense2: 3,
     move: 1,
-    range: 1,
+    // `pulp_wars-b5f.2`: the Grunt's ray pistol, a plain shot (no heat ray)
+    // at range 1–2 (RULESET_7_MARTIANS.md section 3).
+    range: 2,
     minimumRange: 1,
     sightRadius: 1,
     technology: null,
@@ -1793,9 +1795,11 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     attack2: 8,
     defense2: 2,
     move: 2,
+    // `pulp_wars-b5f.2`: a siege ray at exactly range 2 like the Catapult's
+    // minimum range (no adjacent shots), seeing two tiles from its height.
     range: 2,
-    minimumRange: 1,
-    sightRadius: 1,
+    minimumRange: 2,
+    sightRadius: 2,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: true,
     abilities: ["ATTACK", "STRIDE", "HEAT_RAY", "PIERCE"],

@@ -1,16 +1,20 @@
 import { describe, expect, it } from "vitest";
 import {
   BEAM_DOWN_PRIORITY_V7,
+  LEGACY_MARTIAN_POLICY_OPTIONS_V7,
   MARTIAN_RESEARCH_PRIORITY_V7,
   MIND_CONTROL_ESCAPE_PRIORITY_V7,
   MIND_CONTROL_PRIORITY_V7,
   MOTHERSHIP_GUARD_PRIORITY_V7,
+  RANGED_STEP_BACK_PRIORITY_V7,
   RAY_KITE_PRIORITY_V7,
   SHIELD_BREAK_PRIORITY_V7,
   TRACTOR_CAPTURE_PRIORITY_V7,
   martianArmyCountsV7,
   martianProductionAdjustmentV7,
   martianResearchV7,
+  setMartianPolicyOptionsV7,
+  type MartianPolicyOptionsV7,
 } from "../../src/ai/v7-martian";
 import {
   queryCombatPreviewV7,
@@ -96,26 +100,85 @@ describe("Martian Normal AI: heat rays", () => {
 
   it("refuses a Pierce shot that kills an own unit without killing the target", () => {
     // A full-power Tripod ray on a Guard (15 HP) pierces the 2-HP Grunt
-    // behind it.
+    // behind it (`pulp_wars-b5f.2`: from range 2, the Tripod's only range).
     const pieces = [
-      own("CATAPULT", 6, 5),
+      own("CATAPULT", 7, 5),
       foe("GUARD", 5, 5),
       own("FIGHTER", 4, 5, { hp: 2, shield: 0 }),
     ];
     const state = asMartian(pieces);
-    const shot = attackV7(state, at(6, 5), at(5, 5));
+    const shot = attackV7(state, at(7, 5), at(5, 5));
     expect(candidatesV7(state).map((item) => item.command)).not.toContainEqual(
       shot,
     );
     // With a hostile unit behind instead, it fires.
     const clean = asMartian([
-      own("CATAPULT", 6, 5),
+      own("CATAPULT", 7, 5),
       foe("GUARD", 5, 5),
       foe("FIGHTER", 4, 5),
     ]);
     expect(candidatesV7(clean).map((item) => item.command)).toContainEqual(
-      attackV7(clean, at(6, 5), at(5, 5)),
+      attackV7(clean, at(7, 5), at(5, 5)),
     );
+  });
+});
+
+describe("Martian Normal AI: ranged play (`pulp_wars-b5f.2`)", () => {
+  const withOptions = <T>(
+    options: Partial<MartianPolicyOptionsV7>,
+    run: () => T,
+  ): T => {
+    const previous = setMartianPolicyOptionsV7(options);
+    try {
+      return run();
+    } finally {
+      setMartianPolicyOptionsV7(previous);
+    }
+  };
+
+  it("a Grunt next to a melee unit steps back to shoot from two tiles", () => {
+    const state = asMartian([own("FIGHTER", 5, 5), foe("FIGHTER", 4, 5)]);
+    const best = unitCandidatesV7(state, at(5, 5))[0];
+    expect(best?.command.kind).toBe("MOVE");
+    expect(best?.score.priority).toBe(RANGED_STEP_BACK_PRIORITY_V7);
+    const end = best === undefined ? undefined : endOf(best.command);
+    expect(
+      end === undefined
+        ? 0
+        : Math.max(Math.abs(end.x - 4), Math.abs(end.y - 5)),
+    ).toBe(2);
+    // The baseline policy shoots from where it stands (or holds).
+    withOptions(LEGACY_MARTIAN_POLICY_OPTIONS_V7, () => {
+      expect(
+        unitCandidatesV7(state, at(5, 5)).some(
+          (item) => item.score.priority === RANGED_STEP_BACK_PRIORITY_V7,
+        ),
+      ).toBe(false);
+    });
+  });
+
+  it("a Grunt next to a hostile shooter that answers at range 2 stays", () => {
+    const state = asMartian([own("FIGHTER", 5, 5), foe("MARKSMAN", 4, 5)]);
+    expect(
+      unitCandidatesV7(state, at(5, 5)).some(
+        (item) => item.score.priority === RANGED_STEP_BACK_PRIORITY_V7,
+      ),
+    ).toBe(false);
+  });
+
+  it("a Tripod with only an adjacent target strides away to fire from two tiles", () => {
+    const state = asMartian([own("CATAPULT", 5, 5), foe("FIGHTER", 4, 5)]);
+    // The adjacent Fighter is not a target (minimum range 2).
+    expect(unitCandidatesV7(state, at(5, 5), "ATTACK")).toEqual([]);
+    const best = unitCandidatesV7(state, at(5, 5))[0];
+    expect(best?.command.kind).toBe("MOVE");
+    expect(best?.score.priority).toBe(RANGED_STEP_BACK_PRIORITY_V7);
+    const end = best === undefined ? undefined : endOf(best.command);
+    expect(
+      end === undefined
+        ? 0
+        : Math.max(Math.abs(end.x - 4), Math.abs(end.y - 5)),
+    ).toBe(2);
   });
 });
 
@@ -203,8 +266,9 @@ describe("Martian Normal AI: production and research", () => {
   it("values every role by HP plus twice its Shield and trains bodies first under threat", () => {
     const view = viewerViewV7(asMartian([own("FIGHTER", 7, 7)]));
     const counts = martianArmyCountsV7(view);
-    // Grunt: Shield 2 (+4), and +12 in a threatened city; in the preferred
-    // role its repetition costs 5 a Grunt instead of 8 (+3 for the one).
+    // Grunt: Shield 2 (+4), and +14 in a threatened city (`pulp_wars-b5f.2`:
+    // 12 before its cost rose to 3); in the preferred role its repetition
+    // costs 5 a Grunt instead of 8 (+3 for the one).
     expect(
       martianProductionAdjustmentV7(
         view,
@@ -217,7 +281,7 @@ describe("Martian Normal AI: production and research", () => {
     ).toBe(4);
     expect(
       martianProductionAdjustmentV7(view, "FIGHTER", counts, true, true, false),
-    ).toBe(16);
+    ).toBe(18);
     expect(
       martianProductionAdjustmentV7(view, "FIGHTER", counts, false, true, true),
     ).toBe(7);

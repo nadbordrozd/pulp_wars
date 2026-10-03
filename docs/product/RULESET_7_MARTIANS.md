@@ -232,15 +232,15 @@ unit tiles, forms, homes, and entity IDs as any other faction.
 
 | Unit             | Role          | Tech              | Cost | Slots |  HP | Shield | Attack (`attack2`) | Defense (`defense2`) | Move | Range | Sight | Attack after Move | Capture | Abilities                                                    |
 | ---------------- | ------------- | ----------------- | ---: | ----: | --: | -----: | -----------------: | -------------------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------ |
-| Grunt            | `FIGHTER`     | start             |    2 |     1 |  10 |      2 |              2 (4) |              1.5 (3) |    1 |     1 |     1 | yes               | yes     | no Field Defense                                             |
+| Grunt            | `FIGHTER`     | start             |   3³ |     1 |  10 |      2 |           1.5 (3)³ |              1.5 (3) |    1 |  1–2³ |     1 | yes               | yes     | ray pistol (plain shot); no Field Defense                    |
 | Saucer           | `RAIDER`      | Scouting          |    4 |     1 |   8 |      2 |            1.5 (3) |                1 (2) |    3 |     1 |     2 | yes               | no      | flies; Beam Down; Strafe (Raiding)                           |
 | Ray Gunner       | `MARKSMAN`    | Marksmanship      |    4 |     1 |   8 |      2 |              3 (6) |                1 (2) |    1 |   1–2 |    1¹ | yes               | yes     | heat ray                                                     |
 | Shield Projector | `GUARD`       | Drill             |    4 |     1 |  12 |      3 |            1.5 (3) |              2.5 (5) |    1 |     1 |     1 | no                | yes     | Force Field; no Field Defense                                |
 | Brain            | `CAPTAIN`     | Administration    |    5 |     1 |   8 |      2 |              1 (2) |                1 (2) |    1 |     1 |     1 | yes               | no      | Psychic Command; Mind Control; no Tend Wounded               |
-| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |              4 (8) |                1 (2) |    2 |   1–2 |     1 | yes               | no      | strides; heat ray; Pierce; destroys Field Defense            |
+| Tripod           | `CATAPULT`    | Sawmilling        |    9 |     1 |  12 |      2 |              4 (8) |                1 (2) |    2 |    2³ |    2³ | yes               | no      | strides; heat ray; Pierce; destroys Field Defense            |
 | Mothership       | `KNIGHT`      | Chivalry          |   10 |     2 |  16 |      4 |            2.5 (5) |                2 (4) |    2 |     1 |     1 | yes               | no      | flies; Tractor Beam; no Overrun                              |
 | Colossus         | `JUGGERNAUT`  | reward only       |    — |     2 |  32 |      3 |              4 (8) |             2.5 (5)² |    1 |   1–2 |     1 | yes               | yes     | strides; heat ray; Push                                      |
-| Thrall           | `FIGHTER`     | Mind Control only |    — |     0 | ≤10 |      0 |              2 (4) |              1.5 (3) |    1 |     1 |     1 | yes               | yes     | no Shield; no Promotion; no Disband; collapses without Brain |
+| Thrall           | `FIGHTER`     | Mind Control only |    — |     0 | ≤10 |      0 |            1.5 (3) |              1.5 (3) |    1 |   1–2 |     1 | yes               | yes     | no Shield; no Promotion; no Disband; collapses without Brain |
 | Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 |      0 |              2 (4) |                2 (4) |    2 |     1 |     2 | yes               | no      | naval                                                        |
 | Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 |      0 |             6 (12) |                4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                                |
 
@@ -249,6 +249,13 @@ unit tiles, forms, homes, and entity IDs as any other faction.
 ² Colossus Defense 2.5 since `pulp_wars-t6s.5` (contract value 3; see the
 [tuning record](#165-tuning-record)).
 
+³ Since `pulp_wars-b5f.2` (`pulp-wars-poc-7r32`, the user's playtest round
+5): the Grunt has a ray pistol, range 1–2 (was 1), and costs 3 Coins with
+Attack 1.5 (was 2 Coins and Attack 2); the Tripod fires at range 2 only
+(minimum range 2, was range 1–2 with minimum range 1) and has Sight 2 (was
+1). The battle analysis of [section 9](#9-per-unit-battle-analysis) predates
+it ([tuning record](#165-tuning-record)).
+
 These are starting values for `pulp_wars-t6s.5`, computed against the
 registry of commit `f1c17bd` with the revision-20 Triceratops and T-Rex.
 Revision 20 may raise Human HP by up to 3
@@ -256,8 +263,11 @@ Revision 20 may raise Human HP by up to 3
 analysis states where that matters.
 
 - **Grunt** has Fighter parity (capture, Pillage with Raiding, Disband,
-  ordinary Promotion) except its numbers, its Shield, and that it cannot build
-  Field Defense. It is trained on the city center from the first turn.
+  ordinary Promotion) except its numbers, its Shield, its range, and that it
+  cannot build Field Defense. It is trained on the city center from the
+  first turn. Since `pulp_wars-b5f.2` its attack is a **ray pistol**: an
+  ordinary attack at range 1 or 2 (minimum range 1), not a heat ray (full
+  Attack after moving, no Cooling).
 - **Saucer** flies ([section 7.2](#72-flying)). It has Raider parity for
   Sight 2 and for Charge (Raiding), labelled **Strafe**: +1 Attack on its
   first attack after a Move of at least two tiles. It has no Escape, no
@@ -275,10 +285,12 @@ analysis states where that matters.
   `UNIT_ROLE_INVALID`). Its primary actions are Attack, Psychic Command, and
   Mind Control ([section 8.2](#82-mind-control-brain)).
 - **Tripod** is a walker ([section 7.1](#71-stride)) with a heat ray and
-  Pierce ([section 6.4](#64-pierce-tripod)). Unlike the Catapult it has range
-  1–2 with minimum range 1 and may attack after moving (at half power). Like
-  the Catapult it cannot capture, never advances, and every attack it makes
-  destroys Field Defense on the primary target's tile (reason `CATAPULT`).
+  Pierce ([section 6.4](#64-pierce-tripod)). Since `pulp_wars-b5f.2` it fires
+  like the Catapult from a distance: range 2 with minimum range 2 (never at
+  an adjacent unit), and it sees two tiles. Unlike the Catapult it may
+  attack after moving (at half power). Like the Catapult it cannot capture,
+  never advances, and every attack it makes destroys Field Defense on the
+  primary target's tile (reason `CATAPULT`).
 - **Mothership** flies. It has Knight parity for no capture and nothing else:
   no Overrun, Move 2, and it never advances. Its primary actions are Attack
   and Tractor Beam ([section 8.4](#84-tractor-beam-mothership)). A Mothership
@@ -290,7 +302,8 @@ analysis states where that matters.
 - **Patrol Boat and Battleship** are identical to the Human units: names,
   stats, abilities, and art. Martian faction rules do not apply to them: no
   Shield, one slot, the ordinary Promotion.
-- **Disband refunds** are `floor(cost / 2)` as usual: Grunt 1, Saucer, Ray
+- **Disband refunds** are `floor(cost / 2)` as usual: Grunt 1 (cost 3 since
+  `pulp_wars-b5f.2`), Saucer, Ray
   Gunner, and Shield Projector 2, Brain 2, Tripod 4, Mothership 5. A Colossus
   and a Thrall cannot Disband.
 - **Arms Industry** applies as to every faction: −1 Coin for a land unit
@@ -625,6 +638,9 @@ pierce damage = max(1, ceil(whole hit on the primary target / 2))
   count for the Tripod, and own or allied kills do not.
 - A target at a knight's-move offset (distance 2 with offsets 2 and 1) has no
   tile behind it and nothing is pierced.
+- Since `pulp_wars-b5f.2` the Tripod fires at distance 2 only (minimum
+  range 2), so in play its primary target is two tiles away and the pierced
+  tile three; the rule itself is unchanged.
 - Pierce applies at full and at half power. It does not destroy Field
   Defense on the pierced tile.
 - Examples: a full-power ray on a Fighter (12) pierces a Marksman behind it
@@ -2099,6 +2115,11 @@ As Martians it must at least:
   fire at half power; prefer Tripod targets with a hostile unit behind them
   and refuse a shot whose Pierce would kill an own unit unless it kills the
   target;
+- **use range 2** (`pulp_wars-b5f.2`): a Grunt (ray pistol) or other
+  shooter next to a hostile unit that cannot answer at range 2, and a
+  Tripod next to any hostile unit (it cannot fire at an adjacent one), steps
+  back to a tile two tiles from a target, outside lethal reach, before it
+  shoots;
 - **use the Saucer:** explore early; afterwards keep one Saucer unmoved
   within three tiles of the front and Beam Down every turn the best eligible
   passenger (a unit trained this turn first) onto the legal tile with the
@@ -2265,6 +2286,9 @@ One sentence per rule, shown in Help for every viewer:
   it Cooling, at half Attack, until the end of its next turn.
 - **Pierce:** a Tripod's ray also hits the unit directly behind its target
   for half the damage, friend or foe.
+- **Ranges** (`pulp_wars-b5f.2`): a Grunt's ray pistol shoots up to two
+  tiles away at full Attack, even after moving; a Tripod fires only at units
+  two tiles away, never at one next to it.
 - **Disintegrator:** with the Disintegrator, heat rays ignore Walls and Field
   Defense.
 - **Walkers:** a Tripod or Colossus crosses Forest, Mountain, and Shallow
@@ -2529,6 +2553,69 @@ Control 39%, the Tractor Beam 37%; proposals in the report), and the win-rate
 gaps with and without a Tripod or Mothership exceed the watch band through
 the length of the games that reach tier 3, not dominance. Fine tuning is
 deferred by the user.
+
+`pulp_wars-b5f.2` (identity `pulp-wars-poc-7r32`; the user's playtest round
+5: "grunts should probably have ranged attack. they are weak anyway" and
+"martian tripod should have range 2 attack like catapults"):
+
+| Parameter              | Before (`7r30`)   | Chosen                  | Reason                                                                                   |
+| ---------------------- | ----------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
+| Grunt range            | 1                 | 1–2 (ray pistol, plain) | the user's direction; a plain shot keeps the basic unit simple (no Cooling)              |
+| Grunt Attack / cost    | 2 (`4`) / 2 Coins | 1.5 (`3`) / 3 Coins     | at Attack 2 and 2 Coins Martians won 82–93% of decided games against every faction       |
+| Tripod range / minimum | 1–2 / 1           | 2 / 2                   | "like catapults": it fires from two tiles, never at an adjacent unit, and needs a screen |
+| Tripod Sight           | 1                 | 2                       | a tall walker that fires at two tiles sees two tiles                                     |
+| Grunt threatened bias  | 12                | 14 (Normal AI)          | cancels the third Coin in the production value, so threatened cities still train Grunts  |
+
+**Why the Tripod played as a melee unit.** In 208 Dry Land games at `7r30`
+(Martians against each faction, seeds 0–13 in both orders, and a 40-game
+mirror) Normal AI Tripods fired 262 times: 228 (87%) from two tiles and 34
+(13%) from an adjacent tile; 78 of the range-2 shots came after a Move at
+half power, and 48 shots (18%) drew retaliation. At the start of every
+Martian turn each hostile unit two tiles from a Tripod was visible to its
+owner (88 of 88 in a 54-game sample): the army's sight covers it, so Sight
+1 did not stop the AI. What made it play as melee was the rule itself: range
+1–2 with minimum range 1 let a Tripod (and a player whose lone Tripod sees
+one tile) walk up and shoot from the next tile, and the half power after a
+Move made walking up cost little. Range 2 with minimum range 2 removes the
+adjacent shot (after the change all of its 307 shots in 168 games came from
+two tiles and none drew retaliation), and Sight 2 lets a lone Tripod see its
+targets. Pierce is unchanged: at distance 2 the pierced tile is three tiles
+away, at half the hit.
+
+**The Grunt's numbers.** Coarse screens (Martians against the Humans,
+Undead, Goblins, and Dwarves, 28 games each, the Normal AI under
+development): Attack 2 at 2 Coins 89–93% (82–93% against all six, with the
+`7r30` AI); Attack 1.5 at 2 Coins 64–82%;
+Attack 1.5 and Defense 1 at 2 Coins 61–71%; Attack 1.5 and 8 HP at 2 Coins
+67–71%; Attack 1.5, Defense 1, and 9 HP at 2 Coins 54–71%; Attack 1.5 at 3
+Coins 50–64%. The third Coin is the lever: the Grunt now does a Marksman's
+job (a shot from two tiles that a melee unit cannot answer), so it pays a
+Marksman's price, and it stays below the Ray Gunner (4 Coins, Attack 3 at
+full power), which is still trained (155 Ray Gunners against 1,095 Grunts
+in the 168 games below). Its 10 HP, Shield 2, and Defense 1.5 are
+unchanged; the Thrall (a Grunt statline) shares the range.
+
+**Coarse matchups** (Dry Land 11 x 11, Rival, round cap 120, seeds 0–13 in
+both orders, Martian wins of decided games; no game hit the cap):
+
+| Opponent | Before (`7r30` rules and AI) | After (rules and AI) | After, `7r30` Martian AI |
+| -------- | ---------------------------: | -------------------: | -----------------------: |
+| Human    |                  18–10 (64%) |          17–11 (61%) |              16–12 (57%) |
+| Undead   |                  15–13 (54%) |          19–9 (68%)¹ |              17–11 (61%) |
+| Goblin   |                  17–11 (61%) |          15–13 (54%) |              14–14 (50%) |
+| Dinosaur |                  15–13 (54%) |          18–10 (64%) |              15–13 (54%) |
+| Ice Folk |                  11–17 (39%) |          14–14 (50%) |              15–13 (54%) |
+| Dwarf    |                  13–15 (46%) |          15–13 (54%) |               19–9 (68%) |
+| Total    |                  89–79 (53%) |          98–70 (58%) |              96–72 (57%) |
+
+¹ Seeds 14–27 added 17–11, so 36–20 (64%) over 56 games.
+
+The `7r31` Dwarf balance (Bomb Run 5, Dive 6) landed after these runs; the
+Dwarf pairing rerun at `7r32` is again 15–13.
+Grunt shots: before, 3,627 attacks, all adjacent, 67% drawing retaliation;
+after, 7,172, of which 6,313 (88%) from two tiles and 7% drawing
+retaliation. The Normal AI changes are in the
+[Normal AI notes](../architecture/NORMAL_AI.md#martian-ranged-play-pulp_wars-b5f2).
 
 ## 17. Decisions made in this spec
 

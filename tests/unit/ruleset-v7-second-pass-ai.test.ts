@@ -206,12 +206,16 @@ describe("Normal AI second pass: Ice Folk, Martian abilities", () => {
   it("pulls a hostile unit where the other own attacks take half of it", () => {
     const state = field(
       [
-        // Pulled to (6, 4): the Fighters (4 each) and the Projector (2)
-        // take 10 of the Guard's 17 HP; with the Mothership's 5 it would
-        // still live, so this is no kill setup.
+        // Pulled to (6, 4): the Grunts (2 each) and the Projector (2) take
+        // 10 of the Guard's 17 HP; with the Mothership's 5 it would still
+        // live, so this is no kill setup. `pulp_wars-b5f.2`: a Grunt (Attack
+        // 1.5, was 2) deals 2, not 4, so two more Grunts join with their ray
+        // pistols from two tiles away.
         own("KNIGHT", 6, 3),
         own("FIGHTER", 5, 4),
         own("FIGHTER", 7, 4),
+        own("FIGHTER", 4, 4),
+        own("FIGHTER", 8, 4),
         own("GUARD", 7, 3),
         foe("GUARD", 6, 5),
       ],

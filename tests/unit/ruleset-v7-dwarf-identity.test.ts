@@ -22,10 +22,11 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // (docs/product/RULESET_7_DWARVES.md section 2.1). It took 7r30 after the
 // unique-factions rule (7r29); later beads that bump the identity re-pin
 // REVISION here: the Dwarf coarse balance (`pulp_wars-78i.7`, bomb 5 and
-// Dive 6) took 7r31.
+// Dive 6) took 7r31, the Martian Grunt and Tripod ranges
+// (`pulp_wars-b5f.2`) 7r32.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 31;
+const REVISION = 32;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

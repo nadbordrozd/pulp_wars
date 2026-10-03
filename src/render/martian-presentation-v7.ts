@@ -221,6 +221,28 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
   const brains = martianRolesWith("MIND_CONTROL").map(label);
   const pullers = martianRolesWith("TRACTOR_BEAM").map(label);
   const strafers = martianRolesWith("CHARGE").map(label);
+  // `pulp_wars-b5f.2`: the Grunt's ray pistol (a land role with range 2
+  // and no heat ray) and the Tripod's range-2-only ray.
+  const pistolRoles = martianRolesWith("ATTACK").filter(
+    (role) =>
+      role !== "PATROL_BOAT" &&
+      role !== "BATTLESHIP" &&
+      !martianRolesWith("HEAT_RAY").includes(role) &&
+      effectiveRoleRuleV7(role, "MARTIAN").range >= 2,
+  );
+  const pistols = pistolRoles.map(label);
+  const pistolRange = Math.max(
+    ...pistolRoles.map((role) => effectiveRoleRuleV7(role, "MARTIAN").range),
+  );
+  const standoffRoles = UNIT_ROLE_IDS_V7.filter(
+    (role) => effectiveRoleRuleV7(role, "MARTIAN").minimumRange >= 2,
+  );
+  const standoff = standoffRoles.map(label);
+  const standoffRange = Math.max(
+    ...standoffRoles.map(
+      (role) => effectiveRoleRuleV7(role, "MARTIAN").minimumRange,
+    ),
+  );
   return [
     [
       "Shields",
@@ -241,6 +263,10 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     [
       "Pierce",
       `a ${joinOr(pierce)}'s ray also hits the unit directly behind its target for half the damage, friend or foe.`,
+    ],
+    [
+      "Ranges",
+      `a ${joinOr(pistols)}'s ray pistol shoots up to ${numberWord(pistolRange)} tiles away at full Attack, even after moving; a ${joinOr(standoff)} fires only at units ${numberWord(standoffRange)} tiles away, never at one next to it.`,
     ],
     [
       "Disintegrator",

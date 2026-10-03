@@ -479,7 +479,8 @@ describe("public queries (section 11)", () => {
     expect(threatens(tripod, at(2, 3), at(7, 3), 0)).toBe(false);
     expect(threatens(tripod, at(2, 3), at(6, 3), 1)).toBe(true);
     // A Grunt in the same place does not cross the Mountains (its owner's
-    // view knows it has no Engineering).
+    // view knows it has no Engineering). `pulp_wars-b5f.2`: its ray pistol
+    // (range 2) still shoots over the ridge to (4, 3), not to (5, 3).
     const grunt = checkedV7({
       ...tripod,
       units: tripod.units.map((unit) =>
@@ -488,7 +489,8 @@ describe("public queries (section 11)", () => {
           : unit,
       ),
     });
-    expect(threatens(grunt, at(2, 3), at(4, 3), 0)).toBe(false);
+    expect(threatens(grunt, at(2, 3), at(4, 3), 0)).toBe(true);
+    expect(threatens(grunt, at(2, 3), at(5, 3), 0)).toBe(false);
     // Mind Control and the Tractor Beam add no threatened tile: a Brain
     // (Move 1, range 1) threatens distance 2 at most.
     const brain = martianFieldV7([

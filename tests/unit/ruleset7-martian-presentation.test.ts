@@ -188,6 +188,7 @@ describe("Martian texts (section 13.2)", () => {
       "Force Fields",
       "Heat rays",
       "Pierce",
+      "Ranges",
       "Disintegrator",
       "Walkers",
       "Flyers",
@@ -203,6 +204,10 @@ describe("Martian texts (section 13.2)", () => {
     );
     expect(rules.get("Mind Control")).toContain(
       `with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles`,
+    );
+    // `pulp_wars-b5f.2`: the Grunt's ray pistol and the Tripod's range.
+    expect(rules.get("Ranges")).toBe(
+      `a ${label("FIGHTER")}'s ray pistol shoots up to two tiles away at full Attack, even after moving; a ${label("CATAPULT")} fires only at units two tiles away, never at one next to it.`,
     );
     expect(rules.get("Heat rays")).toContain(
       `a ${label("MARKSMAN")}, ${label("CATAPULT")}, or ${label("JUGGERNAUT")} fires at full power`,
@@ -226,7 +231,8 @@ describe("Martian previews (section 13.1)", () => {
       ...(preview.coolingApplied ? ["Leaves it Cooling next turn"] : []),
     ]);
     expect(lines.pierce).toEqual([]);
-    // Melee retaliation on the Tripod: its own Shield absorbs.
+    // Retaliation on the Tripod (the Grunt's ray pistol reaches range 2):
+    // its own Shield absorbs.
     const tripod = unitAt(view, MARTIAN_DUEL_V7.tripod);
     const dented = unitAt(view, MARTIAN_DUEL_V7.dentedGrunt);
     const melee = queryCombatPreviewV7(view, tripod.id, dented.id);

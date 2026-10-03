@@ -177,6 +177,7 @@ import {
   PSYCHIC_COMMAND_DEFERRED_PRIORITY_V7,
   RAY_KITE_PRIORITY_V7,
   RAY_WASTED_KILL_PRIORITY_V7,
+  RANGED_STEP_BACK_PRIORITY_V7,
   RETALIATION_SHIELD_COST_V7,
   SAUCER_STAGING_DISTANCE_V7,
   SHIELDLESS_RETREAT_PRIORITY_V7,
@@ -199,6 +200,7 @@ import {
   martianArmyCountsV7,
   martianFactsV7,
   martianMatchForPolicyV7,
+  martianPolicyOptionsV7,
   martianProductionAdjustmentV7,
   martianResearchV7,
   martianRetainedValueV7,
@@ -9036,6 +9038,73 @@ function martianBeamDownScoreV7(
 }
 
 /**
+ * `pulp_wars-b5f.2`: the step back of a Martian shooter with range 2 (the
+ * Grunt's plain ray pistol, the Ray Gunner, the Tripod, the Colossus) that
+ * can still attack after this Move. It stands next to a hostile melee unit
+ * (one that cannot shoot at range 2, so it retaliates only when adjacent),
+ * or, for the Tripod, inside its minimum range of any hostile unit, and is
+ * not on a settlement center: a Move to a tile with no such unit that
+ * close, from which a visible hostile land unit is in range, outside
+ * visible lethal reach, goes at 904 (above the chips, so it steps before it
+ * shoots). A ray unit that could fire at full power where it stands keeps
+ * that shot. Null when the rule does not apply.
+ */
+function martianRangedStepBackV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  blockedHere: boolean,
+): { readonly priority: number; readonly strategic: number } | null {
+  const view = context.view;
+  const cache = martianCacheV7(context);
+  const facts = cache.facts;
+  if (
+    actor.activation.moved ||
+    !primaryReadyForPolicyV7(actor) ||
+    !unitMayActAfterMoveV7(view, actor)
+  )
+    return null;
+  const rule = unitRoleRuleV7(view, actor);
+  if (!rule.abilities.includes("ATTACK")) return null;
+  const hostileLand = context.lookup.visibleHostiles.filter(
+    (unit) => unit.form === "LAND" && unit.hp > 0,
+  );
+  if (hostileLand.length === 0) return null;
+  const melee = (unit: PublicUnitV7): boolean =>
+    publicCombatFacts(view, unit, context.lookup).maximumRange < 2;
+  const tooClose = (at: CoordV7): boolean =>
+    hostileLand.some((unit) => {
+      const gap = distance(unit.at, at);
+      return gap < rule.minimumRange || (gap === 1 && melee(unit));
+    });
+  if (tooClose(to)) return null;
+  const targets = hostileLand.filter((unit) => {
+    const gap = distance(unit.at, to);
+    return gap >= Math.max(2, rule.minimumRange) && gap <= rule.range;
+  });
+  if (targets.length === 0) return null;
+  const danger = visibleImmediateDamage(view, actor, to, context);
+  if (danger >= actor.hp) return null;
+  if (
+    view.cities.some((city) => same(city.at, actor.at)) ||
+    !tooClose(actor.at)
+  )
+    return null;
+  // A ready ray unit with a full-power shot where it stands keeps it.
+  if (
+    isRayUnitV7(view, actor) &&
+    !facts.coolingNow.has(actor.id) &&
+    !blockedHere &&
+    cache.attackers.has(actor.id)
+  )
+    return null;
+  return {
+    priority: RANGED_STEP_BACK_PRIORITY_V7,
+    strategic: 6 + targets.length - Math.floor(danger / 2),
+  };
+}
+
+/**
  * Martian Move adjustments.
  *
  * As Martians: a ray unit that can fire at full power fires before it moves
@@ -9131,10 +9200,17 @@ function martianMoveValueV7(
   const hostileLand = context.lookup.visibleHostiles.filter(
     (unit) => unit.form === "LAND" && unit.hp > 0,
   );
+  const rangedStepBack = martianPolicyOptionsV7().rangedStepBack;
+  // `pulp_wars-b5f.2`: a Tripod (minimum range 2) with a hostile unit
+  // inside its minimum range cannot fire from where it stands.
+  const blockedHere =
+    rangedStepBack &&
+    rule.minimumRange >= 2 &&
+    hostileLand.some((unit) => distance(unit.at, actor.at) < rule.minimumRange);
   // Rays: full power from where the unit stands.
   if (isRayUnitV7(view, actor) && routine) {
     const ready = !actor.activation.moved && !facts.coolingNow.has(actor.id);
-    if (ready && dangerHere() < actor.hp) {
+    if (ready && dangerHere() < actor.hp && !blockedHere) {
       if (cache.attackers.has(actor.id)) return { priority: -1, strategic: 0 };
       const approaching = hostileLand.some(
         (unit) => distance(unit.at, actor.at) === 3 && !isRayUnitV7(view, unit),
@@ -9171,6 +9247,15 @@ function martianMoveValueV7(
         next = Math.max(next, RAY_KITE_PRIORITY_V7);
         strategic += 6;
       }
+    }
+  }
+  // `pulp_wars-b5f.2`: the step back of the Grunt's ray pistol and the
+  // Tripod's range-2 ray.
+  if (rangedStepBack && routine && rule.range >= 2) {
+    const ranged = martianRangedStepBackV7(context, actor, to, blockedHere);
+    if (ranged !== null) {
+      next = Math.max(next, ranged.priority);
+      strategic += ranged.strategic;
     }
   }
   // Flyers: never into visible lethal reach unless it is no worse.

@@ -118,9 +118,10 @@ describe("Martian Shields: absorption (section 5.3)", () => {
       { seat: 1, role: "FIGHTER", at: at(5, 3) },
     ]);
     const run = attackV7(state, at(5, 2), at(5, 3));
-    // The Grunt (Attack 2) deals 5; the Fighter retaliates for 5.
+    // The Grunt (Attack 1.5 since `pulp_wars-b5f.2`, was 2 and 5) deals 3;
+    // the Fighter retaliates for 5.
     expect(run.combat).toMatchObject({
-      damageToDefender: 5,
+      damageToDefender: 3,
       defenderShieldDamage: 0,
       damageToAttacker: 3,
       attackerShieldDamage: 2,

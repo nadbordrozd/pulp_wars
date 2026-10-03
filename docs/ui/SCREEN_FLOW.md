@@ -679,7 +679,8 @@ without a Martian seat looks as before apart from the extra faction option.
 - **City panel.** A Martian viewer's city counts slots like a Dinosaur's
   ("5/7 slots"; the tooltip names the two-slot Mothership and Colossus and
   that Thralls use no slot), and every train card names its slots.
-- **Help.** A "Martians" section lists the fourteen section-13.3 sentences
+- **Help.** A "Martians" section lists the fifteen section-13.3 sentences
+  (the "Ranges" sentence since `pulp_wars-b5f.2`)
   for every viewer of a match with a Martian seat (numbers and names from
   the registry); a Martian viewer is not told of the Raider's Escape.
 

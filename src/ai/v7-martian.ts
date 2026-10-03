@@ -36,6 +36,50 @@ import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
  * routine Moves 600 to 850).
  */
 
+// --- Options --------------------------------------------------------------
+
+/**
+ * `pulp_wars-b5f.2`: the Martian ranged play. With the Grunt's ray pistol
+ * (range 1–2) and the Tripod's range-2-only ray, a shooter next to a
+ * hostile unit that cannot shoot back at range 2 (or, for the Tripod, next
+ * to any hostile unit) steps back to range 2 before it shoots
+ * (`rangedStepBack`). Off, the policy decides as that of `pulp_wars-7g3.8`
+ * did (the head-to-head baseline). A second rule, walking a shooter with no
+ * target in range to a tile two tiles from one, lost its head-to-head and
+ * was dropped (docs/architecture/NORMAL_AI.md, "Martian ranged play").
+ *
+ * Tests and headless harnesses set the switch before a seat's decision;
+ * nothing else does.
+ */
+export interface MartianPolicyOptionsV7 {
+  readonly rangedStepBack: boolean;
+}
+
+export const DEFAULT_MARTIAN_POLICY_OPTIONS_V7: MartianPolicyOptionsV7 =
+  Object.freeze({ rangedStepBack: true });
+export const LEGACY_MARTIAN_POLICY_OPTIONS_V7: MartianPolicyOptionsV7 =
+  Object.freeze({ rangedStepBack: false });
+
+let martianPolicyOptions: MartianPolicyOptionsV7 =
+  DEFAULT_MARTIAN_POLICY_OPTIONS_V7;
+
+/** The options the next decisions use. */
+export function martianPolicyOptionsV7(): MartianPolicyOptionsV7 {
+  return martianPolicyOptions;
+}
+
+/**
+ * Tests and headless harnesses only: changes the options and returns the
+ * previous ones (restore them when done).
+ */
+export function setMartianPolicyOptionsV7(
+  options: Partial<MartianPolicyOptionsV7>,
+): MartianPolicyOptionsV7 {
+  const previous = martianPolicyOptions;
+  martianPolicyOptions = Object.freeze({ ...martianPolicyOptions, ...options });
+  return previous;
+}
+
 // --- Priorities -----------------------------------------------------------
 
 /** Mind Control: above every ordinary kill (a conversion beats a kill). */
@@ -62,6 +106,13 @@ export const TRACTOR_UTILITY_PRIORITY_V7 = 1150;
 export const BEAM_DOWN_PRIORITY_V7 = 865;
 /** A Cooling ray unit steps out of melee reach before its half shot. */
 export const RAY_KITE_PRIORITY_V7 = 905;
+/**
+ * `pulp_wars-b5f.2`: a shooter next to a hostile it would rather not shoot
+ * from there (a melee unit retaliates; the Tripod cannot fire at an
+ * adjacent unit) steps back to range 2: above the chips (900), so it steps
+ * before it shoots, below the kills.
+ */
+export const RANGED_STEP_BACK_PRIORITY_V7 = 904;
 /** A full-power kill that a half-power shot would also make waits. */
 export const RAY_WASTED_KILL_PRIORITY_V7 = 1176;
 /** A Thrall's chip goes before other chips (900): it is the front row. */
@@ -102,8 +153,12 @@ export const LATE_RESEARCH_FRONT_V7 = 5;
 
 /** Production: each Shield point is worth two HP. */
 export const SHIELD_PRODUCTION_VALUE_V7 = 2;
-/** Production: bodies first while the city is threatened. */
-export const THREATENED_GRUNT_BIAS_V7 = 12;
+/**
+ * Production: bodies first while the city is threatened. `pulp_wars-b5f.2`:
+ * 14 (was 12), cancelling the Grunt's third Coin in the role value's
+ * "minus twice the cost" term, so a threatened city still trains Grunts.
+ */
+export const THREATENED_GRUNT_BIAS_V7 = 14;
 export const THREATENED_SUPPORT_COST_V7 = 30;
 /** Production: the Grunt pays less for repetition (5 instead of 8 a unit). */
 export const GRUNT_REPETITION_REFUND_V7 = 3;
@@ -422,8 +477,9 @@ export function martianArmyCountsV7(view: PlayerViewV7): MartianArmyCountsV7 {
  * they are"; "train bodies first under threat"):
  *
  * - every role gains two per Shield point (`HP + 2 x Shield`);
- * - in a threatened city the Grunt gains 12 and the Projector, Saucer, and
- *   Brain cost 30 (a Projector would win the Guard's threatened bonus);
+ * - in a threatened city the Grunt gains 14 (12 before its cost of 3) and
+ *   the Projector, Saucer, and Brain cost 30 (a Projector would win the
+ *   Guard's threatened bonus);
  * - the Grunt's repetition costs 5 a unit instead of 8 (bodies; in the
  *   preferred role only, which is where the repetition cost applies), and
  *   the Ray Gunner gains 10 (the main damage, about two for every three

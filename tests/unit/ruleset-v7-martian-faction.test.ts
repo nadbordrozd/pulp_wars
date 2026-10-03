@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 31;
+const REVISION = 32;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -520,15 +520,17 @@ const ROSTER = [
     "Grunt",
     "FIGHTER",
     null,
-    2,
+    // `pulp_wars-b5f.2`: the ray pistol, range 1–2 (was 1), paid for with
+    // cost 3 (was 2) and Attack 1.5 (`3`, was 2).
+    3,
     1,
     10,
     2,
-    4,
+    3,
     3,
     1,
     1,
-    1,
+    2,
     1,
     true,
     ["ATTACK", "CAPTURE"],
@@ -627,9 +629,11 @@ const ROSTER = [
     8,
     2,
     2,
-    1,
+    // `pulp_wars-b5f.2`: range exactly 2 (minimum range 2, was 1) and
+    // Sight 2 (was 1).
     2,
-    1,
+    2,
+    2,
     true,
     ["ATTACK", "STRIDE", "HEAT_RAY", "PIERCE"],
     "STRIDE",

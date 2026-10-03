@@ -575,9 +575,11 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
       expect(pierceTileV7(TRIPOD, at(TRIPOD.x + dx, TRIPOD.y + dy))).toBeNull();
   });
 
-  it("hits the unit behind the target in all eight directions at distance 1 and 2: a Guard (10) pierces for 5", () => {
+  // `pulp_wars-b5f.2`: the Tripod fires at range 2 only (minimum range 2),
+  // so Pierce is tested at distance 2; the rule itself is not range-bound.
+  it("hits the unit behind the target in all eight directions at distance 2: a Guard (10) pierces for 5", () => {
     for (const [dx, dy] of DIRECTIONS)
-      for (const distance of [1, 2]) {
+      for (const distance of [2]) {
         const target = at(TRIPOD.x + dx * distance, TRIPOD.y + dy * distance);
         const behind = at(target.x + dx, target.y + dy);
         const state = martianFieldV7(
@@ -602,10 +604,8 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
           },
         ]);
         expect(unitAtV7(run.state, behind).hp, label).toBe(victim.hp - 5);
-        // Nobody retaliates for a Pierce hit.
-        expect(shieldAtV7(run.state, TRIPOD), label).toBe(
-          distance === 1 ? 2 - run.combat.attackerShieldDamage : 2,
-        );
+        // Nobody retaliates for a Pierce hit (nor, at range 2, the Guard).
+        expect(shieldAtV7(run.state, TRIPOD), label).toBe(2);
       }
   });
 
@@ -735,7 +735,7 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
 
     const egg = martianFieldV7(
       [
-        { seat: 0, role: "CATAPULT", at: at(4, 5) },
+        { seat: 0, role: "CATAPULT", at: at(5, 4) },
         { seat: 1, role: "FIGHTER", at: at(3, 6) },
       ],
       {
@@ -744,7 +744,7 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
         eggs: [{ seat: 1, role: "RAIDER", at: at(2, 7) }],
       },
     );
-    const run = attackV7(egg, at(4, 5), at(3, 6));
+    const run = attackV7(egg, at(5, 4), at(3, 6));
     expect(run.combat.splash).toHaveLength(1);
     expect(run.combat.splash[0]?.at).toEqual(at(2, 7));
   });
@@ -783,7 +783,7 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
     const fortified = fieldDefenseV7(
       fieldDefenseV7(
         martianFieldV7([
-          { seat: 0, role: "CATAPULT", at: at(4, 7) },
+          { seat: 0, role: "CATAPULT", at: at(5, 7) },
           { seat: 1, role: "FIGHTER", at: at(3, 7), hp: 1 },
           { seat: 1, role: "GUARD", at: at(2, 7) },
         ]),
@@ -791,7 +791,7 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
       ),
       at(2, 7),
     );
-    const run = attackV7(fortified, at(4, 7), at(3, 7));
+    const run = attackV7(fortified, at(5, 7), at(3, 7));
     expect(run.combat).toMatchObject({ defenderDies: true, advances: false });
     expect(run.events).toContainEqual(
       expect.objectContaining({
@@ -802,7 +802,34 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
     expect(tileV7(run.state, at(3, 7)).fieldDefense).toBe(false);
     // Pierce does not destroy Field Defense on the pierced tile.
     expect(tileV7(run.state, at(2, 7)).fieldDefense).toBe(true);
-    expect(run.attacker?.at).toEqual(at(4, 7));
+    expect(run.attacker?.at).toEqual(at(5, 7));
+  });
+
+  it("a Tripod fires at range 2 only, never at an adjacent unit (`pulp_wars-b5f.2`)", () => {
+    const state = martianFieldV7([
+      { seat: 0, role: "CATAPULT", at: at(4, 4) },
+      { seat: 1, role: "FIGHTER", at: at(5, 4) },
+      { seat: 1, role: "FIGHTER", at: at(6, 6) },
+    ]);
+    const tripod = unitAtV7(state, at(4, 4));
+    const attacks = queryPlayerCommandsV7(state, activeIdV7(state)).filter(
+      (command) => command.kind === "ATTACK" && command.unitId === tripod.id,
+    );
+    // The adjacent Fighter is not a target; the one two tiles away is.
+    expect(attacks).toEqual([
+      {
+        kind: "ATTACK",
+        unitId: tripod.id,
+        targetUnitId: unitAtV7(state, at(6, 6)).id,
+      },
+    ]);
+    expect(
+      queryCombatPreviewV7(
+        viewForV7(state, activeIdV7(state)),
+        tripod.id,
+        unitAtV7(state, at(5, 4)).id,
+      ),
+    ).toBeNull();
   });
 
   it("a Ray Gunner and a Colossus advance after an adjacent kill; the Colossus pushes at range 1 only", () => {

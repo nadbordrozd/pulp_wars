@@ -149,10 +149,13 @@ export const MARTIAN_UI_V7 = {
    */
   rayGunner: { x: 5, y: 7 },
   rayTarget: { x: 3, y: 7 },
-  /** Unmoved Tripod: a Fighter diagonal with a Marksman behind it. */
+  /**
+   * Unmoved Tripod: a Fighter two tiles diagonal with a Marksman behind it
+   * (`pulp_wars-b5f.2`: the Tripod fires at range 2 only).
+   */
   tripod: { x: 2, y: 2 },
-  pierceTarget: { x: 3, y: 3 },
-  pierceVictim: { x: 4, y: 4 },
+  pierceTarget: { x: 4, y: 4 },
+  pierceVictim: { x: 5, y: 5 },
   /** Two tiles south: an enemy Fighter with an own Grunt behind it. */
   friendlyTarget: { x: 2, y: 4 },
   friendlyVictim: { x: 2, y: 5 },
@@ -223,7 +226,8 @@ export function martianUiFixtureV7(
 
 /**
  * Two Martian seats: the human's Ray Gunner two tiles from an enemy Grunt
- * in a Force Field (Shield 4), and its Tripod next to an enemy Grunt with a
+ * in a Force Field (Shield 4), and its Tripod two tiles from an enemy Grunt
+ * (whose ray pistol answers at range 2, `pulp_wars-b5f.2`) with a
  * dented Shield: the attack previews name the Shield on both sides.
  */
 export const MARTIAN_DUEL_V7 = {
@@ -231,7 +235,7 @@ export const MARTIAN_DUEL_V7 = {
   shieldedGrunt: { x: 5, y: 4 },
   enemyProjector: { x: 6, y: 4 },
   tripod: { x: 2, y: 2 },
-  dentedGrunt: { x: 3, y: 2 },
+  dentedGrunt: { x: 2, y: 4 },
 } as const;
 
 export function martianDuelFixtureV7(): GameStateV7 {
