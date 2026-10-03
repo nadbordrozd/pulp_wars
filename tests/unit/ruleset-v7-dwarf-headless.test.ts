@@ -19,7 +19,8 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // `pulp_wars-78i.4` (tunnels, bombs, Assemble), and every other faction
 // plays against Dwarf units, mounds, bombs, and Dig In without an illegal
 // command, a crash, or a stall (docs/product/RULESET_7_DWARVES.md sections
-// 15 and 19).
+// 15 and 19). The Showcase match with a Dwarf seat runs beside this file in
+// ruleset-v7-dwarf-showcase-headless.test.ts (`pulp_wars-9s0.13`).
 
 const MATCHES: readonly (readonly [
   readonly FactionIdV7[],
@@ -101,26 +102,6 @@ describe("headless Normal matches with Dwarf seats", () => {
       state = result.state;
     }
     expect(canonicalHash(state)).toBe(match.stateHash);
-  }, 300_000);
-
-  it("plays a Showcase with a Dwarf seat without errors", () => {
-    const setup: MatchSetupV7 = {
-      rulesetId: RULESET_7_ID,
-      seed: 1,
-      width: 16,
-      height: 16,
-      aiCount: 3,
-      aiDifficulty: "NORMAL",
-      aiMode: "RIVAL",
-      humanColor: "CORAL",
-      factions: ["DWARF", "ORIGINAL", "UNDEAD", "GOBLIN"],
-      mapType: "SHOWCASE",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-    };
-    const match = runAiMatchV7(setup, { maxRounds: 15 });
-    expect(match.errors).toEqual([]);
-    expect(match.stalls).toEqual([]);
-    expect(parseGameStateV7(match.state)).not.toBeNull();
   }, 300_000);
 });
 

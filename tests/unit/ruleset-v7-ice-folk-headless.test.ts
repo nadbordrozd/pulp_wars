@@ -18,7 +18,9 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // stays safe with Ice Folk seats. It plays an Ice Folk seat with the generic
 // policy (the Ice Folk policy is `pulp_wars-7g3.4`), and every other faction
 // plays against Ice Folk units, Snow, and Chill without an illegal command,
-// a crash, or a stall (docs/product/RULESET_7_ICE_FOLK.md section 12).
+// a crash, or a stall (docs/product/RULESET_7_ICE_FOLK.md section 12). The
+// Showcase match with an Ice Folk seat runs beside this file in
+// ruleset-v7-ice-folk-showcase-headless.test.ts (`pulp_wars-9s0.13`).
 
 const MATCHES: readonly (readonly [
   readonly FactionIdV7[],
@@ -102,27 +104,6 @@ describe("headless Normal matches with Ice Folk seats", () => {
       state = result.state;
     }
     expect(canonicalHash(state)).toBe(match.stateHash);
-  }, 300_000);
-
-  it("plays a Showcase with an Ice Folk seat; the Frost Giant's aura chills from the first rounds", () => {
-    const setup: MatchSetupV7 = {
-      rulesetId: RULESET_7_ID,
-      seed: 1,
-      width: 16,
-      height: 16,
-      aiCount: 3,
-      aiDifficulty: "NORMAL",
-      aiMode: "RIVAL",
-      humanColor: "CORAL",
-      factions: ["ICE_FOLK", "ORIGINAL", "UNDEAD", "GOBLIN"],
-      mapType: "SHOWCASE",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-    };
-    const match = runAiMatchV7(setup, { maxRounds: 20 });
-    expect(match.errors).toEqual([]);
-    expect(match.stalls).toEqual([]);
-    expect(match.metrics.iceFolk.snowTilesAtEndTurnMaximum).toBeGreaterThan(0);
-    expect(parseGameStateV7(match.state)).not.toBeNull();
   }, 300_000);
 });
 

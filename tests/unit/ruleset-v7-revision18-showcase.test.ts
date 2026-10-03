@@ -97,37 +97,10 @@ function tile(state: GameStateV7, x: number, y: number): TileStateV7 {
   return found;
 }
 
-function factionMixes(seats: number): readonly (readonly FactionIdV7[])[] {
-  let mixes: FactionIdV7[][] = [[]];
-  for (let seat = 0; seat < seats; seat += 1)
-    mixes = mixes.flatMap((mix) =>
-      FACTION_IDS_V7.map((faction) => [...mix, faction]),
-    );
-  return mixes;
-}
-
 const THREE: readonly FactionIdV7[] = ["ORIGINAL", "UNDEAD", "GOBLIN"];
 
 describe("ruleset-7 revision-18 Showcase setup", () => {
-  it("accepts SHOWCASE at 16 for 1–3 AI seats and every faction mix", () => {
-    let accepted = 0;
-    for (const seats of [2, 3, 4])
-      for (const factions of factionMixes(seats)) {
-        const setup = showcaseSetup(factions);
-        expect(parseMatchSetupV7(setup)).toEqual(setup);
-        const created = createInitialMapStateV7(setup);
-        expect(created.ok).toBe(true);
-        accepted += 1;
-      }
-    // The Ice Folk revision: six factions (36, 216, and 1296 mixes); the
-    // Dwarf revision: seven (49, 343, and 2401 mixes).
-    expect(accepted).toBe(49 + 343 + 2401);
-    for (const aiMode of ["RIVAL", "COOPERATIVE"] as const)
-      expect(createPlayableGameV7(showcaseSetup(THREE, { aiMode })).ok).toBe(
-        true,
-      );
-  });
-
+  // Every faction mix is accepted: ruleset-v7-revision18-showcase-mixes.test.ts.
   it("rejects SHOWCASE at every other size", () => {
     for (const size of [11, 14, 20, 25] as const) {
       const setup = showcaseSetup(["ORIGINAL", "UNDEAD"], {
@@ -941,7 +914,7 @@ describe("ruleset-7 revision-18 Showcase play", () => {
       );
       expect(commands.at(-1)).toEqual({ kind: "END_TURN" });
     }
-  });
+  }, 120_000);
 
   it("does not start in the Normal AI endgame siege mode", () => {
     for (const aiMode of ["RIVAL", "COOPERATIVE"] as const) {

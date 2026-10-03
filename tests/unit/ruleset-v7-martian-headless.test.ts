@@ -19,6 +19,8 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // policy (it never uses Beam Down, Mind Control, or the Tractor Beam; the
 // Martian policy is `pulp_wars-t6s.3`), and every other faction plays
 // against Martian units without an illegal command, a crash, or a stall.
+// The Showcase match with a Martian seat runs beside this file in
+// ruleset-v7-martian-showcase-headless.test.ts (`pulp_wars-9s0.13`).
 
 const MATCHES: readonly (readonly [
   readonly FactionIdV7[],
@@ -99,30 +101,6 @@ describe("headless Normal matches with Martian seats", () => {
       state = result.state;
     }
     expect(canonicalHash(state)).toBe(match.stateHash);
-  }, 300_000);
-
-  it("plays a Showcase with a Martian seat, where every Martian unit exists from the first turn", () => {
-    const setup: MatchSetupV7 = {
-      rulesetId: RULESET_7_ID,
-      seed: 1,
-      width: 16,
-      height: 16,
-      aiCount: 3,
-      aiDifficulty: "NORMAL",
-      aiMode: "RIVAL",
-      humanColor: "CORAL",
-      factions: ["MARTIAN", "ORIGINAL", "UNDEAD", "GOBLIN"],
-      mapType: "SHOWCASE",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-    };
-    const match = runAiMatchV7(setup, { maxRounds: 20 });
-    expect(match.errors).toEqual([]);
-    expect(match.stalls).toEqual([]);
-    const martian = match.metrics.martian;
-    // Ray units fire and Shields absorb from the first rounds.
-    expect(martian.raysFull + martian.raysHalf).toBeGreaterThan(0);
-    expect(martian.rechargeEvents).toBeGreaterThan(0);
-    expect(parseGameStateV7(match.state)).not.toBeNull();
   }, 300_000);
 });
 
