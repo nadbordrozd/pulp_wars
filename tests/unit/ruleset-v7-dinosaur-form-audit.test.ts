@@ -511,11 +511,18 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // (an Egg and an embarked unit never attack).
     // `pulp_wars-9s0.1`: the campaign plan gives jobs to land-form units
     // only (an Egg and an embarked unit must fail the gate).
+    // `pulp_wars-t6s.3`: Mind Control targets and the enabler target values
+    // are land-form units (an Egg and an embarked unit are never Mind
+    // Controlled and project no Force Field); the Tractor Beam kill test
+    // counts land-form attackers, the Disintegrator research a land-form
+    // fortified unit, and the Martian Move rules a land-form mover (an Egg
+    // never moves; an embarked unit keeps the naval rules).
     "src/ai/v7-campaign.ts": 1,
     "src/ai/v7-dinosaur.ts": 2,
     "src/ai/v7-goblin.ts": 1,
+    "src/ai/v7-martian.ts": 2,
     "src/ai/v7-undead.ts": 1,
-    "src/ai/v7.ts": 11,
+    "src/ai/v7.ts": 14,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

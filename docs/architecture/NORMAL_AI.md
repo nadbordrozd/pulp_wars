@@ -16,7 +16,12 @@ tiles, Egg protection, Hatch, Grow, the Triceratops's Charge! (revision 20,
 play against each of them. It is gated on a match with a Dinosaur seat, so
 matches without one decide as under revision 18, except that a wounded unit
 that can be promoted is promoted first (revision 20: a Promotion fully
-heals). The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
+heals). The Martian play (`pulp_wars-t6s.3`, `src/ai/v7-martian.ts`) is
+[summarized below](#martian-play-pulp_wars-t6s3): Shields, heat rays and
+Cooling, Pierce, Beam Down, Mind Control and Thralls, the Tractor Beam,
+production and research, and play against each of them; it is gated on a
+match with a Martian seat, and matches without one are byte-identical.
+The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
 [summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
 every land unit has one job (a village, an invader, the frontier, or a known
 enemy city) and walks the land route to it, in every match.
@@ -968,6 +973,215 @@ turn used 49 commands). `pulp_wars-c87.8` tuned the numbers above against the
 balance acceptance; the measurements are in the
 [Dinosaur balance report](../validation/RULESET_7_DINOSAUR_BALANCE.md), an
 interim baseline ahead of the revision 20 rework.
+
+## Martian play (`pulp_wars-t6s.3`)
+
+Every Martian heuristic lives behind one gate: the match has a Martian seat
+(`src/ai/v7-martian.ts`, `martianMatchForPolicyV7`), or reads a fact that
+only a Martian unit has (a Shield, a heat ray, a walker's or flyer's
+movement, the Force Field, Beam Down, Mind Control, a Thrall, the Tractor
+Beam). A match without a Martian seat never evaluates any of it: the
+[parity run](#martian-measurements) is byte-identical. The rules and their values
+are in `src/ai/v7-martian.ts`; the policy (`src/ai/v7.ts`) calls them from
+its existing scoring steps. They read only the public view, the offered
+commands, and the public previews (`queryCombatPreviewV7` with its
+`rayPower`, `defenderShieldDamage`, and `attackerShieldDamage`,
+`previewKaboomV7` with each result's `shieldDamage`), cached per decision.
+They add no PRNG use, no elapsed-time input, and no work units. Values are in
+the policy's usual units (a unit is worth its cost x 4 plus its HP).
+
+Shared estimates (every match; all neutral without a Martian unit):
+
+- **Shields.** The projected damage to an own unit in the enemy turn is
+  reduced by the Shield it will have then: its current Shield, or with Force
+  Fields the End Turn recharge (4 next to an own Projector).
+- **Rays.** A visible hostile ray unit threatens at full power only where it
+  need not move and while it is not Cooling; otherwise at half power.
+- **Machines.** A visible hostile flyer's reach passes every unit, ignores
+  zone of control, and crosses Shallow Water; a walker's enters Mountains
+  without Engineering and is never stopped by terrain. Both attack only from
+  land, and a flyer never from a center it does not own. Machines never get
+  cover or fortification in the estimate.
+- **Values.** A hostile Projector is worth 4 more per covered unit next to
+  it, a Saucer 8 more while its owner holds a city, a Brain its Thralls'
+  value (they collapse with it), and a ray unit that can fire at full power
+  4 more. An own Thrall is worth its HP (it cost nothing); a Brain carries
+  its Thralls' HP. A lethal follow-up projection also strips the Shield the
+  first hit took.
+
+As Martians:
+
+- **Production.** The role value gains two per Shield point
+  (`HP + 2 x Shield`). In a threatened city the Grunt gains 12 and the
+  Projector, Saucer, and Brain cost 30 (bodies first; the Projector loses the
+  Guard's threatened bonus too). In the preferred role the Grunt's repetition
+  costs 5 a unit instead of 8; the Ray Gunner gains 10 (the main damage, about
+  two for every three Grunts). A Projector gains 4 while the army has more
+  than four front units (Grunts, Thralls, Ray Gunners, Tripods, the Colossus)
+  per Projector and at least three, and otherwise costs 20; a second Saucer
+  costs 20 below six front units, a third always; a Brain gains 10 at war
+  with four or more front units and fewer than one Brain per six, otherwise
+  costs 20; a Tripod (one per three front units) and a Mothership (one per
+  six) gain 30, so they are bought as soon as they are offered (the
+  Dinosaur T-Rex finding).
+- **Research.** Drill and Scouting first (1062, just above the role plan);
+  with two cities Marksmanship and Administration, then Force Fields once a
+  Projector exists, then the Tripod's and the Mothership's technologies (the
+  shorter chain first). These take priority 1150 (Force Fields 1145:
+  above land production, below the best economic plan) once the army has
+  three front units (five for the tier-3 machines), and 1062 before:
+  researched ahead of training they starved the opening of Grunts, and at
+  the Dinosaur signature priority (1170, above the economic plan) they won
+  fewer head-to-head games. The Disintegrator (1061) while a visible
+  hostile unit stands fortified and the seat owns a ray unit.
+- **Rays.** A ray unit that can fire at full power makes no routine Move
+  while it has an offered attack or stands three tiles from a hostile
+  non-ray land unit (it holds its tile, unless it is in lethal reach); one
+  without a target steps to range 2 of a hostile unit holding a settlement
+  center (760, it fires at full power next turn). A Cooling ray unit next to
+  a hostile melee unit steps to a tile at range 2 of a hostile unit and next
+  to none (905, above its half-power chip). A full-power kill that the
+  half-power shot would also make waits (1176, below other kills) and costs
+  6: the next turn's full shot is worth keeping.
+- **Shields.** Shield spent on retaliation costs 2 a point without Force
+  Fields (it is exposure in the enemy turn). A unit ending a Move next to an
+  own Projector gains 3; a Projector's Move gains 4 per own shielded unit it
+  then covers (705 when it covers more). A wounded unit with no Shield left
+  steps out of visible reach (935).
+- **Pierce.** A Tripod attack whose Pierce kills an own or allied unit
+  without killing the target is not a candidate (a city save excuses it);
+  the friendly splash cost and the hostile splash gain are the generic ones.
+- **Beam Down** (865, above routine Moves). A passenger that cannot attack
+  this turn, is not a Brain, and is not the garrison of a city with a hostile
+  unit within three tiles goes onto a tile next to the Saucer when that gains
+  at least three campaign route steps toward its job, lands within two
+  tiles of another own land unit, and is outside visible lethal reach.
+  Value: 4 per route step gained (at most 8), 8 more for a passenger that
+  cannot walk this turn (a unit trained this turn), minus twice the danger
+  there. Commands are scored directly; nothing is previewed, so the larger
+  command list costs one cheap score each.
+- **Saucer.** An unmoved Saucer with a Beam Down worth taking makes no
+  routine Move. Otherwise, with a wave target, it moves only to stage
+  (720): about four tiles from that city, within two tiles of the army.
+  Its hits that do not kill are not candidates (a city save excuses it);
+  it never makes a routine Move into visible lethal reach unless that is no
+  worse.
+- **Brain.** Mind Control (1186, above every kill) on the most valuable
+  convertible target (cost x 10 + HP + target value). A Brain that can
+  still Mind Control moves where a convertible target is in range (1183),
+  outside lethal reach. An attack that leaves a hostile unit convertible by
+  a ready own Brain (in range, or one step away) goes at 1182. Psychic
+  Command uses the Frenzy rule (only adjacent units that can still attack
+  count: 1235 for two, 1190 for one) and waits (1100) while the Brain can
+  Mind Control. A Brain makes no routine Move next to a visible hostile
+  land unit unless it already stands next to one.
+- **Thralls** are the front row: their chips go first (901), and they are
+  worth only their HP when the policy weighs a sacrifice.
+- **Mothership.** The Tractor Beam is scored by the pull's effect: a
+  defender off a hostile center next to an own capturer that can still step
+  in (1347); a besieger off an own center (1279); a hostile unit pulled
+  where own units that need not move deal its Shield plus HP (1181); a
+  fortified unit pulled off its fortification into the reach of at least
+  half its HP (1150); an own unit pulled out of lethal reach (1150). Any
+  other pull is not a candidate. The Mothership makes no routine Move away
+  from the army (no own land unit within two tiles) toward visible hostile
+  units, and gains 2 per own land unit within two tiles.
+- **Machines and water.** A walker or flyer with a job it can walk to
+  crosses water only inside a Move and never ends a routine Move on water
+  (afloat it cannot fight); without one it may self-launch, but never
+  within three tiles of a visible hostile naval unit.
+- The campaign plan is unchanged: Martian units take jobs and waves like
+  every unit, which brings ray units and Projectors along with the wave.
+
+Against Martians (every seat in such a match):
+
+- **Focus fire.** When this turn's offered attacks on a shielded unit (each
+  attacker's best whole hit, Shield plus HP damage, at least two attackers)
+  reach its Shield plus HP, each hit on it that does not kill goes at 1179
+  (ranged, no retaliation: they strip the Shield first) or 1178, above every
+  chip, worth 10 plus the share of the target's value that its Shield damage
+  is. Such a hit is never rejected as harmful. Any other hit keeps the
+  generic rule, so a hit that a full Shield absorbs and nothing follows up is
+  not taken.
+- **Cooling.** A hit on a Cooling ray unit gains 6.
+- **Mind Control denial.** A unit at 6 HP or less (one slot, land form, not
+  on a settlement center) makes no routine Move into three tiles of a ready
+  visible hostile Brain, and steps out of the Brain's range (1150) when it
+  is inside it and a tile outside lethal reach exists.
+- **Mothership pulls.** While a visible hostile Mothership is within four
+  tiles of an own city center whose only adjacent own unit stands on it, a
+  Move that puts a second unit next to the center goes at 1245.
+- **Goblin seats.** A Kaboom gains 4 per Shield point it strips from a
+  hostile unit that own attacks can still hit this turn.
+
+Not covered: the Colossus uses the generic Juggernaut play with the ray
+rules above; Strafe uses the Charge rule unchanged.
+
+### Martian measurements
+
+All on Dry Land, Normal against Normal, Rival mode, the balance-testing
+policy's coarse samples. "Placeholder" is the policy of `d88503c` (the
+generic policy on the Martian registration); "Martian" is this policy. The
+runs used a scratch harness that loads both policies over the same engine and
+gives each seat its own policy; nothing in the shipped policy switches.
+
+**Head-to-head, Martian mirror** (the Martian policy on one seat, the
+placeholder on the other, every seed in both seat orders):
+
+| Board   | Seeds | Round cap | Decided | Martian policy | Placeholder |
+| ------- | ----: | --------: | ------: | -------------: | ----------: |
+| 11 x 11 |  0-39 |       120 |      80 |             44 |          36 |
+| 14 x 14 |  0-29 |       150 |      60 |             33 |          27 |
+| Total   |       |           |     140 |       77 (55%) |          63 |
+
+The edge is modest and consistent: every intermediate run of 40 to 80
+games while the rules were built came out between 50% and 57% for the
+Martian policy, and so did removing any one group of rules (production,
+research, attacks, Moves, Beam Down, the Shield-aware danger). Most seeds
+are won by the same seat in both orders (the map decides them in the
+opening, before a Ray Gunner, a Brain, or a Tripod exists); the rules decide
+the seeds that flip.
+
+**Usage** (the Martian policy's seats in the head-to-head; in brackets the
+placeholder's): seats that trained each role, 11 x 11 of 80 and 14 x 14 of
+60:
+
+| Role             | 11 x 11 | 14 x 14 |
+| ---------------- | ------: | ------: |
+| Grunt            | 80 (80) | 60 (60) |
+| Saucer           | 50 (63) | 43 (53) |
+| Shield Projector | 49 (56) | 46 (56) |
+| Brain            |  33 (0) |  32 (0) |
+| Ray Gunner       | 18 (10) | 34 (28) |
+| Tripod           |  13 (9) | 26 (19) |
+| Mothership       |   5 (0) |  16 (0) |
+
+Abilities, 11 x 11 and 14 x 14: Beam Down 174 and 224 (in 38 of 80 and 39
+of 60 seats); Mind Control 24 and 21 (15 and 15 seats; 45 Thralls, 3
+captures by a Thrall); Tractor Beam 3 and 32; Psychic Command 133 and 128;
+full-power rays 109 and 449 against 70 and 289 at half power (35 and 107 of
+them after a Move); Pierce hits on hostile units 13 and 42, on own units 3
+and 3. The placeholder used no Beam Down, Mind Control, Tractor Beam, or
+Psychic Command. Shields recharged to 4 (the Force Field, and the
+Mothership's own maximum) 852 and 1,044 times.
+
+**Against each faction** (the Martian policy on both sides of the matchup,
+seeds 0-7 in both orders on 11 x 11 and 14 x 14, 32 decided games each,
+Martian wins first): Humans 18-14, Undead 16-16, Goblins 17-15, Dinosaurs
+15-17. No pairing is beyond 70/30; the numbers are the balance bead's
+(`pulp_wars-t6s.5`) to tune.
+
+**Parity.** 27 matches without a Martian seat (Human-Undead,
+Goblin-Dinosaur, Dinosaur-Human, and Undead-Goblin on 11 x 11, seeds 0-5;
+Human-Goblin-Dinosaur on 14 x 14, seeds 0-2) end in the same state hash
+after the same number of accepted commands under both policies.
+
+**Cost.** With 8 ms slices the longest slice of three Martian mirror
+matches was 10.4 ms and the longest decision 48 ms; no turn reached the
+128-command cap through a Martian rule. (Two Martian-mirror turns did reach
+it through the generic economy: a `REDEVELOP` and `BUILD_LUMBER_CAMP` pair
+repeated on one tile by a rich seat, a generic-policy issue this bead
+does not change.)
 
 ## Revision-8 merged industry and processor adjacency
 

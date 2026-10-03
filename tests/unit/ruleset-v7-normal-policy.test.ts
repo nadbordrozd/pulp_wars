@@ -87,6 +87,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-endgame",
       "./v7-goblin",
       "./v7-dinosaur",
+      "./v7-martian",
       "./v7-opening",
       "./v7-undead",
     ]);

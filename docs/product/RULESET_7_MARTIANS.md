@@ -8,9 +8,11 @@ the production art of
 [MARTIAN.md](../art/factions/MARTIAN.md) in place of the placeholder sprites
 of section 13.4 (the setup screen offers the faction; see
 [the Screen Flow Martian overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay)).
-**The Normal AI ([section 12](#12-normal-ai-requirements), `pulp_wars-t6s.3`)
-is pending:** a Martian seat plays with the generic Normal policy. What the
-implementation changed or made precise is in
+**The Normal AI is implemented**
+([section 12](#12-normal-ai-requirements), `pulp_wars-t6s.3`,
+`src/ai/v7-martian.ts`; summary and measurements in the
+[Normal AI notes](../architecture/NORMAL_AI.md#martian-play-pulp_wars-t6s3)).
+What the implementation changed or made precise is in
 [section 19](#19-implementation-notes-pulp_wars-t6s2). It is an
 overlay over the rules in force when `pulp_wars-t6s.2` starts: today that is
 [revision 20](RULESET_7_REVISION_20.md), which amends
@@ -2023,6 +2025,21 @@ labels).
 
 ## 12. Normal AI requirements
 
+**Status: implemented** (`pulp_wars-t6s.3`). The rules, their values, and
+the measurements (a head-to-head against the generic policy, ability
+telemetry, a coarse look at each faction, and parity of matches without a
+Martian seat) are in the
+[Normal AI notes](../architecture/NORMAL_AI.md#martian-play-pulp_wars-t6s3).
+Readings of this section: the Martian research priorities stay below the
+best economic plan (1150; the Dinosaur signature priority 1170 measured
+worse); "keep units at 6 HP or less out of three tiles of a Brain" moves a
+unit out of the Brain's range (two tiles) when it cannot get farther, and
+"end a machine's Move on water only to cross toward an objective" is read as
+never ending a routine Move on water while the unit has a land route to its
+job. The tactical benchmark scenarios are unit tests
+(`tests/unit/ruleset-v7-martian-ai.test.ts`), as for the Goblin and
+Dinosaur policies.
+
 Normal AI plays as and against Martians (`pulp_wars-t6s.3`) with every
 existing guarantee: deterministic and PRNG-free, only the public view, public
 commands, and public previews, at most 128 accepted commands per owner turn
@@ -2785,11 +2802,10 @@ The scripts and outputs are in the session scratch space under `t6s2/step0/`
 
 ### 19.3 Left to the following beads
 
-- **`pulp_wars-t6s.3` (AI).** The generic policy plays a Martian seat without
-  errors or stalls and never uses Beam Down, Mind Control, or the Tractor
-  Beam. Its simulated views of future positions do not model Cooling or the
-  half power of a ray after a planned Move beyond what `estimateCombatV7`
-  reports for the attacker's own planned path.
+- **`pulp_wars-t6s.3` (AI).** Done: see
+  [section 12](#12-normal-ai-requirements). Before it the generic policy
+  played a Martian seat without errors or stalls and never used Beam Down,
+  Mind Control, or the Tractor Beam.
 - **`pulp_wars-t6s.4` (UI).** Done: the setup offers the faction, the
   production art of `pulp_wars-t6s.6` is wired in (the placeholder
   generator of section 13.4 is not built), and every surface of section

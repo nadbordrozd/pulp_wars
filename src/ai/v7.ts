@@ -6,6 +6,8 @@ import {
   EMBARKED_MOVE_V7,
   GROWTH_HP_V7,
   GROWTH_KILLS_V7,
+  MIND_CONTROL_RANGE_V7,
+  MIND_CONTROL_THRALL_LIMIT_V7,
   armouredDamageV7,
   chargeRunUpAttack2V7,
   effectiveRoleRuleV7,
@@ -13,6 +15,8 @@ import {
   factionTreeV7,
   isRallyTargetV7,
   technologyCapabilitiesV7,
+  unitMovementModeV7,
+  unitTakesCoverV7,
   unitAlphaAttack2V7,
   unitCapacitySlotsV7,
   unitRoleMechanicsV7,
@@ -145,6 +149,52 @@ import {
   policyTacticalRoleV7,
   technologyWithUnlockV7,
 } from "./v7-dinosaur";
+import {
+  COOLING_RAY_ATTACK_BONUS_V7,
+  FORCE_FIELD_COVER_VALUE_V7,
+  MARTIAN_ROUTINE_MOVE_PRIORITY_V7,
+  MIND_CONTROL_APPROACH_PRIORITY_V7,
+  MIND_CONTROL_ESCAPE_PRIORITY_V7,
+  PROJECTOR_COVER_VALUE_V7,
+  PSYCHIC_COMMAND_DEFERRED_PRIORITY_V7,
+  RAY_KITE_PRIORITY_V7,
+  RAY_WASTED_KILL_PRIORITY_V7,
+  RETALIATION_SHIELD_COST_V7,
+  SAUCER_STAGING_DISTANCE_V7,
+  SHIELDLESS_RETREAT_PRIORITY_V7,
+  SHIELD_BREAK_PRIORITY_V7,
+  SHIELD_BREAK_RANGED_PRIORITY_V7,
+  SHIELD_BREAK_VALUE_V7,
+  STRIPPED_SHIELD_VALUE_V7,
+  THRALL_CHIP_PRIORITY_V7,
+  MIND_CONTROL_SETUP_PRIORITY_V7,
+  RAY_SIEGE_PRIORITY_V7,
+  MOTHERSHIP_GUARD_PRIORITY_V7,
+  MOTHERSHIP_PULL_RADIUS_V7,
+  WASTED_FULL_RAY_COST_V7,
+  beamDownScoreV7,
+  enemyTurnShieldV7,
+  fliesForPolicyV7,
+  hasAbilityV7,
+  hostileRayAttack2V7,
+  isRayUnitV7,
+  martianArmyCountsV7,
+  martianFactsV7,
+  martianMatchForPolicyV7,
+  martianProductionAdjustmentV7,
+  martianResearchV7,
+  martianRetainedValueV7,
+  martianTargetBonusV7,
+  mindControlExposedV7,
+  mindControlScoreV7,
+  readyHostileBrainsV7,
+  shieldMaximumForPolicyV7,
+  tractorBeamScoreV7,
+  wholeHitV7,
+  type MartianArmyCountsV7,
+  type MartianFactsV7,
+  type MartianPolicyToolsV7,
+} from "./v7-martian";
 import {
   normalOpeningResearchPendingV7,
   normalOpeningTechnologyV7,
@@ -280,6 +330,13 @@ interface PolicyContextV7 {
   readonly dinosaur: boolean;
   /** Dinosaur matches: per-decision public Egg facts. */
   dinosaurFacts: DinosaurFactsV7 | null;
+  /**
+   * The Martian revision (`pulp_wars-t6s.3`): a seat is Martian; all
+   * Martian heuristics are gated on it.
+   */
+  readonly martian: boolean;
+  /** Martian matches: per-decision public Martian facts and caches. */
+  martianCache: MartianContextCacheV7 | null;
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
   readonly commands: readonly CommandV7[];
@@ -1200,6 +1257,8 @@ function bareContext(
     goblinDoomed: new Map(),
     dinosaur: dinosaurMatchForPolicyV7(view),
     dinosaurFacts: null,
+    martian: martianMatchForPolicyV7(view),
+    martianCache: null,
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     commands,
     openingGrowthHarvest: commands.some((command) =>
@@ -2445,6 +2504,13 @@ function* publicThreatenedTilesWorkV7(
   // Rocket Cart), threatening every tile within Chebyshev 1 of a tile it can
   // reach. Only Goblin units have Kaboom, so other matches are unchanged.
   const kaboom = unit.form === "LAND" && rule.abilities.includes("KABOOM");
+  // The Martian revision (`pulp_wars-t6s.3`): a flyer passes every unit,
+  // ignores zone of control, and crosses Shallow Water; a walker strides
+  // over Forest, Mountain, and Shallow Water. Both end only on land, and a
+  // flyer never on a center it does not own. `GROUND` for every non-Martian
+  // unit, so other matches are unchanged.
+  const mode: "GROUND" | "STRIDE" | "FLY" =
+    unit.form === "LAND" ? unitMovementModeV7(view, unit) : "GROUND";
   const origins = new Map([[coordKey(unit.at), unit.at]]);
   if (
     unit.form !== "EMBARKED" &&
@@ -2481,9 +2547,15 @@ function* publicThreatenedTilesWorkV7(
         ).filter(
           (occupant) => occupant.id !== unit.id && same(occupant.at, tile.at),
         );
-        if (occupants.some((occupant) => occupant.ownerId !== unit.ownerId))
+        if (
+          mode !== "FLY" &&
+          occupants.some((occupant) => occupant.ownerId !== unit.ownerId)
+        )
           continue;
-        const passedOnly = occupants.length > 0;
+        const passedOnly =
+          occupants.length > 0 ||
+          (mode !== "GROUND" &&
+            !machineMayEndForThreatV7(view, unit, tile, mode));
         // Revision 18: leaving a usable Road node costs half; the Forest and
         // Mountain stop is still waived only when both ends are Road nodes.
         const roadCost = unit.form === "LAND" && priorRoadNode;
@@ -2495,22 +2567,25 @@ function* publicThreatenedTilesWorkV7(
         if ((best.get(key) ?? Number.POSITIVE_INFINITY) <= spent2) continue;
         const terrainStop =
           unit.form === "LAND" &&
+          mode === "GROUND" &&
           tile.explored &&
           !roadEdge &&
           (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN");
-        const hostileZoc = neighbors8V7(view, tile.at).some((adjacent) =>
-          (lookup.occupantsByKey.get(coordKey(adjacent)) ?? []).some(
-            (occupant) =>
-              occupant.id !== unit.id &&
-              occupant.hp > 0 &&
-              occupant.form !== "EMBARKED" &&
-              // Revision 19: an Egg projects no zone of control.
-              occupant.form !== "EGG" &&
-              occupant.ownerId !== unit.ownerId &&
-              !publicPlayersAllied(view, unit.ownerId, occupant.ownerId) &&
-              publicProjectsZocForThreatV7(view, occupant, unit, tile),
-          ),
-        );
+        const hostileZoc =
+          mode !== "FLY" &&
+          neighbors8V7(view, tile.at).some((adjacent) =>
+            (lookup.occupantsByKey.get(coordKey(adjacent)) ?? []).some(
+              (occupant) =>
+                occupant.id !== unit.id &&
+                occupant.hp > 0 &&
+                occupant.form !== "EMBARKED" &&
+                // Revision 19: an Egg projects no zone of control.
+                occupant.form !== "EGG" &&
+                occupant.ownerId !== unit.ownerId &&
+                !publicPlayersAllied(view, unit.ownerId, occupant.ownerId) &&
+                publicProjectsZocForThreatV7(view, occupant, unit, tile),
+            ),
+          );
         const stops = terrainStop || hostileZoc;
         if (passedOnly && stops) continue;
         best.set(key, spent2);
@@ -2609,13 +2684,37 @@ function publicMovementTilePossible(
     publicPlayersAllied(view, unit.ownerId, tile.territoryOwnerId)
   )
     return false;
-  if (unit.form === "LAND")
+  if (unit.form === "LAND") {
+    // The Martian revision: a walker or flyer enters a Mountain without
+    // Engineering and crosses Shallow Water (Deep Water needs its owner's
+    // private Navigation, so the estimate leaves it out).
+    if (unitMovementModeV7(view, unit) !== "GROUND")
+      return tile.biome !== null || tile.terrain === "SHALLOW_WATER";
     return (
       tile.biome !== null &&
       (tile.terrain !== "MOUNTAIN" ||
         lookup.engineeringOwnerIds.has(unit.ownerId))
     );
+  }
   return tile.biome === null;
+}
+
+/**
+ * The Martian revision: whether a walker or flyer can end a Move (and so
+ * attack) on `tile`: land only (a Move that ends on water embarks), and a
+ * flyer never on a settlement center it does not own.
+ */
+function machineMayEndForThreatV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  tile: PlayerViewV7["board"]["tiles"][number],
+  mode: "GROUND" | "STRIDE" | "FLY",
+): boolean {
+  if (!tile.explored || tile.biome === null) return false;
+  if (mode !== "FLY" || tile.site === null) return true;
+  return view.cities.some(
+    (city) => same(city.at, tile.at) && city.ownerId === unit.ownerId,
+  );
 }
 
 function isPolicyCandidate(
@@ -2813,6 +2912,11 @@ function isLowValueAttackV7(
     dinosaurAttackRejectedV7(context, command, actor, preview)
   )
     return true;
+  if (
+    context.martian &&
+    martianAttackRejectedV7(context, command, actor, preview)
+  )
+    return true;
   const immediate =
     combatImmediateValue(preview, context.view) +
     (context.undead ? biteHarmAdjustmentV7(context, actor, preview) : 0);
@@ -2822,6 +2926,18 @@ function isLowValueAttackV7(
   if (!harmful) return false;
   if (attackPurposeExceptionV7(context, command, preview)) return false;
   if (endgameCombinedKillV7(context, command, preview)) return false;
+  // The Martian revision: a hit that this turn's attacks complete into a
+  // kill through the target's Shield.
+  if (
+    context.martian &&
+    !preview.attackerDies &&
+    martianShieldBreakExceptionV7(
+      context,
+      context.lookup.unitsById.get(command.targetUnitId),
+      preview,
+    )
+  )
+    return false;
   return true;
 }
 
@@ -3138,9 +3254,28 @@ function hasLethalAttackFollowUpV7(
   const target = context.lookup.unitsById.get(command.targetUnitId);
   if (target === undefined || target.hp <= preview.damageToDefender)
     return false;
-  const projected = projectPublicUnitForPolicyV7(context.view, target.id, {
+  const projectedUnits = projectPublicUnitForPolicyV7(context.view, target.id, {
     hp: target.hp - preview.damageToDefender,
   });
+  // The Martian revision: the first hit also takes the Shield it absorbed.
+  const projected =
+    preview.defenderShieldDamage > 0
+      ? {
+          ...projectedUnits,
+          shields: projectedUnits.shields.flatMap((entry) =>
+            entry.unitId !== target.id
+              ? [entry]
+              : entry.shield - preview.defenderShieldDamage > 0
+                ? [
+                    {
+                      ...entry,
+                      shield: entry.shield - preview.defenderShieldDamage,
+                    },
+                  ]
+                : [],
+          ),
+        }
+      : projectedUnits;
   return context.commands.some((candidate) => {
     if (
       candidate.kind !== "ATTACK" ||
@@ -3300,6 +3435,25 @@ function* sharedCityContextWorkV7(
       ? GOBLIN_HORDE_TRAINING_BIAS_V7 *
         Math.min(GOBLIN_HORDE_TRAINING_MAXIMUM_V7, count)
       : 0;
+  // The Martian revision (`pulp_wars-t6s.3`): the Martian role values.
+  const martianCounts =
+    view.viewer.faction === "MARTIAN" ? martianArmyCountsV7(view) : null;
+  const atWar = context.tactical.campaign?.atWar === true;
+  const martianAdjustment = (
+    role: UnitRoleIdV7,
+    threatened: boolean,
+    repetition: boolean,
+  ) =>
+    martianCounts === null
+      ? 0
+      : martianProductionAdjustmentV7(
+          view,
+          role,
+          martianCounts,
+          threatened,
+          atWar,
+          repetition,
+        );
   const endgameCaptureShortfall =
     context.endgame !== null &&
     endgameRoutedUnitsV7(context, (unit) => canCaptureV7(view, unit)) <
@@ -3439,7 +3593,8 @@ function* sharedCityContextWorkV7(
         hordeAdjustment(command.role, count) +
         cityAdjustment(command.role) +
         layEggAdjustmentV7(view, command, threatened) +
-        dinosaurProductionAdjustmentV7(view, command, productionCity);
+        dinosaurProductionAdjustmentV7(view, command, productionCity) +
+        martianAdjustment(command.role, threatened, true);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
         preferredLand === null ||
@@ -3534,7 +3689,8 @@ function* sharedCityContextWorkV7(
                     view,
                     command,
                     productionCity,
-                  )) *
+                  ) +
+                  martianAdjustment(command.role, threatened, false)) *
                   3 -
                 cost * 4 +
                 Number(preferredLand?.role === command.role) * 18
@@ -3986,6 +4142,23 @@ function scoreCommandWithContext(
         strategicValue = plunder.strategic;
       }
     }
+    if (view.viewer.faction === "MARTIAN") {
+      // The Martian revision (`pulp_wars-t6s.3`): research toward the roles.
+      const plan = martianResearchV7(
+        view,
+        view.cities.filter((city) => city.ownerId === view.viewer.id).length,
+        martianCacheV7(context).army.front,
+        martianFortifiedHostileVisibleV7(context),
+      );
+      if (
+        plan !== null &&
+        plan.tech === command.tech &&
+        plan.priority > priority
+      ) {
+        priority = plan.priority;
+        strategicValue = plan.strategic;
+      }
+    }
     if (
       view.viewer.faction === "DINOSAUR" &&
       priority < SIGNATURE_RESEARCH_PRIORITY_V7
@@ -4242,7 +4415,44 @@ function scoreCommandWithContext(
             priority = CHARGE_BREAKER_PRIORITY_V7;
         }
       }
+      // The Martian revision (`pulp_wars-t6s.3`): Shields, rays, Cooling.
+      if (context.martian && actor !== undefined && targetUnit !== undefined) {
+        const martian = martianAttackAdjustmentV7(
+          context,
+          actor,
+          targetUnit,
+          preview,
+          priority,
+        );
+        priority = martian.priority;
+        strategicValue += martian.strategic;
+      }
     }
+  }
+
+  if (command.kind === "BEAM_DOWN" && context.martian) {
+    const beam = martianBeamDownScoreV7(context, command);
+    priority = beam.priority;
+    strategicValue = beam.strategic;
+    immediateValue = beam.immediate;
+  }
+
+  if (command.kind === "MIND_CONTROL" && context.martian) {
+    const control = mindControlScoreV7(martianCacheV7(context).tools, command);
+    priority = control.priority;
+    strategicValue = control.strategic;
+    immediateValue = control.immediate;
+  }
+
+  if (command.kind === "TRACTOR_BEAM" && context.martian) {
+    const pull = tractorBeamScoreV7(
+      martianCacheV7(context).tools,
+      command,
+      (center) => martianCapturerCanEnterV7(context, center),
+    );
+    priority = pull.priority;
+    strategicValue = pull.strategic;
+    immediateValue = pull.immediate;
   }
 
   if (command.kind === "TEND_WOUNDED" && actor !== undefined) {
@@ -4296,6 +4506,14 @@ function scoreCommandWithContext(
       const waaagh = waaaghValueV7(context, actor);
       strategicValue = waaagh.strategic;
       priority = waaagh.priority;
+    } else if (view.viewer.faction === "MARTIAN" && context.martian) {
+      // The Martian revision: Psychic Command only for adjacent units that
+      // can still attack (the Frenzy rule), and Mind Control first.
+      const command = undeadFrenzyValueV7(context, actor);
+      strategicValue = command.strategic;
+      priority = martianCacheV7(context).mindControllers.has(actor.id)
+        ? Math.min(command.priority, PSYCHIC_COMMAND_DEFERRED_PRIORITY_V7)
+        : command.priority;
     }
   }
 
@@ -4573,6 +4791,12 @@ function scoreCommandWithContext(
       );
       priority = dinosaur.priority;
       strategicValue += dinosaur.strategic;
+    }
+    if (context.martian && resultAt !== null) {
+      // The Martian revision (`pulp_wars-t6s.3`).
+      const martian = martianMoveValueV7(context, actor, resultAt, priority);
+      priority = martian.priority;
+      strategicValue += martian.strategic;
     }
   }
 
@@ -5987,8 +6211,14 @@ function kaboomScoreV7(
   )
     return none;
   const coins = preview.totals.plunderCoins;
+  // The Martian revision (`pulp_wars-t6s.3`): Shields a Kaboom strips from
+  // hostile units that own attacks can still hit this turn (0 otherwise).
+  const stripped = context.martian
+    ? martianStrippedShieldValueV7(context, preview)
+    : 0;
   // pulp_wars-0ao.7: friendly fire costs the bomb trade factor here too.
   const net =
+    stripped +
     chain.hostileValue -
     FRIENDLY_FIRE_TRADE_FACTOR_V7 * chain.friendlyValue -
     exploder +
@@ -7398,6 +7628,756 @@ function dinosaurMoveValueV7(
   return { priority: raised, strategic };
 }
 
+// The Martian revision (`pulp_wars-t6s.3`, docs/product/RULESET_7_MARTIANS.md
+// section 12). Every helper below runs only in a match with a Martian seat
+// (`context.martian`) or through facts only a Martian unit has; each is a
+// bounded scan of the public view and public previews inside an existing
+// scoring step, cached per decision, with no PRNG use, elapsed-time input, or
+// work units. The rules and values live in `src/ai/v7-martian.ts`.
+
+interface MartianContextCacheV7 {
+  readonly facts: MartianFactsV7;
+  readonly army: MartianArmyCountsV7;
+  readonly tools: MartianPolicyToolsV7;
+  /** Own units with an offered `ATTACK`, and with an offered `MOVE`. */
+  readonly attackers: ReadonlySet<UnitId>;
+  readonly movers: ReadonlySet<UnitId>;
+  /** Own Brains with an offered `MIND_CONTROL`. */
+  readonly mindControllers: ReadonlySet<UnitId>;
+  /** Ready hostile Brains (no cooldown, below the Thrall limit). */
+  readonly hostileBrains: readonly PublicUnitV7[];
+  /** Own Saucers with a `BEAM_DOWN` worth taking now. */
+  readonly beamers: Map<UnitId, boolean>;
+  /** The own offered attack previews on each target. */
+  readonly attacksOnTarget: Map<UnitId, readonly CombatPreviewV7[]>;
+}
+
+const martianFactsByViewV7 = new WeakMap<PlayerViewV7, MartianFactsV7>();
+
+function martianFactsForViewV7(view: PlayerViewV7): MartianFactsV7 {
+  const cached = martianFactsByViewV7.get(view);
+  if (cached !== undefined) return cached;
+  const facts = martianFactsV7(view);
+  martianFactsByViewV7.set(view, facts);
+  return facts;
+}
+
+function martianCacheV7(context: PolicyContextV7): MartianContextCacheV7 {
+  if (context.martianCache !== null) return context.martianCache;
+  const view = context.view;
+  const facts = martianFactsForViewV7(view);
+  const attackers = new Set<UnitId>();
+  const movers = new Set<UnitId>();
+  const mindControllers = new Set<UnitId>();
+  for (const command of context.commands) {
+    if (command.kind === "ATTACK") attackers.add(command.unitId);
+    else if (command.kind === "MOVE") movers.add(command.unitId);
+    else if (command.kind === "MIND_CONTROL")
+      mindControllers.add(command.unitId);
+  }
+  const campaign = context.tactical.campaign;
+  let waveTarget: CoordV7 | null = null;
+  let waveAssigned = -1;
+  for (const target of campaign?.targetByCityId.values() ?? [])
+    if (
+      target.assigned > waveAssigned ||
+      (target.assigned === waveAssigned &&
+        waveTarget !== null &&
+        (target.city.at.y < waveTarget.y ||
+          (target.city.at.y === waveTarget.y &&
+            target.city.at.x < waveTarget.x)))
+    ) {
+      waveTarget = target.city.at;
+      waveAssigned = target.assigned;
+    }
+  const threatenedCityIds = new Set(context.threats.map((item) => item.cityId));
+  const cache: MartianContextCacheV7 = {
+    facts,
+    army: martianArmyCountsV7(view),
+    attackers,
+    movers,
+    mindControllers,
+    hostileBrains: readyHostileBrainsV7(view, facts, (owner) =>
+      isHostile(view, owner),
+    ),
+    beamers: new Map(),
+    attacksOnTarget: new Map(),
+    tools: {
+      view,
+      facts,
+      commands: context.commands,
+      isHostile: (owner) => isHostile(view, owner),
+      unit: (unitId) => context.lookup.unitsById.get(unitId),
+      danger: (unit, at) => visibleImmediateDamage(view, unit, at, context),
+      targetValue: (unit) =>
+        targetStrategicValue(view, unit.id, context.lookup),
+      retainedValue: (unit) => retainedUnitValue(view, unit),
+      routeProgress: (unit, to) => campaignRouteProgressV7(campaign, unit, to),
+      waveTarget,
+      threatenedCityIds,
+      projectedKillers: (target, at) =>
+        martianProjectedKillersV7(context, target, at),
+    },
+  };
+  context.martianCache = cache;
+  return cache;
+}
+
+/** The own offered attack previews on `targetId` (cached per decision). */
+function martianAttacksOnTargetV7(
+  context: PolicyContextV7,
+  targetId: UnitId,
+): readonly CombatPreviewV7[] {
+  const cache = martianCacheV7(context);
+  const cached = cache.attacksOnTarget.get(targetId);
+  if (cached !== undefined) return cached;
+  const best = new Map<UnitId, CombatPreviewV7>();
+  for (const command of context.commands) {
+    if (command.kind !== "ATTACK" || command.targetUnitId !== targetId)
+      continue;
+    const preview = queryCombatPreviewV7(
+      context.view,
+      command.unitId,
+      command.targetUnitId,
+    );
+    if (preview === null) continue;
+    const prior = best.get(command.unitId);
+    if (prior === undefined || wholeHitV7(preview) > wholeHitV7(prior))
+      best.set(command.unitId, preview);
+  }
+  const previews = [...best.values()];
+  cache.attacksOnTarget.set(targetId, previews);
+  return previews;
+}
+
+/**
+ * Against Martians: whether this turn's offered attacks on a shielded
+ * target kill it through its Shield (the sum of each attacker's best whole
+ * hit reaches its Shield plus HP).
+ */
+function martianKillableThisTurnV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7,
+): boolean {
+  const shield = martianCacheV7(context).facts.shieldByUnit.get(target.id) ?? 0;
+  const previews = martianAttacksOnTargetV7(context, target.id);
+  return (
+    previews.length >= 2 && sum(previews.map(wholeHitV7)) >= target.hp + shield
+  );
+}
+
+/**
+ * The whole damage own units that need not move could deal to `target`
+ * pulled onto `at` (melee units next to it and ray units within their
+ * range, at the power they would fire with): the Tractor Beam's kill test.
+ */
+function martianProjectedKillersV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7,
+  at: CoordV7,
+): number {
+  const view = context.view;
+  const facts = martianCacheV7(context).facts;
+  const moved = { ...target, at };
+  let total = 0;
+  for (const unit of view.units) {
+    if (
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      unit.activation.attacksUsed > 0 ||
+      unit.activation.handled
+    )
+      continue;
+    const combat = publicCombatFacts(view, unit, context.lookup);
+    if (!combat.abilities.includes("ATTACK") || combat.attack2 <= 0) continue;
+    const range = distance(unit.at, at);
+    if (range < combat.minimumRange || range > combat.maximumRange) continue;
+    const rayAttack2 = isRayUnitV7(view, unit)
+      ? unit.activation.moved || facts.coolingNow.has(unit.id)
+        ? Math.floor(unitRoleRuleV7(view, unit).attack2 / 2)
+        : unitRoleRuleV7(view, unit).attack2
+      : undefined;
+    total += publicProjectedDamageWithLookupV7(
+      view,
+      unit,
+      moved,
+      at,
+      { uncapped: true, ...(rayAttack2 === undefined ? {} : { rayAttack2 }) },
+      context.lookup,
+    );
+  }
+  return total;
+}
+
+/**
+ * Martian attack scoring (both sides of a match with a Martian seat).
+ *
+ * As Martians: Shield spent on retaliation is exposure without Force Fields;
+ * a full-power kill that a half-power shot would also make waits for other
+ * killers (the next turn's full shot is worth keeping).
+ *
+ * Against Martians (any seat): a hit that this turn's other attacks complete
+ * into a kill through the Shield is taken before other chips (ranged hits,
+ * which draw no retaliation, first) and is worth a share of the Shield it
+ * strips; a Cooling ray unit is attacked first (it is weak now and next
+ * turn).
+ */
+function martianAttackAdjustmentV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  const cache = martianCacheV7(context);
+  const facts = cache.facts;
+  let strategic = 0;
+  let next = priority;
+  if (actor.ownerId === view.viewer.id && facts.viewerMartian) {
+    // Thralls are the front row: their chips go before shielded units'.
+    if (priority === 900 && facts.brainOfThrall.has(actor.id))
+      next = THRALL_CHIP_PRIORITY_V7;
+    if (preview.attackerShieldDamage > 0 && !facts.forceFields)
+      strategic -= RETALIATION_SHIELD_COST_V7 * preview.attackerShieldDamage;
+    if (
+      preview.rayPower === "FULL" &&
+      preview.defenderDies &&
+      priority === 1180
+    ) {
+      const half = publicProjectedDamageWithLookupV7(
+        view,
+        actor,
+        target,
+        target.at,
+        {
+          rayAttack2: Math.floor(unitRoleRuleV7(view, actor).attack2 / 2),
+          uncapped: true,
+        },
+        context.lookup,
+      );
+      if (half >= target.hp + (facts.shieldByUnit.get(target.id) ?? 0)) {
+        next = RAY_WASTED_KILL_PRIORITY_V7;
+        strategic -= WASTED_FULL_RAY_COST_V7;
+      }
+    }
+  }
+  if (
+    facts.viewerMartian &&
+    actor.ownerId === view.viewer.id &&
+    !preview.defenderDies &&
+    next < MIND_CONTROL_SETUP_PRIORITY_V7 &&
+    martianConvertibleAfterV7(
+      context,
+      target,
+      target.hp - preview.damageToDefender,
+    )
+  ) {
+    next = MIND_CONTROL_SETUP_PRIORITY_V7;
+    strategic += targetStrategicValue(view, target.id, context.lookup);
+  }
+  if (isHostile(view, target.ownerId)) {
+    const shield = facts.shieldByUnit.get(target.id) ?? 0;
+    if (
+      shield > 0 &&
+      !preview.defenderDies &&
+      wholeHitV7(preview) > 0 &&
+      next < SHIELD_BREAK_PRIORITY_V7 &&
+      martianKillableThisTurnV7(context, target)
+    ) {
+      next =
+        preview.damageToAttacker === 0 && !preview.retaliation
+          ? SHIELD_BREAK_RANGED_PRIORITY_V7
+          : SHIELD_BREAK_PRIORITY_V7;
+      strategic +=
+        SHIELD_BREAK_VALUE_V7 +
+        Math.floor(
+          (targetStrategicValue(view, target.id, context.lookup) *
+            preview.defenderShieldDamage) /
+            Math.max(1, target.hp + shield),
+        );
+    }
+    if (isRayUnitV7(view, target) && facts.coolingNow.has(target.id))
+      strategic += COOLING_RAY_ATTACK_BONUS_V7;
+  }
+  return { priority: next, strategic };
+}
+
+/**
+ * Martian attack rejections: a Pierce that kills an own or allied unit
+ * without killing the target; a Saucer's hit that does not kill (it
+ * finishes units, it does not trade); and, against Martians, a hit fully
+ * absorbed by a Shield that no other attack this turn follows up.
+ */
+function martianAttackRejectedV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  actor: PublicUnitV7,
+  preview: CombatPreviewV7,
+): boolean {
+  const view = context.view;
+  if (preview.defenderDies) return false;
+  if (
+    actor.ownerId === view.viewer.id &&
+    preview.splash.some((entry) => {
+      if (!entry.dies) return false;
+      const victim = context.lookup.unitsById.get(entry.unitId);
+      return victim !== undefined && !isHostile(view, victim.ownerId);
+    }) &&
+    hasAbilityV7(view, actor, "PIERCE")
+  )
+    return !attackPurposeFactsV7(context, command, preview).savesCity;
+  if (
+    actor.ownerId === view.viewer.id &&
+    hasAbilityV7(view, actor, "BEAM_DOWN")
+  )
+    return !attackPurposeFactsV7(context, command, preview).savesCity;
+  return false;
+}
+
+/** Against Martians: a shielded target's follow-up kill this turn. */
+function martianShieldBreakExceptionV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7 | undefined,
+  preview: CombatPreviewV7,
+): boolean {
+  return (
+    target !== undefined &&
+    (martianCacheV7(context).facts.shieldByUnit.get(target.id) ?? 0) > 0 &&
+    wholeHitV7(preview) > 0 &&
+    martianKillableThisTurnV7(context, target)
+  );
+}
+
+/**
+ * As Martians: whether a hostile unit left with `hp` is a Mind Control target
+ * of an own Brain that can still act this turn (no cooldown, below the
+ * Thrall limit, primary action unused) and stands within its range, or can
+ * step there (one tile) this turn.
+ */
+function martianConvertibleAfterV7(
+  context: PolicyContextV7,
+  target: PublicUnitV7,
+  hp: number,
+): boolean {
+  if (hp <= 0 || !isHostile(context.view, target.ownerId)) return false;
+  const view = context.view;
+  const facts = martianCacheV7(context).facts;
+  const brains = view.units.filter(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      !unit.activation.handled &&
+      !unit.activation.attacked &&
+      hasAbilityV7(view, unit, "MIND_CONTROL") &&
+      !facts.cooldownBrains.has(unit.id) &&
+      (facts.thrallsOfBrain.get(unit.id)?.length ?? 0) <
+        MIND_CONTROL_THRALL_LIMIT_V7 &&
+      distance(unit.at, target.at) <=
+        MIND_CONTROL_RANGE_V7 + (unit.activation.moved ? 0 : 1),
+  );
+  return mindControlExposedV7(view, target, target.at, hp, brains);
+}
+
+/** A visible hostile land unit stands fortified (Walls or Field Defense). */
+function martianFortifiedHostileVisibleV7(context: PolicyContextV7): boolean {
+  const view = context.view;
+  return context.lookup.visibleHostiles.some((unit) => {
+    if (unit.form !== "LAND") return false;
+    const tile = findPublicTileV7(view, unit.at);
+    return (
+      tile?.explored === true &&
+      tile.territoryOwnerId === unit.ownerId &&
+      (tile.fortificationLevel ?? 0) > 0
+    );
+  });
+}
+
+/**
+ * Whether an own capture-capable land unit next to `center` can still step
+ * onto it this turn (it has an offered Move), once a Tractor Beam empties it.
+ */
+function martianCapturerCanEnterV7(
+  context: PolicyContextV7,
+  center: CoordV7,
+): boolean {
+  const view = context.view;
+  const movers = martianCacheV7(context).movers;
+  return view.units.some(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      distance(unit.at, center) === 1 &&
+      movers.has(unit.id) &&
+      unitRoleRuleV7(view, unit).abilities.includes("CAPTURE"),
+  );
+}
+
+/**
+ * Against Martians (Goblin seats): a Kaboom that strips the Shields of a
+ * clump the own units can still attack this turn is worth those Shields
+ * (Gang Up attacks then deal HP damage).
+ */
+function martianStrippedShieldValueV7(
+  context: PolicyContextV7,
+  preview: NonNullable<ReturnType<typeof previewKaboomV7>>,
+): number {
+  const view = context.view;
+  const attacked = new Set<UnitId>();
+  for (const command of context.commands)
+    if (command.kind === "ATTACK") attacked.add(command.targetUnitId);
+  let value = 0;
+  for (const explosion of preview.explosions)
+    for (const result of explosion.results)
+      if (
+        result.unitId !== null &&
+        !result.friendly &&
+        !result.dies &&
+        result.shieldDamage > 0 &&
+        isHostile(view, result.ownerId) &&
+        attacked.has(result.unitId)
+      )
+        value += STRIPPED_SHIELD_VALUE_V7 * result.shieldDamage;
+  return value;
+}
+
+/**
+ * Against Martians: `actor` moving to `to` stands next to an own city center
+ * whose only adjacent own unit is the one on it, while a visible hostile
+ * Mothership is within four tiles (it could pull the defender off).
+ */
+function martianSoleDefenderBesideV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const view = context.view;
+  const motherships = context.lookup.visibleHostiles.filter(
+    (unit) => unit.form === "LAND" && hasAbilityV7(view, unit, "TRACTOR_BEAM"),
+  );
+  if (motherships.length === 0) return false;
+  return view.cities.some((city) => {
+    if (city.ownerId !== view.viewer.id || distance(city.at, to) !== 1)
+      return false;
+    if (distance(city.at, actor.at) <= 1) return false;
+    if (
+      !motherships.some(
+        (unit) => distance(unit.at, city.at) <= MOTHERSHIP_PULL_RADIUS_V7,
+      )
+    )
+      return false;
+    const near = view.units.filter(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        distance(unit.at, city.at) <= 1,
+    );
+    return near.length === 1 && same(near[0]?.at ?? actor.at, city.at);
+  });
+}
+
+/** Whether an own Saucer has a `BEAM_DOWN` worth taking now. */
+function martianSaucerBeamsV7(
+  context: PolicyContextV7,
+  saucerId: UnitId,
+): boolean {
+  const cache = martianCacheV7(context);
+  const cached = cache.beamers.get(saucerId);
+  if (cached !== undefined) return cached;
+  let beams = false;
+  for (const command of context.commands)
+    if (
+      command.kind === "BEAM_DOWN" &&
+      command.unitId === saucerId &&
+      martianBeamDownScoreV7(context, command).priority > 0
+    ) {
+      beams = true;
+      break;
+    }
+  cache.beamers.set(saucerId, beams);
+  return beams;
+}
+
+function martianBeamDownScoreV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "BEAM_DOWN" }>,
+): {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly immediate: number;
+} {
+  const cache = martianCacheV7(context);
+  const passenger = context.lookup.unitsById.get(command.passengerUnitId);
+  if (passenger === undefined)
+    return { priority: -1, strategic: 0, immediate: 0 };
+  // The passenger joins a group: another own land unit near the landing.
+  const joins = context.view.units.some(
+    (unit) =>
+      unit.id !== passenger.id &&
+      unit.id !== command.unitId &&
+      unit.ownerId === context.view.viewer.id &&
+      unit.form === "LAND" &&
+      !fliesForPolicyV7(context.view, unit) &&
+      distance(unit.at, command.to) <= 2,
+  );
+  if (!joins) return { priority: -1, strategic: 0, immediate: 0 };
+  return beamDownScoreV7(
+    cache.tools,
+    command,
+    cache.attackers.has(passenger.id),
+    cache.movers.has(passenger.id),
+  );
+}
+
+/**
+ * Martian Move adjustments.
+ *
+ * As Martians: a ray unit that can fire at full power fires before it moves
+ * and holds its tile while a non-ray hostile unit is three tiles away; a
+ * Cooling ray unit next to a hostile melee unit steps back to range two; a
+ * Saucer stays out of lethal reach, waits unmoved where it can beam, and
+ * otherwise stages within four tiles of the wave target next to the army; a
+ * Mothership stays with the army; a Brain stays out of contact and steps
+ * into range of a convertible target; a Projector moves to cover more own
+ * units, and other units end next to it; a wounded unit with no Shield
+ * leaves visible reach.
+ *
+ * Against Martians (any seat): a unit at 6 HP or less leaves, and does not
+ * enter, the reach of a ready hostile Brain.
+ */
+function martianMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  const cache = martianCacheV7(context);
+  const facts = cache.facts;
+  let next = priority;
+  let strategic = 0;
+  const routine = priority < MARTIAN_ROUTINE_MOVE_PRIORITY_V7;
+  if (actor.form !== "LAND") return { priority, strategic };
+  // Against Martians: Mind Control denial.
+  if (cache.hostileBrains.length > 0) {
+    const exposedNow = mindControlExposedV7(
+      view,
+      actor,
+      actor.at,
+      actor.hp,
+      cache.hostileBrains,
+    );
+    const exposedThere = mindControlExposedV7(
+      view,
+      actor,
+      to,
+      actor.hp,
+      cache.hostileBrains,
+    );
+    if (exposedThere && !exposedNow && routine)
+      return { priority: -1, strategic: 0 };
+    // A step away that leaves the Brain's current range (a Move-1 unit
+    // cannot outrun a Brain's Move and range together).
+    const nearest = (from: CoordV7): number =>
+      Math.min(...cache.hostileBrains.map((brain) => distance(brain.at, from)));
+    if (
+      exposedNow &&
+      nearest(to) > Math.max(MIND_CONTROL_RANGE_V7, nearest(actor.at))
+    ) {
+      const danger = visibleImmediateDamage(view, actor, to, context);
+      if (danger < actor.hp) {
+        next = Math.max(next, MIND_CONTROL_ESCAPE_PRIORITY_V7);
+        strategic += retainedUnitValue(view, actor);
+      }
+    }
+  }
+  // Against Martians: a sole defender of an own center within reach of a
+  // visible hostile Mothership is pullable; a second unit stands next to it.
+  if (routine && martianSoleDefenderBesideV7(context, actor, to))
+    next = Math.max(next, MOTHERSHIP_GUARD_PRIORITY_V7);
+  if (!facts.viewerMartian || actor.ownerId !== view.viewer.id)
+    return { priority: next, strategic };
+  const rule = unitRoleRuleV7(view, actor);
+  // Machines cross water only toward their job and never into the reach
+  // of a visible hostile naval unit (afloat they cannot fight).
+  if (routine && unitMovementModeV7(view, actor) !== "GROUND") {
+    const tile = findPublicTileV7(view, to);
+    if (tile?.explored === true && tile.biome === null) {
+      const progress = campaignRouteProgressV7(
+        context.tactical.campaign,
+        actor,
+        to,
+      );
+      if (
+        (progress !== null && progress <= 0) ||
+        context.lookup.visibleHostiles.some(
+          (unit) => unit.form === "NAVAL" && distance(unit.at, to) <= 3,
+        )
+      )
+        return { priority: -1, strategic: 0 };
+    }
+  }
+  const abilities = rule.abilities;
+  const dangerThere = (): number =>
+    visibleImmediateDamage(view, actor, to, context);
+  const dangerHere = (): number =>
+    visibleImmediateDamage(view, actor, actor.at, context);
+  const hostileLand = context.lookup.visibleHostiles.filter(
+    (unit) => unit.form === "LAND" && unit.hp > 0,
+  );
+  // Rays: full power from where the unit stands.
+  if (isRayUnitV7(view, actor) && routine) {
+    const ready = !actor.activation.moved && !facts.coolingNow.has(actor.id);
+    if (ready && dangerHere() < actor.hp) {
+      if (cache.attackers.has(actor.id)) return { priority: -1, strategic: 0 };
+      const approaching = hostileLand.some(
+        (unit) => distance(unit.at, actor.at) === 3 && !isRayUnitV7(view, unit),
+      );
+      if (approaching) return { priority: -1, strategic: 0 };
+    }
+    // Position the turn before: range 2 of a hostile unit holding a
+    // settlement center (it does not walk away), outside lethal reach.
+    if (
+      !cache.attackers.has(actor.id) &&
+      hostileLand.some(
+        (unit) =>
+          distance(unit.at, to) === 2 &&
+          view.cities.some((city) => same(city.at, unit.at)),
+      ) &&
+      dangerThere() < actor.hp
+    ) {
+      next = Math.max(next, RAY_SIEGE_PRIORITY_V7);
+      strategic += 4;
+    }
+    if (facts.coolingNow.has(actor.id)) {
+      const meleeNear = (at: CoordV7): boolean =>
+        hostileLand.some(
+          (unit) =>
+            distance(unit.at, at) === 1 &&
+            publicCombatFacts(view, unit, context.lookup).minimumRange <= 1,
+        );
+      if (
+        meleeNear(actor.at) &&
+        !hostileLand.some((unit) => distance(unit.at, to) <= 1) &&
+        hostileLand.some((unit) => distance(unit.at, to) === 2) &&
+        dangerThere() < actor.hp
+      ) {
+        next = Math.max(next, RAY_KITE_PRIORITY_V7);
+        strategic += 6;
+      }
+    }
+  }
+  // Flyers: never into visible lethal reach unless it is no worse.
+  if (fliesForPolicyV7(view, actor) && routine) {
+    const there = dangerThere();
+    if (there >= actor.hp && there >= dangerHere())
+      return { priority: -1, strategic: 0 };
+  }
+  // The Saucer: waits where it can beam; stages near the wave target.
+  if (abilities.includes("BEAM_DOWN") && routine) {
+    if (!actor.activation.moved && martianSaucerBeamsV7(context, actor.id))
+      return { priority: -1, strategic: 0 };
+    const target = cache.tools.waveTarget;
+    if (target !== null) {
+      const staging = (at: CoordV7): number =>
+        Math.abs(distance(at, target) - SAUCER_STAGING_DISTANCE_V7 + 1) +
+        (view.units.some(
+          (unit) =>
+            unit.id !== actor.id &&
+            unit.ownerId === view.viewer.id &&
+            unit.form === "LAND" &&
+            !fliesForPolicyV7(view, unit) &&
+            distance(unit.at, at) <= 2,
+        )
+          ? 0
+          : 2);
+      const gain = staging(actor.at) - staging(to);
+      if (gain <= 0) return { priority: -1, strategic: 0 };
+      next = Math.max(next, 720);
+      strategic += 3 * gain - dangerThere();
+    }
+  }
+  // The Mothership stays with the army.
+  if (abilities.includes("TRACTOR_BEAM") && routine) {
+    const army = view.units.filter(
+      (unit) =>
+        unit.id !== actor.id &&
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        !fliesForPolicyV7(view, unit) &&
+        distance(unit.at, to) <= 2,
+    ).length;
+    if (army === 0 && hostileLand.some((unit) => distance(unit.at, to) <= 3))
+      return { priority: -1, strategic: 0 };
+    strategic += 2 * Math.min(4, army);
+  }
+  // The Brain: out of contact; into range of a convertible target.
+  if (abilities.includes("MIND_CONTROL")) {
+    const ready =
+      !facts.cooldownBrains.has(actor.id) &&
+      (facts.thrallsOfBrain.get(actor.id)?.length ?? 0) <
+        MIND_CONTROL_THRALL_LIMIT_V7 &&
+      !actor.activation.handled &&
+      !cache.mindControllers.has(actor.id);
+    if (ready) {
+      const convertible = hostileLand.filter(
+        (unit) =>
+          distance(unit.at, to) <= MIND_CONTROL_RANGE_V7 &&
+          mindControlExposedV7(view, unit, unit.at, unit.hp, [
+            { ...actor, at: to },
+          ]),
+      );
+      if (convertible.length > 0 && dangerThere() < actor.hp) {
+        next = Math.max(next, MIND_CONTROL_APPROACH_PRIORITY_V7);
+        strategic += Math.max(
+          ...convertible.map((unit) =>
+            targetStrategicValue(view, unit.id, context.lookup),
+          ),
+        );
+      }
+    }
+    if (
+      next < MARTIAN_ROUTINE_MOVE_PRIORITY_V7 &&
+      hostileLand.some((unit) => distance(unit.at, to) <= 1) &&
+      !hostileLand.some((unit) => distance(unit.at, actor.at) <= 1)
+    )
+      return { priority: -1, strategic: 0 };
+  }
+  // The Force Field: Projectors cover the army; units end beside them.
+  if (abilities.includes("FORCE_FIELD") && routine) {
+    const covered = (at: CoordV7): number =>
+      view.units.filter(
+        (unit) =>
+          unit.id !== actor.id &&
+          unit.ownerId === view.viewer.id &&
+          distance(unit.at, at) === 1 &&
+          shieldMaximumForPolicyV7(view, facts, unit) > 0,
+      ).length;
+    const gain = covered(to) - covered(actor.at);
+    strategic += PROJECTOR_COVER_VALUE_V7 * gain;
+    if (gain > 0 && next >= 0 && dangerThere() < actor.hp)
+      next = Math.max(next, 705);
+  } else if (
+    shieldMaximumForPolicyV7(view, facts, actor) > 0 &&
+    facts.ownProjectors.some(
+      (projector) =>
+        projector.id !== actor.id && distance(projector.at, to) === 1,
+    )
+  )
+    strategic += FORCE_FIELD_COVER_VALUE_V7;
+  // A wounded unit without a Shield leaves visible reach to recover.
+  if (
+    routine &&
+    actor.hp < actor.maxHp &&
+    shieldMaximumForPolicyV7(view, facts, actor) > 0 &&
+    (facts.shieldByUnit.get(actor.id) ?? 0) === 0 &&
+    dangerHere() > 0 &&
+    dangerThere() === 0
+  )
+    next = Math.max(next, SHIELDLESS_RETREAT_PRIORITY_V7);
+  return { priority: next, strategic };
+}
+
 function captureEndsMatchV7(
   view: PlayerViewV7,
   targetOwnerId: PlayerId,
@@ -8332,6 +9312,12 @@ function visibleImmediateDamage(
   // the activation (`pulp_wars-0ao.15`), so an embarked goblin-crewed unit
   // has no same-turn Kaboom and is modelled like any embarked unit.
   const goblin = context?.goblin ?? goblinMatchForPolicyV7(view);
+  // The Martian revision (`pulp_wars-t6s.3`): rays at the power they fire
+  // with next turn, and the Shield the actor has during the enemy turn.
+  const martian =
+    (context?.martian ?? martianMatchForPolicyV7(view))
+      ? martianFactsForViewV7(view)
+      : null;
   for (const hostile of hostiles) {
     const facts = publicCombatFacts(view, hostile, effectiveLookup);
     const wail =
@@ -8384,6 +9370,11 @@ function visibleImmediateDamage(
           : {}),
         // Revision 20: the Charge! run-up (+1 Attack per tile moved).
         ...(runUp2 > 0 ? { bonusAttack2: runUp2 } : {}),
+        // The Martian revision: full power only when it need not move and
+        // is not Cooling.
+        ...(martian === null
+          ? {}
+          : rayAttack2OptionV7(view, martian, hostile, !directlyThreatened)),
       },
       effectiveLookup,
     );
@@ -8408,7 +9399,21 @@ function visibleImmediateDamage(
     )
       total += actor.hp;
   }
+  // The Martian revision: the Shield absorbs the first hits of the enemy
+  // turn (0 for every unit without one).
+  if (martian !== null && total > 0)
+    total = Math.max(0, total - enemyTurnShieldV7(view, martian, actor, at));
   return total;
+}
+
+function rayAttack2OptionV7(
+  view: PlayerViewV7,
+  facts: MartianFactsV7,
+  hostile: PublicUnitV7,
+  mustMove: boolean,
+): { readonly rayAttack2?: number } {
+  const attack2 = hostileRayAttack2V7(view, facts, hostile, mustMove);
+  return attack2 === null ? {} : { rayAttack2: attack2 };
 }
 
 /**
@@ -8471,13 +9476,20 @@ function publicProjectedDamageWithLookupV7(
     readonly maximumCharge?: boolean;
     /** Revision 17 Gang Up estimate (Goblin matches only). */
     readonly bonusAttack2?: number;
+    /**
+     * The Martian revision: a heat ray's `attack2` at the power it fires
+     * with (full or half), instead of the published Attack.
+     */
+    readonly rayAttack2?: number;
+    /** The Martian revision: the whole hit, not capped at the HP. */
+    readonly uncapped?: boolean;
   },
   lookup?: PolicyLookupV7,
 ): number {
   const attackRule = unitRoleRuleV7(view, attacker);
   const defenseRule = unitRoleRuleV7(view, defender);
   const attackFacts = publicCombatFacts(view, attacker, lookup);
-  const publishedAttack2 = attackFacts.attack2;
+  const publishedAttack2 = options.rayAttack2 ?? attackFacts.attack2;
   // Revision 19: an Alpha's +1 Attack is part of its published Attack; the
   // Pounce estimate adds it to the role's base (0 for every other unit).
   const attack2 =
@@ -8501,6 +9513,8 @@ function publicProjectedDamageWithLookupV7(
   const tileFortification =
     !acid &&
     defender.form === "LAND" &&
+    // The Martian revision: walkers and flyers are never fortified.
+    unitTakesCoverV7(view, defender) &&
     defenderTile?.explored === true &&
     defenderTile.territoryOwnerId === defender.ownerId
       ? (defenderTile.fortificationLevel ?? 0)
@@ -8542,7 +9556,7 @@ function publicProjectedDamageWithLookupV7(
   // Revision 19 Armoured: one less damage (minimum 1) to an Ankylosaurus,
   // before the cap at its HP; unchanged for every other unit.
   return Math.min(
-    defender.hp,
+    options.uncapped === true ? Number.MAX_SAFE_INTEGER : defender.hp,
     armouredDamageV7(
       view,
       defender,
@@ -8596,6 +9610,9 @@ function projectedDefenseBonus(
   at: CoordV7,
 ): { readonly numerator: number; readonly denominator: number } {
   if (unit.form !== "LAND") return { numerator: 1, denominator: 1 };
+  // The Martian revision: walkers and flyers never take cover (every
+  // non-Martian unit does).
+  if (!unitTakesCoverV7(view, unit)) return { numerator: 1, denominator: 1 };
   const tile = findPublicTileV7(view, at);
   return tile?.explored === true &&
     (tile.terrain === "FOREST" || tile.terrain === "MOUNTAIN")
@@ -8743,13 +9760,19 @@ function usefulDisband(
 
 function retainedUnitValue(view: PlayerViewV7, unit: PublicUnitV7): number {
   const rule = unitRoleRuleV7(view, unit);
-  return unit.role === "JUGGERNAUT"
-    ? 40 + rule.attack2 + rule.defense2 + 8 + unit.kills * 2
-    : (rule.cost ?? 0) * 4 +
+  const base =
+    unit.role === "JUGGERNAUT"
+      ? 40 + rule.attack2 + rule.defense2 + 8 + unit.kills * 2
+      : (rule.cost ?? 0) * 4 +
         unit.hp +
         unit.kills * 2 +
         // Revision 19: a grown unit costs more to replace (0 otherwise).
         grownUnitPremiumV7(view, unit);
+  // The Martian revision: a Thrall is worth its HP, a Brain carries its
+  // Thralls (unchanged without a Martian seat).
+  return view.thralls.length > 0
+    ? martianRetainedValueV7(view, martianFactsForViewV7(view), unit, base)
+    : base;
 }
 
 function targetStrategicValue(
@@ -8796,13 +9819,23 @@ function targetStrategicValue(
   // target, and an Egg is worth more the longer it still needs.
   const dinosaur =
     grownUnitPremiumV7(view, unit) + eggTargetBonusV7(view, unit);
+  // The Martian revision: the enablers (0 without a Martian unit).
+  const martian = view.players.some((player) => player.faction === "MARTIAN")
+    ? martianTargetBonusV7(view, martianFactsForViewV7(view), unit)
+    : 0;
   return unit.role === "JUGGERNAUT"
     ? 40 +
         rule.attack2 +
         rule.defense2 +
         (rule.abilities.includes("PUSH") ? 8 : 0) +
-        dinosaur
-    : (rule.cost ?? 0) * 4 + unit.hp + necromancer + plagueSource + dinosaur;
+        dinosaur +
+        martian
+    : (rule.cost ?? 0) * 4 +
+        unit.hp +
+        necromancer +
+        plagueSource +
+        dinosaur +
+        martian;
 }
 
 const NECROMANCER_TARGET_BONUS_V7 = 12;

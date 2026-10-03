@@ -117,15 +117,12 @@ npm run headless -- match --ruleset pulp-wars-poc-7r23 --map-type pangea --facti
 npm run headless -- match --ruleset pulp-wars-poc-7r23 --map-type showcase --ai-count 3 --factions martian,human,undead,goblin --max-rounds 50
 ```
 
-The engine bead adds no Martian policy. A Martian seat plays with the
-generic Normal policy on the Martian registration: it trains, moves,
-attacks, captures, researches, and builds like a Human seat, its machines
-stride, fly, and self-launch wherever the generic route search sends them,
-and its ray units fire at full or half power as their Moves happen to
-allow. It never issues `BEAM_DOWN`, `MIND_CONTROL`, or `TRACTOR_BEAM` (the
-policy gives an unknown command kind no priority), so it has no Thralls.
-The other factions' policies attack Martian units with their ordinary
-previews, which include Shields. The Martian policy is `pulp_wars-t6s.3`.
+The engine bead added no Martian policy: a Martian seat played with the
+generic Normal policy and never issued `BEAM_DOWN`, `MIND_CONTROL`, or
+`TRACTOR_BEAM`. The Martian policy (`pulp_wars-t6s.3`) is
+[summarized in the Normal AI notes](NORMAL_AI.md#martian-play-pulp_wars-t6s3):
+a Martian seat now uses all three, and every seat plays against Martian
+Shields, rays, Brains, and Motherships.
 
 Every v7 result carries a `martian` block (all zero without a Martian
 seat), computed from the events of the accepted commands:
