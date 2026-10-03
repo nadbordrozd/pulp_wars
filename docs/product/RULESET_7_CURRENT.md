@@ -815,9 +815,12 @@ cities (the first is its capital) with a level and one reward per reached
 level, units by mechanical role, and a reveal (a radius around each own
 city plus rectangles). The registry holds only the current revision of each
 mission. The only objective is `DOMINATION`, which is the ordinary outcome
-rule of [section 3](#3-players-turns-and-victory). The one registered
-mission so far is the hidden engine fixture `TEST_GROUNDS`, which belongs to
-no campaign chapter.
+rule of [section 3](#3-players-turns-and-victory). The registered missions
+are the four Chapter One missions `FRONTIER_1`–`FRONTIER_4`
+([campaign design](CAMPAIGN.md) section 6, `pulp_wars-68k.4`) and the hidden
+test fixtures `TEST_GROUNDS`, `TEST_RUSH`, `TEST_HOLD`, and `TEST_GUARD`,
+which belong to no campaign chapter. Adding a mission is content: it
+changes no rule and no ruleset identity.
 
 | Setup field              | `MISSION` rule                                                                                                             |
 | ------------------------ | -------------------------------------------------------------------------------------------------------------------------- |

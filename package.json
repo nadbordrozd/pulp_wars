@@ -116,6 +116,7 @@
     "validate:ruleset7-growth-maps": "tsx scripts/validate-ruleset7-growth-maps.ts",
     "validate:ruleset7-naval-playable": "tsx scripts/validate-ruleset7-naval-playable.ts",
     "balance:ruleset7-undead": "tsx scripts/ruleset7-undead-balance-matrix.ts",
+    "playtest:campaign": "tsx scripts/campaign-playtest-v7.ts",
     "validate:ruleset7-archive-r2": "tsx scripts/validate-ruleset7-release.ts",
     "test": "vitest run",
     "test:watch": "vitest",

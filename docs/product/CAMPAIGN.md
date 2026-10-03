@@ -5,8 +5,11 @@ bead `68k.2` is implemented at `pulp-wars-poc-7r34`
 ([current rules section 2.6](RULESET_7_CURRENT.md#26-mission-setup); its
 notes are in [section 8.1](#81-68k2-engine-missions-authored-maps-forbidden-technologies)),
 and the AI bead `68k.3` (directives and proxy variation; its notes are in
-[section 8.2](#82-68k3-ai-mission-directives-and-proxy-variation)); nothing
-else here is implemented yet. The implementation beads in
+[section 8.2](#82-68k3-ai-mission-directives-and-proxy-variation)), and the
+content bead `68k.4` (the four Chapter One missions, `src/campaign/chapter-1.ts`,
+and `npm run playtest:campaign`; its final numbers and tuning record are in
+[section 8.3](#83-68k4-content-the-four-teaser-missions-and-their-playtest));
+the campaign UI (`68k.5`) is not implemented yet. The implementation beads in
 [section 8](#8-implementation-beads) follow this document; where an
 implementation bead finds that this design and the code disagree, it stops
 and surfaces the conflict.
@@ -718,7 +721,9 @@ army needs soldiers who never tire, Captain.' To be continued…"
 
 All numbers above (coins, levels, unit counts, `untilRound`, garrison) are
 first guesses; the content bead tunes them against
-[section 7](#7-testing) and records the final values here.
+[section 7](#7-testing). The final values, and where they differ from the
+sketches above, are in the
+[`68k.4` tuning record](#83-68k4-content-the-four-teaser-missions-and-their-playtest).
 
 ## 7. Testing
 
@@ -901,6 +906,114 @@ Validation profile: ai/map/persistence
 Worker focused checks: npx vitest run tests/unit/ruleset-v7-missions.test.ts tests/unit/campaign-chapter-v7.test.ts ; npm run playtest:campaign ; npm run typecheck ; npm run lint
 Conditional final gates: npm run check ; npm run validate:ruleset6-release ; npm run validate:ruleset7-release ; root review of the playtest evidence against section 7.1
 ```
+
+**Implementation notes and tuning record (`68k.4`, no identity change).**
+The missions are `src/engine/v7/missions/frontier-1.ts` … `frontier-4.ts`
+(revision 1 each, pinned in the mission hash test), the chapter data is
+`src/campaign/chapter-1.ts` (`CHAPTER_ONE_V7`: order, intro, briefings,
+Objective line, hints, closing lines, outro, starting factions, and
+per-mission unlocks; tested by `tests/unit/campaign-chapter-v7.test.ts`,
+which also refuses tile coordinates and engine identifiers in player
+text), and the evidence is
+[`CAMPAIGN_TEASER_PLAYTEST.md`](../validation/CAMPAIGN_TEASER_PLAYTEST.md)
+with its per-run `CAMPAIGN_TEASER_PLAYTEST.json`, written by
+`npm run playtest:campaign` (20 variation seeds from 1 at rate 0.15, up to
+80 rounds, every faction choice of mission 4; `--missions`, `--factions`,
+`--seeds`, `--first-seed`, and `--runs` explore without writing). The full
+run takes about 25 minutes with 8 jobs, mostly mission 4's matches running
+to the round cap.
+
+_Final setups_ (every mission is 1 Human-side seat against 1 AI seat,
+Rival, the Naval branch forbidden; resources follow the ring floors of
+section 6):
+
+| Mission      | You                                                                                                                                                    | AI                                                                                                                                                                                                   | Directive                                        |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `FRONTIER_1` | Human, 8 Coins, Drill; capital `(2,8)` L3 (Survey, Walls); Guard ×2, Fighter ×3                                                                        | Goblin, 0 Coins, Scouting; capital `(8,2)` **L1**; one Goblin at home and a war band in the field (Goblin ×4, Wolf Rider ×1 between `(4,4)` and `(6,6)`); villages `(3,2)`, `(9,5)`, `(7,8)`         | `RUSH`; reveal: your capital and the lane        |
+| `FRONTIER_2` | Human, 10 Coins, Gathering, Scouting; capital `(3,11)` L3 (Survey, Walls) with Guard, Fighter ×2, Raider; **town `(7,11)` L2** with Guard, Fighter     | Goblin, 0 Coins, Drill, Scouting, Hunting; capital `(10,3)` L3 (Survey, Walls) with Orc Brute, Goblin, Wolf Rider; towns `(4,2)`, `(11,8)` L2 (Stockpile) with Goblin ×2 each                        | `NORMAL`; villages `(1,7)`, `(7,6)`, **`(5,8)`** |
+| `FRONTIER_3` | Goblin, 6 Coins, Scouting, Drill; capital `(4,11)` L2 (Survey), town `(10,11)` L1; Goblin ×4, Wolf Rider, Orc Brute; reveal both passes                | Undead, 5 Coins, **Gathering**, Drill, Administration; capital `(7,2)` L3 (Survey, Walls), town `(2,2)` L2 (Stockpile); Skeleton ×2, Zombie ×2, Necromancer; Graves as sketched                      | `HOLD` x 0–13, y 0–6, `untilRound: 16`           |
+| `FRONTIER_4` | Human or Goblin, 10 Coins, Drill, Scouting, Hunting, Forestry; capital `(3,8)` L3 (Survey, Walls), town `(3,3)` L2 (Survey); Fighter ×2, Guard, Raider | Undead, 8 Coins, the seven sketched technologies; capital `(13,3)` L4 (Survey, Walls, **Boom**) with two Lumber Camps; gate `(11,8)` L3 (Survey, Walls); `(12,12)` L2 (Stockpile); units as sketched | `GUARD` x 10–12, y 7–9, garrison 4               |
+
+Differences from the section 6 sketches, all content: mission 1's middle
+village moved from `(6,5)` to `(9,5)`, off the rush lane, and the Goblin
+army starts in the field (bold above); mission 2 gives you a second city
+in place of the `(7,11)` village, whose village moved to `(5,8)`; mission 3's
+Undead also know Gathering (Administration requires it, and the builder
+refuses a technology without its prerequisite); mission 4's level-4 reward
+is Boom, not Treasury (the capital's footprint holds four free Grass tiles,
+and Treasury would need nine harvest records). The briefings, hints, and
+closing lines are section 6's text unchanged.
+
+_Results against the section 7.1 bands_ (seeds 1–20; a second set,
+seeds 21–40, gave mission 1 95%, mission 2 70%, mission 3 50%, every
+directive check passing):
+
+| Mission            | Proxy win rate (band) | Median winning round, range (floor) | Directive check                                                                                                       |
+| ------------------ | --------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| 1                  | 100% (70–100%)        | 26.5, 14–40 (≥ 8)                   | a Goblin land unit in your territory by round 5 in 20/20 runs (latest: round 3)                                       |
+| 2                  | 55% (35–90%)          | 27, 20–44 (≥ 15)                    | the Goblins captured or besieged a city of yours in 16/20 runs (80% ≥ 20%)                                            |
+| 3                  | 40% (30–90%)          | 30, 20–49 (≥ 15)                    | no hold violation in 20/20 runs (worst distance 1); left the zone after round 16 in 16/20 runs with units (80% ≥ 50%) |
+| 4 (Human / Goblin) | **0% / 0% (20–80%)**  | — (≥ 20)                            | garrison of four in the gate zone at 100% of AI End Turns in every run                                                |
+
+_Tuning history._
+
+- **Mission 1** (design numbers: 0% win, the Goblins took the fort in every
+  run by round 15). The Normal AI on your side researches first and spreads
+  its few units over villages, and the middle village on the rush lane
+  became a Goblin town that the rush stopped to hold. Steps: your capital
+  L3 with Walls, 8 Coins, a second Guard (0%); the Goblin capital L1 with 0
+  Coins (10%); one Goblin fewer (5%); five Human units (60–100%, but the
+  rush met your army in the open and reached your territory by round 5 in
+  only 8–10 of 20 runs); the middle village moved east and the war band
+  started in the field (100%, incursion 16/20); one more war-band Goblin
+  (incursion 19/20; a sixth tipped it to 70% wins with captures by round
+  6); the extra Goblin placed nearer your fort instead (100%, incursion
+  20/20). The rush still breaks and the counterattack is slow (median round
+  26), so "easy" holds without being a walkover.
+- **Mission 2** (design numbers: 0%, your capital fell by round 12–22 in
+  every run). Three Goblin cities out-produce one Human city many times
+  over (1-Coin Goblins, a Wolf Rider that takes an empty capital): even
+  with your capital L3, five then seven starting units, 15 Coins, the
+  Goblin towns at L1, and the Goblins' Scouting removed, the proxy won 0–10%.
+  A calibration with only the Goblin capital gave 85%, with capital and
+  outpost 20%. The lever that worked is a second Human city: with it the
+  proxy won 100%, and restoring the Goblins toward the sketch (Scouting,
+  towns L2 with Stockpile, the Wolf Rider, two Goblins per town) brought it
+  to 55%. The Goblins still keep the head start in cities (three to two).
+- **Mission 3** met its band with the design's numbers (40%; 50% on the
+  second seed set). One checker refinement: an Undead Infect or Bite raises
+  a Zombie on its victim's tile, which can lie two tiles outside the zone in
+  the AI's own turn before the leash can move it; the check counts such
+  just-risen units apart (it happened once on seeds 1–20) and requires
+  every unit that existed at the AI's previous End Turn to stay within one
+  tile.
+- **Mission 4** is **not reachable by content**: the proxy never breaches
+  the isthmus, with either faction, and the match runs to the round cap
+  (the Undead take a village-city now and then). Numbers and layout tried,
+  eight seeds each, all 0% (one 1-in-8 win, at round 74): Undead 0 Coins,
+  lower levels, the peninsula's growth resources removed; starting
+  Catapults for you; Sawmilling forbidden (no Liches or Catapults beyond the
+  start); the gate without Field Defenses, Walls, or Zombies and a garrison
+  of two; the Lich moved away; `GUARD` released at round 15; the isthmus
+  widened to two tiles; even a `NORMAL` Undead seat; and the whole Industry
+  branch forbidden (no Guards or Zombies), the only change that produced a
+  win. Traces show why: the Normal AI attacks only at favourable odds, so
+  two lines of high-Defense units (Guards and Zombies on Field Defenses)
+  facing each other across a one-file front never engage, and a unit of
+  your own parked on the isthmus (a Catapult with a target every turn, or a
+  Guard that will not attack) corks the only path for the rest of the army.
+  It is a limit of the Normal AI as a proxy at a chokepoint, not of the
+  mission's numbers, so mission 4 keeps the design's numbers (the Boom
+  substitution aside) and its band is argued here: the proxy's 0% is a
+  floor, and the user's own playtest decides whether a person breaches the
+  gate (Catapults from the isthmus, the Lich first). Making the band
+  measurable needs either a Normal AI siege behaviour for a single-file
+  front (an AI change, outside content) or a different mission shape.
+- **Directive compliance** held everywhere: every `RUSH` run reached your
+  territory by round 3, no `HOLD` unit strayed more than one tile before
+  round 16, and the `GUARD` garrison was full at every Undead End Turn
+  (the enemy never entered the zone, so the section 8.2 caveat never
+  applied).
 
 ### 8.4 `68k.5` Campaign UI and progress
 

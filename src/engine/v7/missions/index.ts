@@ -6,6 +6,10 @@ import {
   type MissionRefV7,
   type PlayerColorV7,
 } from "../types";
+import { FRONTIER_1_V7 } from "./frontier-1";
+import { FRONTIER_2_V7 } from "./frontier-2";
+import { FRONTIER_3_V7 } from "./frontier-3";
+import { FRONTIER_4_V7 } from "./frontier-4";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
 import { TEST_GUARD_V7, TEST_HOLD_V7, TEST_RUSH_V7 } from "./test-directives";
 import type { MissionDefinitionV7, MissionSeatV7 } from "./types";
@@ -24,6 +28,11 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   TEST_RUSH_V7,
   TEST_HOLD_V7,
   TEST_GUARD_V7,
+  // Chapter One, "The Hollow Frontier" (`pulp_wars-68k.4`, section 6).
+  FRONTIER_1_V7,
+  FRONTIER_2_V7,
+  FRONTIER_3_V7,
+  FRONTIER_4_V7,
 ]);
 
 /** The registered mission with this ID (any revision), or null. */

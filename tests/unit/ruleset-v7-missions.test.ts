@@ -82,6 +82,17 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "63f8feb4d5d7e1cb313b1c2bf4a09bee259ef73727773fdce351671ac4ed5925",
   "TEST_GUARD@1:ORIGINAL":
     "75569e71228d50c8bdf4977e655316676c8f0b626a657b8c6c00bf5cefc31a50",
+  // Chapter One (`pulp_wars-68k.4`).
+  "FRONTIER_1@1:ORIGINAL":
+    "9030c7d3187c9c2faa38d3db36096dad1f2424420417667a4ca0916a00d74df6",
+  "FRONTIER_2@1:ORIGINAL":
+    "521f989c0cf7c0513e6c506103d7a5b34b2cb0c23ee5e61b9e86a714605ab76d",
+  "FRONTIER_3@1:GOBLIN":
+    "88df5acb386704a039494aa57ed41a63b3e03ece60479bcac595853b867b4f94",
+  "FRONTIER_4@1:ORIGINAL":
+    "f4663ed1c325ed8660a8de1ee0dac655b36b65e5b4dfe7fcddabab2f7251bbe0",
+  "FRONTIER_4@1:GOBLIN":
+    "20e77d0b87274ff9e53cd5493f14ae24f4459d4fc4d6221a654e836fd0c2d114",
 };
 
 function missionStateHash(state: GameStateV7): string {
@@ -110,6 +121,18 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "ab9625959c3cea281c1a8628bea232302513cc0a5d928e416fad71419e6a4670",
   "TEST_GUARD@1:ORIGINAL":
     "493749a981bcc06da8f1346adedfef54c1dd0d6a491e7167376f4a8cceb5432a",
+  // Chapter One (`pulp_wars-68k.4`), added after the curiosities: the same
+  // states with the two curiosities keys left out.
+  "FRONTIER_1@1:ORIGINAL":
+    "f3da8d77afc147d8c5f13ff451bd7d669745cc1f5e2a91c1d44502b7aa752928",
+  "FRONTIER_2@1:ORIGINAL":
+    "97eaffcff5ad0bd5bec8a59ebf2f38b6cf2819d243b5dc325d2956b85c146d30",
+  "FRONTIER_3@1:GOBLIN":
+    "0e4d7ec0d44c70139bf1dd4b840dea8c25e70704219fb6e836c1b8b2e7775217",
+  "FRONTIER_4@1:ORIGINAL":
+    "e3b81c5eab12579c52d9d3bd5fd3601b1f79f2ba6ac0303363a51e91c248c934",
+  "FRONTIER_4@1:GOBLIN":
+    "f348bd3d951384837b8ba084709964030bf07b7aeb49c6b9ae21b7357a41925c",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {
