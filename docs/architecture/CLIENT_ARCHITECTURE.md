@@ -137,13 +137,16 @@ below).
 
 What the Martian UI reads, all from `PlayerViewV7` and the public queries:
 
-- `view.shields`, `view.cooling`, `view.thralls` (a Thrall's Brain is null
-  when the viewer cannot see it), and `view.mindControlCooldowns`: one entry
-  per visible unit, public like HP;
+- `view.shields`, `view.cooling`, `view.mindControlled` (the Mind Control
+  revision, `7r33`: `{ unitId, brainUnitId, originalOwnerId }`, the Brain
+  null when the viewer cannot see it), and `view.mindControlCooldowns`: one
+  entry per visible unit, public like HP;
 - `publicUnitStatsV7(...).martian` (`shield`, `shieldMaximum`,
   `capacitySlots`, `movementMode`, `rayPower`, `cooling`, `pierce`,
-  `forceField`, `thrall`, `mindControl`), the `SHIELD` stat row after `HP`,
-  and the `HALF_POWER` and `FORCE_FIELD` modifier sources;
+  `forceField`, `mindControl` with `controlled` and `controlLimit`), a
+  controlled unit's top-level `mindControl`, the `SHIELD` stat row after
+  `HP`, and the `HALF_POWER` and `FORCE_FIELD` modifier sources; a unit's
+  kind (label, art, faction blocks) through `unitFactionV7`;
 - the commands `BEAM_DOWN`, `MIND_CONTROL`, and `TRACTOR_BEAM` in
   `queryPlayerCommandsV7`, with the exact previews `previewBeamDownV7`,
   `previewMindControlV7`, and `previewTractorBeamV7` (null unless the
@@ -154,7 +157,7 @@ What the Martian UI reads, all from `PlayerViewV7` and the public queries:
   Wail, and explosion entries, and `fortificationIgnored` for the
   Disintegrator;
 - the events `SHIELDS_RECHARGED`, `UNIT_BEAMED`, `UNIT_MIND_CONTROLLED`,
-  and `UNIT_PULLED`, the `UNIT_DIED` cause `BRAIN_LOST`, and the
+  `UNIT_RELEASED`, and `UNIT_PULLED`, the `UNIT_DIED` cause `BRAIN_LOST`, and the
   `UNIT_MOVE_INTERRUPTED` reason `SETTLEMENT_FORBIDDEN`;
 - `MOVE` offers that already follow Stride, Flying, and self-launch (a
   machine's Move that ends on water emits `UNIT_EMBARKED`).
@@ -177,20 +180,26 @@ and Dinosaur presentation:
   board plan: unit markers (`BoardRenderPlanEntryV7.martian`), the three
   aimed abilities (`BoardRenderInteractionV7.martianPick`; target families
   `BEAM_DOWN_PASSENGER`, `BEAM_DOWN`, `MIND_CONTROL`, `TRACTOR_BEAM`), the
-  Force Field and Thrall-link selection previews, and an attack target's
+  Force Field and control-link selection previews, and an attack target's
   Martian lines (`previewFocusNote`, `pierce`, `pullTo`, `launch`);
 - `src/render/canvas/martian-canvas-v7.ts`: the code-drawn markers (saucer
-  badge, Shield bar, Cooling glyph, Thrall collar and link, flyer shadow and
-  lift, wade ripples), and `src/render/canvas/martian-effects-v7.ts`: the
-  cues of the `MARTIAN` presentation step, beams in code and the effect
-  sprites through the support effect art of the effects canvas;
+  badge, Shield bar, Cooling glyph, flyer shadow and lift, wade ripples)
+  and the Mind Control revision's control visual (`drawControlHaloV7` over
+  the head found by `spriteHeadAnchorV7`, `drawControlBrainChipV7`,
+  `drawControlLinkV7`) in `MIND_CONTROL_COLOURS_V7`, the Martian faction
+  colour's shades from `factionColourShadesV7` (`faction-colours-v7.ts`);
+  the board host keeps a calm redraw while a controlled unit is visible
+  (full motion) for the halo's pulse. `src/render/canvas/martian-effects-v7.ts`:
+  the cues of the `MARTIAN` presentation step (the halo shattering,
+  `CONTROL_RELEASE`, on `UNIT_RELEASED` and `BRAIN_LOST`), beams in code and
+  the effect sprites through the support effect art of the effects canvas;
 - art: the Martian modules of the direction registry
   (`chibi-direction-martian-art-manifest.ts`), resolved by
-  `unitArtSubjectV7` (Thrall, machine afloat), `cityArtSubjectV7`,
-  `portraitSubjectV7`, `technologySubjectV7` and `commandSubjectV7`, with
-  `chibiFallbackSubjectV7` falling back to the Human subject (the Thrall to
-  the Fighter); `MARTIAN_FLAG_ANCHORS_V7` is part of
-  `DIRECTION_FLAG_ANCHORS_V7`.
+  `unitArtSubjectV7` (from the unit's kind; a machine afloat),
+  `cityArtSubjectV7`, `portraitSubjectV7`, `technologySubjectV7` and
+  `commandSubjectV7`, with `chibiFallbackSubjectV7` falling back to the
+  Human subject; the Thrall subjects are retired (`pulp_wars-b5f.3`);
+  `MARTIAN_FLAG_ANCHORS_V7` is part of `DIRECTION_FLAG_ANCHORS_V7`.
 
 The Classic look and LEGACY have no Martian art: a Martian unit is the Human
 sprite of its role with the saucer badge (the rule of every earlier

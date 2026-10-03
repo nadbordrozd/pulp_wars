@@ -5,6 +5,7 @@ import path from "node:path";
 import process from "node:process";
 import { prepareSmokeOutput } from "./browser-smoke-output";
 import {
+  controlCasingPixelsExpressionV7,
   martianFixtureMountExpressionV7,
   type MartianUiFixtureNameV7,
 } from "./browser-martian-fixture-v7";
@@ -14,17 +15,21 @@ import {
  * default-route setup with a Martian seat; real Showcase launches (the
  * Martians against Humans, and the Martians beside
  * every other faction) at zoom steps 1 and 0.75; and, on the Martian UI
- * fixtures, the board markers (Shield bars, Cooling, the Thrall collar,
- * flyers over land and water, machines afloat), the attack previews
- * (Shield, ray power, Pierce, friendly fire, the Disintegrator), Beam Down
- * targeting, Mind Control and the Thrall, the Tractor Beam preview, the
- * Force Field, the cues pinned mid-animation, Help and the technology
- * tree, in the CHIBI (default look) and LEGACY art sets at desktop and
- * phone widths. It needs the Vite dev server, because the fixtures are
- * imported from `tests/fixtures`.
+ * fixtures, the board markers (Shield bars, Cooling, the control halo and
+ * brain chip, flyers over land and water, machines afloat), the attack
+ * previews (Shield, ray power, Pierce, friendly fire, the Disintegrator),
+ * Beam Down targeting, Mind Control and the unit it takes, the Tractor Beam
+ * preview, the Force Field, the cues pinned mid-animation, Help and the
+ * technology tree, in the CHIBI (default look) and LEGACY art sets at
+ * desktop and phone widths. The `control` part (the Mind Control revision,
+ * bead pulp_wars-b5f.3) captures a controlled Goblin, Knight, Yeti and
+ * Hammerer at zoom 1 and 0.75 (with enlarged crops), the control link from
+ * the unit and from its Brain, their docks, the release cue at three
+ * moments, and the halo in high contrast. It needs the Vite dev server,
+ * because the fixtures are imported from `tests/fixtures`.
  *
  * Usage: tsx scripts/browser-martian-review-v7.ts http://localhost:6173/
- *   [--output-dir=<new-dir>] [--only=setup,showcase,fixtures]
+ *   [--output-dir=<new-dir>] [--only=setup,showcase,fixtures,control]
  */
 
 interface DebugTarget {
@@ -151,6 +156,10 @@ try {
       for (const size of ["desktop", "phone"] as const)
         await fixtureTour(connection, art, size);
 
+  if (want("control"))
+    for (const size of ["desktop", "phone"] as const)
+      await controlTour(connection, size);
+
   if (errors.length > 0)
     throw new Error(`Browser errors: ${errors.join("\n")}`);
   await writeFile(
@@ -246,7 +255,7 @@ async function fixtureTour(
     string,
     Coord
   >;
-  // The board: Shields, Cooling, the Thrall, flyers over land and water,
+  // The board: Shields, Cooling, the controlled unit, flyers over land and water,
   // machines afloat.
   await focusCell(connection, at.brain as Coord);
   await capture(connection, `board-${suffix}-zoom-1.png`);
@@ -321,11 +330,11 @@ async function fixtureTour(
     `({ notice: document.querySelector('#v7-live')?.textContent, events: ${REVIEW}.traces.at(-1).eventKinds })`,
   );
   await capture(connection, `beam-down-after-${suffix}.png`);
-  // Mind Control: the target, the reasons, the Thrall it makes.
+  // Mind Control: the target, the reasons, the controlled unit it makes.
   await deselect(connection);
   await activate(connection, at.brain as Coord);
   evidence[`${suffix}BrainDock`] = await dockText(connection);
-  await capture(connection, `brain-thrall-links-${suffix}.png`);
+  await capture(connection, `brain-control-link-${suffix}.png`);
   await evaluate(
     connection,
     `document.querySelector('[data-action="martian-mind-control"]')?.click()`,
@@ -407,7 +416,7 @@ async function fixtureTour(
       { effect: 'BEAM_DOWN', from: ${JSON.stringify(at.saucer)}, cells: [${JSON.stringify({ x: 9, y: 6 })}], progress: 0.5 },
       { effect: 'TRACTOR_BEAM', from: ${JSON.stringify(at.mothership)}, cells: [${JSON.stringify({ x: 9, y: 4 })}], progress: 0.5 },
       { effect: 'MIND_CONTROL', from: ${JSON.stringify(at.brain)}, cells: [${JSON.stringify(at.weakTarget)}], progress: 0.5 },
-      { effect: 'THRALL_COLLAPSE', cells: [${JSON.stringify(at.controlled)}], progress: 0.4 },
+      { effect: 'CONTROL_RELEASE', cells: [${JSON.stringify(at.controlled)}], progress: 0.4 },
     ])`,
   );
   await delay(300);
@@ -468,6 +477,238 @@ async function fixtureTour(
   await keys(connection, ["ArrowRight"]);
   evidence[`${suffix}ShieldMeleeCursor`] = await cursorText(connection);
   await capture(connection, `attack-shield-melee-${suffix}.png`);
+}
+
+/**
+ * The Mind Control revision (bead pulp_wars-b5f.3) in the default look: a
+ * controlled unit of four kinds keeps its own sprite under the halo and the
+ * brain chip, at zoom 1 and 0.75 (each with an enlarged crop); the control
+ * link from the unit and from its Brain with their docks; the release cue
+ * pinned at three moments; and the halo in high contrast.
+ */
+async function controlTour(
+  connection: Connection,
+  size: ScreenSize,
+): Promise<void> {
+  await viewport(connection, size);
+  // A real Mind Control on the wounded Marksman: it stays itself, under
+  // the halo (the casing pixels on the board canvas), with its badge.
+  await mount(connection, "chibi", "martianUiFixtureV7");
+  const start = (await evaluate(connection, `${REVIEW}.at`)) as Record<
+    string,
+    Coord
+  >;
+  const casingBefore = await evaluate(
+    connection,
+    controlCasingPixelsExpressionV7(start.weakTarget as Coord),
+    true,
+  );
+  await activate(connection, start.brain as Coord);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="martian-mind-control"]')?.click()`,
+  );
+  await delay(500);
+  await capture(connection, `mind-control-aim-${size}.png`);
+  evidence[`control${size}Aim`] = await evaluate(
+    connection,
+    `({ panel: document.querySelector('[data-v7-martian-pick]')?.textContent ?? null, choices: Array.from(document.querySelectorAll('[data-action^="mind-control-"]')).map((node) => node.getAttribute('aria-label')), cursor: document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? null })`,
+  );
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action^="mind-control-"]')?.click()`,
+  );
+  await waitFor(
+    connection,
+    `${REVIEW}.traces.some((trace) => trace.command.kind === 'MIND_CONTROL')`,
+  );
+  await delay(1_400);
+  evidence[`control${size}Taken`] = await evaluate(
+    connection,
+    `(async () => {
+      const { buildBoardRenderPlanV7 } = await import('/src/render/canvas/board-renderer-v7.ts');
+      const { factionColourShadesV7 } = await import('/src/render/canvas/faction-colours-v7.ts');
+      const view = ${REVIEW}.snapshotView();
+      const unit = view.units.find((candidate) => candidate.at.x === ${start.weakTarget?.x} && candidate.at.y === ${start.weakTarget?.y});
+      const entry = buildBoardRenderPlanV7(view, [], { selection: null, selectedUnitId: null, selectedAchievement: null }).entries.find((candidate) => candidate.key === 'unit:' + unit.id);
+      return { notice: document.querySelector('#v7-live')?.textContent, owner: unit.ownerId === view.viewer.id, role: unit.role, artSubject: entry?.artSubject, controlled: entry?.martian?.controlled };
+    })()`,
+    true,
+  );
+  evidence[`control${size}CasingPixels`] = {
+    before: casingBefore,
+    after: await evaluate(
+      connection,
+      controlCasingPixelsExpressionV7(start.weakTarget as Coord),
+      true,
+    ),
+  };
+  await capture(connection, `mind-control-taken-${size}.png`);
+  await cropHalo(
+    connection,
+    `mind-control-taken-${size}.png`,
+    `mind-control-taken-${size}-x3.png`,
+    start.weakTarget as Coord,
+  );
+  const kinds = [
+    ["goblin", "martianControlGoblinFixtureV7"],
+    ["knight", "martianControlKnightFixtureV7"],
+    ["yeti", "martianControlYetiFixtureV7"],
+    ["hammerer", "martianControlHammererFixtureV7"],
+  ] as const;
+  for (const [kind, fixture] of kinds) {
+    await mount(connection, "chibi", fixture);
+    const at = (await evaluate(connection, `${REVIEW}.at`)) as Record<
+      string,
+      Coord
+    >;
+    await focusCell(connection, at.controlled as Coord);
+    await delay(300);
+    evidence[`control${kind}${size}Plan`] = await evaluate(
+      connection,
+      `(async () => {
+        const { buildBoardRenderPlanV7 } = await import('/src/render/canvas/board-renderer-v7.ts');
+        const view = ${REVIEW}.snapshotView();
+        const entry = buildBoardRenderPlanV7(view, [], { selection: null, selectedUnitId: null, selectedAchievement: null })
+          .entries.find((candidate) => candidate.kind === 'UNIT' && candidate.at.x === ${at.controlled?.x} && candidate.at.y === ${at.controlled?.y});
+        return { label: entry?.label, artSubject: entry?.artSubject, controlled: entry?.martian?.controlled, ownerColor: entry?.ownerColor };
+      })()`,
+      true,
+    );
+    for (const zoom of ["1", "0.75"] as const) {
+      if (zoom === "0.75") {
+        await evaluate(connection, `${REVIEW}.boardHost.zoom('OUT')`);
+        await delay(500);
+      }
+      const name = `control-${kind}-${size}-zoom-${zoom}`;
+      await capture(connection, `${name}.png`);
+      await cropHalo(
+        connection,
+        `${name}.png`,
+        `${name}-x3.png`,
+        at.controlled as Coord,
+      );
+    }
+    await evaluate(connection, `${REVIEW}.boardHost.zoom('IN')`);
+    await delay(400);
+    if (kind !== "goblin") continue;
+    // The link from the unit to its Brain, and from the Brain to it.
+    await activate(connection, at.controlled as Coord);
+    evidence[`control${size}UnitDock`] = await controlDockText(connection);
+    await capture(connection, `control-link-from-unit-${size}.png`);
+    await deselect(connection);
+    await activate(connection, at.controller as Coord);
+    evidence[`control${size}BrainDock`] = await controlDockText(connection);
+    await capture(connection, `control-link-from-brain-${size}.png`);
+    // The release: the Brain is disbanded, the Goblin goes home (no halo),
+    // and the cue is pinned over it at three moments.
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="command-disband"]')?.click()`,
+    );
+    await waitFor(
+      connection,
+      `${REVIEW}.traces.some((trace) => trace.command.kind === 'DISBAND')`,
+    );
+    await delay(1_400);
+    evidence[`control${size}Released`] = await evaluate(
+      connection,
+      `({ notice: document.querySelector('#v7-live')?.textContent, events: ${REVIEW}.traces.at(-1).eventKinds })`,
+    );
+    await deselect(connection);
+    await focusCell(connection, at.controlled as Coord);
+    await capture(connection, `released-${size}.png`);
+    await cropHalo(
+      connection,
+      `released-${size}.png`,
+      `released-${size}-x3.png`,
+      at.controlled as Coord,
+    );
+    for (const progress of [0.12, 0.4, 0.75]) {
+      await evaluate(
+        connection,
+        `${REVIEW}.boardHost.pinMartianFeedback([{ effect: 'CONTROL_RELEASE', cells: [${JSON.stringify(at.controlled)}], progress: ${progress} }])`,
+      );
+      await delay(250);
+      const name = `release-cue-${String(progress).replace(".", "")}-${size}`;
+      await capture(connection, `${name}.png`);
+      await cropHalo(
+        connection,
+        `${name}.png`,
+        `${name}-x3.png`,
+        at.controlled as Coord,
+      );
+    }
+    await evaluate(connection, `${REVIEW}.boardHost.pinMartianFeedback([])`);
+    // High contrast: white on black (on a fresh copy, still controlled).
+    await mount(connection, "chibi", fixture);
+    await openMenu(connection, "settings");
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="high-contrast"]')?.click()`,
+    );
+    await delay(200);
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="close-overlay"]')?.click()`,
+    );
+    await delay(400);
+    await focusCell(connection, at.controlled as Coord);
+    await capture(connection, `control-high-contrast-${size}.png`);
+  }
+}
+
+/** The dock's control badge, Brain chip and owner line. */
+async function controlDockText(connection: Connection): Promise<unknown> {
+  return evaluate(
+    connection,
+    `(() => { const dock = document.querySelector('.v7-selection-dock'); if (dock === null) return null; const badge = dock.querySelector('[data-unit-status="mind-controlled"]'); const brain = dock.querySelector('[data-unit-status="controlled"]'); return { title: dock.querySelector('h2')?.textContent, badge: badge?.textContent ?? null, badgeTitle: badge?.getAttribute('title') ?? null, brain: brain?.textContent ?? null, portrait: brain?.querySelector('.v7-control-portrait')?.getAttribute('aria-label') ?? null, owner: dock.querySelector('.v7-identity-owner')?.textContent ?? null, chips: Array.from(dock.querySelectorAll('.v7-chip')).map((node) => node.textContent) }; })()`,
+  );
+}
+
+/**
+ * An enlarged (x3, nearest) crop of a capture around the cell `at` (the
+ * unit and the space above its head, where the halo sits), located with the
+ * board host's review accessor `cellCentreCssPx`.
+ */
+async function cropHalo(
+  connection: Connection,
+  source: string,
+  target: string,
+  at: Coord,
+): Promise<void> {
+  const { default: sharp } = await import("sharp");
+  const place = (await evaluate(
+    connection,
+    `(() => { const canvas = document.querySelector('canvas.board-canvas-v7'); const box = canvas.getBoundingClientRect(); const point = ${REVIEW}.boardHost.cellCentreCssPx(${JSON.stringify(at)}); return { x: box.left + point.x, y: box.top + point.y, tile: Number(canvas.dataset.tileCssPx ?? '80'), ratio: globalThis.devicePixelRatio }; })()`,
+  )) as {
+    readonly x: number;
+    readonly y: number;
+    readonly tile: number;
+    readonly ratio: number;
+  };
+  const file = path.join(output.directory, source);
+  const { width: imageWidth = 0, height: imageHeight = 0 } =
+    await sharp(file).metadata();
+  const cell = place.tile * place.ratio;
+  const width = Math.round(cell * 1.6);
+  const height = Math.round(cell * 1.9);
+  const x = Math.max(
+    0,
+    Math.min(imageWidth - width, Math.round(place.x * place.ratio - width / 2)),
+  );
+  const y = Math.max(
+    0,
+    Math.min(
+      imageHeight - height,
+      Math.round(place.y * place.ratio - cell * 1.15),
+    ),
+  );
+  await sharp(file)
+    .extract({ left: x, top: y, width, height })
+    .resize(width * 3, height * 3, { kernel: "nearest" })
+    .png()
+    .toFile(path.join(output.directory, target));
 }
 
 async function openMenu(connection: Connection, action: string): Promise<void> {

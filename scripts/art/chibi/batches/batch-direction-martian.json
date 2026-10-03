@@ -104,18 +104,6 @@
       "accent": "martian-magenta"
     },
     {
-      "id": "chibi-direction-martian-thrall",
-      "subject": "UNIT:MARTIAN:THRALL",
-      "assetClass": "STANDARD_UNIT",
-      "recipeClass": "unit",
-      "canvas": {
-        "width": 56,
-        "height": 80
-      },
-      "ownerColour": false,
-      "accent": "martian-magenta"
-    },
-    {
       "id": "chibi-direction-portrait-martian-grunt",
       "subject": "PORTRAIT:MARTIAN:FIGHTER",
       "assetClass": "PORTRAIT",
@@ -204,18 +192,6 @@
       "subject": "PORTRAIT:MARTIAN:JUGGERNAUT",
       "assetClass": "PORTRAIT",
       "recipeClass": "icon",
-      "canvas": {
-        "width": 48,
-        "height": 48
-      },
-      "ownerColour": false,
-      "accent": "martian-magenta"
-    },
-    {
-      "id": "chibi-direction-portrait-martian-thrall",
-      "subject": "PORTRAIT:MARTIAN:THRALL",
-      "assetClass": "PORTRAIT",
-      "recipeClass": "portrait",
       "canvas": {
         "width": 48,
         "height": 48
@@ -607,7 +583,7 @@
     },
     {
       "id": "thrall-a",
-      "asset": "chibi-direction-martian-thrall",
+      "asset": "chibi-direction-martian-grunt",
       "endpoint": "create-image-pixen",
       "seed": 91901,
       "requestSize": {
@@ -662,7 +638,7 @@
     },
     {
       "id": "thrall-b",
-      "asset": "chibi-direction-martian-thrall",
+      "asset": "chibi-direction-martian-grunt",
       "endpoint": "edit-image-pixen",
       "seed": 91902,
       "requestSize": {
@@ -741,7 +717,7 @@
     },
     {
       "id": "portrait-thrall-a",
-      "asset": "chibi-direction-portrait-martian-thrall",
+      "asset": "chibi-direction-portrait-martian-grunt",
       "endpoint": "create-image-pixen",
       "seed": 92004,
       "requestSize": {
@@ -1100,7 +1076,7 @@
     },
     {
       "id": "portrait-thrall-b",
-      "asset": "chibi-direction-portrait-martian-thrall",
+      "asset": "chibi-direction-portrait-martian-grunt",
       "endpoint": "edit-image-pixen",
       "seed": 92014,
       "requestSize": {

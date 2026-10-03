@@ -7,8 +7,13 @@ into [current rules sections 20.8 and 20.9](RULESET_7_CURRENT.md#208-mind-contro
 which win where this document differs). **The Normal AI (section 8) is
 implemented** (`pulp_wars-b5f.3` AI step, no identity change: the
 [Mind Control play](../architecture/NORMAL_AI.md#mind-control-play-pulp_wars-b5f3)
-records its rules and its head-to-head). The UI step (section 9) is not
-implemented yet. It is an overlay over
+records its rules and its head-to-head), and **the UI is implemented**
+(`pulp_wars-b5f.3` UI step: every item of section 9 and the "UI" list of
+section 10, worded under the
+[no-coordinates, minimal-text rule](../ui/SCREEN_FLOW.md#no-coordinates-minimal-text-bead-pulp_wars-b5f8):
+the dock's control line is a brain badge "Controlled" with the
+controller's and original owner's names, the sentences of section 9 in its
+tooltip; current rules section 20.9 "Presentation"). It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r30`
 (and the pending [Dwarf overlay](RULESET_7_DWARVES.md)); it amends the
 Martian Mind Control and **replaces the Thrall**

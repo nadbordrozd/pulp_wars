@@ -39,11 +39,12 @@ export type ArtSubjectV7 =
    */
   | `UNIT:DINOSAUR:${DinosaurArtRoleV7 | "EGG"}`
   /**
-   * The Martian units and the Thrall, one sprite for a mind-controlled unit
-   * of any faction (bead pulp_wars-t6s.6, MARTIAN.md), registered in the
-   * direction registry since the UI bead (pulp_wars-t6s.4).
+   * The Martian units (bead pulp_wars-t6s.6, MARTIAN.md), registered in the
+   * direction registry since the UI bead (pulp_wars-t6s.4). The Thrall
+   * sprite is retired (bead pulp_wars-b5f.3): a mind-controlled unit keeps
+   * its own kind's sprite.
    */
-  | `UNIT:MARTIAN:${MartianArtRoleV7 | "THRALL"}`
+  | `UNIT:MARTIAN:${MartianArtRoleV7}`
   | `CITY:${1 | 2 | 3}`
   /**
    * Faction city sets (bead pulp_wars-6gd.6): the Undead necropolis and the
@@ -210,13 +211,14 @@ export type IceFolkArtRoleV7 = UndeadArtRoleV7;
 
 /**
  * Martian interface and effect subjects (bead pulp_wars-t6s.6): the unit
- * portraits (the Thrall has one), the landed-saucer colony, the command and
- * ability icons (`ICON:ACTION:MARTIAN:RALLY` is Psychic Command), the Shield
- * and Cooling status icons, and the ability effect sprites. They are a list
- * of their own so that no existing subject family changes.
+ * portraits, the landed-saucer colony, the command and ability icons
+ * (`ICON:ACTION:MARTIAN:RALLY` is Psychic Command), the Shield and Cooling
+ * status icons, and the ability effect sprites. They are a list of their
+ * own so that no existing subject family changes. (The Thrall's portrait is
+ * retired with its sprite, bead pulp_wars-b5f.3.)
  */
 export type MartianArtSubjectV7 =
-  | `PORTRAIT:MARTIAN:${MartianArtRoleV7 | "THRALL"}`
+  | `PORTRAIT:MARTIAN:${MartianArtRoleV7}`
   | `CITY:MARTIAN:${1 | 2 | 3}`
   | `ICON:ACTION:${"BEAM_DOWN" | "MIND_CONTROL" | "TRACTOR_BEAM" | "FORCE_FIELD"}`
   | "ICON:ACTION:MARTIAN:RALLY"
@@ -342,17 +344,15 @@ const SHARED_ART_ROLES_V7: readonly UnitRoleIdV7[] = [
  * The Martian revision (bead pulp_wars-t6s.4): a self-launched Martian
  * machine (`machine`: its role walks or flies) afloat is drawn as itself
  * over the water, never as the transport (RULESET_7_MARTIANS.md section
- * 13.1), and a Thrall (`thrall`) is drawn with its own sprite on land. An
- * embarked Thrall is a foot unit afloat, so it draws its owner's (the
- * Martian) transport like every embarked foot unit ("embarked foot units
- * keep the transport"); its collar marker still says Thrall (bead
- * pulp_wars-w5j.3).
+ * 13.1). The Mind Control revision (bead pulp_wars-b5f.3): `faction` is
+ * the unit's kind (`unitFactionV7`), so a mind-controlled unit draws its
+ * own sprite, and its own faction's transport when embarked; the control
+ * halo and brain chip say who controls it.
  */
 export function unitArtSubjectV7(unit: {
   readonly role: UnitRoleIdV7;
   readonly form: UnitFormV7;
   readonly faction: FactionIdV7;
-  readonly thrall?: boolean;
   readonly machine?: boolean;
 }): ArtSubjectV7 {
   if (
@@ -364,8 +364,6 @@ export function unitArtSubjectV7(unit: {
     return `UNIT:MARTIAN:${unit.role as MartianArtRoleV7}`;
   if (unit.form === "EMBARKED")
     return navalArtSubjectV7(unit.faction, "UNIT", "EMBARKED_TRANSPORT");
-  if (unit.faction === "MARTIAN" && unit.thrall === true)
-    return "UNIT:MARTIAN:THRALL";
   // Revision 19: one Egg sprite for every role inside.
   if (unit.form === "EGG") return "UNIT:DINOSAUR:EGG";
   if (SHARED_ART_ROLES_V7.includes(unit.role))
@@ -415,8 +413,7 @@ export function moundArtSubjectV7(rider: boolean): ArtSubjectV7 {
  * revision (bead pulp_wars-t6s.4): `UNIT:MARTIAN:<ROLE>`,
  * `PORTRAIT:MARTIAN:<ROLE>`, `CITY:MARTIAN:<level>` and
  * `ICON:ACTION:MARTIAN:RALLY` (Psychic Command) fall back like the other
- * factions'; the Thrall (`UNIT:MARTIAN:THRALL`, `PORTRAIT:MARTIAN:THRALL`)
- * falls back to the Human Fighter, the role it fights as. The Ice Folk
+ * factions'. The Ice Folk
  * (bead pulp_wars-7g3.6): `UNIT:ICE_FOLK:<ROLE>`, `PORTRAIT:ICE_FOLK:<ROLE>`
  * and `CITY:ICE_FOLK:<level>` fall back like the other factions'; Deep
  * Winter and Brittle (`ICON:TECH:ICE_FOLK:*`) to the Human Fortification
@@ -440,8 +437,6 @@ export function chibiFallbackSubjectV7(
     return null;
   const naval = navalSharedSubjectV7(subject);
   if (naval !== null) return naval;
-  if (subject === "UNIT:MARTIAN:THRALL") return "UNIT:FIGHTER";
-  if (subject === "PORTRAIT:MARTIAN:THRALL") return "PORTRAIT:FIGHTER";
   if (
     subject === "ICON:TECH:ICE_FOLK:FORTIFICATION" ||
     subject === "ICON:TECH:DWARF:FORTIFICATION"

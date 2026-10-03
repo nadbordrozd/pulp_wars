@@ -406,7 +406,7 @@ function underStandIn(
 /**
  * The scene's direction art: the game's production art without the
  * stand-in factions' own, plus the Ice Folk (and Martian) rasters under the
- * stand-ins' subjects. The Martian Thrall has no role and is left out.
+ * stand-ins' subjects.
  */
 export function iceFolkSceneArtV7(
   kind: IceFolkSceneKindV7,
@@ -437,9 +437,7 @@ export function iceFolkSceneArtV7(
     ...(spec.martian === null
       ? []
       : underStandIn(
-          CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7.filter(
-            (asset) => asset.subject !== "UNIT:MARTIAN:THRALL",
-          ),
+          CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7,
           "MARTIAN",
           spec.martian,
         )),

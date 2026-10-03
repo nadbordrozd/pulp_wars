@@ -238,7 +238,22 @@ Gunner and the Shield Projector stay at 0.69 (0.66 before), as both are
 now wide and heavy, and are told apart by the crest, the pack and the gun
 against the round shield.
 
-## The Thrall
+## The Thrall (retired)
+
+**Retired by bead `pulp_wars-b5f.3`** (the
+[Mind Control overlay](../../product/RULESET_7_MIND_CONTROL.md#9-presentation)):
+a mind-controlled unit keeps its own kind's sprite and portrait and wears
+the code-drawn control halo and brain chip in the Martian faction colour,
+so the Thrall sprite and portrait (`UNIT:MARTIAN:THRALL`,
+`PORTRAIT:MARTIAN:THRALL`) are no longer subjects, registered, or shipped:
+their two runtime manifest entries and the two PNGs under
+`public/assets/chibi/` are removed (`npm run art:chibi -- retire`). Their
+recipes (`thrall-a`, `thrall-b`, `portrait-thrall-a`, `portrait-thrall-b`)
+stay in the batch as history, bound to the Grunt's assets with their
+verdicts marked retired, and the raw PixelLab outputs, submissions, review
+evidence and the subject prompts in `scripts/art/chibi/subjects/MARTIAN.json`
+stay as they were. The rest of this section and the Thrall rows above and
+below describe the retired art.
 
 One sprite for a mind-controlled unit of any faction. It is deliberately
 drab: mid-grey tunic, olive-grey trousers, brown boots, a grey blank face,
@@ -333,9 +348,12 @@ The spec makes these code-drawn; the colours are `MARTIAN_PALETTE_V7`.
   (the third and fourth) gets a `#ff8fd6` fill, so the field is seen.
 - **Cooling glyph:** the heat lines of the Cooling icon in `#aab3c0` on a
   `#4a5262` chip; no magenta, so "not glowing" reads as "not at full power".
-- **Thrall collar:** a 2 px ring in `#d5dde6` with one `#ff2fb0` pixel,
-  beside the sprite's own control helmet; the link line from a selected
-  Brain to its Thralls in `#ff8fd6`, dashed.
+- **Control halo and brain chip** (bead `pulp_wars-b5f.3`, replacing the
+  Thrall collar): a thin ring just above a mind-controlled unit's head with
+  two tendrils waving down to it, and a brain on the status chip, in the
+  Martian faction colour `#e83aae` (`faction-colours-v7.ts`) on its dark
+  shade, pulsing toward its glow; the dashed control link between a
+  selected controlled unit and its Brain in the same colour.
 - **Flying:** the shadow ellipse above; a ready flyer may bob by 1 px.
 - **Heat ray:** a 3 px line from the emitter to the target, `#ff2fb0` with
   a 1 px `#ffffff` core, ending in the `heat-ray` flash; the Pierce victim

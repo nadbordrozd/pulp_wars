@@ -102,6 +102,7 @@ const FIXTURES: readonly (readonly [
       "martian-beam-down performed",
       "martian-tractor-beam aimed",
       "martian-mind-control aimed",
+      "martian-mind-control performed",
     ],
   ],
   ["Martian duel", martianDuelFixtureV7, []],
@@ -137,7 +138,7 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
       "4 Coins · slot 2/3",
       "+4 machines, +2 others",
       "Hammerer, 12 of 12 HP, riding",
-      "Thralls 2 / 2",
+      "Controls 1 / 1",
     ])
       expect(COORDINATE.test(text)).toBe(false);
   });

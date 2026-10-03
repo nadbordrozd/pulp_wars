@@ -477,17 +477,6 @@ export const UNIT_SHADOW_MEASUREMENTS_V7: Readonly<
     baseLeft: 0,
     baseRight: 83,
   },
-  "UNIT:MARTIAN:THRALL": {
-    assetId: "chibi-direction-martian-thrall",
-    assetClass: "STANDARD_UNIT",
-    width: 56,
-    height: 80,
-    contactY: 75,
-    footLeft: 15,
-    footRight: 46,
-    baseLeft: 15,
-    baseRight: 47,
-  },
   "UNIT:ICE_FOLK:FIGHTER": {
     assetId: "chibi-direction-ice-folk-yeti",
     assetClass: "STANDARD_UNIT",

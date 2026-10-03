@@ -72,10 +72,13 @@ import {
   drawCoolingGlyphV7,
   drawFlyerShadowV7,
   drawMartianBadgeV7,
+  controlHaloPulseV7,
+  drawControlBrainChipV7,
+  drawControlHaloV7,
+  drawControlLinkV7,
   drawShieldBarV7,
-  drawThrallCollarV7,
-  drawThrallLinkV7,
   drawWadeRipplesV7,
+  spriteHeadAnchorV7,
   type MartianUnitMarkersV7,
 } from "./martian-canvas-v7";
 import {
@@ -523,8 +526,9 @@ export interface BoardRenderPlanEntryV7 {
   /** UNIT only, revision 19: a grown Dinosaur unit, Big (1) or Alpha (2). */
   readonly growthStage?: 1 | 2;
   /**
-   * UNIT only, the Martian revision: the Shield, Cooling, Thrall, flying
-   * and afloat markers of a visible Martian unit.
+   * UNIT only, the Martian revision: the Shield, Cooling, flying and afloat
+   * markers of a visible Martian unit, and the control visual of a
+   * mind-controlled unit of any kind.
    */
   readonly martian?: MartianUnitMarkersV7;
   /**
@@ -821,7 +825,7 @@ export function buildBoardRenderPlanV7(
     const iceFolk = iceFolkMatch ? iceFolkUnitMarkersV7(view, unit) : undefined;
     // The Martian revision: a machine afloat is drawn as itself (never as
     // the transport); the Mind Control revision: a controlled unit keeps its
-    // own name and sprite and carries the control marker.
+    // own name and sprite and carries the control halo and brain chip.
     const machine = martianMatch && martianMachineV7(view, unit);
     const martian = martianMatch ? martianUnitMarkersV7(view, unit) : undefined;
     // Revision 19: an Egg is "{Unit} Egg".
@@ -999,7 +1003,7 @@ export function buildBoardRenderPlanV7(
     )
       addAbilityPreviews(entries, view, commands, selectedUnitId);
     // The Martian revision: the Force Field of a selected Shield Projector
-    // and the Thrall-Brain link.
+    // and the control link between a controlled unit and its Brain.
     if (martianMatch)
       addMartianSelectionEntriesV7(entries, view, selectedUnitId);
   }
@@ -1424,6 +1428,11 @@ export function drawBoardV7(input: {
    * rasters. Omitted, the earthwork is a plain code-drawn stand-in.
    */
   readonly dwarfArt?: DwarfBoardArtV7;
+  /**
+   * The Mind Control revision: the control halo's pulse clock in ms (0, the
+   * default, and reduced motion draw it static in the faction colour).
+   */
+  readonly controlPulseTimeMs?: number;
 }): void {
   const { context, viewport, devicePixelRatio } = input;
   const saturationOf = (entry: BoardRenderPlanEntryV7): number => {
@@ -2036,6 +2045,9 @@ export function drawBoardV7(input: {
               (pulse) => pulse.unitId === Number(entry.key.slice(5)),
             ) ?? null)
           : null;
+      // The Mind Control revision: the top of a controlled unit's head as
+      // drawn this frame (lifted, jumping, garrisoned), for its halo.
+      let controlHead: { readonly x: number; readonly y: number } | null = null;
       // The Ice Folk revision: this frame of a Shatter on this unit, if any.
       const shatterCue =
         entry.kind === "UNIT" &&
@@ -2277,6 +2289,13 @@ export function drawBoardV7(input: {
               rect.height,
             );
           context.restore();
+          if (entry.kind === "UNIT" && entry.martian?.controlled === true) {
+            const anchor = spriteHeadAnchorV7(image);
+            controlHead = {
+              x: rect.x + rect.width * (anchor?.centre ?? 0.5),
+              y: rect.y + rect.height * (anchor?.top ?? 0.12),
+            };
+          }
           // The Dwarf revision: the sandbags in front of a dug-in unit.
           if (digIn !== null)
             drawDigInEarthworkV7(
@@ -2403,10 +2422,9 @@ export function drawBoardV7(input: {
         )
           drawDinosaurBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Martian revision: the saucer badge over Human stand-in art
-        // (LEGACY and the classic look), then the Cooling glyph or the
-        // control marker (the Mind Control revision: the former Thrall
-        // collar as a placeholder until the UI pass) in the status slot
-        // right of the sprite.
+        // (LEGACY and the classic look), then (below) the Cooling glyph, or
+        // a controlled unit's halo and brain chip, in the status slot right
+        // of the sprite.
         if (entry.kind === "UNIT" && entry.faction === "MARTIAN" && !factionArt)
           drawMartianBadgeV7(context, x, y, camera.zoom, chibiPiece);
         // The Ice Folk revision: the snow-capped peak badge over Human stand-in art
@@ -2433,12 +2451,27 @@ export function drawBoardV7(input: {
             highContrast: input.highContrast ?? false,
           });
         if (entry.kind === "UNIT" && entry.martian !== undefined) {
-          if (entry.martian.controlled)
-            drawThrallCollarV7(context, x, y, camera.zoom, {
+          if (entry.martian.controlled) {
+            // The Mind Control revision (section 9): the halo over the
+            // head (over the cell's upper part while the sprite is not
+            // drawn) and the brain chip, in the Martian faction colour.
+            drawControlHaloV7(
+              context,
+              controlHead ?? { x, y: y - 40 * camera.zoom },
+              camera.zoom,
+              {
+                pulse: controlHaloPulseV7(
+                  input.controlPulseTimeMs ?? 0,
+                  input.reducedMotion ?? false,
+                ),
+                highContrast: input.highContrast ?? false,
+              },
+            );
+            drawControlBrainChipV7(context, x, y, camera.zoom, {
               chibi: chibiPiece,
               highContrast: input.highContrast ?? false,
             });
-          else if (entry.martian.cooling)
+          } else if (entry.martian.cooling)
             drawCoolingGlyphV7(context, x, y, camera.zoom, {
               chibi: chibiPiece,
               highContrast: input.highContrast ?? false,
@@ -2910,7 +2943,7 @@ export function drawBoardV7(input: {
       entry.label === "CONTROL_LINK" &&
       entry.linkTo !== undefined
     )
-      drawThrallLinkV7(
+      drawControlLinkV7(
         context,
         {
           x: camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,

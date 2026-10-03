@@ -55,7 +55,8 @@ export type CorePresentationStepV7 =
       /**
        * The Martian cues (bead pulp_wars-t6s.4, martian-effects-v7): a heat
        * ray (with its Pierce victim), a Shield flare, the Beam Down column,
-       * the Tractor Beam, the Mind Control spiral, and Thralls collapsing.
+       * the Tractor Beam, the Mind Control spiral, and a control halo
+       * shattering when a Brain is lost.
        */
       readonly kind: "MARTIAN";
       readonly effect: MartianFeedbackEffectV7;
@@ -223,6 +224,12 @@ export type SupportEffectV7 =
    */
   | "REGENERATE";
 
+/**
+ * The Mind Control revision: how long the control halo takes to shatter
+ * when its Brain is lost (`CONTROL_RELEASE`).
+ */
+export const CONTROL_RELEASE_DURATION_MS_V7 = 420;
+
 /** Builds animation instructions exclusively from captured public views/events. */
 export function corePresentationPlanV7(
   before: PlayerViewV7,
@@ -299,7 +306,7 @@ export function corePresentationPlanV7(
       ...(enemyTurn ? { followCamera: true as const } : {}),
     });
   };
-  /** Adds a Martian cue; collapses of one boundary merge. */
+  /** Adds a Martian cue; consecutive releases of one boundary merge. */
   const pushMartian = (
     step: Omit<
       Extract<CorePresentationStepV7, { readonly kind: "MARTIAN" }>,
@@ -309,8 +316,8 @@ export function corePresentationPlanV7(
     const last = steps.at(-1);
     if (
       last?.kind === "MARTIAN" &&
-      last.effect === "THRALL_COLLAPSE" &&
-      step.effect === "THRALL_COLLAPSE"
+      last.effect === "CONTROL_RELEASE" &&
+      step.effect === "CONTROL_RELEASE"
     ) {
       steps[steps.length - 1] = {
         ...last,
@@ -477,13 +484,23 @@ export function corePresentationPlanV7(
         pushDinosaur("HATCH_CALL", event.at, null, 250, shaman.at);
       pushDinosaur("HATCH", event.at, event.unitId, 450);
     } else if (event.kind === "UNIT_DIED" && event.cause === "BRAIN_LOST") {
-      // The Martian revision: a Thrall collapses when its Brain is lost.
-      const thrall = before.units.find((unit) => unit.id === event.unitId);
-      if (thrall !== undefined && isExplored(thrall.at))
+      // The Mind Control revision: a controlled unit whose original owner
+      // is out is lost with its Brain; its halo shatters where it stood.
+      const lost = before.units.find((unit) => unit.id === event.unitId);
+      if (lost !== undefined && isExplored(lost.at))
         pushMartian({
-          effect: "THRALL_COLLAPSE",
-          cells: [thrall.at],
-          durationMs: 320,
+          effect: "CONTROL_RELEASE",
+          cells: [lost.at],
+          durationMs: CONTROL_RELEASE_DURATION_MS_V7,
+        });
+    } else if (event.kind === "UNIT_RELEASED") {
+      // The Mind Control revision (section 9): the Brain is lost, the halo
+      // shatters and the unit stands with its original owner again.
+      if (isExplored(event.at))
+        pushMartian({
+          effect: "CONTROL_RELEASE",
+          cells: [event.at],
+          durationMs: CONTROL_RELEASE_DURATION_MS_V7,
         });
     } else if (event.kind === "UNIT_BEAMED") {
       // The Martian revision: the passenger arrives in a column of light.
@@ -520,7 +537,7 @@ export function corePresentationPlanV7(
       origins.set(event.targetUnitId, event.to);
     } else if (event.kind === "UNIT_MIND_CONTROLLED") {
       // The Martian revision: a spiral over the victim, a ring round the
-      // Brain; the Thrall appears in its place.
+      // Brain; the unit stays, under its control halo.
       const brain = before.units.find((unit) => unit.id === event.unitId);
       if (isExplored(event.at))
         pushMartian({
@@ -700,7 +717,7 @@ export function corePresentationPlanV7(
       // The Martian revision: a heat ray is a beam from the shooter (with a
       // thinner beam on to a Pierce victim), not a projectile or a lunge.
       const ray = event.preview.rayPower !== "NONE";
-      // `pulp_wars-b5f.2`: a Grunt's (or Thrall's) ray pistol is a plain
+      // `pulp_wars-b5f.2`: a Grunt's ray pistol is a plain
       // shot shown as the thin beam, at range 1 or 2.
       const pistol =
         !ray &&

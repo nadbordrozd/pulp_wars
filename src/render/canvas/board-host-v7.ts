@@ -1,4 +1,5 @@
 import {
+  unitFactionV7,
   unitRoleRuleV7,
   type CoordV7,
   type PlayerEventEnvelopeV7,
@@ -9,6 +10,7 @@ import {
   unitIsUndeadV7,
 } from "../undead-presentation-v7";
 import { unitIsGoblinV7 } from "../goblin-presentation-v7";
+import { mindControlledInfoV7 } from "../martian-presentation-v7";
 import {
   eggCountdownTextV7,
   eggTurnsRemainingV7,
@@ -944,7 +946,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#followCamera(first);
         // A heat ray shows the target before the hit and the result after
         // it; every other cue shows the result (the arrival, the pull's
-        // start, the Thrall in its victim's place).
+        // start, the taken unit under its control halo, the released unit
+        // back with its owner).
         const ray = step.effect === "HEAT_RAY";
         this.#presentedView = ray ? before : after;
         this.#draw();
@@ -1375,6 +1378,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         iceFolkShatter: this.#iceFolkShatter,
         // The Dwarf revision: the Dig In earthwork rasters.
         dwarfArt: this.#dwarfArt,
+        // The Mind Control revision: the control halo's pulse (static for
+        // reduced motion).
+        controlPulseTimeMs: model.motion === "REDUCED" ? 0 : now,
         selectionJump:
           jump === null
             ? null
@@ -1548,6 +1554,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   pinDinosaurFeedback(feedback: readonly DinosaurFeedbackV7[]): void {
     this.#pinnedDinosaurFeedback = feedback;
     this.#drawSupportOverlay();
+  }
+
+  /**
+   * Review tooling and tests: the centre of a cell in CSS px from the
+   * canvas's top-left corner, under the current camera (review scripts crop
+   * and enlarge a piece of the board around it). The game never calls it.
+   */
+  cellCentreCssPx(at: CoordV7): { readonly x: number; readonly y: number } {
+    return worldToScreen(projectGrid(at), this.#camera);
   }
 
   /**
@@ -1896,6 +1911,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         : [
             `${unitName(model.view, unit)}, ${unit.hp} of ${unit.maxHp} HP`,
             afflictionCursorCueV7(model.view, unit.id),
+            // The Mind Control revision: the halo, said.
+            mindControlledInfoV7(model.view, unit)?.byLine ?? "",
           ]
             .filter(Boolean)
             .join(", "),
@@ -2522,12 +2539,14 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     if (!ready && !jumping) {
       if (!jumping) this.#selectionJump = null;
       // The Ice Folk revision: a visible Blizzard keeps its flakes falling
-      // with a calm redraw about fifteen times a second (full motion only).
+      // with a calm redraw about fifteen times a second (full motion only);
+      // the Mind Control revision: so does a visible controlled unit's halo.
       if (
         model.motion === "FULL" &&
-        model.view.board.tiles.some(
+        (model.view.board.tiles.some(
           (tile) => tile.explored && tile.blizzard === true,
-        ) &&
+        ) ||
+          (model.view.mindControlled ?? []).length > 0) &&
         typeof browser.setTimeout === "function"
       )
         this.#blizzardTimer = browser.setTimeout(() => {
@@ -2650,6 +2669,11 @@ function unitName(
         : ""
     }`;
   }
+  // The Mind Control revision: the Martian, Ice Folk and Dwarf kinds by
+  // their own names too (a controlled Yeti is a Yeti, a Brain a Brain).
+  const faction = unitFactionV7(view, unit);
+  if (faction === "MARTIAN" || faction === "ICE_FOLK" || faction === "DWARF")
+    return `${faction === "MARTIAN" ? "Martian" : faction === "ICE_FOLK" ? "Ice Folk" : "Dwarf"} ${unitRoleRuleV7(view, unit).label}`;
   return title(unit.role);
 }
 const NO_HELD_UNITS: ReadonlyMap<number, CoordV7> = new Map();

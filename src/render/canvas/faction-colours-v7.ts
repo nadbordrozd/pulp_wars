@@ -43,3 +43,40 @@ export function playerFactionColourV7(
   const player = view.players.find((candidate) => candidate.id === playerId);
   return player === undefined ? undefined : factionColourV7(player.faction);
 }
+
+/** The lighter and darker shades of a faction colour (bead pulp_wars-b5f.3). */
+export interface FactionColourShadesV7 {
+  /** The faction colour itself. */
+  readonly base: string;
+  /** Toward white: the glow or highlight of the colour. */
+  readonly glow: string;
+  /** Toward black: the outline or shade of the colour. */
+  readonly dark: string;
+}
+
+function mixHexV7(colour: string, toward: number, share: number): string {
+  const channel = (offset: number): string => {
+    const value = Number.parseInt(colour.slice(offset, offset + 2), 16);
+    return Math.round(value + (toward - value) * share)
+      .toString(16)
+      .padStart(2, "0");
+  };
+  return `#${channel(1)}${channel(3)}${channel(5)}`;
+}
+
+/**
+ * The shades of a faction colour, derived here so that every code-drawn
+ * cue in that colour reads this one source. The Mind Control revision's
+ * control visual is the Martian colour with its glow and dark shades
+ * (docs/product/RULESET_7_MIND_CONTROL.md section 9).
+ */
+export function factionColourShadesV7(
+  faction: FactionIdV7,
+): FactionColourShadesV7 {
+  const base = factionColourV7(faction);
+  return {
+    base,
+    glow: mixHexV7(base, 255, 0.5),
+    dark: mixHexV7(base, 0, 0.55),
+  };
+}

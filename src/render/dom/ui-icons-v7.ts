@@ -46,7 +46,14 @@ export type UiIconIdV7 =
   | "gear"
   | "drill"
   | "bomb-run"
-  | "key";
+  | "key"
+  // The Mind Control revision (bead pulp_wars-b5f.3): a brain, the badge of
+  // a mind-controlled unit.
+  | "brain";
+
+/** The Mind Control brain's two lobes (shared by its outline and parts). */
+const BRAIN_LOBES =
+  "M8.7 5.4a5.3 6.6 0 1 0 0 13.2 5.3 6.6 0 1 0 0-13.2ZM15.3 5.4a5.3 6.6 0 1 0 0 13.2 5.3 6.6 0 1 0 0-13.2Z";
 
 const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   hp: "M12 20.5 4.2 12.8a4.6 4.6 0 0 1 6.5-6.5L12 7.6l1.3-1.3a4.6 4.6 0 0 1 6.5 6.5Z",
@@ -128,6 +135,7 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
   "bomb-run":
     "M3.5 3.5h17M12 3.5v3.5M12 9.5a5.2 5.2 0 1 0 0 10.4 5.2 5.2 0 0 0 0-10.4ZM15.4 10.4l1.8-1.8",
   key: "M12 10.5 7 6.2a2.6 2.6 0 1 0 0 8.6L12 10.5l5 4.3a2.6 2.6 0 1 0 0-8.6ZM12 10.5v10.5M9.5 18h5",
+  brain: BRAIN_LOBES,
 };
 
 /** One shape of a multi-part icon; `fill` may be a fixed colour. */
@@ -191,8 +199,29 @@ const BOMB_PARTS: readonly IconPartV7[] = [
   },
 ];
 
+/**
+ * The Mind Control revision: a brain seen from the side, two lobes filled
+ * in the icon's colour (the Martian faction colour in the dock) with their
+ * folds darkened over it, like the board's brain chip.
+ */
+const BRAIN_PARTS: readonly IconPartV7[] = [
+  {
+    d: BRAIN_LOBES,
+    fill: "currentColor",
+    stroke: "rgba(0, 0, 0, 0.55)",
+    width: 1,
+  },
+  {
+    d: "M12 5.8v12.4M5.4 10.6c1.6.9 2.9.3 3.6-1.2M5.6 14.8c2-.2 3 .7 3.3 2.1M18.6 10.6c-1.6.9-2.9.3-3.6-1.2M18.4 14.8c-2-.2-3 .7-3.3 2.1",
+    fill: "none",
+    stroke: "rgba(0, 0, 0, 0.55)",
+    width: 1.3,
+  },
+];
+
 const PARTS: Partial<Record<UiIconIdV7, readonly IconPartV7[]>> = {
   bomb: BOMB_PARTS,
+  brain: BRAIN_PARTS,
 };
 
 const FILLED: ReadonlySet<UiIconIdV7> = new Set([

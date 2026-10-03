@@ -37,11 +37,12 @@ import {
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
   MARTIAN_HELP_RULES_V7,
-  MIND_CONTROLLED_INFO_V7,
+  MIND_CONTROLLED_LABEL_V7,
   brainControlTextV7,
   martianRoleUnlockTextV7,
   mindControlPreviewLinesV7,
   mindControlReadyInV7,
+  mindControlledInfoV7,
   shieldTextV7,
 } from "../../src/render/martian-presentation-v7";
 import {
@@ -136,17 +137,38 @@ describe("Martian unit dock", () => {
     selectUnitAt(controller, host, AT.coolingGunner);
     expect(chipText("cooling")).toBe("Cooling");
     expect(chipText("ray-power")).toBeNull();
-    // The Mind Control revision: a controlled Human Fighter keeps its name,
-    // with the placeholder control chip until the UI pass.
+    // The Mind Control revision (section 9): a controlled Human Fighter
+    // keeps its name; its brain badge says "Controlled" and names the
+    // controller and the original owner, with the sentences in its tooltip.
     selectUnitAt(controller, host, AT.controlled);
     expect(requiredElement(".v7-selection-dock h2").textContent).toBe(
       "Fighter",
     );
+    const badge = requiredElement<HTMLElement>(
+      '.v7-selection-dock [data-unit-status="mind-controlled"]',
+    );
+    expect(badge.querySelector('[data-icon="brain"]')).not.toBe(null);
     expect(
-      requiredElement<HTMLElement>(
-        '.v7-selection-dock [data-unit-status="mind-controlled"]',
-      ).title,
-    ).toContain(MIND_CONTROLLED_INFO_V7);
+      [...badge.querySelectorAll("[data-control-owner]")].map((node) => [
+        (node as HTMLElement).dataset.controlOwner,
+        node.textContent,
+      ]),
+    ).toEqual([
+      ["controller", "You"],
+      ["original", "Player 2"],
+    ]);
+    expect(badge.querySelector(".v7-control-label")?.textContent).toBe(
+      MIND_CONTROLLED_LABEL_V7,
+    );
+    const info = required(
+      mindControlledInfoV7(view, unitAt(controller, AT.controlled)),
+    );
+    expect(badge.title).toContain(info.byLine);
+    expect(badge.title).toContain(info.fateLine);
+    // Its owner line is the badge's: no separate "Player N".
+    expect(
+      document.querySelector(".v7-selection-dock .v7-identity-owner"),
+    ).toBe(null);
     expect(chipText("shield")).toBeNull();
     // A controlled unit cannot be disbanded; its Brain's link is on the
     // board.
@@ -161,6 +183,15 @@ describe("Martian unit dock", () => {
     selectUnitAt(controller, host, AT.controller);
     const brain = required(stats(AT.controller).mindControl);
     expect(chipText("controlled")).toBe(brainControlTextV7(brain));
+    // The Brain's chip shows the portrait of the unit it controls.
+    const held = unitAt(controller, AT.controlled);
+    const portrait = requiredElement<HTMLElement>(
+      '.v7-selection-dock [data-unit-status="controlled"] .v7-control-portrait',
+    );
+    expect(portrait.dataset.controlledUnit).toBe(String(held.id));
+    expect(portrait.getAttribute("aria-label")).toBe(
+      `Fighter, ${held.hp} of ${held.maxHp} HP`,
+    );
     selectUnitAt(controller, host, AT.brain);
     // Psychic Command is the Brain's Rally.
     expect(actionLabels()).toContain("Psychic Command");
@@ -364,7 +395,7 @@ describe("Martian abilities", () => {
       view.mindControlCooldowns.find((entry) => entry.unitId === brain.id),
     ).turnsRemaining;
     expect(chipText("mind-control-cooldown")).toBe(
-      `Recovering: ready in ${mindControlReadyInV7(cooldown)} turns`,
+      `Recovering: ${mindControlReadyInV7(cooldown)} turns`,
     );
     app.destroy();
   });

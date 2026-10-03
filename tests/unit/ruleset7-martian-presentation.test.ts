@@ -21,6 +21,7 @@ import {
   BEAM_DOWN_MOVED_V7,
   BEAM_DOWN_NO_PASSENGER_V7,
   MARTIAN_HELP_RULES_V7,
+  MIND_CONTROLLED_LABEL_V7,
   beamDownUnavailableTextV7,
   brainControlTextV7,
   martianAbilityNameV7,
@@ -34,6 +35,7 @@ import {
   mindControlPreviewLinesV7,
   mindControlReadyInV7,
   mindControlUnavailableTextV7,
+  mindControlledInfoV7,
   rayPowerTextV7,
   shieldBarMaximumV7,
   shieldTextV7,
@@ -61,6 +63,10 @@ const unitAt = (view: PlayerViewV7, at: CoordV7) => {
   if (unit === undefined) throw new Error(`no unit at ${at.x},${at.y}`);
   return unit;
 };
+function required<T>(value: T | undefined): T {
+  if (value === undefined) throw new Error("missing");
+  return value;
+}
 const statsAt = (view: PlayerViewV7, at: CoordV7) => {
   const stats = view.unitStats.find(
     (entry) => entry.unitId === unitAt(view, at).id,
@@ -101,7 +107,7 @@ describe("Martian texts (section 13.2)", () => {
     );
   });
 
-  it("names a Brain's Thralls and why it cannot Mind Control", () => {
+  it("names a Brain's control and why it cannot Mind Control", () => {
     const view = humanView(martianUiFixtureV7());
     const brain = statsAt(view, AT.brain).mindControl;
     if (brain === null) throw new Error("no Mind Control block");
@@ -110,10 +116,10 @@ describe("Martian texts (section 13.2)", () => {
     );
     expect(mindControlUnavailableTextV7(brain)).toBeNull();
     expect(mindControlUnavailableTextV7({ ...brain, cooldown: 1 })).toBe(
-      `Recovering: ready in ${mindControlReadyInV7(1)} turns`,
+      `Recovering: ${mindControlReadyInV7(1)} turns`,
     );
     expect(mindControlUnavailableTextV7({ ...brain, cooldown: 0 })).toBe(
-      "Recovering: ready in 1 turn",
+      "Recovering: 1 turn",
     );
     const controller = statsAt(view, AT.controller).mindControl;
     if (controller === null) throw new Error("no Mind Control block");
@@ -121,6 +127,40 @@ describe("Martian texts (section 13.2)", () => {
     expect(mindControlUnavailableTextV7(controller)).toBe(
       "Controls a unit already",
     );
+  });
+
+  it("names a controlled unit's controller, original owner and fate (section 9)", () => {
+    const view = humanView(martianUiFixtureV7());
+    const controlled = unitAt(view, AT.controlled);
+    expect(mindControlledInfoV7(view, controlled)).toEqual({
+      controllerId: view.viewer.id,
+      originalOwnerId: required(
+        view.mindControlled.find((entry) => entry.unitId === controlled.id),
+      ).originalOwnerId,
+      controllerName: "You",
+      originalOwnerName: "Player 2",
+      returns: true,
+      byLine: `Mind-controlled by your ${label("CAPTAIN")}`,
+      fateLine: `Returns to Player 2 if the ${label("CAPTAIN")} is lost`,
+    });
+    expect(MIND_CONTROLLED_LABEL_V7).toBe("Controlled");
+    expect(mindControlledInfoV7(view, unitAt(view, AT.brain))).toBeNull();
+    // An eliminated original owner: lost with the Brain.
+    const state = martianUiFixtureV7();
+    const gone = humanView({
+      ...state,
+      players: state.players.map((player) =>
+        player.id === state.humanPlayerId
+          ? player
+          : { ...player, status: "ELIMINATED" as const },
+      ),
+    });
+    expect(
+      mindControlledInfoV7(gone, unitAt(gone, AT.controlled)),
+    ).toMatchObject({
+      returns: false,
+      fateLine: `Lost with the ${label("CAPTAIN")}`,
+    });
   });
 
   it("explains a Brain, the Shield and a machine afloat in unit info", () => {
@@ -356,5 +396,25 @@ describe("Martian log lines (section 13.2)", () => {
     ).toBe(
       `Your ${label("KNIGHT")} pulled Player 2's ${effectiveRoleRuleV7("RAIDER", "ORIGINAL").label}`,
     );
+  });
+
+  it("logs a controlled unit going home to its owner when the Brain is lost", () => {
+    const state = martianUiFixtureV7("GOBLIN");
+    const view = humanView(state);
+    const result = applyCommandV7(state, state.humanPlayerId, {
+      kind: "DISBAND",
+      unitId: unitAt(view, AT.controller).id,
+    });
+    if (!result.accepted) throw new Error(result.error.code);
+    const notice = martianBoundaryNoticeV7(
+      projectEventsV7(state, result.state, state.humanPlayerId, result.events)
+        .events,
+      view,
+      humanView(result.state),
+    );
+    expect(notice).toEqual({
+      text: `${effectiveRoleRuleV7("FIGHTER", "GOBLIN").label} returned to Player 2`,
+      toast: true,
+    });
   });
 });

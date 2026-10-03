@@ -2712,6 +2712,70 @@
   font-weight: 800;
 }
 
+/*
+ * The Mind Control revision (bead pulp_wars-b5f.3): a controlled unit's
+ * badge, a brain in the Martian faction colour (#e83aae, faction-colours-v7)
+ * and "Controlled", then its controller and original owner on swatches of
+ * their faction colours; a Brain's chip holds its controlled unit's
+ * portrait.
+ */
+.v7-control-chip {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px 5px;
+  align-items: center;
+  border: 1px solid #e83aae;
+  background: #2b1a28;
+  color: #f8d4ec;
+  font-weight: 800;
+}
+
+.v7-control-chip-icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  min-width: 0;
+  min-height: 0;
+  color: #e83aae;
+}
+
+.v7-control-owner {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.v7-control-owner .v7-player-swatch {
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 1px solid #00000080;
+}
+
+.v7-control-arrow {
+  color: #f4a5da;
+}
+
+.v7-martian-chip[data-unit-status="controlled"] {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.v7-control-portrait {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e83aae;
+  border-radius: 6px;
+  background: #1d1420;
+  overflow: hidden;
+}
+
 .v7-command-icon[data-icon="beam-down"],
 .v7-command-icon[data-icon="mind-control"],
 .v7-command-icon[data-icon="tractor-beam"] {

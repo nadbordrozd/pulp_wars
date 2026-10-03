@@ -860,7 +860,8 @@ true }`): an `edit-image-pixen` recipe may edit an earlier recipe of
   350, saturation at least 0.4, value at least 0.25; target hue 322 with a
   fifth of the hue spread and no trim rule. PixelLab's "hot magenta pink"
   ranged from hue 300 to 340 between sprites; the masters measure 320 to 324. The `undead-violet` preset is unchanged (a test holds it).
-- **Subjects**: `UNIT:MARTIAN:<ROLE>` and `UNIT:MARTIAN:THRALL`,
+- **Subjects**: `UNIT:MARTIAN:<ROLE>` (and `UNIT:MARTIAN:THRALL`, retired
+  with its portrait by bead `pulp_wars-b5f.3`; its recipes stay as history),
   `PORTRAIT:MARTIAN:<ROLE>`, `CITY:MARTIAN:<level>`,
   `ICON:ACTION:MARTIAN:RALLY` (Psychic Command), and a new family
   `ICON:STATUS:SHIELD` and `ICON:STATUS:COOLING`.
@@ -906,7 +907,8 @@ real board host with the default look) and `index.json`. The faction is not
 in the engine yet, so a scene gives a Martian seat a **stand-in faction**
 that it does not otherwise show and registers the Martian rasters under
 that faction's subjects; the Thrall is a second stand-in's Fighter owned by
-a shadow player of the seat's colour. Its captures start Vite on port 6509
+a shadow player of the seat's colour (drawn with that stand-in's own art
+since the Thrall sprite is retired). Its captures start Vite on port 6509
 unless `--port` says otherwise, need `CHROME_PATH`, and are written after
 the browser closes (a file written under the project while the page is
 open makes the dev server reload it).

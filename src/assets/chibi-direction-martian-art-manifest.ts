@@ -9,9 +9,10 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * a mask (`fixedColours`); the player is read from the base plate, the
  * pennant and the border.
  *
- * The nine unit sprites (the eight land roles and the Thrall), their
- * portraits, seven command, ability and status icons, five ability effect
- * sprites and City 1-3 (a landed-saucer colony).
+ * The eight unit sprites (the land roles), their portraits, seven command,
+ * ability and status icons, five ability effect sprites and City 1-3 (a
+ * landed-saucer colony). The Thrall's sprite and portrait are retired (bead
+ * pulp_wars-b5f.3: a mind-controlled unit keeps its own sprite).
  *
  * Since bead `pulp_wars-t6s.4` this list is registered in the direction
  * registry (chibiDirectionArtRegistryV7), MARTIAN_FLAG_ANCHORS_V7 is part of
@@ -101,15 +102,6 @@ export const CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
       fixedColours: true,
     },
     {
-      id: "chibi-direction-martian-thrall",
-      subject: "UNIT:MARTIAN:THRALL",
-      assetClass: "STANDARD_UNIT",
-      width: 56,
-      height: 80,
-      url: chibiArtUrl("assets/chibi/units/chibi-direction-martian-thrall.png"),
-      fixedColours: true,
-    },
-    {
       id: "chibi-direction-portrait-martian-grunt",
       subject: "PORTRAIT:MARTIAN:FIGHTER",
       assetClass: "PORTRAIT",
@@ -194,17 +186,6 @@ export const CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
       height: 48,
       url: chibiArtUrl(
         "assets/chibi/portraits/chibi-direction-portrait-martian-colossus.png",
-      ),
-      fixedColours: true,
-    },
-    {
-      id: "chibi-direction-portrait-martian-thrall",
-      subject: "PORTRAIT:MARTIAN:THRALL",
-      assetClass: "PORTRAIT",
-      width: 48,
-      height: 48,
-      url: chibiArtUrl(
-        "assets/chibi/portraits/chibi-direction-portrait-martian-thrall.png",
       ),
       fixedColours: true,
     },

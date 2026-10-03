@@ -4138,7 +4138,7 @@
     },
     "portrait-thrall-a": {
       "id": "portrait-thrall-a",
-      "asset": "chibi-direction-portrait-martian-thrall",
+      "asset": "chibi-direction-portrait-martian-grunt",
       "jobId": "sync-927d689b-e914-4a1b-8a74-181b6e61d044",
       "request": {
         "endpoint": "create-image-pixen",
@@ -4226,7 +4226,7 @@
     },
     "portrait-thrall-b": {
       "id": "portrait-thrall-b",
-      "asset": "chibi-direction-portrait-martian-thrall",
+      "asset": "chibi-direction-portrait-martian-grunt",
       "jobId": "5f20a898-a6f6-4eb9-8509-4f2c800f8376",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -4285,9 +4285,9 @@
       ],
       "completedAt": "2026-10-02T20:55:58.363Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "A drab grey soldier with a blank face, a control helmet with an antenna and one magenta light.",
+        "notes": "A drab grey soldier with a blank face, a control helmet with an antenna and one magenta light. Retired with chibi-direction-portrait-martian-thrall: Mind Control keeps the unit, bead pulp_wars-b5f.3. A controlled unit keeps its own portrait, so the Thrall portrait is not used.",
         "reviewedAt": "2026-10-02T21:02:44.926Z"
       }
     },
@@ -5415,7 +5415,7 @@
     },
     "thrall-a": {
       "id": "thrall-a",
-      "asset": "chibi-direction-martian-thrall",
+      "asset": "chibi-direction-martian-grunt",
       "jobId": "sync-b620ad96-3886-47a2-a26d-780ad9c5b485",
       "request": {
         "endpoint": "create-image-pixen",
@@ -5503,7 +5503,7 @@
     },
     "thrall-b": {
       "id": "thrall-b",
-      "asset": "chibi-direction-martian-thrall",
+      "asset": "chibi-direction-martian-grunt",
       "jobId": "478f5ed8-100c-4b64-a0b4-2ecad385ab77",
       "request": {
         "endpoint": "edit-image-pixen",
@@ -5562,9 +5562,9 @@
       ],
       "completedAt": "2026-10-02T20:18:59.762Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "A slumped drab grey soldier with a chrome control helmet, an antenna and one magenta light, a sword hanging low; no heraldry, no faction mark.",
+        "notes": "A slumped drab grey soldier with a chrome control helmet, an antenna and one magenta light, a sword hanging low; no heraldry, no faction mark. Retired with chibi-direction-martian-thrall: Mind Control keeps the unit, bead pulp_wars-b5f.3. A controlled unit keeps its own sprite under the code-drawn control halo, so the Thrall sprite is not used.",
         "reviewedAt": "2026-10-02T20:21:35.301Z"
       }
     },
@@ -7165,66 +7165,6 @@
       "notes": "Bead pulp_wars-b5f.1: the line holder. One big round chrome shield disc with a magenta lens and a thin magenta arc covers him from the chest to the knees, wider than his body, between big round shoulder plates; an emitter rig on his back (a small dish with a magenta centre on a gunmetal mast left of the helmet, a rod on the right) frames the head, so the top of the outline differs from the Grunt's antenna and the Ray Gunner's crest. The broadest, heaviest outline of the three (54 x 73 px, 2849 opaque pixels); no pixel below the feet.",
       "acceptedAt": "2026-10-03T14:43:45.875Z"
     },
-    "chibi-direction-martian-thrall": {
-      "id": "chibi-direction-martian-thrall",
-      "subject": "UNIT:MARTIAN:THRALL",
-      "assetClass": "STANDARD_UNIT",
-      "status": "ACCEPTED",
-      "recipe": "thrall-b",
-      "candidate": 0,
-      "candidateSha256": "8a35d29cdf78c3f8966af83fa37186514f54a03a051f00e0a534134d0d86b028",
-      "master": {
-        "path": "public/assets/chibi/units/chibi-direction-martian-thrall.png",
-        "sha256": "1741ac03ce65e9521a2b6877354a03b6aa1ff7707a8018549f0ee8e25c1c1e98",
-        "pixelSha256": "5fda241468c53b51f8efbf35dfc015c5c06cf3bab76a6815b2d2c36373da6f2d",
-        "width": 56,
-        "height": 80
-      },
-      "derivation": {
-        "kind": "as-is",
-        "accent": {
-          "preset": "martian-magenta",
-          "spec": {
-            "band": {
-              "hueFrom": 285,
-              "hueTo": 350,
-              "saturationMin": 0.4,
-              "valueMin": 0.25,
-              "hueCentre": 320
-            },
-            "hue": 322,
-            "hueSpread": 0.2
-          },
-          "accentPixels": 21,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 28,
-        "y": 40
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "plateCheck": {
-        "bandRows": 14,
-        "groundShare": 0.1779,
-        "footprintWidthShare": 0.6944,
-        "suspect": false
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "A slumped drab grey soldier with a chrome control helmet, an antenna and one magenta light, a sword hanging low; no heraldry, no faction mark.",
-      "acceptedAt": "2026-10-02T20:21:35.301Z"
-    },
     "chibi-direction-martian-tripod": {
       "id": "chibi-direction-martian-tripod",
       "subject": "UNIT:MARTIAN:CATAPULT",
@@ -7704,66 +7644,6 @@
       },
       "notes": "Bead pulp_wars-b5f.1: the bust of the new Shield Projector: a big round chrome shield disc with a magenta lens and rim fills the lower half, the eyes look over it, big round shoulder plates frame it, and the small dish emitter on its mast sits at the top left of the helmet as on the map sprite; no weapon. Told from the Grunt's and the Ray Gunner's busts at a glance.",
       "acceptedAt": "2026-10-03T14:45:07.043Z"
-    },
-    "chibi-direction-portrait-martian-thrall": {
-      "id": "chibi-direction-portrait-martian-thrall",
-      "subject": "PORTRAIT:MARTIAN:THRALL",
-      "assetClass": "PORTRAIT",
-      "status": "ACCEPTED",
-      "recipe": "portrait-thrall-b",
-      "candidate": 0,
-      "candidateSha256": "2a5ea60873fbceb772e32ffc3984ff2adfcd853008a6e58d854a2e65d48ffdcf",
-      "master": {
-        "path": "public/assets/chibi/portraits/chibi-direction-portrait-martian-thrall.png",
-        "sha256": "6c5fbcb178988db05f21ea74c814ef8b038bed8acff6f6193eeb1b1b1cc76ee5",
-        "pixelSha256": "29d88d4f080a7fa5064b70953570884bda3c8598cca319f59000bb3b3143177f",
-        "width": 48,
-        "height": 48
-      },
-      "derivation": {
-        "kind": "as-is",
-        "accent": {
-          "preset": "martian-magenta",
-          "spec": {
-            "band": {
-              "hueFrom": 285,
-              "hueTo": 350,
-              "saturationMin": 0.4,
-              "valueMin": 0.25,
-              "hueCentre": 320
-            },
-            "hue": 322,
-            "hueSpread": 0.2
-          },
-          "accentPixels": 17,
-          "trimPixels": 0
-        }
-      },
-      "anchor": {
-        "x": 24,
-        "y": 24
-      },
-      "overflow": {
-        "left": 0,
-        "right": 0,
-        "up": 0,
-        "down": 0
-      },
-      "plateCheck": {
-        "bandRows": 9,
-        "groundShare": 0,
-        "footprintWidthShare": 1,
-        "suspect": false
-      },
-      "reviewChecks": {
-        "native": true,
-        "enlarged": true,
-        "owners": true,
-        "noPlate": true,
-        "camera": true
-      },
-      "notes": "A drab grey soldier with a blank face, a control helmet with an antenna and one magenta light.",
-      "acceptedAt": "2026-10-02T21:02:44.926Z"
     },
     "chibi-direction-portrait-martian-tripod": {
       "id": "chibi-direction-portrait-martian-tripod",

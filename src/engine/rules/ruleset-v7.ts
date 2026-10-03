@@ -1702,8 +1702,7 @@ export const MARTIAN_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
 export const MARTIAN_ROLE_RULES_V7: Readonly<
   Record<UnitRoleIdV7, EffectiveRoleRuleV7>
 > = deepFreeze({
-  // The Grunt; a Thrall is a `FIGHTER`-role unit with a `thralls` entry and
-  // shares this statline (section 8.3).
+  // The Grunt.
   FIGHTER: role({
     role: "FIGHTER",
     label: "Grunt",

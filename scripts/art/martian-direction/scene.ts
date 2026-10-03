@@ -14,7 +14,9 @@
  * `CITY:MARTIAN:<level>` as `CITY:GOBLIN:<level>`. The stand-in's own
  * direction art is left out of the scene's registry. The Thrall has no role,
  * so a second stand-in faction's FIGHTER is the Thrall, owned by a shadow
- * player with the colour of its Martian seat. The board host, the plates,
+ * player with the colour of its Martian seat; since the Thrall sprite is
+ * retired (bead pulp_wars-b5f.3: a mind-controlled unit keeps its own
+ * sprite) that FIGHTER draws its own stand-in art. The board host, the plates,
  * the HP bars and the pennants are the game's own.
  *
  * The pennant anchors of the Martian cities (MARTIAN_FLAG_ANCHORS_V7) are
@@ -504,15 +506,6 @@ export function martianSceneArtV7(
     ...CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7,
   ].filter((asset) => !taken(asset.subject));
   const martian = CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7.flatMap((asset) => {
-    if (asset.subject === "UNIT:MARTIAN:THRALL")
-      return spec.thrall === null
-        ? []
-        : [
-            {
-              ...asset,
-              subject: `UNIT:${spec.thrall}:FIGHTER` as ArtSubjectV7,
-            },
-          ];
     if (
       asset.subject.startsWith("UNIT:MARTIAN:") ||
       asset.subject.startsWith("CITY:MARTIAN:")
@@ -537,7 +530,6 @@ export function martianSceneArtV7(
       : CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7.flatMap((asset) => {
           if (!asset.subject.startsWith("UNIT:MARTIAN:")) return [];
           const role = asset.subject.slice("UNIT:MARTIAN:".length);
-          if (role === "THRALL") return [];
           const url = before[role as UnitRoleIdV7];
           return [
             {

@@ -8,7 +8,7 @@
  *
  * Writes art/pixellab/reviews/chibi-batch-direction-martian/:
  *
- * - `roster-{x4,1x}.png`, `roster-zoom-0.75.png`: the nine units on Grass and
+ * - `roster-{x4,1x}.png`, `roster-zoom-0.75.png`: the eight units on Grass and
  *   on Mountain rock, each beside the Human, Undead, Goblin and Dinosaur
  *   unit of its role;
  * - `terrain-x2.png`: every unit on Grass, Forest, Mountain, Shallow and
@@ -122,7 +122,6 @@ const UNITS = [
     "troll",
     "brontosaurus",
   ],
-  ["THRALL", "thrall", "Thrall", "fighter", "skeleton", "goblin", "caveman"],
 ] as const;
 /** Plate widths of the live look by unit class (VISUAL_DIRECTION_2026-10.md). */
 const PLATE = { STANDARD_UNIT: 52, LARGE_UNIT: 57, GIANT_UNIT: 68 } as const;
@@ -1000,9 +999,7 @@ async function paletteAndReadability(): Promise<void> {
       raster: await readRaster(unitFile(`chibi-direction-martian-${unit[1]}`)),
     })),
   );
-  // The Thrall is a controlled local: its drab cloth is not the faction's.
-  const faction = masters.filter((entry) => entry.unit[0] !== "THRALL");
-  const all = measure(faction.map((entry) => entry.raster));
+  const all = measure(masters.map((entry) => entry.raster));
   const stat = (id: string): BandStat => {
     const found = all.bands[id];
     if (found === undefined) throw new Error(`no band ${id}`);
@@ -1170,7 +1167,7 @@ async function paletteAndReadability(): Promise<void> {
   });
   await writeFile(
     path.join(OUT, "palette.json"),
-    `${JSON.stringify({ measuredOn: "the eight faction unit masters (the Thrall is left out)", palette, codeDrawn: MARTIAN_PALETTE_V7 }, null, 2)}\n`,
+    `${JSON.stringify({ measuredOn: "the eight faction unit masters", palette, codeDrawn: MARTIAN_PALETTE_V7 }, null, 2)}\n`,
   );
   written.push("palette.json");
   await writeFile(
@@ -1601,7 +1598,6 @@ const ALIEN_NEIGHBOURS = [
   "tripod",
   "mothership",
   "colossus",
-  "thrall",
 ] as const;
 
 async function recordedCandidate(recipeId: string): Promise<RgbaRaster> {

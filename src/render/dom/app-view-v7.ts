@@ -228,9 +228,9 @@ import {
   MIND_CONTROL_PICK_V7,
   MIND_CONTROL_TOOLTIP_V7,
   STRAFE_LABEL_V7,
-  MIND_CONTROLLED_INFO_V7,
   MIND_CONTROLLED_LABEL_V7,
   MIND_CONTROLLED_NO_SLOT_V7,
+  MIND_CONTROL_NO_TARGET_V7,
   TRACTOR_BEAM_LABEL_V7,
   TRACTOR_BEAM_PICK_V7,
   TRACTOR_BEAM_TOOLTIP_V7,
@@ -251,7 +251,9 @@ import {
   matchHasMartianV7,
   mindControlPreviewLinesV7,
   mindControlUnavailableTextV7,
+  mindControlledInfoV7,
   rayPowerTextV7,
+  type MindControlledInfoV7,
   shieldTextV7,
   tractorBeamPreviewLinesV7,
 } from "../martian-presentation-v7";
@@ -1729,7 +1731,10 @@ export class Ruleset7DomAppView {
           eggFigure === undefined ? "chibi" : "code",
         ),
       );
-      if (unit.ownerId !== view.viewer.id) {
+      // The Mind Control revision (section 9): a controlled unit's badge
+      // names its controller and original owner, so no owner line.
+      const control = mindControlledInfoV7(view, unit);
+      if (unit.ownerId !== view.viewer.id && control === null) {
         const owner = view.players.find((player) => player.id === unit.ownerId);
         if (owner !== undefined)
           dock
@@ -1959,11 +1964,21 @@ export class Ruleset7DomAppView {
           );
         if (martian.mindControl !== null) {
           const blocked = mindControlUnavailableTextV7(martian.mindControl);
-          chip(
+          const controls = chip(
             brainControlTextV7(martian.mindControl),
             "controlled",
             blocked ?? `${MIND_CONTROL_LABEL_V7} is ready`,
           );
+          // The Mind Control revision (section 9): the portrait of each
+          // unit this Brain controls, in its chip.
+          for (const entry of view.mindControlled) {
+            if (entry.brainUnitId !== unit.id) continue;
+            const held = view.units.find(
+              (candidate) => candidate.id === entry.unitId,
+            );
+            if (held === undefined) continue;
+            controls.prepend(this.#controlledPortrait(view, held));
+          }
           if (martian.mindControl.cooldown !== null && blocked !== null)
             chip(blocked, "mind-control-cooldown", blocked);
         }
@@ -1975,21 +1990,11 @@ export class Ruleset7DomAppView {
           );
       }
       // The Mind Control revision (section 9): a controlled unit of any kind
-      // shows the control chip (the UI pass words it with the controller and
-      // the original owner).
-      if (stats?.mindControl != null) {
-        const cue = text(
-          this.#document,
-          "span",
-          MIND_CONTROLLED_LABEL_V7,
-          "v7-chip v7-martian-chip",
-        );
-        const title = `${MIND_CONTROLLED_INFO_V7} ${MIND_CONTROLLED_NO_SLOT_V7}.`;
-        cue.dataset.unitStatus = "mind-controlled";
-        cue.title = title;
-        cue.setAttribute("aria-label", title);
-        identityColumn?.append(cue);
-      }
+      // shows the brain badge "Controlled" and, as names in their faction
+      // colours, its controller and (after a return arrow) its original
+      // owner; the sentences are its tooltip and accessible name.
+      if (control !== null)
+        identityColumn?.append(this.#controlBadge(view, control));
       // The Ice Folk revision (section 13.1): the Chill of a unit of any
       // owner (Frozen, Frosted or Thawing), and an Ice Folk unit's Blizzard
       // or Snow, Rockfall reach and Boulder throw, from `stats.chill` and
@@ -2278,8 +2283,8 @@ export class Ruleset7DomAppView {
             );
             abilities.append(entry);
           }
-        // The Martian revision: the Shield, the ray's power now, a Thrall,
-        // a Brain's Thralls, a two-slot body and a machine afloat.
+        // The Martian revision: the Shield, the ray's power now,
+        // a Brain's control, a two-slot body and a machine afloat.
         if (stats.martian !== undefined)
           for (const line of martianUnitInfoLinesV7(unit, stats.martian)) {
             const entry = el(this.#document, "p", "v7-unit-ability");
@@ -2290,6 +2295,22 @@ export class Ruleset7DomAppView {
             );
             abilities.append(entry);
           }
+        // The Mind Control revision (section 9): who controls it and what
+        // happens when the Brain is lost.
+        const controlInfo = mindControlledInfoV7(view, unit);
+        if (controlInfo !== null) {
+          const entry = el(this.#document, "p", "v7-unit-ability");
+          entry.dataset.martianInfo = "controlled";
+          entry.append(
+            text(this.#document, "strong", MIND_CONTROLLED_LABEL_V7),
+            text(
+              this.#document,
+              "span",
+              `${controlInfo.byLine}. ${controlInfo.fateLine}. It cannot be disbanded or create units.`,
+            ),
+          );
+          abilities.append(entry);
+        }
         // The Ice Folk revision: the Chill (any owner), the Shatter
         // threshold, Snow or the Blizzard, Rockfall and the Boulder throw.
         if (matchHasIceFolkSeatV7(view))
@@ -2703,7 +2724,7 @@ export class Ruleset7DomAppView {
           view.viewer.faction,
         );
         // The Martian revision: a Martian viewer also counts slots (the
-        // Mothership and the Colossus take two; a Thrall none).
+        // Mothership and the Colossus take two; a controlled unit none).
         // The Ice Folk revision: an Ice Folk viewer counts slots too (the
         // spec's production rows name them; every Ice Folk unit takes one).
         const eggLaying = view.viewer.faction === "DINOSAUR";
@@ -5464,13 +5485,94 @@ export class Ruleset7DomAppView {
     );
   }
 
+  /**
+   * The Mind Control revision (section 9): the dock badge of a
+   * mind-controlled unit, a brain in the Martian faction colour with
+   * "Controlled", then the controller's name, a return arrow and the
+   * original owner's name, each on a swatch of its faction colour (the
+   * arrow and the original owner drop out when that owner is eliminated:
+   * the unit is lost with the Brain). No sentence is shown; the tooltip
+   * and the accessible name hold them.
+   */
+  #controlBadge(
+    view: PlayerViewV7,
+    control: MindControlledInfoV7,
+  ): HTMLElement {
+    const badge = el(this.#document, "span", "v7-chip v7-control-chip");
+    badge.dataset.unitStatus = "mind-controlled";
+    const sentence = `${control.byLine}. ${control.fateLine}. ${MIND_CONTROLLED_NO_SLOT_V7}.`;
+    badge.title = sentence;
+    badge.setAttribute("role", "img");
+    badge.setAttribute(
+      "aria-label",
+      `${MIND_CONTROLLED_LABEL_V7}. ${sentence}`,
+    );
+    const owner = (
+      playerId: number,
+      name: string,
+      role: "controller" | "original",
+    ): HTMLElement => {
+      const node = el(this.#document, "span", "v7-control-owner");
+      node.dataset.controlOwner = role;
+      const colour = this.#playerColour(view, playerId);
+      if (colour !== undefined) node.style.setProperty("--player", colour);
+      node.append(el(this.#document, "span", "v7-player-swatch"), name);
+      return node;
+    };
+    badge.append(
+      uiIconV7(this.#document, "brain", "v7-ui-icon v7-control-chip-icon"),
+      text(
+        this.#document,
+        "span",
+        MIND_CONTROLLED_LABEL_V7,
+        "v7-control-label",
+      ),
+      owner(control.controllerId, control.controllerName, "controller"),
+    );
+    if (control.returns) {
+      const arrow = text(this.#document, "span", "↩", "v7-control-arrow");
+      arrow.setAttribute("aria-hidden", "true");
+      badge.append(
+        arrow,
+        owner(control.originalOwnerId, control.originalOwnerName, "original"),
+      );
+    }
+    return badge;
+  }
+
+  /**
+   * The Mind Control revision (section 9): the small portrait of a unit a
+   * Brain controls, in the Brain's "Controls 1 / 1" chip (its kind's
+   * portrait, or the brain glyph without art).
+   */
+  #controlledPortrait(
+    view: PlayerViewV7,
+    unit: PlayerViewV7["units"][number],
+  ): HTMLElement {
+    const frame = el(this.#document, "span", "v7-control-portrait");
+    frame.dataset.controlledUnit = String(unit.id);
+    const name = martianUnitNameV7(view, unit);
+    frame.title = `${name}, ${unit.hp} of ${unit.maxHp} HP`;
+    frame.setAttribute("role", "img");
+    frame.setAttribute("aria-label", frame.title);
+    frame.append(
+      this.#chibiArt(
+        portraitSubjectV7(unit.role, unitFactionV7(view, unit)),
+        CHIBI_DOM_BOXES_V7.passenger,
+        this.#playerColour(view, unit.ownerId),
+      )?.element ??
+        uiIconV7(this.#document, "brain", "v7-ui-icon v7-control-chip-icon"),
+    );
+    return frame;
+  }
+
   /** Redraws the board (for example a Kaboom! preview) without the DOM. */
   /**
    * The Martian revision (section 13.1): one button per Martian ability
    * of an own unit (Beam Down, Mind Control, Tractor Beam). With a legal
    * target it aims the ability on the board (pressed while aiming); without
    * one it is disabled and names the reason (moved, no passenger, no free
-   * tile; recovering, Thrall limit; nothing in reach).
+   * tile; recovering, control limit; nothing in reach).
    */
   #martianActionButtons(
     view: PlayerViewV7,
@@ -5517,7 +5619,7 @@ export class Ruleset7DomAppView {
             ? null
             : (mindControlUnavailableTextV7(
                 martianStatsV7(view, unit.id)?.mindControl ?? null,
-              ) ?? "No weakened enemy within reach"),
+              ) ?? MIND_CONTROL_NO_TARGET_V7),
       },
       {
         kind: "TRACTOR_BEAM",

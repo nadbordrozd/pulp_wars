@@ -559,10 +559,11 @@ describe("Ruleset 7 browser smoke script", () => {
     // revision-14 Plague/Bitten fixture capture per art set (in a loop), and
     // three revision-17 Goblin probe captures, four Dinosaur probe captures
     // (revision 20 adds the Charge! attack preview), two Martian probe
-    // captures (pulp_wars-t6s.4), two Ice Folk probe captures
+    // captures (pulp_wars-t6s.4) and the Mind Control fixture capture
+    // (pulp_wars-b5f.3, dev server only), two Ice Folk probe captures
     // (pulp_wars-7g3.6), two Dwarf probe captures (pulp_wars-78i.6), and
     // one revision-18 Showcase capture.
-    expect(source.match(/await capture\(/g)).toHaveLength(21);
+    expect(source.match(/await capture\(/g)).toHaveLength(22);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");

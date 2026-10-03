@@ -258,10 +258,12 @@ kind, role)` names them (the shared subject for the Humans);
    for the two naval roles and for the `EMBARKED` form; the Humans keep
    `UNIT:PATROL_BOAT`, `UNIT:BATTLESHIP` and `UNIT:EMBARKED_TRANSPORT`. The
    Martian machine rule stays first: a self-launched machine afloat is
-   drawn as itself. **An embarked Thrall draws the Martian transport**
-   (decided in w5j.3): a Thrall is a foot unit, and "embarked foot units
-   keep the transport" ([RULESET_7_MARTIANS.md section 13.1](../product/RULESET_7_MARTIANS.md#131-surfaces));
-   its collar marker still says Thrall. On land it keeps its own sprite.
+   drawn as itself. An embarked mind-controlled unit draws **its own
+   kind's** transport (bead `pulp_wars-b5f.3`: the subject reads the
+   unit's kind, and "embarked foot units keep the transport",
+   [RULESET_7_MARTIANS.md section 13.1](../product/RULESET_7_MARTIANS.md#131-surfaces)),
+   under its control halo. (The retired Thrall drew the Martian transport,
+   decided in w5j.3.)
 3. **Portraits.** `portraitSubjectV7` returns `PORTRAIT:<FACTION>:<ROLE>`
    for the naval roles (the Humans' `PORTRAIT:<ROLE>`). By the same rule
    the Naval Engineering card shows the faction's Battleship and the

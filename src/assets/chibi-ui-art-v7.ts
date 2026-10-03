@@ -39,8 +39,8 @@ const NAVAL_ROLES: readonly UnitRoleIdV7[] = ["PATROL_BOAT", "BATTLESHIP"];
  * (bead pulp_wars-t6s.4) Martian, (bead pulp_wars-7g3.6) Ice Folk and (bead
  * pulp_wars-78i.6) Dwarf land roles have their own; so does every faction's Patrol Boat and Battleship
  * (`PORTRAIT:<FACTION>:<ROLE>`, the Humans' `PORTRAIT:<ROLE>`, bead
- * pulp_wars-w5j.3). The Thrall's portrait, `PORTRAIT:MARTIAN:THRALL`, is
- * asked for by subject (the Mind Control preview).
+ * pulp_wars-w5j.3). A mind-controlled unit's portrait is its kind's (bead
+ * pulp_wars-b5f.3).
  */
 export function portraitSubjectV7(
   role: UnitRoleIdV7,

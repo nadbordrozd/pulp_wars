@@ -51,11 +51,16 @@ import {
   LIVE_DIRECTION_V7,
 } from "../../src/render/canvas/visual-direction-v7";
 import {
+  MIND_CONTROL_COLOURS_V7,
+  controlHaloPulseV7,
+  drawControlBrainChipV7,
+  drawControlHaloV7,
+  drawControlLinkV7,
   drawCoolingGlyphV7,
   drawShieldBarV7,
-  drawThrallCollarV7,
   flyerPresentationV7,
 } from "../../src/render/canvas/martian-canvas-v7";
+import { factionColourShadesV7 } from "../../src/render/canvas/faction-colours-v7";
 import {
   MARTIAN_EFFECT_SUBJECTS_V7,
   drawMartianFeedbackV7,
@@ -178,18 +183,10 @@ const fills = (log: readonly LogEntry[]): unknown[] =>
     .map((call) => call[2]);
 
 describe("Martian art wiring (MARTIAN.md wiring steps 1-4, 6)", () => {
-  it("resolves the unit, Thrall, machine-afloat, city, portrait and icon subjects", () => {
+  it("resolves the unit, machine-afloat, city, portrait and icon subjects", () => {
     expect(
       unitArtSubjectV7({ role: "KNIGHT", form: "LAND", faction: "MARTIAN" }),
     ).toBe("UNIT:MARTIAN:KNIGHT");
-    expect(
-      unitArtSubjectV7({
-        role: "FIGHTER",
-        form: "LAND",
-        faction: "MARTIAN",
-        thrall: true,
-      }),
-    ).toBe("UNIT:MARTIAN:THRALL");
     // A machine afloat is drawn as itself; a foot unit at sea as the
     // Martian transport and a ship as the Martian ship (bead
     // pulp_wars-w5j.3).
@@ -208,16 +205,15 @@ describe("Martian art wiring (MARTIAN.md wiring steps 1-4, 6)", () => {
         faction: "MARTIAN",
       }),
     ).toBe("UNIT:MARTIAN:EMBARKED_TRANSPORT");
-    // An embarked Thrall is a foot unit afloat: the Martian transport, not
-    // the Thrall standing on the water (its collar still says Thrall).
+    // The Mind Control revision: the subject reads the unit's kind, so an
+    // embarked controlled Goblin rides its own faction's transport.
     expect(
       unitArtSubjectV7({
         role: "FIGHTER",
         form: "EMBARKED",
-        faction: "MARTIAN",
-        thrall: true,
+        faction: "GOBLIN",
       }),
-    ).toBe("UNIT:MARTIAN:EMBARKED_TRANSPORT");
+    ).toBe("UNIT:GOBLIN:EMBARKED_TRANSPORT");
     expect(
       unitArtSubjectV7({
         role: "PATROL_BOAT",
@@ -240,12 +236,16 @@ describe("Martian art wiring (MARTIAN.md wiring steps 1-4, 6)", () => {
     ).toBe("ICON:ACTION:MARTIAN:RALLY");
   });
 
-  it("falls back to the Human stand-in (the Thrall to the Fighter), never to a missing subject", () => {
+  it("falls back to the Human stand-in, never to a missing subject; the Thrall art is retired", () => {
     expect(chibiFallbackSubjectV7("UNIT:MARTIAN:RAIDER")).toBe("UNIT:RAIDER");
-    expect(chibiFallbackSubjectV7("UNIT:MARTIAN:THRALL")).toBe("UNIT:FIGHTER");
-    expect(chibiFallbackSubjectV7("PORTRAIT:MARTIAN:THRALL")).toBe(
-      "PORTRAIT:FIGHTER",
-    );
+    // The Mind Control revision (bead pulp_wars-b5f.3): no Thrall subject
+    // is registered or drawn.
+    expect(
+      CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7.filter(
+        (asset) =>
+          asset.subject.includes("THRALL") || asset.id.includes("thrall"),
+      ),
+    ).toEqual([]);
     expect(chibiFallbackSubjectV7("CITY:MARTIAN:3")).toBe("CITY:3");
     expect(chibiFallbackSubjectV7("ICON:ACTION:MARTIAN:RALLY")).toBe(
       "ICON:ACTION:RALLY",
@@ -357,6 +357,32 @@ describe("Martian board plan", () => {
     });
     // Human units carry no Martian markers.
     expect(unitEntry(plan, view, AT.rayTarget).martian).toBeUndefined();
+  });
+
+  it("draws a controlled unit of every kind with its own sprite and the controller's colour", () => {
+    for (const [enemy, role, subject, name] of [
+      ["ORIGINAL", "KNIGHT", "UNIT:KNIGHT", "Knight"],
+      ["UNDEAD", "FIGHTER", "UNIT:UNDEAD:FIGHTER", "Skeleton"],
+      ["GOBLIN", "FIGHTER", "UNIT:GOBLIN:FIGHTER", "Goblin"],
+      ["DINOSAUR", "FIGHTER", "UNIT:DINOSAUR:FIGHTER", "Caveman"],
+      ["ICE_FOLK", "FIGHTER", "UNIT:ICE_FOLK:FIGHTER", "Yeti"],
+      ["DWARF", "FIGHTER", "UNIT:DWARF:FIGHTER", "Hammerer"],
+    ] as const) {
+      const view = humanView(martianUiFixtureV7(enemy, role));
+      const controlled = unitEntry(planFor(view, null), view, AT.controlled);
+      expect(controlled.faction, enemy).toBe(
+        enemy === "ORIGINAL" ? undefined : enemy,
+      );
+      expect(controlled, enemy).toMatchObject({
+        artSubject: subject,
+        label: name,
+        ownerId: view.viewer.id,
+        // The seat badge and border ring take the controller's colour.
+        ownerColor: factionColourShadesV7("MARTIAN").base,
+      });
+      expect(controlled.martian?.controlled, enemy).toBe(true);
+      expect(controlled.artSubject).not.toContain("THRALL");
+    }
   });
 
   it("shows a selected Shield Projector's Force Field and the control link", () => {
@@ -640,7 +666,7 @@ describe("Martian board markers", () => {
     ).toHaveLength(2);
   });
 
-  it("draws the Cooling glyph without magenta and the collar with one magenta light", () => {
+  it("draws the Cooling glyph without magenta", () => {
     const cooling = recordingContext();
     drawCoolingGlyphV7(cooling.context, 0, 0, 1, { chibi: true });
     const strokes = cooling.log
@@ -650,9 +676,130 @@ describe("Martian board markers", () => {
     expect([...strokes, ...fills(cooling.log)]).not.toContain(
       MARTIAN_PALETTE_V7.magenta,
     );
-    const collar = recordingContext();
-    drawThrallCollarV7(collar.context, 0, 0, 1, { chibi: false });
-    expect(fills(collar.log)).toContain(MARTIAN_PALETTE_V7.magenta);
+  });
+
+  it("draws the control halo, brain chip and link in the Martian faction colour", () => {
+    // The colours come from the one faction-colour source.
+    expect(MIND_CONTROL_COLOURS_V7).toEqual(factionColourShadesV7("MARTIAN"));
+    expect(MIND_CONTROL_COLOURS_V7.base).toBe("#e83aae");
+    const strokesOf = (log: readonly LogEntry[]): unknown[] =>
+      log
+        .filter((call) => call[0] === "set" && call[1] === "strokeStyle")
+        .map((call) => call[2]);
+    const { base, glow, dark } = MIND_CONTROL_COLOURS_V7;
+    // Static (reduced motion): the colour on its dark casing, no glow.
+    const still = recordingContext();
+    drawControlHaloV7(still.context, { x: 100, y: 60 }, 0.625, { pulse: 0 });
+    expect(strokesOf(still.log)).toEqual([dark, base]);
+    // An ellipse just above the head, with two tendrils down to it.
+    const ellipse = still.log.find((call) => call[0] === "ellipse");
+    expect(ellipse?.[2]).toBeLessThan(60);
+    expect(
+      still.log.filter((call) => call[0] === "bezierCurveTo"),
+    ).toHaveLength(4);
+    // Pulsing toward the glow; high contrast is white on black.
+    const lit = recordingContext();
+    drawControlHaloV7(lit.context, { x: 100, y: 60 }, 0.625, { pulse: 1 });
+    expect(strokesOf(lit.log)).toEqual([dark, base, glow]);
+    const contrast = recordingContext();
+    drawControlHaloV7(contrast.context, { x: 100, y: 60 }, 0.625, {
+      pulse: 1,
+      highContrast: true,
+    });
+    expect(strokesOf(contrast.log)).toEqual(["#000000", "#ffffff"]);
+    // The 1.2 s pulse, frozen by reduced motion.
+    expect(controlHaloPulseV7(0, false)).toBe(0);
+    expect(controlHaloPulseV7(600, false)).toBeCloseTo(1);
+    expect(controlHaloPulseV7(600, true)).toBe(0);
+    // The brain chip: a brain in the faction colour on the dark chip.
+    const chip = recordingContext();
+    drawControlBrainChipV7(chip.context, 0, 0, 0.625, { chibi: true });
+    expect(fills(chip.log)).toContain(base);
+    expect(fills(chip.log)).toContain(MARTIAN_PALETTE_V7.gunmetal);
+    const chipContrast = recordingContext();
+    drawControlBrainChipV7(chipContrast.context, 0, 0, 0.625, {
+      chibi: true,
+      highContrast: true,
+    });
+    expect(fills(chipContrast.log)).not.toContain(base);
+    // The link: dashed, in the faction colour, ringing the far end.
+    const link = recordingContext();
+    drawControlLinkV7(link.context, { x: 0, y: 0 }, { x: 80, y: 0 }, 0.625);
+    expect(strokesOf(link.log)).toEqual([dark, base, dark, base]);
+    expect(link.log.some((call) => call[0] === "arc")).toBe(true);
+  });
+
+  it("puts the halo over a controlled unit's head on the board, pulsing with the clock", () => {
+    const view = humanView(martianUiFixtureV7());
+    const plan = planFor(view, null);
+    // The dark casing and the glow belong to the control visual alone (the
+    // Martian seat's own colour also paints its border and badges).
+    const { dark, glow } = MIND_CONTROL_COLOURS_V7;
+    const strokes = (log: readonly LogEntry[]): unknown[] =>
+      log
+        .filter((call) => call[0] === "set" && call[1] === "strokeStyle")
+        .map((call) => call[2]);
+    const still = draw(plan);
+    expect(strokes(still)).toContain(dark);
+    expect(strokes(still)).not.toContain(glow);
+    expect(strokes(draw(plan, { controlPulseTimeMs: 600 }))).toContain(glow);
+    // Reduced motion holds it in the faction colour.
+    expect(
+      strokes(draw(plan, { controlPulseTimeMs: 600, reducedMotion: true })),
+    ).not.toContain(glow);
+    // Only the controlled unit wears it.
+    const freed = humanView(
+      martianUiFieldV7([
+        { seat: 0, role: "CAPTAIN", at: AT.controller },
+        { seat: 1, role: "FIGHTER", at: AT.controlled, hp: 4 },
+      ]),
+    );
+    expect(strokes(draw(planFor(freed, null)))).not.toContain(dark);
+  });
+
+  it("draws and plans a match without a Martian seat exactly the same at any halo clock", () => {
+    const state = martianUiFieldV7(
+      [
+        { seat: 0, role: "CAPTAIN", at: AT.controller },
+        { seat: 1, role: "FIGHTER", at: AT.controlled, hp: 4 },
+        { seat: 1, role: "KNIGHT", at: AT.weakTarget, hp: 5 },
+      ],
+      { factions: ["ORIGINAL", "GOBLIN"] },
+    );
+    const view = humanView(state);
+    expect(view.mindControlled).toEqual([]);
+    // Its boundaries plan no Martian cue (no control release).
+    const result = applyCommandV7(state, state.humanPlayerId, {
+      kind: "DISBAND",
+      unitId: unitAt(view, AT.controller).id,
+    });
+    if (!result.accepted) throw new Error(result.error.code);
+    expect(
+      corePresentationPlanV7(
+        view,
+        projectEventsV7(
+          state,
+          result.state,
+          state.humanPlayerId,
+          result.events,
+        ),
+        humanView(result.state),
+      ).some((step) => step.kind === "MARTIAN"),
+    ).toBe(false);
+    for (const selected of [null, AT.controller]) {
+      const plan = planFor(view, selected);
+      const still = draw(plan);
+      expect(draw(plan, { controlPulseTimeMs: 600 })).toEqual(still);
+      expect(
+        still.some((call) =>
+          call.some(
+            (value) =>
+              value === MIND_CONTROL_COLOURS_V7.base ||
+              value === MIND_CONTROL_COLOURS_V7.dark,
+          ),
+        ),
+      ).toBe(false);
+    }
   });
 
   it("draws the Martian markers and badge on the board in LEGACY", () => {
@@ -780,6 +927,62 @@ describe("Martian cues", () => {
     });
   });
 
+  it("shatters the halo when the Brain is lost and the unit goes home", () => {
+    const state = martianUiFixtureV7("GOBLIN");
+    const before = humanView(state);
+    const brain = unitAt(before, AT.controller);
+    const controlled = unitAt(before, AT.controlled);
+    const result = applyCommandV7(state, state.humanPlayerId, {
+      kind: "DISBAND",
+      unitId: brain.id,
+    });
+    if (!result.accepted) throw new Error(result.error.code);
+    const projected = projectEventsV7(
+      state,
+      result.state,
+      result.state.humanPlayerId,
+      result.events,
+    );
+    expect(projected.events.map((event) => event.kind)).toContain(
+      "UNIT_RELEASED",
+    );
+    const after = humanView(result.state);
+    const steps = corePresentationPlanV7(before, projected, after);
+    expect(steps.filter((step) => step.kind === "MARTIAN")).toEqual([
+      expect.objectContaining({
+        effect: "CONTROL_RELEASE",
+        cells: [AT.controlled],
+      }),
+    ]);
+    // Back with its owner: no halo, no link, its own sprite.
+    const entry = unitEntry(planFor(after, null), after, AT.controlled);
+    expect(entry.ownerId).toBe(unitAt(after, AT.controlled).ownerId);
+    expect(entry.ownerId).not.toBe(after.viewer.id);
+    expect(entry.martian).toBeUndefined();
+    expect(entry.artSubject).toBe("UNIT:GOBLIN:FIGHTER");
+    expect(unitAt(after, AT.controlled).id).toBe(controlled.id);
+    // The cue in code, its halo breaking apart in the faction colour.
+    const cue = recordingContext();
+    drawMartianFeedbackV7(
+      cue.context,
+      { offsetX: 0, offsetY: 0, zoom: 1 },
+      {
+        effect: "CONTROL_RELEASE",
+        cells: [AT.controlled],
+        progress: 0.5,
+      },
+    );
+    expect(
+      cue.log.filter(
+        (call) =>
+          call[0] === "set" &&
+          call[1] === "strokeStyle" &&
+          call[2] === MIND_CONTROL_COLOURS_V7.base,
+      ),
+    ).toHaveLength(1);
+    expect(cue.log.filter((call) => call[0] === "ellipse").length).toBe(12);
+  });
+
   it("draws every cue in code without its sprite, and with the sprite when it is loaded", () => {
     const effects: readonly MartianFeedbackEffectV7[] = [
       "HEAT_RAY",
@@ -787,7 +990,7 @@ describe("Martian cues", () => {
       "BEAM_DOWN",
       "TRACTOR_BEAM",
       "MIND_CONTROL",
-      "THRALL_COLLAPSE",
+      "CONTROL_RELEASE",
     ];
     const camera = { offsetX: 0, offsetY: 0, zoom: 1 };
     for (const effect of effects) {

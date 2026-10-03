@@ -133,14 +133,70 @@ export const STRAFE_LABEL_V7 = "Strafe";
 export const MARTIAN_FIELD_DEFENSE_EXPLANATION_V7 =
   "Martians cannot build Field Defense";
 /**
- * The Mind Control revision (section 9): the control line of a
- * mind-controlled unit. The UI pass (`pulp_wars-b5f.3`) words the dock with
- * the controller and the original owner.
+ * The Mind Control revision (section 9): the dock's badge of a
+ * mind-controlled unit (a brain and this one word; the controller and the
+ * original owner beside it as names, the sentences in its tooltip).
  */
-export const MIND_CONTROLLED_LABEL_V7 = "Mind-controlled";
-export const MIND_CONTROLLED_INFO_V7 =
-  "Fights for a Brain as itself. Returns to its owner if the Brain is lost.";
+export const MIND_CONTROLLED_LABEL_V7 = "Controlled";
 export const MIND_CONTROLLED_NO_SLOT_V7 = "Mind-controlled units use no slot";
+/** The short reason on a Mind Control button without a legal target. */
+export const MIND_CONTROL_NO_TARGET_V7 = "No wounded enemy in reach";
+
+/** "You" for the viewer, otherwise "Player N" (a chip's owner name). */
+export function playerShortNameV7(
+  view: PlayerViewV7,
+  playerId: number,
+): string {
+  if (playerId === view.viewer.id) return "You";
+  const player = view.players.find((candidate) => candidate.id === playerId);
+  return player === undefined ? "Unknown" : `Player ${player.seat + 1}`;
+}
+
+/** What the dock and unit info say about a mind-controlled unit. */
+export interface MindControlledInfoV7 {
+  /** The controller (the unit's owner now). */
+  readonly controllerId: number;
+  readonly originalOwnerId: number;
+  /** "You" or "Player N". */
+  readonly controllerName: string;
+  readonly originalOwnerName: string;
+  /** The unit goes back to its original owner (not eliminated). */
+  readonly returns: boolean;
+  /** "Mind-controlled by your Brain", "... by Player 1's Brain". */
+  readonly byLine: string;
+  /** "Returns to Player 2 if the Brain is lost", or "Lost with the Brain". */
+  readonly fateLine: string;
+}
+
+/**
+ * Section 9 "Dock and info": a mind-controlled unit's controller, original
+ * owner and fate, from the public `mindControlled` list; null for a unit
+ * that is not controlled.
+ */
+export function mindControlledInfoV7(
+  view: PlayerViewV7,
+  unit: Pick<PublicUnitV7, "id" | "ownerId">,
+): MindControlledInfoV7 | null {
+  const entry = view.mindControlled.find((item) => item.unitId === unit.id);
+  if (entry === undefined) return null;
+  const brain = martianLabelV7("CAPTAIN");
+  const original = view.players.find(
+    (player) => player.id === entry.originalOwnerId,
+  );
+  const returns = original?.status !== "ELIMINATED";
+  const originalName = playerShortNameV7(view, entry.originalOwnerId);
+  return {
+    controllerId: unit.ownerId,
+    originalOwnerId: entry.originalOwnerId,
+    controllerName: playerShortNameV7(view, unit.ownerId),
+    originalOwnerName: originalName,
+    returns,
+    byLine: `Mind-controlled by ${possessive(view, unit.ownerId)} ${brain}`,
+    fateLine: returns
+      ? `Returns to ${entry.originalOwnerId === view.viewer.id ? "you" : originalName} if the ${brain} is lost`
+      : `Lost with the ${brain}`,
+  };
+}
 export const COOLING_LABEL_V7 = "Cooling";
 export const COOLING_TOOLTIP_V7 =
   "Cooling: its ray fires at half power until the end of its owner's next turn";
@@ -195,15 +251,16 @@ export function mindControlReadyInV7(turnsRemaining: number): number {
 }
 
 /**
- * Section 13.2 "Mind Control unavailable": "Recovering: ready in {n}
- * turn(s)" or "Controls a unit already"; null when neither applies.
+ * The Mind Control revision section 9 "disabled reasons": "Recovering: {n}
+ * turn(s)" (the turns until it is ready) or "Controls a unit already"; null
+ * when neither applies.
  */
 export function mindControlUnavailableTextV7(
   mindControl: PublicMartianMechanicsV7["mindControl"],
 ): string | null {
   if (mindControl === null) return null;
   if (mindControl.cooldown !== null)
-    return `Recovering: ready in ${plural(mindControlReadyInV7(mindControl.cooldown), "turn")}`;
+    return `Recovering: ${plural(mindControlReadyInV7(mindControl.cooldown), "turn")}`;
   if (mindControl.controlled >= mindControl.controlLimit)
     return mindControl.controlLimit === 1
       ? "Controls a unit already"
@@ -483,8 +540,7 @@ export interface MartianUnitInfoLineV7 {
  * Unit info lines from the public Martian mechanics (`stats.martian`) that
  * are not abilities: the Shield, the ray's power now, a Brain's controlled
  * units and cooldown, a two-slot body, and a machine afloat. (A
- * mind-controlled unit's line reads the top-level `mindControl` stats; the
- * dock wording is the UI pass.)
+ * mind-controlled unit's line, of any kind, is `mindControlledInfoV7`.)
  */
 export function martianUnitInfoLinesV7(
   unit: Pick<PublicUnitV7, "role" | "form">,
@@ -842,7 +898,9 @@ export function martianBoundaryNoticeV7(
       const unit = unitById(event.unitId);
       const name =
         unit === undefined ? "A unit" : martianUnitNameV7(after, unit);
-      parts.push(`${name} returned to ${possessive(after, event.toPlayerId)}`);
+      parts.push(
+        `${name} returned to ${event.toPlayerId === viewerId ? "you" : playerShortNameV7(after, event.toPlayerId)}`,
+      );
     } else if (event.kind === "UNIT_DIED" && event.cause === "BRAIN_LOST") {
       toast = true;
       const unit = unitById(event.unitId);

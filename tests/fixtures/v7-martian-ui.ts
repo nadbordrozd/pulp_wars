@@ -4,6 +4,7 @@ import {
   type FactionIdV7,
   type GameStateV7,
   type TechnologyIdV7,
+  type UnitRoleIdV7,
   type UnitStateV7,
 } from "../../src/engine/index";
 import { checkedV7 } from "./v7-builders";
@@ -215,10 +216,12 @@ export const MARTIAN_UI_V7 = {
 /**
  * Seat 0 (Martian) with every ability ready, against seat 1 (Human by
  * default; `enemy` picks another faction). Every technology is researched,
- * so Force Fields and the Disintegrator apply.
+ * so Force Fields and the Disintegrator apply. The unit the second Brain
+ * controls is seat 1's `controlledRole` (a wounded Fighter by default).
  */
 export function martianUiFixtureV7(
   enemy: FactionIdV7 = "ORIGINAL",
+  controlledRole: UnitRoleIdV7 = "FIGHTER",
 ): GameStateV7 {
   const at = MARTIAN_UI_V7;
   return martianUiFieldV7(
@@ -232,7 +235,7 @@ export function martianUiFixtureV7(
       { seat: 0, role: "CAPTAIN", at: at.controller },
       {
         seat: 1,
-        role: "FIGHTER",
+        role: controlledRole,
         at: at.controlled,
         hp: 4,
         controlledBy: at.controller,
@@ -260,6 +263,21 @@ export function martianUiFixtureV7(
     },
   );
 }
+
+/**
+ * The Mind Control revision (bead pulp_wars-b5f.3): `martianUiFixtureV7`
+ * with the controlled unit of another kind, for the browser review (its
+ * fixture mount calls a fixture without arguments): a Goblin, a Human
+ * Knight, an Ice Folk Yeti and a Dwarf Hammerer.
+ */
+export const martianControlGoblinFixtureV7 = (): GameStateV7 =>
+  martianUiFixtureV7("GOBLIN");
+export const martianControlKnightFixtureV7 = (): GameStateV7 =>
+  martianUiFixtureV7("ORIGINAL", "KNIGHT");
+export const martianControlYetiFixtureV7 = (): GameStateV7 =>
+  martianUiFixtureV7("ICE_FOLK");
+export const martianControlHammererFixtureV7 = (): GameStateV7 =>
+  martianUiFixtureV7("DWARF");
 
 /**
  * Two Martian seats: the human's Ray Gunner two tiles from an enemy Grunt

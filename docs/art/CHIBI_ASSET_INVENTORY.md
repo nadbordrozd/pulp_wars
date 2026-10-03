@@ -587,17 +587,20 @@ owner mask. See [MARTIAN.md](factions/MARTIAN.md).
 | `UNIT:MARTIAN:FIGHTER`, `MARKSMAN`, `GUARD`, `CAPTAIN`                                              | Grunt, Ray Gunner, Shield Projector, Brain | `STANDARD_UNIT`, 56 x 80                                          |
 | `UNIT:MARTIAN:RAIDER`, `CATAPULT`, `KNIGHT`                                                         | Saucer, Tripod, Mothership                 | `LARGE_UNIT`, 72 x 88                                             |
 | `UNIT:MARTIAN:JUGGERNAUT`                                                                           | Colossus                                   | `GIANT_UNIT`, 88 x 104                                            |
-| `UNIT:MARTIAN:THRALL`                                                                               | Thrall (a controlled unit of any faction)  | `STANDARD_UNIT`, 56 x 80                                          |
-| `PORTRAIT:MARTIAN:<ROLE>`, `PORTRAIT:MARTIAN:THRALL`                                                | nine portraits                             | `PORTRAIT`, 48 x 48                                               |
+| `PORTRAIT:MARTIAN:<ROLE>`                                                                           | eight portraits                            | `PORTRAIT`, 48 x 48                                               |
 | `CITY:MARTIAN:1` to `3`                                                                             | the landed-saucer colony                   | `SETTLEMENT`, 80 x 80, 88 x 88, 96 x 88; pennant anchors recorded |
 | `ICON:ACTION:BEAM_DOWN`, `MIND_CONTROL`, `TRACTOR_BEAM`, `FORCE_FIELD`, `ICON:ACTION:MARTIAN:RALLY` | five command and ability icons             | `ICON`, 48 x 48                                                   |
 | `ICON:STATUS:SHIELD`, `ICON:STATUS:COOLING`                                                         | two status icons                           | `ICON`, 48 x 48                                                   |
 | `EFFECT:HEAT_RAY`, `SHIELD_FLARE`, `BEAM_DOWN`, `TRACTOR_BEAM`, `MIND_CONTROL`                      | five effect sprites                        | `EFFECT`, 48 x 48 (the spiral 40 x 40), palette `martian-magenta` |
 
-33 assets from 62 recipes (62 PixelLab calls). Patrol Boat, Battleship and
+31 assets from 62 recipes (62 PixelLab calls): the Thrall sprite
+(`UNIT:MARTIAN:THRALL`) and portrait (`PORTRAIT:MARTIAN:THRALL`) are
+**retired** (bead `pulp_wars-b5f.3`: a mind-controlled unit keeps its own
+sprite under a code-drawn control halo); their four recipes stay in the
+batch as history, bound to the Grunt's assets. Patrol Boat, Battleship and
 the embarked transport stay the shared ships. The Shield bar, the Cooling
-glyph, the Thrall collar, the flyers' shadow and the beams are code-drawn
-by the UI bead; their colours and shapes are suggested in
+glyph, the control halo and brain chip, the flyers' shadow and the beams
+are code-drawn; their colours and shapes are in
 [MARTIAN.md](factions/MARTIAN.md#suggestions-for-the-code-drawn-markers).
 
 ## Ice Folk production art: batch `direction-ice-folk` (bead `pulp_wars-7g3.5`)

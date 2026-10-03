@@ -13,6 +13,10 @@ import {
   undeadFixtureMountExpressionV7,
 } from "./browser-undead-fixture-v7";
 import {
+  controlCasingPixelsExpressionV7,
+  martianFixtureMountExpressionV7,
+} from "./browser-martian-fixture-v7";
+import {
   armFastForwardExpression,
   stableControlPointExpression,
 } from "./browser-smoke-v7-controls";
@@ -1888,7 +1892,132 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
     `localStorage.removeItem(${JSON.stringify(saveKey)})`,
   );
   await navigateFresh(freshSetup);
-  return `Showcase launch as Martian vs three Humans, full-power ${ray.role === "JUGGERNAUT" ? "Colossus" : ray.role === "CATAPULT" ? "Tripod" : "Ray Gunner"} ray from ${ray.at.x},${ray.at.y} (Cooling after), Grunt beamed down to ${beamed.at.x},${beamed.at.y}, and resume`;
+  // The Mind Control revision (bead pulp_wars-b5f.3): no opening puts a
+  // Brain beside a wounded enemy, so on the dev server the Martian UI
+  // fixture is mounted for it.
+  const mindControl = deployed
+    ? "Mind Control fixture skipped on the deployed bundle"
+    : await probeMindControlFixture(connection);
+  await navigateFresh(freshSetup);
+  return `Showcase launch as Martian vs three Humans, full-power ${ray.role === "JUGGERNAUT" ? "Colossus" : ray.role === "CATAPULT" ? "Tripod" : "Ray Gunner"} ray from ${ray.at.x},${ray.at.y} (Cooling after), Grunt beamed down to ${beamed.at.x},${beamed.at.y}, and resume; ${mindControl}`;
+}
+
+/**
+ * The Mind Control revision (bead pulp_wars-b5f.3; dev server only, the
+ * fixture comes from `tests/fixtures`): on the Martian UI fixture in the
+ * default look, the Brain's Mind Control button aims, the dock's choice
+ * takes the wounded enemy Ray Gunner stand-in (a Human Marksman), and the
+ * unit stays itself: its own kind's sprite subject (never a Thrall), now
+ * the viewer's, with the control halo drawn in the Martian faction colour's
+ * dark casing on the board canvas and the brain badge "Controlled" in its
+ * dock.
+ */
+async function probeMindControlFixture(
+  connection: Connection,
+): Promise<string> {
+  const review = "globalThis.__MARTIAN_REVIEW__";
+  await evaluate(
+    connection,
+    martianFixtureMountExpressionV7("martianUiFixtureV7", "CHIBI"),
+    true,
+  );
+  await waitForExpression(
+    connection,
+    `${review}?.boardHost !== undefined && document.querySelector('canvas.board-canvas-v7') !== null`,
+  );
+  const at = await evaluate<{
+    readonly brain: { readonly x: number; readonly y: number };
+    readonly weakTarget: { readonly x: number; readonly y: number };
+  }>(connection, `${review}.at`);
+  const target = await evaluate<{
+    readonly id: number;
+    readonly role: string;
+    readonly hp: number;
+    readonly maxHp: number;
+  }>(
+    connection,
+    `(() => { const unit = ${review}.snapshotView().units.find((candidate) => candidate.at.x === ${at.weakTarget.x} && candidate.at.y === ${at.weakTarget.y}); return { id: unit.id, role: unit.role, hp: unit.hp, maxHp: unit.maxHp }; })()`,
+  );
+  if (target.hp >= target.maxHp)
+    throw new Error(
+      `Mind Control target is not wounded: ${JSON.stringify(target)}`,
+    );
+  const casingBefore = await evaluate<number>(
+    connection,
+    controlCasingPixelsExpressionV7(at.weakTarget),
+    true,
+  );
+  await evaluate(
+    connection,
+    `(() => { ${review}.boardHost.activate(${JSON.stringify(at.brain)}); document.querySelector('canvas.board-canvas-v7')?.focus(); })()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="martian-mind-control"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
+  );
+  await pointerClick(connection, '[data-action="martian-mind-control"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="mind-control-${target.id}"]') !== null`,
+  );
+  await pointerClick(connection, `[data-action="mind-control-${target.id}"]`);
+  await waitForExpression(
+    connection,
+    `${review}.traces.some((trace) => trace.command.kind === 'MIND_CONTROL' && trace.command.targetUnitId === ${target.id})`,
+  );
+  // Let the cue play out, then read the board plan and the canvas.
+  await waitForExpression(
+    connection,
+    `(() => { const view = ${review}.snapshotView(); return view.mindControlled.some((entry) => entry.unitId === ${target.id}) && document.querySelector('canvas.board-canvas-v7')?.dataset.martianEffect === undefined; })()`,
+  );
+  await new Promise((resolve) => setTimeout(resolve, 600));
+  interface ControlledEvidenceV7 {
+    readonly owner: boolean;
+    readonly role: string | null;
+    readonly artSubject: string | null;
+    readonly controlled: boolean;
+  }
+  const evidence = await evaluate<ControlledEvidenceV7>(
+    connection,
+    `(async () => {
+      const { buildBoardRenderPlanV7 } = await import('/src/render/canvas/board-renderer-v7.ts');
+      const view = ${review}.snapshotView();
+      const unit = view.units.find((candidate) => candidate.id === ${target.id});
+      const entry = buildBoardRenderPlanV7(view, [], { selection: null, selectedUnitId: null, selectedAchievement: null }).entries.find((candidate) => candidate.key === 'unit:${target.id}');
+      return { owner: unit?.ownerId === view.viewer.id, role: unit?.role ?? null, artSubject: entry?.artSubject ?? null, controlled: entry?.martian?.controlled === true };
+    })()`,
+    true,
+  );
+  // The halo's dark casing appears over the taken unit's own sprite.
+  const casingAfter = await evaluate<number>(
+    connection,
+    controlCasingPixelsExpressionV7(at.weakTarget),
+    true,
+  );
+  if (
+    !evidence.owner ||
+    evidence.role !== target.role ||
+    evidence.artSubject !== `UNIT:${target.role}` ||
+    !evidence.controlled ||
+    casingAfter - casingBefore < 15
+  )
+    throw new Error(
+      `Mind Control did not keep the unit with its control visual: ${JSON.stringify({ ...evidence, casingBefore, casingAfter })}`,
+    );
+  await evaluate(
+    connection,
+    `(() => { ${review}.boardHost.resetInspectionCycle(); ${review}.boardHost.activate(${JSON.stringify(at.weakTarget)}); })()`,
+  );
+  await waitForExpression(
+    connection,
+    `(document.querySelector('.v7-selection-dock [data-unit-status="mind-controlled"]')?.textContent ?? '').includes('Controlled')`,
+  );
+  await capture(connection, "martian-mind-control-desktop.png");
+  await evaluate(
+    connection,
+    `(() => { ${review}?.view?.destroy?.(); delete globalThis.__MARTIAN_REVIEW__; })()`,
+  );
+  return `Mind Control took the wounded ${evidence.artSubject} (own sprite, halo casing pixels ${casingBefore} to ${casingAfter}, "Controlled" badge)`;
 }
 
 /**

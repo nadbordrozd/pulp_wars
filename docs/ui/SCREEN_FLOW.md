@@ -597,7 +597,7 @@ the placeholder generator of spec 13.4 is not built. The Martian rules are
 part of
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md#20-martian-faction-rules).
 Every cue reads only
-public views (`view.shields`, `view.cooling`, `view.thralls`,
+public views (`view.shields`, `view.cooling`, `view.mindControlled`,
 `view.mindControlCooldowns`), the public unit stats' `martian` block, the
 public previews (`previewBeamDownV7`, `previewMindControlV7`,
 `previewTractorBeamV7`, `queryCombatPreviewV7`) and projected events. A match
@@ -606,13 +606,15 @@ without a Martian seat looks as before apart from the extra faction option.
 - **Setup.** Every seat's faction select offers Human, Undead, Goblin,
   Dinosaur and Martian (default Human); saves, resume and the Showcase keep
   Martian seats.
-- **Art and labels.** Units are named by their owner's registration (Grunt,
-  Saucer, Ray Gunner, Shield Projector, Brain, Tripod, Mothership, Colossus;
-  a Thrall is "Thrall" with its own sprite). The default look paints the
+- **Art and labels.** Units are named by their kind's registration (Grunt,
+  Saucer, Ray Gunner, Shield Projector, Brain, Tripod, Mothership,
+  Colossus); a mind-controlled unit keeps its own name, sprite and portrait
+  (a controlled Knight is a Knight; the Thrall art is retired, bead
+  `pulp_wars-b5f.3`). The default look paints the
   chrome-and-magenta sprites, portraits, icons and the landed-saucer
   colonies (their antenna masts bare since bead `pulp_wars-b5f.4`). The Classic look and
-  LEGACY have no Martian art: they draw the Human sprite of the role (the
-  Fighter for a Thrall) with the **saucer badge** (chrome saucer on a
+  LEGACY have no Martian art: they draw the Human sprite of the role with
+  the **saucer badge** (chrome saucer on a
   gunmetal disc) in the corner of the other factions' badges, and the Human
   city; the dock and the train cards do the same. The dock shows a
   "Martian" faction chip. Rally reads "Psychic Command" (the antenna-dish
@@ -635,27 +637,47 @@ without a Martian seat looks as before apart from the extra faction option.
   - **Cooling**: three grey heat lines on a gunmetal chip right of the
     sprite (no magenta: not at full power), on a Cooling ray unit of any
     owner.
-  - **Thrall collar**: a chrome ring with one magenta light on the same chip
-    slot (a Thrall has no ray). Selecting a Thrall draws a dashed magenta
-    link to its Brain with a ring round it; selecting a Brain links each of
-    its Thralls.
+  - **Mind control** (bead `pulp_wars-b5f.3`; every colour is the Martian
+    faction colour of `faction-colours-v7`, with its glow and dark shades
+    derived there): a controlled unit of any kind wears the **control
+    halo**, a thin ring just above the top of its own sprite's head (found
+    from the sprite's opaque pixels, so it sits on a Knight's plume and a
+    Hammerer's helmet alike) with two short tendrils waving down to the
+    head, on a dark casing, pulsing toward the glow every 1.2 s (static for
+    reduced motion, white on black in high contrast); and the **brain
+    chip** (a brain on the dark chip) in the status slot, before Cooling.
+    Both stay above the sprite and right of it, clear of the ready ring and
+    Dig In sandbags on the ground, the Shield bar, and the Chill, Plague and
+    Bitten markers on the left. Selecting a controlled unit draws the
+    dashed **control link** to its Brain with a ring round it; selecting a
+    Brain links its controlled unit. The seat badge and border ring are the
+    controller's. A match without a Martian seat never draws any of it.
   - **Flying**: the Saucer and the Mothership are drawn lifted above a soft
     ground shadow of their own (`MARTIAN_FLYER_PRESENTATION_V7`), over
     land and water. LEGACY lifts the stand-in a little over the same shadow.
   - **Machines afloat**: a self-launched machine is drawn as itself on the
     water (never as the transport; no ring since bead `pulp_wars-w5j.3`); a
     wading Tripod or Colossus gets two white ripple arcs. Embarked foot
-    units keep the transport: the Martian saucer-barge in the default look,
-    an embarked Thrall included (its collar still says Thrall).
+    units keep the transport: the Martian saucer-barge in the default look
+    (an embarked controlled unit rides its own kind's transport, under its
+    halo).
   - **Force Field**: selecting a land-form Shield Projector tints the eight
     tiles around it in the pale magenta glow with an outer dashed edge.
 - **Dock and unit info.** Chips beside the name: "Shield 2 / 2" ("Shield 4 /
   4 (Force Field)" when raised), the ray's power ("Full power" or "Half
-  power: moved"), "Cooling" (with the Cooling tooltip), "Thrall", a Brain's
-  "Thralls 1 / 2" and "Recovering: ready in 2 turns", and "2 slots". The
-  Shield stat row reads current / maximum. Unit info adds the Shield, ray,
-  Thrall ("Controlled by a Brain. No Shield. Collapses if the Brain is lost.
-  Thralls use no slot."), Brain and afloat lines. A machine afloat is
+  power: moved"), "Cooling" (with the Cooling tooltip), a Brain's
+  "Controls 1 / 1" (with the small portrait of the unit it controls) and
+  "Recovering: 2 turns", and "2 slots". A controlled unit of any kind
+  shows a **brain badge** instead of an owner line: the brain glyph,
+  "Controlled", then the controller's and (after a return arrow) the
+  original owner's names, "You" or "Player N", each on a swatch of its
+  faction colour (no arrow and no original owner when that owner is
+  eliminated); its tooltip and accessible name hold the sentences
+  ("Mind-controlled by your Brain. Returns to Player 2 if the Brain is
+  lost." or "Lost with the Brain"). The Shield stat row reads current /
+  maximum. Unit info adds the Shield, ray, Brain and afloat lines, and a
+  "Controlled" line with the same sentences and "It cannot be disbanded or
+  create units". A machine afloat is
   "{Unit} (afloat)" and says it cannot attack or use abilities until it
   lands. A Grunt or Shield Projector where a Fighter or Guard would fortify
   shows a disabled Fortify: "Martians cannot build Field Defense".
@@ -664,8 +686,8 @@ without a Martian seat looks as before apart from the extra faction option.
   never buttons). A button without a legal choice is `aria-disabled` and
   names why: "A Saucer that moved this turn cannot Beam Down", "No unit on
   or next to one of your city centers", "No free tile next to this Saucer";
-  "Recovering: ready in N turns", "Controls two Thralls already", "No
-  weakened enemy within reach"; "No unit two tiles away can be pulled". A
+  "Recovering: N turns", "Controls a unit already", "No wounded enemy in
+  reach"; "No unit two tiles away can be pulled". A
   press aims the ability: the dock replaces the actions with the aiming
   panel of the [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8)
   (the ability's icon and name with its `?`, unit choices as chips, each
@@ -679,10 +701,13 @@ without a Martian seat looks as before apart from the extra faction option.
     legal tiles around the Saucer on the board only ("Beam here",
     "destroys Field Defense"; named "Beam the Grunt here"); the `?` adds
     "The unit cannot act this turn"; a tile performs it.
-  - **Mind Control**: the legal targets ("Thrall · 5 HP", with "Thralls 2 /
-    2 after · Mind Control recovers for 2 turns" and any collapse or Plague
-    it ends); a hostile unit in reach that cannot be taken is marked grey
-    with why: "Too healthy (10 HP)", "Immune", "Protected on a city or
+  - **Mind Control**: the legal targets, wounded hostile units ("Take · 5
+    HP", with "Mind Control recovers for 2 turns · Returns if this Brain is
+    lost"; named "Take the Marksman, 5 of 12 HP" with no tile); the dock's
+    choice "Take Player 2's Marksman (5 HP)" carries "Becomes yours:
+    Marksman (5 / 12 HP)" in its accessible name; a hostile unit in reach
+    that cannot be taken is marked grey with why: "Too healthy (10 HP)",
+    "Unhurt", "Immune", "Already controlled", "Protected on a city or
     village center". A target performs it, like an attack.
   - **Tractor Beam**: the targets two tiles away; the focused one shows its
     destination (magenta tile and an arrow) and "Pulled out of Walls",
@@ -707,16 +732,21 @@ without a Martian seat looks as before apart from the extra faction option.
   the Pierce victim; a Shield that absorbs flares as a crescent turned to
   the blow; Beam Down is a column of light coming down on the arrival tile;
   the Tractor Beam is a cone with hoops, then the target slides one tile;
-  Mind Control spins the spiral over the victim and rings the Brain; a
-  collapsing Thrall's helmet ring shrinks. The beams are code-drawn (as
+  Mind Control spins the spiral over the victim and rings the Brain, and
+  the unit stays, under its halo; when a Brain is lost its controlled
+  unit's halo shatters (a white flash, six arcs flying apart and fading)
+  as the unit goes back to its owner or is lost with the Brain. The beams
+  are code-drawn (as
   MARTIAN.md recommends); the flash, crescent and spiral are the effect
   sprites, and without them (Classic look, LEGACY) code shapes stand in.
 - **Log.** "Your Shields recharged", "Your Saucer beamed down a Grunt"
-  (toast), "Player 2's Brain took control of a Fighter" (toast), "2 Thralls
-  collapsed" (toast), "Your Mothership pulled Player 2's Raider".
+  (toast), "Your Brain took control of Player 2's Marksman" (toast), "Goblin
+  returned to Player 2" or "Knight returned to you" (toast), "Fighter was
+  lost with its Brain" (toast), "Your Mothership pulled Player 2's Raider".
 - **City panel.** A Martian viewer's city counts slots like a Dinosaur's
   ("5/7 slots"; the tooltip names the two-slot Mothership and Colossus and
-  that Thralls use no slot), and every train card names its slots.
+  that mind-controlled units use no slot), and every train card names its
+  slots.
 - **Help.** A "Martians" section lists the fifteen section-13.3 sentences
   (the "Ranges" sentence since `pulp_wars-b5f.2`)
   for every viewer of a match with a Martian seat (numbers and names from

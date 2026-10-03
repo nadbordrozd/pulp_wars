@@ -49,7 +49,6 @@ const ROLES = [
   ["CATAPULT", "tripod"],
   ["KNIGHT", "mothership"],
   ["JUGGERNAUT", "colossus"],
-  ["THRALL", "thrall"],
 ] as const;
 
 describe("Martian interface art (pulp_wars-t6s.4, MARTIAN.md wiring)", () => {
@@ -108,10 +107,8 @@ describe("Martian interface art (pulp_wars-t6s.4, MARTIAN.md wiring)", () => {
 
   it("draws the Human stand-in in the Classic look (the Martian badge marks it)", () => {
     for (const [role] of ROLES) {
-      // The Thrall stands in as the Fighter, the role it fights as.
-      const human = role === "THRALL" ? "FIGHTER" : role;
-      const stand = resolve(`UNIT:${human}`, { classic: true });
-      if (typeof stand !== "object") throw new Error(`${human}: ${stand}`);
+      const stand = resolve(`UNIT:${role}`, { classic: true });
+      if (typeof stand !== "object") throw new Error(`${role}: ${stand}`);
       expect(resolve(`UNIT:MARTIAN:${role}`, { classic: true }), role).toEqual({
         ...stand,
         factionArt: false,

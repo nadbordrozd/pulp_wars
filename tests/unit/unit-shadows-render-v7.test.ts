@@ -224,7 +224,8 @@ describe("unit shadow table (pulp_wars-jg1)", () => {
 
   it("puts every grounded unit's feet in the front half of its shadow, near its centre", () => {
     const grounded = anchors.filter((anchor) => anchor.motion === "GROUNDED");
-    expect(grounded.length).toBeGreaterThan(55);
+    // 55 since the Thrall sprite is retired (bead pulp_wars-b5f.3).
+    expect(grounded.length).toBeGreaterThanOrEqual(55);
     for (const anchor of grounded) {
       const measurement = UNIT_SHADOW_MEASUREMENTS_V7[anchor.subject];
       const shadow = anchor.shadow;

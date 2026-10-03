@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
@@ -60,7 +60,7 @@ import {
 const ROOT = process.cwd();
 const BATCH = "direction-martian";
 
-/** Role (or THRALL), unit name, and the Human role whose canvas it takes. */
+/** Role, unit name, and the Human role whose canvas it takes. */
 const UNITS = [
   ["FIGHTER", "grunt", "FIGHTER"],
   ["RAIDER", "saucer", "RAIDER"],
@@ -70,7 +70,6 @@ const UNITS = [
   ["CATAPULT", "tripod", "CATAPULT"],
   ["KNIGHT", "mothership", "KNIGHT"],
   ["JUGGERNAUT", "colossus", "JUGGERNAUT"],
-  ["THRALL", "thrall", "FIGHTER"],
 ] as const;
 const ICONS = [
   ["ICON:ACTION:BEAM_DOWN", "action-beam-down"],
@@ -127,7 +126,7 @@ describe("Martian production art (pulp_wars-t6s.6)", () => {
     CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7.map((asset) => [asset.id, asset]),
   );
 
-  it("lists the nine units and portraits, seven icons, five effects and City 1-3", () => {
+  it("lists the eight units and portraits, seven icons, five effects and City 1-3", () => {
     const expected: [ArtSubjectV7, string][] = [
       ...UNITS.map(
         ([role, name]) =>
@@ -180,6 +179,32 @@ describe("Martian production art (pulp_wars-t6s.6)", () => {
         built.registry.variants(subject).map((asset) => asset.id),
         subject,
       ).toEqual([id]);
+  });
+
+  // The Mind Control revision (bead pulp_wars-b5f.3): a controlled unit
+  // keeps its own sprite, so the Thrall's sprite and portrait are retired;
+  // their recipes stay in the batch as history, bound to the Grunt's assets.
+  it("retires the Thrall sprite and portrait and keeps their recipes as history", async () => {
+    const manifest = JSON.parse(
+      await readFile(
+        path.join(ROOT, `scripts/art/chibi/batches/batch-${BATCH}.json`),
+        "utf8",
+      ),
+    ) as {
+      readonly assets: readonly { readonly id: string }[];
+      readonly recipes: readonly { readonly id: string }[];
+    };
+    expect(
+      manifest.assets.filter((asset) => asset.id.includes("thrall")),
+    ).toEqual([]);
+    expect(
+      manifest.recipes.filter((recipe) => recipe.id.includes("thrall")),
+    ).toHaveLength(4);
+    for (const file of [
+      "public/assets/chibi/units/chibi-direction-martian-thrall.png",
+      "public/assets/chibi/portraits/chibi-direction-portrait-martian-thrall.png",
+    ])
+      await expect(access(path.join(ROOT, file))).rejects.toThrow();
   });
 
   // Turned round by the UI bead (pulp_wars-t6s.4, MARTIAN.md wiring step

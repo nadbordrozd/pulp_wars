@@ -2,6 +2,10 @@ import type { CoordV7 } from "../../engine/index";
 import { MARTIAN_PALETTE_V7 } from "../../assets/chibi-direction-martian-presentation";
 import type { MartianEffectIdV7 } from "../../assets/chibi-art-v7";
 import { chibiMasterScale, isWholeScale } from "./chibi-geometry-v7";
+import {
+  CONTROL_HALO_FRAME_V7,
+  MIND_CONTROL_COLOURS_V7,
+} from "./martian-canvas-v7";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
 import type { SupportEffectArtV7 } from "./support-presentation-v7";
 
@@ -28,8 +32,11 @@ export type MartianFeedbackEffectV7 =
   | "TRACTOR_BEAM"
   /** The Mind Control spiral over the victim, and a ring round the Brain. */
   | "MIND_CONTROL"
-  /** A Thrall collapsing when its Brain is lost. */
-  | "THRALL_COLLAPSE";
+  /**
+   * The Mind Control revision: the control halo shattering when its Brain
+   * is lost (the unit goes back to its owner, or is lost with the Brain).
+   */
+  | "CONTROL_RELEASE";
 
 export interface MartianFeedbackV7 {
   readonly effect: MartianFeedbackEffectV7;
@@ -54,8 +61,7 @@ export const MARTIAN_EFFECT_SUBJECTS_V7: readonly `EFFECT:${MartianEffectIdV7}`[
     "EFFECT:MIND_CONTROL",
   ];
 
-const { magenta, magentaGlow, magentaPale, magentaDark, chrome } =
-  MARTIAN_PALETTE_V7;
+const { magenta, magentaGlow, magentaPale, magentaDark } = MARTIAN_PALETTE_V7;
 
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
@@ -382,33 +388,56 @@ export function drawMartianFeedbackV7(
         context.restore();
       }
     }
-  } else if (feedback.effect === "THRALL_COLLAPSE") {
-    const alpha = 1 - progress;
+  } else if (feedback.effect === "CONTROL_RELEASE") {
+    // The control halo over the head breaks into six arcs that fly apart
+    // and fade, with a white flash at the break (reduced motion holds the
+    // midpoint: the halo just broken).
+    const { base, glow, dark } = MIND_CONTROL_COLOURS_V7;
+    const alpha = clamp01(1.25 - progress * 1.25);
+    const frame = CONTROL_HALO_FRAME_V7;
+    const rx = Math.max(frame.minRadiusCssPx, frame.radiusX * zoom);
+    const ry = rx * frame.flatness;
+    const pieces = 6;
     for (const at of feedback.cells) {
-      const point = body(at);
-      // The control helmet's light goes out: a chrome ring shrinks, sparks
-      // fall.
+      const point = centre(at);
+      const cx = point.x;
+      // Where the halo sits over a standard unit's head.
+      const cy = point.y - 64 * zoom;
+      const spread = progress * 16 * zoom;
       context.save();
       context.globalAlpha *= alpha;
-      context.strokeStyle = chrome;
-      context.lineWidth = Math.max(1, 3 * zoom);
-      context.beginPath();
-      context.arc(
-        point.x,
-        point.y - 10 * zoom,
-        (22 - 14 * progress) * zoom,
-        0,
-        Math.PI * 2,
-      );
-      context.stroke();
-      context.fillStyle = magenta;
-      for (const dx of [-14, 0, 14])
-        context.fillRect(
-          point.x + dx * zoom - 1.5 * zoom,
-          point.y + (-4 + 40 * progress) * zoom,
-          3 * zoom,
-          3 * zoom,
-        );
+      context.lineCap = "round";
+      for (const [colour, width] of [
+        [dark, Math.max(3.5, rx * 0.36)],
+        [progress < 0.3 ? glow : base, Math.max(2, rx * 0.2)],
+      ] as const) {
+        context.strokeStyle = colour;
+        context.lineWidth = width;
+        for (let index = 0; index < pieces; index += 1) {
+          const middle = ((index + 0.5) / pieces) * Math.PI * 2;
+          const half = (Math.PI / pieces) * (1 - 0.45 * progress);
+          const dx = Math.cos(middle) * spread;
+          const dy = Math.sin(middle) * spread * 0.6 + progress * 10 * zoom;
+          context.beginPath();
+          context.ellipse(
+            cx + dx,
+            cy + dy,
+            rx,
+            ry,
+            0,
+            middle - half,
+            middle + half,
+          );
+          context.stroke();
+        }
+      }
+      if (progress < 0.5) {
+        context.globalAlpha *= 1 - progress * 2;
+        context.fillStyle = "#ffffff";
+        context.beginPath();
+        context.ellipse(cx, cy, rx * 0.5, ry * 0.9, 0, 0, Math.PI * 2);
+        context.fill();
+      }
       context.restore();
     }
   }

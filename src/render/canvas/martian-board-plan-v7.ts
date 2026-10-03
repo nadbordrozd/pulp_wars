@@ -57,8 +57,8 @@ export type MartianPickV7 =
 /**
  * The board markers of a visible unit of the Martian kind, or of a
  * mind-controlled unit of any kind (the Mind Control revision: `controlled`
- * draws the placeholder control marker; the UI pass draws the halo and the
- * brain chip in the Martian faction colour), or undefined.
+ * draws the control halo and the brain chip in the Martian faction colour),
+ * or undefined.
  */
 export function martianUnitMarkersV7(
   view: PlayerViewV7,
@@ -166,6 +166,9 @@ export function martianPickTargetsV7(
       );
       if (preview === null) return [];
       const lines = mindControlPreviewLinesV7(view, preview);
+      const target = unitAt(command.targetUnitId);
+      const name =
+        target === undefined ? "unit" : martianUnitNameV7(view, target);
       return [
         {
           at: preview.at,
@@ -173,7 +176,8 @@ export function martianPickTargetsV7(
           family: "MIND_CONTROL",
           previewLabel: mindControlTargetLabelV7(preview),
           previewNote: lines.slice(1).join(" · "),
-          semanticLabel: `Take it: ${lines.join(". ")}`,
+          // Bead pulp_wars-b5f.8: the target is named, never placed.
+          semanticLabel: `Take the ${name}, ${preview.hp} of ${preview.maxHp} HP. ${lines.slice(1).join(". ")}`,
         },
       ];
     });

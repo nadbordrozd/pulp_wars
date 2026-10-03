@@ -102,10 +102,11 @@ technologies ([section 2.6](#26-mission-setup),
 described here. The [Dwarf overlay](RULESET_7_DWARVES.md) was the last
 pending one; `pulp_wars-78i.8` folded it in as
 [section 22](#22-dwarf-faction-rules). The
-[Mind Control overlay](RULESET_7_MIND_CONTROL.md) is folded as its engine
-step landed (`pulp_wars-b5f.3`, `7r33`); its Normal AI (overlay section 8)
-and UI (overlay section 9) steps are pending
-([section 24](#24-known-discrepancies)). The Dwarf additions (the `burrowed`,
+[Mind Control overlay](RULESET_7_MIND_CONTROL.md) is folded: its engine
+step (`pulp_wars-b5f.3`, `7r33`) in sections 20.8 and 20.9, and its Normal
+AI (overlay section 8) and UI (overlay section 9) steps since, with no
+identity change (section 20.9 "Presentation";
+[section 24](#24-known-discrepancies)). The Dwarf additions (the `burrowed`,
 `surfacedThisTurn`, and `bombedThisTurn` lists, the two per-unit flags and
 the `dwarf` block of the unit stats, and three combat-preview fields) are
 neutral in a match without a Dwarf seat
@@ -161,8 +162,8 @@ placeholder-art plan, and the Dwarf overlay keeps the root's decided bomb of
 some Help text, an identity written as `7rNN`, and a fallback-art plan; the
 values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
-[Known discrepancies](#24-known-discrepancies) lists the open items as of
-`pulp-wars-poc-7r34`.
+[Known discrepancies](#24-known-discrepancies) lists the open items (none)
+and the resolved ones as of `pulp-wars-poc-7r34`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -4939,6 +4940,20 @@ Rider with no Charge. Three rulings decide the rest:
   its kind (Graves, Infect and Bitten risings, death blasts, Plunder for the
   killer's seat, kill credit); its entry ends and the Brain's limit frees.
   Bitten and Chill persist through control and release.
+- **Presentation** (`pulp_wars-b5f.3` UI step; details in
+  [the Martian overlay of SCREEN_FLOW](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay)).
+  A controlled unit is drawn with its kind's sprite and portrait under a
+  code-drawn **control halo** (a ring over the head with two tendrils
+  down to it, pulsing, static for reduced motion, white in high contrast)
+  and a **brain chip**, both in the Martian faction colour; selecting it or
+  its Brain draws the dashed control link. Its dock shows a brain badge
+  "Controlled" with the controller's and the original owner's names, the
+  Brain's "Controls 1 / 1" chip shows its portrait, and a release shatters
+  the halo. Tooltip: "Take a wounded hostile unit with 6 HP or less within
+  2 tiles. It fights for you as itself until this Brain is lost." Log:
+  "{owner} Brain took control of {original owner}'s {unit}", "{unit}
+  returned to {owner}", "{unit} was lost with its Brain". The Thrall art
+  subjects are retired.
 - **State parsing** rejects a duplicate or unsorted entry; a `unitId` that
   is not a unit on the board or burrowed, or whose form is not `LAND` or
   `EMBARKED`, or whose `homeCityId` is not null; an `originalOwnerId` equal
@@ -6753,21 +6768,21 @@ the seven factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
 faction of the Ice Folk overlay, the Dwarf faction of the Dwarf overlay,
-and the mission setup of [section 2.6](#26-mission-setup), with one open
-item: the pending Mind Control AI and UI steps below.
+and the mission setup of [section 2.6](#26-mission-setup). No item is
+open.
 
-**Open.**
+**Resolved by implementation** (`pulp_wars-b5f.3`):
 
-- **Mind Control AI and UI steps pending.** The engine of the
-  [Mind Control overlay](RULESET_7_MIND_CONTROL.md) is implemented
-  (`pulp_wars-b5f.3`, `7r33`), but its Normal AI (overlay section 8: value
-  targeting, re-gating per-unit policies on the unit's kind, the doubled
-  Brain bonus) and its UI (overlay section 9: the halo and brain chip in
-  the Martian faction colour, the control link, the dock, preview, Help,
-  and log texts, and the retirement of the Thrall art subjects) are not.
-  Until then the Normal AI still plays only its old targeting (now limited
-  to wounded targets, one per Brain), and the board draws a controlled unit
-  with its kind's sprite and a placeholder collar.
+- **Mind Control AI and UI steps (resolved).** The engine of the
+  [Mind Control overlay](RULESET_7_MIND_CONTROL.md) landed first (`7r33`)
+  with its Normal AI and UI pending. Both are now implemented, with no
+  identity change: the Normal AI (overlay section 8: value targeting,
+  controlled units played by their kind, the doubled Brain bonus, value
+  denial; [Mind Control play](../architecture/NORMAL_AI.md#mind-control-play-pulp_wars-b5f3))
+  and the UI (overlay section 9: the halo and brain chip in the Martian
+  faction colour, the control link, the release cue, the dock, preview,
+  Help, and log texts, and the retirement of the Thrall art subjects;
+  section 20.9 "Presentation").
 
 **Resolved by a code change** (`pulp_wars-7g3.9`):
 

@@ -96,8 +96,9 @@ export type CommandV7 =
     }
   | {
       /**
-       * The Martian revision (section 8.2): a Brain takes a weakened
-       * hostile unit, which becomes a Thrall.
+       * The Martian revision (section 8.2): a Brain takes control of a
+       * wounded hostile unit, which keeps its kind (the Mind Control
+       * revision).
        */
       readonly kind: "MIND_CONTROL";
       readonly unitId: UnitId;

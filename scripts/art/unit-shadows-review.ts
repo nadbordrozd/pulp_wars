@@ -5,7 +5,7 @@
  * 1 and 0.75 on DPR 1. It writes to --out (default <tmp>/pulp-wars-unit-shadows):
  *
  *   roster-<ground>-zoom-<step>.png   per faction a BEFORE and an AFTER row
- *       of its land units (plus the Thrall, the Egg, the Dwarf mounds and a
+ *       of its land units (plus the Egg, the Dwarf mounds and a
  *       Big and Alpha Dinosaur) standing in adjacent cells on Grass, and on
  *       Forest and Mountain ground for zoom 1
  *   ready-grass-zoom-<step>.png      the same with every unit ready, so the
@@ -236,8 +236,6 @@ function rosterOf(prefix: string): Piece[] {
     const subject = `UNIT:${prefix}${role}` as ArtSubjectV7;
     return { subject, label: nameOf(subject) };
   });
-  if (prefix === "MARTIAN:")
-    pieces.push({ subject: "UNIT:MARTIAN:THRALL", label: "thrall" });
   if (prefix === "DINOSAUR:")
     pieces.push(
       { subject: "UNIT:DINOSAUR:EGG", label: "egg" },
