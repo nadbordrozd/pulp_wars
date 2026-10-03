@@ -11,6 +11,11 @@ import type { AiModeV6, FactionIdV6, MatchSetupV6 } from "../engine/v6/types";
 import type { ReplayFileV6 } from "../engine/v6/replay";
 import type { ReplayFileV7 } from "../engine/v7/replay";
 import type { FactionIdV7, MapTypeV7, MatchSetupV7 } from "../engine/v7/types";
+import {
+  missionByIdV7,
+  missionMatchSetupV7,
+  missionSeatFactionsV7,
+} from "../engine/v7/missions/index";
 import { distinctFactionsV7, duplicateFactionV7 } from "../engine/v7/setup";
 import { headless } from "./index";
 import {
@@ -42,12 +47,12 @@ if (mode === "replay") {
         : await headless.run(replay as ReplayFile);
   process.stdout.write(`${canonicalJson(result)}\n`);
 } else if (mode === "match") {
-  if (ruleset === "pulp-wars-poc-7r33") await runV7Match();
+  if (ruleset === "pulp-wars-poc-7r34") await runV7Match();
   else if (ruleset === "pulp-wars-poc-6") await runV6Match();
   else if (ruleset === "pulp-wars-poc-5") await runV5Match();
   else invalidRuleset();
 } else if (mode === "batch") {
-  if (ruleset === "pulp-wars-poc-7r33") await runV7Batch();
+  if (ruleset === "pulp-wars-poc-7r34") await runV7Batch();
   else if (ruleset === "pulp-wars-poc-6") await runV6Batch();
   else if (ruleset === "pulp-wars-poc-5") await runV5Batch();
   else invalidRuleset();
@@ -58,11 +63,17 @@ if (mode === "replay") {
 async function runV7Match(): Promise<void> {
   if (args.includes("--demo"))
     throw new Error("ruleset 7 does not support --demo");
-  const aiCount = aiCountArg("--ai-count", 1);
   const mapType = mapTypeArg();
+  if (mapType === "MISSION") {
+    await runV7MissionMatch();
+    return;
+  }
+  if (args.includes("--mission"))
+    throw new Error("--mission requires --map-type mission");
+  const aiCount = aiCountArg("--ai-count", 1);
   const size = boardSizeArgV7(aiCount, mapType);
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r33",
+    rulesetId: "pulp-wars-poc-7r34",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: numberArg("--seed", 0),
     width: size,
@@ -75,6 +86,50 @@ async function runV7Match(): Promise<void> {
     mapType,
     ...(allowDuplicateFactionsArgV7() ? { allowDuplicateFactions: true } : {}),
   };
+  const result = await headlessV7.runAiMatch(setup, {
+    maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
+    maxRounds: numberArg("--max-rounds", V7_MATCH_MAX_ROUNDS_DEFAULT),
+  });
+  writeMatchSummary(result);
+}
+
+/**
+ * docs/product/CAMPAIGN.md section 2.4: `--map-type mission --mission <ID>`
+ * plays the registered mission's current revision. The mission fixes the
+ * board size, seats, seed, and AI mode; `--factions` (one value per seat)
+ * picks seat 0's faction where the mission offers a choice and must repeat
+ * the AI seats' fixed factions. Without it seat 0 plays its first choice.
+ */
+async function runV7MissionMatch(): Promise<void> {
+  for (const flag of [
+    "--seed",
+    "--size",
+    "--ai-count",
+    "--cooperative",
+    "--allow-duplicate-factions",
+  ])
+    if (args.includes(flag))
+      throw new Error(
+        `${flag} does not apply to --map-type mission: the mission fixes its size, seats, seed, and mode`,
+      );
+  if (!args.includes("--mission"))
+    throw new Error("--map-type mission requires --mission <ID>");
+  const id = stringArg("--mission", "");
+  const mission = missionByIdV7(id);
+  if (mission === null)
+    throw new Error(`--mission ${id} is not a registered mission`);
+  const choices = mission.seats.map((seat) => missionSeatFactionsV7(seat));
+  const factions = args.includes("--factions")
+    ? factionsArgV7((mission.seats.length - 1) as 1 | 2 | 3)
+    : null;
+  const setup = missionMatchSetupV7(mission, factions?.[0]);
+  if (
+    setup === null ||
+    (factions !== null && setup.factions.join(",") !== factions.join(","))
+  )
+    throw new Error(
+      `ruleset 7 --factions for mission ${id} must be ${choices.map((choice) => choice.join("|").toLowerCase()).join(",")}`,
+    );
   const result = await headlessV7.runAiMatch(setup, {
     maxCommands: numberArg("--max-commands", V7_MATCH_MAX_COMMANDS_DEFAULT),
     maxRounds: numberArg("--max-rounds", V7_MATCH_MAX_ROUNDS_DEFAULT),
@@ -307,11 +362,12 @@ function mapTypeArg(): MapTypeV7 {
     value === "CONTINENTS" ||
     value === "ARCHIPELAGO" ||
     value === "LAKES" ||
-    value === "SHOWCASE"
+    value === "SHOWCASE" ||
+    value === "MISSION"
   )
     return value;
   throw new Error(
-    "--map-type must be dry_land, pangea, continents, archipelago, lakes, or showcase",
+    "--map-type must be dry_land, pangea, continents, archipelago, lakes, showcase, or mission",
   );
 }
 
@@ -443,6 +499,6 @@ function parseFactionValues(
 
 function invalidRuleset(): never {
   throw new Error(
-    "--ruleset must be pulp-wars-poc-7r33, pulp-wars-poc-6, or pulp-wars-poc-5",
+    "--ruleset must be pulp-wars-poc-7r34, pulp-wars-poc-6, or pulp-wars-poc-5",
   );
 }

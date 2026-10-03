@@ -11,6 +11,7 @@ import {
   parseMatchSetupV7,
   parseReplayFileV7,
   runReplayV7,
+  validateMatchSetupV7,
   type CommandV7,
   type GameStateV7,
   type MatchSetupV7,
@@ -20,6 +21,13 @@ import {
 
 export { SAVE_STORAGE_KEY_V7 };
 export const MAX_SAVE_BYTES_V7 = 1_572_864;
+/**
+ * The diagnostic of a mission save whose `(id, revision)` is no longer
+ * registered (docs/product/CAMPAIGN.md section 2.4); the save-recovery
+ * screen shows it with the usual Delete action.
+ */
+export const STALE_MISSION_DIAGNOSTIC_V7 =
+  "This mission was updated since the game was saved. Start it again from the campaign.";
 
 export interface SaveEnvelopeV7 {
   readonly format: "pulp-wars-save";
@@ -125,6 +133,11 @@ export function parseSaveV7(source: string): SaveLoadResultV7 {
           kind: "INCOMPATIBLE",
           diagnostic: "Saved match rules are incompatible.",
         };
+  // docs/product/CAMPAIGN.md section 2.4: a mission save whose mission was
+  // revised (or removed) since it was saved is incompatible, not corrupt.
+  const setupCheck = validateMatchSetupV7(input.setup);
+  if (!setupCheck.ok && setupCheck.error.code === "UNKNOWN_MISSION")
+    return { kind: "INCOMPATIBLE", diagnostic: STALE_MISSION_DIAGNOSTIC_V7 };
   const setup = parseMatchSetupV7(input.setup);
   const state = parseGameStateV7(input.state);
   const commands = parseCommands(input.acceptedCommands);

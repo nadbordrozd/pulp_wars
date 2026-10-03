@@ -72,6 +72,14 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::applyRaiseDead": "SEAT",
   "src/engine/v7/reducer.ts::plunderAwardsV7": "SEAT",
   "src/engine/v7/setup.ts::validateMatchSetupV7": "SEAT",
+  // `pulp_wars-68k.2`: mission registry, setup, and builder read seat
+  // factions; no unit is mind-controlled at setup, so a seat's faction is
+  // the kind of every unit it starts with (as in the Showcase).
+  "src/engine/v7/setup.ts::validateMissionSetupV7": "SEAT",
+  "src/engine/v7/missions/index.ts::missionSeatFactionsV7": "SEAT",
+  "src/engine/v7/missions/index.ts::missionMatchSetupV7": "SEAT",
+  "src/engine/v7/missions/build.ts::buildMissionStateV7": "SEAT",
+  "src/engine/v7/missions/build.ts::validateMissionDefinitionV7": "SEAT",
   "src/engine/v7/showcase.ts::createShowcaseEntitiesV7": "SEAT",
   "src/engine/v7/state-schema.ts::parsePlayers": "SEAT",
   "src/engine/v7/state-schema.ts::parsePlayer": "SEAT",

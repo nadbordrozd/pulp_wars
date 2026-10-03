@@ -23,11 +23,11 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // unique-factions rule (7r29); later beads that bump the identity re-pin
 // REVISION here: the Dwarf coarse balance (`pulp_wars-78i.7`, bomb 5 and
 // Dive 6) took 7r31, the Martian Grunt and Tripod ranges
-// (`pulp_wars-b5f.2`) 7r32, and Mind Control keeps the unit
-// (`pulp_wars-b5f.3`) 7r33.
+// (`pulp_wars-b5f.2`) 7r32, Mind Control keeps the unit
+// (`pulp_wars-b5f.3`) 7r33, and the mission setup (`pulp_wars-68k.2`) 7r34.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 33;
+const REVISION = 34;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

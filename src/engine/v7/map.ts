@@ -11,6 +11,13 @@ import { placeTreasureChestsV6 } from "../v6/map";
 import { initialAchievementEntitlementsV7 } from "./achievements";
 import { withFullShieldsV7 } from "./martian";
 import { placeRiftsV7 } from "./rift";
+import {
+  missionBoardV7,
+  missionCapitalsV7,
+  missionInitialStateV7,
+  missionTreasureChestsV7,
+} from "./missions/build";
+import { missionDefinitionV7 } from "./missions/index";
 import { validateMatchSetupV7, type MatchSetupErrorV7 } from "./setup";
 import {
   createShowcaseEntitiesV7,
@@ -191,7 +198,40 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   if (!validated.ok) return validated;
   const setup = validated.setup;
   if (setup.mapType === "SHOWCASE") return showcaseMapV7(setup);
+  if (setup.mapType === "MISSION") return missionMapV7(setup);
   return generateMapWithVillageCountV7(setup, villageCount(setup), "RIFTS");
+}
+
+/**
+ * The authored mission board as a "generated" map
+ * (docs/product/CAMPAIGN.md section 2.2): like the Showcase, no PRNG draw is
+ * consumed, no generation invariant applies, turn order is seat order, and
+ * the single attempt is attempt 1. The board carries the authored tiles and
+ * settlement sites but no territory.
+ */
+function missionMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
+  const mission =
+    setup.mission === undefined ? null : missionDefinitionV7(setup.mission);
+  if (mission === null)
+    return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
+  const capitals = missionCapitalsV7(mission);
+  return {
+    ok: true,
+    map: deepFreeze({
+      board: missionBoardV7(mission),
+      capitals,
+      villages: [...mission.villages].sort(
+        (left, right) => left.y - right.y || left.x - right.x,
+      ),
+      capitalAssignments: capitals,
+      turnOrderSeats: capitals.map((_, seat) => seat),
+      treasureChests: missionTreasureChestsV7(mission),
+      random: randomState(mission.seed),
+      attempt: 1,
+      attempts: [],
+      regionSizes: [],
+    }),
+  };
 }
 
 /**
@@ -274,8 +314,10 @@ export function generateInitialMapWithVillageCountV7(
   if (!validated.ok) return validated;
   const setup = validated.setup;
   if (
-    // The fixed Showcase board has no generator and no village count.
+    // The fixed Showcase and the authored mission boards have no generator
+    // and no village count.
     setup.mapType === "SHOWCASE" ||
+    setup.mapType === "MISSION" ||
     !Number.isSafeInteger(villages) ||
     villages < 0 ||
     (rules !== "REVISION_15" &&
@@ -2033,6 +2075,9 @@ function initialMapStateFromV7(
 ): CreateInitialMapStateResultV7 {
   if (!generated.ok) return generated;
   if (setup.mapType === "SHOWCASE") return showcaseInitialStateV7(setup);
+  // docs/product/CAMPAIGN.md section 2.2: the authored mission state.
+  if (setup.mapType === "MISSION")
+    return { ok: true, state: missionInitialStateV7(setup), mapAttempt: 1 };
   const players = createPlayers(setup);
   const entities = createEntities(
     players,

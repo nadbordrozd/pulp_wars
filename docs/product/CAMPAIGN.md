@@ -1,9 +1,13 @@
 # Campaign mode: design and teaser
 
-**Status:** design (`pulp_wars-68k.1`, epic `pulp_wars-68k`). Nothing here is
-implemented yet. The implementation beads in [section 8](#8-implementation-beads)
-follow this document; where an implementation bead finds that this design
-and the code disagree, it stops and surfaces the conflict.
+**Status:** design (`pulp_wars-68k.1`, epic `pulp_wars-68k`). The engine
+bead `68k.2` is implemented at `pulp-wars-poc-7r34`
+([current rules section 2.6](RULESET_7_CURRENT.md#26-mission-setup); its
+notes are in [section 8.1](#81-68k2-engine-missions-authored-maps-forbidden-technologies));
+nothing else here is implemented yet. The implementation beads in
+[section 8](#8-implementation-beads) follow this document; where an
+implementation bead finds that this design and the code disagree, it stops
+and surfaces the conflict.
 
 **Request (user, 2026-10-03, summarized):** a campaign "sort of like in HoMM":
 beat one map to advance to the next, unlocking more playable factions along
@@ -806,6 +810,26 @@ Validation profile: ai/map/persistence
 Worker focused checks: npx vitest run tests/unit/ruleset-v7-missions.test.ts tests/unit/ruleset-v7-revision18-showcase.test.ts tests/replay ; npm run typecheck ; npm run lint
 Conditional final gates: npm run check ; npm run validate:ruleset6-release ; npm run validate:ruleset7-release ; npm run smoke:browser (autosave key change is observable at startup) ; npm run smoke:browser:legacy-v5 (schema handling and compatibility routing)
 ```
+
+**Implementation notes (`68k.2`, `pulp-wars-poc-7r34`).** Where this design
+left a detail open, the engine decided:
+
+- The pinned hash leaves the ruleset ID out, so an identity bump alone never
+  fails it; a rule change that alters a mission's built state re-pins it.
+- A city whose live population alone exceeds `growthSpent(level)` gets no
+  harvest record and starts with that surplus (it must stay below
+  `level + 1`); otherwise it starts at population 0 of its level.
+- A replay of an unregistered `(id, revision)` is `INCOMPATIBLE_REPLAY`
+  (the save gets the diagnostic of section 2.4).
+- Every seat needs at least one unit (its first unit takes ID `2s + 2`); a
+  unit may not start on another seat's city or dock, and a village may not
+  lie in a city's territory.
+- `missionMatchSetupV7(mission, faction?, color?)` builds a mission's setup;
+  the CLI refuses `--seed`, `--size`, `--ai-count`, `--cooperative`, and
+  `--allow-duplicate-factions` with `--map-type mission`, and batches do not
+  take `mission`.
+- The directive types of section 2.5 are declared with the definition
+  (`src/engine/v7/missions/types.ts`) for `68k.3`; no AI reads them yet.
 
 ### 8.2 `68k.3` AI: mission directives and proxy variation
 

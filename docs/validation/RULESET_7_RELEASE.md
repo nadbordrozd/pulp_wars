@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r33`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
+## Current release contract (`pulp-wars-poc-7r34`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
 
-The current runtime is `pulp-wars-poc-7r33` (autosave
-`pulpWars.save.v7r33.current`; saves and replays of `pulp-wars-poc-7r32`
+The current runtime is `pulp-wars-poc-7r34` (autosave
+`pulpWars.save.v7r34.current`; saves and replays of `pulp-wars-poc-7r33`
 and earlier are refused, and startup removes their autosave keys). Its seven
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -75,6 +75,11 @@ and abilities (one per Brain, a wounded target, released to its owner when
 the Brain is lost;
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); matches
 without a Martian seat replay their command logs with identical outcomes.
+`pulp_wars-68k.2` (`7r34`) adds the `MISSION` setup (authored mission
+boards, `UNKNOWN_MISSION`, and mission-forbidden technologies;
+[current rules section 2.6](../product/RULESET_7_CURRENT.md#26-mission-setup));
+non-mission matches replay byte-identically to `7r33` apart from the
+ruleset ID, and its contract test is `tests/unit/ruleset-v7-missions.test.ts`.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, and the
 Dwarves are part of the default route: match setup always offers a
 Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf choice for the human and
@@ -91,7 +96,7 @@ rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r33` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r34` identity (ruleset ID, autosave key, the
   seven-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
@@ -228,7 +233,7 @@ rerun their matrices.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (`7r33`) captures. The revision-2 validator described below as
+  (`7r34`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 

@@ -11,7 +11,7 @@ import {
   isDenseArrayV7,
   isNonNegativeSafeIntegerV7,
 } from "./schema";
-import { parseMatchSetupV7, validateMatchSetupV7 } from "./setup";
+import { validateMatchSetupV7 } from "./setup";
 import { parseGameStateV7 } from "./state-schema";
 import {
   PRIOR_RULESET_7_IDS,
@@ -162,8 +162,13 @@ export function parseReplayFileV7(input: unknown): ReplayParseResultV7 {
     !isDenseArrayV7(input.checkpoints)
   )
     return { kind: "INVALID_REPLAY" };
-  const setup = parseMatchSetupV7(input.setup);
-  if (setup === null) return { kind: "INVALID_REPLAY" };
+  const validated = validateMatchSetupV7(input.setup);
+  // docs/product/CAMPAIGN.md section 2.4: a replay of a mission revision
+  // that is no longer registered cannot be rebuilt; it is incompatible.
+  if (!validated.ok && validated.error.code === "UNKNOWN_MISSION")
+    return { kind: "INCOMPATIBLE_REPLAY" };
+  if (!validated.ok) return { kind: "INVALID_REPLAY" };
+  const setup = validated.setup;
   const commands: CommandV7[] = [];
   for (const item of input.commands) {
     const parsed = parseCommandV7(item);

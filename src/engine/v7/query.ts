@@ -65,6 +65,7 @@ import {
   marketCoinsV7,
   rewardCandidatesForLevelV7,
 } from "./economy";
+import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
 import { raiseDeadGravesV7 } from "./graves";
 import { applyCommandV7 } from "./reducer";
 import {
@@ -217,6 +218,9 @@ export function queryTechnologyTreeV7(
   // Revision 13: the tree, unlock effects, and role labels are the viewer's
   // own faction registration.
   const tree = factionTreeV7(player.faction);
+  // Forbidden technologies (docs/product/CAMPAIGN.md section 2.3): the Dry
+  // Land Naval branch and a mission's list are DISABLED, never offered.
+  const forbidden = forbiddenTechnologiesV7(view.setup);
   return {
     id: tree.id,
     faction: tree.faction,
@@ -227,17 +231,15 @@ export function queryTechnologyTreeV7(
         (tech) => !owned.has(tech),
       );
       const nodeState: PublicTechnologyStateV7 =
-        view.setup.mapType === "DRY_LAND" &&
-        node.branch === "NAVAL" &&
-        !owned.has(node.id)
+        forbidden.has(node.id) && !owned.has(node.id)
           ? "DISABLED"
           : owned.has(node.id)
             ? "OWNED"
             : missingPrerequisites.length === 0
               ? "AVAILABLE"
               : "BLOCKED";
-      // The free opener applies only to researchable offers; a Dry Land
-      // Naval node keeps its ordinary cost.
+      // The free opener applies only to researchable offers; a forbidden
+      // (Dry Land Naval or mission) node keeps its ordinary cost.
       const cost =
         nodeState === "DISABLED"
           ? technologyResearchCostV7(node.tier, ownedCityCount)

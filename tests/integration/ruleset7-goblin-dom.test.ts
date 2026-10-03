@@ -4,6 +4,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   GOBLIN_ROLE_MECHANICS_V7,
   applyCommandV7,
+  createPlayableGameV7,
+  missionByIdV7,
+  missionMatchSetupV7,
   projectEventsV7,
   queryPlayerCommandsV7,
   viewForV7,
@@ -286,6 +289,36 @@ describe("Revision 17 Goblin DOM", () => {
       document.querySelector('[data-tactical-state="overrun"]')?.textContent,
     ).toBe("Ram: attack again");
     fortifyApp.destroy();
+  });
+
+  it("shows a mission's forbidden technologies as unavailable in this mission", () => {
+    // docs/product/CAMPAIGN.md section 2.3: the hidden fixture mission
+    // TEST_GROUNDS forbids the Naval branch; a Goblin leads seat 0.
+    const setup = required(
+      missionMatchSetupV7(required(missionByIdV7("TEST_GROUNDS")), "GOBLIN"),
+    );
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    const controller = new FixtureController(created.state);
+    const app = mount(controller, new RecordingBoardHost());
+    requiredButton("tech").click();
+    const shorecraft = requiredButton("tech-shorecraft");
+    expect(shorecraft.getAttribute("aria-disabled")).toBe("true");
+    expect(shorecraft.getAttribute("aria-label")).toBe(
+      "Shorecraft, unavailable in this mission",
+    );
+    expect(requiredButton("tech-navigation").getAttribute("aria-label")).toBe(
+      "Navigation, unavailable in this mission",
+    );
+    shorecraft.click();
+    const detail = requiredElement<HTMLElement>(".v7-tech-detail");
+    expect(detail.dataset.techState).toBe("disabled");
+    expect(detail.textContent).toContain("Unavailable in this mission");
+    expect(detail.textContent).not.toContain("Dry Land");
+    expect(detail.querySelector('[data-action="research-shorecraft"]')).toBe(
+      null,
+    );
+    app.destroy();
   });
 
   it("shows Warrens, Plunder, Goblin Help and Goblin training", () => {

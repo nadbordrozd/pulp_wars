@@ -2,6 +2,7 @@ import { allocateCityId, allocateUnitId, type PlayerId } from "../model/ids";
 import { deepFreeze } from "../model/freeze";
 import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
+import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
   DEEP_WINTER_RECOVER_V7,
@@ -705,8 +706,11 @@ function applyResearch(
   const player = requirePlayer(state, actor);
   const node = ORIGINAL_BASELINE_V5_TREE.nodes.find((item) => item.id === tech);
   if (node === undefined) return rejected(original, "TECH_NOT_FOUND", { tech });
-  if (state.setup.mapType === "DRY_LAND" && node.branch === "NAVAL")
-    return rejected(original, "TECH_REQUIRED", { tech, reason: "DRY_LAND" });
+  // Forbidden technologies (docs/product/CAMPAIGN.md section 2.3): the Dry
+  // Land Naval branch and a mission's list, from the one source.
+  const forbidden = forbiddenTechnologiesV7(state.setup).get(tech);
+  if (forbidden !== undefined)
+    return rejected(original, "TECH_REQUIRED", { tech, reason: forbidden });
   if (player.researchedTechs.includes(tech))
     return rejected(original, "TECH_ALREADY_RESEARCHED", { tech });
   const missing = node.prerequisites.find(

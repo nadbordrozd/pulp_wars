@@ -47,6 +47,7 @@ import {
   CITY_LEVEL_INCOME_CAP_V7,
   MARKET_INCOME_CAP_V7,
   cityLevelIncomeV7,
+  forbiddenTechnologiesV7,
   queryTechnologyTreeV7,
   type CommandV7,
   type CoordV7,
@@ -3836,6 +3837,7 @@ export class Ruleset7DomAppView {
         this.#selectedTech,
         (tech) => this.#technologyChibiArt(tech)?.element ?? null,
         this.#viewerFaction(),
+        (tech) => this.#technologyUnavailableText(tech),
       );
       const option = this.#document.createElement("option");
       option.value = laneId;
@@ -3882,7 +3884,7 @@ export class Ruleset7DomAppView {
           ? text(
               this.#document,
               "p",
-              "Unavailable on Dry Land maps",
+              this.#technologyUnavailableText(node.id),
               "v7-tech-status is-locked",
             )
           : node.missingPrerequisites.length > 0
@@ -6563,6 +6565,14 @@ export class Ruleset7DomAppView {
     return view.viewer.faction;
   }
 
+  /** Why a `DISABLED` technology cannot be researched in this match. */
+  #technologyUnavailableText(tech: TechnologyIdV7): string {
+    const view = this.#snapshot.view;
+    return technologyUnavailableTextV7(
+      view === null ? null : forbiddenTechnologiesV7(view.setup).get(tech),
+    );
+  }
+
   #localBusy(): boolean {
     return (
       this.#presentationActive ||
@@ -6717,6 +6727,19 @@ function reconcileElementChildren(
     if (!retained.has(child)) child.remove();
 }
 
+/**
+ * The technology tree's text for a forbidden (`DISABLED`) technology
+ * (docs/product/CAMPAIGN.md section 2.3): a mission's own list, or the Dry
+ * Land Naval branch.
+ */
+function technologyUnavailableTextV7(
+  reason: "DRY_LAND" | "MISSION" | null | undefined,
+): string {
+  return reason === "MISSION"
+    ? "Unavailable in this mission"
+    : "Unavailable on Dry Land maps";
+}
+
 function stableElementKey(element: Element): string {
   const action = element.getAttribute("data-action");
   if (action !== null) return `action:${action}`;
@@ -6736,6 +6759,9 @@ function appendTechNode(
   chibiArt: (tech: TechnologyIdV7) => HTMLElement | null = () => null,
   /** The viewer's faction, which names the technologies (Plunder). */
   faction: FactionIdV7 = "ORIGINAL",
+  /** Why a `DISABLED` technology is unavailable (Dry Land or a mission). */
+  unavailable: (tech: TechnologyIdV7) => string = () =>
+    technologyUnavailableTextV7("DRY_LAND"),
 ): void {
   const name = technologyNameV7(layout.node.id, faction);
   const node = el(documentRoot, "div", "v7-tech-node");
@@ -6784,7 +6810,11 @@ function appendTechNode(
     );
     if (layout.node.state === "DISABLED") {
       card.setAttribute("aria-disabled", "true");
-      card.setAttribute("aria-label", `${name}, unavailable on Dry Land maps`);
+      const reason = unavailable(layout.node.id);
+      card.setAttribute(
+        "aria-label",
+        `${name}, ${reason.charAt(0).toLowerCase()}${reason.slice(1)}`,
+      );
     }
   } else {
     card.append(text(documentRoot, "span", "✓", "v7-tech-check"));
@@ -6809,6 +6839,7 @@ function appendTechNode(
         selected,
         chibiArt,
         faction,
+        unavailable,
       );
       children.append(edge);
     }
@@ -6965,7 +6996,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r33",
+    rulesetId: "pulp-wars-poc-7r34",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

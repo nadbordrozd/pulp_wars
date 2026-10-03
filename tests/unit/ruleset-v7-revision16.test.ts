@@ -81,10 +81,10 @@ const CELLS = [
 ] as const;
 
 describe("ruleset-7 revision-16 identity", () => {
-  it("keeps rejecting r15 after the r33 identity and cleans the r15 through r32 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r33");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r33.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-18)).toEqual([
+  it("keeps rejecting r15 after the r34 identity and cleans the r15 through r33 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r34");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r34.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-19)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -103,6 +103,7 @@ describe("ruleset-7 revision-16 identity", () => {
       "pulpWars.save.v7r30.current",
       "pulpWars.save.v7r31.current",
       "pulpWars.save.v7r32.current",
+      "pulpWars.save.v7r33.current",
     ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const setup = setupFor("CONTINENTS", 11, 1, 3);
@@ -156,7 +157,7 @@ describe("ruleset-7 prior identities", () => {
   ];
 
   it("lists every earlier Ruleset 7 identity exactly once, in order", () => {
-    expect(revision).toBe(33);
+    expect(revision).toBe(34);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -190,7 +191,7 @@ describe("ruleset-7 prior identities", () => {
   });
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r34", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r35", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",

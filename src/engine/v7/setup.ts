@@ -8,6 +8,7 @@ import {
   type PlayerColorV7,
 } from "./types";
 import { hasExactKeysV7, isDenseArrayV7, isUint32V7 } from "./schema";
+import { missionDefinitionV7, missionSeatFactionsV7 } from "./missions/index";
 
 const SETUP_KEYS_V7 = [
   "aiCount",
@@ -27,12 +28,17 @@ const MIRROR_SETUP_KEYS_V7 = [
   ...SETUP_KEYS_V7,
   "allowDuplicateFactions",
 ] as const;
+/** The keys of a `MISSION` setup (docs/product/CAMPAIGN.md section 2.4). */
+const MISSION_SETUP_KEYS_V7 = [...SETUP_KEYS_V7, "mission"] as const;
 
 /**
  * Why a Ruleset 7 setup was refused. `DUPLICATE_FACTION`
  * (docs/product/RULESET_7_UNIQUE_FACTIONS.md): two seats chose the same
  * faction; `faction` is the first repeated faction in seat order and `seats`
- * every seat that chose it, ascending. Every other refusal is
+ * every seat that chose it, ascending. `UNKNOWN_MISSION`
+ * (docs/product/CAMPAIGN.md section 2.4): a well-formed `MISSION` setup
+ * names a mission ID and revision that is not registered (an unknown ID, or
+ * a revision other than the current one). Every other refusal is
  * `INVALID_SETUP`.
  */
 export type MatchSetupErrorV7 =
@@ -46,6 +52,10 @@ export type MatchSetupErrorV7 =
         faction: FactionIdV7;
         seats: readonly number[];
       }>;
+    }
+  | {
+      readonly code: "UNKNOWN_MISSION";
+      readonly params: Readonly<{ id: string; revision: number }>;
     };
 
 export type MatchSetupValidationV7 =
@@ -115,13 +125,22 @@ export function allowDuplicateFactionsV7(setup: MatchSetupV7): MatchSetupV7 {
  * Validates a Ruleset 7 setup. Besides the shape and the board, seat, and
  * map constraints, every seat must play a different faction
  * (`DUPLICATE_FACTION`) unless the setup carries the headless and test only
- * `allowDuplicateFactions: true`.
+ * `allowDuplicateFactions: true`. A `MISSION` setup carries exactly one
+ * extra key, `mission: { id, revision }`, and never `allowDuplicateFactions`;
+ * the pair must be registered (`UNKNOWN_MISSION`) and every other field must
+ * match the definition (docs/product/CAMPAIGN.md section 2.4).
  */
 export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
   const invalid = {
     ok: false,
     error: { code: "INVALID_SETUP", params: {} },
   } as const;
+  if (
+    typeof input === "object" &&
+    input !== null &&
+    (input as { readonly mapType?: unknown }).mapType === "MISSION"
+  )
+    return validateMissionSetupV7(input);
   const mirror =
     typeof input === "object" &&
     input !== null &&
@@ -175,6 +194,86 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
       mapType: input.mapType,
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
       ...(mirror ? { allowDuplicateFactions: true as const } : {}),
+    },
+  };
+}
+
+/**
+ * A `MISSION` setup (docs/product/CAMPAIGN.md section 2.4): the ordinary
+ * shape plus `mission`, a registered `(id, revision)`, with `width`,
+ * `height`, `aiCount`, `aiMode`, `seed`, and `factions` equal to the
+ * definition's (seat 0 inside its choice where it has one). The human color
+ * is free; `allowDuplicateFactions` is refused (an unknown key).
+ */
+function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
+  const invalid = {
+    ok: false,
+    error: { code: "INVALID_SETUP", params: {} },
+  } as const;
+  if (
+    !hasExactKeysV7(input, MISSION_SETUP_KEYS_V7) ||
+    !hasExactKeysV7(input.mission, ["id", "revision"]) ||
+    typeof input.mission.id !== "string" ||
+    input.mission.id.length === 0 ||
+    typeof input.mission.revision !== "number" ||
+    !Number.isSafeInteger(input.mission.revision) ||
+    input.mission.revision < 1 ||
+    input.rulesetId !== RULESET_7_ID ||
+    input.mapGenerationRevision !== "REGIONAL_BIOMES_NAVAL_V2" ||
+    !isUint32V7(input.seed) ||
+    !isBoardSize(input.width) ||
+    input.height !== input.width ||
+    !isAiCount(input.aiCount) ||
+    input.aiDifficulty !== "NORMAL" ||
+    (input.aiMode !== "RIVAL" && input.aiMode !== "COOPERATIVE") ||
+    !isColor(input.humanColor) ||
+    !isDenseArrayV7(input.factions) ||
+    !input.factions.every((faction) =>
+      FACTION_IDS_V7.includes(faction as FactionIdV7),
+    )
+  )
+    return invalid;
+  const ref = { id: input.mission.id, revision: input.mission.revision };
+  const mission = missionDefinitionV7(ref);
+  if (mission === null)
+    return { ok: false, error: { code: "UNKNOWN_MISSION", params: ref } };
+  const factions = [...input.factions] as readonly FactionIdV7[];
+  if (
+    input.width !== mission.size ||
+    input.aiCount !== mission.seats.length - 1 ||
+    input.aiMode !== mission.aiMode ||
+    input.seed !== mission.seed ||
+    factions.length !== mission.seats.length ||
+    mission.seats.some(
+      (seat, index) =>
+        !missionSeatFactionsV7(seat).includes(factions[index] as FactionIdV7),
+    )
+  )
+    return invalid;
+  const duplicate = duplicateFactionV7(factions);
+  if (duplicate !== null)
+    return {
+      ok: false,
+      error: {
+        code: "DUPLICATE_FACTION",
+        params: { faction: duplicate.faction, seats: duplicate.seats },
+      },
+    };
+  return {
+    ok: true,
+    setup: {
+      rulesetId: RULESET_7_ID,
+      seed: input.seed,
+      width: input.width,
+      height: input.width,
+      aiCount: input.aiCount,
+      aiDifficulty: "NORMAL",
+      aiMode: input.aiMode,
+      humanColor: input.humanColor,
+      factions,
+      mapType: "MISSION",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mission: ref,
     },
   };
 }

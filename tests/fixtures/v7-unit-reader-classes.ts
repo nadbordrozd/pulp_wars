@@ -152,6 +152,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/ice-folk.ts::winterV7": "BOARD",
     "src/engine/v7/map.ts::initialMapStateFromV7": "BOARD",
     "src/engine/v7/map.ts::showcaseInitialStateV7": "BOARD",
+    // `pulp_wars-68k.2`: the mission builder reads a definition's starting
+    // units, which all stand on the board (nothing starts burrowed).
+    "src/engine/v7/missions/build.ts::buildMissionStateV7": "BOARD",
+    "src/engine/v7/missions/build.ts::validateMissionDefinitionV7": "BOARD",
     "src/engine/v7/martian.ts::coolingStepV7": "BOARD",
     "src/engine/v7/martian.ts::mindControlCooldownStepV7": "BOARD",
     "src/engine/v7/martian.ts::rechargeShieldsV7": "BOARD",

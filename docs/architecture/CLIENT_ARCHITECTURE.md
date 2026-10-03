@@ -2,9 +2,10 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r33` (autosave
-`pulpWars.save.v7r33.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r32.current`), whose rules for all seven factions
+The current client runs `pulp-wars-poc-7r34` (autosave
+`pulpWars.save.v7r34.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r33.current`; mission setups are described
+[below](#mission-setups-pulp_wars-68k2)), whose rules for all seven factions
 the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk,
 and Dwarf, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
@@ -439,6 +440,40 @@ the reducer resolves it, `repairMachineHeal`, 4, instead of 2):
 The Classic look and LEGACY have no Dwarf art: a Dwarf unit is the Human
 sprite of its role with the cog badge, a Dwarf city the Human city, and a
 mound a code-drawn heap; every marker is code-drawn in both.
+
+## Mission setups (`pulp_wars-68k.2`)
+
+`pulp-wars-poc-7r34` adds the engine half of the
+[campaign design](../product/CAMPAIGN.md) (section 2;
+[current rules section 2.6](../product/RULESET_7_CURRENT.md#26-mission-setup)).
+A mission is engine data: one frozen `MissionDefinitionV7` per module under
+`src/engine/v7/missions/`, registered in `MISSION_REGISTRY_V7`
+(`missions/index.ts`, with `missionByIdV7`, `missionDefinitionV7`, and
+`missionMatchSetupV7`, which builds the `MISSION` setup of a mission and a
+faction choice). `missions/build.ts` is the pure, PRNG-free builder that
+`createInitialMapStateV7` dispatches `mapType: "MISSION"` to, exactly as it
+dispatches the Showcase; the result is an ordinary `GameStateV7` (no new
+state field). The only hidden mission registered so far is the engine
+fixture `TEST_GROUNDS`; the chapter, story, and campaign screens are
+`pulp_wars-68k.4` and `68k.5`, so the setup screen does not offer `MISSION`
+yet and the browser builds no mission setup.
+
+- **Setup.** A `MISSION` setup carries `mission: { id, revision }`, which the
+  autosave and replays store; any other mismatch with the definition is
+  `INVALID_SETUP` and an unregistered pair is `UNKNOWN_MISSION` (the
+  controller reports both as an invalid setup).
+- **Forbidden technologies.** `forbiddenTechnologiesV7(setup)`
+  (`src/engine/v7/forbidden-technologies.ts`) is the one source of the Dry
+  Land Naval ban and of a mission's list; the reducer, the public technology
+  tree (`DISABLED`), and the research offers read it. The technology tree
+  card and detail read the reason from it: "Unavailable in this mission" for
+  a mission, "Unavailable on Dry Land maps" otherwise.
+- **Stale saves.** `parseSaveV7` maps `UNKNOWN_MISSION` to `INCOMPATIBLE`
+  with the diagnostic `STALE_MISSION_DIAGNOSTIC_V7` ("This mission was
+  updated since the game was saved. Start it again from the campaign."),
+  which the save-recovery screen shows with its Delete action; a replay of
+  such a setup is `INCOMPATIBLE_REPLAY`. Adding a mission or bumping a
+  mission's revision never changes the ruleset identity or the autosave key.
 
 ## 0. Ruleset-6 replacement boundary
 

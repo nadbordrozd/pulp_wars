@@ -10,7 +10,7 @@ factions (Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf;
 [Martian overlay](../product/RULESET_7_MARTIANS.md), `pulp_wars-7g3.8` the
 [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), and `pulp_wars-78i.8`
 the [Dwarf overlay](../product/RULESET_7_DWARVES.md) into it). The headless CLI
-accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r33`
+accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r34`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
 [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md) the
 `achievements` metrics carry all seven achievements: `progressMaximum` and
@@ -76,14 +76,14 @@ affect map generation), and `benchmark-ruleset-v7-command-processing`
 launches the browser controller, so it uses distinct factions too.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --factions undead,undead --allow-duplicate-factions --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --factions undead,undead --allow-duplicate-factions --seed 3 --max-rounds 150
 ```
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
-npm run headless -- batch --ruleset pulp-wars-poc-7r33 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
+npm run headless -- batch --ruleset pulp-wars-poc-7r34 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
 ```
 
 A Dinosaur seat
@@ -164,8 +164,8 @@ credited to no role or faction. Faction-keyed fields (`factionRoles`,
 including `showcase`:
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type pangea --factions martian,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type showcase --ai-count 3 --factions martian,human,undead,goblin --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type pangea --factions martian,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type showcase --ai-count 3 --factions martian,human,undead,goblin --max-rounds 50
 ```
 
 The engine bead added no Martian policy: a Martian seat played with the
@@ -207,8 +207,8 @@ has had its Martian pairings and summary since the balance bead
 including `showcase`:
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type dry-land --factions ice,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type showcase --ai-count 3 --factions ice,human,undead,goblin --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type dry-land --factions ice,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type showcase --ai-count 3 --factions ice,human,undead,goblin --max-rounds 50
 ```
 
 The engine bead adds no Ice Folk policy. An Ice Folk seat plays with the
@@ -267,8 +267,8 @@ map type including `showcase`; the browser setup offers the faction since
 its UI bead (`pulp_wars-78i.6`):
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type dry-land --factions dwarf,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type showcase --ai-count 3 --factions dwarf,human,undead,goblin --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type dry-land --factions dwarf,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type showcase --ai-count 3 --factions dwarf,human,undead,goblin --max-rounds 50
 ```
 
 The engine bead adds no Dwarf policy. A Dwarf seat plays with the generic
@@ -314,6 +314,34 @@ Gyrocopters' killers) and `summary.dwarf` (`pulp_wars-78i.7`; the
 [Dwarf balance report](../validation/RULESET_7_DWARF_BALANCE.md)). The
 scripted rider probe of the Dwarf overlay's section 19.2 is
 `npx tsx scripts/ruleset7-dwarf-rider-probe.ts`.
+
+## Mission matches (`pulp_wars-68k.2`)
+
+`pulp-wars-poc-7r34` adds the `MISSION` map type
+([campaign design](../product/CAMPAIGN.md) section 2.4;
+[current rules section 2.6](../product/RULESET_7_CURRENT.md#26-mission-setup)):
+a hand-authored board built from a registered mission, named by the setup's
+`mission: { id, revision }`. `runAiMatchV7` accepts a mission setup
+unchanged (`missionMatchSetupV7(mission, faction)` builds one), and the CLI
+plays the current revision of a registered mission with
+`--map-type mission --mission <ID>`:
+
+```bash
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type mission --mission TEST_GROUNDS --max-rounds 30
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type mission --mission TEST_GROUNDS --factions goblin,undead --max-rounds 30
+```
+
+The mission fixes the board size, the seats, the seed, and the AI mode, so
+`--seed`, `--size`, `--ai-count`, `--cooperative`, and
+`--allow-duplicate-factions` are errors with it; `--factions` gives one value
+per seat, seat 0's from its choice where the mission offers one and the AI
+seats' as the mission fixes them (without it seat 0 plays its first choice).
+Hidden fixture missions such as `TEST_GROUNDS` are runnable here and appear
+in no chapter. Batches (`--map-types`) do not take `mission`. A mission
+played Normal against Normal is always the same game (its board, seed, and
+starting position are fixed). `pulp_wars-68k.2` changes no AI decision:
+non-mission matches replay byte-identically to `7r33` apart from the ruleset
+ID.
 
 ## Normal AI pressure telemetry (`pulp_wars-9s0.1`)
 
@@ -412,7 +440,7 @@ change the board): its size defaults to 16 for every seat count, any other
 types at 16. No validation or balance matrix includes it by default.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r33 --map-type showcase --ai-count 3 --factions human,undead,goblin,dinosaur --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r34 --map-type showcase --ai-count 3 --factions human,undead,goblin,dinosaur --max-rounds 50
 ```
 
 The naval

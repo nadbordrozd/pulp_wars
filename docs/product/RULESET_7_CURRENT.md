@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r33`, for all seven playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r34`, for all seven playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), and Dwarf (`DWARF`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
@@ -86,13 +86,17 @@ Gyrocopter's bomb (5, and 6 with Dive), `pulp-wars-poc-7r32`
 (`pulp_wars-b5f.2`) gives the Martian Grunt a ray pistol (range 1–2, Attack
 1.5, 3 Coins) and the Tripod range 2 only with Sight 2
 ([section 11](#11-unit-roster), [section 20](#20-martian-faction-rules)),
-and `pulp-wars-poc-7r33` (`pulp_wars-b5f.3`, the engine step of the
+`pulp-wars-poc-7r33` (`pulp_wars-b5f.3`, the engine step of the
 [Mind Control overlay](RULESET_7_MIND_CONTROL.md)) makes a mind-controlled
 unit keep its type and abilities under the Brain's owner, one per Brain,
 released to its owner when the Brain is lost
 ([section 20.8](#208-mind-control),
 [section 20.9](#209-mind-controlled-units)); matches without a Martian seat
-are unchanged.
+are unchanged, and `pulp-wars-poc-7r34` (`pulp_wars-68k.2`, the engine step
+of the [campaign design](CAMPAIGN.md)) adds the `MISSION` setup, a
+hand-authored board built from a registered mission, and mission-forbidden
+technologies ([section 2.6](#26-mission-setup),
+[section 6.1](#61-research-cost)); every other match is unchanged.
 
 **No pending faction overlay.** Every faction the engine registers is
 described here. The [Dwarf overlay](RULESET_7_DWARVES.md) was the last
@@ -158,7 +162,7 @@ some Help text, an identity written as `7rNN`, and a fallback-art plan; the
 values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#24-known-discrepancies) lists the open items as of
-`pulp-wars-poc-7r33`.
+`pulp-wars-poc-7r34`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -217,7 +221,9 @@ Mind Control cooldowns (`martian.ts`; the kind resolver `unitFactionV7` and
 (`ice-folk.ts`), Dig In, clockwork, Knockback, and the rider brake
 (`dwarf.ts`), Tunnel, surfacing, Bomb Run, and Assemble
 (`dwarf-reducer.ts`), the board and owned-unit accessors and the occupancy
-predicate (`units.ts`), achievements, movement, map generation, queries,
+predicate (`units.ts`), achievements, movement, map generation, the mission
+registry and builder (`missions/`) and forbidden technologies
+(`forbidden-technologies.ts`), queries,
 views), and `src/ai/v7.ts` with its `src/ai/v7-*.ts` helpers (Normal AI,
 including `src/ai/v7-goblin.ts`, `src/ai/v7-dinosaur.ts`,
 `src/ai/v7-martian.ts`, `src/ai/v7-ice-folk.ts`, and `src/ai/v7-dwarf.ts`).
@@ -238,10 +244,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r33`                                                                                                                                                                                                                                                                                                                                                                              |
+| Ruleset                                    | `pulp-wars-poc-7r34`                                                                                                                                                                                                                                                                                                                                                                              |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                               |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                               |
-| Browser autosave                           | `pulpWars.save.v7r33.current`                                                                                                                                                                                                                                                                                                                                                                     |
+| Browser autosave                           | `pulpWars.save.v7r34.current`                                                                                                                                                                                                                                                                                                                                                                     |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                                                                                                                                                        |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`                                                                                                                                                                                                                                                                                                                        |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`                                                                                                                                                                                                                                    |
@@ -253,7 +259,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r32`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r33`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -316,8 +322,15 @@ separate [Ruleset 6](RULESET_6.md) route.
   reason `THRALL` to `MIND_CONTROLLED`, replaced the `martian` block's
   `thrall` with a top-level `mindControl` unit stat, and reshaped the Mind
   Control preview ([section 20.12](#2012-commands-events-errors-and-queries)).
+  The mission setup (`pulp_wars-68k.2`, `7r34`) added the map type
+  `MISSION`, the setup key `mission: { id, revision }` (only on a `MISSION`
+  setup), the setup refusal `UNKNOWN_MISSION`, and the `TECH_REQUIRED`
+  reason `MISSION` ([section 2.6](#26-mission-setup)); no command or event
+  shape changed and no state or view field was added (the setup they carry
+  has `mission` only in a `MISSION` match), and a non-mission match is
+  unchanged.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r32.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r33.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -395,7 +408,7 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                                                                           |
 | Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                                                                                      |
-| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only)                                                     |
+| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only), `MISSION` (a registered mission only)              |
 | AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                    |
 | Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                                                                    |
 | Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, or `DWARF`; no two seats alike |
@@ -427,6 +440,12 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   map: sections 2.2–2.4 and the opening of [section 3](#3-players-turns-and-victory)
   do not apply to it. [Section 2.5](#25-showcase-setup) is its complete
   description.
+- **Mission.** `MISSION` is a hand-authored board built from a registered
+  mission, not a generated map: its size, seats, factions (but for a choice
+  the mission offers seat 0), AI mode, and seed come from the mission, and
+  sections 2.2–2.4 and the opening of
+  [section 3](#3-players-turns-and-victory) do not apply to it.
+  [Section 2.6](#26-mission-setup) is its complete description.
 
 ### 2.2 Settlements and treasures
 
@@ -753,6 +772,125 @@ North and Capital centers, is not dug in
   disabled and the "Map seed" control is hidden; the launched setup carries
   seed 0. The headless tools accept `showcase` for `--map-type` and
   `--map-types`.
+
+### 2.6 Mission setup
+
+`MISSION` (`pulp_wars-68k.2`, `pulp-wars-poc-7r34`; the engine step of the
+[campaign design](CAMPAIGN.md), section 2) is a seventh map type: a
+hand-authored board built from a registered **mission**. Like the
+Showcase, it is an ordinary match from its first Start Turn on. The browser
+setup screen does not offer it yet (the campaign screens are later beads);
+the headless tools play it with `--map-type mission --mission <ID>`.
+
+**Missions.** A mission is one frozen `MissionDefinitionV7` in
+`MISSION_REGISTRY_V7` (`src/engine/v7/missions/`): a stable ID, a revision,
+a size (11, 14, or 16), a seed, a terrain layer, a resource layer, a
+default biome with an optional biome layer, villages, Roads, Field
+Defenses, improvements, treasure chests, Graves, an AI mode, two to four
+seats, its forbidden technologies, and its objective. Each seat has a fixed
+faction (or, seat 0 only, a choice among factions), Coins, technologies,
+cities (the first is its capital) with a level and one reward per reached
+level, units by mechanical role, and a reveal (a radius around each own
+city plus rectangles). The registry holds only the current revision of each
+mission. The only objective is `DOMINATION`, which is the ordinary outcome
+rule of [section 3](#3-players-turns-and-victory). The one registered
+mission so far is the hidden engine fixture `TEST_GROUNDS`, which belongs to
+no campaign chapter.
+
+| Setup field              | `MISSION` rule                                                                                                             |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `mission`                | `{ id, revision }` of a registered mission; only a `MISSION` setup carries it; an unregistered pair is `UNKNOWN_MISSION`   |
+| `width`, `height`        | the mission's size                                                                                                         |
+| `aiCount`                | the mission's seat count minus 1                                                                                           |
+| `aiMode`                 | the mission's                                                                                                              |
+| `seed`                   | the mission's; it seeds only the draws of play (treasure chests), never the board                                          |
+| `factions`               | each seat's fixed faction, seat 0 one of its choice where the mission offers one; no two seats alike (`DUPLICATE_FACTION`) |
+| `humanColor`             | any                                                                                                                        |
+| `allowDuplicateFactions` | refused                                                                                                                    |
+| Turn order               | seat order, seat 0 (the human) first                                                                                       |
+| `random`                 | the Mulberry32 initial state of the seed, no draw consumed; `mapAttempt` is 1                                              |
+| Invariants               | no generation invariant applies (spacing, fairness, growth, port reach, land share)                                        |
+
+Any other mismatch with the definition is `INVALID_SETUP`.
+`UNKNOWN_MISSION { id, revision }` is returned for a well-formed setup whose
+mission ID is unknown or whose revision is not the current one.
+
+**Board.** The terrain legend is `.` Grass, `f` Forest, `^` Mountain, `~`
+water, and `x` Rift; water is Shallow when one of its four orthogonal
+on-board neighbours is land and otherwise Deep (the rule of
+[section 2.4](#24-biomes-terrain-and-resources)). The resource legend is `r`
+Fruit, `e` Fertile Ground, `g` Game, `o` Ore, `s` Fish, `p` Pearls; the
+biome legend `P`, `W`, `H`. Each seat's first city is a `CAPITAL` site, its
+other cities `CITY` sites, and the villages `VILLAGE` sites; Roads, Field
+Defenses, improvements, treasure chests, and Graves stand as written. Every
+city claims the neutral cells of its centered 3 x 3 footprint, in city-ID
+order.
+
+**Cities.** A city's reward records are history only: setup pays no Coins,
+unit, or exploration for them; a `WALLS` record gives the Walls and a
+`BOOM` record its permanent record (3, at the center). The ledger is the
+ordinary one ([section 4.2](#42-population-growth-and-levels)): every
+improvement except a Market has its live record with the value the spatial
+rules compute (a Port 1, a Shipyard 2), and Road population counts. The
+permanent `HARVEST_FRUIT` records (1 each) stand on the city's own footprint
+Grass tiles without a site, resource, or improvement, in `(y, x)` order, as
+many as make `permanent + live = growthSpent(level)`, so the city starts at
+population 0 of its level; when its live population alone is more, it has
+no harvest record and starts with that surplus (below `level + 1`). No
+reward choice is pending.
+
+**Players.** Every seat has its setup faction and tree, the mission's Coins
+before its first Start Turn (the first seat's first Start Turn pays income
+as in every match), the mission's technologies (a seat that starts with one
+does not get the free opening technology,
+[section 6.1](#61-research-cost)), every cell within its reveal radius of an
+own city plus its reveal rectangles explored, and seven locked achievement
+entitlements.
+
+**Units.** Each unit is written by mechanical role and resolves through its
+seat's faction (a Fighter for a Human seat, a Goblin for a Goblin seat), at
+full HP with zero kills and a fresh activation, homed as written (the
+capital by default). A Patrol Boat or Battleship is naval and starts on
+Shallow Water (Deep only with Navigation); every other role is a land unit
+on a tile its movement may enter. Creation performs no capacity check, so
+a mission may start a seat over capacity. A Martian seat's units start at
+full Shield and a Dinosaur seat's hatched.
+
+**Entity IDs** follow the Showcase convention: seat `s` has capital ID
+`2s + 1` and its first unit ID `2s + 2`; then, each pass in seat order,
+every seat's other cities, every seat's ledger records (per city in
+definition order: permanent records, then live records in `(y, x)` order),
+and every seat's other units in definition order.
+
+**Forbidden technologies.** A mission's list is closed under prerequisites
+and disjoint from every seat's starting technologies; a board without water
+forbids the whole Naval branch. They are refused, never offered, and
+`DISABLED` in the tree ([section 6.1](#61-research-cost)).
+
+**Revisions, saves, and replays.** A mission's revision is bumped whenever
+its built initial state changes; a test pins the initial-state hash (the
+ruleset ID left out) of every registered mission revision and faction
+choice. Adding a mission or bumping a revision does not change the ruleset
+identity, so skirmish saves survive mission work. A save or replay stores
+the setup with its mission ID and revision, and replaying rebuilds the
+initial state from the bundled definition. A save whose mission pair is no
+longer registered loads as incompatible with the diagnostic "This mission
+was updated since the game was saved. Start it again from the campaign.",
+and such a replay is `INCOMPATIBLE_REPLAY`.
+
+**Build-time validation.** The builder refuses (with a thrown error that the
+tests catch before any release) layers of the wrong shape or legend; a
+resource on the wrong terrain; a settlement off Grass or on a resource, or a
+city on the edge ring or in another city's footprint; a village in a city's
+territory; an improvement that does not fit its tile or lies outside
+territory; rewards that do not match a city's levels; a faction choice on an
+AI seat, or a choice option an AI seat plays; a repeated faction; a seat
+without a capital or a unit; a unit off the board, on another unit, on a
+treasure chest, on another seat's city or dock, or on terrain it cannot
+stand on; forbidden technologies that are not closed under prerequisites or
+that a seat starts with, or a waterless board that leaves a Naval
+technology allowed; Graves without an Undead seat; a city whose footprint
+cannot hold its harvest records; and a result that fails the state schema.
 
 ## 3. Players, turns, and victory
 
@@ -1159,8 +1297,19 @@ tier 3 = 12 + 5 * (C - 1)
 `C` is the researcher's currently owned city count
 (`TECHNOLOGY_RESEARCH_COST_V7`). Research is permanent,
 costs Coins only, and needs the one listed prerequisite. No technology starts
-known. On `DRY_LAND` the three Naval technologies are visible but cannot be
-researched, so Shorecraft is never offered there.
+known (a mission may start a seat with some, [section 2.6](#26-mission-setup)).
+On `DRY_LAND` the three Naval technologies are visible but cannot be
+researched, so Shorecraft is never offered there. **Forbidden technologies**
+generalize that rule: `forbiddenTechnologiesV7(setup)` lists the
+technologies no seat may research in the match, with the reason, `DRY_LAND`
+(the three Naval technologies of a `DRY_LAND` match) or `MISSION` (the
+mission's own list, closed under prerequisites, on a `MISSION` match);
+other matches forbid nothing. A `RESEARCH` of a forbidden technology is
+refused with `TECH_REQUIRED { tech, reason }` and changes no state; the
+public technology tree shows its node `DISABLED` at its ordinary cost (the
+free opening technology never applies to it, the card reads "Unavailable on
+Dry Land maps" or "Unavailable in this mission"), and research offers never
+include it.
 
 **Free opening technology:** while a player has researched zero
 technologies, researching any offered tier-1 technology (Gathering, Hunting,
@@ -6347,6 +6496,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
 | Dwarf    | `pulp-wars-poc-7r31` | `pulp_wars-78i.7` coarse Dry Land Dwarf balance: the bomb deals 5, 6 with Dive                                                                                                                                                                                                                                           | [Dwarf balance](../validation/RULESET_7_DWARF_BALANCE.md)        |
 | Martian  | `pulp-wars-poc-7r32` | `pulp_wars-b5f.2`: the Grunt's ray pistol (range 1–2, Attack 1.5, 3 Coins) and the Tripod at range 2 only (minimum range 2, Sight 2); Normal AI step back                                                                                                                                                                | [Martian tuning record](RULESET_7_MARTIANS.md#165-tuning-record) |
 | Martian  | `pulp-wars-poc-7r33` | `pulp_wars-b5f.3` engine step: Mind Control keeps the unit (kind resolver `unitFactionV7`, `mindControlled` replaces `thralls`, limit 1, wounded targets, release to the original owner, `UNIT_RELEASED`); the Thrall is retired; matches without a Martian seat unchanged                                               | [Mind Control overlay](RULESET_7_MIND_CONTROL.md)                |
+| Campaign | `pulp-wars-poc-7r34` | `pulp_wars-68k.2` mission engine: the `MISSION` map type and setup key `mission: { id, revision }`, `UNKNOWN_MISSION`, the mission registry and builder (hidden fixture `TEST_GROUNDS`), forbidden technologies (`TECH_REQUIRED` reason `MISSION`; Dry Land through the same rule); non-mission matches unchanged        | [section 2.6](#26-mission-setup)                                 |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -6598,12 +6748,13 @@ cover at all (not the viewer's `snow` flags, as the Ice Folk fold wrote).
 
 ## 24. Known discrepancies
 
-As of `pulp-wars-poc-7r33` the rules in this document match the code for
+As of `pulp-wars-poc-7r34` the rules in this document match the code for
 the seven factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
-faction of the Ice Folk overlay, and the Dwarf faction of the Dwarf
-overlay, with one open item: the pending Mind Control AI and UI steps below.
+faction of the Ice Folk overlay, the Dwarf faction of the Dwarf overlay,
+and the mission setup of [section 2.6](#26-mission-setup), with one open
+item: the pending Mind Control AI and UI steps below.
 
 **Open.**
 
