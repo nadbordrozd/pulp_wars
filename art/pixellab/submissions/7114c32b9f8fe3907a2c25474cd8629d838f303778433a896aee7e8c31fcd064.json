@@ -1,0 +1,36 @@
+{
+  "id": "portrait-snow-hunter-a-edit",
+  "jobId": "31a07b8d-8234-422e-bfd5-40dc2a36d3ea",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-portrait-ice-folk-snow-hunter",
+    "subject": "PORTRAIT:ICE_FOLK:MARKSMAN",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 72032,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Zoom in to a close-up portrait: redraw it as only the hooded head and the top of the shoulders, twice as big, so the face in its cream fur hood fills the middle of the square, with the ice-tipped harpoon resting on one shoulder. No legs, no feet. Keep the face, the dark brown-grey parka, the ice colours, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Zoom in to a close-up portrait: redraw it as only the hooded head and the top of the shoulders, twice as big, so the face in its cream fur hood fills the middle of the square, with the ice-tipped harpoon resting on one shoulder. No legs, no feet. Keep the face, the dark brown-grey parka, the ice colours, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Zoom in to a close-up portrait: redraw it as only the hooded head and the top of the shoulders, twice as big, so the face in its cream fur hood fills the middle of the square, with the ice-tipped harpoon resting on one shoulder. No legs, no feet. Keep the face, the dark brown-grey parka, the ice colours, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Zoom in to a close-up portrait: redraw it as only the hooded head and the top of the shoulders, twice as big, so the face in its cream fur hood fills the middle of the square, with the ice-tipped harpoon resting on one shoulder. No legs, no feet. Keep the face, the dark brown-grey parka, the ice colours, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-snow-hunter-a",
+      "candidate": 0,
+      "sha256": "9afca99dd4b3153c86ae41a27861135d33d19b2b0ab3a9029be6ec4dc9ad5213"
+    }
+  }
+}

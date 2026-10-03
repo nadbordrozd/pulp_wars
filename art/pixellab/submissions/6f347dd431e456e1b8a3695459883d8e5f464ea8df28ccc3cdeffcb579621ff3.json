@@ -1,0 +1,36 @@
+{
+  "id": "ice-folk-city-2-calm-a-edit",
+  "jobId": "13ed3d83-493b-4b39-89e7-f791e814ea50",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-city-2",
+    "subject": "CITY:ICE_FOLK:2",
+    "faction": "ICE_FOLK",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 75022,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass and the dirt slab under the village, so the snow wall, the igloos and the hall stand directly on a transparent background with nothing under them. Make the orange doorways plain dark slate grey, so nothing is orange. Keep the white igloos, the snow wall, the cream hall roof, the bone pole, the outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass and the dirt slab under the village, so the snow wall, the igloos and the hall stand directly on a transparent background with nothing under them. Make the orange doorways plain dark slate grey, so nothing is orange. Keep the white igloos, the snow wall, the cream hall roof, the bone pole, the outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass and the dirt slab under the village, so the snow wall, the igloos and the hall stand directly on a transparent background with nothing under them. Make the orange doorways plain dark slate grey, so nothing is orange. Keep the white igloos, the snow wall, the cream hall roof, the bone pole, the outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass and the dirt slab under the village, so the snow wall, the igloos and the hall stand directly on a transparent background with nothing under them. Make the orange doorways plain dark slate grey, so nothing is orange. Keep the white igloos, the snow wall, the cream hall roof, the bone pole, the outline and art style exactly the same.",
+    "source": {
+      "recipe": "ice-folk-city-2-calm-a",
+      "candidate": 0,
+      "sha256": "5562b0a0c53a8a7ba7062aa861d68514a237fbaf8ae47a9258e9985109392fd9"
+    }
+  }
+}

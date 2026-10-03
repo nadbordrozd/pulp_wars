@@ -1,0 +1,656 @@
+{
+  "note": "Fur and accent options of the direction study (ICE_FOLK.md). CIE76 colour difference: about 10 is clear at a glance, 20 and more are different colours. worstAgainstShallowTealGlass is the smallest difference, in normal vision and under deuteranopia and protanopia, from Shallow Water, the Teal plate and the Martian glass.",
+  "fur": [
+    {
+      "option": "F1 warm white, blue-grey shade (yeti-a)",
+      "lit": "#dbd8c1",
+      "shade": "#747a82",
+      "pairs": [
+        {
+          "a": "fur lit #dbd8c1",
+          "b": "Grass #89b75b",
+          "deltaE": 44.3,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 32.2,
+          "protanopiaDeltaE": 38.8,
+          "hueA": 53,
+          "hueB": 90
+        },
+        {
+          "a": "fur lit #dbd8c1",
+          "b": "Forest #769a51",
+          "deltaE": 41.7,
+          "contrast": 2.2,
+          "deuteranopiaDeltaE": 34.2,
+          "protanopiaDeltaE": 37.2,
+          "hueA": 53,
+          "hueB": 89
+        },
+        {
+          "a": "fur lit #dbd8c1",
+          "b": "Mountain rock, mean #a2aab6",
+          "deltaE": 25.5,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 26.1,
+          "protanopiaDeltaE": 25.3,
+          "hueA": 53,
+          "hueB": 216
+        },
+        {
+          "a": "fur lit #dbd8c1",
+          "b": "Mountain rock, light #a7afbb",
+          "deltaE": 24.1,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 24.8,
+          "protanopiaDeltaE": 24.2,
+          "hueA": 53,
+          "hueB": 216
+        },
+        {
+          "a": "fur shade #747a82",
+          "b": "Mountain rock, mean #a2aab6",
+          "deltaE": 18.3,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 18.3,
+          "protanopiaDeltaE": 18.5,
+          "hueA": 215,
+          "hueB": 216
+        },
+        {
+          "a": "fur shade #747a82",
+          "b": "Mountain rock, light #a7afbb",
+          "deltaE": 20.3,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 20.1,
+          "protanopiaDeltaE": 20.4,
+          "hueA": 215,
+          "hueB": 216
+        },
+        {
+          "a": "fur shade #747a82",
+          "b": "Grass #89b75b",
+          "deltaE": 58.7,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 47.5,
+          "protanopiaDeltaE": 56.3,
+          "hueA": 215,
+          "hueB": 90
+        },
+        {
+          "a": "fur lit #dbd8c1",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 53.2,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 51.5,
+          "protanopiaDeltaE": 55.8,
+          "hueA": 53,
+          "hueB": 44
+        }
+      ]
+    },
+    {
+      "option": "F2 warm white, taupe shade (yeti-fur-b)",
+      "lit": "#ddd9c1",
+      "shade": "#8d8273",
+      "pairs": [
+        {
+          "a": "fur lit #ddd9c1",
+          "b": "Grass #89b75b",
+          "deltaE": 43.8,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 32,
+          "protanopiaDeltaE": 38.2,
+          "hueA": 52,
+          "hueB": 90
+        },
+        {
+          "a": "fur lit #ddd9c1",
+          "b": "Forest #769a51",
+          "deltaE": 41.5,
+          "contrast": 2.3,
+          "deuteranopiaDeltaE": 34.2,
+          "protanopiaDeltaE": 36.8,
+          "hueA": 52,
+          "hueB": 89
+        },
+        {
+          "a": "fur lit #ddd9c1",
+          "b": "Mountain rock, mean #a2aab6",
+          "deltaE": 26.4,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 26.8,
+          "protanopiaDeltaE": 25.8,
+          "hueA": 52,
+          "hueB": 216
+        },
+        {
+          "a": "fur lit #ddd9c1",
+          "b": "Mountain rock, light #a7afbb",
+          "deltaE": 24.9,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 25.6,
+          "protanopiaDeltaE": 24.7,
+          "hueA": 52,
+          "hueB": 216
+        },
+        {
+          "a": "fur shade #8d8273",
+          "b": "Mountain rock, mean #a2aab6",
+          "deltaE": 22.2,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 22,
+          "protanopiaDeltaE": 22.6,
+          "hueA": 33,
+          "hueB": 216
+        },
+        {
+          "a": "fur shade #8d8273",
+          "b": "Mountain rock, light #a7afbb",
+          "deltaE": 23.3,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 23.2,
+          "protanopiaDeltaE": 23.9,
+          "hueA": 33,
+          "hueB": 216
+        },
+        {
+          "a": "fur shade #8d8273",
+          "b": "Grass #89b75b",
+          "deltaE": 48.1,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 32.3,
+          "protanopiaDeltaE": 41.5,
+          "hueA": 33,
+          "hueB": 90
+        },
+        {
+          "a": "fur lit #ddd9c1",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 52.5,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 51,
+          "protanopiaDeltaE": 55.3,
+          "hueA": 52,
+          "hueB": 44
+        }
+      ]
+    },
+    {
+      "option": "F3 honey cream (yeti-fur-c)",
+      "lit": "#f1deb6",
+      "shade": "#5c7282",
+      "pairs": [
+        {
+          "a": "fur lit #f1deb6",
+          "b": "Grass #89b75b",
+          "deltaE": 41.8,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 26.5,
+          "protanopiaDeltaE": 31.1,
+          "hueA": 41,
+          "hueB": 90
+        },
+        {
+          "a": "fur lit #f1deb6",
+          "b": "Forest #769a51",
+          "deltaE": 41.2,
+          "contrast": 2.4,
+          "deuteranopiaDeltaE": 32.3,
+          "protanopiaDeltaE": 32.6,
+          "hueA": 41,
+          "hueB": 89
+        },
+        {
+          "a": "fur lit #f1deb6",
+          "b": "Mountain rock, mean #a2aab6",
+          "deltaE": 35.7,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 36.8,
+          "protanopiaDeltaE": 34.7,
+          "hueA": 41,
+          "hueB": 216
+        },
+        {
+          "a": "fur lit #f1deb6",
+          "b": "Mountain rock, light #a7afbb",
+          "deltaE": 34.4,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 35.8,
+          "protanopiaDeltaE": 33.7,
+          "hueA": 41,
+          "hueB": 216
+        },
+        {
+          "a": "fur shade #5c7282",
+          "b": "Mountain rock, mean #a2aab6",
+          "deltaE": 23.1,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 23.3,
+          "protanopiaDeltaE": 21.9,
+          "hueA": 205,
+          "hueB": 216
+        },
+        {
+          "a": "fur shade #5c7282",
+          "b": "Mountain rock, light #a7afbb",
+          "deltaE": 25,
+          "contrast": 2.3,
+          "deuteranopiaDeltaE": 25.2,
+          "protanopiaDeltaE": 23.7,
+          "hueA": 205,
+          "hueB": 216
+        },
+        {
+          "a": "fur shade #5c7282",
+          "b": "Grass #89b75b",
+          "deltaE": 63.2,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 56.1,
+          "protanopiaDeltaE": 62.1,
+          "hueA": 205,
+          "hueB": 90
+        },
+        {
+          "a": "fur lit #f1deb6",
+          "b": "Gold plate #e2b63f",
+          "deltaE": 43.4,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 41.7,
+          "protanopiaDeltaE": 46.8,
+          "hueA": 41,
+          "hueB": 44
+        }
+      ]
+    }
+  ],
+  "accent": [
+    {
+      "option": "A1 glacier ice blue, as drawn",
+      "lit": "#a4f1fa",
+      "mean": "#8ecce5",
+      "pixels": 532,
+      "pairs": [
+        {
+          "a": "ice, lit #a4f1fa",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 10.4,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 9.8,
+          "protanopiaDeltaE": 10.2,
+          "hueA": 186,
+          "hueB": 187
+        },
+        {
+          "a": "ice, lit #a4f1fa",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 32.3,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 25.7,
+          "protanopiaDeltaE": 26.4,
+          "hueA": 186,
+          "hueB": 172
+        },
+        {
+          "a": "ice, lit #a4f1fa",
+          "b": "Martian glass #8db9cd",
+          "deltaE": 21.5,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 17.5,
+          "protanopiaDeltaE": 19,
+          "hueA": 186,
+          "hueB": 199
+        },
+        {
+          "a": "ice, lit #a4f1fa",
+          "b": "Martian glass, lit #c7e7f5",
+          "deltaE": 14,
+          "contrast": 1,
+          "deuteranopiaDeltaE": 2.7,
+          "protanopiaDeltaE": 2.2,
+          "hueA": 186,
+          "hueB": 198
+        },
+        {
+          "a": "ice, lit #a4f1fa",
+          "b": "Martian chrome #d1dbe1",
+          "deltaE": 21,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 10.3,
+          "protanopiaDeltaE": 7.6,
+          "hueA": 186,
+          "hueB": 203
+        },
+        {
+          "a": "ice, lit #a4f1fa",
+          "b": "Dinosaur blue #205794",
+          "deltaE": 65.8,
+          "contrast": 5.8,
+          "deuteranopiaDeltaE": 60.6,
+          "protanopiaDeltaE": 60.6,
+          "hueA": 186,
+          "hueB": 212
+        },
+        {
+          "a": "ice, lit #a4f1fa",
+          "b": "Deep Water #4277a5",
+          "deltaE": 49.5,
+          "contrast": 3.7,
+          "deuteranopiaDeltaE": 46.1,
+          "protanopiaDeltaE": 46.8,
+          "hueA": 186,
+          "hueB": 208
+        },
+        {
+          "a": "ice, lit #a4f1fa",
+          "b": "Mountain rock, light #a7afbb",
+          "deltaE": 29,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 19.3,
+          "protanopiaDeltaE": 21.6,
+          "hueA": 186,
+          "hueB": 216
+        },
+        {
+          "a": "ice, lit #a4f1fa",
+          "b": "Violet plate #a277d2",
+          "deltaE": 71.2,
+          "contrast": 2.7,
+          "deuteranopiaDeltaE": 40.6,
+          "protanopiaDeltaE": 50.5,
+          "hueA": 186,
+          "hueB": 268
+        },
+        {
+          "a": "ice, mean #8ecce5",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 9.2,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 7.4,
+          "protanopiaDeltaE": 7.9,
+          "hueA": 197,
+          "hueB": 187
+        },
+        {
+          "a": "ice, mean #8ecce5",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 34.3,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 19.9,
+          "protanopiaDeltaE": 23.3,
+          "hueA": 197,
+          "hueB": 172
+        },
+        {
+          "a": "ice, mean #8ecce5",
+          "b": "Martian glass #8db9cd",
+          "deltaE": 8,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 6.9,
+          "protanopiaDeltaE": 7.2,
+          "hueA": 197,
+          "hueB": 199
+        }
+      ],
+      "worstAgainstShallowTealGlass": 2.2
+    },
+    {
+      "option": "A2 deep ice blue",
+      "lit": "#37b1fa",
+      "mean": "#2f97e5",
+      "pixels": 532,
+      "pairs": [
+        {
+          "a": "ice, lit #37b1fa",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 37.7,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 39.1,
+          "protanopiaDeltaE": 34.9,
+          "hueA": 202,
+          "hueB": 187
+        },
+        {
+          "a": "ice, lit #37b1fa",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 54.9,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 45.5,
+          "protanopiaDeltaE": 46.5,
+          "hueA": 202,
+          "hueB": 172
+        },
+        {
+          "a": "ice, lit #37b1fa",
+          "b": "Martian glass #8db9cd",
+          "deltaE": 31,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 33.8,
+          "protanopiaDeltaE": 28.9,
+          "hueA": 202,
+          "hueB": 199
+        },
+        {
+          "a": "ice, lit #37b1fa",
+          "b": "Martian glass, lit #c7e7f5",
+          "deltaE": 41.1,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 44.5,
+          "protanopiaDeltaE": 37.2,
+          "hueA": 202,
+          "hueB": 198
+        },
+        {
+          "a": "ice, lit #37b1fa",
+          "b": "Martian chrome #d1dbe1",
+          "deltaE": 45.7,
+          "contrast": 1.7,
+          "deuteranopiaDeltaE": 50,
+          "protanopiaDeltaE": 40.4,
+          "hueA": 202,
+          "hueB": 203
+        },
+        {
+          "a": "ice, lit #37b1fa",
+          "b": "Dinosaur blue #205794",
+          "deltaE": 35.8,
+          "contrast": 3.1,
+          "deuteranopiaDeltaE": 32.6,
+          "protanopiaDeltaE": 34,
+          "hueA": 202,
+          "hueB": 212
+        },
+        {
+          "a": "ice, lit #37b1fa",
+          "b": "Deep Water #4277a5",
+          "deltaE": 26.3,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 25.8,
+          "protanopiaDeltaE": 26,
+          "hueA": 202,
+          "hueB": 208
+        },
+        {
+          "a": "ice, lit #37b1fa",
+          "b": "Mountain rock, light #a7afbb",
+          "deltaE": 39.5,
+          "contrast": 1.1,
+          "deuteranopiaDeltaE": 42.4,
+          "protanopiaDeltaE": 34.3,
+          "hueA": 202,
+          "hueB": 216
+        },
+        {
+          "a": "ice, lit #37b1fa",
+          "b": "Violet plate #a277d2",
+          "deltaE": 45.3,
+          "contrast": 1.4,
+          "deuteranopiaDeltaE": 12.8,
+          "protanopiaDeltaE": 15.7,
+          "hueA": 202,
+          "hueB": 268
+        },
+        {
+          "a": "ice, mean #2f97e5",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 44.6,
+          "contrast": 1.9,
+          "deuteranopiaDeltaE": 43.7,
+          "protanopiaDeltaE": 40.8,
+          "hueA": 206,
+          "hueB": 187
+        },
+        {
+          "a": "ice, mean #2f97e5",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 60.5,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 47.3,
+          "protanopiaDeltaE": 49.6,
+          "hueA": 206,
+          "hueB": 172
+        },
+        {
+          "a": "ice, mean #2f97e5",
+          "b": "Martian glass #8db9cd",
+          "deltaE": 35.6,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 37.3,
+          "protanopiaDeltaE": 33.3,
+          "hueA": 206,
+          "hueB": 199
+        }
+      ],
+      "worstAgainstShallowTealGlass": 28.9
+    },
+    {
+      "option": "A3 frost white, blue-violet shade",
+      "lit": "#eefdfe",
+      "mean": "#d4dae6",
+      "pixels": 1091,
+      "pairs": [
+        {
+          "a": "ice, lit #eefdfe",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 24.5,
+          "contrast": 1.6,
+          "deuteranopiaDeltaE": 21.5,
+          "protanopiaDeltaE": 17.2,
+          "hueA": 184,
+          "hueB": 187
+        },
+        {
+          "a": "ice, lit #eefdfe",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 47.5,
+          "contrast": 2.4,
+          "deuteranopiaDeltaE": 32.8,
+          "protanopiaDeltaE": 29.1,
+          "hueA": 184,
+          "hueB": 172
+        },
+        {
+          "a": "ice, lit #eefdfe",
+          "b": "Martian glass #8db9cd",
+          "deltaE": 28.9,
+          "contrast": 2,
+          "deuteranopiaDeltaE": 29.8,
+          "protanopiaDeltaE": 26.7,
+          "hueA": 184,
+          "hueB": 199
+        },
+        {
+          "a": "ice, lit #eefdfe",
+          "b": "Martian glass, lit #c7e7f5",
+          "deltaE": 12.1,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 12.7,
+          "protanopiaDeltaE": 10.8,
+          "hueA": 184,
+          "hueB": 198
+        },
+        {
+          "a": "ice, lit #eefdfe",
+          "b": "Martian chrome #d1dbe1",
+          "deltaE": 11.9,
+          "contrast": 1.3,
+          "deuteranopiaDeltaE": 11.3,
+          "protanopiaDeltaE": 11.8,
+          "hueA": 184,
+          "hueB": 203
+        },
+        {
+          "a": "ice, lit #eefdfe",
+          "b": "Dinosaur blue #205794",
+          "deltaE": 72.3,
+          "contrast": 7.1,
+          "deuteranopiaDeltaE": 74.2,
+          "protanopiaDeltaE": 68.9,
+          "hueA": 184,
+          "hueB": 212
+        },
+        {
+          "a": "ice, lit #eefdfe",
+          "b": "Deep Water #4277a5",
+          "deltaE": 57.2,
+          "contrast": 4.6,
+          "deuteranopiaDeltaE": 59.5,
+          "protanopiaDeltaE": 54.9,
+          "hueA": 184,
+          "hueB": 208
+        },
+        {
+          "a": "ice, lit #eefdfe",
+          "b": "Mountain rock, light #a7afbb",
+          "deltaE": 27.9,
+          "contrast": 2.1,
+          "deuteranopiaDeltaE": 27.6,
+          "protanopiaDeltaE": 27.8,
+          "hueA": 184,
+          "hueB": 216
+        },
+        {
+          "a": "ice, lit #eefdfe",
+          "b": "Violet plate #a277d2",
+          "deltaE": 68.5,
+          "contrast": 3.3,
+          "deuteranopiaDeltaE": 55.1,
+          "protanopiaDeltaE": 59.4,
+          "hueA": 184,
+          "hueB": 268
+        },
+        {
+          "a": "ice, mean #d4dae6",
+          "b": "Shallow Water #8fd3dc",
+          "deltaE": 20.9,
+          "contrast": 1.2,
+          "deuteranopiaDeltaE": 9.7,
+          "protanopiaDeltaE": 4.5,
+          "hueA": 221,
+          "hueB": 187
+        },
+        {
+          "a": "ice, mean #d4dae6",
+          "b": "Teal plate #28b7a4",
+          "deltaE": 46,
+          "contrast": 1.8,
+          "deuteranopiaDeltaE": 21.6,
+          "protanopiaDeltaE": 20.6,
+          "hueA": 221,
+          "hueB": 172
+        },
+        {
+          "a": "ice, mean #d4dae6",
+          "b": "Martian glass #8db9cd",
+          "deltaE": 19.1,
+          "contrast": 1.5,
+          "deuteranopiaDeltaE": 17.9,
+          "protanopiaDeltaE": 13.9,
+          "hueA": 221,
+          "hueB": 199
+        }
+      ],
+      "worstAgainstShallowTealGlass": 4.5
+    }
+  ],
+  "drawnDeepIce": "#0813af"
+}

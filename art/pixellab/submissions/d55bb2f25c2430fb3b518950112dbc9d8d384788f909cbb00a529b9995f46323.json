@@ -1,0 +1,36 @@
+{
+  "id": "ice-folk-city-2-ice",
+  "jobId": "3f718319-83ff-4b55-ad5f-9ec01fe5db0a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-city-2",
+    "subject": "CITY:ICE_FOLK:2",
+    "faction": "ICE_FOLK",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 75023,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the walls of the long hall: they become pale ice blue blocks of clear ice, colour #9fd8ff, with white edges, under the same cream hide roof. Keep the white igloos, the snow wall, the roof, the bone pole, the transparent background, the outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Recolour only the walls of the long hall: they become pale ice blue blocks of clear ice, colour #9fd8ff, with white edges, under the same cream hide roof. Keep the white igloos, the snow wall, the roof, the bone pole, the transparent background, the outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Recolour only the walls of the long hall: they become pale ice blue blocks of clear ice, colour #9fd8ff, with white edges, under the same cream hide roof. Keep the white igloos, the snow wall, the roof, the bone pole, the transparent background, the outline and art style exactly the same.",
+    "editInstruction": "Recolour only the walls of the long hall: they become pale ice blue blocks of clear ice, colour #9fd8ff, with white edges, under the same cream hide roof. Keep the white igloos, the snow wall, the roof, the bone pole, the transparent background, the outline and art style exactly the same.",
+    "source": {
+      "recipe": "ice-folk-city-2-calm-a-edit",
+      "candidate": 0,
+      "sha256": "49e3c951748c840f24c189f7424390d80ad2c23307d7d6f3a5940bc66a0ead2e"
+    }
+  }
+}

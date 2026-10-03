@@ -1,0 +1,36 @@
+{
+  "id": "sabretooth-a-edit-frost",
+  "jobId": "132e8fe7-502e-4431-be81-a5a6bb5a7430",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-sabretooth",
+    "subject": "UNIT:ICE_FOLK:KNIGHT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 71603,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only small details: bright ice blue eyes, and three or four small sharp bright ice blue ice crystals of frost on its shoulders and along its back. Do not redraw anything else: keep the pale cream coat, the taupe spots, the dark saddle, the long ivory fangs, the pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only small details: bright ice blue eyes, and three or four small sharp bright ice blue ice crystals of frost on its shoulders and along its back. Do not redraw anything else: keep the pale cream coat, the taupe spots, the dark saddle, the long ivory fangs, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only small details: bright ice blue eyes, and three or four small sharp bright ice blue ice crystals of frost on its shoulders and along its back. Do not redraw anything else: keep the pale cream coat, the taupe spots, the dark saddle, the long ivory fangs, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only small details: bright ice blue eyes, and three or four small sharp bright ice blue ice crystals of frost on its shoulders and along its back. Do not redraw anything else: keep the pale cream coat, the taupe spots, the dark saddle, the long ivory fangs, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "sabretooth-a-edit",
+      "candidate": 0,
+      "sha256": "a1fc3e0f30df0b93eb0c635996aae78e351e44b2a9fd5ddc21a515210f0b9cdf"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "icon-status-chilled-a-edit",
+  "jobId": "f526b9f4-3eed-42f3-9234-bcd40efc8f44",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-icon-status-chilled",
+    "subject": "ICON:STATUS:CHILLED",
+    "faction": "ICE_FOLK",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73082,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the grey stick that hangs from the bottom of the snowflake, leaving empty transparent background there, and draw the bottom arm of the snowflake like the other five arms, so it is one symmetrical six-pointed snowflake. Keep the colours, the white centre, the outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the grey stick that hangs from the bottom of the snowflake, leaving empty transparent background there, and draw the bottom arm of the snowflake like the other five arms, so it is one symmetrical six-pointed snowflake. Keep the colours, the white centre, the outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the grey stick that hangs from the bottom of the snowflake, leaving empty transparent background there, and draw the bottom arm of the snowflake like the other five arms, so it is one symmetrical six-pointed snowflake. Keep the colours, the white centre, the outline and art style exactly the same.",
+    "editInstruction": "Remove the grey stick that hangs from the bottom of the snowflake, leaving empty transparent background there, and draw the bottom arm of the snowflake like the other five arms, so it is one symmetrical six-pointed snowflake. Keep the colours, the white centre, the outline and art style exactly the same.",
+    "source": {
+      "recipe": "icon-status-chilled-a",
+      "candidate": 0,
+      "sha256": "042886afb2d1d528f8edd92e1db2f412e2c2ddb1cee865475cb158c88c7a3300"
+    }
+  }
+}

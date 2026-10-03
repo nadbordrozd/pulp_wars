@@ -1,0 +1,36 @@
+{
+  "id": "portrait-mammoth-b-edit",
+  "jobId": "02070b8e-bf09-46b9-89be-ff99ca7f3729",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-portrait-ice-folk-mammoth",
+    "subject": "PORTRAIT:ICE_FOLK:GUARD",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 72063,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the wool: the orange and brown wool on the head, back and chest becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like a sheep's fleece, so nothing is orange or brown. Keep the dark charcoal face, trunk and legs, the ivory tusks with their frost, the shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the wool: the orange and brown wool on the head, back and chest becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like a sheep's fleece, so nothing is orange or brown. Keep the dark charcoal face, trunk and legs, the ivory tusks with their frost, the shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the wool: the orange and brown wool on the head, back and chest becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like a sheep's fleece, so nothing is orange or brown. Keep the dark charcoal face, trunk and legs, the ivory tusks with their frost, the shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the wool: the orange and brown wool on the head, back and chest becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like a sheep's fleece, so nothing is orange or brown. Keep the dark charcoal face, trunk and legs, the ivory tusks with their frost, the shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-mammoth-b",
+      "candidate": 0,
+      "sha256": "c6cfa461f968fe14271f774899ea3953665b903a2c46f46fc39de34283f48a15"
+    }
+  }
+}

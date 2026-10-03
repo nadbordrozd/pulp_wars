@@ -1,0 +1,64 @@
+{
+  "id": "portrait-ice-witch-a",
+  "jobId": "sync-da3acbc2-78a5-44d7-99ae-ec68a20afe9d",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-portrait-ice-folk-ice-witch",
+    "subject": "PORTRAIT:ICE_FOLK:CAPTAIN",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 72041,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+        "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+        "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+        "text": "Subject: Ice Witch portrait, head and shoulders of a chunky cute young witch: a pale cream face with rosy cheeks and big friendly eyes, long straight snow-white hair, a tall crown of sharp ice crystal shards, a deep navy blue robe with a short white fur collar, and the big ice crystal on top of her staff beside her head."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A close-up bust: her head with the ice crown and her shoulders fill the square.",
+        "negative": "full body, legs, hat, pointed hat, hood, grey skin, blue skin, brown hair"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Ice Witch portrait, head and shoulders of a chunky cute young witch: a pale cream face with rosy cheeks and big friendly eyes, long straight snow-white hair, a tall crown of sharp ice crystal shards, a deep navy blue robe with a short white fur collar, and the big ice crystal on top of her staff beside her head. A close-up bust: her head with the ice crown and her shoulders fill the square.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, hat, pointed hat, hood, grey skin, blue skin, brown hair",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Ice Witch portrait, head and shoulders of a chunky cute young witch: a pale cream face with rosy cheeks and big friendly eyes, long straight snow-white hair, a tall crown of sharp ice crystal shards, a deep navy blue robe with a short white fur collar, and the big ice crystal on top of her staff beside her head. A close-up bust: her head with the ice crown and her shoulders fill the square. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, hat, pointed hat, hood, grey skin, blue skin, brown hair."
+  }
+}

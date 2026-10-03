@@ -1,0 +1,64 @@
+{
+  "id": "yeti-a",
+  "jobId": "sync-ce1bda4c-63c2-4642-ab67-ab31cd584b51",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-yeti",
+    "subject": "UNIT:ICE_FOLK:FIGHTER",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 71001,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+        "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with soft blue-grey, dark slate blue-grey skin, dark brown-grey hide and furs, pale ivory bone, and exactly one accent colour, a bright glacier ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+        "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+        "text": "Subject: Yeti, a chunky cute snow ape, broad and upright, with a huge round head about half of the figure's height and a short wide body covered in shaggy fur, long strong arms with big dark slate hands and short legs with big dark slate feet: a dark slate blue-grey face with small bright friendly eyes, a wide mouth with two small white fangs and shaggy fur framing the face; one big chunky club of pale ivory bone crusted with ice crystals held in one hand; simple shapes and very few details; clearly an ape, not a person in furs."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "human, person, man, clothes, armour, helmet, sword, shield, bow, cape, cloak, hat, brown fur, grey fur, monkey tail"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with soft blue-grey, dark slate blue-grey skin, dark brown-grey hide and furs, pale ivory bone, and exactly one accent colour, a bright glacier ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Yeti, a chunky cute snow ape, broad and upright, with a huge round head about half of the figure's height and a short wide body covered in shaggy fur, long strong arms with big dark slate hands and short legs with big dark slate feet: a dark slate blue-grey face with small bright friendly eyes, a wide mouth with two small white fangs and shaggy fur framing the face; one big chunky club of pale ivory bone crusted with ice crystals held in one hand; simple shapes and very few details; clearly an ape, not a person in furs.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, man, clothes, armour, shield, bow, cape, cloak, hat, brown fur, grey fur, monkey tail",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with soft blue-grey, dark slate blue-grey skin, dark brown-grey hide and furs, pale ivory bone, and exactly one accent colour, a bright glacier ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Yeti, a chunky cute snow ape, broad and upright, with a huge round head about half of the figure's height and a short wide body covered in shaggy fur, long strong arms with big dark slate hands and short legs with big dark slate feet: a dark slate blue-grey face with small bright friendly eyes, a wide mouth with two small white fangs and shaggy fur framing the face; one big chunky club of pale ivory bone crusted with ice crystals held in one hand; simple shapes and very few details; clearly an ape, not a person in furs. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, man, clothes, armour, shield, bow, cape, cloak, hat, brown fur, grey fur, monkey tail."
+  }
+}

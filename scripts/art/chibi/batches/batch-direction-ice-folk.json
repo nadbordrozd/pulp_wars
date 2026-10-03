@@ -1,0 +1,1427 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-ice-folk",
+  "title": "New visual direction: Ice Folk units, portraits, icons, effects and the igloo settlement City 1-3 in fixed faction colours",
+  "bead": "pulp_wars-7g3.5",
+  "faction": "ICE_FOLK",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-ice-folk-yeti",
+      "subject": "UNIT:ICE_FOLK:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-ice-witch",
+      "subject": "UNIT:ICE_FOLK:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-mammoth",
+      "subject": "UNIT:ICE_FOLK:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-yeti",
+      "subject": "PORTRAIT:ICE_FOLK:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-city-1",
+      "subject": "CITY:ICE_FOLK:1",
+      "subjectKey": "CITY:ICE_FOLK:1/CALM",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-action-cold-snap",
+      "subject": "ICON:ACTION:COLD_SNAP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-effect-ice-folk-shatter",
+      "subject": "EFFECT:SHATTER",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/ice-folk-frost.png",
+        "sha256": "6008cad7ac21acdc847954d225166dfa5c64c252455678b2f104ef735a616a03"
+      }
+    },
+    {
+      "id": "chibi-direction-ice-folk-sled",
+      "subject": "UNIT:ICE_FOLK:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-snow-hunter",
+      "subject": "UNIT:ICE_FOLK:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-boulder-yeti",
+      "subject": "UNIT:ICE_FOLK:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-sabretooth",
+      "subject": "UNIT:ICE_FOLK:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-frost-giant",
+      "subject": "UNIT:ICE_FOLK:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-city-2",
+      "subject": "CITY:ICE_FOLK:2",
+      "subjectKey": "CITY:ICE_FOLK:2/CALM",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 88,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-ice-folk-city-3",
+      "subject": "CITY:ICE_FOLK:3",
+      "subjectKey": "CITY:ICE_FOLK:3/CALM",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 96,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-effect-ice-folk-shatter-shards",
+      "subject": "EFFECT:SHATTER_SHARDS",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/ice-folk-frost.png",
+        "sha256": "6008cad7ac21acdc847954d225166dfa5c64c252455678b2f104ef735a616a03"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-ice-folk-cold-snap",
+      "subject": "EFFECT:COLD_SNAP",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/ice-folk-frost.png",
+        "sha256": "6008cad7ac21acdc847954d225166dfa5c64c252455678b2f104ef735a616a03"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-ice-folk-bolas",
+      "subject": "EFFECT:BOLAS",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/ice-folk-frost.png",
+        "sha256": "6008cad7ac21acdc847954d225166dfa5c64c252455678b2f104ef735a616a03"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-ice-folk-frost-hit",
+      "subject": "EFFECT:FROST_HIT",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/ice-folk-frost.png",
+        "sha256": "6008cad7ac21acdc847954d225166dfa5c64c252455678b2f104ef735a616a03"
+      }
+    },
+    {
+      "id": "chibi-direction-icon-action-throw-bolas",
+      "subject": "ICON:ACTION:THROW_BOLAS",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-action-sweep",
+      "subject": "ICON:ACTION:SWEEP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-action-rockfall",
+      "subject": "ICON:ACTION:ROCKFALL",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-action-prowl",
+      "subject": "ICON:ACTION:PROWL",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-action-shatter",
+      "subject": "ICON:ACTION:SHATTER",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-tech-deep-winter",
+      "subject": "ICON:TECH:ICE_FOLK:FORTIFICATION",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-tech-brittle",
+      "subject": "ICON:TECH:ICE_FOLK:EXPLOSIVES",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-status-chilled",
+      "subject": "ICON:STATUS:CHILLED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-icon-status-frozen",
+      "subject": "ICON:STATUS:FROZEN",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-sled",
+      "subject": "PORTRAIT:ICE_FOLK:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-snow-hunter",
+      "subject": "PORTRAIT:ICE_FOLK:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-mammoth",
+      "subject": "PORTRAIT:ICE_FOLK:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-ice-witch",
+      "subject": "PORTRAIT:ICE_FOLK:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-boulder-yeti",
+      "subject": "PORTRAIT:ICE_FOLK:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-sabretooth",
+      "subject": "PORTRAIT:ICE_FOLK:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    },
+    {
+      "id": "chibi-direction-portrait-ice-folk-frost-giant",
+      "subject": "PORTRAIT:ICE_FOLK:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "ice-folk-blue"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "yeti-a",
+      "asset": "chibi-direction-ice-folk-yeti",
+      "endpoint": "create-image-pixen",
+      "seed": 71001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "human, person, man, clothes, armour, helmet, sword, shield, bow, cape, cloak, hat, brown fur, grey fur, monkey tail",
+      "notes": "Study, fur option F1 and accent option A1 (the root's starting direction): a fresh creation with the unit class."
+    },
+    {
+      "id": "ice-witch-a",
+      "asset": "chibi-direction-ice-folk-ice-witch",
+      "endpoint": "create-image-pixen",
+      "seed": 71101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "black robe, purple robe, violet, skull, bones, broom, pointed witch hat, green skin, old hag, cauldron, fire",
+      "notes": "Study, accent option A1: a fresh creation with the unit class."
+    },
+    {
+      "id": "mammoth-a",
+      "asset": "chibi-direction-ice-folk-mammoth",
+      "endpoint": "create-image-pixen",
+      "seed": 71201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. The wool is warm cream to light tan, never white and never grey.",
+      "negativeAddendum": "rider, person, saddle, blanket, howdah, armour, elephant ears, grey skin, white wool, brown wool, two animals",
+      "notes": "Study, fur option for the Mammoth (warm cream-to-tan wool): a fresh creation in the side view the Dinosaur quadrupeds use."
+    },
+    {
+      "id": "mammoth-b",
+      "asset": "chibi-direction-ice-folk-mammoth",
+      "endpoint": "create-image-pixen",
+      "seed": 71202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "It is a four-legged animal seen from the front and a little from the side: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. The wool is warm cream to light tan, never white and never grey.",
+      "negativeAddendum": "rider, person, saddle, blanket, howdah, armour, elephant ears, grey skin, white wool, brown wool, two animals",
+      "notes": "Study: the same Mammoth in the default south-east view, to compare with the side view."
+    },
+    {
+      "id": "yeti-fur-b",
+      "asset": "chibi-direction-ice-folk-yeti",
+      "endpoint": "edit-image-pixen",
+      "seed": 71002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "yeti-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the shadows of the fur: every cool blue-grey shadow tone in the fur becomes a warm taupe grey, colour #a8957c, darker #857258 in the deepest folds, so no fur is blue or grey-blue. Keep the warm white and cream lit fur, the dark slate face, hands and feet, the ice club, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Study, fur option F2: warm cream fur with warm taupe shading instead of the blue-grey, which measures as the Mountain rock."
+    },
+    {
+      "id": "yeti-fur-c",
+      "asset": "chibi-direction-ice-folk-yeti",
+      "endpoint": "edit-image-pixen",
+      "seed": 71003,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "yeti-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the fur: the whole coat becomes a light honey cream, colour #e8d3a8, shaded warm fawn #b08e66, with a few lighter #f6ead0 tufts on the head and shoulders, so no fur is white, grey or blue. Keep the dark slate face, hands and feet, the ice club, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Study, fur option F3: a darker honey-cream coat, for more contrast against Mountain rock."
+    },
+    {
+      "id": "yeti-ice-b",
+      "asset": "chibi-direction-ice-folk-yeti",
+      "endpoint": "edit-image-pixen",
+      "seed": 71004,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "yeti-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the ice crystals on the club: they become a deep saturated ice blue, colour #1f9bff, with small white highlights and dark blue #0b5fb8 shading, so they are clearly a strong blue and not pale cyan. Keep the fur, the dark slate face, hands and feet, the bone handle, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Study, accent option A2: can PixelLab hold a deeper, more saturated ice blue in an edit?"
+    },
+    {
+      "id": "ice-witch-b",
+      "asset": "chibi-direction-ice-folk-ice-witch",
+      "endpoint": "edit-image-pixen",
+      "seed": 71102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "ice-witch-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change her colours only: her face and hands become pale cream skin, colour #f3dccb, with rosy cheeks; her hair becomes long straight white hair; remove the pointed blue hat so the ice crown sits on her white hair; the brown staff, belt and boots become pale ivory bone #eadfc8 and dark navy #1b2552. Keep the navy robe, the ice crown, the ice crystal on the staff, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "ice-witch-a: the fragment's slate skin went onto her face; brown hair, staff and boots, and a pointed hat."
+    },
+    {
+      "id": "mammoth-a-edit",
+      "asset": "chibi-direction-ice-folk-mammoth",
+      "endpoint": "edit-image-pixen",
+      "seed": 71203,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "mammoth-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only these parts: the orange trunk becomes the same dark slate grey as the face; the dark brown wool on the belly, legs and lower body becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like the top of the body, so nothing is orange or dark brown. Keep the ivory tusks, the frost on their tips, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "mammoth-a is the right animal in side view, but its trunk is orange and its lower wool dark brown."
+    },
+    {
+      "id": "ice-witch-c",
+      "asset": "chibi-direction-ice-folk-ice-witch",
+      "endpoint": "create-image-pixen",
+      "seed": 71103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "hat, pointed hat, hood, black robe, purple robe, violet, skull, bones, broom, grey skin, blue skin, slate skin, brown hair, brown staff, old hag, cauldron, fire",
+      "notes": "A fresh creation with the faction fragment of the chosen direction (no slate skin in it) and the subject's pale skin, white hair and ice crown."
+    },
+    {
+      "id": "ice-witch-d",
+      "asset": "chibi-direction-ice-folk-ice-witch",
+      "endpoint": "create-image-pixen",
+      "seed": 71104,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "hat, pointed hat, hood, black robe, purple robe, violet, skull, bones, broom, grey skin, blue skin, slate skin, brown hair, brown staff, old hag, cauldron, fire",
+      "notes": "As ice-witch-c with a second seed."
+    },
+    {
+      "id": "portrait-yeti-a",
+      "asset": "chibi-direction-portrait-ice-folk-yeti",
+      "endpoint": "create-image-pixen",
+      "seed": 72001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "human, person, clothes, helmet, hat, grey fur, blue fur",
+      "notes": "First portrait sample: a fresh creation with the portrait class."
+    },
+    {
+      "id": "ice-folk-city-1-calm-a",
+      "asset": "chibi-direction-ice-folk-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 75001,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "negativeAddendum": "yeti, mammoth, animal, flag on the pole, red, gold, wood, brown, green, grass",
+      "notes": "First city sample: the calm settlement class, as the Martian and Undead direction cities."
+    },
+    {
+      "id": "icon-cold-snap-a",
+      "asset": "chibi-direction-icon-action-cold-snap",
+      "endpoint": "create-image-pixen",
+      "seed": 73001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, character, hand, staff, wand, fire, orange, purple",
+      "notes": "First icon sample."
+    },
+    {
+      "id": "effect-shatter-a",
+      "asset": "chibi-direction-effect-ice-folk-shatter",
+      "endpoint": "create-image-pixen",
+      "seed": 74001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "First effect sample, the faction's Shatter burst."
+    },
+    {
+      "id": "effect-shatter-a-edit",
+      "asset": "chibi-direction-effect-ice-folk-shatter",
+      "endpoint": "edit-image-pixen",
+      "seed": 74002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "effect-shatter-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the red and orange flash in the middle: it becomes a round white flash with a pale blue rim and a few small white sparkles, so nothing is red, orange or yellow. Keep the blue ice shards flying outward, their shapes, the outline and art style exactly the same, on a transparent background.",
+      "notes": "The shards are right, but the flash in the middle is a red and orange explosion."
+    },
+    {
+      "id": "ice-folk-city-1-calm-a-edit",
+      "asset": "chibi-direction-ice-folk-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 75002,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "ice-folk-city-1-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass and the brown dirt slab under the camp, so the igloo, the hide tent, the ice blocks and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloo, the cream tent, the blue ice blocks, the tall bone pole, the colours, outline and art style exactly the same.",
+      "notes": "The camp stands on a grass and dirt slab."
+    },
+    {
+      "id": "sled-a",
+      "asset": "chibi-direction-ice-folk-sled",
+      "endpoint": "create-image-pixen",
+      "seed": 71301,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The two dogs, the sled and the driver are drawn large and together fill most of the width of the image.",
+      "negativeAddendum": "horse, reindeer, wheels, cart, wagon, car, motor, metal, wood planks, brown wood, red, scarf",
+      "notes": "A fresh creation with the machine class: a vehicle, not one figure."
+    },
+    {
+      "id": "snow-hunter-a",
+      "asset": "chibi-direction-ice-folk-snow-hunter",
+      "endpoint": "create-image-pixen",
+      "seed": 71401,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "bow, arrows, sword, shield, helmet, armour, gun, beard, red, green, orange, yeti, ape",
+      "notes": "A fresh creation with the unit class."
+    },
+    {
+      "id": "boulder-yeti-a",
+      "asset": "chibi-direction-ice-folk-boulder-yeti",
+      "endpoint": "create-image-pixen",
+      "seed": 71501,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The yeti is drawn large and fills most of the height of the image, with the boulder above its head inside the image.",
+      "negativeAddendum": "human, person, clothes, armour, helmet, club, sword, brown fur, grey fur, blue fur, orange fur, catapult, wheels",
+      "notes": "A fresh creation with the unit class at the CATAPULT canvas: a bigger yeti than the FIGHTER's."
+    },
+    {
+      "id": "sabretooth-a",
+      "asset": "chibi-direction-ice-folk-sabretooth",
+      "endpoint": "create-image-pixen",
+      "seed": 71601,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "options": {
+        "view": "side",
+        "direction": "east"
+      },
+      "promptAddendum": "It is a four-legged animal: it stands on all four legs with its body level and low, never upright on two legs, and it has no arms and no hands. It carries no rider, no saddle and no armour.",
+      "negativeAddendum": "rider, person, saddle, armour, tiger stripes, orange fur, black stripes, wings, two animals",
+      "notes": "A fresh creation in the side view of the Dinosaur quadrupeds."
+    },
+    {
+      "id": "frost-giant-a",
+      "asset": "chibi-direction-ice-folk-frost-giant",
+      "endpoint": "create-image-pixen",
+      "seed": 71701,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The giant is drawn large and fills most of the height of the image.",
+      "negativeAddendum": "human knight, steel armour, metal, helmet, sword, axe, cape, red, gold, fire, horns, blue skin, cyan skin",
+      "notes": "A fresh creation with the unit class at the JUGGERNAUT canvas."
+    },
+    {
+      "id": "portrait-yeti-b",
+      "asset": "chibi-direction-portrait-ice-folk-yeti",
+      "endpoint": "create-image-pixen",
+      "seed": 72002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the head and the top of the shoulders, very close up, filling the whole square; no body, no legs.",
+      "negativeAddendum": "human, person, clothes, helmet, hat, grey fur, blue fur, brown fur, full body, legs, feet",
+      "notes": "portrait-yeti-a is a whole small brown yeti, not a bust."
+    },
+    {
+      "id": "icon-cold-snap-a-edit",
+      "asset": "chibi-direction-icon-action-cold-snap",
+      "endpoint": "edit-image-pixen",
+      "seed": 73002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-cold-snap-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the grass and dirt slab under the snowflake, leaving empty transparent background there, so the ice snowflake and its shards float alone. Keep the snowflake, the ice shards and the sparkles exactly the same.",
+      "notes": "The snowflake burst is right, but it stands on a grass slab."
+    },
+    {
+      "id": "ice-folk-city-2-calm-a",
+      "asset": "chibi-direction-ice-folk-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 75021,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "negativeAddendum": "yeti, mammoth, animal, flag on the pole, red, gold, wood, brown, green, grass",
+      "notes": "City 2: the calm settlement class, as City 1."
+    },
+    {
+      "id": "ice-folk-city-3-calm-a",
+      "asset": "chibi-direction-ice-folk-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 75031,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "negativeAddendum": "yeti, mammoth, animal, flag on the pole, red, gold, wood, brown, green, grass",
+      "notes": "City 3: the calm settlement class, as City 1."
+    },
+    {
+      "id": "effect-shatter-shards-a",
+      "asset": "chibi-direction-effect-ice-folk-shatter-shards",
+      "endpoint": "create-image-pixen",
+      "seed": 74011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "A fresh creation with the effect class, as the Shatter burst."
+    },
+    {
+      "id": "effect-cold-snap-a",
+      "asset": "chibi-direction-effect-ice-folk-cold-snap",
+      "endpoint": "create-image-pixen",
+      "seed": 74021,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "A fresh creation with the effect class, as the Shatter burst."
+    },
+    {
+      "id": "effect-bolas-a",
+      "asset": "chibi-direction-effect-ice-folk-bolas",
+      "endpoint": "create-image-pixen",
+      "seed": 74031,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "A fresh creation with the effect class, as the Shatter burst."
+    },
+    {
+      "id": "effect-frost-hit-a",
+      "asset": "chibi-direction-effect-ice-folk-frost-hit",
+      "endpoint": "create-image-pixen",
+      "seed": 74041,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "A fresh creation with the effect class, as the Shatter burst."
+    },
+    {
+      "id": "icon-action-throw-bolas-a",
+      "asset": "chibi-direction-icon-action-throw-bolas",
+      "endpoint": "create-image-pixen",
+      "seed": 73011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-action-sweep-a",
+      "asset": "chibi-direction-icon-action-sweep",
+      "endpoint": "create-image-pixen",
+      "seed": 73021,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-action-rockfall-a",
+      "asset": "chibi-direction-icon-action-rockfall",
+      "endpoint": "create-image-pixen",
+      "seed": 73031,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-action-prowl-a",
+      "asset": "chibi-direction-icon-action-prowl",
+      "endpoint": "create-image-pixen",
+      "seed": 73041,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-action-shatter-a",
+      "asset": "chibi-direction-icon-action-shatter",
+      "endpoint": "create-image-pixen",
+      "seed": 73051,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-tech-deep-winter-a",
+      "asset": "chibi-direction-icon-tech-deep-winter",
+      "endpoint": "create-image-pixen",
+      "seed": 73061,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-tech-brittle-a",
+      "asset": "chibi-direction-icon-tech-brittle",
+      "endpoint": "create-image-pixen",
+      "seed": 73071,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-status-chilled-a",
+      "asset": "chibi-direction-icon-status-chilled",
+      "endpoint": "create-image-pixen",
+      "seed": 73081,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-status-frozen-a",
+      "asset": "chibi-direction-icon-status-frozen",
+      "endpoint": "create-image-pixen",
+      "seed": 73091,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, hand, fire, orange, purple, red",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "ice-folk-city-2-calm-a-edit",
+      "asset": "chibi-direction-ice-folk-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 75022,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "ice-folk-city-2-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass and the dirt slab under the village, so the snow wall, the igloos and the hall stand directly on a transparent background with nothing under them. Make the orange doorways plain dark slate grey, so nothing is orange. Keep the white igloos, the snow wall, the cream hall roof, the bone pole, the outline and art style exactly the same.",
+      "notes": "The village stands on a grass slab and its doorways glow orange."
+    },
+    {
+      "id": "ice-folk-city-3-calm-a-edit",
+      "asset": "chibi-direction-ice-folk-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 75032,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "ice-folk-city-3-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass and the dark dirt slab under the town, so the igloos, the great hall, the ice towers and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloos, the domed hall, the blue ice towers, the bone pole, the colours, outline and art style exactly the same.",
+      "notes": "The town stands on a grass and dirt slab."
+    },
+    {
+      "id": "portrait-yeti-c",
+      "asset": "chibi-direction-portrait-ice-folk-yeti",
+      "endpoint": "create-image-pixen",
+      "seed": 72003,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up of the head only: the big round furry head fills the whole square from edge to edge, with just the tops of the shoulders at the bottom. The face is a very dark charcoal grey, almost black, with small bright eyes. The fur is warm white and cream, never brown.",
+      "negativeAddendum": "human, person, clothes, helmet, hat, grey fur, blue fur, brown fur, full body, legs, feet, arms, club, standing figure",
+      "notes": "portrait-yeti-a and -b drew a whole small yeti; this asks for the head only."
+    },
+    {
+      "id": "sabretooth-a-edit",
+      "asset": "chibi-direction-ice-folk-sabretooth",
+      "endpoint": "edit-image-pixen",
+      "seed": 71602,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "sabretooth-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the coat: the tan, brown and dark grey patches on the body and legs become a pale cream white coat, colour #ece4d0, shaded warm taupe #a8957c, with a few soft taupe-grey spots on the back, so nothing is brown or dark grey except the paw pads. Remove the blue marks on its head. Keep the shape, the big ivory fangs, the eyes, the thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "sabretooth-a is the right cat but its coat is tan with brown and dark grey patches and blue marks on the head: the faction's cats are snow leopards."
+    },
+    {
+      "id": "boulder-yeti-a-edit",
+      "asset": "chibi-direction-ice-folk-boulder-yeti",
+      "endpoint": "edit-image-pixen",
+      "seed": 71502,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "boulder-yeti-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the fur: the brown and tan coat becomes a shaggy ash cream coat, colour #cfc3a8, shaded darker warm taupe #857258, with a few lighter #e6dcc4 tufts on the head and shoulders, so it is a slightly darker cousin of a white yeti and nothing is brown or orange. Keep the dark slate face, hands and feet, the fangs, the icy boulder over its head, the pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "boulder-yeti-a has the right pose and boulder but a brown bear-like coat; the spec asks for a larger, darker Yeti of the same family."
+    },
+    {
+      "id": "frost-giant-a-edit",
+      "asset": "chibi-direction-ice-folk-frost-giant",
+      "endpoint": "edit-image-pixen",
+      "seed": 71702,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "frost-giant-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the hair and the beard: the tan blond hair, beard and eyebrows become frosty white, colour #f2f4f6, shaded pale grey #b9c0c8, with a few tiny icicles hanging from the beard. Keep the slate grey face and hands, the blue ice armour, the ice axe, the brown-grey hide, the shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "frost-giant-a is a towering giant in ice armour, but its blond beard reads as a dwarf rather than a creature of frost."
+    },
+    {
+      "id": "portrait-sled-a",
+      "asset": "chibi-direction-portrait-ice-folk-sled",
+      "endpoint": "create-image-pixen",
+      "seed": 72011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the driver's hooded head and shoulders fill the square; the husky's head beside the shoulder.",
+      "negativeAddendum": "full body, legs, sled, horse, red, brown skin",
+      "notes": "A fresh creation with the portrait class and a close-up addendum (the first Yeti portraits drew whole figures)."
+    },
+    {
+      "id": "portrait-snow-hunter-a",
+      "asset": "chibi-direction-portrait-ice-folk-snow-hunter",
+      "endpoint": "create-image-pixen",
+      "seed": 72021,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the hooded head and shoulders fill the square.",
+      "negativeAddendum": "full body, legs, bow, arrows, helmet, red, brown skin",
+      "notes": "A fresh creation with the portrait class and a close-up addendum (the first Yeti portraits drew whole figures)."
+    },
+    {
+      "id": "portrait-mammoth-a",
+      "asset": "chibi-direction-portrait-ice-folk-mammoth",
+      "endpoint": "create-image-pixen",
+      "seed": 72031,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up of the head only: the big woolly head with its tusks fills the whole square; the face and trunk are very dark charcoal grey.",
+      "negativeAddendum": "full body, legs, rider, saddle, grey wool, brown wool, orange trunk",
+      "notes": "A fresh creation with the portrait class and a close-up addendum (the first Yeti portraits drew whole figures)."
+    },
+    {
+      "id": "portrait-ice-witch-a",
+      "asset": "chibi-direction-portrait-ice-folk-ice-witch",
+      "endpoint": "create-image-pixen",
+      "seed": 72041,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: her head with the ice crown and her shoulders fill the square.",
+      "negativeAddendum": "full body, legs, hat, pointed hat, hood, grey skin, blue skin, brown hair",
+      "notes": "A fresh creation with the portrait class and a close-up addendum (the first Yeti portraits drew whole figures)."
+    },
+    {
+      "id": "portrait-boulder-yeti-a",
+      "asset": "chibi-direction-portrait-ice-folk-boulder-yeti",
+      "endpoint": "create-image-pixen",
+      "seed": 72051,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the big furry head and the boulder held above it fill the whole square; the face is very dark charcoal grey, almost black.",
+      "negativeAddendum": "full body, legs, feet, brown fur, grey fur, blue fur, person, clothes",
+      "notes": "A fresh creation with the portrait class and a close-up addendum (the first Yeti portraits drew whole figures)."
+    },
+    {
+      "id": "portrait-sabretooth-a",
+      "asset": "chibi-direction-portrait-ice-folk-sabretooth",
+      "endpoint": "create-image-pixen",
+      "seed": 72061,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up of the head only: the big round cat head with its two long fangs fills the whole square.",
+      "negativeAddendum": "full body, legs, rider, tiger stripes, orange fur, brown fur",
+      "notes": "A fresh creation with the portrait class and a close-up addendum (the first Yeti portraits drew whole figures)."
+    },
+    {
+      "id": "portrait-frost-giant-a",
+      "asset": "chibi-direction-portrait-ice-folk-frost-giant",
+      "endpoint": "create-image-pixen",
+      "seed": 72071,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the big head with its frosty white beard and the icy shoulder plates fill the square.",
+      "negativeAddendum": "full body, legs, steel helmet, blond beard, red, gold, fire",
+      "notes": "A fresh creation with the portrait class and a close-up addendum (the first Yeti portraits drew whole figures)."
+    },
+    {
+      "id": "portrait-yeti-c-edit",
+      "asset": "chibi-direction-portrait-ice-folk-yeti",
+      "endpoint": "edit-image-pixen",
+      "seed": 72004,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-yeti-c",
+        "candidate": 0
+      },
+      "editInstruction": "Zoom in to a close-up portrait: redraw it as only the head and the top of the shoulders, three times bigger, so the furry head fills the whole square from edge to edge and the dark face with its eyes and fangs is in the middle; the top of the icy club shows beside the head. No legs, no feet, no belly. Keep the cream fur, the dark charcoal face, the ice crystals, thick black outline and art style the same, on a transparent background.",
+      "notes": "portrait-yeti-c is a whole small yeti again; an edit asks for the close-up."
+    },
+    {
+      "id": "icon-action-shatter-a-edit",
+      "asset": "chibi-direction-icon-action-shatter",
+      "endpoint": "edit-image-pixen",
+      "seed": 73052,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-shatter-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the orange and salmon flash in the middle: it becomes a bright white flash with a pale blue rim, so nothing is orange, red or salmon. Keep the ice shards bursting outward, their shapes and colours, the outline and art style exactly the same, on a transparent background.",
+      "notes": "The burst of ice shards is right, but its centre flash is orange like fire."
+    },
+    {
+      "id": "icon-status-chilled-a-edit",
+      "asset": "chibi-direction-icon-status-chilled",
+      "endpoint": "edit-image-pixen",
+      "seed": 73082,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-status-chilled-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the grey stick that hangs from the bottom of the snowflake, leaving empty transparent background there, and draw the bottom arm of the snowflake like the other five arms, so it is one symmetrical six-pointed snowflake. Keep the colours, the white centre, the outline and art style exactly the same.",
+      "notes": "A good snowflake, but a grey stick hangs from it like a lollipop."
+    },
+    {
+      "id": "icon-tech-brittle-b",
+      "asset": "chibi-direction-icon-tech-brittle",
+      "endpoint": "create-image-pixen",
+      "seed": 73072,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "One simple cube of ice seen at a slight angle, with three flat faces, filling most of the square; the cracks are thick dark lines in a zigzag across its front face.",
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, animal, yeti, hand, fire, orange, purple, red, rock, stone, bird",
+      "notes": "icon-tech-brittle-a is an unreadable blue and grey lump."
+    },
+    {
+      "id": "icon-action-throw-bolas-b",
+      "asset": "chibi-direction-icon-action-throw-bolas",
+      "endpoint": "create-image-pixen",
+      "seed": 73013,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "Only the bolas itself in flight: two round balls on one cord, nothing holds it.",
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, yeti, ape, animal, creature, figure, hand, arm, fire, orange, purple, red",
+      "notes": "icon-action-throw-bolas-a drew a yeti holding the bolas."
+    },
+    {
+      "id": "icon-action-rockfall-b",
+      "asset": "chibi-direction-icon-action-rockfall",
+      "endpoint": "create-image-pixen",
+      "seed": 73022,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The snowy peak is small in the bottom left corner; the round rock is in mid-air in the top right, clearly flying away from the peak, with motion lines behind it pointing back to the peak.",
+      "negativeAddendum": "grass, ground, dirt, slab, platform, person, character, yeti, hand, fire, orange, purple, red, crystal cluster",
+      "notes": "icon-action-rockfall-a is a rocky mound with crystals: nothing is thrown."
+    },
+    {
+      "id": "icon-action-throw-bolas-b-edit",
+      "asset": "chibi-direction-icon-action-throw-bolas",
+      "endpoint": "edit-image-pixen",
+      "seed": 73014,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-action-throw-bolas-b",
+        "candidate": 0
+      },
+      "editInstruction": "Erase the yeti completely, leaving empty transparent background where it was, and make the bolas bigger in the middle: two round ice balls joined by one curved cream cord, flying, with one short white motion arc. Nothing else is in the image. Keep the ice colours, thick black outline and art style the same, on a transparent background.",
+      "notes": "Both bolas creations drew a yeti swinging it (the faction layer names fur); the edit keeps only the bolas."
+    },
+    {
+      "id": "portrait-ice-witch-a-edit",
+      "asset": "chibi-direction-portrait-ice-folk-ice-witch",
+      "endpoint": "edit-image-pixen",
+      "seed": 72042,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-ice-witch-a",
+        "candidate": 0
+      },
+      "editInstruction": "Zoom in to a close-up portrait: redraw it as only her head and the top of her shoulders, twice as big, so her face fills the middle of the square; remove the pointed hat and put a tall crown of sharp ice shards on her long white hair instead; a white fur collar on a navy robe at the bottom. Keep her pale face and big eyes, the ice colours, thick black outline and art style, on a transparent background.",
+      "notes": "portrait-ice-witch-a is a small whole figure in a pointed hat."
+    },
+    {
+      "id": "portrait-snow-hunter-a-edit",
+      "asset": "chibi-direction-portrait-ice-folk-snow-hunter",
+      "endpoint": "edit-image-pixen",
+      "seed": 72032,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-snow-hunter-a",
+        "candidate": 0
+      },
+      "editInstruction": "Zoom in to a close-up portrait: redraw it as only the hooded head and the top of the shoulders, twice as big, so the face in its cream fur hood fills the middle of the square, with the ice-tipped harpoon resting on one shoulder. No legs, no feet. Keep the face, the dark brown-grey parka, the ice colours, thick black outline and art style, on a transparent background.",
+      "notes": "portrait-snow-hunter-a is a whole small figure, not a bust."
+    },
+    {
+      "id": "portrait-boulder-yeti-b",
+      "asset": "chibi-direction-portrait-ice-folk-boulder-yeti",
+      "endpoint": "edit-image-pixen",
+      "seed": 72052,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-yeti-c-edit",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Change only what it holds and where: remove the club, and draw both big dark slate hands raised beside the head holding one big round grey boulder crusted with ice crystals above the head, at the top of the square. Make the fur a little darker, an ash cream shaded warm taupe. Keep the round furry head, the dark charcoal face, eyes and fangs, thick black outline and art style, on a transparent background.",
+      "notes": "portrait-boulder-yeti-a is a horned bison-like face; derived from the accepted Yeti portrait instead, so the two apes share a face."
+    },
+    {
+      "id": "portrait-mammoth-b",
+      "asset": "chibi-direction-portrait-ice-folk-mammoth",
+      "endpoint": "create-image-pixen",
+      "seed": 72062,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up of the head only: the big domed head of shaggy warm cream wool with its two long curved ivory tusks fills the whole square; the face and the curled trunk are very dark charcoal grey; no body and no legs. The wool is warm cream, never orange, red or brown.",
+      "negativeAddendum": "full body, legs, feet, rider, saddle, orange, red, brown wool, orange tusks, grey wool, elephant",
+      "notes": "portrait-mammoth-a is a whole mammoth in orange-brown wool."
+    },
+    {
+      "id": "portrait-mammoth-b-edit",
+      "asset": "chibi-direction-portrait-ice-folk-mammoth",
+      "endpoint": "edit-image-pixen",
+      "seed": 72063,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-mammoth-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the wool: the orange and brown wool on the head, back and chest becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like a sheep's fleece, so nothing is orange or brown. Keep the dark charcoal face, trunk and legs, the ivory tusks with their frost, the shape, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Both Mammoth portrait creations drew orange wool; this recolours the second to the map sprite's cream-to-tan wool."
+    },
+    {
+      "id": "snow-hunter-a-skin",
+      "asset": "chibi-direction-ice-folk-snow-hunter",
+      "endpoint": "edit-image-pixen",
+      "seed": 71402,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "snow-hunter-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the red-orange face and hands become a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing on him is red. Keep the cream fur hood, the dark brown-grey parka, the ivory harpoon and its ice tip, the face, the pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "snow-hunter-a's face is a saturated red-orange: 62 of its pixels are in the owner key's red band, which no fixed-colour sprite may have."
+    },
+    {
+      "id": "portrait-sled-a-skin",
+      "asset": "chibi-direction-portrait-ice-folk-sled",
+      "endpoint": "edit-image-pixen",
+      "seed": 72012,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-sled-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin: the red face becomes a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing is red. Keep the cream fur hood, the dark parka, the bolas with its ice weights, the husky, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-sled-a's face is red: 20 pixels in the owner key's band."
+    },
+    {
+      "id": "portrait-sabretooth-a-mouth",
+      "asset": "chibi-direction-portrait-ice-folk-sabretooth",
+      "endpoint": "edit-image-pixen",
+      "seed": 72022,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-sabretooth-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, so nothing is red. Keep the pale snow-leopard head, the spots, the ice-blue eyes, the two long ivory fangs, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-sabretooth-a has a red mouth: 11 pixels in the owner key's band."
+    },
+    {
+      "id": "sabretooth-a-edit-frost",
+      "asset": "chibi-direction-ice-folk-sabretooth",
+      "endpoint": "edit-image-pixen",
+      "seed": 71603,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "sabretooth-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Add only small details: bright ice blue eyes, and three or four small sharp bright ice blue ice crystals of frost on its shoulders and along its back. Do not redraw anything else: keep the pale cream coat, the taupe spots, the dark saddle, the long ivory fangs, the pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The accepted Sabretooth has no ice at all: every unit of the faction carries the accent."
+    },
+    {
+      "id": "ice-folk-city-2-ice",
+      "asset": "chibi-direction-ice-folk-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 75023,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "ice-folk-city-2-calm-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the walls of the long hall: they become pale ice blue blocks of clear ice, colour #9fd8ff, with white edges, under the same cream hide roof. Keep the white igloos, the snow wall, the roof, the bone pole, the transparent background, the outline and art style exactly the same.",
+      "notes": "City 2 has no ice: City 1 and City 3 show the accent in their ice blocks and towers."
+    },
+    {
+      "id": "portrait-boulder-yeti-b-ice",
+      "asset": "chibi-direction-portrait-ice-folk-boulder-yeti",
+      "endpoint": "edit-image-pixen",
+      "seed": 72053,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-boulder-yeti-b",
+        "candidate": 0
+      },
+      "editInstruction": "Add only frost on the boulder: four or five small sharp bright ice blue ice crystals crusted on top of the grey boulder. Do not redraw anything else: keep the boulder's shape, the hands, the furry head, the dark face, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The Boulder Yeti portrait has no ice; the map sprite's boulder is crusted with it."
+    },
+    {
+      "id": "snow-hunter-a-skin-hair",
+      "asset": "chibi-direction-ice-folk-snow-hunter",
+      "endpoint": "edit-image-pixen",
+      "seed": 71403,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "snow-hunter-a-skin",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dark red-brown hair on his forehead under the hood: it becomes dark charcoal brown-grey, colour #3a3432, so nothing on him is red. Do not redraw anything else: keep the tan face, the cream fur hood, the dark parka, the harpoon and its ice tip, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "snow-hunter-a-skin still has a dark red-brown fringe (#5a1c17, 56 pixels) in the owner key band."
+    },
+    {
+      "id": "portrait-sled-a-skin-mouth",
+      "asset": "chibi-direction-portrait-ice-folk-sled",
+      "endpoint": "edit-image-pixen",
+      "seed": 72013,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-sled-a-skin",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the small red mouth and the red mitten: they become a soft dark brown-grey, colour #4a3a36, so nothing is red. Do not redraw anything else: keep the tan face, the cream fur hood, the parka, the bolas and the husky, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-sled-a-skin keeps five bright red pixels (#aa1b1a) in the owner key band."
+    }
+  ]
+}

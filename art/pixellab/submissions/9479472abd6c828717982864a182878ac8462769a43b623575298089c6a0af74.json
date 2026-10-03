@@ -1,0 +1,64 @@
+{
+  "id": "mammoth-b",
+  "jobId": "sync-509fd470-0b81-4c20-86f9-cc0e8e9fdc3b",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-mammoth",
+    "subject": "UNIT:ICE_FOLK:GUARD",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 71202,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+        "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with soft blue-grey, dark slate blue-grey skin, dark brown-grey hide and furs, pale ivory bone, and exactly one accent colour, a bright glacier ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+        "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+        "text": "Subject: Mammoth, a chunky cute woolly mammoth: a big round body covered in long shaggy warm cream-to-tan wool, a big domed head with small dark friendly eyes, a curled trunk, two long curved pale ivory tusks raised forward with frost on their tips, four short thick legs with dark slate feet and a small tail; wide and heavy; simple shapes and very few details; the feet are the lowest thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "It is a four-legged animal seen from the front and a little from the side: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. The wool is warm cream to light tan, never white and never grey.",
+        "negative": "rider, person, saddle, blanket, howdah, armour, elephant ears, grey skin, white wool, brown wool, two animals"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with soft blue-grey, dark slate blue-grey skin, dark brown-grey hide and furs, pale ivory bone, and exactly one accent colour, a bright glacier ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Mammoth, a chunky cute woolly mammoth: a big round body covered in long shaggy warm cream-to-tan wool, a big domed head with small dark friendly eyes, a curled trunk, two long curved pale ivory tusks raised forward with frost on their tips, four short thick legs with dark slate feet and a small tail; wide and heavy; simple shapes and very few details; the feet are the lowest thing in the image. It is a four-legged animal seen from the front and a little from the side: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. The wool is warm cream to light tan, never white and never grey.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, howdah, armour, elephant ears, grey skin, white wool, brown wool, two animals",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with soft blue-grey, dark slate blue-grey skin, dark brown-grey hide and furs, pale ivory bone, and exactly one accent colour, a bright glacier ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Mammoth, a chunky cute woolly mammoth: a big round body covered in long shaggy warm cream-to-tan wool, a big domed head with small dark friendly eyes, a curled trunk, two long curved pale ivory tusks raised forward with frost on their tips, four short thick legs with dark slate feet and a small tail; wide and heavy; simple shapes and very few details; the feet are the lowest thing in the image. It is a four-legged animal seen from the front and a little from the side: it stands on all four legs with its body level, never upright on two legs, and it has no arms and no hands. It holds nothing and carries no rider, no saddle and no blanket. The wool is warm cream to light tan, never white and never grey. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, rider, person, saddle, blanket, howdah, armour, elephant ears, grey skin, white wool, brown wool, two animals."
+  }
+}

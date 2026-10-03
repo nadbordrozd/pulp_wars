@@ -1,0 +1,36 @@
+{
+  "id": "portrait-sabretooth-a-mouth",
+  "jobId": "3074810f-cdf8-46e2-bfce-e458ac9b3564",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-portrait-ice-folk-sabretooth",
+    "subject": "PORTRAIT:ICE_FOLK:KNIGHT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 72022,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, so nothing is red. Keep the pale snow-leopard head, the spots, the ice-blue eyes, the two long ivory fangs, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, so nothing is red. Keep the pale snow-leopard head, the spots, the ice-blue eyes, the two long ivory fangs, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, so nothing is red. Keep the pale snow-leopard head, the spots, the ice-blue eyes, the two long ivory fangs, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the inside of the open mouth: the red becomes a dark charcoal grey, so nothing is red. Keep the pale snow-leopard head, the spots, the ice-blue eyes, the two long ivory fangs, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-sabretooth-a",
+      "candidate": 0,
+      "sha256": "67e4b5c2f839fc1cada5ca52d16b4b316623cda610d84dca6b5edf5235920fbd"
+    }
+  }
+}

@@ -3107,3 +3107,5 @@ show the live look, with all four converted factions in the mixed Showcase.
 The Martian faction's production art in this direction (bead
 `pulp_wars-t6s.6`, not live yet) is described in
 [factions/MARTIAN.md](factions/MARTIAN.md).
+
+The Ice Folk faction's direction and production art (bead `pulp_wars-7g3.5`, not live yet) is described in [factions/ICE_FOLK.md](factions/ICE_FOLK.md).

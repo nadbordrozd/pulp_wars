@@ -1,0 +1,36 @@
+{
+  "id": "portrait-sled-a-skin",
+  "jobId": "382a96f6-bcaf-4c34-8160-2503d0a7841f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-portrait-ice-folk-sled",
+    "subject": "PORTRAIT:ICE_FOLK:RAIDER",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 72012,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin: the red face becomes a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing is red. Keep the cream fur hood, the dark parka, the bolas with its ice weights, the husky, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin: the red face becomes a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing is red. Keep the cream fur hood, the dark parka, the bolas with its ice weights, the husky, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin: the red face becomes a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing is red. Keep the cream fur hood, the dark parka, the bolas with its ice weights, the husky, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only his skin: the red face becomes a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing is red. Keep the cream fur hood, the dark parka, the bolas with its ice weights, the husky, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-sled-a",
+      "candidate": 0,
+      "sha256": "3857e4c8d46df09899e94681888e3d4174dd10be788455ed34482c8d63bc41ae"
+    }
+  }
+}

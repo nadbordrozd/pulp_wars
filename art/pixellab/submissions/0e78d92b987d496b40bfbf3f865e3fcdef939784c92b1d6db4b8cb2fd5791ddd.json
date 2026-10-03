@@ -1,0 +1,36 @@
+{
+  "id": "snow-hunter-a-skin",
+  "jobId": "11d7dc8a-a3c7-44f0-967a-c5cc7690e995",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-snow-hunter",
+    "subject": "UNIT:ICE_FOLK:MARKSMAN",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 71402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin: the red-orange face and hands become a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing on him is red. Keep the cream fur hood, the dark brown-grey parka, the ivory harpoon and its ice tip, the face, the pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin: the red-orange face and hands become a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing on him is red. Keep the cream fur hood, the dark brown-grey parka, the ivory harpoon and its ice tip, the face, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin: the red-orange face and hands become a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing on him is red. Keep the cream fur hood, the dark brown-grey parka, the ivory harpoon and its ice tip, the face, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only his skin: the red-orange face and hands become a light golden tan skin, colour #e2b48a, shaded #c08e66, with small soft pink cheeks, so nothing on him is red. Keep the cream fur hood, the dark brown-grey parka, the ivory harpoon and its ice tip, the face, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "snow-hunter-a",
+      "candidate": 0,
+      "sha256": "c9a9e88250cffd7bb4a526b37671e7911f57a081189402bf6a1cb33ee274bc50"
+    }
+  }
+}

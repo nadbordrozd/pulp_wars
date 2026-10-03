@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-shatter-a-edit",
+  "jobId": "a455d9ed-02b6-4ea8-a1c5-f622cab8bb24",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-icon-action-shatter",
+    "subject": "ICON:ACTION:SHATTER",
+    "faction": "ICE_FOLK",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73052,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the orange and salmon flash in the middle: it becomes a bright white flash with a pale blue rim, so nothing is orange, red or salmon. Keep the ice shards bursting outward, their shapes and colours, the outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the orange and salmon flash in the middle: it becomes a bright white flash with a pale blue rim, so nothing is orange, red or salmon. Keep the ice shards bursting outward, their shapes and colours, the outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the orange and salmon flash in the middle: it becomes a bright white flash with a pale blue rim, so nothing is orange, red or salmon. Keep the ice shards bursting outward, their shapes and colours, the outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the orange and salmon flash in the middle: it becomes a bright white flash with a pale blue rim, so nothing is orange, red or salmon. Keep the ice shards bursting outward, their shapes and colours, the outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-shatter-a",
+      "candidate": 0,
+      "sha256": "a4375127ad4e4baa6603c3b4b16749c3b0ade125851ea46527e9612b00eee557"
+    }
+  }
+}

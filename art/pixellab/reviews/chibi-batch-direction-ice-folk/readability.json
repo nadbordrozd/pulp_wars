@@ -1,0 +1,430 @@
+{
+  "note": "CIE76 colour difference (about 10 is clear at a glance, 20 and more are different colours); contrast is the WCAG luminance ratio; terrain colours are the mean of the tile rasters, 'toned' as the live look tones terrain; Snow is the overlay's wash over the tile.",
+  "verdict": {
+    "rule": "the accent must differ by at least 20 (CIE76) from Shallow Water, the Teal plate and the Martian glass in normal vision and by at least 10 under deuteranopia and protanopia",
+    "worstAgainstShallowTealGlass": 33.1,
+    "accentHue": 203,
+    "accent": "DEEP_ICE_BLUE",
+    "furOnMountain": "fur against rock is 20 to 30 apart (different colours) but its luminance contrast is only about 1.6: the black outline (contrast above 8 against rock), the charcoal faces and hands, and the ice accent carry a unit on a Mountain"
+  },
+  "accent": [
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 42.8,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 44.3,
+      "protanopiaDeltaE": 39.4,
+      "hueA": 203,
+      "hueB": 187
+    },
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Teal plate #28b7a4",
+      "deltaE": 59.7,
+      "contrast": 1,
+      "deuteranopiaDeltaE": 50.2,
+      "protanopiaDeltaE": 50.6,
+      "hueA": 203,
+      "hueB": 172
+    },
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Martian glass #8db9cd",
+      "deltaE": 35.6,
+      "contrast": 1.2,
+      "deuteranopiaDeltaE": 38.8,
+      "protanopiaDeltaE": 33.1,
+      "hueA": 203,
+      "hueB": 199
+    },
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Martian glass, lit #c7e7f5",
+      "deltaE": 45.6,
+      "contrast": 1.9,
+      "deuteranopiaDeltaE": 49.7,
+      "protanopiaDeltaE": 41.7,
+      "hueA": 203,
+      "hueB": 198
+    },
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Dinosaur blue #205794",
+      "deltaE": 34.2,
+      "contrast": 2.9,
+      "deuteranopiaDeltaE": 32.1,
+      "protanopiaDeltaE": 33.1,
+      "hueA": 203,
+      "hueB": 212
+    },
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Deep Water #4277a5",
+      "deltaE": 27.2,
+      "contrast": 1.9,
+      "deuteranopiaDeltaE": 27.8,
+      "protanopiaDeltaE": 26.9,
+      "hueA": 203,
+      "hueB": 208
+    },
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Violet plate #a277d2",
+      "deltaE": 43.2,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 15.7,
+      "protanopiaDeltaE": 13.7,
+      "hueA": 203,
+      "hueB": 268
+    },
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Undead violet #a221ee",
+      "deltaE": 91.4,
+      "contrast": 2.1,
+      "deuteranopiaDeltaE": 25.5,
+      "protanopiaDeltaE": 44.5,
+      "hueA": 203,
+      "hueB": 278
+    },
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Martian magenta #f30a96",
+      "deltaE": 98.4,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 52.7,
+      "protanopiaDeltaE": 31,
+      "hueA": 203,
+      "hueB": 324
+    },
+    {
+      "a": "ice, lit #24abfc",
+      "b": "Snow on Grass #b8d3a2",
+      "deltaE": 73.7,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 77,
+      "protanopiaDeltaE": 70.6,
+      "hueA": 203,
+      "hueB": 93
+    },
+    {
+      "a": "ice, mean #198de3",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 51.1,
+      "contrast": 2.1,
+      "deuteranopiaDeltaE": 50.1,
+      "protanopiaDeltaE": 45.7,
+      "hueA": 205,
+      "hueB": 187
+    },
+    {
+      "a": "ice, mean #198de3",
+      "b": "Teal plate #28b7a4",
+      "deltaE": 66.6,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 53.1,
+      "protanopiaDeltaE": 54,
+      "hueA": 205,
+      "hueB": 172
+    }
+  ],
+  "furAndTerrain": [
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Grass #89b75b",
+      "deltaE": 42.8,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 27.7,
+      "protanopiaDeltaE": 34.2,
+      "hueA": 41,
+      "hueB": 90
+    },
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Grass, toned #89b75c",
+      "deltaE": 42.8,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 27.8,
+      "protanopiaDeltaE": 33.8,
+      "hueA": 41,
+      "hueB": 90
+    },
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Forest #769a51",
+      "deltaE": 40.5,
+      "contrast": 2.2,
+      "deuteranopiaDeltaE": 31,
+      "protanopiaDeltaE": 33.1,
+      "hueA": 41,
+      "hueB": 89
+    },
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 29.1,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 30.1,
+      "protanopiaDeltaE": 28.1,
+      "hueA": 41,
+      "hueB": 216
+    },
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Mountain rock, light #a7afbb",
+      "deltaE": 27.8,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 29,
+      "protanopiaDeltaE": 27.1,
+      "hueA": 41,
+      "hueB": 216
+    },
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Mountain rock, toned #a2aab6",
+      "deltaE": 29.1,
+      "contrast": 1.6,
+      "deuteranopiaDeltaE": 30.1,
+      "protanopiaDeltaE": 28.1,
+      "hueA": 41,
+      "hueB": 216
+    },
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Mountain peak #758393",
+      "deltaE": 41.4,
+      "contrast": 2.6,
+      "deuteranopiaDeltaE": 42.8,
+      "protanopiaDeltaE": 39.9,
+      "hueA": 41,
+      "hueB": 212
+    },
+    {
+      "a": "fur, shade #8c7667",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 26.7,
+      "contrast": 1.8,
+      "deuteranopiaDeltaE": 25.9,
+      "protanopiaDeltaE": 26.3,
+      "hueA": 24,
+      "hueB": 216
+    },
+    {
+      "a": "fur, shade #8c7667",
+      "b": "Mountain rock, light #a7afbb",
+      "deltaE": 27.8,
+      "contrast": 1.9,
+      "deuteranopiaDeltaE": 27.1,
+      "protanopiaDeltaE": 27.7,
+      "hueA": 24,
+      "hueB": 216
+    },
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Snow on Grass #b8d3a2",
+      "deltaE": 19,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 5.8,
+      "protanopiaDeltaE": 8,
+      "hueA": 41,
+      "hueB": 93
+    },
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Snow on rock #c6ccd4",
+      "deltaE": 21.9,
+      "contrast": 1.1,
+      "deuteranopiaDeltaE": 22.3,
+      "protanopiaDeltaE": 21.6,
+      "hueA": 41,
+      "hueB": 215
+    },
+    {
+      "a": "fur, lit #e3d4b6",
+      "b": "Gold plate #e2b63f",
+      "deltaE": 47.8,
+      "contrast": 1.3,
+      "deuteranopiaDeltaE": 46.2,
+      "protanopiaDeltaE": 51.3,
+      "hueA": 41,
+      "hueB": 44
+    },
+    {
+      "a": "slate face #515864",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 32,
+      "contrast": 3,
+      "deuteranopiaDeltaE": 32,
+      "protanopiaDeltaE": 32.2,
+      "hueA": 219,
+      "hueB": 216
+    },
+    {
+      "a": "slate face #515864",
+      "b": "Snow on rock #c6ccd4",
+      "deltaE": 44.8,
+      "contrast": 4.4,
+      "deuteranopiaDeltaE": 44.8,
+      "protanopiaDeltaE": 44.7,
+      "hueA": 219,
+      "hueB": 215
+    },
+    {
+      "a": "hide #4b3936",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 45.9,
+      "contrast": 4.6,
+      "deuteranopiaDeltaE": 44.7,
+      "protanopiaDeltaE": 46.1,
+      "hueA": 7,
+      "hueB": 216
+    },
+    {
+      "a": "outline #000000 #000000",
+      "b": "Mountain rock, light #a7afbb",
+      "deltaE": 71.5,
+      "contrast": 9.5,
+      "deuteranopiaDeltaE": 71.2,
+      "protanopiaDeltaE": 71.9,
+      "hueA": 0,
+      "hueB": 216
+    },
+    {
+      "a": "Snow on Grass #b8d3a2",
+      "b": "Grass #89b75b",
+      "deltaE": 26.7,
+      "contrast": 1.4,
+      "deuteranopiaDeltaE": 22.2,
+      "protanopiaDeltaE": 26.3,
+      "hueA": 93,
+      "hueB": 90
+    },
+    {
+      "a": "Snow on rock #c6ccd4",
+      "b": "Mountain rock, mean #a2aab6",
+      "deltaE": 12.9,
+      "contrast": 1.5,
+      "deuteranopiaDeltaE": 13.1,
+      "protanopiaDeltaE": 12.6,
+      "hueA": 215,
+      "hueB": 216
+    },
+    {
+      "a": "Snow on Grass #b8d3a2",
+      "b": "Shallow Water #8fd3dc",
+      "deltaE": 32.9,
+      "contrast": 1,
+      "deuteranopiaDeltaE": 33.6,
+      "protanopiaDeltaE": 32.2,
+      "hueA": 93,
+      "hueB": 187
+    }
+  ],
+  "units": [
+    {
+      "unit": "Yeti",
+      "role": "FIGHTER",
+      "asset": "chibi-direction-ice-folk-yeti",
+      "canvas": "56 x 80",
+      "spriteWidth": 52,
+      "spriteHeight": 54,
+      "plateWidth": 52,
+      "accentPixels": 112,
+      "accentShare": 5.6,
+      "darkShare": 33,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Sled",
+      "role": "RAIDER",
+      "asset": "chibi-direction-ice-folk-sled",
+      "canvas": "72 x 88",
+      "spriteWidth": 69,
+      "spriteHeight": 76,
+      "plateWidth": 57,
+      "accentPixels": 162,
+      "accentShare": 5.4,
+      "darkShare": 41,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Snow Hunter",
+      "role": "MARKSMAN",
+      "asset": "chibi-direction-ice-folk-snow-hunter",
+      "canvas": "56 x 80",
+      "spriteWidth": 53,
+      "spriteHeight": 65,
+      "plateWidth": 52,
+      "accentPixels": 58,
+      "accentShare": 2.8,
+      "darkShare": 53.8,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Mammoth",
+      "role": "GUARD",
+      "asset": "chibi-direction-ice-folk-mammoth",
+      "canvas": "56 x 80",
+      "spriteWidth": 53,
+      "spriteHeight": 61,
+      "plateWidth": 52,
+      "accentPixels": 16,
+      "accentShare": 0.7,
+      "darkShare": 34.4,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Ice Witch",
+      "role": "CAPTAIN",
+      "asset": "chibi-direction-ice-folk-ice-witch",
+      "canvas": "56 x 80",
+      "spriteWidth": 48,
+      "spriteHeight": 55,
+      "plateWidth": 52,
+      "accentPixels": 185,
+      "accentShare": 12,
+      "darkShare": 29.2,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Boulder Yeti",
+      "role": "CATAPULT",
+      "asset": "chibi-direction-ice-folk-boulder-yeti",
+      "canvas": "72 x 88",
+      "spriteWidth": 58,
+      "spriteHeight": 80,
+      "plateWidth": 57,
+      "accentPixels": 185,
+      "accentShare": 6.1,
+      "darkShare": 31.1,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Sabretooth",
+      "role": "KNIGHT",
+      "asset": "chibi-direction-ice-folk-sabretooth",
+      "canvas": "72 x 88",
+      "spriteWidth": 60,
+      "spriteHeight": 49,
+      "plateWidth": 57,
+      "accentPixels": 95,
+      "accentShare": 4.5,
+      "darkShare": 34,
+      "keyRedPixels": 0
+    },
+    {
+      "unit": "Frost Giant",
+      "role": "JUGGERNAUT",
+      "asset": "chibi-direction-ice-folk-frost-giant",
+      "canvas": "88 x 104",
+      "spriteWidth": 80,
+      "spriteHeight": 92,
+      "plateWidth": 68,
+      "accentPixels": 981,
+      "accentShare": 19.4,
+      "darkShare": 40.1,
+      "keyRedPixels": 0
+    }
+  ]
+}

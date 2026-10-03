@@ -1,0 +1,36 @@
+{
+  "id": "ice-folk-city-3-calm-a-edit",
+  "jobId": "c9021090-4515-4b5b-8b2f-400f1de1d891",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-city-3",
+    "subject": "CITY:ICE_FOLK:3",
+    "faction": "ICE_FOLK",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 75032,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass and the dark dirt slab under the town, so the igloos, the great hall, the ice towers and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloos, the domed hall, the blue ice towers, the bone pole, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass and the dark dirt slab under the town, so the igloos, the great hall, the ice towers and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloos, the domed hall, the blue ice towers, the bone pole, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass and the dark dirt slab under the town, so the igloos, the great hall, the ice towers and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloos, the domed hall, the blue ice towers, the bone pole, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass and the dark dirt slab under the town, so the igloos, the great hall, the ice towers and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloos, the domed hall, the blue ice towers, the bone pole, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "ice-folk-city-3-calm-a",
+      "candidate": 0,
+      "sha256": "febe5c0f0f7f171239d3ffd4e448f8815673f49c74b5d618b53d7c632c119310"
+    }
+  }
+}

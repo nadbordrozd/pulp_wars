@@ -1,0 +1,36 @@
+{
+  "id": "ice-witch-b",
+  "jobId": "c19bc00e-844d-4237-af21-01050ccc2a90",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-ice-witch",
+    "subject": "UNIT:ICE_FOLK:CAPTAIN",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 71102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change her colours only: her face and hands become pale cream skin, colour #f3dccb, with rosy cheeks; her hair becomes long straight white hair; remove the pointed blue hat so the ice crown sits on her white hair; the brown staff, belt and boots become pale ivory bone #eadfc8 and dark navy #1b2552. Keep the navy robe, the ice crown, the ice crystal on the staff, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change her colours only: her face and hands become pale cream skin, colour #f3dccb, with rosy cheeks; her hair becomes long straight white hair; remove the pointed blue hat so the ice crown sits on her white hair; the brown staff, belt and boots become pale ivory bone #eadfc8 and dark navy #1b2552. Keep the navy robe, the ice crown, the ice crystal on the staff, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change her colours only: her face and hands become pale cream skin, colour #f3dccb, with rosy cheeks; her hair becomes long straight white hair; remove the pointed blue hat so the ice crown sits on her white hair; the brown staff, belt and boots become pale ivory bone #eadfc8 and dark navy #1b2552. Keep the navy robe, the ice crown, the ice crystal on the staff, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change her colours only: her face and hands become pale cream skin, colour #f3dccb, with rosy cheeks; her hair becomes long straight white hair; remove the pointed blue hat so the ice crown sits on her white hair; the brown staff, belt and boots become pale ivory bone #eadfc8 and dark navy #1b2552. Keep the navy robe, the ice crown, the ice crystal on the staff, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "ice-witch-a",
+      "candidate": 0,
+      "sha256": "1a295857d601a41e391293dfceb87abb2bed19a9a5ac6182f2cbdb4f50426843"
+    }
+  }
+}

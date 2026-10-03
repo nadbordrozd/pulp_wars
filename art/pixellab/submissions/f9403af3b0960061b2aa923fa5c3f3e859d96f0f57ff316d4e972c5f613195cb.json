@@ -1,0 +1,36 @@
+{
+  "id": "sabretooth-a-edit",
+  "jobId": "a838624e-d17e-40e4-ad51-6f6282a4a4fa",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-sabretooth",
+    "subject": "UNIT:ICE_FOLK:KNIGHT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 71602,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the coat: the tan, brown and dark grey patches on the body and legs become a pale cream white coat, colour #ece4d0, shaded warm taupe #a8957c, with a few soft taupe-grey spots on the back, so nothing is brown or dark grey except the paw pads. Remove the blue marks on its head. Keep the shape, the big ivory fangs, the eyes, the thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the coat: the tan, brown and dark grey patches on the body and legs become a pale cream white coat, colour #ece4d0, shaded warm taupe #a8957c, with a few soft taupe-grey spots on the back, so nothing is brown or dark grey except the paw pads. Remove the blue marks on its head. Keep the shape, the big ivory fangs, the eyes, the thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the coat: the tan, brown and dark grey patches on the body and legs become a pale cream white coat, colour #ece4d0, shaded warm taupe #a8957c, with a few soft taupe-grey spots on the back, so nothing is brown or dark grey except the paw pads. Remove the blue marks on its head. Keep the shape, the big ivory fangs, the eyes, the thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the coat: the tan, brown and dark grey patches on the body and legs become a pale cream white coat, colour #ece4d0, shaded warm taupe #a8957c, with a few soft taupe-grey spots on the back, so nothing is brown or dark grey except the paw pads. Remove the blue marks on its head. Keep the shape, the big ivory fangs, the eyes, the thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "sabretooth-a",
+      "candidate": 0,
+      "sha256": "eb71fa555dc685a66d117660342db57122ac7d5da8e1586b7f9a3276c3c9ef82"
+    }
+  }
+}

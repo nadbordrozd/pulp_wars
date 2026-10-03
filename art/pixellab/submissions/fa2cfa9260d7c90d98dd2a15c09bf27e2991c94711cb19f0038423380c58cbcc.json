@@ -1,0 +1,37 @@
+{
+  "id": "portrait-boulder-yeti-b",
+  "jobId": "481f85a9-bc47-4ea2-b9b7-08d30d4560fb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-portrait-ice-folk-boulder-yeti",
+    "subject": "PORTRAIT:ICE_FOLK:CATAPULT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 72052,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only what it holds and where: remove the club, and draw both big dark slate hands raised beside the head holding one big round grey boulder crusted with ice crystals above the head, at the top of the square. Make the fur a little darker, an ash cream shaded warm taupe. Keep the round furry head, the dark charcoal face, eyes and fangs, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Change only what it holds and where: remove the club, and draw both big dark slate hands raised beside the head holding one big round grey boulder crusted with ice crystals above the head, at the top of the square. Make the fur a little darker, an ash cream shaded warm taupe. Keep the round furry head, the dark charcoal face, eyes and fangs, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only what it holds and where: remove the club, and draw both big dark slate hands raised beside the head holding one big round grey boulder crusted with ice crystals above the head, at the top of the square. Make the fur a little darker, an ash cream shaded warm taupe. Keep the round furry head, the dark charcoal face, eyes and fangs, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Change only what it holds and where: remove the club, and draw both big dark slate hands raised beside the head holding one big round grey boulder crusted with ice crystals above the head, at the top of the square. Make the fur a little darker, an ash cream shaded warm taupe. Keep the round furry head, the dark charcoal face, eyes and fangs, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-yeti-c-edit",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "a0500781c46c30d4546b48af9df5701e2738f7d1fd0fcad10f2f5ba610ec6050"
+    }
+  }
+}

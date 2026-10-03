@@ -1,0 +1,36 @@
+{
+  "id": "icon-cold-snap-a-edit",
+  "jobId": "abe55c57-51f3-4778-a87d-cfb60d7dbbea",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-icon-action-cold-snap",
+    "subject": "ICON:ACTION:COLD_SNAP",
+    "faction": "ICE_FOLK",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the grass and dirt slab under the snowflake, leaving empty transparent background there, so the ice snowflake and its shards float alone. Keep the snowflake, the ice shards and the sparkles exactly the same."
+      }
+    ],
+    "prompt": "Remove the grass and dirt slab under the snowflake, leaving empty transparent background there, so the ice snowflake and its shards float alone. Keep the snowflake, the ice shards and the sparkles exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the grass and dirt slab under the snowflake, leaving empty transparent background there, so the ice snowflake and its shards float alone. Keep the snowflake, the ice shards and the sparkles exactly the same.",
+    "editInstruction": "Remove the grass and dirt slab under the snowflake, leaving empty transparent background there, so the ice snowflake and its shards float alone. Keep the snowflake, the ice shards and the sparkles exactly the same.",
+    "source": {
+      "recipe": "icon-cold-snap-a",
+      "candidate": 0,
+      "sha256": "0fef723eb02f684e79bd55ebda2d16911e8bda511441e0e43420e3a768e5e90b"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "portrait-boulder-yeti-b-ice",
+  "jobId": "e5c7d867-7037-4899-95c0-7554b85383fb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-portrait-ice-folk-boulder-yeti",
+    "subject": "PORTRAIT:ICE_FOLK:CATAPULT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 72053,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only frost on the boulder: four or five small sharp bright ice blue ice crystals crusted on top of the grey boulder. Do not redraw anything else: keep the boulder's shape, the hands, the furry head, the dark face, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Add only frost on the boulder: four or five small sharp bright ice blue ice crystals crusted on top of the grey boulder. Do not redraw anything else: keep the boulder's shape, the hands, the furry head, the dark face, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Add only frost on the boulder: four or five small sharp bright ice blue ice crystals crusted on top of the grey boulder. Do not redraw anything else: keep the boulder's shape, the hands, the furry head, the dark face, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Add only frost on the boulder: four or five small sharp bright ice blue ice crystals crusted on top of the grey boulder. Do not redraw anything else: keep the boulder's shape, the hands, the furry head, the dark face, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-boulder-yeti-b",
+      "candidate": 0,
+      "sha256": "a7e3af6c6c0ccf8583d0ef452baf6cd720a0bb45d6c0c2bbd0ca70fe058adaaa"
+    }
+  }
+}

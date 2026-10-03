@@ -596,3 +596,32 @@ the embarked transport stay the shared ships. The Shield bar, the Cooling
 glyph, the Thrall collar, the flyers' shadow and the beams are code-drawn
 by the UI bead; their colours and shapes are suggested in
 [MARTIAN.md](factions/MARTIAN.md#suggestions-for-the-code-drawn-markers).
+
+## Ice Folk production art: batch `direction-ice-folk` (bead `pulp_wars-7g3.5`)
+
+A sixth faction's art, made before the faction is in the game and **not
+registered**: the entries are in
+[`chibi-direction-ice-folk-art-manifest.ts`](../../src/assets/chibi-direction-ice-folk-art-manifest.ts),
+which nothing imports until bead `pulp_wars-7g3.6` (the review scenes
+excepted). Fixed faction colours ("frost and fur": warm white and cream fur
+shaded taupe, charcoal slate faces, dark brown-grey hide, ivory bone, one
+deep ice-blue accent), no owner mask. See [ICE_FOLK.md](factions/ICE_FOLK.md).
+
+| Subjects                                                                        | Assets                                  | Class and canvas                                                      |
+| ------------------------------------------------------------------------------- | --------------------------------------- | --------------------------------------------------------------------- |
+| `UNIT:ICE_FOLK:FIGHTER`, `MARKSMAN`, `GUARD`, `CAPTAIN`                         | Yeti, Snow Hunter, Mammoth, Ice Witch   | `STANDARD_UNIT`, 56 x 80                                              |
+| `UNIT:ICE_FOLK:RAIDER`, `CATAPULT`, `KNIGHT`                                    | Sled, Boulder Yeti, Sabretooth          | `LARGE_UNIT`, 72 x 88                                                 |
+| `UNIT:ICE_FOLK:JUGGERNAUT`                                                      | Frost Giant                             | `GIANT_UNIT`, 88 x 104                                                |
+| `PORTRAIT:ICE_FOLK:<ROLE>`                                                      | eight portraits                         | `PORTRAIT`, 48 x 48                                                   |
+| `CITY:ICE_FOLK:1` to `3`                                                        | the igloo settlement                    | `SETTLEMENT`, 80 x 80, 88 x 88, 96 x 88; pennant anchors recorded     |
+| `ICON:ACTION:THROW_BOLAS`, `COLD_SNAP`, `SHATTER`, `SWEEP`, `ROCKFALL`, `PROWL` | six command and ability icons           | `ICON`, 48 x 48                                                       |
+| `ICON:TECH:ICE_FOLK:FORTIFICATION`, `ICON:TECH:ICE_FOLK:EXPLOSIVES`             | Deep Winter and Brittle                 | `ICON`, 48 x 48                                                       |
+| `ICON:STATUS:CHILLED`, `ICON:STATUS:FROZEN`                                     | the Frosted glyph and the Frozen status | `ICON`, 48 x 48                                                       |
+| `EFFECT:SHATTER`, `SHATTER_SHARDS`, `COLD_SNAP`, `BOLAS`, `FROST_HIT`           | five effect sprites                     | `EFFECT`, 48 x 48 (Bolas and frost 40 x 40), palette `ice-folk-frost` |
+
+34 assets from 72 recipes (72 PixelLab calls). Patrol Boat, Battleship and
+the embarked transport stay the shared ships. The Snow overlay, the
+Blizzard, the Frozen and Frosted markers and the Shatter window on the HP
+bar are code-drawn; their pure drawing functions and colours are in
+[`chibi-direction-ice-folk-presentation.ts`](../../src/assets/chibi-direction-ice-folk-presentation.ts)
+and described in [ICE_FOLK.md](factions/ICE_FOLK.md#code-drawn-pieces).

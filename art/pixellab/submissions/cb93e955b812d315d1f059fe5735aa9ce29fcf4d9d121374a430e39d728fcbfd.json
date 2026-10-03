@@ -1,0 +1,36 @@
+{
+  "id": "effect-shatter-a-edit",
+  "jobId": "92ab2b43-d7a6-48ce-9c5e-a325bd109ad5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-effect-ice-folk-shatter",
+    "subject": "EFFECT:SHATTER",
+    "faction": "ICE_FOLK",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 74002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the red and orange flash in the middle: it becomes a round white flash with a pale blue rim and a few small white sparkles, so nothing is red, orange or yellow. Keep the blue ice shards flying outward, their shapes, the outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the red and orange flash in the middle: it becomes a round white flash with a pale blue rim and a few small white sparkles, so nothing is red, orange or yellow. Keep the blue ice shards flying outward, their shapes, the outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the red and orange flash in the middle: it becomes a round white flash with a pale blue rim and a few small white sparkles, so nothing is red, orange or yellow. Keep the blue ice shards flying outward, their shapes, the outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the red and orange flash in the middle: it becomes a round white flash with a pale blue rim and a few small white sparkles, so nothing is red, orange or yellow. Keep the blue ice shards flying outward, their shapes, the outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-shatter-a",
+      "candidate": 0,
+      "sha256": "ab68ee4a339edc47a4afc18a852a8d6b2ed7d8cb2efca8c0677cd50e22b09df1"
+    }
+  }
+}

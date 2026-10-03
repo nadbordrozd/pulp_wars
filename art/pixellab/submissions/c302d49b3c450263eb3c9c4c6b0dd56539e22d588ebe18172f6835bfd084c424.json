@@ -1,0 +1,36 @@
+{
+  "id": "ice-folk-city-1-calm-a-edit",
+  "jobId": "0c19719a-9e4f-46fa-85ca-badb224cfca4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-city-1",
+    "subject": "CITY:ICE_FOLK:1",
+    "faction": "ICE_FOLK",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 75002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass and the brown dirt slab under the camp, so the igloo, the hide tent, the ice blocks and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloo, the cream tent, the blue ice blocks, the tall bone pole, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass and the brown dirt slab under the camp, so the igloo, the hide tent, the ice blocks and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloo, the cream tent, the blue ice blocks, the tall bone pole, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass and the brown dirt slab under the camp, so the igloo, the hide tent, the ice blocks and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloo, the cream tent, the blue ice blocks, the tall bone pole, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass and the brown dirt slab under the camp, so the igloo, the hide tent, the ice blocks and the bone pole stand directly on a transparent background with nothing at all under them. Keep the white igloo, the cream tent, the blue ice blocks, the tall bone pole, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "ice-folk-city-1-calm-a",
+      "candidate": 0,
+      "sha256": "43a411b8eff06476b8dc9cd281ef7669923b23979e1035858007eb5ffb349d74"
+    }
+  }
+}

@@ -48,6 +48,16 @@ export interface AccentSpec {
   readonly floor?: {
     readonly valueMin: number;
   };
+  /**
+   * Every accent pixel (bead pulp_wars-7g3.5): the saturation becomes
+   * `min(max, saturation * scale + add)`, for an accent that PixelLab draws
+   * too pale. Omitted, the saturation is kept, as in the earlier presets.
+   */
+  readonly saturation?: {
+    readonly scale: number;
+    readonly add: number;
+    readonly max: number;
+  };
 }
 
 /**
@@ -93,6 +103,31 @@ export const ACCENT_PRESETS = {
     },
     hue: 322,
     hueSpread: 0.2,
+  },
+  /**
+   * The Ice Folk accent (bead pulp_wars-7g3.5, ICE_FOLK.md): a deep ice
+   * blue at hue 205 (lit about `#36a5f5`). PixelLab draws "ice blue" as a
+   * pale glacier cyan (hue 185 to 200, saturation about 0.3), which measures
+   * 10 from Shallow Water and 2 from the Martian glass for a deuteranope; an
+   * edit asking for a deeper blue drew a dark royal blue (`#0813af`). The
+   * step finds the drawn ice by colour (hue 175 to 218, saturation at least
+   * 0.2, value at least 0.62) and moves it to hue 205 with its saturation
+   * raised. Fur, hide, bone, skin and the slate faces are below saturation
+   * 0.2 or below value 0.62 (a few lit tones of a slate face are
+   * caught and turn a little bluer); white highlights stay white; the Witch's navy
+   * robe is darker and bluer (hue 225 and more) and is never touched.
+   */
+  "ice-folk-blue": {
+    band: {
+      hueFrom: 175,
+      hueTo: 218,
+      saturationMin: 0.2,
+      valueMin: 0.62,
+      hueCentre: 195,
+    },
+    hue: 205,
+    hueSpread: 0.3,
+    saturation: { scale: 1.4, add: 0.3, max: 0.95 },
   },
 } as const satisfies Readonly<Record<string, AccentSpec>>;
 
@@ -198,6 +233,11 @@ export function accentRaster(base: RgbaRaster, spec: AccentSpec): AccentResult {
       let { saturation, value } = hsv;
       if (spec.floor !== undefined && value < spec.floor.valueMin)
         value = spec.floor.valueMin;
+      if (spec.saturation !== undefined)
+        saturation = Math.min(
+          spec.saturation.max,
+          saturation * spec.saturation.scale + spec.saturation.add,
+        );
       if (spec.trim !== undefined) {
         let accentNear = 0;
         let darkNear = 0;

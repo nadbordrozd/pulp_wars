@@ -1,0 +1,36 @@
+{
+  "id": "yeti-fur-b",
+  "jobId": "d8d3910c-99b6-4fe6-922b-6909883e4c9a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-yeti",
+    "subject": "UNIT:ICE_FOLK:FIGHTER",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 71002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the shadows of the fur: every cool blue-grey shadow tone in the fur becomes a warm taupe grey, colour #a8957c, darker #857258 in the deepest folds, so no fur is blue or grey-blue. Keep the warm white and cream lit fur, the dark slate face, hands and feet, the ice club, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the shadows of the fur: every cool blue-grey shadow tone in the fur becomes a warm taupe grey, colour #a8957c, darker #857258 in the deepest folds, so no fur is blue or grey-blue. Keep the warm white and cream lit fur, the dark slate face, hands and feet, the ice club, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the shadows of the fur: every cool blue-grey shadow tone in the fur becomes a warm taupe grey, colour #a8957c, darker #857258 in the deepest folds, so no fur is blue or grey-blue. Keep the warm white and cream lit fur, the dark slate face, hands and feet, the ice club, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the shadows of the fur: every cool blue-grey shadow tone in the fur becomes a warm taupe grey, colour #a8957c, darker #857258 in the deepest folds, so no fur is blue or grey-blue. Keep the warm white and cream lit fur, the dark slate face, hands and feet, the ice club, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "yeti-a",
+      "candidate": 0,
+      "sha256": "617bea95c9dd78d029d0f7d2a5839a8d93a985a88450a3b0ea2de4fe7152d52f"
+    }
+  }
+}

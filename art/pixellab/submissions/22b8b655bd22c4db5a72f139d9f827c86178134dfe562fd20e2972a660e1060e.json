@@ -1,0 +1,36 @@
+{
+  "id": "mammoth-a-edit",
+  "jobId": "2676f28e-edf0-4eda-8d16-6271786f9888",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-mammoth",
+    "subject": "UNIT:ICE_FOLK:GUARD",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 71203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only these parts: the orange trunk becomes the same dark slate grey as the face; the dark brown wool on the belly, legs and lower body becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like the top of the body, so nothing is orange or dark brown. Keep the ivory tusks, the frost on their tips, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only these parts: the orange trunk becomes the same dark slate grey as the face; the dark brown wool on the belly, legs and lower body becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like the top of the body, so nothing is orange or dark brown. Keep the ivory tusks, the frost on their tips, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only these parts: the orange trunk becomes the same dark slate grey as the face; the dark brown wool on the belly, legs and lower body becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like the top of the body, so nothing is orange or dark brown. Keep the ivory tusks, the frost on their tips, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only these parts: the orange trunk becomes the same dark slate grey as the face; the dark brown wool on the belly, legs and lower body becomes warm cream to light tan wool, colour #e3cfa5 shaded #b8976b, like the top of the body, so nothing is orange or dark brown. Keep the ivory tusks, the frost on their tips, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "mammoth-a",
+      "candidate": 0,
+      "sha256": "f9a50d2377827eb6e53b11e60f5347d745865f4b7e008eb68d6057f6b160248e"
+    }
+  }
+}

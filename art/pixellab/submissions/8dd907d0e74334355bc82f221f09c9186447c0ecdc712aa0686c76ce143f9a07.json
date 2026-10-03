@@ -1,0 +1,64 @@
+{
+  "id": "sled-a",
+  "jobId": "sync-17d60cd0-d3e3-40d7-8d4d-e49a1f5c1005",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-sled",
+    "subject": "UNIT:ICE_FOLK:RAIDER",
+    "faction": "ICE_FOLK",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 71301,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/ICE_FOLK.md#prompt-fragment + docs/art/factions/ICE_FOLK.md#negative-fragment",
+        "text": "Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards.",
+        "negative": "red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-machine.txt + scripts/art/chibi/fragments/class-machine.negative.txt",
+        "text": "Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/ICE_FOLK.json",
+        "text": "Subject: Sled, a small low dog sled racing forward: two chunky cute husky dogs with grey backs and white faces and bellies pulling in front, a short pale ivory bone sled with curved runners behind them, and a small fur-clad driver standing on the back of the sled with weathered tan skin, a dark brown-grey fur parka with a cream fur hood, whirling a bolas over his head: two round ice crystal weights on one cord; simple shapes and very few details; fast and low, wider than it is tall; the runners and the paws are the lowest thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The two dogs, the sled and the driver are drawn large and together fill most of the width of the image.",
+        "negative": "horse, reindeer, wheels, cart, wagon, car, motor, metal, wood planks, brown wood, red, scarf"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Sled, a small low dog sled racing forward: two chunky cute husky dogs with grey backs and white faces and bellies pulling in front, a short pale ivory bone sled with curved runners behind them, and a small fur-clad driver standing on the back of the sled with weathered tan skin, a dark brown-grey fur parka with a cream fur hood, whirling a bolas over his head: two round ice crystal weights on one cord; simple shapes and very few details; fast and low, wider than it is tall; the runners and the paws are the lowest thing in the image. The two dogs, the sled and the driver are drawn large and together fill most of the width of the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, horse, reindeer, wheels, cart, wagon, car, motor, metal, wood planks, brown wood, scarf",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: ice-age folk of the frozen mountain peaks, calm and friendly. Their fixed colours: shaggy warm white and cream fur shaded with warm taupe grey, never blue-grey; dark charcoal slate on the bare faces, hands and feet of beasts; dark brown-grey hide and furs; pale ivory bone; and exactly one accent colour, a bright clear ice blue with white highlights, only as small ice crystals, frost and ice shards. Class: one chunky cute toy-like machine map piece, a single vehicle or device with big simple rounded shapes and one oversized signature feature, thick single-colour black outline; the whole machine is visible, and its lowest part is the lowest thing in the image. Subject: Sled, a small low dog sled racing forward: two chunky cute husky dogs with grey backs and white faces and bellies pulling in front, a short pale ivory bone sled with curved runners behind them, and a small fur-clad driver standing on the back of the sled with weathered tan skin, a dark brown-grey fur parka with a cream fur hood, whirling a bolas over his head: two round ice crystal weights on one cord; simple shapes and very few details; fast and low, wider than it is tall; the runners and the paws are the lowest thing in the image. The two dogs, the sled and the driver are drawn large and together fill most of the width of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, gold, brass, orange, fire, flames, green, lime, purple, violet, magenta, pink, blue-grey fur, grey fur, metal armour, steel, chrome, plate armour, medieval knight, helmet, sword, gun, scary, horror, realistic, large glowing area, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, horse, reindeer, wheels, cart, wagon, car, motor, metal, wood planks, brown wood, scarf."
+  }
+}

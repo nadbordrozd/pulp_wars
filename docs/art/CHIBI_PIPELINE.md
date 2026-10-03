@@ -910,3 +910,89 @@ a shadow player of the seat's colour. Its captures start Vite on port 6509
 unless `--port` says otherwise, need `CHROME_PATH`, and are written after
 the browser closes (a file written under the project while the page is
 open makes the dev server reload it).
+
+## The Ice Folk batch (bead `pulp_wars-7g3.5`)
+
+Batch `direction-ice-folk` holds the direction study and the production art
+of a sixth faction, the [Ice Folk](factions/ICE_FOLK.md): faction
+`ICE_FOLK`, `fixedFactionColours`, 34 assets (eight units, eight portraits,
+ten icons, five effects, City 1 to 3) from 72 recipes, all new PixelLab
+calls. Like the Martian batch it starts from fresh creations and **nothing
+registers it yet**: its registry lines are in
+[`chibi-direction-ice-folk-art-manifest.ts`](../../src/assets/chibi-direction-ice-folk-art-manifest.ts),
+which no game module imports until bead `pulp_wars-7g3.6`. It added these
+pipeline pieces:
+
+- **`ice-folk-blue` accent preset**
+  ([`accent.ts`](../../scripts/art/chibi/accent.ts)): the band hue 175 to
+  218, saturation at least 0.2, value at least 0.62; target hue 205 with
+  three tenths of the hue spread, and a new optional **saturation step**
+  (`saturation: { scale, add, max }`, here 1.4, 0.3 and 0.95), because
+  PixelLab draws "ice blue" as a pale glacier cyan (saturation about 0.3)
+  that measures 10 from Shallow Water. The step is the Ice Folk preset's
+  alone; `undead-violet` and `martian-magenta` are unchanged (tests hold
+  both), and the Martian test's list of preset names now includes this one.
+- **Subjects**: `UNIT:ICE_FOLK:<ROLE>`, `PORTRAIT:ICE_FOLK:<ROLE>`,
+  `CITY:ICE_FOLK:<level>`, the command and ability icons
+  `ICON:ACTION:{THROW_BOLAS,COLD_SNAP,SHATTER,SWEEP,ROCKFALL,PROWL}`, the
+  technology icons `ICON:TECH:ICE_FOLK:{FORTIFICATION,EXPLOSIVES}` (Deep
+  Winter and Brittle), the status icons `ICON:STATUS:{CHILLED,FROZEN}` and
+  the effects `EFFECT:{SHATTER,SHATTER_SHARDS,COLD_SNAP,BOLAS,FROST_HIT}`
+  (the type `IceFolkArtSubjectV7` in
+  [`chibi-art-v7.ts`](../../src/assets/chibi-art-v7.ts), and the manifest's
+  subject pattern).
+- **Effects** are `palette-map` assets on
+  `scripts/art/chibi/palettes/ice-folk-frost.png`, written by
+  `npx tsx scripts/art/ice-folk-direction/frost-palette.ts` (a test checks
+  the bytes).
+- **The study is in the batch.** The first recipes (`yeti-a`,
+  `yeti-fur-b`, `yeti-fur-c`, `yeti-ice-b`, `ice-witch-a`, `mammoth-a`) are
+  the fur and accent options of the direction study, kept as rejected
+  history with their reasons; `npx tsx scripts/art/ice-folk-direction/study.ts`
+  measures them again.
+
+What worked, added to the prompt notes of the earlier batches:
+
+- **Measure the colour space before the first call.** The root's starting
+  accent (`#8fe3ff`) and a blue-grey fur shade were measured against the
+  terrain and the other factions with no PixelLab call: the accent was 12
+  from Shallow Water and the shade 6 from the Mountain rock. The study then
+  confirmed both on drawn sprites.
+- **A cool shade on a pale coat falls into a blue accent's band:** the
+  accent step turned the blue-grey fur shade blue. A warm taupe shade
+  ("shaded with warm taupe grey, never blue-grey") keeps the fur out of it.
+- **Skin colours named by the faction layer reach every figure:** the first
+  fragment's "dark slate blue-grey skin" gave the Ice Witch a slate face.
+  The fragment now names slate only for "the bare faces, hands and feet of
+  beasts", and people's skin is in their subject lines.
+- **"Ice blue" by hex in an edit is not controllable** (`#1f9bff` asked,
+  `#0813af` drawn); the accent step pins it instead.
+- **Portraits of beasts come out as whole small figures.** "Zoom in to a
+  close-up portrait: redraw it as only the head and the top of the
+  shoulders, twice as big" as an edit of the creation worked for the Yeti,
+  the Witch and the Snow Hunter; a sibling edit of the accepted Yeti
+  portrait gave the Boulder Yeti's.
+- **Icons with the faction layer may gain a figure:** both Bolas creations
+  drew a yeti swinging it; "Erase the yeti completely" fixed it.
+- **Saturated tan and red skin can fall into the owner key band** (hue 340
+  to 5): the Snow Hunter's first face and a dark red fringe did; a colour
+  edit with a hex skin tone fixed both. A test checks every master.
+- **PixelLab draws mammoth wool orange** in portraits; a recolour edit with
+  hex values gave the map sprite's cream.
+
+`npm run art:chibi-ice-folk-direction-review` writes
+`art/pixellab/reviews/chibi-batch-direction-ice-folk/`: the study sheets,
+`roster-{x4,1x}.png` and `roster-zoom-0.75.png` (the units on Grass,
+Mountain rock, Snow and snowy rock beside the other five factions' unit of
+the role), `terrain-x2.png` (Grass, Forest, Mountain, both waters and the
+Snow overlay over Grass, Forest and Mountain), `portraits-x4.png`,
+`icons-x4.png`, `effects-x3.png`, `shatter-frames-x3.png`, `cities-x3.png`,
+`markers-x3.png` (Frozen and Frosted on six factions, the HP bar's Shatter
+window), `snow-tiles-x2.png`, `snow-board-zoom-{1,0.75}.png` (a board mock
+with the Snow overlay over a city's territory and a Blizzard over enemy
+land), `palette.{png,json}`, `readability.json` and the scenes
+`scene-{four,mixed-a,mixed-b}-{desktop,phone}-zoom-{1,0.75}.png` of
+[`scene.ts`](../../scripts/art/ice-folk-direction/scene.ts), which register
+the Ice Folk (and Martian) rasters under stand-in factions as the Martian
+review does. Captures start Vite on port 6513 unless `--port` says
+otherwise and need `CHROME_PATH`; `--copy-to DIR` copies the key sheets.

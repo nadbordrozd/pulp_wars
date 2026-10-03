@@ -53,7 +53,37 @@ export type ArtSubjectV7 =
   | "GRAVE"
   | UiArtSubjectV7
   | ChibiEffectSubjectV7
-  | MartianArtSubjectV7;
+  | MartianArtSubjectV7
+  | IceFolkArtSubjectV7;
+
+/**
+ * Ice Folk art subjects (bead pulp_wars-7g3.5, ICE_FOLK.md): the units, their
+ * portraits, the igloo settlement, the command, ability, technology and
+ * status icons (`ICON:TECH:ICE_FOLK:*` are Deep Winter and Brittle, the Ice
+ * Folk names of Fortification and Explosives) and the ability effect
+ * sprites. The art exists before the faction is wired in: nothing resolves
+ * these subjects until the UI bead (pulp_wars-7g3.6) registers them.
+ */
+export type IceFolkArtSubjectV7 =
+  | `UNIT:ICE_FOLK:${IceFolkArtRoleV7}`
+  | `PORTRAIT:ICE_FOLK:${IceFolkArtRoleV7}`
+  | `CITY:ICE_FOLK:${1 | 2 | 3}`
+  | `ICON:ACTION:${"THROW_BOLAS" | "COLD_SNAP" | "SWEEP" | "ROCKFALL" | "PROWL" | "SHATTER"}`
+  | `ICON:TECH:ICE_FOLK:${"FORTIFICATION" | "EXPLOSIVES"}`
+  | `ICON:STATUS:${"CHILLED" | "FROZEN"}`
+  | `EFFECT:${IceFolkEffectIdV7}`;
+
+/**
+ * Ice Folk effect sprites: SHATTER (the burst of a shattered unit),
+ * SHATTER_SHARDS (the loose shards that fly out and melt), COLD_SNAP (the
+ * frost ring of a Cold Snap), BOLAS (the thrown bolas) and FROST_HIT (frost
+ * forming on a unit that is chilled).
+ */
+export type IceFolkEffectIdV7 =
+  "SHATTER" | "SHATTER_SHARDS" | "COLD_SNAP" | "BOLAS" | "FROST_HIT";
+
+/** Roles with their own Ice Folk art (docs/art/factions/ICE_FOLK.md). */
+export type IceFolkArtRoleV7 = UndeadArtRoleV7;
 
 /**
  * Martian interface and effect subjects (bead pulp_wars-t6s.6): the unit

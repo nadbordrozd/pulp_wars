@@ -1,0 +1,36 @@
+{
+  "id": "snow-hunter-a-skin-hair",
+  "jobId": "61c260da-7fd8-488f-bc46-b51f55ff4a16",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-snow-hunter",
+    "subject": "UNIT:ICE_FOLK:MARKSMAN",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 71403,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dark red-brown hair on his forehead under the hood: it becomes dark charcoal brown-grey, colour #3a3432, so nothing on him is red. Do not redraw anything else: keep the tan face, the cream fur hood, the dark parka, the harpoon and its ice tip, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the dark red-brown hair on his forehead under the hood: it becomes dark charcoal brown-grey, colour #3a3432, so nothing on him is red. Do not redraw anything else: keep the tan face, the cream fur hood, the dark parka, the harpoon and its ice tip, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the dark red-brown hair on his forehead under the hood: it becomes dark charcoal brown-grey, colour #3a3432, so nothing on him is red. Do not redraw anything else: keep the tan face, the cream fur hood, the dark parka, the harpoon and its ice tip, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the dark red-brown hair on his forehead under the hood: it becomes dark charcoal brown-grey, colour #3a3432, so nothing on him is red. Do not redraw anything else: keep the tan face, the cream fur hood, the dark parka, the harpoon and its ice tip, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "snow-hunter-a-skin",
+      "candidate": 0,
+      "sha256": "73dfd3cb32a5700528c1a5a5afe9a012315968d8b71f66b619fb134075ef7c0d"
+    }
+  }
+}

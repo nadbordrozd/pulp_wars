@@ -1,0 +1,36 @@
+{
+  "id": "portrait-ice-witch-a-edit",
+  "jobId": "6cbe434d-4220-4388-a231-145490c186f8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-portrait-ice-folk-ice-witch",
+    "subject": "PORTRAIT:ICE_FOLK:CAPTAIN",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 72042,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Zoom in to a close-up portrait: redraw it as only her head and the top of her shoulders, twice as big, so her face fills the middle of the square; remove the pointed hat and put a tall crown of sharp ice shards on her long white hair instead; a white fur collar on a navy robe at the bottom. Keep her pale face and big eyes, the ice colours, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Zoom in to a close-up portrait: redraw it as only her head and the top of her shoulders, twice as big, so her face fills the middle of the square; remove the pointed hat and put a tall crown of sharp ice shards on her long white hair instead; a white fur collar on a navy robe at the bottom. Keep her pale face and big eyes, the ice colours, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Zoom in to a close-up portrait: redraw it as only her head and the top of her shoulders, twice as big, so her face fills the middle of the square; remove the pointed hat and put a tall crown of sharp ice shards on her long white hair instead; a white fur collar on a navy robe at the bottom. Keep her pale face and big eyes, the ice colours, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Zoom in to a close-up portrait: redraw it as only her head and the top of her shoulders, twice as big, so her face fills the middle of the square; remove the pointed hat and put a tall crown of sharp ice shards on her long white hair instead; a white fur collar on a navy robe at the bottom. Keep her pale face and big eyes, the ice colours, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-ice-witch-a",
+      "candidate": 0,
+      "sha256": "cfee75011be6b140e821900b2d70be7ede1b7f5ef3e34ca57ae64ebbd2aa02ea"
+    }
+  }
+}

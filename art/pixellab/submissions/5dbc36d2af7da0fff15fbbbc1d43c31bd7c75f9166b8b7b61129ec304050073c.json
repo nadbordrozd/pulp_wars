@@ -1,0 +1,36 @@
+{
+  "id": "frost-giant-a-edit",
+  "jobId": "d5b35079-80b7-4515-9f37-67f15190d0ed",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-frost-giant",
+    "subject": "UNIT:ICE_FOLK:JUGGERNAUT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 71702,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the hair and the beard: the tan blond hair, beard and eyebrows become frosty white, colour #f2f4f6, shaded pale grey #b9c0c8, with a few tiny icicles hanging from the beard. Keep the slate grey face and hands, the blue ice armour, the ice axe, the brown-grey hide, the shape, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the hair and the beard: the tan blond hair, beard and eyebrows become frosty white, colour #f2f4f6, shaded pale grey #b9c0c8, with a few tiny icicles hanging from the beard. Keep the slate grey face and hands, the blue ice armour, the ice axe, the brown-grey hide, the shape, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the hair and the beard: the tan blond hair, beard and eyebrows become frosty white, colour #f2f4f6, shaded pale grey #b9c0c8, with a few tiny icicles hanging from the beard. Keep the slate grey face and hands, the blue ice armour, the ice axe, the brown-grey hide, the shape, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the hair and the beard: the tan blond hair, beard and eyebrows become frosty white, colour #f2f4f6, shaded pale grey #b9c0c8, with a few tiny icicles hanging from the beard. Keep the slate grey face and hands, the blue ice armour, the ice axe, the brown-grey hide, the shape, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "frost-giant-a",
+      "candidate": 0,
+      "sha256": "4a5847ed70467dae1e594deb28cdc517457bcbb6c815f60d25ece144477d270b"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "measuredOn": "the eight unit masters",
+  "accentLit": "#24abfc",
+  "palette": [
+    {
+      "role": "Ice blue accent",
+      "mean": "#198de3",
+      "tones": [
+        "#24abfc",
+        "#0d9efa",
+        "#0c98f5",
+        "#0d9ffd"
+      ],
+      "share": 8.5
+    },
+    {
+      "role": "Outline and darkest tones",
+      "mean": "#030303",
+      "tones": [
+        "#000000",
+        "#241e27",
+        "#252426",
+        "#131316"
+      ],
+      "share": 23.1
+    },
+    {
+      "role": "Snow white and highlights",
+      "mean": "#f7fbfa",
+      "tones": [
+        "#fafcf9",
+        "#ffffff",
+        "#f5fefc",
+        "#f6faf8"
+      ],
+      "share": 4
+    },
+    {
+      "role": "Fur and cream, lit",
+      "mean": "#e3d4b6",
+      "tones": [
+        "#fffbe6",
+        "#fffddb",
+        "#f9e8c6",
+        "#fff0c6"
+      ],
+      "share": 23.6
+    },
+    {
+      "role": "Fur, taupe shade",
+      "mean": "#8c7667",
+      "tones": [
+        "#aa856e",
+        "#847072",
+        "#8e8d87",
+        "#a1866e"
+      ],
+      "share": 8
+    },
+    {
+      "role": "Dark brown-grey hide",
+      "mean": "#4b3936",
+      "tones": [
+        "#3d3d3d",
+        "#442b2e",
+        "#5e5e51",
+        "#5e5d5b"
+      ],
+      "share": 4.7
+    },
+    {
+      "role": "Slate faces, hands and stone",
+      "mean": "#515864",
+      "tones": [
+        "#4e4e59",
+        "#6e6c76",
+        "#292c34",
+        "#272729"
+      ],
+      "share": 10.5
+    },
+    {
+      "role": "Navy robe",
+      "mean": "#22324f",
+      "tones": [
+        "#1c233e",
+        "#2b3e53",
+        "#29354d",
+        "#1a2538"
+      ],
+      "share": 6.8
+    }
+  ],
+  "codeDrawn": {
+    "ice": "#37b1fa",
+    "iceGlow": "#7fcbff",
+    "icePale": "#d6f0ff",
+    "iceDark": "#145a9c",
+    "outline": "#0e1c30",
+    "snow": "#f5f8fc",
+    "snowShade": "#bccbdd",
+    "snowRim": "#9aaec7",
+    "fur": "#ddd9c1",
+    "furShade": "#8d8273",
+    "slate": "#3b4352",
+    "navy": "#1b2552"
+  }
+}

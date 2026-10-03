@@ -1,0 +1,36 @@
+{
+  "id": "portrait-sled-a-skin-mouth",
+  "jobId": "b1c61091-d264-453d-b60f-cd04c485ab8a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-portrait-ice-folk-sled",
+    "subject": "PORTRAIT:ICE_FOLK:RAIDER",
+    "faction": "ICE_FOLK",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 72013,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the small red mouth and the red mitten: they become a soft dark brown-grey, colour #4a3a36, so nothing is red. Do not redraw anything else: keep the tan face, the cream fur hood, the parka, the bolas and the husky, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the small red mouth and the red mitten: they become a soft dark brown-grey, colour #4a3a36, so nothing is red. Do not redraw anything else: keep the tan face, the cream fur hood, the parka, the bolas and the husky, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the small red mouth and the red mitten: they become a soft dark brown-grey, colour #4a3a36, so nothing is red. Do not redraw anything else: keep the tan face, the cream fur hood, the parka, the bolas and the husky, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the small red mouth and the red mitten: they become a soft dark brown-grey, colour #4a3a36, so nothing is red. Do not redraw anything else: keep the tan face, the cream fur hood, the parka, the bolas and the husky, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-sled-a-skin",
+      "candidate": 0,
+      "sha256": "baee2f6b2b9ad7955f9fc33ebc9fa1f86bae6e8bd8bbcda47166419a0d84f85c"
+    }
+  }
+}

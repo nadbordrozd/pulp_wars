@@ -1,0 +1,36 @@
+{
+  "id": "icon-action-throw-bolas-b-edit",
+  "jobId": "8b342714-9e5d-463f-bdcb-bb0f434014fb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-icon-action-throw-bolas",
+    "subject": "ICON:ACTION:THROW_BOLAS",
+    "faction": "ICE_FOLK",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 73014,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase the yeti completely, leaving empty transparent background where it was, and make the bolas bigger in the middle: two round ice balls joined by one curved cream cord, flying, with one short white motion arc. Nothing else is in the image. Keep the ice colours, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Erase the yeti completely, leaving empty transparent background where it was, and make the bolas bigger in the middle: two round ice balls joined by one curved cream cord, flying, with one short white motion arc. Nothing else is in the image. Keep the ice colours, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Erase the yeti completely, leaving empty transparent background where it was, and make the bolas bigger in the middle: two round ice balls joined by one curved cream cord, flying, with one short white motion arc. Nothing else is in the image. Keep the ice colours, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Erase the yeti completely, leaving empty transparent background where it was, and make the bolas bigger in the middle: two round ice balls joined by one curved cream cord, flying, with one short white motion arc. Nothing else is in the image. Keep the ice colours, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-action-throw-bolas-b",
+      "candidate": 0,
+      "sha256": "d37e17ece373d7e5042b49b5f8c35eaf3a923082057cba15679e93714bfcbbda"
+    }
+  }
+}

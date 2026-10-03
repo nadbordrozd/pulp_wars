@@ -1,0 +1,36 @@
+{
+  "id": "boulder-yeti-a-edit",
+  "jobId": "d09087bf-0e8c-48aa-8fe0-db4eb514a743",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-ice-folk",
+    "asset": "chibi-direction-ice-folk-boulder-yeti",
+    "subject": "UNIT:ICE_FOLK:CATAPULT",
+    "faction": "ICE_FOLK",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 71502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the fur: the brown and tan coat becomes a shaggy ash cream coat, colour #cfc3a8, shaded darker warm taupe #857258, with a few lighter #e6dcc4 tufts on the head and shoulders, so it is a slightly darker cousin of a white yeti and nothing is brown or orange. Keep the dark slate face, hands and feet, the fangs, the icy boulder over its head, the pose, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the fur: the brown and tan coat becomes a shaggy ash cream coat, colour #cfc3a8, shaded darker warm taupe #857258, with a few lighter #e6dcc4 tufts on the head and shoulders, so it is a slightly darker cousin of a white yeti and nothing is brown or orange. Keep the dark slate face, hands and feet, the fangs, the icy boulder over its head, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the fur: the brown and tan coat becomes a shaggy ash cream coat, colour #cfc3a8, shaded darker warm taupe #857258, with a few lighter #e6dcc4 tufts on the head and shoulders, so it is a slightly darker cousin of a white yeti and nothing is brown or orange. Keep the dark slate face, hands and feet, the fangs, the icy boulder over its head, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the fur: the brown and tan coat becomes a shaggy ash cream coat, colour #cfc3a8, shaded darker warm taupe #857258, with a few lighter #e6dcc4 tufts on the head and shoulders, so it is a slightly darker cousin of a white yeti and nothing is brown or orange. Keep the dark slate face, hands and feet, the fangs, the icy boulder over its head, the pose, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "boulder-yeti-a",
+      "candidate": 0,
+      "sha256": "306baa5cf17d2376d27ab872e006db45d9aa9c12957846a8a2e6c65ce7b8bbfc"
+    }
+  }
+}
