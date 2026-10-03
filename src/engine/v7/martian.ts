@@ -1,13 +1,17 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   FORCE_FIELD_SHIELD_V7,
+  MIND_CONTROL_HP_V7,
+  MIND_CONTROL_RANGE_V7,
   attackIsRayV7,
   technologyCapabilitiesV7,
+  unitCapacitySlotsV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
   type MartianUnitFactsV7,
 } from "../rules/ruleset-v7";
+import { unitIsConstructV7 } from "./afflictions";
 import type { DomainEventV7 } from "./events";
 import type {
   CoolingStatusV7,
@@ -15,6 +19,7 @@ import type {
   GameStateV7,
   MindControlCooldownV7,
   ShieldStatusV7,
+  TerrainIdV7,
   ThrallStatusV7,
   UnitRoleIdV7,
   UnitStateV7,
@@ -333,6 +338,64 @@ export function thrallsOfBrainV7(
   return thralls
     .filter((entry) => entry.brainUnitId === brainUnitId)
     .map((entry) => entry.unitId);
+}
+
+/** Why a living, visible, hostile unit is not a legal Mind Control target. */
+export type MindControlTargetBlockV7 =
+  "TARGET_IMMUNE" | "OUT_OF_RANGE" | "TARGET_HEALTHY";
+
+/**
+ * Section 8.2: the per-target Mind Control conditions, shared by the
+ * reducer and the public command query so that every offered target is
+ * accepted and every rejected one is not offered. `target` is a living
+ * unit the Brain's owner sees and is hostile to (each caller checks that
+ * against its own data); `targetTile` is the tile it stands on, undefined
+ * when unknown. Returns null when the target is legal, otherwise the first
+ * failing condition in the reducer's rejection order:
+ *
+ * - `TARGET_IMMUNE`: not in land form, a `JUGGERNAUT`-role or two-slot
+ *   unit, on a settlement site (or an unknown tile), on a Rift
+ *   (RULESET_7_RIFT.md section 4), or a construct (the Dwarf revision
+ *   section 7.2);
+ * - `OUT_OF_RANGE`: more than `MIND_CONTROL_RANGE_V7` from the Brain;
+ * - `TARGET_HEALTHY`: more than `MIND_CONTROL_HP_V7` HP.
+ */
+export function mindControlTargetBlockV7(
+  roster: FactionRosterV7,
+  brain: { readonly at: CoordV7 },
+  target: {
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form: UnitStateV7["form"];
+    readonly at: CoordV7;
+    readonly hp: number;
+  },
+  targetTile:
+    | {
+        readonly site: unknown;
+        readonly terrain: TerrainIdV7 | null;
+      }
+    | undefined,
+): MindControlTargetBlockV7 | null {
+  if (
+    target.form !== "LAND" ||
+    target.role === "JUGGERNAUT" ||
+    unitCapacitySlotsV7(roster, target) !== 1 ||
+    targetTile === undefined ||
+    targetTile.site !== null ||
+    targetTile.terrain === "RIFT" ||
+    unitIsConstructV7(roster, target)
+  )
+    return "TARGET_IMMUNE";
+  if (
+    Math.max(
+      Math.abs(brain.at.x - target.at.x),
+      Math.abs(brain.at.y - target.at.y),
+    ) > MIND_CONTROL_RANGE_V7
+  )
+    return "OUT_OF_RANGE";
+  if (target.hp > MIND_CONTROL_HP_V7) return "TARGET_HEALTHY";
+  return null;
 }
 
 /**

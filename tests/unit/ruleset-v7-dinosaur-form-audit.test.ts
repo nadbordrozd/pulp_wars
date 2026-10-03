@@ -514,7 +514,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Revision 20 removed the Stampede resolution and preview (two tests
     // each in the reducer and the queries).
     "src/engine/v7/query.ts": 3,
-    "src/engine/v7/reducer.ts": 17,
+    // `pulp_wars-b5f.6`: the Mind Control target gate moved from the
+    // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
+    // the reducer and the public query both call; the Brain gate stays in
+    // the reducer. An Egg, an embarked unit, and a boat must still fail it.
+    "src/engine/v7/reducer.ts": 16,
+    "src/engine/v7/martian.ts": 1,
     // `pulp_wars-9s0.5`: only a land-form flyer stands on a Rift (an Egg,
     // an embarked unit, and a boat must fail the state check).
     "src/engine/v7/state-schema.ts": 5,

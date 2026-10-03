@@ -13,8 +13,6 @@ import {
   technologyCapabilitiesV7,
   EGG_DEFENSE2_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_HP_V7,
-  MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_THRALL_LIMIT_V7,
   PROMOTION_KILLS_V7,
   TRACTOR_BEAM_RANGE_V7,
@@ -119,6 +117,7 @@ import {
 import {
   absorbHitV7,
   isThrallV7,
+  mindControlTargetBlockV7,
   pierceTileV7,
   rayPowerV7,
   shieldOfV7,
@@ -1546,9 +1545,11 @@ function publicBeamDownDestinationsV7(
 /**
  * Section 8.2: the legal Mind Control targets of an own Brain that is ready
  * (land form, no primary action used): none while it has a cooldown entry
- * or controls the limit of Thralls; otherwise every visible hostile
- * land-form one-slot non-`JUGGERNAUT` unit within range with at most
- * `MIND_CONTROL_HP_V7` HP that does not stand on a settlement site.
+ * or controls the limit of Thralls; otherwise every visible hostile unit
+ * that `mindControlTargetBlockV7` (the reducer's own per-target check)
+ * accepts: land-form, one-slot, non-`JUGGERNAUT`, not a construct, within
+ * range, with at most `MIND_CONTROL_HP_V7` HP, and not on a settlement site
+ * or a Rift.
  */
 function publicMindControlTargetsV7(
   view: PlayerViewV7,
@@ -1566,15 +1567,9 @@ function publicMindControlTargetsV7(
       return (
         target.hp > 0 &&
         publicHostile(view, brain.ownerId, target.ownerId) &&
-        target.form === "LAND" &&
-        target.role !== "JUGGERNAUT" &&
-        unitCapacitySlotsV7(view, target) === 1 &&
         tile?.explored === true &&
-        tile.site === null &&
-        // The Rift (RULESET_7_RIFT.md section 4): immune on a Rift.
-        tile.terrain !== "RIFT" &&
-        chebyshev(brain.at, target.at) <= MIND_CONTROL_RANGE_V7 &&
-        target.hp <= MIND_CONTROL_HP_V7
+        // The per-target conditions the reducer enforces, shared with it.
+        mindControlTargetBlockV7(view, brain, target, tile) === null
       );
     })
     .sort((left, right) => left.id - right.id);

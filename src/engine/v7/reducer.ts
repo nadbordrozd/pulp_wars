@@ -6,8 +6,6 @@ import {
   BASIC_ECONOMIC_ACTIONS_V7,
   DEEP_WINTER_RECOVER_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
-  MIND_CONTROL_HP_V7,
-  MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_THRALL_LIMIT_V7,
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
@@ -135,6 +133,7 @@ import {
   coolingStepV7,
   isThrallV7,
   mindControlCooldownStepV7,
+  mindControlTargetBlockV7,
   prunedMartianV7,
   rechargeShieldsAtEndTurnV7,
   rechargeShieldsV7,
@@ -2276,28 +2275,16 @@ function applyMindControl(
     });
   if (!arePlayersHostileV7(state, actor, target.ownerId))
     return rejected(original, "TARGET_ALLIED");
-  // A unit on a Rift (RULESET_7_RIFT.md section 4) is immune as well: the
-  // Thrall could not stand there.
-  if (
-    target.form !== "LAND" ||
-    target.role === "JUGGERNAUT" ||
-    unitCapacitySlotsV7(state, target) !== 1 ||
-    tileAtV7(state.board, target.at)?.site !== null ||
-    riftAtV7(state.board, target.at) ||
-    // The Dwarf revision section 7.2: a construct is immune.
-    unitIsConstructV7(state, target)
-  )
-    return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
-      reason: "TARGET_IMMUNE",
-    });
-  if (chebyshev(brain.at, target.at) > MIND_CONTROL_RANGE_V7)
-    return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
-      reason: "OUT_OF_RANGE",
-    });
-  if (target.hp > MIND_CONTROL_HP_V7)
-    return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
-      reason: "TARGET_HEALTHY",
-    });
+  // The per-target conditions (immunity, range, HP) are shared with the
+  // public command query (`mindControlTargetBlockV7`).
+  const block = mindControlTargetBlockV7(
+    state,
+    brain,
+    target,
+    tileAtV7(state.board, target.at),
+  );
+  if (block !== null)
+    return rejected(original, "MIND_CONTROL_NOT_LEGAL", { reason: block });
   try {
     const allocation = allocateUnitId(state.nextEntityId);
     const rule = effectiveRoleRuleV7(

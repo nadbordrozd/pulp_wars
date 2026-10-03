@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   MIND_CONTROL_COOLDOWN_TURNS_V7,
+  applyCommandV7,
   MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
   MIND_CONTROL_THRALL_LIMIT_V7,
@@ -53,6 +54,7 @@ import {
   kindsV7,
   mountainV7,
   movedV7,
+  patchTileV7,
   patchUnitV7,
   tileV7,
   unexploreV7,
@@ -732,6 +734,106 @@ describe("Mind Control (section 8.2)", () => {
             (right as { targetUnitId: number }).targetUnitId,
         ),
     );
+  });
+
+  it("offers exactly the targets the reducer accepts, Dwarf constructs excluded", () => {
+    // One Brain against a Dwarf seat with a target failing each per-target
+    // condition of the reducer, plus two legal ones. The Gunner and the
+    // Titan are constructs (the Dwarf revision section 7.2); a weakened
+    // Gunner within range was offered and then rejected (pulp_wars-b5f.6).
+    const expected: readonly [CoordV7, string | null][] = [
+      [at(6, 3), null], // a weakened Hammerer
+      [at(3, 1), null], // a Cannon at exactly 6 HP
+      [at(5, 2), "TARGET_IMMUNE"], // a weakened Gunner (construct)
+      [at(3, 2), "TARGET_IMMUNE"], // a weakened Titan (construct, JUGGERNAUT)
+      [at(5, 5), "TARGET_IMMUNE"], // on a settlement site
+      [at(2, 4), "TARGET_IMMUNE"], // a Gyrocopter on a Rift
+      [at(4, 1), "TARGET_IMMUNE"], // embarked
+      [at(7, 3), "OUT_OF_RANGE"],
+      [at(2, 2), "TARGET_HEALTHY"], // 7 HP
+    ];
+    const state = patchTileV7(
+      brainField(
+        [
+          { seat: 1, role: "FIGHTER", at: at(6, 3), hp: 3 },
+          { seat: 1, role: "CATAPULT", at: at(3, 1), hp: 6 },
+          { seat: 1, role: "MARKSMAN", at: at(5, 2), hp: 3 },
+          { seat: 1, role: "JUGGERNAUT", at: at(3, 2), hp: 3 },
+          { seat: 1, role: "FIGHTER", at: at(5, 5), hp: 3 },
+          { seat: 1, role: "RAIDER", at: at(2, 4), hp: 3 },
+          { seat: 1, role: "FIGHTER", at: at(4, 1), hp: 3, form: "EMBARKED" },
+          { seat: 1, role: "FIGHTER", at: at(7, 3), hp: 3 },
+          { seat: 1, role: "FIGHTER", at: at(2, 2), hp: 7 },
+        ],
+        { factions: ["MARTIAN", "DWARF"], water: [at(4, 1)] },
+      ),
+      at(2, 4),
+      { terrain: "RIFT" },
+    );
+    const offered = expectOfferedAcceptedV7(state, "MIND_CONTROL");
+    expect(offered).toEqual(
+      expected
+        .filter(([, reason]) => reason === null)
+        .map(([where]) => control(state, BRAIN, where))
+        .sort(
+          (left, right) =>
+            (left as { targetUnitId: number }).targetUnitId -
+            (right as { targetUnitId: number }).targetUnitId,
+        ),
+    );
+    for (const [where, reason] of expected) {
+      if (reason === null) continue;
+      expect(
+        rejectedV7(state, control(state, BRAIN, where)),
+        `${where.x},${where.y}`,
+      ).toEqual({ code: "MIND_CONTROL_NOT_LEGAL", params: { reason } });
+    }
+    // Offered exactly when accepted, for every unit on the board.
+    const actor = activeIdV7(state);
+    const brain = idAt(state, BRAIN);
+    for (const unit of state.units) {
+      const command: CommandV7 = {
+        kind: "MIND_CONTROL",
+        unitId: brain,
+        targetUnitId: unit.id,
+      };
+      expect(
+        offered.some(
+          (candidate) =>
+            candidate.kind === "MIND_CONTROL" &&
+            candidate.targetUnitId === unit.id,
+        ),
+        `${unit.role} ${unit.at.x},${unit.at.y}`,
+      ).toBe(applyCommandV7(state, actor, command).accepted);
+    }
+    // A Brain on cooldown or at its Thrall limit is offered nothing, and
+    // the reducer rejects even the legal targets.
+    const limit: MartianPieceV7[] = [
+      { seat: 0, role: "FIGHTER", at: at(3, 3), thrallOf: BRAIN, hp: 5 },
+      { seat: 0, role: "FIGHTER", at: at(3, 4), thrallOf: BRAIN, hp: 5 },
+    ];
+    const weak: MartianPieceV7 = {
+      seat: 1,
+      role: "FIGHTER",
+      at: at(6, 3),
+      hp: 3,
+    };
+    for (const [blocked, reason] of [
+      [
+        brainField([weak], { factions: ["MARTIAN", "DWARF"] }, { cooldown: 1 }),
+        "COOLDOWN",
+      ],
+      [
+        brainField([weak, ...limit], { factions: ["MARTIAN", "DWARF"] }),
+        "THRALL_LIMIT",
+      ],
+    ] as const) {
+      expect(offeredV7(blocked, "MIND_CONTROL"), reason).toEqual([]);
+      expect(rejectedV7(blocked, control(blocked, BRAIN, at(6, 3)))).toEqual({
+        code: "MIND_CONTROL_NOT_LEGAL",
+        params: { reason },
+      });
+    }
   });
 
   it("the cooldown: not on turns N + 1 and N + 2, again on N + 3", () => {
