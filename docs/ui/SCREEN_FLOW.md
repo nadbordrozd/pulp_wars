@@ -153,8 +153,9 @@ an Undead seat looks and behaves exactly as in revision 12.
 
 - Setup always shows a labelled **Factions** group with one faction select
   per seat ("Your faction", "Player N faction"), offering Human and Undead
-  (and, since revision 17, Goblin; see the
-  [Goblin overlay](#current-ruleset-7-revision-17-goblin-overlay)), all Human
+  (and, since revision 17, Goblin, and since revision 19, Dinosaur; see the
+  [Goblin overlay](#current-ruleset-7-revision-17-goblin-overlay) and the
+  [Dinosaur overlay](#current-ruleset-7-revision-19-dinosaur-overlay)), all Human
   by default and resized with the opponent count; the launched setup carries
   each seat's choice. There is no URL parameter or development flag for it
   (`pulp_wars-vkq.16` removed the former `?undead=1` flag). Saves with Undead
@@ -276,7 +277,8 @@ This overlay implements
 looks as in revision 16 apart from the extra faction option.
 
 - **Setup.** Every seat's faction select offers Human, Undead and Goblin
-  (default Human); the launched setup, saves and resume keep Goblin seats.
+  (and Dinosaur since revision 19; default Human); the launched setup, saves
+  and resume keep Goblin seats.
 - **Labels.** Units are named by their owner's registration (Goblin, Wolf
   Rider, Bomb Chucker, Orc Brute, Orc Warboss, Rocket Cart, Scrap Buggy,
   Troll). The dock shows a "Goblin" faction chip; CHIBI paints the reviewed
@@ -389,7 +391,10 @@ This overlay implements
 [revision 20 section 7.2](../product/RULESET_7_REVISION_20.md#72-ui-text-and-surfaces)
 (`pulp_wars-0hi.2`: the Stampede button, lanes, legend, and confirmation are
 removed; the Triceratops charges with the ordinary attack flow), with the
-art of the [Dinosaur art fragment](../art/factions/DINOSAUR.md). Every cue
+art of the [Dinosaur art fragment](../art/factions/DINOSAUR.md); the
+Dinosaur rules are part of
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md#19-dinosaur-faction-rules).
+Every cue
 reads only public views, public previews (`previewLayEggV7`,
 `previewHatchV7`, `queryCombatPreviewV7`, `view.eggs`,
 `publicUnitStats.dinosaur`) and projected events. A match without a Dinosaur
@@ -535,7 +540,9 @@ seat looks as in revision 18 apart from the extra faction option.
 ## Current Ruleset 7 revision 21 achievements overlay
 
 Rules: [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md)
-(bead `pulp_wars-9s0.4`). The Achievements screen, the completion notice,
+(bead `pulp_wars-9s0.4`), folded into
+[current rules section 5](../product/RULESET_7_CURRENT.md#5-achievements-and-monuments).
+The Achievements screen, the completion notice,
 and the Monument action keep their revision-5 behaviour; this overlay lists
 what changed.
 

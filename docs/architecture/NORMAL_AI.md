@@ -944,10 +944,10 @@ Against Dinosaurs (every seat in such a match):
   A unit that can attack after moving steps where its projected hit destroys
   an Egg it cannot reach now (1179, half the Egg's value), outside visible
   lethal reach. City defence and capture keep their priorities.
-- **Lane blocking.** An own unit worth no more than the defender of an own
-  city center steps onto a tile of the open lane between a visible hostile
-  Triceratops and that center (priority 1245, value 10, +4 next to the
-  Triceratops, which then has no run at all), when it would survive there.
+- **No lane blocking.** The revision-19 heuristic that stepped an own unit
+  into the Stampede lane of a visible hostile Triceratops was deleted with
+  Stampede (`pulp_wars-0hi.2`); a Triceratops is countered through the
+  shared threat reach above.
 - **Growth.** An attack whose retaliation kills the attacker, against a unit
   one kill from Big or Alpha, is not a candidate (only a city save, a lethal
   follow-up, or the endgame combined kill excuses it), and it and a

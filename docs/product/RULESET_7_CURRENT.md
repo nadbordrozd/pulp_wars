@@ -1,24 +1,44 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r18` (revision 18), for all three playable factions, Human
-(`ORIGINAL`), Undead (`UNDEAD`), and Goblin (`GOBLIN`). It folds in revision
-12 (free opening technology, Fruit visible from the start, Fertile Ground
-revealed by Gathering, resources kept under improvements, Normal AI opening
-research, and Raider Escape; no separate overlay document) and the overlays
-of revisions [13](RULESET_7_REVISION_13_UNDEAD.md) (the Undead faction),
-[14](RULESET_7_REVISION_14_BALANCE.md) (Plague, Bitten, the unanswered
-Vampire, villages, and income caps),
+`pulp-wars-poc-7r23`, for all four playable factions, Human (`ORIGINAL`),
+Undead (`UNDEAD`), Goblin (`GOBLIN`), and Dinosaur (`DINOSAUR`). It folds in
+revision 12 (free opening technology, Fruit visible from the start, Fertile
+Ground revealed by Gathering, resources kept under improvements, Normal AI
+opening research, and Raider Escape; no separate overlay document) and the
+overlays of revisions [13](RULESET_7_REVISION_13_UNDEAD.md) (the Undead
+faction), [14](RULESET_7_REVISION_14_BALANCE.md) (Plague, Bitten, the
+unanswered Vampire, villages, and income caps),
 [15](RULESET_7_REVISION_15_BALANCE.md) (three-turn Plague, 18-HP Zombie),
 [16](RULESET_7_REVISION_16.md) (16a: orthogonal Shallow Water and the capital
 growth guarantee; 16b: 2-tile boats and landing; 16c: economy deflation),
 [17](RULESET_7_REVISION_17_GOBLINS.md) (the Goblin faction, with the
-`pulp_wars-0ao.7` tuned numbers), and [18](RULESET_7_REVISION_18.md)
-(friendly pass-through, the Road half cost by origin, and the fixed
-Showcase setup). The Undead and the Goblins are part of the
-ordinary game: faction choice is offered in every match setup, with no
-development flag. Every number below was checked against the engine code at
-the time of writing.
+`pulp_wars-0ao.7` tuned numbers), [18](RULESET_7_REVISION_18.md) (friendly
+pass-through, the Road half cost by origin, and the fixed Showcase setup),
+[19](RULESET_7_REVISION_19_DINOSAURS.md) (the Dinosaur faction) as amended by
+[20](RULESET_7_REVISION_20.md) (the Triceratops's Charge! replacing
+Stampede, the T-Rex cost and hatch time, Nesting's city slot, Wallbreaker,
+and the full heal of a Promotion or growth stage),
+[21](RULESET_7_REVISION_21_ACHIEVEMENTS.md) (the Conqueror, Land Baron, Sea
+Dog, and Slayer achievements), and the `pulp_wars-0hi.3` coarse balance
+numbers of `pulp-wars-poc-7r23`
+([revision 20 section 6.3](RULESET_7_REVISION_20.md#63-tuning-record): Human
+Fighter, Raider, and Marksman 12 HP, Guard 17, Caveman 10). The Undead, the
+Goblins, and the Dinosaurs are part of the ordinary game: faction choice is
+offered in every match setup, with no development flag. Every number below
+was checked against the engine code at `pulp-wars-poc-7r23`.
+
+**Pending overlays, not folded.** The engine at `pulp-wars-poc-7r23` also
+registers a fifth faction, `MARTIAN`, whose rules are in the
+[Martian overlay](RULESET_7_MARTIANS.md) (engine implemented by
+`pulp_wars-t6s.2` at `pulp-wars-poc-7r22`; its Normal AI and UI are pending,
+so the browser setup does not offer it and a Martian seat plays with the
+generic Normal policy). The [Ice Folk overlay](RULESET_7_ICE_FOLK.md) is a
+specification only, with no engine code. This document does not describe
+either faction: wherever it lists "every faction", it means the four
+playable ones, and the Martian additions to shared state, commands, events,
+and previews are neutral in a match without a Martian seat
+([section 21](#21-known-discrepancies)).
 
 **Supersedes for current play:** [Ruleset 7 baseline](RULESET_7.md) and its
 overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
@@ -33,8 +53,11 @@ overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
 [14](RULESET_7_REVISION_14_BALANCE.md),
 [15](RULESET_7_REVISION_15_BALANCE.md),
 [16](RULESET_7_REVISION_16.md),
-[17](RULESET_7_REVISION_17_GOBLINS.md), and
-[18](RULESET_7_REVISION_18.md). Those documents remain as design
+[17](RULESET_7_REVISION_17_GOBLINS.md),
+[18](RULESET_7_REVISION_18.md),
+[19](RULESET_7_REVISION_19_DINOSAURS.md),
+[20](RULESET_7_REVISION_20.md), and
+[21](RULESET_7_REVISION_21_ACHIEVEMENTS.md). Those documents remain as design
 history, exact schema/ordering detail, measurements, and acceptance
 provenance. When one of them disagrees with this document, this document
 describes the current rules. In particular, the [baseline](RULESET_7.md)
@@ -43,29 +66,42 @@ editing it (for example Walls, Mine, and Market numbers, Medic, Scout, Heavy,
 Horse Archer, Breacher, Saboteur, and Grand Works), the revision 13–15
 overlays state values that later revisions replaced (for example the Lich's
 Attack 2.5, the 20-HP Zombie, unlimited Plague, the Move-3 embarked unit, the
-level-5 income cap, and the 4-Coin Market), and the revision-17 overlay's
+level-5 income cap, and the 4-Coin Market), the revision-17 overlay's
 tuning bounds and decisions keep the pre-tuning contract values (two starting
-Goblins, Goblin Attack 2 and Defense 1, Kaboom 4, death blasts 3/5/5); the
-values here are current. Where a document and the code disagreed, the code's
-behavior is the rule and is stated below;
-[Known discrepancies](#20-known-discrepancies) lists no discrepancy as of
-revision 18.
+Goblins, Goblin Attack 2 and Defense 1, Kaboom 4, death blasts 3/5/5), the
+revision-19 overlay keeps the Stampede command, its 18-HP, Move-1
+Triceratops and its T-Rex costing 10 and hatching in 3, and the
+`pulp_wars-c87.8` interim values (Caveman 12 HP, a one-slot Triceratops
+hatching in one turn), and revision 20 keeps the Human HP
+before `pulp_wars-0hi.3` (Fighter, Raider, and Marksman 10, Guard 15) in its
+bounds; the values here are current. Where a document and the code
+disagreed, the code's behavior is the rule and is stated below;
+[Known discrepancies](#21-known-discrepancies) lists the open items as of
+`pulp-wars-poc-7r23`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague, and
 Bitten: a unit whose owner's faction is not `UNDEAD`. Undead units are
-therefore never living, whatever their HP; Human and Goblin units are living.
+therefore never living, whatever their HP; Human, Goblin, and Dinosaur units
+are living (an Egg is living but takes no status,
+[section 19.3](#193-eggs)).
 **Goblin-crewed** units are the Goblin seat's Goblin, Wolf Rider, Bomb
 Chucker, Rocket Cart, and Scrap Buggy (they can Kaboom); **exploding units**
 are its Bomb Chucker, Rocket Cart, and Scrap Buggy (they also explode when
-killed) ([section 18](#18-goblin-faction-rules)).
+killed) ([section 18](#18-goblin-faction-rules)). **Dinosaur units** (or
+**dinosaurs**) are the Dinosaur seat's growing roles: Raptor, Spitter,
+Ankylosaurus, Triceratops, T-Rex, and Brontosaurus; never the Caveman, the
+Shaman, a boat, or an Egg. **Egg-laid roles** are the five trainable
+dinosaurs (all but the Brontosaurus), which a Dinosaur seat lays as
+**Eggs**: units of the form `EGG` ([section 19](#19-dinosaur-faction-rules)).
 
 **Source of truth in code:** `src/engine/rules/ruleset-v7.ts` (technology,
 faction registrations, roles and role mechanics, faction rules, action
 costs), `src/engine/v7/` (reducer, economy, spatial economy, combat, Graves,
-Infect, Wail, Plague and Bitten afflictions, explosions, movement, map
-generation, queries, views), and `src/ai/v7.ts` with its `src/ai/v7-*.ts`
-helpers (Normal AI, including `src/ai/v7-goblin.ts`).
+Infect, Wail, Plague and Bitten afflictions, explosions, Eggs, growth,
+achievements, movement, map generation, queries, views), and `src/ai/v7.ts`
+with its `src/ai/v7-*.ts` helpers (Normal AI, including
+`src/ai/v7-goblin.ts` and `src/ai/v7-dinosaur.ts`).
 
 **Not covered here:** production art specifications
 ([Art Direction](../art/ART_DIRECTION.md) and
@@ -81,40 +117,51 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 ## 1. Identity and compatibility
 
-| Boundary                                   | Current value                                                                                         |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r18`                                                                                  |
-| Game-state schema                          | `7`                                                                                                   |
-| Command/event/save/replay numeric versions | `7`                                                                                                   |
-| Browser autosave                           | `pulpWars.save.v7r18.current`                                                                         |
-| Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                            |
-| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`                                                                        |
-| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`                                    |
-| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1` |
-| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"                                     |
+| Boundary                                   | Current value                                                                                                                                                                                        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ruleset                                    | `pulp-wars-poc-7r23`                                                                                                                                                                                 |
+| Game-state schema                          | `7`                                                                                                                                                                                                  |
+| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                  |
+| Browser autosave                           | `pulpWars.save.v7r23.current`                                                                                                                                                                        |
+| Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                           |
+| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN` (the last is the pending Martian overlay)                                                                                                      |
+| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`                                                                                    |
+| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`                        |
+| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"                                                                                  |
+| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                        |
+| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`: the browser setup offers these four; the engine and the headless tools also accept `MARTIAN` ([Martian overlay](RULESET_7_MARTIANS.md), not folded here) |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r17`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r22`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
-  so a revision-17 command stream is not replayable. It also added the
-  `SHOWCASE` map type ([section 2.5](#25-showcase-setup)) under the same
-  identity; no existing match changed.
+  and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
+  Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
+  the `eggs` state and view lists, the `LAY_EGG` and `HATCH` commands, the
+  `EGG_LAID`, `EGG_HATCHED`, and `UNIT_GREW` events, and the `dinosaur`
+  public unit stats block. Revision 20 (`7r20`) removed the revision-19
+  `STAMPEDE` command, its error, preview field, and retaliation reason, and
+  added the combat-preview fields `runUp` and `fortificationIgnored`.
+  Revision 21 (`7r21`) widened every player's achievement entitlements and
+  progress to seven entries. The Martian overlay (`7r22`) registered the
+  fifth faction with its own state lists, commands, and events
+  ([section 21](#21-known-discrepancies)). `pulp_wars-0hi.3` (`7r23`)
+  changed only numbers (Human and Caveman HP) and no shape.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r17.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r22.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
   error. There is no other rules parameter: the former `?undead=1`
-  development flag is gone, and a save or replay with Undead or Goblin seats
-  loads like any other.
+  development flag is gone, and a save or replay with Undead, Goblin, or
+  Dinosaur seats loads like any other.
 - All arithmetic is safe-integer and atomic: a rejected command changes no
   state and consumes no Coins, city action, or PRNG draw.
 - **Factions.** Each seat has one faction, fixed for the match. A player
   stores `faction` and the bound `factionTreeId`; state parsing rejects a
   player whose faction differs from its setup entry or whose tree does not
   match its faction.
-- **Faction model** (the Ruleset 6 Candy precedent). All three factions share
+- **Faction model** (the Ruleset 6 Candy precedent). Every faction shares
   the frozen mechanical role order `FIGHTER`, `RAIDER`, `MARKSMAN`, `GUARD`,
   `CAPTAIN`, `CATAPULT`, `KNIGHT`, `JUGGERNAUT`, `PATROL_BOAT`, `BATTLESHIP`.
   State, commands, events, reward IDs, and event literals serialize the
@@ -122,17 +169,23 @@ separate [Ruleset 6](RULESET_6.md) route.
   and the AI resolve every unit through its **owner's** faction registration
   (label, cost, stats, abilities, role mechanics, faction rules) with no
   cross-faction fallback. Units never change owner; Infect and Bitten remove
-  the victim and create a new unit.
-- The Undead and Goblin technology graphs, economy, and every non-unit rule
-  are identical to the Human ones; the differences are the unit rosters
-  ([section 11](#11-unit-roster)), the technology unlocks of
-  [section 6.2](#62-technology-tree) (two for each faction, plus the Goblin
-  name Plunder for Commerce), and the faction rules of
-  [section 17](#17-undead-faction-rules) (Undead) and
-  [section 18](#18-goblin-faction-rules) (Goblin).
+  the victim and create a new unit. An Egg hatches in place into its unit
+  with the same ID ([section 19.5](#195-hatching)).
+- The Undead, Goblin, and Dinosaur technology graphs, economy, and every
+  non-unit rule are identical to the Human ones; the differences are the unit
+  rosters ([section 11](#11-unit-roster)), the technology unlocks of
+  [section 6.2](#62-technology-tree) (two for the Undead and the Goblins,
+  plus the Goblin name Plunder for Commerce; Nesting and Wallbreaker for the
+  Dinosaurs), and the faction rules of
+  [section 17](#17-undead-faction-rules) (Undead),
+  [section 18](#18-goblin-faction-rules) (Goblin), and
+  [section 19](#19-dinosaur-faction-rules) (Dinosaur).
 - `GameStateV7` has no Goblin field: explosions resolve inside one command or
   Start Turn and leave no persistent state; Plunder changes Coins and Troll
-  regeneration changes HP.
+  regeneration changes HP. Its only Dinosaur field is `eggs`, the Egg
+  countdowns ([section 19.3](#193-eggs)); growth is derived from the
+  existing `kills` and `maxHp` unit fields, and capacity slots are
+  registration values.
 
 ## 2. Setup and map generation
 
@@ -148,15 +201,17 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 | Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only) |
 | AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                |
 | Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                |
-| Factions    | one entry per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, or `GOBLIN`       |
+| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, or `DINOSAUR` |
 | Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures           |
 
 - **Faction choice.** `factions` is a dense array; index `i` is seat `i`'s
   faction, and every combination is legal (single-faction or any mix of the
-  three). The browser setup always offers one Human/Undead/Goblin select per
-  seat ("Your faction", "Player N faction"), all Human by default. The
-  headless tools accept `original` (alias `human`), `undead`, and `goblin` in
-  `--factions`. Faction choice never
+  four). The browser setup always offers one Human/Undead/Goblin/Dinosaur
+  select per seat ("Your faction", "Player N faction"), all Human by
+  default. The headless tools accept `original` (alias `human`), `undead`,
+  `goblin`, and `dinosaur` in `--factions`. The engine and the headless
+  tools also accept `MARTIAN` (`martian`), which the browser does not offer
+  ([Martian overlay](RULESET_7_MARTIANS.md)). Faction choice never
   affects map generation, capital placement, turn order, treasure placement,
   or any PRNG draw: setups that differ only in `factions` generate
   byte-identical boards, turn orders, and treasures.
@@ -210,10 +265,14 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   never relaxed.
 - Chests sit on empty Grass/Forest land reachable from a capital (no site,
   resource, or improvement). Moving onto a chest makes one PRNG draw: 5 Coins,
-  or a full-HP exhausted unit of the mover's faction's `KNIGHT` role (Knight,
-  Vampire, or Scrap Buggy) on the first legal adjacent land cell, homed to the
-  mover's home city first and then by city ID among cities with free capacity;
-  if no placement exists the chest gives 5 Coins.
+  or a full-HP exhausted unit of the mover's faction's **treasure role**
+  (faction rule `treasureUnitRole`: the `KNIGHT` role for Human, Undead, and
+  Goblin, so a Knight, Vampire, or Scrap Buggy; the `RAIDER` role, a
+  Raptor, for Dinosaur) on the first legal adjacent land cell, homed to the
+  mover's home city first and then by city ID among cities with enough free
+  capacity slots for it ([section 4.4](#44-unit-capacity)); if no placement
+  exists the chest gives 5 Coins. The serialized `TREASURE_CAPTURED` reward
+  literal stays `KNIGHT` for every faction.
 - Generation uses one Mulberry32 stream and at most 256 candidates; a rejected
   candidate continues the stream and constraints never relax.
 
@@ -360,17 +419,21 @@ for them.
   `population = permanent + live − growthSpent(level)`.
 - First income ([section 4.3](#43-income)): the capital pays 4 + 1 + 2
   (Market); North 4 + 1 land trade; Coast 3 + 1 land trade: 16 Coins for a
-  Human or Undead seat and 14 for a Goblin seat (Plunder replaces land
-  trade). No city has sea trade: the Port and Shipyard belong to one city.
+  Human, Undead, or Dinosaur seat and 14 for a Goblin seat (Plunder replaces
+  land trade). No city has sea trade: the Port and Shipyard belong to one
+  city.
 
 **Players.** Every seat has all 23 technologies (nothing is left to
 research and the free opening technology does not apply), 5 Coins before its
 first Start Turn (so the first seat shows 21 Coins, or 19 for a Goblin seat),
-all 256 cells explored, and three locked achievement entitlements. Explorer
-and Muster unlock at each seat's first evaluation; Engineer does not.
+all 256 cells explored, and seven locked achievement entitlements. Explorer
+and Muster unlock at each seat's first evaluation; no other achievement does
+(no processor reaches output 6, three cities and two ships are below the
+Land Baron and Sea Dog thresholds, and no unit has a kill).
 
 **Units.** One unit of each of the ten roles, in the seat's faction, at full
-HP with zero kills and a fresh activation.
+HP with zero kills and a fresh activation. A Dinosaur seat's units are all
+hatched (no Egg exists at setup) and at growth stage 0.
 
 | Role          | Tile          | Form  | Home city |
 | ------------- | ------------- | ----- | --------- |
@@ -386,8 +449,13 @@ HP with zero kills and a fresh activation.
 | `BATTLESHIP`  | `(cx, 13)`    | naval | Coast     |
 
 - Creation performs no capacity check, but the homes fit: Capital 5 of 7,
-  North 3 of 6, Coast 2 of 5 (each capacity one higher for a Goblin seat), so
-  every trainable role is offered from the first turn. Both docks start
+  North 3 of 6, Coast 2 of 5 (each capacity one higher for a Goblin seat,
+  Warrens), so every trainable role is offered from the first turn. A
+  Dinosaur seat counts slots and has Nesting's city slot
+  ([section 4.4](#44-unit-capacity)): its capital is exactly full at 8 of 8
+  (Caveman and Shaman 1 each, Triceratops, T-Rex, and Brontosaurus 2 each),
+  so it cannot train or lay until a slot frees, while North (3 of 7) and
+  Coast (2 of 6) can lay every Egg from the first turn. Both docks start
   empty.
 - **Entity IDs.** Seat `s` has capital ID `2s + 1` and `FIGHTER` ID `2s + 2`.
   Then, each pass in seat order: every seat's North and Coast cities; then
@@ -408,9 +476,10 @@ HP with zero kills and a fresh activation.
 
 - Every seat starts with 5 Coins, no technology, a level-1 capital, one
   full-HP unit of its faction's `FIGHTER` role (Fighter for Human, Skeleton
-  for Undead, Goblin for Goblin) on the capital and homed there, three locked
-  achievement entitlements, and every cell within radius 2 of its capital
-  explored. A Goblin seat, too, starts with a single Goblin: `pulp_wars-0ao.7`
+  for Undead, Goblin for Goblin, Caveman for Dinosaur) on the capital and
+  homed there, seven locked achievement entitlements, and every cell within
+  radius 2 of its capital explored. A Dinosaur seat starts with no Egg. A
+  Goblin seat, too, starts with a single Goblin: `pulp_wars-0ao.7`
   tuned the revision-17 contract's two starting Goblins to one
   (`STARTING_FIGHTERS_V7` is 1 for every faction). The engine keeps the
   contract's second-Goblin placement for a value of 2 (created after every
@@ -427,22 +496,27 @@ HP with zero kills and a fresh activation.
   the human. Allies cannot attack each other, capture each other's cities, or
   enter each other's territory; they share nothing else.
 - **Start Turn** (in order): set the active seat and reset its units'
-  activations and capture eligibility; set every owned city's city action
-  available; resolve the seat's Plague ([section 17.8](#178-plague));
-  explode the seat's exploding units that Plague killed, with any chain
-  reaction and its Plunder
-  ([section 18.7](#187-where-chains-run-and-event-order)); resolve Windmill
+  activations and capture eligibility (an Egg keeps its exhausted
+  activation); set every owned city's city action available; resolve the
+  seat's Plague ([section 17.8](#178-plague)); explode the seat's exploding
+  units that Plague killed, with any chain reaction and its Plunder
+  ([section 18.7](#187-where-chains-run-and-event-order)); count down and
+  hatch the seat's Eggs ([section 19.5](#195-hatching)); resolve Windmill
   healing; regenerate Trolls
   ([section 18.10](#1810-waaagh-ram-and-troll-regeneration)); award income;
   settle pending city rewards; evaluate achievements. Events:
   `TURN_STARTED`, then `PLAGUE_DAMAGED`, deaths and risings, `PLAGUE_SPREAD`,
   `PLAGUE_EXPIRED`, rising reveals and economy changes, then the chain
   events, `PLUNDER_AWARDED`, and the chain's rising reveals and economy
-  changes, then `WINDMILL_HEALING_RESOLVED`, `UNITS_REGENERATED`,
+  changes, then one `EGG_HATCHED` per hatch and one `TILES_REVEALED` for the
+  hatch step, then `WINDMILL_HEALING_RESOLVED`, `UNITS_REGENERATED`,
   `INCOME_AWARDED`, and the reward and achievement events. Plague resolves
   before income, so a rising that besieges its victim's city center cuts
   that city's income this turn, and Plunder from a Start Turn chain is added
-  before income.
+  before income. A unit that hatched this Start Turn counts for that turn's
+  Muster evaluation. (The Martian overlay adds its Mind Control
+  cooldown and Shield recharge steps between the reset and Plague; they do
+  nothing in a match without a Martian seat.)
 - **End Turn** (in order): auto-recover idle damaged units; expire Inspired and
   Overrun; preview next income; advance to the next active seat and run its
   Start Turn. End Turn is unavailable while a city reward choice is pending.
@@ -454,8 +528,8 @@ HP with zero kills and a fresh activation.
 - The first seat's first Start Turn runs when the match is created, so every
   seat's first turn includes ordinary income.
 - **Elimination:** a player owning zero cities is eliminated immediately; its
-  units are removed (leaving no Graves and setting off no death blasts) and
-  its future turns skipped. Plague
+  units, Eggs included, are removed (`UNIT_DIED` cause `ELIMINATION`, leaving
+  no Graves and setting off no death blasts) and its future turns skipped. Plague
   from its removed Liches and the bites it inflicted end
   ([section 17](#17-undead-faction-rules)).
 - **Outcome:** the human wins when every other player is eliminated and loses
@@ -521,22 +595,36 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 ### 4.4 Unit capacity
 
 - Capacity is `level + 1`, plus 1 if the owner has Planning, plus 1
-  (**Warrens**) if the city's current owner is a Goblin seat
-  (`cityUnitCapacityForV7`). Warrens follow the owner: a city a Goblin seat
-  captures gains the slot and a Goblin city captured by another faction loses
-  it. Training, treasure placement, `previewCityCapacityV7`, the city panel,
-  and the Normal AI use the same formula.
-- Every unit on the board counts against its home city; land and naval units
-  share capacity.
-- Training and treasure units need a free slot; reward units and Undead
-  risings ([section 17.3](#173-risings)) may exceed capacity, and capacity
-  loss never removes units.
+  (**Warrens**) if the city's current owner is a Goblin seat, plus 1
+  (**Nesting**) if the city's current owner has the Dinosaur Nesting
+  technology (capability `nestingCityCapacityBonus`;
+  `cityUnitCapacityForV7`). Every term is read live from the city's current
+  owner: a city a Goblin seat captures gains the Warrens slot, a city a
+  Dinosaur seat with Nesting captures gains the Nesting slot, and a city
+  captured from them by another faction loses it. Only the Dinosaur tree has
+  the Nesting unlock, so the two bonuses never combine. Training, laying,
+  treasure placement, `previewCityCapacityV7`, `previewLayEggV7`, the city
+  panel, and the Normal AI use the same formula.
+- **Used slots** of a city are the sum of the **capacity slots** of every
+  unit on the board homed to it, Eggs included (an Egg uses the slots of the
+  unit inside). Every role uses 1 slot except the Dinosaur Triceratops,
+  T-Rex, and Brontosaurus, which use 2 (role mechanic `capacitySlots`), so
+  for a Human, Undead, or Goblin city the used slots equal the unit count.
+  Land and naval units share capacity; orphaned units (no home city) use no
+  slots anywhere.
+- `TRAIN`, `TRAIN_NAVAL`, `LAY_EGG`, and a treasure unit need
+  `used + slots(role) <= capacity`, otherwise `CITY_CAPACITY_FULL` (or the
+  5-Coin chest). Reward units (a two-slot Brontosaurus too) and Undead
+  risings ([section 17.3](#173-risings)) may exceed capacity; a capturing
+  unit is re-homed with its own slots and may put its new city over
+  capacity; capacity loss never removes a unit or an Egg. A death, Disband,
+  or Egg destruction frees its slots at once.
 
 ### 4.5 City action
 
 - Each city has one city action per owner turn, spent by exactly one of: land
-  `TRAIN`, `TRAIN_NAVAL` from any of its Ports or its Shipyard, or
-  `LAND_GRANT`.
+  `TRAIN`, `TRAIN_NAVAL` from any of its Ports or its Shipyard, `LAY_EGG`
+  (Dinosaur, [section 19.4](#194-laying-an-egg)), or `LAND_GRANT`.
 - The action becomes available at the owner's Start Turn. A captured city's
   action is unavailable until its new owner's next Start Turn.
 - Research, construction, harvesting, unit commands, and reward choices never
@@ -546,22 +634,29 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 ### 4.6 Training and city-center spawning
 
 - **Land training** requires the role's technology, an available city action,
-  a free capacity slot, enough Coins, no siege, no pending reward for the city,
-  and an **empty city center**. Any unit on the center (own or allied)
-  blocks land training with `CITY_SPAWN_OCCUPIED`; a hostile occupant besieges
-  the city instead.
+  enough free capacity slots, enough Coins, no siege, no pending reward for
+  the city, and an **empty city center**. Any unit on the center (own or
+  allied) blocks land training with `CITY_SPAWN_OCCUPIED`; a hostile
+  occupant besieges the city instead.
+- **Dinosaur production.** A Dinosaur seat trains only its Caveman and
+  Shaman with `TRAIN` (and its boats with `TRAIN_NAVAL`); its five egg-laid
+  roles are produced only
+  with `LAY_EGG` on a free tile next to the city, which does not need an
+  empty center ([section 19.4](#194-laying-an-egg)). `TRAIN` of an egg-laid
+  role is rejected with `UNIT_ROLE_INVALID { role }` and never offered.
 - **Arms Industry:** while a Forge in the training city has positive output,
-  every land role trains for 1 Coin less (minimum 1, so the 1-Coin Goblin
-  stays at 1).
+  every land role trains (and every Egg is laid) for 1 Coin less (minimum 1,
+  so the 1-Coin Goblin stays at 1).
 - **Naval training** happens on a selected active, empty Port or Shipyard
   assigned to the city ([section 14](#14-naval-rules)).
 - **Reward units** (the Militia `FIGHTER` and the level-5+ `JUGGERNAUT`, in
-  the owner's faction: Fighter, Skeleton, or Goblin; Juggernaut, Abomination,
-  or Troll) always appear on the city center. An existing occupant moves to
+  the owner's faction: Fighter, Skeleton, Goblin, or Caveman; Juggernaut,
+  Abomination, Troll, or Brontosaurus) always appear on the city center,
+  hatched (no reward ever creates an Egg). An existing occupant moves to
   the first free adjacent land cell in `(y, x)` order that it can legally
-  enter (Engineering for Mountain, no unit, no treasure, not allied
-  territory). If none exists, the occupant is removed with no refund or kill
-  credit (and no Grave or death blast).
+  enter (Engineering for Mountain, no unit or Egg, no treasure, not allied
+  territory); an Egg is never displaced. If none exists, the occupant is
+  removed with no refund or kill credit (and no Grave or death blast).
 - **Goblin Militia** is two Goblins (`MILITIA_FIGHTERS_V7`): the first
   appears on the center as above; the second then appears on the first
   adjacent cell in `(y, x)` order that the same displacement rule allows, or
@@ -573,17 +668,22 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 ### 4.7 Siege and capture
 
 - A city is **besieged** while a hostile unit stands on its center: zero income
-  and no training, Land Grant, or tile economy for that city. Pending rewards
-  can still be chosen.
+  and no training, Egg laying, Land Grant, or tile economy for that city.
+  Pending rewards can still be chosen, and the city's Eggs still count down
+  and hatch.
 - **Capture** requires a capture-capable land unit (Human Fighter, Raider,
   Marksman, Guard, or Juggernaut; Undead Skeleton, Ghoul, Banshee, Zombie, or
-  Abomination; Goblin Goblin, Wolf Rider, Bomb Chucker, Orc Brute, or Troll)
+  Abomination; Goblin Goblin, Wolf Rider, Bomb Chucker, Orc Brute, or Troll;
+  Dinosaur Caveman, Raptor, Spitter, Ankylosaurus, or Brontosaurus)
   that began its owner's turn on a neutral
   village or hostile city center, stands there alone, and has not moved or used
   a primary action this turn. Capture is terminal.
 - Capture transfers level, footprint, improvements, Roads, Walls, and reward
-  history; re-homes the capturing unit; orphans units homed there by the
-  former owner; and spends the city action.
+  history; re-homes the capturing unit (with its capacity slots); destroys
+  every Egg homed to the city (`UNIT_DIED` cause `CITY_CAPTURED`, in unit-ID
+  order right after `CITY_CAPTURED`, with no kill credit, Plunder, or Grave);
+  orphans the other units homed there by the former owner; and spends the
+  city action.
 - **Spoils:** with Drill, a player's first capture of each hostile city grants
   2 Coins (never for villages or recaptures).
 
@@ -601,8 +701,9 @@ Each reached level grants exactly one reward, chosen by the owner:
 - Reward units come from the owner's registration: an Undead Militia is a
   Skeleton and an Undead Juggernaut reward is an Abomination; a Goblin Militia
   is two Goblins ([section 4.6](#46-training-and-city-center-spawning)) and a
-  Goblin Juggernaut reward is a Troll. Reward IDs (`MILITIA`, `JUGGERNAUT`)
-  are the same for every faction.
+  Goblin Juggernaut reward is a Troll; a Dinosaur Militia is one Caveman and
+  a Dinosaur Juggernaut reward is a Brontosaurus (2 slots, hatched). Reward
+  IDs (`MILITIA`, `JUGGERNAUT`) are the same for every faction.
 - Rewards settle only for the active player's cities, by city ID then level;
   the first unrewarded level becomes the single pending choice, which blocks
   every other command until chosen.
@@ -612,27 +713,68 @@ Each reached level grants exactly one reward, chosen by the owner:
 
 ## 5. Achievements and Monuments
 
-| Achievement | Requires    | Condition                                                                                          |
-| ----------- | ----------- | -------------------------------------------------------------------------------------------------- |
-| Explorer    | Scouting    | at least 100 explored tiles                                                                        |
-| Engineer    | Engineering | one owned Windmill, Sawmill, Forge, or Workshop with live output of at least 6 (Workshop max is 4) |
-| Muster      | Drill       | at least four distinct trainable roles owned on the board at once (Juggernaut excluded)            |
+Seven achievements, in canonical order (`ACHIEVEMENT_IDS_V7`; revision 21
+added the last four, constants in `src/engine/v7/achievements.ts`):
 
-- Progress made before the enabling research counts; unlocking is permanent
-  and evaluated after every relevant accepted transition.
+| Achievement | ID           | Requires    | Condition                                                                                          | Goal shown to the player   |
+| ----------- | ------------ | ----------- | -------------------------------------------------------------------------------------------------- | -------------------------- |
+| Explorer    | `EXPLORER`   | Scouting    | at least 100 explored tiles                                                                        | —                          |
+| Engineer    | `ENGINEER`   | Engineering | one owned Windmill, Sawmill, Forge, or Workshop with live output of at least 6 (Workshop max is 4) | —                          |
+| Muster      | `MUSTER`     | Drill       | at least four distinct trainable roles owned on the board at once (Juggernaut excluded)            | —                          |
+| Conqueror   | `CONQUEROR`  | —           | the player captures a city owned by another player (`CONQUEROR_CAPTURES_V7` 1)                     | Capture an enemy city.     |
+| Land Baron  | `LAND_BARON` | —           | the player owns at least 5 cities at once (`LAND_BARON_CITIES_V7`)                                 | Own 5 cities at once.      |
+| Sea Dog     | `SEA_DOG`    | —           | at least 3 of the player's units in `NAVAL` form on the board at once (`SEA_DOG_SHIPS_V7`)         | Own 3 warships at once.    |
+| Slayer      | `SLAYER`     | —           | one of the player's units on the board has at least 5 kills (`SLAYER_KILLS_V7`)                    | Get 5 kills with one unit. |
+
+- Every seat has seven entitlements (`PlayerStateV7.achievementEntitlements`)
+  and seven progress entries (`PlayerViewV7.achievementProgress`, owner-only)
+  in this order. The four revision-21 achievements have no enabling
+  technology (`ACHIEVEMENT_REQUIRED_TECH_V7` is null); for the three older
+  ones, progress made before the enabling research counts. Unlocking is
+  personal and permanent: an entitlement stays unlocked when the count later
+  drops (a city lost, a ship sunk, the veteran dead), and each achievement
+  unlocks at most once per player per match.
+- **Evaluation.** Achievements are evaluated for the acting player at the
+  end of every accepted command that evaluates them, and for the incoming
+  player at the end of its Start Turn; only that player is evaluated, so a
+  unit that earns its fifth kill by retaliation in another player's turn
+  completes Slayer at its owner's next Start Turn (if it is still on the
+  board). Locked entitlements are checked in canonical order, and each that
+  qualifies emits one owner-only `ACHIEVEMENT_UNLOCKED`, after the economy
+  and reward-settlement events (in a `CAPTURE`, before `PLAYER_ELIMINATED`
+  and `MATCH_ENDED`).
+- **Conqueror** has no stored counter: it unlocks only in the accepted
+  `CAPTURE` of a city whose owner was another player (`CITY_CAPTURED.from`
+  not null); a neutral village never counts, a recaptured city does, and the
+  capture that eliminates a player or ends the match does. Its progress is 1
+  once unlocked and 0 before. A hostile capture that brings the player to 5
+  cities emits Conqueror, then Land Baron.
+- **Land Baron** counts the cities the player owns, the capital included,
+  however gained. **Sea Dog** counts the player's Patrol Boats and
+  Battleships on the board (an embarked land unit is `EMBARKED` and does not
+  count; it cannot be completed on `DRY_LAND`). **Slayer** reads the largest
+  `kills` of one unit on the board, with the ordinary kill credit
+  ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)): explosions
+  credit no unit, a rising starts at 0, an Egg has 0, kills of different
+  units never add up, and a Promotion or growth stage does not reset the
+  count.
 - Muster counts mechanical roles under the owner's registration (for Undead:
   Skeleton, Ghoul, Banshee, Zombie, Necromancer, Lich, Vampire, Patrol Boat,
   Battleship; the Abomination is excluded like the Juggernaut; for Goblins:
   Goblin, Wolf Rider, Bomb Chucker, Orc Brute, Orc Warboss, Rocket Cart,
-  Scrap Buggy, Patrol Boat, Battleship, with the Troll excluded). Risings
-  count. No achievement counts kills, so explosion kills affect achievements
-  only by removing units.
+  Scrap Buggy, Patrol Boat, Battleship, with the Troll excluded; for
+  Dinosaurs: Caveman, Raptor, Spitter, Ankylosaurus, Shaman, Triceratops,
+  T-Rex, Patrol Boat, Battleship, with the Brontosaurus excluded). Risings
+  and hatched units count; an Egg does not count until it hatches.
 - Each unlocked, unspent entitlement funds one `BUILD_MONUMENT`: 0 Coins, +3
   live population, on an explored owned land tile with no site, resource,
   improvement, or treasure (Mountain needs Engineering), at most one Monument
-  per city, no siege or pending reward.
+  per city, no siege or pending reward. A player can therefore place at most
+  seven Monuments in a match, never more than one per owned city.
 - Spent entitlements stay spent if the Monument is removed or captured;
   captured Monuments keep their +3 for the captor.
+- The Normal AI does not plan for any achievement; it builds a Monument
+  whenever the public command query offers one.
 
 ## 6. Technology
 
@@ -746,10 +888,45 @@ differently from the Human table are:
 | Drill          | same        | reveal Ore; Orc Brute; first-hostile-capture Spoils (2 Coins)                                  |
 | Fortification  | same        | Orc Brute Build Field Defense                                                                  |
 
+The Dinosaur tree (`DINOSAUR_BASELINE_V1`) has the same graph, tiers,
+prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
+the Human one, with two unlock differences, both in the Industry branch.
+**Fortification**, displayed as **Nesting**, grants
+`NESTING { eggHp: 4, hatchTurns: 1, citySlots: 1 }` instead of the Field
+Defense command: every Egg the player lays has +4 HP and hatches one turn
+sooner (minimum 1), and every city the player owns has one more unit slot
+([section 19.2](#192-capacity-slots-and-nesting)). **Explosives**,
+displayed as **Wallbreaker**, keeps Blast Mountain and the melee Field
+Defense demolition and adds `WALLBREAKER`: the player's dinosaurs ignore
+City Walls when they attack ([section 19.10](#1910-wallbreaker)).
+Administration keeps Captain support (the Shaman's War Drums and Tend
+Wounded), Chivalry keeps Overrun (labelled Rampage), and Raiding keeps the
+Charge bonus (labelled Pounce). `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7`
+holds `DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" }`,
+resolved by `technologyNameV7` as for Plunder. The Dinosaur unlocks that
+read differently from the Human table are:
+
+| Technology     | Dinosaur name | Dinosaur unlocks                                                                 |
+| -------------- | ------------- | -------------------------------------------------------------------------------- |
+| Administration | same          | Shaman (War Drums, Tend Wounded, Hatch); Market; Disband                         |
+| Sawmilling     | same          | Sawmill; Triceratops Egg (Charge!)                                               |
+| Marksmanship   | same          | Spitter Egg                                                                      |
+| Fieldcraft     | same          | Replant Forest; Raptor and Spitter ignore Forest movement stops; Spitter Sight 2 |
+| Scouting       | same          | Raptor Egg; Raptor Sight 2                                                       |
+| Raiding        | same          | Pillage for all trainable land roles; Raptor Pounce                              |
+| Chivalry       | same          | T-Rex Egg; Rampage; Cultivate Forest                                             |
+| Drill          | same          | reveal Ore; Ankylosaurus Egg; first-hostile-capture Spoils (2 Coins)             |
+| Metallurgy     | same          | Forge; Arms Industry (−1 Coin for trained land units and Eggs)                   |
+| Fortification  | Nesting       | Eggs have +4 HP and hatch one turn sooner; +1 unit slot in every city            |
+| Explosives     | Wallbreaker   | Blast Mountain; melee attacks destroy Field Defense; dinosaurs ignore City Walls |
+
 The other technologies read the same for every faction. The engine, query,
 and AI checks of land trade read the technology capability
 `landTradeIncomeCoins` (never a raw `COMMERCE` test), and Plunder is the
-capability `plunderCoins`.
+capability `plunderCoins`. Nesting and Wallbreaker are likewise read through
+the capabilities `eggHpBonus` (0 or 4), `eggHatchTurnReduction` (0 or 1),
+`nestingCityCapacityBonus` (0 or 1), and `ignoresCityWalls`, never through a
+raw `FORTIFICATION` or `EXPLOSIVES` test.
 
 ## 7. Resources and visibility
 
@@ -937,7 +1114,9 @@ market income = min(3, 1 + distinct adjacent families)
 | Embarked unit                   | none                                                                   | —                                                                            |
 | Windmill (Milling)              | up to 6                                                                | Start Turn, once per unit                                                    |
 | Troll regeneration (Goblin)     | up to 4, any tile and form; cures nothing                              | Start Turn, after Windmill healing                                           |
-| Captain Tend Wounded (Human)    | up to 2, and cures Plague and Bitten                                   | Captain action, once per unit per owner turn                                 |
+| Tend Wounded (Captain, Shaman)  | up to 2, and cures Plague and Bitten                                   | Captain or Shaman action, once per unit per owner turn                       |
+| Promotion, growth stage         | full heal to the new maximum HP; cures nothing                         | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs)  |
+| Egg                             | none: no healing source ever heals an Egg                              | —                                                                            |
 
 - **Windmill healing:** at the owner's Start Turn, each Windmill in the
   owner's territory heals damaged own units (any form) on its eight
@@ -955,41 +1134,57 @@ market income = min(3, 1 + distinct adjacent families)
   seat has no healer and no cure for Plague or Bitten
   ([section 18.3](#183-discipline-field-defense-and-no-healers)); beyond
   recovery and Windmills it heals only by Troll regeneration.
+- **Dinosaur recovery** is the Human rule (Dinosaurs are not Restless), and
+  the Shaman's Tend Wounded heals and cures exactly like the Captain's. A
+  grown dinosaur heals toward its grown maximum HP. Eggs never heal: idle
+  recovery, Windmill healing, and Tend Wounded skip them.
 - **Captain** (Human `CAPTAIN`): may Move, then use one primary action:
-  Attack, Rally, or Tend Wounded. The Undead Necromancer instead has Attack,
-  Frenzy, and Raise Dead ([section 17](#17-undead-faction-rules)), and the
-  Goblin Orc Warboss has Attack and WAAAGH!
+  Attack, Rally, or Tend Wounded. The Dinosaur Shaman has the same three
+  (Rally labelled **War Drums**) plus Hatch
+  ([section 19.6](#196-shaman-hatch)). The Undead Necromancer instead has
+  Attack, Frenzy, and Raise Dead ([section 17](#17-undead-faction-rules)),
+  and the Goblin Orc Warboss has Attack and WAAAGH!
   ([section 18.10](#1810-waaagh-ram-and-troll-regeneration)); neither has
   Tend Wounded (`TEND_WOUNDED` is never offered and is rejected with
   `UNIT_ROLE_INVALID`).
 - **Rally** (Undead: **Frenzy**, labelled "Frenzied"; Goblin: **WAAAGH!**;
-  all with the same command `RALLY`, flag `inspired`, and event
-  `UNITS_RALLIED`): every adjacent own land-form unit that is not `SUPPORT`
-  or `SIEGE` (not a Captain, Necromancer, Catapult, or Lich), has the
-  `ATTACK` ability (so not a Banshee), and is not already Inspired becomes
-  Inspired: +1 Attack on its next attack this turn. WAAAGH! reaches every
+  Dinosaur: **War Drums**; all with the same command `RALLY`, flag
+  `inspired`, and event `UNITS_RALLIED`): every adjacent own land-form unit
+  that is not `SUPPORT` or `SIEGE` (not a Captain, Necromancer, Shaman,
+  Catapult, Lich, or Triceratops), has the `ATTACK` ability (so not a
+  Banshee), and is not already Inspired becomes Inspired: +1 Attack on its
+  next attack this turn. An Egg is never a target (it is not in land form).
+  WAAAGH! reaches every
   other own land-form unit within Chebyshev distance 2 and includes `SUPPORT`
   and `SIEGE` roles (Rocket Carts, other Warbosses); it keeps the `ATTACK`
   and not-already-Inspired requirements. Inspired expires at End Turn, does
   not stack, and never affects Wail, Kaboom, or blasts. With no eligible
   target the command rejects with `HEAL_TARGET_NOT_FOUND`.
-- **Tend Wounded** (Human Captain): targets every adjacent own land-form unit
-  (other than the Captain, not yet tended this turn) that is damaged,
-  plagued, or bitten; a plagued or bitten unit is a target even at full HP.
-  Each target heals `min(2, maxHp - hp)` (possibly 0) and loses both Plague and
-  Bitten (`WOUNDED_TENDED` results carry `curedPlague` and `curedBitten`). It
-  does not use the target's action. The Captain cannot tend itself.
+- **Tend Wounded** (Human Captain, Dinosaur Shaman): targets every adjacent
+  own land-form unit (other than the tender, not yet tended this turn) that
+  is damaged, plagued, or bitten; a plagued or bitten unit is a target even
+  at full HP. Each target heals `min(2, maxHp - hp)` (possibly 0) and loses
+  both Plague and Bitten (`WOUNDED_TENDED` results carry `curedPlague` and
+  `curedBitten`). It does not use the target's action. The tender cannot
+  tend itself, and an Egg is never a target.
 - **Disband** (Administration): an own land-form trainable unit that has not
   used a primary action (it may have moved) removes itself for
   `floor(printed cost / 2)` Coins (a Goblin refunds 0 and is still offered
-  Disband). Juggernaut, Abomination, Troll, naval, and embarked units cannot
-  Disband. Disband never explodes. A plagued or bitten unit cannot Disband: it
-  is not offered and is rejected with `DISBAND_NOT_LEGAL` (reason `PLAGUED`,
-  reported first, or `BITTEN`).
-- **Promotion:** a unit with at least 3 kills may Promote once for free: +5
-  maximum and current HP. Embarked units cannot Promote. Explosions credit no
-  unit kill, and Bomb Chucker splash kills of own or allied units do not
-  count ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)).
+  Disband). Juggernaut, Abomination, Troll, Brontosaurus, naval, and embarked
+  units cannot Disband. Disband never explodes. A plagued or bitten unit
+  cannot Disband: it is not offered and is rejected with `DISBAND_NOT_LEGAL`
+  (reason `PLAGUED`, reported first, or `BITTEN`). An own Egg may also be
+  disbanded ("Abandon Egg", [section 19.7](#197-egg-destruction-capture-and-abandon-egg)).
+- **Promotion:** a unit with at least 3 kills may Promote once for free:
+  +5 maximum HP and a **full heal** (its HP becomes the new maximum;
+  revision 20). Plague and Bitten stay. It is an explicit command,
+  independent of the activation; embarked units cannot Promote, and a
+  growing unit (a dinosaur) never can: it grows instead
+  ([section 19.8](#198-grow)), and `PROMOTE` for it is never offered and is
+  rejected with `PROMOTION_NOT_ELIGIBLE`. `UNIT_PROMOTED { unitId, maxHp }`
+  implies `hp = maxHp`. Explosions credit no unit kill, and Bomb Chucker
+  splash kills of own or allied units do not count
+  ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)).
 
 ## 11. Unit roster
 
@@ -1011,8 +1206,9 @@ Attack and Defense are shown in whole units (the code stores half-units).
 ¹ Marksman Sight becomes 2 with Fieldcraft.
 ² [Revision 20 section 6.3](RULESET_7_REVISION_20.md#63-tuning-record)
 (`pulp_wars-0hi.3`, `pulp-wars-poc-7r23`): Fighter, Raider, and Marksman 12
-(were 10), Guard 17 (was 15). The Skeleton, Ghoul, Goblin, Wolf Rider, and
-Orc Brute keep their own values.
+(were 10), Guard 17 (was 15); promoted 17 and 22. The Skeleton, Caveman,
+Ghoul, Goblin, Wolf Rider, and Orc Brute state their own values and do not
+copy these. The Knight keeps 10.
 
 The table above is the Human (`ORIGINAL`) roster. The Undead (`UNDEAD`)
 roster, by mechanical role (half-unit values `attack2`/`defense2` in
@@ -1115,17 +1311,98 @@ damages of [section 18.4](#184-kaboom) and [18.5](#185-death-blasts):
   block of its public unit stats (`kaboomDamage`, `deathBlastDamage`,
   `rallyRadius`, `regeneration`, `buildsFieldDefense`).
 
+The Dinosaur (`DINOSAUR`) roster, by mechanical role, with the
+`pulp-wars-poc-7r23` values (`DINOSAUR_ROLE_RULES_V7` and
+`DINOSAUR_ROLE_MECHANICS_V7`). "Hatch" is an Egg's hatch time in owner
+Start Turns without Nesting ([section 19.5](#195-hatching)); "Slots" is the
+capacity the unit, or its Egg, uses
+([section 19.2](#192-capacity-slots-and-nesting)):
+
+| Unit         | Role          | Tech              | Cost | Hatch   | Slots |  HP |  Attack | Defense | Move | Range | Sight | Attack after Move | Capture | Grows | Abilities                      |
+| ------------ | ------------- | ----------------- | ---: | ------- | ----: | --: | ------: | ------: | ---: | ----: | ----: | ----------------- | ------- | ----- | ------------------------------ |
+| Caveman      | `FIGHTER`     | start             |    2 | trained |     1 |  10 |   2 (4) |   2 (4) |    1 |     1 |     1 | yes               | yes     | no    | no Field Defense               |
+| Raptor       | `RAIDER`      | Scouting          |    4 | 1       |     1 |  12 | 2.5 (5) |   1 (2) |    2 |     1 |     2 | yes               | yes     | yes   | Pounce (Raiding); no Escape    |
+| Spitter      | `MARKSMAN`    | Marksmanship      |    4 | 1       |     1 |  10 |   2 (4) |   1 (2) |    1 |   1–2 |    1⁴ | yes               | yes     | yes   | Acid                           |
+| Ankylosaurus | `GUARD`       | Drill             |    5 | 2       |     1 |  20 |   2 (4) |   3 (6) |    1 |     1 |     1 | no                | yes     | yes   | Armoured; no Field Defense     |
+| Shaman       | `CAPTAIN`     | Administration    |    5 | trained |     1 |  10 |   1 (2) |   1 (2) |    1 |     1 |     1 | yes               | no      | no    | War Drums; Tend Wounded; Hatch |
+| Triceratops  | `CATAPULT`    | Sawmilling        |    8 | 2       |     2 |  20 |   3 (6) |   2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Charge!                        |
+| T-Rex        | `KNIGHT`      | Chivalry          |   14 | 4       |     2 |  28 |   4 (8) |   2 (4) |    2 |     1 |     1 | yes               | no      | yes   | Rampage                        |
+| Brontosaurus | `JUGGERNAUT`  | reward only       |    — | —       |     2 |  45 | 3.5 (7) |   4 (8) |    1 |     1 |     1 | yes               | yes     | yes   | Push                           |
+| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 | trained |     1 |  10 |   2 (4) |   2 (4) |    2 |     1 |     2 | yes               | no      | no    | naval                          |
+| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 | trained |     1 |  25 |  6 (12) |   4 (8) |    2 |   1–3 |     3 | no                | no      | no    | naval; splash                  |
+
+⁴ Spitter Sight becomes 2 with Fieldcraft.
+
+- **Caveman** has Fighter parity (capture, Pillage with Raiding, Disband,
+  ordinary Promotion: 15 HP promoted) except that it cannot build Field
+  Defense; it is trained on the city center with `TRAIN`.
+- **Raptor** has Raider parity for Move 2, Sight 2 (Scouting), Charge with
+  Raiding (labelled **Pounce**), Pillage, capture, and Fieldcraft Forest
+  freedom; it has no Escape.
+- **Spitter** has Marksman parity (range 1–2, minimum range 1, capture,
+  Pillage, Disband, Fieldcraft Forest freedom and Sight) and Acid
+  ([section 19.9](#199-acid-and-armoured)).
+- **Ankylosaurus** has Guard parity for "cannot attack after moving" and
+  capture, cannot build Field Defense, and is Armoured
+  ([section 19.9](#199-acid-and-armoured)).
+- **Shaman** has exact Captain parity (no capture; Attack, War Drums, and
+  Tend Wounded, which cures Plague and Bitten) and adds Hatch
+  ([section 19.6](#196-shaman-hatch)).
+- **Triceratops** is a melee line-breaker: range 1, Move 2, it may attack
+  after moving, it cannot capture, it advances after a melee kill (unlike
+  the Catapult), and every attack it makes is a **Charge!**
+  ([section 19.11](#1911-charge)). It keeps the `SIEGE` tactical label of
+  the `CATAPULT` role, so War Drums never Inspires it, and its attacks
+  destroy Field Defense with reason `CATAPULT`.
+- **T-Rex** has Knight parity (no capture, Overrun, labelled **Rampage**)
+  with Move 2 instead of 3. It is never a treasure unit.
+- **Brontosaurus** has Juggernaut parity (reward only, Push, capture, no
+  Pillage or Disband) with 45 HP and Attack 3.5, and uses 2 slots.
+- **Patrol Boat and Battleship** are the Human units. Dinosaur faction rules
+  do not apply to them: they are trained with `TRAIN_NAVAL`, use 1 slot, do
+  not grow, and keep the ordinary Promotion.
+- Dinosaur Disband refunds: Caveman 1; Raptor, Spitter, Ankylosaurus, and
+  Shaman 2; Triceratops 4; T-Rex 7. An Egg refunds the same as the unit
+  inside. With Arms Industry the T-Rex Egg costs 13.
+- **Growth** ([section 19.8](#198-grow)): every dinosaur gains +4 maximum HP
+  at Big (1 kill) and again at Alpha (3 kills), each with a full heal, and
+  +1 Attack at Alpha:
+
+  | Unit         | Stage 0 HP / Attack | Big HP / Attack | Alpha HP / Attack |
+  | ------------ | ------------------- | --------------- | ----------------- |
+  | Raptor       | 12 / 2.5            | 16 / 2.5        | 20 / 3.5          |
+  | Spitter      | 10 / 2              | 14 / 2          | 18 / 3            |
+  | Ankylosaurus | 20 / 2              | 24 / 2          | 28 / 3            |
+  | Triceratops  | 20 / 3              | 24 / 3          | 28 / 4            |
+  | T-Rex        | 28 / 4              | 32 / 4          | 36 / 5            |
+  | Brontosaurus | 45 / 3.5            | 49 / 3.5        | 53 / 4.5          |
+
+- **Public abilities** (the role rule's `abilities`): Caveman `ATTACK`,
+  `CAPTURE`; Raptor `ATTACK`, `CAPTURE`, `CHARGE`, `GROW`; Spitter `ATTACK`,
+  `CAPTURE`, `ACID`, `GROW`; Ankylosaurus `ATTACK`, `CAPTURE`, `ARMOURED`,
+  `GROW`; Shaman `ATTACK`, `RALLY`, `TEND_WOUNDED`, `HATCH`; Triceratops
+  `ATTACK`, `LINEBREAKER`, `GROW`; T-Rex `ATTACK`, `OVERRUN`, `GROW`;
+  Brontosaurus `ATTACK`, `CAPTURE`, `PUSH`, `GROW`; boats `ATTACK`. Slots,
+  hatch times, the run-up bonus, and the Armoured reduction are role
+  mechanics (`capacitySlots`, `hatchTurns`, `runUpBonus2`,
+  `armourReduction`), exposed through the `dinosaur` block of the public
+  unit stats ([section 19.13](#1913-commands-events-errors-and-queries)).
+
 General roster rules:
 
 - An **embarked** land unit of any faction has Move 2 on water (landing
   uses one point, [section 14](#14-naval-rules)), Defense 1, Sight 1, no
-  Attack, no retaliation, no ZOC, and no Kaboom.
+  Attack, no retaliation, no ZOC, no Kaboom, and no Charge!; an embarked
+  dinosaur keeps its slots and growth.
 - Base Sight gains +1 while standing on a Mountain with Engineering.
 - Minimum range limits only the chosen target: a Catapult, Lich, Rocket Cart,
   or Bomb Chucker cannot target an adjacent unit but may still fire at
   another target in range.
 - Tactical-role labels (`LINE`, `SKIRMISHER`, and so on) are display metadata
-  with no combat effect.
+  with no combat effect, except that Rally (Frenzy, War Drums) skips the
+  `SUPPORT` and `SIEGE` labels ([section 10](#10-recovery-and-support)). The
+  registry requires every faction's role to carry the Human label of the
+  same mechanical role, so the Triceratops is `SIEGE`.
 
 ## 12. Movement and unit actions
 
@@ -1137,8 +1414,8 @@ General roster rules:
   ([section 9.2](#92-road-movement)).
 - A Move ends on entering an unexplored cell, a Forest (unless a Road edge or
   Fieldcraft freedom for the `RAIDER` and `MARKSMAN` roles: Raider and
-  Marksman, Ghoul and Banshee, Wolf Rider and Bomb Chucker), a Mountain
-  (unless a Road edge),
+  Marksman, Ghoul and Banshee, Wolf Rider and Bomb Chucker, Raptor and
+  Spitter), a Mountain (unless a Road edge),
   or a cell in hostile ZOC. A path that continues past such a stop is illegal.
 - Land units need Engineering to enter Mountain and cannot enter water except
   by embarking.
@@ -1151,7 +1428,10 @@ General roster rules:
   standing where the Move would have to stop (a roadless Forest or Mountain
   without the exceptions above, hostile ZOC, or an unexplored cell) cannot be
   passed, and own units never cancel hostile ZOC. A passed tile counts in the
-  path length (Charge, the embarked landing budget). This holds on land, on
+  path length (Charge, the Charge! run-up, the embarked landing budget). An
+  Egg occupies its tile like any unit: its owner's units pass through it
+  and never stop on it, and every other unit is blocked by it. This holds
+  on land, on
   water, and for embarked units, including a boat passing a dock that holds
   an own unit and a land unit passing its own garrisoned city center, and for
   the Raider's escape Move. It applies to `MOVE` only: Push, the advance,
@@ -1182,17 +1462,24 @@ General roster rules:
 - **ZOC:** a hostile land unit projects ZOC onto adjacent land cells. A naval
   unit projects it onto adjacent water it could enter. A land unit projects
   onto adjacent water only against an afloat unit it could attack at range 1.
-  Embarked units project none. Leaving ZOC is free.
+  Embarked units and Eggs project none. Leaving ZOC is free.
 
 ### 12.2 Activation
 
 - Each unit may Move once per turn, and cannot Move after a primary action.
 - Primary actions are Attack, Recover, Capture, and specials
-  (Rally/Frenzy/WAAAGH!, Tend, Field Defense, Pillage, Raise Dead, Devour,
-  Wail, Kaboom). Guard, Zombie, Orc Brute, Catapult, Lich, Rocket Cart, and
-  Battleship cannot attack after moving.
+  (Rally/Frenzy/WAAAGH!/War Drums, Tend, Field Defense, Pillage, Raise Dead,
+  Devour, Wail, Kaboom, Hatch). Guard, Zombie, Orc Brute, Ankylosaurus,
+  Catapult, Lich, Rocket Cart, and Battleship cannot attack after moving;
+  the Triceratops can (revision 20).
+- **Eggs** have no activation of their own: an Egg carries an exhausted
+  activation at all times and never needs handling. Every unit command
+  naming an own Egg as `unitId` is rejected with `UNIT_IS_EGG { unitId }`
+  and never offered, except `DISBAND` (Abandon Egg,
+  [section 19.7](#197-egg-destruction-capture-and-abandon-egg)).
 - `WAIT` only marks the unit handled (it also declines an available Escape).
-- **Escape** (Human Raider, innate; the Ghoul and Wolf Rider have none):
+- **Escape** (Human Raider, innate; the Ghoul, Wolf Rider, and Raptor have
+  none):
   after an accepted
   Attack that the Raider survives, including after a melee kill with its
   ordinary advance, the Raider may make exactly one more ordinary `MOVE` this
@@ -1209,7 +1496,8 @@ General roster rules:
   status reads "Escape: may move again", and the public command query offers the
   escape Moves.
 - **Pillage** (Raiding): an own land-form unit other than a Juggernaut,
-  Abomination, or Troll standing on an improvement in hostile territory
+  Abomination, Troll, or Brontosaurus standing on an improvement in hostile
+  territory
   destroys it for +1
   Coin, re-exposing any resource it hid. It may follow a Move but no primary
   action and is terminal. Roads, Field Defense, terrain, resources, city
@@ -1219,14 +1507,19 @@ General roster rules:
 
 - `BUILD_FIELD_DEFENSE` (Fortification, 3 Coins) needs a unit whose role
   mechanics allow it (`buildsFieldDefense`: Fighter, Guard, Skeleton, Zombie,
-  or Orc Brute; never the Goblin) in land form that has neither moved nor
-  acted this turn, standing on an explored land tile of its owner's territory
-  without Field Defense. It uses the unit's whole turn. A Goblin is never
-  offered it and is rejected like any other role that cannot build it
-  (`INVALID_TILE` with `action: "BUILD_FIELD_DEFENSE"`).
+  or Orc Brute; never the Goblin, and no Dinosaur unit) in land form that
+  has neither moved nor acted this turn, standing on an explored land tile
+  of its owner's territory without Field Defense. It uses the unit's whole
+  turn. A Goblin, a Caveman, or an Ankylosaurus is never offered it and is
+  rejected like any other role that cannot build it (`INVALID_TILE` with
+  `action: "BUILD_FIELD_DEFENSE"`); the Dinosaur tree also has no Field
+  Defense unlock (its Fortification is Nesting). Field Defense that already
+  stands in territory a Dinosaur seat captures fortifies its units as usual.
 - Every explosion destroys Field Defense on every tile of its blast area,
   whoever owns the tile (reason `EXPLOSION`,
-  [section 18.6](#186-blast-resolution)).
+  [section 18.6](#186-blast-resolution)), and every Triceratops attack
+  destroys it on the target tile (reason `CATAPULT`,
+  [section 19.11](#1911-charge)).
 - Field Defense is a tile layer, not an improvement: it coexists with Roads,
   resources, improvements, and cities, transfers with the tile, and cannot be
   stacked, pillaged, redeveloped, or removed voluntarily.
@@ -1237,15 +1530,17 @@ General roster rules:
 
 - The attacker needs the `ATTACK` ability (the Banshee has none). The target
   must be a visible, non-allied unit on the board within the attacker's
-  minimum–maximum range. Embarked units cannot attack.
+  minimum–maximum range. Embarked units and Eggs cannot attack. An Egg is a
+  legal target like any unit.
 - Land units may attack afloat units from shore and naval units may attack
   coastal land units.
 
 ### 13.2 Damage
 
 ```text
-attack  = base Attack + 1 (Charge) + 1 (Inspired/Frenzied/WAAAGH!) + Gang Up (0–2)
-defense = base Defense + fortification level          (embarked: 1)
+attack  = base Attack + 1 (Charge/Pounce) + 1 (Inspired/Frenzied/WAAAGH!/War Drums)
+        + Gang Up (0–2) + 1 (Alpha) + run-up (Charge!: 0–2)
+defense = base Defense + fortification level          (embarked or Egg: 1)
 cover   = 1.5 on Forest or Mountain for land-form defenders, else 1
 
 attackForce  = attack  * attacker.hp / attacker.maxHp
@@ -1257,15 +1552,26 @@ damageToAttacker = roundHalfUp(defenseForce / total * defense * 4.5)
 ```
 
 - Both results use pre-combat HP and are capped at current HP. A killed
-  defender does not retaliate.
+  defender does not retaliate. An Armoured unit (the Ankylosaurus) takes
+  `d − 1` (minimum 1) of every hit `d` of 2 or more, before the cap
+  ([section 19.9](#199-acid-and-armoured)).
 - A surviving defender retaliates only if it has the `ATTACK` ability and an
-  Attack above 0, is not embarked, the attacker is within its own range, and
-  the attacker is not `UNANSWERED` (a Vampire). The preview then reports
-  `noRetaliationReason` `DEFENDER_DIED`, `UNANSWERED`, or `OUT_OF_RANGE`.
-- **Charge:** with Raiding, a Raider, Ghoul, or Wolf Rider that moved at
-  least two cells this turn gets +1 Attack on its first attack, at range 1.
-- **Inspired** (Frenzied for Undead, WAAAGH! for Goblins): +1 Attack on the
-  unit's first accepted attack after Rally, Frenzy, or WAAAGH!.
+  Attack above 0, is not embarked or an Egg, the attacker is within its own
+  range, and the attacker is not `UNANSWERED` (a Vampire). The preview then
+  reports `noRetaliationReason` `DEFENDER_DIED`, `UNANSWERED`, or
+  `OUT_OF_RANGE` (the last also for an embarked defender, an Egg, or a
+  defender without Attack).
+- **Charge:** with Raiding, a Raider, Ghoul, Wolf Rider, or Raptor (where it
+  is labelled **Pounce**) that moved at least two cells this turn gets +1
+  Attack on its first attack, at range 1.
+- **Inspired** (Frenzied for Undead, WAAAGH! for Goblins, War Drums for
+  Dinosaurs): +1 Attack on the unit's first accepted attack after Rally,
+  Frenzy, WAAAGH!, or War Drums.
+- **Alpha** (a dinosaur with 3 or more kills): +1 Attack on every attack it
+  makes, included in `attack2` ([section 19.8](#198-grow)).
+- **Charge!** (the Triceratops, [section 19.11](#1911-charge)): +1 Attack
+  per tile moved this turn before its first attack, up to +2 (`runUp`), and
+  the defender's fortification is ignored.
 - **Gang Up** (Goblin attackers in land form,
   [section 18.2](#182-gang-up)): +1 Attack for each other unit the attacker's
   owner has on the eight cells around the target, at most +2. It never
@@ -1286,27 +1592,49 @@ fortification level = 2 (own city center with Walls) + 1 (tile has Field Defense
 ```
 
 Each level adds 1 flat Defense before cover. Naval, embarked, and foreign
-units on the tile receive none. There is no other city-center defense bonus.
+units and Eggs on the tile receive none. There is no other city-center
+defense bonus. Three Dinosaur attacks remove levels for the whole exchange
+(the reduced Defense applies to the damage taken **and** to the
+retaliation), without destroying Walls
+([section 19](#19-dinosaur-faction-rules)):
+
+| Attack                                         | Fortification applied           | Cover      | Preview fields                                   |
+| ---------------------------------------------- | ------------------------------- | ---------- | ------------------------------------------------ |
+| Spitter (Acid)                                 | none                            | none (× 1) | `acid: true`, `fortificationIgnored: 0`          |
+| Triceratops (Charge!)                          | none                            | kept       | `fortificationIgnored`: the levels removed (0–3) |
+| any other dinosaur whose owner has Wallbreaker | Field Defense only (Walls gone) | kept       | `fortificationIgnored`: 2 on a Walled center     |
+| every other attack                             | full                            | kept       | `acid: false`, `fortificationIgnored: 0`         |
+
+`fortificationLevel` in the combat preview is always the level actually
+applied.
 
 ### 13.4 After combat
 
 - **Advance:** a surviving adjacent land attacker (not a Catapult, Lich,
-  Rocket Cart, or Zombie) that kills a land defender moves into its cell if
-  explored and enterable (Mountain needs Engineering), then reveals sight. It
-  does not advance when the defender rises in place (an Infect or Bitten
-  rising), and it stands on any Grave the death left.
-- **Push:** a Juggernaut, Abomination, or Troll pushes a surviving adjacent
-  target one cell directly away if the cell is on the board, explored by the
-  attacker, empty, not a settlement, the same land/water kind as the target,
-  enterable by the target's owner, and not in territory allied to the target.
+  Rocket Cart, or Zombie; the Triceratops does advance) that kills a land
+  defender or an Egg moves into its cell if explored and enterable (Mountain
+  needs Engineering), then reveals sight. It does not advance when the
+  defender rises in place (an Infect or Bitten rising), and it stands on any
+  Grave the death left.
+- **Push:** a Juggernaut, Abomination, Troll, or Brontosaurus pushes a
+  surviving adjacent target one cell directly away if the cell is on the
+  board, explored by the attacker, empty, not a settlement, the same
+  land/water kind as the target, enterable by the target's owner, and not in
+  territory allied to the target. It never pushes an Egg, and the pusher
+  stays where it is.
+- **Charge! Push and follow** (the Triceratops): a surviving target is
+  pushed under the same conditions, and the Triceratops, if it survived,
+  follows into the vacated tile under the advance conditions
+  ([section 19.11](#1911-charge)).
 - **Escape:** a surviving Human Raider may make one more ordinary Move
   ([section 12.2](#122-activation)).
-- **Overrun** (Human Knight; **Ram** for the Goblin Scrap Buggy, same rule
-  and events): after the unit kills and advances, if a visible hostile unit
-  is adjacent to its new cell it may Attack again, with no other action
-  allowed. This repeats without a cap until a non-kill, death, or no target.
-  The continuation is evaluated after any death-blast chain the attack set
-  off ([section 18.7](#187-where-chains-run-and-event-order)).
+- **Overrun** (Human Knight; **Ram** for the Goblin Scrap Buggy; **Rampage**
+  for the Dinosaur T-Rex; same rule and events): after the unit kills (an
+  Egg counts) and advances, if a visible hostile unit is adjacent to its new
+  cell it may Attack again, with no other action allowed. This repeats
+  without a cap until a non-kill, death, or no target. The continuation is
+  evaluated after growth and after any death-blast chain the attack set off
+  ([section 18.7](#187-where-chains-run-and-event-order)).
 - **Splash** (Battleship of any faction, the Undead Lich, and the Goblin Bomb
   Chucker): when the unit attacks (never when it retaliates), every other
   unit on the eight cells around the primary target, hidden or visible and of
@@ -1324,8 +1652,9 @@ units on the tile receive none. There is no other city-center defense bonus.
   unit it damages and does not kill becomes Bitten
   ([sections 17.6](#176-infect) and [17.7](#177-bitten)).
 - **Field Defense destruction:** after an attack against a unit on a Field
-  Defense tile, it is destroyed for the first applicable reason: a Catapult,
-  Lich, or Rocket Cart attacked (reason `CATAPULT`); a surviving Inspired
+  Defense tile, it is destroyed for the first applicable reason: a unit of
+  the `CATAPULT` role (Catapult, Lich, Rocket Cart, or Triceratops) attacked
+  (reason `CATAPULT`, whether or not either unit survives); a surviving Inspired
   (Frenzied, WAAAGH!) unit
   attacked at range 1; a surviving land attacker whose owner has Explosives
   attacked at range 1; or the attacker advanced into the cell. These attack reasons apply whoever owns the tile:
@@ -1334,19 +1663,24 @@ units on the tile receive none. There is no other city-center defense bonus.
   advancing onto it destroys that Field Defense). Separately, a land unit
   entering the empty tile by Move or disembarkation destroys it only when the
   tile's territory belongs to a player hostile to the mover.
-- Kills are counted for promotion, including retaliation and hostile splash
-  kills and kills whose victim rises (not friendly bomb-splash kills or
-  explosion kills).
+- Kills are counted for promotion, growth, and Slayer, including retaliation
+  and hostile splash kills, kills whose victim rises, and destroyed Eggs (not
+  friendly bomb-splash kills or explosion kills). A dinosaur that reaches
+  Big or Alpha grows at once, after the exchange's damage, Lifesteal, and
+  kill credit and before the advance, Push, follow, and any chain
+  ([section 19.8](#198-grow)).
 - **Deaths.** A combat death leaves a Grave, an Infect rising, or a Bitten
-  rising as [section 17](#17-undead-faction-rules) describes. An exploding
+  rising as [section 17](#17-undead-faction-rules) describes; a destroyed Egg
+  leaves none of them. An exploding
   Goblin unit (the defender, a splash victim, or the attacker) then explodes,
   after the attack's deaths, risings, advance, and Push
   ([section 18.7](#187-where-chains-run-and-event-order)). The exact
   resolution and event order of an attack are in
   [revision 13 §6.8](RULESET_7_REVISION_13_UNDEAD.md#68-combat-resolution-order)
   as extended by
-  [revision 14 §10](RULESET_7_REVISION_14_BALANCE.md#10-combat-resolution-order)
-  and [revision 17 §6.7](RULESET_7_REVISION_17_GOBLINS.md#67-where-chains-run-and-event-order).
+  [revision 14 §10](RULESET_7_REVISION_14_BALANCE.md#10-combat-resolution-order),
+  [revision 17 §6.7](RULESET_7_REVISION_17_GOBLINS.md#67-where-chains-run-and-event-order),
+  and [section 19.11](#1911-charge) here (growth, Push, and follow).
 
 ## 14. Naval rules
 
@@ -1405,6 +1739,12 @@ units on the tile receive none. There is no other city-center defense bonus.
   blast area like any unit (the embarked Defense 1 is irrelevant to fixed
   damage), and an exploding unit killed while embarked explodes on its water
   tile. A blast that kills a blockader lifts the blockade.
+- **Dinosaur boats** are the Human Patrol Boat and Battleship too: trained
+  with `TRAIN_NAVAL`, one slot each, no growth, ordinary Promotion. Dinosaur
+  land units embark, sail, and land under the ordinary rules (a two-slot
+  unit embarks like any other, keeping its slots and growth; landing ends
+  the activation, so a landed Triceratops cannot Charge! that turn). An Egg
+  is never on water or a dock, never embarks, and never blockades.
 - **Blockade events.** `PORT_BLOCKADE_CHANGED` and `SEA_NETWORK_CHANGED` are
   recomputed after `ATTACK`, `BUILD_PORT`, `BUILD_ROAD`, `CAPTURE`,
   `DISEMBARK`, `MOVE`, `REDEVELOP`, `WAIL`, `KABOOM`, `END_TURN`, `LAND_GRANT`,
@@ -1441,6 +1781,15 @@ units on the tile receive none. There is no other city-center defense bonus.
   `WINDMILL_HEALING_RESOLVED`. Explosion previews are computed from the
   viewer's visible units and flag `touchesUnexplored`
   ([section 18.12](#1812-commands-events-errors-and-queries)).
+- **Eggs and growth** are public: an Egg is visible exactly when its tile is
+  explored, like any unit, and its role, HP, and countdown (`turnsRemaining`)
+  are public on a visible Egg (`PlayerViewV7.eggs`); a dinosaur's growth
+  stage follows from its public `kills` and `maxHp`. `EGG_LAID` and
+  `EGG_HATCHED` are projected to the owner and to every viewer that has
+  explored the Egg's tile, with `EGG_LAID.cost` hidden from other viewers;
+  `UNIT_GREW` is projected like `UNIT_PROMOTED`. Laying reveals nothing; a
+  hatched unit reveals its sight. A city's capacity and used slots stay
+  owner-private; each unit's own slot value is public in its unit stats.
 - Exact projection rules are in
   [baseline §9](RULESET_7.md#9-observation-safe-views-events-queries-and-artifacts)
   and the relevant overlay sections.
@@ -1531,6 +1880,37 @@ units on the tile receive none. There is no other city-center defense bonus.
   exploding unit is valued with `previewAttackExplosionsV7`. Details:
   [Normal AI revision 17](../architecture/NORMAL_AI.md#revision-17-goblin-play-pulp_wars-0ao6)
   and the [Goblin balance report](../validation/RULESET_7_GOBLIN_BALANCE.md).
+- **Dinosaur play** (revisions 19 and 20, `pulp_wars-c87.5`, `c87.8`,
+  `0hi.2`). Every Dinosaur heuristic is gated on a match with a Dinosaur seat
+  or on a fact only a Dinosaur-faction unit has (an Egg, `GROW`,
+  `LINEBREAKER`, `ACID`, an armour reduction, a slot value above 1;
+  `src/ai/v7-dinosaur.ts`), so it never runs elsewhere. Shared estimates
+  apply Acid, Armoured, and the Alpha bonus, value grown units and visible
+  Eggs, and give a visible hostile Triceratops its move-then-melee reach with
+  the run-up, no Walls or Field Defense on its target, and (because research
+  is private) Wallbreaker for every hostile dinosaur. As Dinosaurs, Normal
+  lays Eggs as land production valued per slot and per Coin with the hatch
+  delay as a cost (never on a nest tile the visible enemies can destroy
+  before it hatches), picks the safest offered nest tile, guards and hatches
+  threatened or long Eggs with an adjacent attacker and the Shaman, abandons
+  an Egg only to free a threatened city's slot, values a kill by the HP its
+  growth restores, retreats grown units earlier, plays the Triceratops as a
+  front-line attacker (a run-up Move before its Charge!, extra value for
+  Field Defense destroyed and for pushing a defender off a hostile center
+  next to an own capturer), researches toward the Triceratops or the T-Rex
+  once it owns two cities, researches Nesting for its slot and Wallbreaker
+  against visible Walled cities, and uses War Drums, Tend Wounded, Rampage,
+  and Pounce like Rally, Tend, Overrun, and Charge. Against Dinosaurs, Normal
+  smashes reachable Eggs (valued by the unit inside and its remaining
+  turns), avoids feeding a kill to a dinosaur one kill from Big or Alpha,
+  prefers killing grown units, and skips a hit of at most 1 on an Armoured
+  unit. Details:
+  [Normal AI revision 19](../architecture/NORMAL_AI.md#revision-19-dinosaur-play-pulp_wars-c875).
+- **Promotion** (revision 20, every faction and match): a wounded unit that
+  can be promoted is promoted before any attack, capture, or End Turn, so the
+  full heal is not wasted; the policy never holds a Promotion back. This is
+  the only decision change of revision 20 in matches without a Dinosaur
+  seat.
 - **Raider Escape:** a Raider attack earns a small bonus for its retreat
   option. After the attack, if visible enemies can reach the Raider, Normal
   only uses an escape Move to a strictly safer visible tile (less projected
@@ -1577,7 +1957,13 @@ infected and bitten flags false). Human units keep every Human ability
 (Rally, Tend Wounded, Escape, Overrun) and Goblin units every Goblin rule
 against Undead opponents; Goblin units are living. Goblin explosions
 interact with these rules as listed in
-[section 18.11](#1811-interactions-with-other-rules).
+[section 18.11](#1811-interactions-with-other-rules). Dinosaur-faction units
+keep every Dinosaur rule against Undead opponents and are living: they leave
+Graves, are plagued, bitten, infected, and wailed like Human units, and the
+Shaman's Tend Wounded cures them. An Egg is the exception: it is wailed
+(defending with 1) and hit by splash, but never plagued, bitten, infected,
+or raised from, and it leaves no Grave
+([section 19.12](#1912-interactions-with-other-rules)).
 Specifications and exact event shapes:
 [revision 13](RULESET_7_REVISION_13_UNDEAD.md),
 [revision 14](RULESET_7_REVISION_14_BALANCE.md), and
@@ -1595,8 +1981,10 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
   (its own Kaboom), or `EXPLOSION` (hit by a blast); the tile is land and is
   not a settlement site (capital, city, or village center); the death did not
   rise (Infect or Bitten); and the tile has no Grave yet.
-- **No Grave** comes from a water, embarked, or naval death, Disband, reward
-  displacement removal, elimination removal, or a death that rises. A chest
+- **No Grave** comes from a water, embarked, or naval death, an Egg's death
+  (form `EGG`), Disband, reward displacement removal, elimination removal,
+  the destruction of Eggs with a captured city, or a death that rises. A
+  chest
   is consumed by the unit that enters its tile, so no Grave shares a tile
   with a chest.
 - **Properties.** A Grave blocks and costs nothing: movement, occupancy, ZOC,
@@ -1792,8 +2180,10 @@ without one no Kaboom is offered, no explosion occurs, no Plunder is
 awarded, no Troll exists, Warrens never apply, and every combat preview's
 `gangUp` is 0. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, `GOBLIN_ROLE_RULES_V7`, `GOBLIN_ROLE_MECHANICS_V7`).
-Human and Undead units keep every ability against Goblins, and blasts hit
-them like any unit. Specification, decisions, and the tuning record:
+Human, Undead, and Dinosaur units keep every ability against Goblins, and
+blasts hit them like any unit (Eggs included; an Ankylosaurus takes 1 less,
+[section 19.12](#1912-interactions-with-other-rules)). Specification,
+decisions, and the tuning record:
 [revision 17](RULESET_7_REVISION_17_GOBLINS.md) and the
 [Goblin balance report](../validation/RULESET_7_GOBLIN_BALANCE.md).
 
@@ -2020,7 +2410,8 @@ Every death is credited to at most one player:
 | Push, Charge, Escape    | Push resolves before the chain. A Raider that survives the attack and the chain keeps its Escape Move.                                                                                                                                                                     |
 | Cities, villages        | Blasts hit units on centers (Walls and fortification give no protection), never capture, move, or advance a unit, and never change a city, territory, level, Walls, improvement, Road, resource, or Monument. Surviving victims keep their capture eligibility.            |
 | Capacity                | A Kaboom or blast death frees its home city's slot at once; the city trains again only with its city action still available.                                                                                                                                               |
-| Achievements, Promotion | No achievement counts kills; explosions credit no unit kill ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)).                                                                                                                                                  |
+| Achievements, Promotion | Explosions credit no unit kill ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)), so they never advance Promotion, growth, or Slayer; Plunder counts them.                                                                                                      |
+| Dinosaurs               | Blasts hit Dinosaur units and Eggs with fixed damage (an Ankylosaurus takes 1 less; an Egg killed by a blast dies with cause `EXPLOSION`); a destroyed Egg is a credited hostile kill for Plunder. Eggs never help Gang Up. No Dinosaur attack has Gang Up.                |
 
 ### 18.12 Commands, events, errors, and queries
 
@@ -2079,7 +2470,482 @@ Every death is credited to at most one player:
   units, and `previewCityCapacityV7` includes Warrens. `PublicPlayerV7` and
   the leaderboard carry `GOBLIN` and `GOBLIN_BASELINE_V1` for Goblin seats.
 
-## 19. Revision history
+## 19. Dinosaur faction rules
+
+Humans are sustain, Undead are attrition, Goblins are a reckless horde, and
+Dinosaurs are **few, big, and growing**: cavemen lead a small number of
+strong beasts that are laid as Eggs next to a city, take up more room, grow
+when they kill, and break lines with the Triceratops's Charge!. Their
+weaknesses are the Egg (a fragile, immobile target for one or more turns),
+low unit counts, and no Field Defense. Every rule in this section applies
+only to units and cities of a `DINOSAUR` seat; in a match without one no Egg
+exists (`eggs` is empty), no `LAY_EGG` or `HATCH` is offered or accepted,
+every role uses one slot, no unit grows, the treasure unit is the `KNIGHT`
+role, no Nesting slot or Wallbreaker applies, and every combat preview has
+`runUp: 0`, `fortificationIgnored: 0`, `acid: false`, and both Armoured
+flags false. Each rule resolves through the owner's registration
+(`FACTION_RULES_V7`, `DINOSAUR_ROLE_RULES_V7`, `DINOSAUR_ROLE_MECHANICS_V7`).
+Human, Undead, and Goblin units keep every ability against Dinosaurs, and
+Eggs are targets like any unit. Specification, decisions, and tuning
+records: [revision 19](RULESET_7_REVISION_19_DINOSAURS.md),
+[revision 20](RULESET_7_REVISION_20.md), the
+[Dinosaur balance report](../validation/RULESET_7_DINOSAUR_BALANCE.md) (the
+`pulp_wars-c87.8` interim baseline), and the
+[revision-20 balance report](../validation/RULESET_7_REVISION_20_BALANCE.md)
+(the `7r23` coarse pass).
+
+### 19.1 Roles, Wild, and labels
+
+| Mechanical role | Human      | Undead      | Goblin       | Dinosaur     |
+| --------------- | ---------- | ----------- | ------------ | ------------ |
+| `FIGHTER`       | Fighter    | Skeleton    | Goblin       | Caveman      |
+| `RAIDER`        | Raider     | Ghoul       | Wolf Rider   | Raptor       |
+| `MARKSMAN`      | Marksman   | Banshee     | Bomb Chucker | Spitter      |
+| `GUARD`         | Guard      | Zombie      | Orc Brute    | Ankylosaurus |
+| `CAPTAIN`       | Captain    | Necromancer | Orc Warboss  | Shaman       |
+| `CATAPULT`      | Catapult   | Lich        | Rocket Cart  | Triceratops  |
+| `KNIGHT`        | Knight     | Vampire     | Scrap Buggy  | T-Rex        |
+| `JUGGERNAUT`    | Juggernaut | Abomination | Troll        | Brontosaurus |
+
+- **Cavemen** (Caveman and Shaman) are trained on the city center with
+  `TRAIN` and keep the ordinary Promotion. **Dinosaurs** (the six growing
+  roles) grow instead of promoting ([section 19.8](#198-grow)); the five
+  trainable ones are laid as Eggs ([section 19.4](#194-laying-an-egg)), and
+  the Brontosaurus is a reward unit only. The boats are the Human boats.
+- **Wild:** no Dinosaur unit builds Field Defense
+  ([section 12.3](#123-field-defense)). Walls are unchanged: a Dinosaur city
+  may choose the Walls reward.
+- **Labels:** Rally is **War Drums**, Overrun is **Rampage** (T-Rex), the
+  Raider Charge is **Pounce** (Raptor), and the Triceratops's `LINEBREAKER`
+  ability is **Charge!**. The commands, flags, and events are the shared
+  ones (`RALLY`, `inspired`, `UNITS_RALLIED`; Overrun's continuation;
+  `chargeApplied`).
+- **Treasure unit:** a Raptor (`treasureUnitRole` `RAIDER`,
+  [section 2.2](#22-settlements-and-treasures)). **Starting unit:** one
+  Caveman. **Militia:** one Caveman. **Level-5+ reward:** a Brontosaurus.
+  Reward and treasure units arrive hatched; no reward or chest ever creates
+  an Egg.
+
+### 19.2 Capacity slots and Nesting
+
+- **Slots.** The Triceratops, T-Rex, and Brontosaurus use 2 capacity slots,
+  every other role of every faction 1 (`capacitySlots`). A city's used
+  slots are the sum over the units on the board homed to it, Eggs included
+  (an Egg uses the slots of the unit inside); training, laying, and the
+  treasure unit need `used + slots <= capacity`
+  ([section 4.4](#44-unit-capacity)). So a level-1 capital (capacity 2)
+  that holds the starting Caveman can lay a Raptor, Spitter, or Ankylosaurus
+  Egg, but not a Triceratops or T-Rex Egg. Hatching never changes used
+  slots.
+- Dinosaur cities have no Warrens-like faction bonus
+  (`cityCapacityBonus` 0).
+- **Nesting** (the Dinosaur Fortification, Industry tier 2, requires Drill,
+  ordinary tier-2 cost) gives every city its owner owns one more slot, read
+  live like Planning (researching it raises every owned city at once; a
+  city captured by a Dinosaur seat with Nesting gains the slot, and a city
+  captured from it loses the slot). It also changes every Egg the player
+  **lays** from then on: +4 HP (10 instead of 6) and one turn less to hatch,
+  minimum 1. Eggs already on the board keep their values.
+
+| Unit         | Hatch time | With Nesting |
+| ------------ | ---------: | -----------: |
+| Raptor       |          1 |            1 |
+| Spitter      |          1 |            1 |
+| Ankylosaurus |          2 |            1 |
+| Triceratops  |          2 |            1 |
+| T-Rex        |          4 |            3 |
+
+### 19.3 Eggs
+
+**An Egg is a unit with the form `EGG`.** It is an ordinary entry of
+`GameStateV7.units` with its own unit ID, `ownerId`, `homeCityId` (the laying
+city), `role` (the role of the unit inside), `at`, `hp`, and `maxHp`, with
+`kills` 0, `veteran` false, `captureEligible` false, and the exhausted
+activation at all times. Its countdown is in
+`GameStateV7.eggs: { unitId, turnsRemaining, laidThisTurn }[]`, sorted by
+unit ID; `turnsRemaining` is the number of its owner's Start Turns still to
+come before it hatches (1 to the role's hatch time), and `laidThisTurn` is
+true from `LAY_EGG` until its owner's next Start Turn. `PlayerViewV7.eggs`
+lists the same entries for every Egg in the view.
+
+| Property       | Value                                                                                                                      |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| HP             | 6, or 10 when laid with Nesting (`EGG_HP_V7` plus `eggHpBonus`)                                                            |
+| Attack         | none: no `ATTACK`, never retaliates                                                                                        |
+| Defense        | 1 (`EGG_DEFENSE2_V7` 2), fixed, like an embarked unit: no cover, no fortification                                          |
+| Move, range    | 0; it never moves and is never pushed or displaced                                                                         |
+| Sight, ZOC     | none: an Egg reveals nothing and projects no ZOC                                                                           |
+| Capture, siege | none; an Egg never stands on a center                                                                                      |
+| Slots          | the slots of the unit inside                                                                                               |
+| Occupancy      | it occupies its tile: no unit ends a Move, lands, is pushed, placed, or displaced there; its owner's units pass through it |
+| Healing        | none                                                                                                                       |
+| Statuses       | never plagued (application or spread), never bitten, never Inspired; no growth and no kills                                |
+| Damage         | everything that damages a unit on its tile: attacks, splash, Wail, Kaboom, and death blasts                                |
+| Label          | "{Unit} Egg", for example "Raptor Egg"; its role, HP, and countdown are public on a visible Egg                            |
+
+An Egg accepts no unit command except Disband
+([section 19.7](#197-egg-destruction-capture-and-abandon-egg)): every other
+command naming an own Egg as `unitId` is rejected with `UNIT_IS_EGG` and
+never offered. It never needs handling (it is never among the units waiting
+for orders, and idle recovery skips it). It does not count for Muster until
+it hatches, and it counts as a unit in the leaderboard unit count. State
+parsing rejects any Egg in a match without a Dinosaur seat, an `EGG` unit
+without an `eggs` entry or the reverse, an Egg whose owner is not a Dinosaur
+seat, whose role is not egg-laid, whose home city is missing or not owned by
+its owner, or whose tile is not a land tile of that city's territory next to
+its center, an Egg `maxHp` other than 6 or 10, and an Egg listed in
+`plagued` or `bitten`.
+
+### 19.4 Laying an Egg
+
+`LAY_EGG { kind, cityId, role, at }` is a city action and the only way a
+Dinosaur seat produces an egg-laid role. Legality is checked in this order,
+the first failure being the (atomic) rejection:
+
+| #   | Requirement                                                                                                                                                                                                                | Rejection                              |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| 1   | The city exists and the actor owns it.                                                                                                                                                                                     | `CITY_NOT_FOUND`, `CITY_NOT_OWNED`     |
+| 2   | Its city action is available.                                                                                                                                                                                              | `CITY_ACTION_SPENT`                    |
+| 3   | It is not besieged and has no pending reward.                                                                                                                                                                              | `CITY_BESIEGED`, `CITY_REWARD_PENDING` |
+| 4   | `role` is an egg-laid role of the actor's registration (so the actor is a Dinosaur seat).                                                                                                                                  | `UNIT_ROLE_INVALID { role }`           |
+| 5   | The actor has researched the role's technology.                                                                                                                                                                            | `TECH_REQUIRED { tech }`               |
+| 6   | `at` is on the board.                                                                                                                                                                                                      | `TILE_NOT_FOUND`                       |
+| 7   | `at` is a **nest tile** of the city: one of the eight tiles around its center; land; in that city's territory; not a settlement site; holding no unit and no treasure chest; a Mountain only if the actor has Engineering. | `INVALID_TILE { action: "LAY_EGG" }`   |
+| 8   | `used + slots(role) <= capacity`.                                                                                                                                                                                          | `CITY_CAPACITY_FULL`                   |
+| 9   | The actor has the cost in Coins.                                                                                                                                                                                           | `INSUFFICIENT_COINS { cost }`          |
+
+- **Cost:** the role's printed cost, minus 1 (minimum 1) while a Forge in
+  the laying city has positive output (Arms Industry); never the Shipyard
+  discount.
+- **The center may be occupied:** laying does not use the city center, so a
+  garrisoned Dinosaur city can still produce (`CITY_SPAWN_OCCUPIED` never
+  applies to `LAY_EGG`; training a Caveman or Shaman still needs an empty
+  center).
+- A nest tile may be Grass, Forest, or (with Engineering) Mountain, with or
+  without a resource, improvement, Road, Field Defense, or Grave. An Egg
+  changes nothing on its tile and blocks no economic action there. A city
+  with no free nest tile cannot lay.
+- **Result:** the actor pays, the city action is spent, and an Egg takes the
+  next entity ID on `at`, homed to the city, with
+  `hp = maxHp = 6 + eggHpBonus`,
+  `turnsRemaining = max(1, hatchTurns(role) − eggHatchTurnReduction)`, and
+  `laidThisTurn: true`. Event `EGG_LAID { playerId, cityId, unitId, role, cost, at, hp, turnsRemaining }`;
+  achievements are then evaluated. Laying reveals nothing, draws no PRNG
+  value, and emits no naval event.
+
+### 19.5 Hatching
+
+At its owner's Start Turn, after the Plague step and any chain it started and
+before Windmill healing ([section 3](#3-players-turns-and-victory)), every
+Egg of that player, in ascending unit ID, has `laidThisTurn` cleared and
+loses one from `turnsRemaining`; at 0 it **hatches**: the form becomes
+`LAND`, `hp` and `maxHp` become the role's maximum HP, `kills` stays 0, the
+`eggs` entry is removed, and the unit gets a **fresh activation** (it can
+move and act this turn) and reveals its sight. One `EGG_HATCHED` (`cause`
+`TIME`, `sourceUnitId` null) per hatch, then one `TILES_REVEALED` for the
+step when anything was revealed.
+
+- An Egg laid on its owner's turn `N` with hatch time 1 hatches at the start
+  of turn `N + 1`, ready to act (the tempo of a trained unit, which is
+  exhausted until then); hatch time 2 at `N + 2`; a T-Rex (4) at `N + 4`.
+- Siege, pending rewards, capacity, and Coins do not matter. The hatched unit
+  appears in place, homed to the laying city, with the same unit ID and the
+  same slots.
+- The hatch tile is always free (an Egg is alone on its tile by
+  construction); a violation is an internal `INVALID_STATE`.
+- Muster and every other achievement are evaluated after the step.
+
+### 19.6 Shaman Hatch
+
+`HATCH { kind, unitId, eggUnitId }` is a primary action of the Shaman: no
+Coins and no technology beyond the Shaman itself.
+
+- **Legal** for an own land-form Shaman (the `HATCH` ability) that has not
+  used its primary action (it may have moved), with `eggUnitId` an own Egg
+  on one of its eight neighbours that was **not laid this turn**.
+- **Result:** the Egg hatches at once as in
+  [section 19.5](#195-hatching), but the hatchling is **exhausted** for the
+  rest of the turn; the Shaman is handled. `EGG_HATCHED` with `cause`
+  `SHAMAN` and `sourceUnitId` the Shaman, then `TILES_REVEALED`, then the
+  achievement evaluation.
+- Every Egg therefore spends at least one round of enemy turns on the
+  board. From its owner's next turn a Hatch saves its whole remaining
+  countdown, so it matters only for Eggs with hatch time 2 or more: a T-Rex
+  Egg laid on turn `N` can be hatched on `N + 1` and act on `N + 2`.
+- **Rejections (atomic):** unknown, dead, or foreign Shaman → the ordinary
+  unit errors; a role without `HATCH` → `UNIT_ROLE_INVALID { role }`; primary
+  action already used (or the Shaman landed this turn) →
+  `UNIT_ALREADY_ACTED`; embarked → `HATCH_NOT_LEGAL { reason: "EMBARKED" }`;
+  `eggUnitId` unknown, dead, not the actor's, not an Egg, or not adjacent →
+  `HATCH_NOT_LEGAL { reason: "NO_EGG" }`; an adjacent own Egg laid this turn
+  → `HATCH_NOT_LEGAL { reason: "LAID_THIS_TURN" }` (never offered). A
+  plagued or bitten Shaman may Hatch.
+
+### 19.7 Egg destruction, capture, and Abandon Egg
+
+- **Destroyed.** An Egg reduced to 0 HP dies like any unit (`UNIT_DIED` with
+  the ordinary cause: `ATTACK`, `SPLASH`, `WAIL`, or `EXPLOSION`); its slots
+  free at once. It leaves no Grave and never rises. The killer gets the
+  ordinary kill credit (Promotion, growth, Slayer), the credited player the
+  ordinary Plunder, and a melee attacker advances onto its tile (an Overrun,
+  Ram, or Rampage continues from there).
+- **City capture** destroys every Egg homed to the captured city:
+  `UNIT_DIED` with cause `CITY_CAPTURED`, in unit-ID order, right after
+  `CITY_CAPTURED` and before the elimination events. These are removals:
+  no kill credit, no Plunder, no Grave.
+- **Elimination** removes Eggs with the player's other units (cause
+  `ELIMINATION`).
+- **Abandon Egg.** With Administration, `DISBAND` is legal for an own Egg,
+  on any turn including the one it was laid and with no city action: it is
+  removed for `floor(printed cost / 2)` Coins of the role inside (Raptor,
+  Spitter, and Ankylosaurus 2, Triceratops 4, T-Rex 7), with the ordinary
+  `UNIT_DISBANDED` event.
+
+### 19.8 Grow
+
+- **Stages** are derived from `kills` (`GROWTH_KILLS_V7` `[1, 3]`): stage 0
+  with no kill, **Big** (stage 1) from 1 kill, **Alpha** (stage 2) from 3
+  kills. There is no stage beyond Alpha. Only the six dinosaurs grow (the
+  `GROW` ability); Eggs never do.
+- **Kill credit** is the ordinary one
+  ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)): the unit's
+  attack kills (each Rampage kill too), retaliation kills, and hostile
+  splash kills count; a victim that rises still counts; destroying an Egg
+  counts; explosions, Plague, and kills of own or allied units do not. A
+  dinosaur is credited only in land form.
+- **Effect.** Each stage reached adds 4 maximum HP (`GROWTH_HP_V7`) and
+  **fully heals** the unit (`hp` becomes the new maximum; revision 20).
+  Alpha also adds +1 Attack (`ALPHA_ATTACK2_V7` 2) to every attack the unit
+  makes from then on. A unit that crosses both thresholds in one command
+  gains both stages in order. The heal removes damage only: Plague and
+  Bitten stay.
+- **Timing.** Growth applies after the exchange's damage, Lifesteal, and
+  kill credit, to a unit that survived it, and before the Push, the advance
+  or follow, and any chain, so a T-Rex that reaches Big with its first kill
+  is fully healed before it advances and Rampages. The exchange's damage is
+  never recomputed; Alpha's Attack applies from the next attack.
+- **Persistence.** Growth is permanent (embarking, landing, capture of its
+  home city, saves) and ends only when the unit leaves the board. A dinosaur
+  that dies and rises (Infect or Bitten) becomes an ordinary Zombie of the
+  biter's owner with no growth.
+- **No Promotion** for a growing unit: it is never `veteran`, and `PROMOTE`
+  is never offered for it (`PROMOTION_NOT_ELIGIBLE`). State parsing requires
+  `veteran` false and `maxHp = role maxHp + 4 × stage(kills)` for it.
+  Healing (recovery, Windmills, Tend Wounded) heals toward the grown
+  maximum, and combat uses `hp / maxHp` as for a promoted unit.
+- **Events and public view.** One `UNIT_GREW { unitId, stage, maxHp, hp }`
+  per stage reached (`hp = maxHp`), after the death events of the attack.
+  `kills` and `maxHp` are public, so the stage is public; the public unit
+  stats carry `growthStage` and `killsToNextStage`, the HP breakdown lists
+  the source `GROWTH`, and the Attack breakdown the source `ALPHA`.
+
+### 19.9 Acid and Armoured
+
+- **Acid** (Spitter): when a land-form Spitter makes an `ATTACK` (range 1
+  or 2), the defender gets **no cover and no fortification** for the whole
+  exchange: its base Defense only (embarked or an Egg: 1), `cover = 1`, and
+  fortification level 0, whatever the terrain, Walls, or Field Defense.
+  Acid destroys nothing and never applies to the Spitter's retaliation. The
+  combat preview and `COMBAT_RESOLVED` carry `acid: true` and
+  `fortificationLevel: 0`. Example: a full-HP Spitter deals 4 (not 2) to a
+  full-HP Guard on a Walled center with Field Defense, and 5 (not 4) to a
+  Fighter in a Forest.
+- **Armoured** (Ankylosaurus, `armourReduction` 1): every instance of damage
+  `d` it takes is `d − 1` for `d >= 2` and `d` for 0 or 1, before the cap at
+  its HP: an attack, a retaliation it takes as attacker, a splash hit, a
+  Wail hit, a Kaboom or death-blast hit, and each Start Turn of Plague (2
+  becomes 1); in land form and embarked, never as an Egg. Everything derived
+  from the damage uses the reduced value (splash around it, Lifesteal from
+  it, death); a Zombie that deals 1 still bites it. The combat preview and
+  `COMBAT_RESOLVED` carry `defenderArmoured` and `attackerArmoured` (true
+  when the reduction lowered that side's damage); splash, Wail, explosion,
+  and Plague entries report the reduced damage. Example: a full-HP Fighter
+  deals 3 (not 4) to a full-HP Ankylosaurus; a Goblin's Kaboom deals 4.
+
+### 19.10 Wallbreaker
+
+Wallbreaker is the Dinosaur Explosives (Industry tier 3, requires
+Fortification): it keeps Blast Mountain and the melee Field Defense
+demolition of every faction's Explosives and adds the capability
+`ignoresCityWalls`. When a dinosaur in land form whose owner has
+Wallbreaker makes an `ATTACK`, the defender's City Walls levels (2) are
+removed from its fortification for the whole exchange (damage and
+retaliation); the Field Defense level and cover stay, and the Walls are not
+destroyed. It applies at any range and on every attack of the turn (each
+Rampage attack too), never to the Caveman, the Shaman, a boat, or an Egg,
+and never to a retaliation the dinosaur makes. It is read from the
+attacker's owner at the moment of the attack, and it is moot for the
+Triceratops and the Spitter, which already remove more. The preview reports
+`fortificationIgnored: 2` on a Walled center.
+
+| Attack (full HP)                                       | Without Wallbreaker (damage / retaliation) | With Wallbreaker |
+| ------------------------------------------------------ | -----------------------------------------: | ---------------: |
+| T-Rex on a Guard on a Walled center                    |                                     8 / 13 |           10 / 6 |
+| T-Rex on a Guard on a Walled center with Field Defense |                                     7 / 16 |            9 / 9 |
+| Raptor on a Fighter on a Walled center                 |                                     4 / 11 |            6 / 4 |
+| Ankylosaurus on a Fighter on a Walled center           |                                     3 / 11 |            5 / 4 |
+
+### 19.11 Charge!
+
+The Triceratops (`LINEBREAKER`, displayed "Charge!") is the faction's
+line-breaker: it walks up, hits a fortified defender as if it stood in the
+open, shoves it back, and takes its tile. **Every `ATTACK` a land-form
+Triceratops makes** (always at range 1) is a Charge! with four parts:
+
+1. **Run-up.** `runUp = min(2, movedPathLength)` when `activation.moved` is
+   true and `attacksUsed` is 0, otherwise 0; the attack gains +1 Attack per
+   run-up tile (`runUpBonus2` 2, `RUN_UP_MAXIMUM_TILES_V7` 2):
+   `attack = 3 + 1 (Alpha) + runUp`. Every tile the unit entered with its
+   `MOVE` this turn counts, in any direction: tiles passed over own units,
+   Road half-steps (three or four Road tiles still give +2), and an
+   interrupted Move's truncated length. An unmoved or landed Triceratops
+   has 0. The preview's `runUp` carries it, and `attack2` includes it.
+2. **Ignores fortification.** The defender's Walls and Field Defense levels
+   are removed for the whole exchange (damage and retaliation); cover stays.
+   Walls are not destroyed. The preview sets `fortificationLevel: 0` and
+   `fortificationIgnored` to the levels removed.
+3. **Destroys Field Defense** on the target's tile, whoever owns it and
+   whether or not either unit survives (reason `CATAPULT`).
+4. **Push and follow.** A surviving defender is pushed one tile directly
+   away from the Triceratops under the ordinary Push conditions
+   ([section 13.4](#134-after-combat)); an Egg is never pushed. If the
+   target was pushed and the Triceratops survived, it **follows** into the
+   vacated tile under the advance conditions (land-form or Egg target, tile
+   enterable by it: a Mountain needs Engineering). A blocked Push has no
+   other effect. The defender is pushed even when the Triceratops dies in
+   the exchange.
+
+Parts 2–4 need no Move. Retaliation is ordinary (with the reduced Defense of
+part 2) and comes before the Push, so the Triceratops may be bitten,
+infected, or killed. It never captures: one that follows a defender onto a
+hostile city or village center besieges it like any unit standing there. It
+attacks once per turn, has no Raider Charge (`chargeApplied` false), and is
+never Inspired. An embarked Triceratops cannot attack, and landing ends its
+activation.
+
+- **Order:** damage both ways (Armoured, Lifesteal); kill credit and growth;
+  Field Defense destroyed; deaths, Graves, and risings; the Push of a
+  surviving target, then the advance (after a kill) or the follow (after a
+  Push); the death-blast chain, Plunder, reveals, and the tail. Events:
+  `COMBAT_RESOLVED`; `FIELD_DEFENSE_DESTROYED`; the death events;
+  `UNIT_GREW`; `UNIT_PUSHED`; `UNIT_MOVED` (the one-tile advance or follow);
+  the chain events; `PLUNDER_AWARDED`; `TILES_REVEALED`; the tail.
+- **Cases.** A killed target that leaves a Grave or nothing: the Triceratops
+  advances onto its tile. A target that rises in place, or dies on a
+  Mountain the actor cannot enter: the Triceratops stays. A survivor with a
+  free, legal tile behind it: pushed, and the Triceratops follows (off a
+  center too, without capturing). A survivor whose tile behind is off the
+  board, water (for a land target), occupied by any unit or Egg, a
+  settlement site, a Mountain its owner cannot enter, allied to it, or
+  unexplored by the actor: it stays, and so does the Triceratops. An afloat
+  target attacked from shore is pushed over free legal water, and the
+  Triceratops stays on land.
+- **Preview.** `queryCombatPreviewV7` reports `push` (`WILL_PUSH`,
+  `BLOCKED`, or `UNKNOWN_BEHIND_FOG`) and `advances` (a kill, or a Push it
+  will follow). For a Charge! the preview reads the explored tile behind
+  the target as resolution does, so `WILL_PUSH` and `BLOCKED` are exact;
+  only a Mountain or Deep Water behind another player's unit stays
+  `UNKNOWN_BEHIND_FOG`, because that owner's Engineering or Navigation is
+  private, and the attack may then push and follow. An unexplored tile
+  behind never pushes.
+
+Worked examples (engine formula, full HP, Grass, stage-0 Triceratops: 20 HP,
+Attack 3, Defense 2):
+
+| Target (HP, Defense)                        | Tiles moved | Attack | Defense used | Damage to target | Retaliation | Outcome                                       |
+| ------------------------------------------- | ----------: | -----: | -----------: | ---------------: | ----------: | --------------------------------------------- |
+| Fighter (12, 2)                             |           0 |      3 |            2 |                8 |           4 | pushed; the Triceratops follows               |
+| Fighter (12, 2)                             |           1 |      4 |            2 |               12 |           — | dies; the Triceratops advances                |
+| Guard (17, 3)                               |           2 |      5 |            3 |               14 |           5 | Guard at 3 HP, pushed                         |
+| Guard on a Walled center with Field Defense |           2 |      5 |    3 (not 6) |               14 |           5 | Field Defense gone; Guard pushed off          |
+| Guard in a Forest with Field Defense        |           2 |      5 |      3 × 1.5 |               12 |           6 | cover stays                                   |
+| Zombie (18, 2) on Field Defense             |           2 |      5 |    2 (not 3) |               16 |           3 | the Zombie bites the Triceratops, then pushed |
+| Ankylosaurus (20, 3)                        |           2 |      5 |            3 |      13 (14 − 1) |           5 | Armoured; pushed                              |
+| Guard (17, 3), Alpha Triceratops (28 HP)    |           2 |      6 |            3 |               17 |           — | dies                                          |
+
+### 19.12 Interactions with other rules
+
+| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Graves, Raise Dead      | Dinosaur-faction land units leave Graves like any unit (in matches with an Undead seat); Eggs never do. A Grave may lie under an Egg, but Raise Dead needs a Grave with no unit on it.                                                                                                                                                                                                                                                                                    |
+| Infect, Bitten          | A Dinosaur-faction land unit killed by a Zombie rises as an ordinary Zombie (10 of 18 HP, 1 slot, no growth, may exceed capacity); dinosaurs are bitten and rise like Human units, and the Shaman cures them. An Egg is never bitten and, killed by a Zombie, is destroyed without rising.                                                                                                                                                                                |
+| Plague                  | Dinosaur-faction units are plagued, take 2 per Start Turn (an Ankylosaurus 1), spread it, and are cured by Tend Wounded. Eggs are never plagued, never receive or pass a spread, and a hatched unit starts unplagued. A Lich attack on an Egg damages it and plagues nothing there.                                                                                                                                                                                       |
+| Wail, Lich splash       | Wail hits dinosaurs and Eggs (a living faction) within its radius; an Egg defends with 1. Lich and Battleship splash hit hostile Eggs like any hostile unit, and the kills count.                                                                                                                                                                                                                                                                                         |
+| Lifesteal, Unanswered   | A Vampire heals by the damage it deals to a dinosaur or an Egg (after Armoured). A Vampire's attack draws no retaliation from a dinosaur. A Vampire attacked by a Triceratops retaliates, heals, and is then pushed.                                                                                                                                                                                                                                                      |
+| Goblin rules            | Gang Up counts the Goblin attacker's own helpers around a dinosaur or an Egg as usual; no Dinosaur attack has Gang Up. Blasts and bomb splash hit dinosaurs and Eggs with their fixed or splash damage (an Ankylosaurus takes 1 less). A Triceratops that kills an exploding unit advances and is then hit by its blast; a pushed survivor is pushed before the chain. An Egg destroyed by a Goblin attack, splash, or blast earns Plunder; Eggs lost with a city do not. |
+| Push, Overrun, Charge   | No Push (Juggernaut role or Charge!) ever moves an Egg or ends on an Egg's tile. A Knight, Scrap Buggy, or T-Rex that destroys an Egg advances and may attack again. Only Charge! follows a pushed target.                                                                                                                                                                                                                                                                |
+| Field Defense, Walls    | They give Human, Undead, and Goblin defenders their ordinary bonus against every Dinosaur attack except the Spitter's (none), the Triceratops's (none), and, with Wallbreaker, the Walls levels against any dinosaur. A Catapult may target an Egg at range 2–3.                                                                                                                                                                                                          |
+| Cities, siege           | A besieged Dinosaur city cannot lay or train; its Eggs stay, count down, and hatch. An enemy that wants the city may ignore its Eggs: capture destroys them all. A Triceratops on a hostile center besieges it and never captures.                                                                                                                                                                                                                                        |
+| Boats, water            | Eggs never embark or stand on water or a dock; a two-slot unit embarks like any other. Dinosaur boats are the Human boats.                                                                                                                                                                                                                                                                                                                                                |
+| Achievements, Promotion | Muster counts hatched Dinosaur roles, never an Egg; Slayer counts a dinosaur's kills (growth does not reset them); a destroyed Egg is a kill for its killer. Promotion stays for the Caveman, the Shaman, and the boats.                                                                                                                                                                                                                                                  |
+
+### 19.13 Commands, events, errors, and queries
+
+- **Commands:** `LAY_EGG { kind, cityId, role, at }` (in
+  `COMMAND_KIND_ORDER_V7` right after `TRAIN_NAVAL`) and
+  `HATCH { kind, unitId, eggUnitId }` (right after `KABOOM`). `DISBAND`
+  also accepts an own Egg. There is no `STAMPEDE` command: revision 20
+  removed it, and a command object with that kind fails parsing like any
+  unknown kind.
+- **Events:** `EGG_LAID` and `EGG_HATCHED`
+  (`{ playerId, unitId, role, at, cause: "TIME" | "SHAMAN", sourceUnitId }`)
+  right after `NAVAL_UNIT_TRAINED`, and `UNIT_GREW` right after
+  `UNIT_PROMOTED`, in `DOMAIN_EVENT_KIND_ORDER_V7`. `UNIT_DIED.cause` gains
+  `CITY_CAPTURED`. There is no separate "Egg destroyed" event.
+- **Combat preview** (`CombatPreviewV7`, so also `COMBAT_RESOLVED`):
+  `runUp` (0–2, in `attack2`), `fortificationIgnored` (levels removed by
+  Charge! or Wallbreaker), `acid`, `defenderArmoured`, and
+  `attackerArmoured`; `push` and `advances` cover the Charge! Push and
+  follow. Alpha needs no field (it is in `attack2`).
+- **Errors:** `HATCH_NOT_LEGAL` (reasons `EMBARKED`, `NO_EGG`,
+  `LAID_THIS_TURN`) and `UNIT_IS_EGG`; `LAY_EGG` reuses existing codes
+  ([section 19.4](#194-laying-an-egg)).
+- **Registration:** faction `DINOSAUR`, tree `DINOSAUR_BASELINE_V1`, display
+  name "Dinosaur"; unlock kinds `NESTING { eggHp: 4, hatchTurns: 1, citySlots: 1 }`
+  and `WALLBREAKER`; capabilities `eggHpBonus`, `eggHatchTurnReduction`,
+  `nestingCityCapacityBonus`, and `ignoresCityWalls`; abilities `HATCH`,
+  `ACID`, `ARMOURED`, `GROW`, and `LINEBREAKER`; faction rule
+  `treasureUnitRole`; role mechanics `capacitySlots` (1 or 2), `hatchTurns`
+  (null, or 1–4), `runUpBonus2` (0 or 2), and `armourReduction` (0 or 1);
+  constants `EGG_HP_V7` 6, `EGG_DEFENSE2_V7` 2, `GROWTH_KILLS_V7` `[1, 3]`,
+  `GROWTH_HP_V7` 4, `ALPHA_ATTACK2_V7` 2, and `RUN_UP_MAXIMUM_TILES_V7` 2.
+- **`queryPlayerCommandsV7`** offers, for a Dinosaur seat, one `LAY_EGG` per
+  legal `(city, role, nest tile)` in city-ID, role, then `(y, x)` order;
+  `HATCH` for every Shaman and adjacent own Egg not laid this turn;
+  `DISBAND` for own Eggs with Administration; and the Triceratops's ordinary
+  `ATTACK` before and after its Move. It never offers `TRAIN` of an egg-laid
+  role, Field Defense, `PROMOTE` for a dinosaur, or any other command for an
+  Egg. Every offered command is accepted.
+- **`previewLayEggV7(view, cityId, role)`** returns null unless the city is
+  the viewer's and the role is egg-laid in its registration; otherwise
+  `{ cityId, role, cost, slots, usedSlots, capacity, hp, turnsToHatch, nestTiles, unavailableReason }`,
+  with `nestTiles` in `(y, x)` order and `unavailableReason` null or the
+  rejection that applies whatever the tile (`CITY_ACTION_SPENT`,
+  `CITY_BESIEGED`, `CITY_REWARD_PENDING`, `TECH_REQUIRED`, `INVALID_TILE`
+  when no nest tile is free, `CITY_CAPACITY_FULL`, `INSUFFICIENT_COINS`).
+- **`previewHatchV7(view, unitId, eggUnitId)`** returns null unless that
+  `HATCH` is offered, otherwise `{ unitId, eggUnitId, role, at, hp, turnsSaved }`.
+- `queryCombatPreviewV7` and `estimateCombatV7` include Alpha, Acid,
+  Armoured, Charge! (the run-up from the unit's current `movedPathLength`,
+  or a planned Move's length for an estimate), and Wallbreaker, and accept
+  an Egg as the target. `previewAttackExplosionsV7` and every other public
+  simulation apply the follow after a Push and the full-heal growth.
+  `queryThreatenedTilesV7` gives a hostile Triceratops its ordinary
+  move-then-melee reach.
+- **Public unit stats** carry, for every unit of a Dinosaur seat, the
+  `dinosaur` block: `capacitySlots`, `growthStage` (0–2, or null for a role
+  that does not grow), `killsToNextStage` (or null), `armourReduction`,
+  `acid`, `runUpBonus`, `runUpMaximum`, and `egg` (null, or
+  `{ turnsRemaining, hatchesAs }`). An Egg's stat rows are HP, Attack 0,
+  Defense 1, Move 0, Range 0, and Sight 0. The Attack row lists the source
+  `RUN_UP` while the Triceratops can still attack this turn, and `ALPHA`
+  for an Alpha; the HP row lists `GROWTH`.
+- `previewCityCapacityV7` reports used slots (the sum), capacity (with
+  Nesting), and each producible role's slots; `previewDisbandV7` covers
+  Eggs. `PublicPlayerV7` and the leaderboard carry `DINOSAUR` and
+  `DINOSAUR_BASELINE_V1`; the leaderboard unit count includes Eggs.
+
+## 20. Revision history
 
 | Revision | Ruleset ID           | Main changes                                                                                                                                                       | Source                                                        |
 | -------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
@@ -2105,6 +2971,12 @@ Every death is credited to at most one player:
 | 17 (fix) | `pulp-wars-poc-7r17` | `pulp_wars-0ao.15`: landing ends the activation for every faction (no Attack, Kaboom, Move, or Disband after landing)                                              | [revision 16](RULESET_7_REVISION_16.md)                       |
 | 18       | `pulp-wars-poc-7r18` | Movement (`pulp_wars-6gd.2`): a Move passes through the mover's own units and never ends on one; the Road half cost depends only on the tile being left            | [revision 18](RULESET_7_REVISION_18.md)                       |
 | 18       | `pulp-wars-poc-7r18` | Showcase (`pulp_wars-6gd.3`): the fixed 16 x 16 `SHOWCASE` map type with three developed cities, every technology, and one unit of every role per seat             | [revision 18](RULESET_7_REVISION_18.md)                       |
+| 19       | `pulp-wars-poc-7r19` | Dinosaur faction (`pulp_wars-c87.2`–`c87.7`): roster, slots, Eggs, Shaman Hatch, Nesting, Grow, Wild, Acid, Armoured, Stampede, treasure Raptor                    | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)             |
+| 19       | `pulp-wars-poc-7r19` | `pulp_wars-c87.8` interim tuning: Caveman 12 HP; one-slot Triceratops hatching in one turn; Forest Stampede lanes; Dinosaur-only AI changes                        | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)             |
+| 20       | `pulp-wars-poc-7r20` | `pulp_wars-0hi.2`: Charge! replaces Stampede (Triceratops Move 2, 20 HP, 2 slots, hatch 2); T-Rex 14, hatch 4; Nesting slot; Wallbreaker; full heal                | [revision 20](RULESET_7_REVISION_20.md)                       |
+| 21       | `pulp-wars-poc-7r21` | `pulp_wars-9s0.4`: Conqueror, Land Baron, Sea Dog, and Slayer achievements (seven entitlements per seat)                                                           | [revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md)          |
+| —        | `pulp-wars-poc-7r22` | `pulp_wars-t6s.2`: Martian faction engine, not offered in setup (AI and UI pending); **not folded** into this document                                             | [Martian overlay](RULESET_7_MARTIANS.md)                      |
+| 20 (bal) | `pulp-wars-poc-7r23` | `pulp_wars-0hi.3` coarse Dry Land balance: Human Fighter, Raider, and Marksman 12 HP, Guard 17; Caveman 10                                                         | [revision 20](RULESET_7_REVISION_20.md#63-tuning-record)      |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -2179,15 +3051,83 @@ goblin-crewed unit's landing-then-Kaboom reach (`pulp_wars-0ao.11`); that
 reach is gone. Cure text is faction-aware (`pulp_wars-0ao.16`): Goblins have
 no cure for Plague or Bitten, and their Help and status sentences say so.
 
-## 20. Known discrepancies
+**Dinosaur release fold (2026-10-03, `pulp_wars-c87.9`, no ruleset or identity
+change):** revision 19 as amended by revision 20, revision 21, and the
+`pulp_wars-0hi.3` numbers (`pulp-wars-poc-7r23`) were folded into this
+document for four factions, with a Dinosaur roster table, the Dinosaur
+technology differences, the seven achievements of
+[section 5](#5-achievements-and-monuments), the slot sum and the Nesting
+term of [section 4.4](#44-unit-capacity), the hatch step of Start Turn, the
+full-heal Promotion, [section 19](#19-dinosaur-faction-rules), and the
+Dinosaur interactions in the shared sections; the former sections 19
+(revision history) and 20 (known discrepancies) became 20 and 21. Every
+value was checked against `ORIGINAL_ROLE_RULES_V7`,
+`DINOSAUR_ROLE_RULES_V7`, `DINOSAUR_ROLE_MECHANICS_V7`, the Dinosaur tree
+and `technologyCapabilitiesV7`, `cityUnitCapacityForV7`,
+`FACTION_RULES_V7`, `STARTING_FIGHTERS_V7`, `MILITIA_FIGHTERS_V7`, the
+constants of `ruleset-v7.ts` and `achievements.ts`, `eggs.ts`, `growth.ts`,
+`combat.ts`, and the reducer. Where an overlay and the code differed, the
+code's behavior is stated:
 
-No discrepancy is open: as of revision 18 (`pulp-wars-poc-7r18`) the rules in
-this document match the code, including the Showcase setup of the
-[revision-18 overlay](RULESET_7_REVISION_18.md) (its section 5,
-[section 2.5](#25-showcase-setup) here).
+- revision 19's text that revision 20 did not mark as superseded but that no
+  longer holds: the "2 slots for the T-Rex and Brontosaurus" of its section
+  5.1 (the Triceratops uses 2 again since revision 20), its section 2.4
+  Showcase capital at 7 of 7 (8 of 8 with the Nesting slot,
+  [section 2.5](#25-showcase-setup)), and its hatch times of at most 3 (the
+  T-Rex hatches in 4);
+- the Caveman has 10 HP (`pulp_wars-0hi.3`); revision 20's implementation
+  note keeping it at 12 describes `7r20`–`7r22`;
+- revision 20 section 4.2's Ankylosaurus row: the engine applies the
+  Ankylosaurus's own Armoured reduction to the retaliation it takes, 3 / 11
+  without Wallbreaker and 5 / 4 with it (revision 20 implementation note 2;
+  [section 19.10](#1910-wallbreaker));
+- revision 20 section 2.2's Push for a Charge!: the preview reads the
+  explored tile behind the target as resolution does, and only a Mountain or
+  Deep Water behind another player's unit stays `UNKNOWN_BEHIND_FOG`
+  (revision 20 implementation note 3; [section 19.11](#1911-charge));
+- revision 19 section 10's "existing reason" for an attack on an Egg is
+  `noRetaliationReason: "OUT_OF_RANGE"`, the reason the engine reports for
+  every surviving defender that cannot retaliate other than an `UNANSWERED`
+  attack ([section 13.2](#132-damage));
+- revision 21's "No achievement counts kills" was removed from this document
+  (Slayer counts them), as its decision 8 asked;
+- the Normal AI document's "lane blocking" bullet (an own unit stepping into
+  a hostile Triceratops's Stampede lane) described a heuristic that
+  `pulp_wars-0hi.2` deleted with Stampede; it was removed from
+  [Normal AI](../architecture/NORMAL_AI.md#revision-19-dinosaur-play-pulp_wars-c875).
 
-The revision 13–17 overlays keep superseded values (for example the
+## 21. Known discrepancies
+
+No rule discrepancy is open: as of `pulp-wars-poc-7r23` the rules in this
+document match the code for the four playable factions, including the
+Dinosaur faction of revisions 19 and 20 and the achievements of revision 21.
+
+**Pending overlay in the code.** The engine at `pulp-wars-poc-7r23` also
+contains the [Martian overlay](RULESET_7_MARTIANS.md) (`pulp_wars-t6s.2`),
+which this document does not describe: the `MARTIAN` faction and
+`MARTIAN_BASELINE_V1` tree in the frozen orders, the commands `BEAM_DOWN`,
+`MIND_CONTROL`, and `TRACTOR_BEAM` (after `HATCH` in
+`COMMAND_KIND_ORDER_V7`), the events `SHIELDS_RECHARGED`, `UNIT_BEAMED`,
+`UNIT_PULLED`, and `UNIT_MIND_CONTROLLED`, the `UNIT_DIED` cause
+`BRAIN_LOST`, the state and view lists `shields`, `cooling`, `thralls`, and
+`mindControlCooldowns`, the combat-preview fields `rayPower`,
+`coolingApplied`, `defenderShieldDamage`, and `attackerShieldDamage`, the
+`shieldDamage` of splash, Wail, and explosion entries, the Start Turn
+cooldown and Shield steps and the End Turn Cooling and Force Fields steps,
+the Brain support, Force Fields, and Disintegrator unlocks, and the
+`martian` public unit stats block. In a match without a Martian seat every
+one of them is empty, neutral, or never offered, and the overlay's parity
+requirement is that such a match is identical to the previous identity apart
+from identity and those neutral fields. The browser setup does not offer
+the faction, and a Martian seat plays with the generic Normal policy until
+`pulp_wars-t6s.3` and `t6s.4` land. The [Ice Folk
+overlay](RULESET_7_ICE_FOLK.md) is a specification with no code. Neither is
+folded.
+
+The revision 13–21 overlays keep superseded values (for example the
 Lich's Attack 2.5 and 20-HP Zombie in revision 13, unlimited Plague in
-revision 14, "Move 3" for embarked units in revision 13, and the pre-tuning
-Goblin contract values in the revision-17 bounds and decisions) as design
-history; this document states the current values.
+revision 14, "Move 3" for embarked units in revision 13, the pre-tuning
+Goblin contract values in the revision-17 bounds and decisions, the
+Stampede and the interim Dinosaur numbers in revision 19, and the
+pre-`0hi.3` Human HP in revision 20's bounds) as design history; this
+document states the current values.

@@ -6,11 +6,11 @@ Normal AI, and the UI by `pulp_wars-0hi.2`
 implementation differs from or adds to this text). `pulp_wars-0hi.3` chose
 the sturdiness numbers of [section 6](#6-human-sturdiness) in a coarse,
 Dry-Land-only pass ([tuning record](#63-tuning-record)). It amends
-[revision 19](RULESET_7_REVISION_19_DINOSAURS.md) (`pulp-wars-poc-7r19`), which
-is itself an overlay over [Ruleset 7: current rules](RULESET_7_CURRENT.md)
-(`pulp-wars-poc-7r18`, three factions). `pulp_wars-c87.9` folds revision 19
-**as amended by this document** into the current rules
-([section 8.3](#83-fold-targets)).
+[revision 19](RULESET_7_REVISION_19_DINOSAURS.md) (`pulp-wars-poc-7r19`).
+`pulp_wars-c87.9` **folded revision 19 as amended by this document into
+[Ruleset 7: current rules](RULESET_7_CURRENT.md) (kept as history)** at
+`pulp-wars-poc-7r23`; the current rules describe the running four-faction
+game and win wherever this document differs.
 
 **Ruleset ID:** `pulp-wars-poc-7r20` (the running game is
 `pulp-wars-poc-7r23`:

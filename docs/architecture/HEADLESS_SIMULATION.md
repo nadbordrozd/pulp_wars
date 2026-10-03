@@ -4,7 +4,10 @@ The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The headless CLI
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) for the four
+playable factions (Human, Undead, Goblin, and Dinosaur); the Martian seats
+below follow the [Martian overlay](../product/RULESET_7_MARTIANS.md), which
+is not folded into it. The headless CLI
 accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r23`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
 [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md) the
@@ -34,7 +37,8 @@ npm run headless -- match --ruleset pulp-wars-poc-7r23 --map-type pangea --facti
 ```
 
 A Dinosaur seat
-([revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)) plays
+([current rules section 19](../product/RULESET_7_CURRENT.md#19-dinosaur-faction-rules);
+[revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)) plays
 with the Normal policy on the Dinosaur registration. It trains Cavemen and
 Shamans, lays every other role as an Egg (`LAY_EGG`, counted with its role's
 production and Coins in the role inventories), and plays Eggs, Hatch, Grow,

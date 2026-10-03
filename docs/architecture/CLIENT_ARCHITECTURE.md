@@ -4,11 +4,11 @@
 
 The current client runs `pulp-wars-poc-7r23` (autosave
 `pulpWars.save.v7r23.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r22.current`), whose rules for the three factions
-the setup screen offers, Human, Undead, and Goblin, are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md). The engine also
-registers the Dinosaur faction of the
-[revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
+through `pulpWars.save.v7r22.current`), whose rules for the four factions
+the setup screen offers, Human, Undead, Goblin, and Dinosaur, are described
+by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
+(`pulp_wars-c87.9` folded revisions 19–21 into it). The Dinosaur faction of
+the [revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
 (`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured;
 `pulp_wars-c87.3`: Eggs, Shaman Hatch, and Nesting, with their public
 previews `previewLayEggV7` and `previewHatchV7`); the client offers the
@@ -47,10 +47,12 @@ Bitten UI surfaces are described in the
 [Screen Flow revision-14 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-14-plague-and-bitten-overlay)
 and read only the public `plagued` and `bitten` view lists, previews, and
 projected events. The engine registers the faction per seat, and the setup UI
-always offers a Human/Undead/Goblin choice for the human and each AI seat (all
-Human by default); there is no URL flag for it (`pulp_wars-vkq.16` removed the
+always offers a Human/Undead/Goblin/Dinosaur choice for the human and each AI
+seat (all Human by default; the engine's fifth faction, `MARTIAN`, is not
+offered, see the [Martian engine boundary](#martian-engine-boundary-pulp_wars-t6s2));
+there is no URL flag for it (`pulp_wars-vkq.16` removed the
 former `?undead=1` development flag and `src/app/undead-flag-v7.ts`). Saves
-with Undead or Goblin seats load and resume like any other. Goblin
+with Undead, Goblin, or Dinosaur seats load and resume like any other. Goblin
 presentation (`pulp_wars-0ao.5`, `0ao.12`) likewise reads only public views,
 the public Kaboom, attack-explosion, and combat previews, the public unit
 stats' `goblin` block, and projected events
@@ -76,7 +78,8 @@ again". Free research shows as "Free" in the technology tree. The earlier
 [revision-11 city logistics contract](../product/RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md),
 including its Normal-AI sections 7–8, and the revision-10 and revision-9
 overlays are implemented and remain as history. Setup exposes Dry Land, Pangea,
-Continents, Archipelago, and Lakes, with Continents selected by default. The
+Continents, Archipelago, Lakes, and (revision 18) Showcase, with Continents
+selected by default. The
 controller persists the selected map type and schedules every AI turn through
 bounded `NormalPolicyWorkV7` callbacks over a retained public view.
 

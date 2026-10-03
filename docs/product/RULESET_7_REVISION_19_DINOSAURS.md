@@ -1,18 +1,22 @@
 # Ruleset 7 revision 19: Dinosaur faction
 
-**Status:** contract (`pulp_wars-c87.1`), not yet implemented. It is an
-overlay over [Ruleset 7: current rules](RULESET_7_CURRENT.md)
-(`pulp-wars-poc-7r18`), which stays the description of the running game until
-`pulp_wars-c87.9` folds this document into it.
+**Status:** implemented (`pulp_wars-c87.2`–`c87.8`), amended by
+[revision 20](RULESET_7_REVISION_20.md), and **folded into
+[Ruleset 7: current rules](RULESET_7_CURRENT.md) (kept as history)** by
+`pulp_wars-c87.9` at `pulp-wars-poc-7r23`. The current rules describe the
+running four-faction game, with the Dinosaurs in their section 19, and win
+wherever this document differs. This contract (`pulp_wars-c87.1`) remains as
+design history, decision provenance, and exact schema detail. The fold's
+corrections of this text are listed in the current rules' revision history.
 
-> **Amended by revision 20.** The running game is `pulp-wars-poc-7r20`
-> ([Ruleset 7 revision 20](RULESET_7_REVISION_20.md), implemented by
-> `pulp_wars-0hi.2`). Revision 20 removes the Stampede command (the
-> Triceratops has a passive Charge! instead), changes the Triceratops and
-> T-Rex numbers, adds a city slot to Nesting and the Wallbreaker technology,
-> and makes a Promotion or a growth stage fully heal. The sections it
-> replaces are marked "Superseded by revision 20" below; their text is kept
-> as the record of revision 19. Everything unmarked stays in force.
+> **Amended by revision 20.** [Ruleset 7 revision 20](RULESET_7_REVISION_20.md)
+> (`pulp_wars-0hi.2`) removes the Stampede command (the Triceratops has a
+> passive Charge! instead), changes the Triceratops and T-Rex numbers, adds a
+> city slot to Nesting and the Wallbreaker technology, and makes a Promotion
+> or a growth stage fully heal. The sections it replaces are marked
+> "Superseded by revision 20" below; their text is kept as the record of
+> revision 19. `pulp_wars-0hi.3` (`pulp-wars-poc-7r23`) set the Caveman back
+> to 10 HP.
 
 **Ruleset ID:** `pulp-wars-poc-7r19`
 

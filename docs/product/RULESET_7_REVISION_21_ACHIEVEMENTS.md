@@ -4,10 +4,11 @@
 overlay over [revision 20](RULESET_7_REVISION_20.md) (`pulp-wars-poc-7r20`),
 which amends the [revision-19 Dinosaur overlay](RULESET_7_REVISION_19_DINOSAURS.md)
 over [Ruleset 7: current rules](RULESET_7_CURRENT.md). It replaces the
-achievement list of [section 5 of the current rules](RULESET_7_CURRENT.md#5-achievements-and-monuments)
-and of the [revision-5 overlay](RULESET_7_REVISION_5_ACHIEVEMENTS.md); the
-Monument rules there are unchanged. It is not folded into the current rules
-document ([section 9](#9-decisions)).
+achievement list of the [revision-5 overlay](RULESET_7_REVISION_5_ACHIEVEMENTS.md);
+the Monument rules there are unchanged. `pulp_wars-c87.9` **folded it into
+[section 5 of the current rules](RULESET_7_CURRENT.md#5-achievements-and-monuments)
+(kept as history)** at `pulp-wars-poc-7r23`; the current rules win wherever
+this document differs.
 
 **Ruleset ID:** `pulp-wars-poc-7r21`
 
