@@ -2,11 +2,12 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r35` (autosave
-`pulpWars.save.v7r35.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r34.current`;
-[mission setups](#mission-setups-pulp_wars-68k2) and
-[map curiosities](#map-curiosities-pulp_wars-7372) are described below),
+The current client runs `pulp-wars-poc-7r36` (autosave
+`pulpWars.save.v7r36.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r35.current`;
+[mission setups](#mission-setups-pulp_wars-68k2),
+[map curiosities](#map-curiosities-pulp_wars-7372), and
+[the Giant Spider](#the-giant-spider-pulp_wars-7373) are described below),
 whose rules for all seven factions
 the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk,
 and Dwarf, are described by
@@ -517,6 +518,47 @@ and `MOVE` (`applyMove`, the Shrine and the Wreck) call.
   has them in its state and public view but they are invisible in the
   browser, and their events have no log text. The Normal AI ignores them
   until `pulp_wars-737.4`.
+
+## The Giant Spider (`pulp_wars-737.3`)
+
+`pulp-wars-poc-7r36` adds engine step II
+([current rules section 2.7](../product/RULESET_7_CURRENT.md#27-map-curiosities);
+[spec section 18](../product/RULESET_7_MAP_CURIOSITIES.md#18-implementation-notes-pulp_wars-7373)):
+the Monster, a unit whose `ownerId` is the reserved neutral owner
+`NEUTRAL_OWNER_ID_V7` (0, never a seat).
+
+- **Kind and owner.** `unitFactionV7` returns `UnitKindV7`, a seat faction
+  or `"NEUTRAL"`; the role, mechanics, and capability resolvers and
+  `factionRulesV7` resolve the neutral registration, and
+  `ownerResearchedTechsV7` is the owner's research (empty for the neutral
+  owner). `cooperativeAlliesV7` (`economy.ts`) is the one Cooperative
+  alliance rule; the canonical relationship helpers and every public copy
+  use it, and it never allies the neutral owner. A checked-in
+  classification (`tests/fixtures/v7-owner-reader-classes.ts`, scanned by
+  `tests/fixtures/v7-owner-readers.ts`) names every owner reader of the
+  engine, the Normal AI, and the headless runner as neutral-aware,
+  neutral-safe, or player-only.
+- **Reducer.** The `ATTACK` exchange after validation is
+  `resolveAttackExchangeV7`, shared by `applyAttack` and the neutral turn
+  (`resolveNeutralTurnV7`, run by `applyEndTurn` when the round wraps and a
+  Monster is on the board). Placement, movement, targeting, the stateless
+  wander, the provocation record (derived from each accepted command's
+  damage events), and the pruning of the `monsters` list are in
+  `curiosities.ts`.
+- **State, view, queries.** `GameStateV7.monsters` and
+  `PlayerViewV7.monsters` (visible Monsters, `provokedBy` filtered to
+  visible units); `previewMonsterV7`, the optional `monsterRetaliates` of
+  `queryCombatPreviewV7` (`PublicCombatPreviewV7`), and the Monster's
+  `queryThreatenedTilesV7` (its provoke tiles).
+- **Presentation until the UI step.** The board, the dock, and the unit
+  panel read the Spider's art and labels through
+  `presentedUnitFactionV7` (`src/render/neutral-presentation-v7.ts`): the
+  base (Human) art of its mechanical role, the Juggernaut, with no owner
+  colour (its owner is no player); its role rule names it the Giant
+  Spider. Its sprite, web, area and reach
+  overlays, the provoke warning, the neutral-turn banner, the event log
+  text, and Help belong to `pulp_wars-737.6`; until then the neutral turn
+  plays back like any other accepted boundary.
 
 ## 0. Ruleset-6 replacement boundary
 

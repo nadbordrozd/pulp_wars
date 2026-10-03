@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r35");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r36");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -112,8 +112,10 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
-    // and WRECK_SALVAGED (85 event kinds).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(85);
+    // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
+    // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
+    // MONSTER_BOUNTY_AWARDED (89).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(89);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after
@@ -176,8 +178,9 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // revision 15 adds PLAGUE_EXPIRED after PLAGUE_SPREAD; revision 17 adds
     // Troll regeneration after Windmill healing; the Martian revision adds
     // the Shield recharge after it; map curiosities (`pulp_wars-737.2`) add
-    // the Fountain heal between Windmill healing and Troll regeneration.
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 9)).toEqual([
+    // the Fountain heal between Windmill healing and Troll regeneration,
+    // and the Giant Spider (`pulp_wars-737.3`) its regeneration after it.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(0, 10)).toEqual([
       "TURN_STARTED",
       "PLAGUE_DAMAGED",
       "PLAGUE_SPREAD",
@@ -185,6 +188,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "WINDMILL_HEALING_RESOLVED",
       "FOUNTAIN_HEALED",
       "UNITS_REGENERATED",
+      "MONSTER_REGENERATED",
       "SHIELDS_RECHARGED",
       "INCOME_AWARDED",
     ]);

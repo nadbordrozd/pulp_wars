@@ -137,8 +137,14 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/combat.ts::requireUnit": "BOARD",
     // `pulp_wars-737.2`: the Fountain heals a unit standing on its tile and
     // a Shrine promotes the unit that just moved onto it (map curiosities).
+    // `pulp_wars-737.3`: the Giant Spider's provokers, its pruned and
+    // recorded provocation lists, and its targets are units on the board (a
+    // burrowed unit is out of its reach and off its list).
+    "src/engine/v7/curiosities.ts::monsterProvokersV7": "BOARD",
+    "src/engine/v7/curiosities.ts::prunedMonstersV7": "BOARD",
     "src/engine/v7/curiosities.ts::resolveCuriosityClaimV7": "BOARD",
     "src/engine/v7/curiosities.ts::resolveFountainHealingV7": "BOARD",
+    "src/engine/v7/curiosities.ts::withMonsterProvocationsV7": "BOARD",
     "src/engine/v7/dwarf-reducer.ts::applyAssembleV7": "BOARD",
     "src/engine/v7/dwarf-reducer.ts::applyBombRunV7": "BOARD",
     "src/engine/v7/dwarf-reducer.ts::applyTunnelV7": "BOARD",
@@ -200,6 +206,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::previewHatchV7": "BOARD",
     "src/engine/v7/query.ts::previewKaboomV7": "BOARD",
     "src/engine/v7/query.ts::previewMindControlV7": "BOARD",
+    "src/engine/v7/query.ts::previewMonsterV7": "BOARD",
     "src/engine/v7/query.ts::previewTendWoundedV7": "BOARD",
     "src/engine/v7/query.ts::previewTractorBeamV7": "BOARD",
     "src/engine/v7/query.ts::previewTunnelV7": "BOARD",
@@ -224,6 +231,7 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::publicTunnelCommandsV7": "BOARD",
     "src/engine/v7/query.ts::publicWitchesV7": "BOARD",
     "src/engine/v7/query.ts::queryAssembleUnavailableReasonV7": "BOARD",
+    "src/engine/v7/query.ts::queryCombatPreviewV7": "BOARD",
     "src/engine/v7/query.ts::queryLandingPreviewV7": "BOARD",
     "src/engine/v7/query.ts::queryPublicSelectionV7": "BOARD",
     "src/engine/v7/query.ts::queryThreatenedTilesV7": "BOARD",
@@ -260,6 +268,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::evaluateAchievementsV7": "BOARD",
     "src/engine/v7/reducer.ts::graveActionTail": "BOARD",
     "src/engine/v7/reducer.ts::recoverIdleUnits": "BOARD",
+    "src/engine/v7/reducer.ts::resolveAttackExchangeV7": "BOARD",
+    "src/engine/v7/reducer.ts::resolveNeutralTurnV7": "BOARD",
     "src/engine/v7/reducer.ts::resetTurnUnits": "BOARD",
     "src/engine/v7/reducer.ts::resolveCityCenterSpawnV7": "BOARD",
     "src/engine/v7/reducer.ts::resolveStartTurnPlagueAndChainV7": "BOARD",

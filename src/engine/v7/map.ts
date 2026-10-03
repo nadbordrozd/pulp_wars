@@ -3,6 +3,7 @@ import { allocateCityId, allocateUnitId, cityId, playerId } from "../model/ids";
 import { nextBounded, nextUint32, randomState } from "../random/random";
 import { canonicalHash } from "../replay/canonical";
 import {
+  NEUTRAL_MONSTER_ROLE_RULE_V7,
   RULESET_7,
   effectiveRoleRuleV7,
   factionTreeV7,
@@ -10,7 +11,7 @@ import {
 import { placeTreasureChestsV6 } from "../v6/map";
 import { initialAchievementEntitlementsV7 } from "./achievements";
 import { withFullShieldsV7 } from "./martian";
-import { placeCuriositiesV7 } from "./curiosities";
+import { MONSTER_HP_V7, placeCuriositiesV7 } from "./curiosities";
 import { placeRiftsV7 } from "./rift";
 import {
   missionBoardV7,
@@ -28,9 +29,11 @@ import {
 import { parseGameStateV7 } from "./state-schema";
 import {
   BIOME_IDS_V7,
+  NEUTRAL_OWNER_ID_V7,
   RESOURCE_IDS_V7,
   RULESET_7_ID,
   TERRAIN_IDS_V7,
+  type MonsterStateV7,
   type AiCountV7,
   type BiomeIdV7,
   type BoardStateV7,
@@ -99,6 +102,12 @@ export interface GeneratedMapV7 {
    * map is generated, and the rules are `CURIOSITIES`.
    */
   readonly curiosities: readonly CuriosityV7[];
+  /**
+   * Map curiosities (section 4, `pulp_wars-737.3`): the Giant Spider's home
+   * when placement drew a Monster (boards 16 and up), else null. The initial
+   * state creates the Monster there after every other initial entity.
+   */
+  readonly monsterHome: CoordV7 | null;
   readonly random: RandomStateV7;
   readonly attempt: number;
   readonly attempts: readonly MapGenerationAttemptV7[];
@@ -239,6 +248,7 @@ function missionMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
       turnOrderSeats: capitals.map((_, seat) => seat),
       treasureChests: missionTreasureChestsV7(mission),
       curiosities: [],
+      monsterHome: null,
       random: randomState(mission.seed),
       attempt: 1,
       attempts: [],
@@ -265,6 +275,7 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
       turnOrderSeats: capitals.map((_, seat) => seat),
       treasureChests: [],
       curiosities: [],
+      monsterHome: null,
       random: randomState(setup.seed),
       attempt: 1,
       attempts: [],
@@ -410,7 +421,7 @@ function generateMapWithVillageCountV7(
       // RULESET_7_MAP_CURIOSITIES.md section 4: the curiosities go on the
       // accepted board after the Rifts, from their own stream, only with
       // the option on; they never change a tile.
-      const curiosities =
+      const placement =
         rules === "CURIOSITIES" && setup.curiosities
           ? placeCuriositiesV7(setup.seed, {
               board,
@@ -419,7 +430,9 @@ function generateMapWithVillageCountV7(
               villages: candidate.villages,
               treasureChests: treasure.treasureChests,
             })
-          : [];
+          : { curiosities: [], monsterHome: null };
+      const curiosities = placement.curiosities;
+      const monsterHome = placement.monsterHome;
       return {
         ok: true,
         map: deepFreeze({
@@ -430,6 +443,7 @@ function generateMapWithVillageCountV7(
           turnOrderSeats: candidate.turnOrderSeats,
           treasureChests: treasure.treasureChests,
           curiosities,
+          monsterHome,
           random: treasure.random,
           attempt,
           attempts,
@@ -2130,6 +2144,13 @@ function initialMapStateFromV7(
     generated.map.treasureChests,
   );
   const board = assignTerritories(generated.map.board, entities.cities);
+  // Map curiosities (section 3, `pulp_wars-737.3`): the Monster is created
+  // after every other initial entity, so it takes the last initial entity
+  // ID and shifts no other ID.
+  const monster =
+    generated.map.monsterHome === null
+      ? null
+      : createMonsterUnitV7(entities.nextEntityId, generated.map.monsterHome);
   const explored = players.map((player, seat) => ({
     ...player,
     explored: coordsInRadius(
@@ -2145,7 +2166,7 @@ function initialMapStateFromV7(
     setup,
     random: generated.map.random,
     humanPlayerId: explored[0]?.id ?? playerId(1),
-    nextEntityId: entities.nextEntityId,
+    nextEntityId: monster?.nextEntityId ?? entities.nextEntityId,
     commandIndex: 0,
     round: 1,
     activeSeatIndex: 0,
@@ -2156,9 +2177,11 @@ function initialMapStateFromV7(
     players: explored,
     cities: entities.cities,
     populationContributions: [],
-    units: entities.units,
+    units:
+      monster === null ? entities.units : [...entities.units, monster.unit],
     treasureChests: generated.map.treasureChests,
     curiosities: generated.map.curiosities,
+    monsters: monster === null ? [] : [monster.entry],
     graves: [],
     plagued: [],
     bitten: [],
@@ -2214,6 +2237,7 @@ function showcaseInitialStateV7(
     units: entities.units,
     treasureChests: [],
     curiosities: [],
+    monsters: [],
     graves: [],
     plagued: [],
     bitten: [],
@@ -2316,6 +2340,40 @@ export function startingCompanionCellV7(
       );
     }) ?? null
   );
+}
+
+/**
+ * Map curiosities (section 8, `pulp_wars-737.3`): the Giant Spider at its
+ * home with the ID `nextEntityId`: owned by the neutral owner, no home city,
+ * full HP, no kills, never veteran or capture-eligible, a fresh activation.
+ */
+function createMonsterUnitV7(
+  nextEntityId: number,
+  home: CoordV7,
+): {
+  readonly unit: UnitStateV7;
+  readonly entry: MonsterStateV7;
+  readonly nextEntityId: number;
+} {
+  const allocation = allocateUnitId(nextEntityId);
+  return {
+    unit: {
+      id: allocation.id,
+      ownerId: NEUTRAL_OWNER_ID_V7,
+      homeCityId: null,
+      role: NEUTRAL_MONSTER_ROLE_RULE_V7.role,
+      form: "LAND",
+      at: home,
+      hp: MONSTER_HP_V7,
+      maxHp: MONSTER_HP_V7,
+      kills: 0,
+      veteran: false,
+      captureEligible: false,
+      activation: freshStartActivation(),
+    },
+    entry: { unitId: allocation.id, home, provokedBy: [] },
+    nextEntityId: allocation.nextEntityId,
+  };
 }
 
 function freshStartActivation(): UnitStateV7["activation"] {

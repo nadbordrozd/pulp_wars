@@ -4,6 +4,7 @@ import {
   PLAGUE_DURATION_TURNS_V7,
   biteOfV7,
   isLivingUnitV7,
+  unitTakesStatusV7,
   recordBittenRisingV7,
   withPlaguedV7,
 } from "./afflictions";
@@ -160,7 +161,9 @@ export function resolveStartTurnPlagueV7(
         chebyshev(unit.at, spreader.at) === 1 &&
         !alreadyPlagued.has(unit.id) &&
         // The Dwarf revision section 2.3: the per-unit living test.
-        isLivingUnitV7(state, unit)
+        isLivingUnitV7(state, unit) &&
+        // Map curiosities section 8.6: the Monster takes no status.
+        unitTakesStatusV7(unit)
       ) {
         alreadyPlagued.add(unit.id);
         spread.push({ unitId: unit.id, sourceUnitId });

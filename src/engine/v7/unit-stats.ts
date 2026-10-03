@@ -12,6 +12,7 @@ import {
   chargeRunUpAttack2V7,
   halfPowerAttack2V7,
   isMindControlledV7,
+  ownerResearchedTechsV7,
   unitCapabilitiesV7,
   unitFactionV7,
   unitAlphaAttack2V7,
@@ -284,8 +285,9 @@ export function publicUnitStatsV7(
   const snowAt = winter.snowAt;
   const role = unitRoleRuleV7(state, unit);
   const embarked = unit.form === "EMBARKED";
-  const owner = state.players.find((player) => player.id === unit.ownerId);
-  if (owner === undefined) throw new RangeError("INVALID_STATE");
+  // Map curiosities (section 10.5): the controller's research, empty for
+  // the neutral owner (it throws for any other unknown owner).
+  const research = ownerResearchedTechsV7(state, unit.ownerId);
   const chillEntry = chillOfV7(state.chilled, unit.id);
   const chill =
     chillEntry === undefined
@@ -296,7 +298,7 @@ export function publicUnitStatsV7(
   // blocks follow the unit's kind; unit-level technology is the
   // controller's research through the kind's tree.
   const kind = unitFactionV7(state, unit);
-  const capabilities = unitCapabilitiesV7(state, unit, owner.researchedTechs);
+  const capabilities = unitCapabilitiesV7(state, unit, research);
   // Revision 13: Undead support labels Rally as Frenzy and Inspired as Frenzied.
   const frenzied = kind === "UNDEAD";
   // Revision 17: Goblins label Rally as WAAAGH! and Overrun as Ram.
@@ -330,7 +332,7 @@ export function publicUnitStatsV7(
   const promotion = unit.maxHp - role.maxHp;
   const charge =
     !embarked &&
-    owner.researchedTechs.includes("RAIDING") &&
+    research.includes("RAIDING") &&
     role.abilities.includes("CHARGE") &&
     unit.activation.moved &&
     unit.activation.movedPathLength >= 2 &&

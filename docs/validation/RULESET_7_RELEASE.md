@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r35`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
+## Current release contract (`pulp-wars-poc-7r36`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
 
-The current runtime is `pulp-wars-poc-7r35` (autosave
-`pulpWars.save.v7r35.current`; saves and replays of `pulp-wars-poc-7r34`
+The current runtime is `pulp-wars-poc-7r36` (autosave
+`pulpWars.save.v7r36.current`; saves and replays of `pulp-wars-poc-7r35`
 and earlier are refused, and startup removes their autosave keys). Its seven
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -91,6 +91,18 @@ passes it off. Its contract test is
 `tests/unit/ruleset-v7-curiosities.test.ts`; the placement distribution and
 the independent placement checker run with
 `npm run validate:ruleset7-curiosity-maps`.
+`pulp_wars-737.3` (`7r36`) adds map curiosities engine II: the Giant
+Spider, a Monster owned by the reserved neutral owner on boards of 16 and
+up, its neutral turn after every round, its immunities and bounty, and the
+owner-reader classification
+([current rules section 2.7](../product/RULESET_7_CURRENT.md#27-map-curiosities)).
+With the option off a match is the `7r35` match apart from the empty
+`monsters` list (the all-Human parity digests and the `7r34` curiosity
+pins still hold with it removed); with it on, the Monster's weight changes
+which curiosities a board draws. Its contract tests are
+`tests/unit/ruleset-v7-monster.test.ts` and
+`tests/unit/ruleset-v7-owner-readers.test.ts`, and the curiosity-map
+validator checks the Monster's lair rules independently.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, and the
 Dwarves are part of the default route: match setup always offers a
 Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf choice for the human and
@@ -107,7 +119,7 @@ rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r35` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r36` identity (ruleset ID, autosave key, the
   seven-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
@@ -244,7 +256,7 @@ rerun their matrices.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (`7r35`) captures. The revision-2 validator described below as
+  (`7r36`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 

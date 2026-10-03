@@ -37,7 +37,7 @@ import {
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import { knockbackDestinationV7 } from "../engine/v7/dwarf";
-import { marketCoinsV7 } from "../engine/v7/economy";
+import { cooperativeAlliesV7, marketCoinsV7 } from "../engine/v7/economy";
 import { forbiddenTechnologiesV7 } from "../engine/v7/forbidden-technologies";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import {
@@ -12665,9 +12665,7 @@ function publicPlayersAllied(
 ): boolean {
   return (
     left === right ||
-    (view.setup.aiMode === "COOPERATIVE" &&
-      left !== view.humanPlayerId &&
-      right !== view.humanPlayerId)
+    cooperativeAlliesV7(view.setup.aiMode, view.humanPlayerId, left, right)
   );
 }
 

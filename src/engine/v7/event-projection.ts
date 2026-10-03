@@ -406,12 +406,22 @@ function eventVisible(
       tile(event.to)
     );
   }
+  // Map curiosities (section 8.7): the bounty is owner-private like Plunder,
+  // whether or not the owner saw the Monster die.
+  if (event.kind === "MONSTER_BOUNTY_AWARDED")
+    return event.playerId === viewerId;
   if (
     ids.length > 0 &&
     ids.some((id) => !beforeVisible.has(id) && !afterVisible.has(id))
   )
     return false;
   switch (event.kind) {
+    // Map curiosities (section 8.8): the neutral turn's bounds are public
+    // (they say only that the wilds took their turn); a regeneration follows
+    // the ordinary unit-visibility rule.
+    case "NEUTRAL_TURN_STARTED":
+    case "NEUTRAL_TURN_ENDED":
+      return true;
     case "TURN_STARTED":
     case "INCOME_AWARDED":
     case "INCOME_PREVIEWED":

@@ -17,19 +17,16 @@ import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type UnitKindRefV7,
+  type UnitKindV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
+import { isNeutralOwnerV7 } from "../engine/v7/types";
 import {
   mindControlTargetBlockV7,
   tractorBeamDestinationV7,
 } from "../engine/v7/martian";
-import type {
-  CoordV7,
-  FactionIdV7,
-  TechnologyIdV7,
-  UnitRoleIdV7,
-} from "../engine/v7/types";
+import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
 /**
@@ -118,8 +115,10 @@ export function setMartianPolicyOptionsV7(
 export function policyUnitFactionV7(
   view: PlayerViewV7,
   unit: UnitKindRefV7,
-): FactionIdV7 {
-  return martianPolicyOptions.mindControlPlay
+): UnitKindV7 {
+  // Map curiosities (section 8.1): a neutral unit's kind is the neutral
+  // registration in both modes (it has no seat).
+  return martianPolicyOptions.mindControlPlay || isNeutralOwnerV7(unit.ownerId)
     ? unitFactionV7(view, unit)
     : playerFactionV7(view, unit.ownerId);
 }

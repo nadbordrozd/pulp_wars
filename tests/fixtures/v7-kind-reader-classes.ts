@@ -34,6 +34,9 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/rules/ruleset-v7.ts::cityUnitCapacityForV7": "SEAT",
   "src/engine/rules/ruleset-v7.ts::playerFactionV7": "SEAT",
   "src/engine/rules/ruleset-v7.ts::unitFactionV7": "KIND",
+  // Map curiosities (`pulp_wars-737.3`): the capabilities of the empty
+  // technology list, which no tree changes (the neutral registration's).
+  "src/engine/rules/ruleset-v7.ts::neutralCapabilitiesV7": "SEAT",
   "src/engine/rules/ruleset-v7.ts::unitCapabilitiesV7": "KIND",
   "src/engine/rules/ruleset-v7.ts::unitRoleRuleV7": "KIND",
   "src/engine/rules/ruleset-v7.ts::unitRoleMechanicsV7": "KIND",

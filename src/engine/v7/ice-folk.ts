@@ -6,6 +6,7 @@ import {
   COLD_SNAP_RANGE_V7,
   DEEP_WINTER_RADIUS_V7,
   factionRulesV7,
+  ownerResearchedTechsV7,
   technologyCapabilitiesV7,
   unitCapabilitiesV7,
   unitFactionV7,
@@ -27,6 +28,7 @@ import type {
   UnitRoleIdV7,
   UnitStateV7,
 } from "./types";
+import { isNeutralOwnerV7 } from "./types";
 
 /**
  * The Ice Folk revision (docs/product/RULESET_7_ICE_FOLK.md): Chill
@@ -97,7 +99,8 @@ export function isChilledV7(
 /**
  * Section 5.2: whether `target` can be Chilled by a source owned by
  * `sourceOwnerId`: a living land-form unit hostile to the source's owner
- * (never embarked, naval, an Egg, own, or allied). Nothing else is immune.
+ * (never embarked, naval, an Egg, own, or allied). Map curiosities: the
+ * neutral Monster is immune too.
  */
 export function canBeChilledV7(
   state: {
@@ -110,6 +113,8 @@ export function canBeChilledV7(
   return (
     target.hp > 0 &&
     target.form === "LAND" &&
+    // Map curiosities (section 8.6): the Monster is immune to Chill.
+    !isNeutralOwnerV7(target.ownerId) &&
     arePlayersHostileV7(state, sourceOwnerId, target.ownerId)
   );
 }
@@ -685,12 +690,12 @@ export function shatterThresholdV7(
   state: Pick<GameStateV7, "players" | "mindControlled">,
   unit: { readonly id: UnitId; readonly ownerId: PlayerId },
 ): number {
-  const player = state.players.find(
-    (candidate) => candidate.id === unit.ownerId,
-  );
-  if (player === undefined) throw new RangeError("INVALID_STATE");
-  return unitCapabilitiesV7(state, unit, player.researchedTechs)
-    .shatterThreshold;
+  // Map curiosities (section 10.5): the neutral owner has no technology.
+  return unitCapabilitiesV7(
+    state,
+    unit,
+    ownerResearchedTechsV7(state, unit.ownerId),
+  ).shatterThreshold;
 }
 
 /**

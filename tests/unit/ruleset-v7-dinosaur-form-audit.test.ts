@@ -522,7 +522,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/martian.ts": 1,
     // `pulp_wars-9s0.5`: only a land-form flyer stands on a Rift (an Egg,
     // an embarked unit, and a boat must fail the state check).
-    "src/engine/v7/state-schema.ts": 5,
+    // `pulp_wars-737.3`: a Giant Spider is a land-form unit (an Egg, an
+    // embarked unit, and a boat must fail its state check).
+    "src/engine/v7/state-schema.ts": 6,
     "src/engine/v7/dwarf-reducer.ts": 5,
     "src/engine/v7/dwarf.ts": 1,
     "src/engine/v7/wail.ts": 1,

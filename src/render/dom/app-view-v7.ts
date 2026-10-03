@@ -63,6 +63,7 @@ import {
   type CityId,
   type FactionIdV7,
 } from "../../engine/index";
+import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import { downloadJsonFile } from "../../app/browser-download";
 import {
   loadBoardSaturationV7,
@@ -1726,7 +1727,7 @@ export class Ruleset7DomAppView {
       const undeadUnit = unitIsUndeadV7(view, unit);
       // Revision 17: every unit resolves through its owner's faction; the
       // Mind Control revision: through its kind (`unitFactionV7`).
-      const unitFaction = unitFactionV7(view, unit);
+      const unitFaction = presentedUnitFactionV7(view, unit);
       const unitBadge: FactionBadgeV7 = factionBadgeV7(unitFaction);
       const unitSubject = unitArtSubjectV7({
         ...unit,
@@ -5590,7 +5591,7 @@ export class Ruleset7DomAppView {
     frame.setAttribute("aria-label", frame.title);
     frame.append(
       this.#chibiArt(
-        portraitSubjectV7(unit.role, unitFactionV7(view, unit)),
+        portraitSubjectV7(unit.role, presentedUnitFactionV7(view, unit)),
         CHIBI_DOM_BOXES_V7.passenger,
         this.#playerColour(view, unit.ownerId),
       )?.element ??
@@ -6504,7 +6505,10 @@ export class Ruleset7DomAppView {
               ? null
               : this.#chibiArt(
                   // Mind Control revision: the rider's kind.
-                  portraitSubjectV7(unit.role, unitFactionV7(view, unit)),
+                  portraitSubjectV7(
+                    unit.role,
+                    presentedUnitFactionV7(view, unit),
+                  ),
                   CHIBI_DOM_BOXES_V7.passenger,
                   this.#viewerColour(),
                 );
@@ -7131,7 +7135,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r35",
+    rulesetId: "pulp-wars-poc-7r36",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

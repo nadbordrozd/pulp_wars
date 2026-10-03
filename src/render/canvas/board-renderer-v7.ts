@@ -24,10 +24,10 @@ import {
   queryCombatPreviewV7,
   queryLandingPreviewV7,
   seatRoleRuleV7,
-  unitFactionV7,
   unitGrowthStageV7,
   WAIL_RADIUS_V7,
 } from "../../engine/index";
+import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import {
   dinosaurCombatNoteV7,
   dinosaurCombatSemanticNoteV7,
@@ -811,7 +811,7 @@ export function buildBoardRenderPlanV7(
   for (const unit of view.units) {
     // The Mind Control revision (section 9): the sprite, label, and faction
     // cue follow the unit's kind; the owner colour stays the controller's.
-    const faction = unitFactionV7(view, unit);
+    const faction = presentedUnitFactionV7(view, unit);
     const factionUnit =
       faction === "UNDEAD" ||
       faction === "GOBLIN" ||

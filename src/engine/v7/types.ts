@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r35" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r36" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -46,8 +46,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r32",
   "pulp-wars-poc-7r33",
   "pulp-wars-poc-7r34",
+  "pulp-wars-poc-7r35",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r35.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r36.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
@@ -236,10 +237,17 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   // a unit standing on a Fountain of Youth healed at its owner's Start Turn.
   "FOUNTAIN_HEALED",
   "UNITS_REGENERATED",
+  // Map curiosities (section 8.5): a Monster regenerated at the end of the
+  // neutral turn.
+  "MONSTER_REGENERATED",
   "SHIELDS_RECHARGED",
   "INCOME_AWARDED",
   "INCOME_PREVIEWED",
   "TURN_ENDED",
+  // Map curiosities (section 8.5): the neutral turn after the last seat's
+  // turn of a round, inside the END_TURN that wraps the round.
+  "NEUTRAL_TURN_STARTED",
+  "NEUTRAL_TURN_ENDED",
   "TECH_RESEARCHED",
   "FISH_HARVESTED",
   "PEARLS_GATHERED",
@@ -301,6 +309,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_DISBANDED",
   "SPOILS_AWARDED",
   "PLUNDER_AWARDED",
+  // Map curiosities (section 8.7): the bounty for killing a Monster.
+  "MONSTER_BOUNTY_AWARDED",
   "UNIT_RECOVERED",
   "UNIT_WAITED",
   // Map curiosities (section 6): a Move ended on a Shrine promoted the unit.
@@ -429,6 +439,31 @@ export type CuriosityKindV7 = (typeof CURIOSITY_KINDS_V7)[number];
 export interface CuriosityV7 {
   readonly kind: CuriosityKindV7;
   readonly at: CoordV7;
+}
+
+/**
+ * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 8.1):
+ * the reserved owner of the Giant Spider. It is never a seat (seats are 1
+ * to 4), has no entry in `players`, no Coins, no technology, no cities, and
+ * no exploration, is never eliminated, and is hostile to every player in
+ * both AI modes. Only a unit listed in `GameStateV7.monsters` has it.
+ */
+export const NEUTRAL_OWNER_ID_V7 = 0 as PlayerId;
+
+/** Whether `ownerId` is the reserved neutral owner (section 8.1). */
+export function isNeutralOwnerV7(ownerId: PlayerId): boolean {
+  return ownerId === NEUTRAL_OWNER_ID_V7;
+}
+
+/**
+ * Map curiosities (section 10.2): a Giant Spider on the board. `home` is
+ * its lair (the tile it was placed on); `provokedBy` lists, sorted, every
+ * unit on the board that damaged it since its previous neutral turn.
+ */
+export interface MonsterStateV7 {
+  readonly unitId: UnitId;
+  readonly home: CoordV7;
+  readonly provokedBy: readonly UnitId[];
 }
 
 export interface RandomStateV7 {
@@ -620,6 +655,13 @@ export interface GameStateV7 {
    * Showcase and mission boards.
    */
   readonly curiosities: readonly CuriosityV7[];
+  /**
+   * Map curiosities (section 10.2): one entry per Giant Spider on the board
+   * (a unit owned by `NEUTRAL_OWNER_ID_V7`), sorted by `unitId`. Always
+   * empty when `setup.curiosities` is false and on the Showcase and mission
+   * boards.
+   */
+  readonly monsters: readonly MonsterStateV7[];
   /**
    * Revision 13 Grave markers, sorted by (y, x) without duplicates. Always
    * empty in a match whose setup has no UNDEAD seat.

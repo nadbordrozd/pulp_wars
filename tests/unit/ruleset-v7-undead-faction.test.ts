@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r35");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r35.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r36");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r36.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -136,11 +136,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r34 and preserves the r35 save", () => {
+  it("cleans obsolete keys through v7r35 and preserves the r36 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r34.current",
+      "pulpWars.save.v7r35.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(34);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(35);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -166,7 +166,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r32.current", "r32"],
       ["pulpWars.save.v7r33.current", "r33"],
       ["pulpWars.save.v7r34.current", "r34"],
-      [SAVE_STORAGE_KEY_V7, "r35"],
+      ["pulpWars.save.v7r35.current", "r35"],
+      [SAVE_STORAGE_KEY_V7, "r36"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -195,8 +196,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r32.current",
         "pulpWars.save.v7r33.current",
         "pulpWars.save.v7r34.current",
+        "pulpWars.save.v7r35.current",
       ],
-      removedCount: 23,
+      removedCount: 24,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1897,6 +1899,9 @@ describe("ruleset-7 all-Human parity digests", () => {
               key === "curiosities" &&
               (item === false || (Array.isArray(item) && item.length === 0))
             )
+              return undefined;
+            // pulp_wars-737.3: the empty Monster list of state and view.
+            if (key === "monsters" && Array.isArray(item) && item.length === 0)
               return undefined;
             if (key === "snow" || key === "blizzard" || key === "chill")
               winterValues += 1;

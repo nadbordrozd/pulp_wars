@@ -221,8 +221,11 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       if (!withoutRifts.ok) throw new Error(`${mapType} base rejected`);
       const { curiosities: option, ...setupBefore } = revision19State.setup;
       expect(option).toBe(false);
+      // `pulp_wars-737.3`: the empty Monster list, left out.
+      const { monsters, ...withoutMonsters } = revision19State;
+      expect(monsters).toEqual([]);
       const revision18State = {
-        ...revision19State,
+        ...withoutMonsters,
         setup: setupBefore,
         board: {
           ...revision19State.board,

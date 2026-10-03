@@ -159,8 +159,10 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     ]);
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
-    // and WRECK_SALVAGED (85 event kinds).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(85);
+    // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
+    // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
+    // MONSTER_BOUNTY_AWARDED (89).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(89);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [

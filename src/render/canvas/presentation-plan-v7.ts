@@ -4,9 +4,9 @@ import {
   type CoordV7,
   type PlayerEventEnvelopeV7,
   type PlayerViewV7,
-  unitFactionV7,
 } from "../../engine/index";
 import type { Ruleset7TacticalUiSymbolId } from "../../assets/ruleset7-tactical-ui-symbols";
+import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import type { ExplosionBlastV7 } from "./goblin-explosion-v7";
 import type { DinosaurEffectV7 } from "./dinosaur-effects-v7";
 import type { MartianFeedbackEffectV7 } from "./martian-effects-v7";
@@ -1120,7 +1120,7 @@ function kindOf(
   unit: Pick<PlayerViewV7["units"][number], "id" | "ownerId">,
 ): PlayerViewV7["players"][number]["faction"] | undefined {
   return view.players.some((player) => player.id === unit.ownerId)
-    ? unitFactionV7(view, unit)
+    ? presentedUnitFactionV7(view, unit)
     : undefined;
 }
 

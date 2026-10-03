@@ -1,6 +1,7 @@
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import type { CommandV7 } from "../engine/v7/commands";
 import { unitMayEnterMountainV7 } from "../engine/rules/ruleset-v7";
+import { cooperativeAlliesV7 } from "../engine/v7/economy";
 import { missionDefinitionV7 } from "../engine/v7/missions/index";
 import type {
   MissionDefinitionV7,
@@ -96,9 +97,12 @@ const chebyshev = (left: CoordV7, right: CoordV7): number =>
 function allied(view: PlayerViewV7, ownerId: PlayerId): boolean {
   return (
     ownerId === view.viewer.id ||
-    (view.setup.aiMode === "COOPERATIVE" &&
-      ownerId !== view.humanPlayerId &&
-      view.viewer.id !== view.humanPlayerId)
+    cooperativeAlliesV7(
+      view.setup.aiMode,
+      view.humanPlayerId,
+      ownerId,
+      view.viewer.id,
+    )
   );
 }
 

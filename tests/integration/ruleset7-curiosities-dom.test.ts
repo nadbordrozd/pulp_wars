@@ -1,7 +1,15 @@
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { bootstrapRuleset7App } from "../../src/app/index";
+import {
+  Ruleset7BrowserController,
+  bootstrapRuleset7App,
+} from "../../src/app/index";
+import {
+  RULESET_7_ID,
+  createPlayableGameV7,
+  type MatchSetupV7,
+} from "../../src/engine/index";
 
 /**
  * Map curiosities (`pulp_wars-737.2`,
@@ -9,7 +17,8 @@ import { bootstrapRuleset7App } from "../../src/app/index";
  * "Curiosities" checkbox. It is checked by default, hidden while the
  * Showcase is the map (which launches with `curiosities: false`), and its
  * value is the launched setup's `curiosities`. The board does not draw the
- * curiosities yet (`pulp_wars-737.6`).
+ * curiosities yet (`pulp_wars-737.6`). The Giant Spider (`pulp_wars-737.3`):
+ * the browser controller plays Normal rounds with its neutral turns.
  */
 
 beforeEach(() => {
@@ -64,6 +73,58 @@ describe("Ruleset 7 Curiosities setup option", () => {
     expect(view.curiosities).toEqual([]);
     app.destroy();
   });
+});
+
+describe("Ruleset 7 Giant Spider in the browser controller (pulp_wars-737.3)", () => {
+  it("plays Normal rounds of a match with a Spider, its neutral turns included", async () => {
+    // 16 x 16 Dry Land seed 7 with two opponents draws a Giant Spider; the
+    // board does not draw it as a curiosity yet (pulp_wars-737.6).
+    const setup: MatchSetupV7 = {
+      rulesetId: RULESET_7_ID,
+      seed: 7,
+      width: 16,
+      height: 16,
+      aiCount: 2,
+      aiDifficulty: "NORMAL",
+      aiMode: "RIVAL",
+      humanColor: "CORAL",
+      factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
+      mapType: "DRY_LAND",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      curiosities: true,
+    };
+    const created = createPlayableGameV7(setup);
+    if (!created.ok) throw new Error(created.error.code);
+    expect(created.state.monsters).toHaveLength(1);
+    const controller = new Ruleset7BrowserController({
+      storage: null,
+      policySliceMilliseconds: 60_000,
+      aiProgressScheduler: (resume) => {
+        queueMicrotask(resume);
+      },
+    });
+    const launched = await controller.launch(setup);
+    if (!launched.ok) throw new Error(launched.diagnostic);
+    let neutralTurns = 0;
+    controller.subscribeAcceptedBoundary((boundary) => {
+      for (const event of boundary.playerEvents.events)
+        if (event.kind === "NEUTRAL_TURN_ENDED") neutralTurns += 1;
+    });
+    for (let round = 0; round < 4; round += 1) {
+      const view = controller.snapshot().view;
+      if (view === null) throw new Error("public view missing");
+      if (view.turnOrder[view.activeSeatIndex] === view.humanPlayerId) {
+        const ended = await controller.dispatch({ kind: "END_TURN" });
+        expect(ended.accepted).toBe(true);
+      }
+      const progressed = await controller.progressAiTurns();
+      expect(progressed.ok, JSON.stringify(progressed)).toBe(true);
+      expect(controller.snapshot().diagnostic).toBeNull();
+    }
+    expect(controller.snapshot().view?.round).toBeGreaterThanOrEqual(4);
+    expect(neutralTurns).toBeGreaterThanOrEqual(3);
+    controller.destroy();
+  }, 120_000);
 });
 
 function checkbox(): HTMLInputElement {

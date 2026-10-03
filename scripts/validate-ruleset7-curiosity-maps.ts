@@ -1,19 +1,19 @@
 import { strict as assert } from "node:assert";
 import {
-  CURIOSITY_KINDS_V7,
+  CURIOSITY_PLACEMENT_KINDS_V7,
   RULESET_7_ID,
   curiosityRandomStateV7,
   curiosityTargetCountV7,
   generateInitialMapV7,
   generateInitialMapWithVillageCountV7,
   villageCountV7,
-  type CuriosityKindV7,
+  type CuriosityPlacementKindV7,
   type MapTypeV7,
   type MatchSetupV7,
 } from "../src/engine/index";
 import { checkCuriosityPlacementV7 } from "../tests/fixtures/v7-curiosity-checker";
 
-// Map curiosities (`pulp_wars-737.2`,
+// Map curiosities (`pulp_wars-737.2` and `pulp_wars-737.3`, the Monster,
 // docs/product/RULESET_7_MAP_CURIOSITIES.md sections 4 and 13.1): for every
 // generated map type, size, and AI count, seeds 0..SEEDS-1 (default 32):
 // with the option off the map is exactly the `RIFTS` map (the generator
@@ -47,10 +47,10 @@ const setups = [
   [25, 3],
 ] as const;
 const counts: Record<string, [number, number, number]> = {};
-const kinds: Record<string, Record<CuriosityKindV7, number>> = {};
+const kinds: Record<string, Record<CuriosityPlacementKindV7, number>> = {};
 const totals = Object.fromEntries(
-  CURIOSITY_KINDS_V7.map((kind) => [kind, 0]),
-) as Record<CuriosityKindV7, number>;
+  CURIOSITY_PLACEMENT_KINDS_V7.map((kind) => [kind, 0]),
+) as Record<CuriosityPlacementKindV7, number>;
 let cases = 0;
 for (const mapType of mapTypes)
   for (const [width, aiCount] of setups)
@@ -95,8 +95,8 @@ for (const mapType of mapTypes)
       const tally = (counts[label] ??= [0, 0, 0]);
       tally[placed.length] = (tally[placed.length] ?? 0) + 1;
       const kindTally = (kinds[label] ??= Object.fromEntries(
-        CURIOSITY_KINDS_V7.map((kind) => [kind, 0]),
-      ) as Record<CuriosityKindV7, number>);
+        CURIOSITY_PLACEMENT_KINDS_V7.map((kind) => [kind, 0]),
+      ) as Record<CuriosityPlacementKindV7, number>);
       for (const curiosity of placed) {
         kindTally[curiosity.kind] += 1;
         totals[curiosity.kind] += 1;
@@ -109,6 +109,11 @@ assert.equal(cases, mapTypes.length * setups.length * seeds);
 for (const [label, tally] of Object.entries(counts)) {
   const width = Number(label.split("/")[1]);
   if (width <= 16) assert.equal(tally[2], 0, `${label} has two`);
+}
+// Section 4.4: the Monster only on boards of width 16 and up.
+for (const [label, kindTally] of Object.entries(kinds)) {
+  const width = Number(label.split("/")[1]);
+  if (width < 16) assert.equal(kindTally.MONSTER, 0, `${label} has a Monster`);
 }
 console.log(
   JSON.stringify({

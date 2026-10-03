@@ -1177,7 +1177,10 @@ both art sets. Where an older section below disagrees, this overlay wins.
   curiosities off) and comes back with its earlier state. Like the seed
   choice it lasts for the page session. Until the UI step
   (`pulp_wars-737.6`) adds the board markers, the hint text, and Help, the
-  curiosities of a match are not drawn.
+  curiosities of a match are not drawn; the Giant Spider
+  (`pulp_wars-737.3`) appears as an ordinary unit with the base Juggernaut
+  art and no owner colour (its unit panel names it the Giant Spider), and
+  its neutral turn plays with no banner.
 - **Map seed.** Settings shows `Map seed: N` for the current match (selectable
   text), so a map can be replayed by choosing Use seed in a new game. Restart
   and Play again keep the current match's seed; a new game from the resume

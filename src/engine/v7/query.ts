@@ -1,6 +1,7 @@
 import type { CityId, PlayerId, UnitId } from "../model/ids";
 import {
   ASSEMBLE_COST_V7,
+  NEUTRAL_KIND_V7,
   BASIC_ECONOMIC_ACTIONS_V7,
   BOMB_RANGE_V7,
   SPATIAL_ECONOMIC_ACTIONS_V7,
@@ -62,6 +63,7 @@ import {
   assignedUnitCountV7,
   cityLevelIncomeV7,
   cityUnitCapacityV7,
+  cooperativeAlliesV7,
   marketCoinsV7,
   rewardCandidatesForLevelV7,
 } from "./economy";
@@ -72,6 +74,7 @@ import {
   BITTEN_RISING_HP_V7,
   afflictionCombatEffectsV7,
   unitIsConstructV7,
+  unitTakesStatusV7,
 } from "./afflictions";
 import { eruptionResultsV7, tunnelReachV7 } from "./dwarf-reducer";
 import {
@@ -155,6 +158,7 @@ import {
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   isAfloatFormV7,
+  isNeutralOwnerV7,
   type CoordV7,
   type FactionIdV7,
   type FactionTreeIdV7,
@@ -168,6 +172,7 @@ import {
 } from "./types";
 import { publicUnitStatsV7, type PublicUnitStatsV7 } from "./unit-stats";
 import { allOwnedUnitsV7, tileOccupiedV7 } from "./units";
+import { MONSTER_HOME_RADIUS_V7, monsterAreaV7 } from "./curiosities";
 import {
   viewForV7,
   type PlayerTileViewV7,
@@ -1770,13 +1775,16 @@ export function previewMindControlV7(
     return null;
   const target = view.units.find((unit) => unit.id === targetUnitId);
   if (target === undefined) return null;
+  // Map curiosities (section 8.6): the neutral Monster is never a target.
+  const faction = unitFactionV7(view, target);
+  if (faction === NEUTRAL_KIND_V7) return null;
   return {
     unitId,
     targetUnitId,
     at: target.at,
     originalOwnerId: target.ownerId,
     role: target.role,
-    faction: unitFactionV7(view, target),
+    faction,
     hp: target.hp,
     maxHp: target.maxHp,
     controlledAfter:
@@ -2221,6 +2229,148 @@ export function previewWailV7(
 }
 
 /**
+ * The public combat preview: the canonical preview shape plus, exactly when
+ * the target is a visible Monster (map curiosities section 10.4),
+ * `monsterRetaliates`: whether the attacker, where it stands after this
+ * attack, will be in the Monster's reach on its next turn (false when
+ * either dies).
+ */
+export type PublicCombatPreviewV7 = CombatPreviewV7 & {
+  readonly monsterRetaliates?: boolean;
+};
+
+/**
+ * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 10.4):
+ * the public facts of a visible Monster.
+ */
+export interface MonsterPreviewV7 {
+  readonly unitId: UnitId;
+  /** Its lair (section 8.3). */
+  readonly home: CoordV7;
+  /**
+   * Its area as far as the viewer has explored it: the explored tiles within
+   * 2 of home of a terrain it may stand on (Grass, Forest, or Mountain), not
+   * a settlement site, and 3 or more from every known settlement center
+   * (whoever stands there now).
+   */
+  readonly area: readonly CoordV7[];
+  /** The tiles next to it now: a unit that ends there provokes it. */
+  readonly provokeTiles: readonly CoordV7[];
+  /**
+   * Every tile it could attack on its next turn after at most one step (an
+   * unexplored tile of its area counts as a possible step).
+   */
+  readonly reachTiles: readonly CoordV7[];
+  /** The visible provokers now (next to it, or in its `provokedBy`). */
+  readonly provokers: readonly UnitId[];
+  /** The weakest visible provoker in reach (lowest HP, then ID), or null. */
+  readonly likelyTarget: UnitId | null;
+  /**
+   * False when an unexplored tile lies within 2 of it: a hidden provoker
+   * there could be weaker than `likelyTarget`.
+   */
+  readonly exact: boolean;
+}
+
+/**
+ * Map curiosities (section 10.4): the preview of the visible Monster
+ * `unitId`, or null when the viewer cannot see it. It reads only the public
+ * view; its target choice mirrors the neutral turn (section 8.4) over the
+ * visible provokers.
+ */
+export function previewMonsterV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): MonsterPreviewV7 | null {
+  const entry = view.monsters.find((candidate) => candidate.unitId === unitId);
+  const monster = view.units.find((unit) => unit.id === unitId && unit.hp > 0);
+  if (entry === undefined || monster === undefined) return null;
+  const onBoard = (at: CoordV7): boolean =>
+    at.x >= 0 &&
+    at.y >= 0 &&
+    at.x < view.board.width &&
+    at.y < view.board.height;
+  const centers = view.board.tiles.filter(
+    (tile) => tile.explored && tile.site !== null,
+  );
+  const standableTerrain = (at: CoordV7): boolean | null => {
+    if (
+      !onBoard(at) ||
+      Math.max(Math.abs(at.x - entry.home.x), Math.abs(at.y - entry.home.y)) >
+        MONSTER_HOME_RADIUS_V7
+    )
+      return false;
+    const tile = tileAtView(view, at);
+    if (tile?.explored !== true) return null;
+    return (
+      tile.site === null &&
+      (tile.terrain === "GRASS" ||
+        tile.terrain === "FOREST" ||
+        tile.terrain === "MOUNTAIN") &&
+      !centers.some((center) => chebyshev(center.at, at) < 3)
+    );
+  };
+  const neighbours = (at: CoordV7): CoordV7[] => {
+    const result: CoordV7[] = [];
+    for (let dy = -1; dy <= 1; dy += 1)
+      for (let dx = -1; dx <= 1; dx += 1) {
+        const near = { x: at.x + dx, y: at.y + dy };
+        if ((dx !== 0 || dy !== 0) && onBoard(near)) result.push(near);
+      }
+    return result;
+  };
+  const area = monsterAreaV7(view.board, entry.home).filter(
+    (at) => standableTerrain(at) === true,
+  );
+  const provokeTiles = neighbours(monster.at);
+  // A known step: standable and free of visible units, mounds, and chests.
+  // An unexplored tile of the area may be a step too.
+  const steps = neighbours(monster.at).filter((at) => {
+    const standable = standableTerrain(at);
+    if (standable === null) return true;
+    return (
+      standable &&
+      !tileOccupiedV7(view, at) &&
+      !view.treasureChests.some((chest) => same(chest, at))
+    );
+  });
+  const reach = new Map<string, CoordV7>();
+  for (const origin of [monster.at, ...steps])
+    for (const at of neighbours(origin))
+      if (!same(at, monster.at)) reach.set(`${at.y},${at.x}`, at);
+  const reachTiles = [...reach.values()].sort(
+    (left, right) => left.y - right.y || left.x - right.x,
+  );
+  const provokers = view.units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.id !== monster.id &&
+      !isNeutralOwnerV7(unit.ownerId) &&
+      (chebyshev(unit.at, monster.at) === 1 ||
+        entry.provokedBy.includes(unit.id)),
+  );
+  const inReach = provokers.filter((unit) =>
+    reachTiles.some((at) => same(at, unit.at)),
+  );
+  const likely = [...inReach].sort(
+    (left, right) => left.hp - right.hp || left.id - right.id,
+  )[0];
+  const exact = view.board.tiles.every(
+    (tile) => tile.explored || chebyshev(tile.at, monster.at) > 2,
+  );
+  return {
+    unitId,
+    home: entry.home,
+    area,
+    provokeTiles,
+    reachTiles,
+    provokers: provokers.map((unit) => unit.id),
+    likelyTarget: likely?.id ?? null,
+    exact,
+  };
+}
+
+/**
  * Observation-safe exact preview for an offered attack. The Ice Folk
  * revision: `options.assumeTargetChilled` evaluates the attack as if the
  * target had a Chill entry (section 11).
@@ -2230,21 +2380,21 @@ export function queryCombatPreviewV7(
   attackerId: UnitId,
   targetUnitId: UnitId,
   options?: CombatOptionsV7,
-): CombatPreviewV7 | null;
+): PublicCombatPreviewV7 | null;
 export function queryCombatPreviewV7(
   state: GameStateV7,
   viewerId: PlayerId,
   attackerId: UnitId,
   targetUnitId: UnitId,
   options?: CombatOptionsV7,
-): CombatPreviewV7 | null;
+): PublicCombatPreviewV7 | null;
 export function queryCombatPreviewV7(
   input: GameStateV7 | PlayerViewV7,
   viewerOrAttacker: PlayerId | UnitId,
   attackerOrTarget: UnitId,
   maybeTarget?: UnitId | CombatOptionsV7,
   maybeOptions?: CombatOptionsV7,
-): CombatPreviewV7 | null {
+): PublicCombatPreviewV7 | null {
   const stateForm = typeof maybeTarget === "number";
   const view = stateForm
     ? asView(input, viewerOrAttacker as PlayerId)
@@ -2257,7 +2407,24 @@ export function queryCombatPreviewV7(
     ? (maybeOptions ?? {})
     : ((maybeTarget as CombatOptionsV7 | undefined) ?? {});
   if (!publicCommandOfferingAllowedV7(view)) return null;
-  return publicCombatPreview(view, attackerId, targetUnitId, options);
+  const preview = publicCombatPreview(view, attackerId, targetUnitId, options);
+  // Map curiosities (section 10.4): an attack on a visible Monster says
+  // whether the attacker will be in its reach on its next turn.
+  if (
+    preview === null ||
+    !view.monsters.some((entry) => entry.unitId === targetUnitId)
+  )
+    return preview;
+  const attacker = view.units.find((unit) => unit.id === attackerId);
+  const reach = previewMonsterV7(view, targetUnitId)?.reachTiles ?? [];
+  return {
+    ...preview,
+    monsterRetaliates:
+      attacker !== undefined &&
+      !preview.defenderDies &&
+      !preview.attackerDies &&
+      reach.some((at) => same(at, attacker.at)),
+  };
 }
 
 /**
@@ -2813,6 +2980,11 @@ export function queryThreatenedTilesV7(
     return tilesWithinV7(view, mound.unit.at, 1, 2);
   // Revision 19 section 6.2: an Egg threatens nothing.
   if (unit === undefined || unit.form === "EGG") return [];
+  // Map curiosities (section 10.4): a Monster threatens exactly its
+  // provoke tiles (a unit there is attacked unless something weaker is in
+  // reach); standing in its reach without provoking it is safe.
+  if (isNeutralOwnerV7(unit.ownerId))
+    return previewMonsterV7(view, unit.id)?.provokeTiles ?? [];
   const rule = unitRoleRuleV7(view, unit);
   // The Dwarf revision section 14: a Gyrocopter's bombing reach (no
   // ordinary attack): every tile within 2 of its tile, unless it is
@@ -6521,9 +6693,14 @@ function publicCombatPreviewCore(
       !unitIsSluggishV7(view, attacker),
     splash,
     // Revision 13 Lifesteal and Infect from the visible attacker and target.
+    // Map curiosities (section 8.6): a neutral Monster never rises either.
     ...undeadCombatEffectsV7({
       attacker: { ...attacker, construct: unitIsConstructV7(view, attacker) },
-      defender: { ...target, construct: unitIsConstructV7(view, target) },
+      defender: {
+        ...target,
+        construct:
+          unitIsConstructV7(view, target) || !unitTakesStatusV7(target),
+      },
       attackerRule,
       defenderRule,
       damageToDefender,
@@ -7053,9 +7230,11 @@ function publicPushState(
 ): CombatPreviewV7["push"] {
   // Revision 19 section 6.2: an Egg is never pushed. Revision 20: a Charge!
   // pushes like a `PUSH` attacker.
+  // Map curiosities (section 8.6): nothing moves the neutral Monster.
   if (
     !survivesMelee ||
     defender.form === "EGG" ||
+    isNeutralOwnerV7(defender.ownerId) ||
     (!unitRoleRuleV7(view, attacker).abilities.includes("PUSH") &&
       !attackIsChargeV7(view, attacker))
   )
@@ -7215,11 +7394,11 @@ function publicAllied(
   left: PlayerId,
   right: PlayerId,
 ): boolean {
-  return (
-    left !== right &&
-    view.setup.aiMode === "COOPERATIVE" &&
-    left !== view.humanPlayerId &&
-    right !== view.humanPlayerId
+  return cooperativeAlliesV7(
+    view.setup.aiMode,
+    view.humanPlayerId,
+    left,
+    right,
   );
 }
 

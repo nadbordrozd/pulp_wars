@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 35;
+const REVISION = 36;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -271,13 +271,17 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     ]);
     // The Mind Control revision adds UNIT_RELEASED after UNIT_MIND_CONTROLLED.
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
-    // and WRECK_SALVAGED (85 event kinds).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(85);
+    // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
+    // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
+    // MONSTER_BOUNTY_AWARDED (89).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(89);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1
       ];
-    expect(after("UNITS_REGENERATED")).toBe("SHIELDS_RECHARGED");
+    // The Giant Spider's regeneration follows the Trolls'.
+    expect(after("UNITS_REGENERATED")).toBe("MONSTER_REGENERATED");
+    expect(after("MONSTER_REGENERATED")).toBe("SHIELDS_RECHARGED");
     expect(after("UNIT_DISEMBARKED")).toBe("UNIT_BEAMED");
     expect(after("UNIT_INFECTED")).toBe("UNIT_MIND_CONTROLLED");
     expect(after("UNIT_MIND_CONTROLLED")).toBe("UNIT_RELEASED");
@@ -289,7 +293,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
       PLAYER_EVENT_KIND_ORDER_V7[
         PLAYER_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1
       ];
-    expect(playerAfter("UNITS_REGENERATED")).toBe("SHIELDS_RECHARGED");
+    expect(playerAfter("MONSTER_REGENERATED")).toBe("SHIELDS_RECHARGED");
     expect(playerAfter("UNIT_DISEMBARKED")).toBe("UNIT_BEAMED");
     expect(playerAfter("UNIT_INFECTED")).toBe("UNIT_MIND_CONTROLLED");
     expect(playerAfter("UNIT_PUSHED")).toBe("UNIT_PULLED");

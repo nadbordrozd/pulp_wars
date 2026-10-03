@@ -24,11 +24,12 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // REVISION here: the Dwarf coarse balance (`pulp_wars-78i.7`, bomb 5 and
 // Dive 6) took 7r31, the Martian Grunt and Tripod ranges
 // (`pulp_wars-b5f.2`) 7r32, Mind Control keeps the unit
-// (`pulp_wars-b5f.3`) 7r33, the mission setup (`pulp_wars-68k.2`) 7r34, and
-// the map curiosities engine I (`pulp_wars-737.2`) 7r35.
+// (`pulp_wars-b5f.3`) 7r33, the mission setup (`pulp_wars-68k.2`) 7r34, the
+// map curiosities engine I (`pulp_wars-737.2`) 7r35, and the Giant Spider
+// (`pulp_wars-737.3`) 7r36.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 35;
+const REVISION = 36;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

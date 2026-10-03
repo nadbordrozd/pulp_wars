@@ -96,8 +96,12 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
 };
 
 function missionStateHash(state: GameStateV7): string {
+  // The Giant Spider (`pulp_wars-737.3`) added the `monsters` list, always
+  // empty on a mission board, so the pins leave it out.
+  const { monsters, ...rest } = state;
+  expect(monsters).toEqual([]);
   return canonicalHash({
-    ...state,
+    ...rest,
     rulesetId: "*",
     setup: { ...state.setup, rulesetId: "*" },
   });
@@ -136,9 +140,9 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {
-  const { curiosities, ...rest } = state;
+  const { curiosities, monsters, ...rest } = state;
   const { curiosities: option, ...setup } = state.setup;
-  expect([curiosities, option]).toEqual([[], false]);
+  expect([curiosities, monsters, option]).toEqual([[], [], false]);
   return canonicalHash({
     ...rest,
     rulesetId: "*",

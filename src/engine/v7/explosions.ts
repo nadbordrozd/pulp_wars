@@ -64,6 +64,8 @@ export interface ExplosionV7 {
 export interface CreditedDeathV7 {
   readonly creditedId: PlayerId;
   readonly victimOwnerId: PlayerId;
+  /** Map curiosities (section 8.7): the victim, for the Monster bounty. */
+  readonly victimUnitId: UnitId;
 }
 
 /**
@@ -440,6 +442,7 @@ export function resolveStateExplosionChainV7(
       credits.push({
         creditedId: explosion.ownerId,
         victimOwnerId: victim.ownerId,
+        victimUnitId: victim.id,
       });
       const bite = biteOfV7(work, victim.id);
       // The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift.

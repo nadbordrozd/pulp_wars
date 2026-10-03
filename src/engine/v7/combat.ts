@@ -9,6 +9,7 @@ import {
   factionRulesV7,
   flyerMayStandOnSiteV7,
   halfPowerAttack2V7,
+  ownerResearchedTechsV7,
   platedCapAppliesV7,
   unitCapabilitiesV7,
   unitFactionV7,
@@ -23,7 +24,11 @@ import {
   type EffectiveRoleRuleV7,
   type FactionRosterV7,
 } from "../rules/ruleset-v7";
-import { afflictionCombatEffectsV7, unitIsConstructV7 } from "./afflictions";
+import {
+  afflictionCombatEffectsV7,
+  unitIsConstructV7,
+  unitTakesStatusV7,
+} from "./afflictions";
 import {
   attackAllowanceV7,
   attackIsUnflinchingV7,
@@ -55,6 +60,7 @@ import { tileAtV7 } from "./spatial-economy";
 import { tileOccupiedV7 } from "./units";
 import {
   isAfloatFormV7,
+  isNeutralOwnerV7,
   type CoordV7,
   type GameStateV7,
   type UnitStateV7,
@@ -275,9 +281,7 @@ export function calculateCombatPreviewV7(
   const coldBloodApplied =
     attackerLand && attackerMechanics.coldBloodBonus2 > 0 && defenderChilled;
   const chargeApplied =
-    requirePlayer(state, attacker.ownerId).researchedTechs.includes(
-      "RAIDING",
-    ) &&
+    ownerResearchedTechsV7(state, attacker.ownerId).includes("RAIDING") &&
     attackerRule.abilities.includes("CHARGE") &&
     distance === 1 &&
     attacker.activation.moved &&
@@ -340,7 +344,7 @@ export function calculateCombatPreviewV7(
       ignoresCityWalls: attackIgnoresCityWallsV7(
         state,
         attacker,
-        requirePlayer(state, attacker.ownerId).researchedTechs,
+        ownerResearchedTechsV7(state, attacker.ownerId),
       ),
       // The Martian revision section 6.5: the Disintegrator.
       disintegrator:
@@ -348,7 +352,7 @@ export function calculateCombatPreviewV7(
         unitCapabilitiesV7(
           state,
           attacker,
-          requirePlayer(state, attacker.ownerId).researchedTechs,
+          ownerResearchedTechsV7(state, attacker.ownerId),
         ).raysIgnoreFortification,
       // The Ice Folk revision section 7.6: Boulders.
       boulders: attackerLand && attackerMechanics.ignoresFortification,
@@ -356,7 +360,7 @@ export function calculateCombatPreviewV7(
       blasting: cannonIgnoresFortificationV7(
         state,
         attacker,
-        requirePlayer(state, attacker.ownerId).researchedTechs,
+        ownerResearchedTechsV7(state, attacker.ownerId),
       ),
     },
   );
@@ -589,8 +593,17 @@ export function calculateCombatPreviewV7(
   const twinShotLeft =
     !attackerDies && attackAllowanceV7(state, attacker) > nextAttacks;
   const undead = undeadCombatEffectsV7({
-    attacker: { ...attacker, construct: unitIsConstructV7(state, attacker) },
-    defender: { ...defender, construct: unitIsConstructV7(state, defender) },
+    // Map curiosities (section 8.6): a neutral Monster never rises either.
+    attacker: {
+      ...attacker,
+      construct:
+        unitIsConstructV7(state, attacker) || !unitTakesStatusV7(attacker),
+    },
+    defender: {
+      ...defender,
+      construct:
+        unitIsConstructV7(state, defender) || !unitTakesStatusV7(defender),
+    },
     attackerRule,
     defenderRule,
     damageToDefender,
@@ -934,8 +947,9 @@ export function displacementDestinationLegalV7(
   destination: CoordV7,
   technology?: { readonly engineering: boolean; readonly navigation: boolean },
 ): boolean {
-  // Revision 19 section 6.2: an Egg cannot be pushed or displaced.
-  if (moved.form === "EGG") return false;
+  // Revision 19 section 6.2: an Egg cannot be pushed or displaced. Map
+  // curiosities (section 8.6): nothing moves the neutral Monster.
+  if (moved.form === "EGG" || isNeutralOwnerV7(moved.ownerId)) return false;
   const tile = tileAtV7(state.board, destination);
   if (tile === undefined || tile.site !== null) return false;
   const owner = requirePlayer(state, moved.ownerId);

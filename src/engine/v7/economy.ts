@@ -12,6 +12,8 @@ import { spatialContributionAtV7 } from "./spatial-economy";
 import { allOwnedUnitsV7, type UnitListsV7 } from "./units";
 import {
   isAfloatFormV7,
+  isNeutralOwnerV7,
+  type MatchSetupV7,
   type CityStateV7,
   type GameStateV7,
   type PlayerStateV7,
@@ -163,11 +165,34 @@ export function arePlayersAlliedV7(
   left: PlayerId,
   right: PlayerId,
 ): boolean {
+  return cooperativeAlliesV7(
+    state.setup.aiMode,
+    state.humanPlayerId,
+    left,
+    right,
+  );
+}
+
+/**
+ * THE Cooperative alliance rule (current rules section 3), shared by the
+ * canonical relationship helpers and every public copy (movement, queries,
+ * the Normal AI): two different seats are allies exactly in a Cooperative
+ * match when neither is the human. Map curiosities (section 8.1): the
+ * neutral owner is never allied to anyone, in either mode.
+ */
+export function cooperativeAlliesV7(
+  aiMode: MatchSetupV7["aiMode"],
+  humanPlayerId: PlayerId,
+  left: PlayerId,
+  right: PlayerId,
+): boolean {
   return (
     left !== right &&
-    state.setup.aiMode === "COOPERATIVE" &&
-    left !== state.humanPlayerId &&
-    right !== state.humanPlayerId
+    aiMode === "COOPERATIVE" &&
+    left !== humanPlayerId &&
+    right !== humanPlayerId &&
+    !isNeutralOwnerV7(left) &&
+    !isNeutralOwnerV7(right)
   );
 }
 export function arePlayersHostileV7(

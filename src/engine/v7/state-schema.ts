@@ -7,6 +7,7 @@ import {
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
+  NEUTRAL_MONSTER_ROLE_RULE_V7,
   effectiveRoleRuleV7,
   eggMaxHpOptionsV7,
   factionTreeIdV7,
@@ -28,6 +29,9 @@ import {
   TECHNOLOGY_IDS_V7,
   TERRAIN_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  NEUTRAL_OWNER_ID_V7,
+  isNeutralOwnerV7,
+  type MonsterStateV7,
   isAfloatFormV7,
   type BoardStateV7,
   type AchievementEntitlementV7,
@@ -67,12 +71,14 @@ import {
 import { PLAGUE_DURATION_TURNS_V7 } from "./afflictions";
 import {
   CURIOSITY_CENTER_DISTANCE_V7,
+  MONSTER_HOME_RADIUS_V7,
+  MONSTER_MINIMUM_WIDTH_V7,
   curiosityTerrainLegalV7,
   setupHasCuriositiesV7,
 } from "./curiosities";
 import { parseMatchSetupV7 } from "./setup";
 import { spatialContributionAtV7 } from "./spatial-economy";
-import { roadPopulationForCityV7 } from "./economy";
+import { cooperativeAlliesV7, roadPopulationForCityV7 } from "./economy";
 import {
   compareCoordsV7,
   hasExactKeysV7,
@@ -105,6 +111,7 @@ const STATE_KEYS = [
   "graves",
   "humanPlayerId",
   "mindControlCooldowns",
+  "monsters",
   "nextEntityId",
   "outcome",
   "pendingChoices",
@@ -166,10 +173,19 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   const mindControlled = parseMindControlled(input.mindControlled);
   // Map curiosities (section 6): a Shrine promotes without the kills.
   const shrinePromotions = setup !== null && setupHasCuriositiesV7(setup);
+  // Map curiosities (section 10.2): the Monsters, read before the units so
+  // that exactly the listed units may have the neutral owner.
+  const monsters = setup === null ? null : parseMonsters(input.monsters, setup);
   const units =
-    players === null || mindControlled === null
+    players === null || mindControlled === null || monsters === null
       ? null
-      : parseUnits(input.units, players, mindControlled, shrinePromotions);
+      : parseUnits(
+          input.units,
+          players,
+          mindControlled,
+          shrinePromotions,
+          new Set(monsters.map((entry) => entry.unitId)),
+        );
   const treasureChests = parseSortedCoords(input.treasureChests);
   const curiosities =
     setup === null || board === null || treasureChests === null
@@ -212,6 +228,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     units === null ||
     treasureChests === null ||
     curiosities === null ||
+    monsters === null ||
     graves === null ||
     plagued === null ||
     bitten === null ||
@@ -251,6 +268,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       contributions,
       units,
       treasureChests,
+      monsters,
       graves,
       plagued,
       bitten,
@@ -291,6 +309,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     units,
     treasureChests,
     curiosities,
+    monsters,
     graves,
     plagued,
     bitten,
@@ -761,6 +780,7 @@ function parseUnits(
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
   shrinePromotions: boolean,
+  neutralUnitIds: ReadonlySet<number>,
 ): readonly UnitStateV7[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitStateV7[] = [];
@@ -770,6 +790,7 @@ function parseUnits(
       players,
       mindControlled,
       shrinePromotions,
+      neutralUnitIds,
     );
     if (unit === null || (values.at(-1)?.id ?? 0) >= unit.id) return null;
     values.push(unit);
@@ -782,13 +803,22 @@ function parseUnits(
  * docs/product/RULESET_7_MAP_CURIOSITIES.md section 6): in a match whose
  * board can carry a Shrine, a veteran may have fewer than
  * `PROMOTION_KILLS_V7` kills (the Shrine promotes without them).
+ * `neutralUnitIds` (section 10.2): the units listed in `monsters`, exactly
+ * the ones that have the neutral owner.
  */
 function parseUnit(
   input: unknown,
   players: readonly PlayerStateV7[],
   mindControlled: readonly MindControlledStatusV7[],
   shrinePromotions: boolean,
+  neutralUnitIds: ReadonlySet<number>,
 ): UnitStateV7 | null {
+  if (
+    typeof input === "object" &&
+    input !== null &&
+    (input as { readonly ownerId?: unknown }).ownerId === NEUTRAL_OWNER_ID_V7
+  )
+    return parseNeutralUnit(input, neutralUnitIds);
   if (
     !hasExactKeysV7(input, [
       "activation",
@@ -914,6 +944,113 @@ function parseUnit(
     captureEligible: input.captureEligible,
     activation,
   };
+}
+
+/**
+ * Map curiosities (sections 8.1 and 10.2): a Giant Spider, a unit of the
+ * neutral owner listed in `monsters`: the neutral registration's role
+ * (`JUGGERNAUT`), land form, no home city, its full maximum HP, never
+ * veteran or capture-eligible, and at most one attack and no Overrun or
+ * Escape in its activation.
+ */
+function parseNeutralUnit(
+  input: unknown,
+  neutralUnitIds: ReadonlySet<number>,
+): UnitStateV7 | null {
+  if (
+    !hasExactKeysV7(input, [
+      "activation",
+      "at",
+      "captureEligible",
+      "homeCityId",
+      "hp",
+      "id",
+      "kills",
+      "maxHp",
+      "ownerId",
+      "role",
+      "form",
+      "veteran",
+    ]) ||
+    input.ownerId !== NEUTRAL_OWNER_ID_V7 ||
+    input.role !== NEUTRAL_MONSTER_ROLE_RULE_V7.role ||
+    input.form !== "LAND" ||
+    input.homeCityId !== null ||
+    input.maxHp !== NEUTRAL_MONSTER_ROLE_RULE_V7.maxHp ||
+    !isPositiveSafeIntegerV7(input.hp) ||
+    input.hp > input.maxHp ||
+    !isNonNegativeSafeIntegerV7(input.kills) ||
+    input.veteran !== false ||
+    input.captureEligible !== false
+  )
+    return null;
+  const id = parseUnitIdV7(input.id);
+  const at = parseCoordV7(input.at);
+  const activation = parseActivation(input.activation);
+  if (
+    id === null ||
+    !neutralUnitIds.has(id) ||
+    at === null ||
+    activation === null ||
+    activation.attacksUsed > 1 ||
+    activation.attacked !== activation.attacksUsed > 0 ||
+    activation.overrunActive ||
+    activation.escapeAvailable
+  )
+    return null;
+  return {
+    id,
+    ownerId: NEUTRAL_OWNER_ID_V7,
+    homeCityId: null,
+    role: NEUTRAL_MONSTER_ROLE_RULE_V7.role,
+    form: "LAND",
+    at,
+    hp: input.hp,
+    maxHp: input.maxHp,
+    kills: input.kills,
+    veteran: false,
+    captureEligible: false,
+    activation,
+  };
+}
+
+/**
+ * Map curiosities (section 10.2): the `monsters` list, strictly ascending
+ * by `unitId`, each with its home and a strictly ascending `provokedBy`. It
+ * is empty unless the setup's `curiosities` is true on a generated board of
+ * width 16 or more; the cross references check the units.
+ */
+function parseMonsters(
+  input: unknown,
+  setup: MatchSetupV7,
+): readonly MonsterStateV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  if (
+    input.length > 0 &&
+    (!setupHasCuriositiesV7(setup) || setup.width < MONSTER_MINIMUM_WIDTH_V7)
+  )
+    return null;
+  const values: MonsterStateV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["home", "provokedBy", "unitId"]))
+      return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const home = parseCoordV7(candidate.home);
+    const provokedBy = parseStrictlyAscendingIdsV7(
+      candidate.provokedBy,
+      parseUnitIdV7,
+    );
+    if (
+      unitId === null ||
+      home === null ||
+      provokedBy === null ||
+      provokedBy.includes(unitId) ||
+      (values.length > 0 && (values.at(-1) as MonsterStateV7).unitId >= unitId)
+    )
+      return null;
+    values.push({ unitId, home, provokedBy });
+  }
+  return values;
 }
 
 function parseActivation(input: unknown): UnitActivationV7 | null {
@@ -1248,6 +1385,7 @@ function parseBurrowed(
       players,
       mindControlled,
       shrinePromotions,
+      new Set(),
     );
     const moleUnitId =
       candidate.moleUnitId === null
@@ -1372,6 +1510,7 @@ interface CrossInput {
   contributions: readonly PopulationContributionV7[];
   units: readonly UnitStateV7[];
   treasureChests: readonly CoordV7[];
+  monsters: readonly MonsterStateV7[];
   graves: readonly CoordV7[];
   plagued: readonly PlagueStatusV7[];
   bitten: readonly BittenStatusV7[];
@@ -1447,10 +1586,16 @@ function validateCrossReferences(value: CrossInput): boolean {
     cities.some((city) => !playerById.has(city.ownerId)) ||
     [...units, ...burrowedUnits].some(
       (unit) =>
-        !playerById.has(unit.ownerId) ||
+        (!playerById.has(unit.ownerId) &&
+          !(
+            isNeutralOwnerV7(unit.ownerId) &&
+            units.includes(unit) &&
+            value.monsters.some((entry) => entry.unitId === unit.id)
+          )) ||
         (unit.homeCityId !== null &&
           cityById.get(unit.homeCityId)?.ownerId !== unit.ownerId),
     ) ||
+    !monstersValid(board, units, value.monsters) ||
     board.tiles.some(
       (tile) =>
         tile.territoryCityId !== null && !cityById.has(tile.territoryCityId),
@@ -1485,6 +1630,8 @@ function validateCrossReferences(value: CrossInput): boolean {
   if (new Set(units.map((unit) => key(unit.at))).size !== units.length)
     return false;
   for (const unit of units) {
+    // Map curiosities: a Monster's tile is checked by `monstersValid`.
+    if (isNeutralOwnerV7(unit.ownerId)) continue;
     const tile = tileAt(board, unit.at);
     const owner = playerById.get(unit.ownerId);
     const kind = kindOf(unit);
@@ -1659,9 +1806,11 @@ function validateCrossReferences(value: CrossInput): boolean {
   // Revision 19: an Egg takes no status, so it is never plagued or bitten.
   // The Dwarf revision section 2.3: the per-unit living test (a construct is
   // never plagued or bitten).
+  // Map curiosities (section 8.6): a Monster takes no status.
   const living = (unit: UnitStateV7 | undefined): boolean =>
     unit !== undefined &&
     unit.hp > 0 &&
+    !isNeutralOwnerV7(unit.ownerId) &&
     unit.form !== "EGG" &&
     kindOf(unit) !== "UNDEAD" &&
     !roleMechanicsV7(unit.role, kindOf(unit) ?? "ORIGINAL").construct;
@@ -1813,6 +1962,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     if (
       unit === undefined ||
       unit.hp <= 0 ||
+      isNeutralOwnerV7(unit.ownerId) ||
       unit.form === "NAVAL" ||
       unit.form === "EGG"
     )
@@ -1826,6 +1976,57 @@ function validateCrossReferences(value: CrossInput): boolean {
       )
         return false;
     } else if (!playerById.has(outcome.winnerId)) return false;
+  }
+  return true;
+}
+
+/**
+ * Map curiosities (section 10.2): every `monsters` entry has a unit on the
+ * board with the neutral owner, every neutral unit has an entry, each
+ * Monster stands on a tile of its area it may stand on (Grass, Forest, or
+ * Mountain, 3 or more from every settlement center, not a site; the
+ * occupancy and chest tests are the ordinary unit checks), and every
+ * `provokedBy` ID is a unit on the board that is not neutral.
+ */
+function monstersValid(
+  board: BoardStateV7,
+  units: readonly UnitStateV7[],
+  monsters: readonly MonsterStateV7[],
+): boolean {
+  const neutral = units.filter((unit) => isNeutralOwnerV7(unit.ownerId));
+  if (neutral.length !== monsters.length) return false;
+  const centers = board.tiles.filter((tile) => tile.site !== null);
+  for (const entry of monsters) {
+    const unit = neutral.find((candidate) => candidate.id === entry.unitId);
+    const tile = unit === undefined ? undefined : tileAt(board, unit.at);
+    if (
+      unit === undefined ||
+      tile === undefined ||
+      tile.site !== null ||
+      (tile.terrain !== "GRASS" &&
+        tile.terrain !== "FOREST" &&
+        tile.terrain !== "MOUNTAIN") ||
+      Math.max(
+        Math.abs(unit.at.x - entry.home.x),
+        Math.abs(unit.at.y - entry.home.y),
+      ) > MONSTER_HOME_RADIUS_V7 ||
+      tileAt(board, entry.home) === undefined ||
+      centers.some(
+        (center) =>
+          Math.max(
+            Math.abs(center.at.x - unit.at.x),
+            Math.abs(center.at.y - unit.at.y),
+          ) < CURIOSITY_CENTER_DISTANCE_V7,
+      ) ||
+      entry.provokedBy.some(
+        (id) =>
+          !units.some(
+            (candidate) =>
+              candidate.id === id && !isNeutralOwnerV7(candidate.ownerId),
+          ),
+      )
+    )
+      return false;
   }
   return true;
 }
@@ -1964,10 +2165,11 @@ function populationLedgerValid(
                     isAfloatFormV7(unit.form) &&
                     sameCoordV7(unit.at, tile.at) &&
                     unit.ownerId !== city.ownerId &&
-                    !(
-                      setup.aiMode === "COOPERATIVE" &&
-                      unit.ownerId !== humanPlayerId &&
-                      city.ownerId !== humanPlayerId
+                    !cooperativeAlliesV7(
+                      setup.aiMode,
+                      humanPlayerId,
+                      unit.ownerId,
+                      city.ownerId,
                     ),
                 )
                   ? 0

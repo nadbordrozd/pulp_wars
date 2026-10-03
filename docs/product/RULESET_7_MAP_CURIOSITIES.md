@@ -3,10 +3,13 @@
 **Status:** design spec (`pulp_wars-737.1`, epic `pulp_wars-737`). Engine
 step I (bead 2 of section 15: the option, placement, the Fountain, the
 Shrine, and the Wreck) is implemented at `pulp-wars-poc-7r35`
-(`pulp_wars-737.2`) and folded into
+(`pulp_wars-737.2`) and engine step II (bead 3: the Monster, its neutral
+owner, and the owner-reader audit) at `pulp-wars-poc-7r36`
+(`pulp_wars-737.3`); both are folded into
 [current rules section 2.7](RULESET_7_CURRENT.md#27-map-curiosities), with
-the notes of [section 17](#17-implementation-notes-pulp_wars-7372); the
-Monster, the AI, the art, and the UI are pending. It is an overlay over
+the notes of [section 17](#17-implementation-notes-pulp_wars-7372) and
+[section 18](#18-implementation-notes-pulp_wars-7373); the AI, the art,
+and the UI are pending. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r31`,
 with the pending [Dwarf overlay](RULESET_7_DWARVES.md) and the pending
 [Mind Control overlay](RULESET_7_MIND_CONTROL.md). Every rule this document
@@ -778,7 +781,97 @@ predates the code, the implementation rules as follows:
   25 x 25 Lakes boards get none. On Continents and Archipelago boards about
   85% of the curiosities are Wrecks (land kinds stay off home islands), as
   section 4.4 expected. Totals over the 1920 boards: Fountain 523, Shrine
-  520, Wreck 813.
+  520, Wreck 813 (before the Monster joined the draw at `7r36`; see
+  section 18).
+
+## 18. Implementation notes (`pulp_wars-737.3`)
+
+Engine step II landed at `pulp-wars-poc-7r36`. Where this spec was silent,
+the implementation rules as follows:
+
+- **The neutral owner and kind.** `NEUTRAL_OWNER_ID_V7` is 0 (seats are 1
+  to 4). `unitFactionV7` returns the kind `"NEUTRAL"` for a neutral unit
+  (its result type widened from `FactionIdV7` to `UnitKindV7`, so every
+  reader that indexes a faction table had to handle it, and did, at
+  compile time); `unitRoleRuleV7`, `unitRoleMechanicsV7`, and
+  `unitCapabilitiesV7` resolve the registration
+  (`NEUTRAL_MONSTER_ROLE_RULE_V7`, the Juggernaut's mechanics with no
+  advance, and the capabilities of the empty technology list);
+  `factionRulesV7("NEUTRAL")` has every faction rule off;
+  `ownerResearchedTechsV7` is the owner's research, empty for the neutral
+  owner. The unit's `role` is `JUGGERNAUT`, so the existing `JUGGERNAUT`
+  role checks (Mind Control, the Tractor Beam, Knockback, Shatter) apply
+  unchanged; the status immunity is `unitTakesStatusV7` (the owner, not the
+  role) and the displacement immunity is in the one Push-condition helper.
+- **One alliance rule.** The canonical relationship helpers and the four
+  public copies (movement, queries, the Normal AI, the mission directives)
+  now share `cooperativeAlliesV7`, which never allies the neutral owner;
+  the owner-reader audit keeps any new ad hoc `"COOPERATIVE"` test from
+  appearing unclassified.
+- **The owner-reader audit** (section 10.5) scans the engine, the Normal
+  AI, and the headless runner for `requirePlayer`, `playerFactionV7`,
+  `seatRoleRuleV7`, and `seatRoleMechanicsV7` calls, owner-keyed lookups
+  on a `players` list or a player map, and `"COOPERATIVE"` mode tests, and
+  classifies each enclosing function as `NEUTRAL_AWARE` (its text names the
+  neutral owner; checked), `NEUTRAL_SAFE` (a missing player already gives
+  the neutral answer), or `PLAYER_ONLY` (a seat's ID only; the readers
+  throw otherwise). The resolvers above are neutral-aware themselves, so
+  their call sites are not listed (their handling is tested). The
+  presentation layer is outside the audit (the UI bead draws the Spider);
+  its kind reads go through `presentedUnitFactionV7`, which presents the
+  Spider with the base art of its role until then.
+- **The attack.** The `ATTACK` exchange after its validation is one
+  function shared by the command and the neutral turn, with the neutral
+  owner as the actor (no technology, no exploration, no advance, no
+  settlement or achievements, no command index of its own). Kills by the
+  Spider are credited to nobody (Plunder and the bounty skip a neutral
+  credited owner).
+- **`provokedBy` is derived from the events.** After every accepted
+  command, the damage events (`COMBAT_RESOLVED` target and splash entries,
+  `WAIL_RESOLVED`, `UNIT_BOMBED`, `UNIT_SURFACED`) name the units that hurt
+  a Spider; those still on the board join its list. In an `END_TURN` with
+  a neutral turn only the events after `NEUTRAL_TURN_ENDED` count (an
+  eruption at the next seat's Start Turn provokes; a retaliation in the
+  Spider's own attack does not). Every accepted state drops the entries of
+  dead Spiders and the provokers no longer on the board.
+- **Wail credit.** A Wail credits no kill (an Undead seat never has
+  Plunder); a Spider the Wail kills is credited to the Banshee's owner for
+  the bounty only.
+- **Event position.** The blockade and sea-network events of an `END_TURN`
+  (one of which a Spider's kill may cause) come at the end of the command,
+  as before, not before `NEUTRAL_TURN_ENDED` (section 10.3's blockade list
+  already covers them).
+- **A Mountain lair** is reached from a capital (section 4.3 rule 6) when a
+  tile next to it is reached over land without Mountains.
+- **`monsterRetaliates`** is present exactly when the target is a visible
+  Monster (an optional field of the public preview, so the preview of
+  every other attack keeps the canonical preview's shape); it is true when
+  neither side dies and the attacker stands in the Monster's reach.
+- **`queryThreatenedTilesV7`** of a Monster unit is its provoke tiles; the
+  per-unit query has no list of every Monster to add to.
+- **`previewMonsterV7`'s area** ignores occupancy (the tiles of its area it
+  may ever stand on); its reach counts an unexplored tile of its area as a
+  possible step.
+- **Headless.** The metrics gain `monsters` (`placed`, `damageDealt`,
+  `kills`, `bountyCoins`, `slainRound`); the Spider's damage, kills, and
+  death count for no role or faction.
+- **Measured distribution** (seeds 0–31, every map type, size, and AI
+  count; `npm run validate:ruleset7-curiosity-maps`, the independent
+  checker now covering the Monster's lair rules): 188 Monsters, 463
+  Fountains, 444 Shrines, and 765 Wrecks on the 1920 boards. Per 96 boards
+  of a type at widths 16, 20, and 25: Dry Land 9, 9, 12; Pangea 16, 35, 29;
+  Lakes 13, 29, 36; Continents and Archipelago none (5 from every center on
+  a shared or neutral landmass, with no cut tile in the area, leaves no
+  lair there). The per-board counts of section 4.2 are unchanged.
+- **Fuzz.** The contract test plays Normal rounds with a Spider next to
+  units of all seven factions in both modes, and headless matches with the
+  option on at 16 x 16. A worker fuzz of 40 headless Normal matches that
+  drew a Spider (20 Rival at 20 x 20 to 60 rounds, 20 Cooperative at
+  16 x 16 to 50 rounds; Dry Land, Pangea, and Lakes; one to three
+  opponents of all seven factions) found no error or stall: 168 Spider
+  attacks, 97 kills by it, and 10 Spiders slain (100 bounty Coins).
+  The Normal AI ignores curiosities (bead 4), so its units often walk next
+  to the Spider and are attacked.
 
 ## Appendix A. Draft, critique, and changes
 

@@ -653,6 +653,7 @@ export function resolveStartTurnSurfacingV7(
           victimOwnerId: (
             before.find((unit) => unit.id === entry.unitId) as UnitStateV7
           ).ownerId,
+          victimUnitId: entry.unitId,
         })),
       ...chain.credits,
     ];
@@ -920,7 +921,15 @@ export function applyBombRunV7(
     );
     units = [...chain.units];
     const plunder = kit.plunderAwards(state, state.players, [
-      ...(killed ? [{ creditedId: actor, victimOwnerId: target.ownerId }] : []),
+      ...(killed
+        ? [
+            {
+              creditedId: actor,
+              victimOwnerId: target.ownerId,
+              victimUnitId: target.id,
+            },
+          ]
+        : []),
       ...chain.credits,
     ]);
     events.push(...plunder.events);

@@ -2,6 +2,7 @@ import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
   unitRoleMechanicsV7,
   unitRoleRuleV7,
+  NEUTRAL_KIND_V7,
   unitFactionV7,
 } from "../engine/rules/ruleset-v7";
 import { calculateCombatPreviewV7 } from "../engine/v7/combat";
@@ -435,7 +436,10 @@ function recordCombat(
     metrics.shatters += 1;
     metrics.shattersByAttackerRole[attacker.role] += 1;
     // The Mind Control revision: the victim's kind.
-    metrics.shattersByVictimFaction[unitFactionV7(before, defender)] += 1;
+    // Map curiosities: the neutral Monster is never shattered (no Chill).
+    const victimKind = unitFactionV7(before, defender);
+    if (victimKind !== NEUTRAL_KIND_V7)
+      metrics.shattersByVictimFaction[victimKind] += 1;
     metrics.shattersByVictimRole[defender.role] += 1;
     metrics.shattersByChillSource[
       telemetry.lastChillSource.get(defender.id) ?? "UNKNOWN"

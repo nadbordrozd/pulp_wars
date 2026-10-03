@@ -27,6 +27,7 @@ import type {
   CoolingStatusV7,
   CoordV7,
   CuriosityV7,
+  MonsterStateV7,
   EggStatusV7,
   FactionIdV7,
   FactionTreeIdV7,
@@ -252,6 +253,12 @@ export interface PlayerViewV7 {
    * (y, x). A curiosity is public on an explored tile.
    */
   readonly curiosities: readonly CuriosityV7[];
+  /**
+   * Map curiosities (section 8.8): every visible Monster (a unit in
+   * `units` owned by the neutral owner) with its home and its `provokedBy`
+   * filtered to the units the viewer can see, sorted by unit ID.
+   */
+  readonly monsters: readonly MonsterStateV7[];
   /** Revision 13: the viewer-explored subset of the canonical Graves. */
   readonly graves: readonly CoordV7[];
   /**
@@ -739,6 +746,15 @@ export function viewForV7(
     curiosities: state.curiosities
       .filter((curiosity) => explored.has(key(curiosity.at)))
       .map((curiosity) => ({ kind: curiosity.kind, at: curiosity.at })),
+    monsters: state.monsters
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({
+        unitId: entry.unitId,
+        home: entry.home,
+        provokedBy: entry.provokedBy.filter((unitId) =>
+          visibleUnitIds.has(unitId),
+        ),
+      })),
     graves: state.graves.filter((grave) => explored.has(key(grave))),
     // Revision 14 statuses are public on every visible unit.
     plagued: state.plagued

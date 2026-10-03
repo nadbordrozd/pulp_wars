@@ -1,6 +1,7 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   DIG_IN_RADIUS_V7,
+  ownerResearchedTechsV7,
   unitCapabilitiesV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
@@ -48,12 +49,11 @@ function unitOwnerCapabilitiesV7(
   state: Pick<GameStateV7, "players" | "mindControlled">,
   unit: { readonly id: UnitId; readonly ownerId: PlayerId },
 ): ReturnType<typeof unitCapabilitiesV7> {
-  const owner = state.players.find((player) => player.id === unit.ownerId);
-  if (owner === undefined) throw new RangeError("INVALID_STATE");
+  // Map curiosities (section 10.5): the neutral owner has no technology.
   return unitCapabilitiesV7(
     state,
     unit,
-    owner.researchedTechs as readonly TechnologyIdV7[],
+    ownerResearchedTechsV7(state, unit.ownerId),
   );
 }
 

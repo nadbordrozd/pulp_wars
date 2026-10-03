@@ -6,6 +6,7 @@ import {
   FACTION_TREE_IDS_V7,
   IMPROVEMENT_IDS_V7,
   RESOURCE_IDS_V7,
+  NEUTRAL_OWNER_ID_V7,
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -2468,7 +2469,69 @@ export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
     },
   });
 
-export function factionRulesV7(faction: FactionIdV7): FactionRulesV7 {
+/**
+ * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 8.1):
+ * the kind of a neutral unit (the Giant Spider). It is keyed outside
+ * `FACTION_IDS_V7`, so the frozen faction order, setup factions, and the
+ * one-faction-per-seat rule are untouched; it is never a seat's faction.
+ */
+export const NEUTRAL_KIND_V7 = "NEUTRAL" as const;
+/** A unit's kind: a seat faction, or the neutral registration. */
+export type UnitKindV7 = FactionIdV7 | typeof NEUTRAL_KIND_V7;
+
+/**
+ * Section 8.2: the Giant Spider's stats. Its mechanical role is
+ * `JUGGERNAUT` (every rule that names that role treats it as a big body:
+ * immune to Mind Control, the Tractor Beam, and Shatter); it has `ATTACK`
+ * only (no capture, Push, Pillage, or anything else), no Sight (it explores
+ * nothing), and no cost.
+ */
+export const NEUTRAL_MONSTER_ROLE_RULE_V7: EffectiveRoleRuleV7 = deepFreeze({
+  role: "JUGGERNAUT",
+  label: "Giant Spider",
+  tacticalRole: "MYTHIC",
+  cost: null,
+  maxHp: 24,
+  attack2: 6,
+  defense2: 4,
+  move: 1,
+  range: 1,
+  minimumRange: 1,
+  sightRadius: 0,
+  technology: null,
+  mayUsePrimaryActionAfterMove: true,
+  abilities: ["ATTACK"],
+});
+
+/**
+ * Section 8.3: the Giant Spider never advances after a kill and regenerates
+ * only in the neutral turn (the `regeneration` field is the Troll's Start
+ * Turn step, which a neutral unit never has, so it stays 0 here).
+ */
+export const NEUTRAL_MONSTER_ROLE_MECHANICS_V7: RoleMechanicsV7 = deepFreeze({
+  ...ORIGINAL_ROLE_MECHANICS_V7.JUGGERNAUT,
+  advancesAfterKill: false,
+  buildsFieldDefense: false,
+});
+
+/** Section 8.1: the faction-wide rules of the neutral registration. */
+export const NEUTRAL_FACTION_RULES_V7: FactionRulesV7 = deepFreeze({
+  restless: false,
+  cityCapacityBonus: 0,
+  gangUpMaximum: 0,
+  treasureUnitRole: "KNIGHT",
+  snow: false,
+});
+
+/** The display name of the neutral registration (no seat ever has it). */
+export const NEUTRAL_DISPLAY_NAME_V7 = "Wilds";
+
+/**
+ * The faction-wide rules of a unit's kind (`unitFactionV7`) or of a seat's
+ * faction; the neutral kind has every rule off.
+ */
+export function factionRulesV7(faction: UnitKindV7): FactionRulesV7 {
+  if (faction === NEUTRAL_KIND_V7) return NEUTRAL_FACTION_RULES_V7;
   const rules = Object.hasOwn(FACTION_RULES_V7, faction)
     ? FACTION_RULES_V7[faction]
     : undefined;
@@ -2660,7 +2723,10 @@ export function playerFactionV7(
 export function unitFactionV7(
   roster: FactionRosterV7,
   unit: UnitKindRefV7,
-): FactionIdV7 {
+): UnitKindV7 {
+  // Map curiosities (section 8.1): a neutral unit's kind is the neutral
+  // registration (it is never mind-controlled).
+  if (unit.ownerId === NEUTRAL_OWNER_ID_V7) return NEUTRAL_KIND_V7;
   if (roster.mindControlled.length > 0) {
     const entry = roster.mindControlled.find(
       (candidate) => candidate.unitId === unit.id,
@@ -2696,10 +2762,40 @@ export function unitCapabilitiesV7(
   unit: UnitKindRefV7,
   controllerResearchedTechs: readonly TechnologyIdV7[],
 ): TechnologyCapabilitiesV7 {
-  return technologyCapabilitiesV7(
-    controllerResearchedTechs,
-    unitFactionV7(roster, unit),
-  );
+  const kind = unitFactionV7(roster, unit);
+  // Map curiosities (section 8.1): a neutral unit has no technology.
+  if (kind === NEUTRAL_KIND_V7) return neutralCapabilitiesV7();
+  return technologyCapabilitiesV7(controllerResearchedTechs, kind);
+}
+
+/**
+ * Map curiosities (section 8.1): the technology capabilities of the empty
+ * technology list (no researched technology unlocks anything, whatever the
+ * tree), which a neutral unit always has.
+ */
+export function neutralCapabilitiesV7(): TechnologyCapabilitiesV7 {
+  return technologyCapabilitiesV7([], "ORIGINAL");
+}
+
+/**
+ * Map curiosities (section 10.5): the researched technologies of a unit's
+ * controller: the player's own list, or the empty list for the neutral
+ * owner. Every reader of "the owner's technology" for a unit that may be
+ * neutral goes through this helper; it throws for any other unknown ID.
+ */
+export function ownerResearchedTechsV7(
+  roster: {
+    readonly players: readonly {
+      readonly id: PlayerId;
+      readonly researchedTechs: readonly TechnologyIdV7[];
+    }[];
+  },
+  ownerId: PlayerId,
+): readonly TechnologyIdV7[] {
+  if (ownerId === NEUTRAL_OWNER_ID_V7) return [];
+  const player = roster.players.find((candidate) => candidate.id === ownerId);
+  if (player === undefined) throw new RangeError("INVALID_STATE");
+  return player.researchedTechs;
 }
 
 /**
@@ -2735,7 +2831,10 @@ export function unitRoleRuleV7(
   roster: FactionRosterV7,
   unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
 ): EffectiveRoleRuleV7 {
-  const rule = effectiveRoleRuleV7(unit.role, unitFactionV7(roster, unit));
+  const kind = unitFactionV7(roster, unit);
+  // Map curiosities (section 8.1): the neutral registration's only role.
+  if (kind === NEUTRAL_KIND_V7) return neutralRoleRuleV7(unit.role);
+  const rule = effectiveRoleRuleV7(unit.role, kind);
   if (!isMindControlledV7(roster, unit.id)) return rule;
   const cached = CONTROLLED_ROLE_RULES_V7.get(rule);
   if (cached !== undefined) return cached;
@@ -2754,7 +2853,23 @@ export function unitRoleMechanicsV7(
   roster: FactionRosterV7,
   unit: UnitKindRefV7 & { readonly role: UnitRoleIdV7 },
 ): RoleMechanicsV7 {
-  return roleMechanicsV7(unit.role, unitFactionV7(roster, unit));
+  const kind = unitFactionV7(roster, unit);
+  if (kind === NEUTRAL_KIND_V7) {
+    neutralRoleRuleV7(unit.role);
+    return NEUTRAL_MONSTER_ROLE_MECHANICS_V7;
+  }
+  return roleMechanicsV7(unit.role, kind);
+}
+
+/**
+ * Map curiosities (section 8.1): the role rule of a neutral unit. The
+ * neutral registration defines only the Giant Spider, whose mechanical role
+ * is `JUGGERNAUT`; any other role is an invalid state.
+ */
+export function neutralRoleRuleV7(roleId: UnitRoleIdV7): EffectiveRoleRuleV7 {
+  if (roleId !== NEUTRAL_MONSTER_ROLE_RULE_V7.role)
+    throw new RangeError(`Unknown v7 neutral role: ${String(roleId)}`);
+  return NEUTRAL_MONSTER_ROLE_RULE_V7;
 }
 
 /**

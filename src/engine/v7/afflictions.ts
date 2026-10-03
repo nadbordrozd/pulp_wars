@@ -12,11 +12,12 @@ import type {
   CombatSplashEntryV7,
   DomainEventV7,
 } from "./events";
-import type {
-  BittenStatusV7,
-  GameStateV7,
-  PlagueStatusV7,
-  UnitStateV7,
+import {
+  isNeutralOwnerV7,
+  type BittenStatusV7,
+  type GameStateV7,
+  type PlagueStatusV7,
+  type UnitStateV7,
 } from "./types";
 import { allOwnedUnitsV7 } from "./units";
 
@@ -72,6 +73,18 @@ export function isLivingUnitV7(
     unitFactionV7(roster, unit) !== "UNDEAD" &&
     !unitRoleMechanicsV7(roster, unit).construct
   );
+}
+
+/**
+ * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 8.6):
+ * whether a status (Plague, Bitten, Infect, Chill, Mind Control) can stick
+ * to the unit. Only a neutral unit (the Giant Spider) is immune; it is read
+ * from the neutral owner, not from the role.
+ */
+export function unitTakesStatusV7(unit: {
+  readonly ownerId: PlayerId;
+}): boolean {
+  return !isNeutralOwnerV7(unit.ownerId);
 }
 
 /** The Dwarf revision (section 7): whether the unit's role is a construct. */
@@ -158,7 +171,10 @@ export function afflictionCombatEffectsV7(input: {
           readonly role: UnitStateV7["role"];
         }
       | undefined,
-  ): boolean => unit !== undefined && isLivingUnitV7(input.roster, unit);
+  ): boolean =>
+    unit !== undefined &&
+    unitTakesStatusV7(unit) &&
+    isLivingUnitV7(input.roster, unit);
   const plagued: UnitId[] = [];
   if (input.attackerRule.abilities.includes("PLAGUE") && !input.attackerDies) {
     // The Martian revision section 5.3: a Lich plagues only targets that

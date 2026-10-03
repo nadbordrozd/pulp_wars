@@ -6,6 +6,7 @@ import {
   flyerMayStandOnSiteV7,
   isMindControlledV7,
   technologyCapabilitiesV7,
+  ownerResearchedTechsV7,
   unitCapabilitiesV7,
   terrainStopsMoveV7,
   unitFliesV7,
@@ -17,6 +18,7 @@ import {
 import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
+  cooperativeAlliesV7,
   isActivePortV7,
 } from "./economy";
 import {
@@ -39,6 +41,7 @@ import type {
   TileStateV7,
   UnitStateV7,
 } from "./types";
+import { isNeutralOwnerV7 } from "./types";
 import { moundAtV7, tileOccupiedV7 } from "./units";
 import type { PlayerTileViewV7, PlayerViewV7, PublicUnitV7 } from "./view";
 
@@ -911,8 +914,12 @@ export function unitSightRadiusAtV7(
   if (unit.form === "EGG") return 0;
   // The Mind Control revision section 5.2: Fieldcraft Sight and high-ground
   // vision are unit-level unlocks.
-  const player = requirePlayer(state, unit.ownerId);
-  const capabilities = unitCapabilitiesV7(state, unit, player.researchedTechs);
+  // Map curiosities (section 10.5): the neutral owner has no technology.
+  const capabilities = unitCapabilitiesV7(
+    state,
+    unit,
+    ownerResearchedTechsV7(state, unit.ownerId),
+  );
   const base = Math.max(
     unitRoleRuleV7(state, unit).sightRadius,
     capabilities.roleSightRadius[unit.role] ?? 0,
@@ -997,7 +1004,9 @@ function projectsZocV7(
   // Revision 19 section 6.2: an Egg projects no zone of control.
   if (projector.form === "EMBARKED" || projector.form === "EGG") return false;
   // The Martian revision section 7.2: a flyer exerts no zone of control.
-  if (unitFliesV7(state, projector)) return false;
+  // Map curiosities (section 8.3): nor does the neutral Monster.
+  if (unitFliesV7(state, projector) || isNeutralOwnerV7(projector.ownerId))
+    return false;
   const targetTile = tileAtV7(state.board, at);
   const water = targetTile?.biome === null;
   if (!water) return projector.form !== "NAVAL";
@@ -1050,11 +1059,11 @@ function publicAllied(
   left: PlayerId,
   right: PlayerId,
 ): boolean {
-  return (
-    left !== right &&
-    view.setup.aiMode === "COOPERATIVE" &&
-    left !== view.humanPlayerId &&
-    right !== view.humanPlayerId
+  return cooperativeAlliesV7(
+    view.setup.aiMode,
+    view.humanPlayerId,
+    left,
+    right,
   );
 }
 function publicHostileZoc(
@@ -1073,8 +1082,10 @@ function publicHostileZoc(
         unit.form === "EMBARKED" ||
         // Revision 19: an Egg projects no zone of control.
         unit.form === "EGG" ||
-        // The Martian revision: a flyer exerts no zone of control.
+        // The Martian revision: a flyer exerts no zone of control; map
+        // curiosities (section 8.3): nor does the neutral Monster.
         unitFliesV7(view, unit) ||
+        isNeutralOwnerV7(unit.ownerId) ||
         unit.ownerId === target.ownerId ||
         publicAllied(view, target.ownerId, unit.ownerId)
       )

@@ -1,8 +1,23 @@
-import { allocateCityId, allocateUnitId, type PlayerId } from "../model/ids";
+import {
+  allocateCityId,
+  allocateUnitId,
+  type PlayerId,
+  type UnitId,
+} from "../model/ids";
 import { deepFreeze } from "../model/freeze";
 import { nextBounded } from "../random/random";
 import type { JsonValue } from "../replay/canonical";
-import { resolveCuriosityClaimV7 } from "./curiosities";
+import {
+  MONSTER_BOUNTY_V7,
+  MONSTER_REGENERATION_V7,
+  monsterAttackChoiceV7,
+  monsterEntryV7,
+  monsterStepsV7,
+  monsterWanderV7,
+  prunedMonstersV7,
+  resolveCuriosityClaimV7,
+  withMonsterProvocationsV7,
+} from "./curiosities";
 import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
@@ -24,6 +39,7 @@ import {
   isEggLaidRoleV7,
   isMindControlledV7,
   isRallyTargetV7,
+  ownerResearchedTechsV7,
   technologyCapabilitiesV7,
   seatRoleMechanicsV7,
   unitCapabilitiesV7,
@@ -165,7 +181,9 @@ import { twinShotReadyV7, unitIsMachineV7 } from "./dwarf";
 import { unitIsConstructV7 } from "./afflictions";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import {
+  NEUTRAL_OWNER_ID_V7,
   TECHNOLOGY_IDS_V7,
+  isNeutralOwnerV7,
   type AchievementIdV7,
   type CityStateV7,
   type CoordV7,
@@ -376,11 +394,38 @@ export function applyCommandV7(
     : [];
   // Revision 14 section 3.5: a Lich that left the board cures its Plague.
   const cleared = plagueClearedEventsV7(stateInput, result.state);
-  if (!navalMayChange && cleared.length === 0) return result;
-  return {
+  if (!navalMayChange && cleared.length === 0)
+    return withMonsterProvocationsResultV7(result);
+  return withMonsterProvocationsResultV7({
     ...result,
     events: [...result.events, ...naval, ...cleared],
-  };
+  });
+}
+
+/**
+ * Map curiosities (section 8.4): every unit on the board that damaged a
+ * Monster in the command joins its `provokedBy`. In an `END_TURN` with a
+ * neutral turn only the events after `NEUTRAL_TURN_ENDED` count (the list
+ * is cleared at the end of the neutral turn, so a retaliation in the
+ * Monster's own attack provokes nothing). Returns `result` itself when no
+ * Monster was damaged.
+ */
+function withMonsterProvocationsResultV7(
+  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
+): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
+  if (result.state.monsters.length === 0) return result;
+  let start = 0;
+  result.events.forEach((event, index) => {
+    if (event.kind === "NEUTRAL_TURN_ENDED") start = index + 1;
+  });
+  const state = withMonsterProvocationsV7(
+    result.state,
+    result.events.slice(start),
+  );
+  if (state === result.state) return result;
+  const next = accepted(checked(state), result.events);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
 }
 
 /**
@@ -3465,495 +3510,17 @@ function applyAttack(
   )
     return rejected(original, "TARGET_OUT_OF_RANGE");
   try {
-    const calculated = calculateCombatPreviewV7(
+    const exchange = resolveAttackExchangeV7(
       state,
-      attacker.id,
-      defender.id,
+      actor,
+      attacker,
+      defender,
+      rule,
+      distance,
     );
-    const destinationTile = tileAtV7(state.board, defender.at);
-    // The advance enters the defender's tile through the shared
-    // `canEnterTerrainV7` (a striding Colossus needs no Engineering).
-    const canAdvance =
-      calculated.advances &&
-      isExplored(requirePlayer(state, actor), defender.at) &&
-      destinationTile !== undefined &&
-      ((destinationTile.terrain !== "MOUNTAIN" &&
-        !isRiftTerrainV7(destinationTile.terrain)) ||
-        canEnterTerrainV7({
-          terrain: destinationTile.terrain,
-          movementMode: unitMovementModeV7(state, attacker),
-          afloat: false,
-          engineering: requirePlayer(state, actor).researchedTechs.includes(
-            "ENGINEERING",
-          ),
-          navigation: false,
-          mountainBorn: unitIsMountainBornV7(state, attacker),
-        }));
-    const preview =
-      canAdvance === calculated.advances
-        ? calculated
-        : { ...calculated, advances: canAdvance };
-    const attacksUsed = attacker.activation.attacksUsed + 1;
-    // Revision 17 section 6.8: splash kills of own or allied units (the
-    // Bomb Chucker's friendly fire) earn no promotion credit.
-    const attackerKills =
-      attacker.kills +
-      (preview.defenderDies ? 1 : 0) +
-      preview.splash.filter(
-        (entry) =>
-          entry.dies &&
-          arePlayersHostileV7(
-            state,
-            actor,
-            requireValue(state.units.find((unit) => unit.id === entry.unitId))
-              .ownerId,
-          ),
-      ).length;
-    const defenderKills = defender.kills + (preview.attackerDies ? 1 : 0);
-    if (
-      !Number.isSafeInteger(attacksUsed) ||
-      !Number.isSafeInteger(attackerKills) ||
-      !Number.isSafeInteger(defenderKills)
-    )
-      throw new RangeError("INTEGER_OVERFLOW");
-    const pushDestination =
-      preview.push === "WILL_PUSH"
-        ? pushedDestinationV7(state, attacker, defender)
-        : null;
-    let attackerAfter: UnitStateV7 = {
-      ...attacker,
-      at: preview.advances ? defender.at : attacker.at,
-      // Revision 13 Lifesteal heals after both damages (0 unless a Vampire).
-      hp: attacker.hp - preview.damageToAttacker + preview.attackerHeal,
-      kills: attackerKills,
-      captureEligible: false,
-      activation: {
-        ...attacker.activation,
-        // The Dwarf revision section 8: a Hammerer's or a Mole's advance
-        // counts as moving (Dig In).
-        moved:
-          attacker.activation.moved ||
-          (preview.advances && unitRoleMechanicsV7(state, attacker).digsIn),
-        attacked: true,
-        attacksUsed,
-        inspired: false,
-        overrunActive: false,
-        escapeAvailable: preview.escapeAvailable,
-        // The Dwarf revision section 7.3: a Gunner with a second shot left
-        // still awaits orders.
-        handled: !preview.escapeAvailable && preview.attacksRemaining === 0,
-      },
-    };
-    let defenderAfter: UnitStateV7 = {
-      ...defender,
-      at: pushDestination ?? defender.at,
-      hp: defender.hp - preview.damageToDefender + preview.defenderHeal,
-      kills: defenderKills,
-      captureEligible:
-        pushDestination === null ? defender.captureEligible : false,
-    };
-    // Revision 19 Grow (section 5.2): a surviving Dinosaur unit grows at the
-    // moment its kill is credited, after the exchange's damage and Lifesteal
-    // and before the advance, the Push, and any chain reaction.
-    const growthEvents: DomainEventV7[] = [];
-    if (!preview.attackerDies)
-      attackerAfter = grownUnitV7(
-        state,
-        attacker.kills,
-        attackerAfter,
-        growthEvents,
-      );
-    if (!preview.defenderDies)
-      defenderAfter = grownUnitV7(
-        state,
-        defender.kills,
-        defenderAfter,
-        growthEvents,
-      );
-    const splashDamage = new Map(
-      preview.splash.map((entry) => [entry.unitId, entry.damage] as const),
-    );
-    let units = state.units
-      .map((unit) =>
-        unit.id === attacker.id
-          ? attackerAfter
-          : unit.id === defender.id
-            ? defenderAfter
-            : splashDamage.has(unit.id)
-              ? { ...unit, hp: unit.hp - (splashDamage.get(unit.id) ?? 0) }
-              : unit,
-      )
-      .filter((unit) => unit.hp > 0);
-    const defenseReason = destinationTile?.fieldDefense
-      ? attacker.role === "CATAPULT"
-        ? "CATAPULT"
-        : // The Ice Folk revision section 7.5: Trample, whatever survives.
-          attacker.form === "LAND" &&
-            unitRoleMechanicsV7(state, attacker).tramplesFieldDefense
-          ? "TRAMPLE"
-          : preview.inspiredApplied && distance === 1 && !preview.attackerDies
-            ? "INSPIRED"
-            : distance === 1 &&
-                !preview.attackerDies &&
-                attacker.form === "LAND" &&
-                requirePlayer(state, actor).researchedTechs.includes(
-                  "EXPLOSIVES",
-                )
-              ? "EXPLOSIVES"
-              : preview.advances
-                ? "OCCUPATION"
-                : null
-      : null;
-    let board =
-      defenseReason === null || destinationTile === undefined
-        ? state.board
-        : replaceTile(state, defender.at, {
-            ...destinationTile,
-            fieldDefense: false,
-          });
-    const advanceReveal = preview.advances
-      ? revealRadius(
-          { ...state, board, units } as GameStateV7,
-          actor,
-          defender.at,
-          unitSightRadiusAtV7(
-            { ...state, board, units } as GameStateV7,
-            attackerAfter,
-          ),
-        )
-      : null;
-    const visiblePlayers =
-      advanceReveal === null
-        ? state.players
-        : setExplored(state.players, actor, advanceReveal.explored);
-    const visibleState = {
-      ...state,
-      board,
-      players: visiblePlayers,
-      units,
-    } as GameStateV7;
-    // Revision 17 section 6.7: COMBAT_RESOLVED states the Overrun (Ram)
-    // continuation evaluated after any chain, so it is inserted below.
-    const events: DomainEventV7[] = [];
-    if (defenseReason !== null)
-      events.push({
-        kind: "FIELD_DEFENSE_DESTROYED",
-        at: defender.at,
-        reason: defenseReason,
-      });
-    // Revision 13 section 6.8 step 7: each death in order (defender, splash
-    // in (y, x, id) order, attacker) becomes an Infect rising when a Zombie
-    // killed a land-form victim, or may otherwise leave a Grave on its death
-    // tile before the attacker advances onto it.
-    let graves = state.graves;
-    let nextEntityId = state.nextEntityId;
-    const risings: UnitStateV7[] = [];
-    const infect = (
-      source: UnitStateV7,
-      victim: UnitStateV7,
-      cause: "ATTACK" | "RETALIATION",
-    ): void => {
-      const allocation = allocateUnitId(nextEntityId);
-      nextEntityId = allocation.nextEntityId;
-      const rising = recordInfectionV7(
-        state,
-        source,
-        victim,
-        cause,
-        allocation.id,
-        exhaustedActivation(),
-        events,
-      );
-      risings.push(rising);
-      units = [...units, rising];
-    };
-    // Revision 14 section 4.3: a bitten land-form victim that Infect did not
-    // convert rises as its biter's Zombie instead of leaving a Grave.
-    const died = (
-      victim: UnitStateV7,
-      cause: "ATTACK" | "SPLASH" | "RETALIATION" | "SHATTER",
-    ): void => {
-      const bite = biteOfV7(state, victim.id);
-      // The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift.
-      if (
-        bite === undefined ||
-        victim.form !== "LAND" ||
-        riftAtV7(state.board, victim.at)
-      ) {
-        // The Ice Folk revision section 5.5: a shattered unit leaves no
-        // Grave.
-        if (cause === "SHATTER")
-          events.push({ kind: "UNIT_DIED", unitId: victim.id, cause });
-        else graves = recordCombatDeathV7(state, graves, victim, cause, events);
-        return;
-      }
-      const allocation = allocateUnitId(nextEntityId);
-      nextEntityId = allocation.nextEntityId;
-      const rising = recordBittenRisingV7(
-        state,
-        bite,
-        victim,
-        cause,
-        allocation.id,
-        exhaustedActivation(),
-        events,
-      );
-      risings.push(rising);
-      units = [...units, rising];
-    };
-    if (preview.defenderInfected) infect(attacker, defender, "ATTACK");
-    else if (preview.defenderDies)
-      died(defender, preview.shatters ? "SHATTER" : "ATTACK");
-    for (const splash of preview.splash)
-      if (splash.dies)
-        died(
-          requireValue(state.units.find((unit) => unit.id === splash.unitId)),
-          "SPLASH",
-        );
-    if (preview.attackerInfected) infect(defender, attacker, "RETALIATION");
-    else if (preview.attackerDies) died(attacker, "RETALIATION");
-    // The Mind Control revision section 4.2: the controlled units of a Brain
-    // that just left the board are released right after its death events
-    // and before the advance, the Push, and any chain.
-    const release = releaseControlledV7(
-      units,
-      state.burrowed,
-      state.mindControlled,
-      state.players,
-      events,
-    );
-    units = [...release.units];
-    // Sections 5.3 and 6.2: the Shields the exchange spent, and the Cooling
-    // a full-power ray starts.
-    const shields = withShieldDamageV7(
-      state.shields,
-      new Map([
-        [defender.id, preview.defenderShieldDamage],
-        [attacker.id, preview.attackerShieldDamage],
-        ...preview.splash.map(
-          (entry) => [entry.unitId, entry.shieldDamage] as const,
-        ),
-      ]),
-    );
-    const cooling =
-      preview.coolingApplied && !preview.attackerDies
-        ? withFiredRayV7(state.cooling, attacker.id)
-        : state.cooling;
-    // Revision 14 sections 3.1 and 4.1: Plague and bites on the survivors.
-    const plagued = withPlaguedV7(
-      state.plagued,
-      preview.plagued.map((unitId) => ({ unitId, sourceUnitId: attacker.id })),
-    );
-    let bitten = state.bitten;
-    if (preview.defenderBitten)
-      bitten = withBittenV7(bitten, {
-        unitId: defender.id,
-        biterPlayerId: attacker.ownerId,
-        biterUnitId: attacker.id,
-      });
-    if (preview.attackerBitten)
-      bitten = withBittenV7(bitten, {
-        unitId: attacker.id,
-        biterPlayerId: defender.ownerId,
-        biterUnitId: defender.id,
-      });
-    events.push(...growthEvents);
-    // Revision 20 section 2.3: the Push, then the advance (after a kill) or
-    // the follow (a Charge! after a Push). Only a Charge! emits both.
-    if (pushDestination !== null)
-      events.push({
-        kind: "UNIT_PUSHED",
-        sourceUnitId: attacker.id,
-        targetUnitId: defender.id,
-        from: defender.at,
-        to: pushDestination,
-      });
-    if (preview.advances)
-      events.push({
-        kind: "UNIT_MOVED",
-        unitId: attacker.id,
-        path: [defender.at],
-      });
-    // Revision 17 section 6.7: the exploding units among the defender, the
-    // splash victims, and the attacker explode after the attack's deaths,
-    // risings, advance, and Push; Overrun (Ram) is evaluated afterwards.
-    const initialExplosions: {
-      readonly unit: UnitStateV7;
-      readonly cause: ExplosionCauseV7;
-    }[] = [];
-    // The Ice Folk revision section 5.5: a shattered unit never explodes.
-    if (
-      preview.defenderDies &&
-      !preview.shatters &&
-      isExplodingUnitV7(state, defender)
-    )
-      initialExplosions.push({ unit: defender, cause: "DEATH" });
-    for (const splash of preview.splash) {
-      const victim = requireValue(
-        state.units.find((unit) => unit.id === splash.unitId),
-      );
-      if (splash.dies && isExplodingUnitV7(state, victim))
-        initialExplosions.push({ unit: victim, cause: "DEATH" });
-    }
-    if (preview.attackerDies && isExplodingUnitV7(state, attacker))
-      initialExplosions.push({ unit: attacker, cause: "DEATH" });
-    const chain = resolveStateExplosionChainV7(
-      state,
-      {
-        units,
-        board,
-        graves,
-        nextEntityId,
-        bitten,
-        shields,
-        mindControlled: release.mindControlled,
-        burrowed: release.burrowed,
-      },
-      initialExplosions,
-      events,
-    );
-    units = [...chain.units];
-    board = chain.board;
-    graves = chain.graves;
-    nextEntityId = chain.nextEntityId;
-    risings.push(...chain.risings);
-    const survivor = units.find((unit) => unit.id === attacker.id);
-    const afterChainState = {
-      ...visibleState,
-      board,
-      units,
-    } as GameStateV7;
-    const overrunContinues =
-      rule.abilities.includes("OVERRUN") &&
-      preview.advances &&
-      !preview.attackerDies &&
-      survivor !== undefined &&
-      // The Mind Control revision: a controlled attacker released by the
-      // chain is no longer the actor's.
-      survivor.ownerId === actor &&
-      units.some(
-        (candidate) =>
-          candidate.id !== attacker.id &&
-          candidate.hp > 0 &&
-          arePlayersHostileV7(state, actor, candidate.ownerId) &&
-          chebyshev(defender.at, candidate.at) === 1 &&
-          isUnitVisibleToPlayerV7(afterChainState, actor, candidate),
-      );
-    if (overrunContinues && survivor !== undefined) {
-      attackerAfter = {
-        ...survivor,
-        activation: {
-          ...survivor.activation,
-          overrunActive: true,
-          handled: false,
-        },
-      };
-      units = units.map((unit) =>
-        unit.id === attackerAfter.id ? attackerAfter : unit,
-      );
-    }
-    const finalPreview = {
-      ...preview,
-      attacksRemaining:
-        overrunContinues || preview.attacksRemaining === 1 ? 1 : 0,
-      overrunAdvance: rule.abilities.includes("OVERRUN") && preview.advances,
-      overrunContinues,
-    };
-    events.unshift({ kind: "COMBAT_RESOLVED", preview: finalPreview });
-    // Revision 17 Plunder (sections 6.8 and 7.4): the attacker's owner is
-    // credited with the defender and splash deaths, the defender's owner with
-    // a retaliation death, and each exploding unit's owner with its blast's
-    // deaths; a victim that rises still counts as killed.
-    const plunder = plunderAwardsV7(state, visiblePlayers, [
-      ...(preview.defenderDies
-        ? [{ creditedId: attacker.ownerId, victimOwnerId: defender.ownerId }]
-        : []),
-      ...preview.splash.flatMap((entry) =>
-        entry.dies
-          ? [
-              {
-                creditedId: attacker.ownerId,
-                victimOwnerId: requireValue(
-                  state.units.find((unit) => unit.id === entry.unitId),
-                ).ownerId,
-              },
-            ]
-          : [],
-      ),
-      ...(preview.attackerDies
-        ? [{ creditedId: defender.ownerId, victimOwnerId: attacker.ownerId }]
-        : []),
-      ...chain.credits,
-    ]);
-    events.push(...plunder.events);
-    let players = plunder.players;
-    if (preview.advances) {
-      if (advanceReveal !== null && advanceReveal.revealed.length)
-        events.push({
-          kind: "TILES_REVEALED",
-          playerId: actor,
-          tiles: advanceReveal.revealed,
-        });
-    }
-    if (pushDestination !== null) {
-      const reveal = revealRadius(
-        { ...state, board, players, units } as GameStateV7,
-        defender.ownerId,
-        pushDestination,
-        unitSightRadiusAtV7(
-          { ...state, board, players, units } as GameStateV7,
-          defenderAfter,
-        ),
-      );
-      players = setExplored(players, defender.ownerId, reveal.explored);
-      if (reveal.revealed.length)
-        events.push({
-          kind: "TILES_REVEALED",
-          playerId: defender.ownerId,
-          tiles: reveal.revealed,
-        });
-    }
-    for (const risen of risings) {
-      // Revision 13 section 5.4: a rising reveals its sight for its owner.
-      const risenState = { ...state, board, players, units } as GameStateV7;
-      const reveal = revealRadius(
-        risenState,
-        risen.ownerId,
-        risen.at,
-        unitSightRadiusAtV7(risenState, risen),
-      );
-      players = setExplored(players, risen.ownerId, reveal.explored);
-      if (reveal.revealed.length)
-        events.push({
-          kind: "TILES_REVEALED",
-          playerId: risen.ownerId,
-          tiles: reveal.revealed,
-        });
-    }
-    const economy = recomputeLiveEconomyV7(
-      state,
-      { board, cities: state.cities, units },
-      state.populationContributions,
-    );
-    events.push(...economyAndGrowth(economy.changes));
+    const events = [...exchange.events];
     const settlement = settleCityRewardsV7(
-      {
-        ...state,
-        board,
-        commandIndex: nextSafe(state.commandIndex),
-        nextEntityId,
-        players,
-        cities: economy.cities,
-        units,
-        burrowed: chain.burrowed,
-        mindControlled: chain.mindControlled,
-        graves,
-        plagued,
-        bitten,
-        shields: chain.shields,
-        cooling,
-        populationContributions: economy.populationContributions,
-      },
+      { ...exchange.state, commandIndex: nextSafe(state.commandIndex) },
       actor,
     );
     events.push(...settlement.events);
@@ -3963,6 +3530,527 @@ function applyAttack(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
+}
+
+/**
+ * The resolution of one `ATTACK` exchange after its validation (current
+ * rules section 13), shared by the `ATTACK` command and the Monster's
+ * attack in the neutral turn (map curiosities section 8.4): damage both
+ * ways, retaliation, splash, statuses, kill credit, deaths, Graves,
+ * risings, releases, the advance and the Push, death-blast chains, Plunder
+ * and the Monster bounty, reveals, and the live economy. It returns the
+ * state before the city-reward settlement, the achievements, and the
+ * command index (the caller's), with the events in order. `actor` is the
+ * attacker's owner; for the Monster it is `NEUTRAL_OWNER_ID_V7`, which has
+ * no technology, explores nothing, and is credited nothing.
+ */
+function resolveAttackExchangeV7(
+  state: GameStateV7,
+  actor: PlayerId,
+  attacker: UnitStateV7,
+  defender: UnitStateV7,
+  rule: ReturnType<typeof unitRoleRuleV7>,
+  distance: number,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const calculated = calculateCombatPreviewV7(state, attacker.id, defender.id);
+  const destinationTile = tileAtV7(state.board, defender.at);
+  // The advance enters the defender's tile through the shared
+  // `canEnterTerrainV7` (a striding Colossus needs no Engineering). Map
+  // curiosities (section 8.3): the neutral Monster never advances.
+  const canAdvance =
+    calculated.advances &&
+    !isNeutralOwnerV7(actor) &&
+    isExplored(requirePlayer(state, actor), defender.at) &&
+    destinationTile !== undefined &&
+    ((destinationTile.terrain !== "MOUNTAIN" &&
+      !isRiftTerrainV7(destinationTile.terrain)) ||
+      canEnterTerrainV7({
+        terrain: destinationTile.terrain,
+        movementMode: unitMovementModeV7(state, attacker),
+        afloat: false,
+        engineering: requirePlayer(state, actor).researchedTechs.includes(
+          "ENGINEERING",
+        ),
+        navigation: false,
+        mountainBorn: unitIsMountainBornV7(state, attacker),
+      }));
+  const preview =
+    canAdvance === calculated.advances
+      ? calculated
+      : { ...calculated, advances: canAdvance };
+  const attacksUsed = attacker.activation.attacksUsed + 1;
+  // Revision 17 section 6.8: splash kills of own or allied units (the
+  // Bomb Chucker's friendly fire) earn no promotion credit.
+  const attackerKills =
+    attacker.kills +
+    (preview.defenderDies ? 1 : 0) +
+    preview.splash.filter(
+      (entry) =>
+        entry.dies &&
+        arePlayersHostileV7(
+          state,
+          actor,
+          requireValue(state.units.find((unit) => unit.id === entry.unitId))
+            .ownerId,
+        ),
+    ).length;
+  const defenderKills = defender.kills + (preview.attackerDies ? 1 : 0);
+  if (
+    !Number.isSafeInteger(attacksUsed) ||
+    !Number.isSafeInteger(attackerKills) ||
+    !Number.isSafeInteger(defenderKills)
+  )
+    throw new RangeError("INTEGER_OVERFLOW");
+  const pushDestination =
+    preview.push === "WILL_PUSH"
+      ? pushedDestinationV7(state, attacker, defender)
+      : null;
+  let attackerAfter: UnitStateV7 = {
+    ...attacker,
+    at: preview.advances ? defender.at : attacker.at,
+    // Revision 13 Lifesteal heals after both damages (0 unless a Vampire).
+    hp: attacker.hp - preview.damageToAttacker + preview.attackerHeal,
+    kills: attackerKills,
+    captureEligible: false,
+    activation: {
+      ...attacker.activation,
+      // The Dwarf revision section 8: a Hammerer's or a Mole's advance
+      // counts as moving (Dig In).
+      moved:
+        attacker.activation.moved ||
+        (preview.advances && unitRoleMechanicsV7(state, attacker).digsIn),
+      attacked: true,
+      attacksUsed,
+      inspired: false,
+      overrunActive: false,
+      escapeAvailable: preview.escapeAvailable,
+      // The Dwarf revision section 7.3: a Gunner with a second shot left
+      // still awaits orders.
+      handled: !preview.escapeAvailable && preview.attacksRemaining === 0,
+    },
+  };
+  let defenderAfter: UnitStateV7 = {
+    ...defender,
+    at: pushDestination ?? defender.at,
+    hp: defender.hp - preview.damageToDefender + preview.defenderHeal,
+    kills: defenderKills,
+    captureEligible:
+      pushDestination === null ? defender.captureEligible : false,
+  };
+  // Revision 19 Grow (section 5.2): a surviving Dinosaur unit grows at the
+  // moment its kill is credited, after the exchange's damage and Lifesteal
+  // and before the advance, the Push, and any chain reaction.
+  const growthEvents: DomainEventV7[] = [];
+  if (!preview.attackerDies)
+    attackerAfter = grownUnitV7(
+      state,
+      attacker.kills,
+      attackerAfter,
+      growthEvents,
+    );
+  if (!preview.defenderDies)
+    defenderAfter = grownUnitV7(
+      state,
+      defender.kills,
+      defenderAfter,
+      growthEvents,
+    );
+  const splashDamage = new Map(
+    preview.splash.map((entry) => [entry.unitId, entry.damage] as const),
+  );
+  let units = state.units
+    .map((unit) =>
+      unit.id === attacker.id
+        ? attackerAfter
+        : unit.id === defender.id
+          ? defenderAfter
+          : splashDamage.has(unit.id)
+            ? { ...unit, hp: unit.hp - (splashDamage.get(unit.id) ?? 0) }
+            : unit,
+    )
+    .filter((unit) => unit.hp > 0);
+  const defenseReason = destinationTile?.fieldDefense
+    ? attacker.role === "CATAPULT"
+      ? "CATAPULT"
+      : // The Ice Folk revision section 7.5: Trample, whatever survives.
+        attacker.form === "LAND" &&
+          unitRoleMechanicsV7(state, attacker).tramplesFieldDefense
+        ? "TRAMPLE"
+        : preview.inspiredApplied && distance === 1 && !preview.attackerDies
+          ? "INSPIRED"
+          : distance === 1 &&
+              !preview.attackerDies &&
+              attacker.form === "LAND" &&
+              ownerResearchedTechsV7(state, actor).includes("EXPLOSIVES")
+            ? "EXPLOSIVES"
+            : preview.advances
+              ? "OCCUPATION"
+              : null
+    : null;
+  let board =
+    defenseReason === null || destinationTile === undefined
+      ? state.board
+      : replaceTile(state, defender.at, {
+          ...destinationTile,
+          fieldDefense: false,
+        });
+  const advanceReveal = preview.advances
+    ? revealRadius(
+        { ...state, board, units } as GameStateV7,
+        actor,
+        defender.at,
+        unitSightRadiusAtV7(
+          { ...state, board, units } as GameStateV7,
+          attackerAfter,
+        ),
+      )
+    : null;
+  const visiblePlayers =
+    advanceReveal === null
+      ? state.players
+      : setExplored(state.players, actor, advanceReveal.explored);
+  const visibleState = {
+    ...state,
+    board,
+    players: visiblePlayers,
+    units,
+  } as GameStateV7;
+  // Revision 17 section 6.7: COMBAT_RESOLVED states the Overrun (Ram)
+  // continuation evaluated after any chain, so it is inserted below.
+  const events: DomainEventV7[] = [];
+  if (defenseReason !== null)
+    events.push({
+      kind: "FIELD_DEFENSE_DESTROYED",
+      at: defender.at,
+      reason: defenseReason,
+    });
+  // Revision 13 section 6.8 step 7: each death in order (defender, splash
+  // in (y, x, id) order, attacker) becomes an Infect rising when a Zombie
+  // killed a land-form victim, or may otherwise leave a Grave on its death
+  // tile before the attacker advances onto it.
+  let graves = state.graves;
+  let nextEntityId = state.nextEntityId;
+  const risings: UnitStateV7[] = [];
+  const infect = (
+    source: UnitStateV7,
+    victim: UnitStateV7,
+    cause: "ATTACK" | "RETALIATION",
+  ): void => {
+    const allocation = allocateUnitId(nextEntityId);
+    nextEntityId = allocation.nextEntityId;
+    const rising = recordInfectionV7(
+      state,
+      source,
+      victim,
+      cause,
+      allocation.id,
+      exhaustedActivation(),
+      events,
+    );
+    risings.push(rising);
+    units = [...units, rising];
+  };
+  // Revision 14 section 4.3: a bitten land-form victim that Infect did not
+  // convert rises as its biter's Zombie instead of leaving a Grave.
+  const died = (
+    victim: UnitStateV7,
+    cause: "ATTACK" | "SPLASH" | "RETALIATION" | "SHATTER",
+  ): void => {
+    const bite = biteOfV7(state, victim.id);
+    // The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift.
+    if (
+      bite === undefined ||
+      victim.form !== "LAND" ||
+      riftAtV7(state.board, victim.at)
+    ) {
+      // The Ice Folk revision section 5.5: a shattered unit leaves no
+      // Grave.
+      if (cause === "SHATTER")
+        events.push({ kind: "UNIT_DIED", unitId: victim.id, cause });
+      else graves = recordCombatDeathV7(state, graves, victim, cause, events);
+      return;
+    }
+    const allocation = allocateUnitId(nextEntityId);
+    nextEntityId = allocation.nextEntityId;
+    const rising = recordBittenRisingV7(
+      state,
+      bite,
+      victim,
+      cause,
+      allocation.id,
+      exhaustedActivation(),
+      events,
+    );
+    risings.push(rising);
+    units = [...units, rising];
+  };
+  if (preview.defenderInfected) infect(attacker, defender, "ATTACK");
+  else if (preview.defenderDies)
+    died(defender, preview.shatters ? "SHATTER" : "ATTACK");
+  for (const splash of preview.splash)
+    if (splash.dies)
+      died(
+        requireValue(state.units.find((unit) => unit.id === splash.unitId)),
+        "SPLASH",
+      );
+  if (preview.attackerInfected) infect(defender, attacker, "RETALIATION");
+  else if (preview.attackerDies) died(attacker, "RETALIATION");
+  // The Mind Control revision section 4.2: the controlled units of a Brain
+  // that just left the board are released right after its death events
+  // and before the advance, the Push, and any chain.
+  const release = releaseControlledV7(
+    units,
+    state.burrowed,
+    state.mindControlled,
+    state.players,
+    events,
+  );
+  units = [...release.units];
+  // Sections 5.3 and 6.2: the Shields the exchange spent, and the Cooling
+  // a full-power ray starts.
+  const shields = withShieldDamageV7(
+    state.shields,
+    new Map([
+      [defender.id, preview.defenderShieldDamage],
+      [attacker.id, preview.attackerShieldDamage],
+      ...preview.splash.map(
+        (entry) => [entry.unitId, entry.shieldDamage] as const,
+      ),
+    ]),
+  );
+  const cooling =
+    preview.coolingApplied && !preview.attackerDies
+      ? withFiredRayV7(state.cooling, attacker.id)
+      : state.cooling;
+  // Revision 14 sections 3.1 and 4.1: Plague and bites on the survivors.
+  const plagued = withPlaguedV7(
+    state.plagued,
+    preview.plagued.map((unitId) => ({ unitId, sourceUnitId: attacker.id })),
+  );
+  let bitten = state.bitten;
+  if (preview.defenderBitten)
+    bitten = withBittenV7(bitten, {
+      unitId: defender.id,
+      biterPlayerId: attacker.ownerId,
+      biterUnitId: attacker.id,
+    });
+  if (preview.attackerBitten)
+    bitten = withBittenV7(bitten, {
+      unitId: attacker.id,
+      biterPlayerId: defender.ownerId,
+      biterUnitId: defender.id,
+    });
+  events.push(...growthEvents);
+  // Revision 20 section 2.3: the Push, then the advance (after a kill) or
+  // the follow (a Charge! after a Push). Only a Charge! emits both.
+  if (pushDestination !== null)
+    events.push({
+      kind: "UNIT_PUSHED",
+      sourceUnitId: attacker.id,
+      targetUnitId: defender.id,
+      from: defender.at,
+      to: pushDestination,
+    });
+  if (preview.advances)
+    events.push({
+      kind: "UNIT_MOVED",
+      unitId: attacker.id,
+      path: [defender.at],
+    });
+  // Revision 17 section 6.7: the exploding units among the defender, the
+  // splash victims, and the attacker explode after the attack's deaths,
+  // risings, advance, and Push; Overrun (Ram) is evaluated afterwards.
+  const initialExplosions: {
+    readonly unit: UnitStateV7;
+    readonly cause: ExplosionCauseV7;
+  }[] = [];
+  // The Ice Folk revision section 5.5: a shattered unit never explodes.
+  if (
+    preview.defenderDies &&
+    !preview.shatters &&
+    isExplodingUnitV7(state, defender)
+  )
+    initialExplosions.push({ unit: defender, cause: "DEATH" });
+  for (const splash of preview.splash) {
+    const victim = requireValue(
+      state.units.find((unit) => unit.id === splash.unitId),
+    );
+    if (splash.dies && isExplodingUnitV7(state, victim))
+      initialExplosions.push({ unit: victim, cause: "DEATH" });
+  }
+  if (preview.attackerDies && isExplodingUnitV7(state, attacker))
+    initialExplosions.push({ unit: attacker, cause: "DEATH" });
+  const chain = resolveStateExplosionChainV7(
+    state,
+    {
+      units,
+      board,
+      graves,
+      nextEntityId,
+      bitten,
+      shields,
+      mindControlled: release.mindControlled,
+      burrowed: release.burrowed,
+    },
+    initialExplosions,
+    events,
+  );
+  units = [...chain.units];
+  board = chain.board;
+  graves = chain.graves;
+  nextEntityId = chain.nextEntityId;
+  risings.push(...chain.risings);
+  const survivor = units.find((unit) => unit.id === attacker.id);
+  const afterChainState = {
+    ...visibleState,
+    board,
+    units,
+  } as GameStateV7;
+  const overrunContinues =
+    rule.abilities.includes("OVERRUN") &&
+    preview.advances &&
+    !preview.attackerDies &&
+    survivor !== undefined &&
+    // The Mind Control revision: a controlled attacker released by the
+    // chain is no longer the actor's.
+    survivor.ownerId === actor &&
+    units.some(
+      (candidate) =>
+        candidate.id !== attacker.id &&
+        candidate.hp > 0 &&
+        arePlayersHostileV7(state, actor, candidate.ownerId) &&
+        chebyshev(defender.at, candidate.at) === 1 &&
+        isUnitVisibleToPlayerV7(afterChainState, actor, candidate),
+    );
+  if (overrunContinues && survivor !== undefined) {
+    attackerAfter = {
+      ...survivor,
+      activation: {
+        ...survivor.activation,
+        overrunActive: true,
+        handled: false,
+      },
+    };
+    units = units.map((unit) =>
+      unit.id === attackerAfter.id ? attackerAfter : unit,
+    );
+  }
+  const finalPreview = {
+    ...preview,
+    attacksRemaining:
+      overrunContinues || preview.attacksRemaining === 1 ? 1 : 0,
+    overrunAdvance: rule.abilities.includes("OVERRUN") && preview.advances,
+    overrunContinues,
+  };
+  events.unshift({ kind: "COMBAT_RESOLVED", preview: finalPreview });
+  // Revision 17 Plunder (sections 6.8 and 7.4): the attacker's owner is
+  // credited with the defender and splash deaths, the defender's owner with
+  // a retaliation death, and each exploding unit's owner with its blast's
+  // deaths; a victim that rises still counts as killed.
+  const plunder = plunderAwardsV7(state, visiblePlayers, [
+    ...(preview.defenderDies
+      ? [
+          {
+            creditedId: attacker.ownerId,
+            victimOwnerId: defender.ownerId,
+            victimUnitId: defender.id,
+          },
+        ]
+      : []),
+    ...preview.splash.flatMap((entry) =>
+      entry.dies
+        ? [
+            {
+              creditedId: attacker.ownerId,
+              victimOwnerId: requireValue(
+                state.units.find((unit) => unit.id === entry.unitId),
+              ).ownerId,
+              victimUnitId: entry.unitId,
+            },
+          ]
+        : [],
+    ),
+    ...(preview.attackerDies
+      ? [
+          {
+            creditedId: defender.ownerId,
+            victimOwnerId: attacker.ownerId,
+            victimUnitId: attacker.id,
+          },
+        ]
+      : []),
+    ...chain.credits,
+  ]);
+  events.push(...plunder.events);
+  let players = plunder.players;
+  if (preview.advances) {
+    if (advanceReveal !== null && advanceReveal.revealed.length)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: advanceReveal.revealed,
+      });
+  }
+  if (pushDestination !== null) {
+    const reveal = revealRadius(
+      { ...state, board, players, units } as GameStateV7,
+      defender.ownerId,
+      pushDestination,
+      unitSightRadiusAtV7(
+        { ...state, board, players, units } as GameStateV7,
+        defenderAfter,
+      ),
+    );
+    players = setExplored(players, defender.ownerId, reveal.explored);
+    if (reveal.revealed.length)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: defender.ownerId,
+        tiles: reveal.revealed,
+      });
+  }
+  for (const risen of risings) {
+    // Revision 13 section 5.4: a rising reveals its sight for its owner.
+    const risenState = { ...state, board, players, units } as GameStateV7;
+    const reveal = revealRadius(
+      risenState,
+      risen.ownerId,
+      risen.at,
+      unitSightRadiusAtV7(risenState, risen),
+    );
+    players = setExplored(players, risen.ownerId, reveal.explored);
+    if (reveal.revealed.length)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: risen.ownerId,
+        tiles: reveal.revealed,
+      });
+  }
+  const economy = recomputeLiveEconomyV7(
+    state,
+    { board, cities: state.cities, units },
+    state.populationContributions,
+  );
+  events.push(...economyAndGrowth(economy.changes));
+  return {
+    state: {
+      ...state,
+      board,
+      nextEntityId,
+      players,
+      cities: economy.cities,
+      units,
+      burrowed: chain.burrowed,
+      mindControlled: chain.mindControlled,
+      graves,
+      plagued,
+      bitten,
+      shields: chain.shields,
+      cooling,
+      populationContributions: economy.populationContributions,
+    },
+    events,
+  };
 }
 
 function supportCaptain(
@@ -5090,9 +5178,16 @@ function applyEndTurn(
     if (nextPlayer === undefined) return rejected(original, "INVALID_STATE");
     const round =
       nextIndex <= state.activeSeatIndex ? nextSafe(state.round) : state.round;
+    // Map curiosities (section 8.5): the neutral turn follows the last
+    // seat's turn of the round, before the next round's first Start Turn.
+    // A match without a Monster has none.
+    const neutral =
+      nextIndex <= state.activeSeatIndex && expired.monsters.length > 0
+        ? resolveNeutralTurnV7(expired, state.round)
+        : null;
     const advanced = resetTurnUnits(
       {
-        ...expired,
+        ...(neutral?.state ?? expired),
         activeSeatIndex: nextIndex,
         round,
       },
@@ -5154,6 +5249,7 @@ function applyEndTurn(
           cities: preview.cities,
         },
         { kind: "TURN_ENDED", playerId: actor },
+        ...(neutral?.events ?? []),
         turnStarted,
         ...started.events.slice(1),
         ...settlement.events,
@@ -5163,6 +5259,146 @@ function applyEndTurn(
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }
+}
+
+/**
+ * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 8.5):
+ * the neutral turn after the last seat's turn of `round`, inside the
+ * `END_TURN` that wraps the round. Each Monster on the board, in unit-ID
+ * order, has its activation reset and then attacks the weakest provoker it
+ * can reach (stepping first when it must) or wanders (the stateless draw);
+ * each attack is resolved with the ordinary exchange before the next
+ * Monster acts. Then each surviving Monster regenerates and its
+ * `provokedBy` is cleared. The caller adds the blockade and sea-network
+ * events of the whole `END_TURN`.
+ */
+function resolveNeutralTurnV7(
+  state: GameStateV7,
+  round: number,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const events: DomainEventV7[] = [{ kind: "NEUTRAL_TURN_STARTED", round }];
+  let current = state;
+  const replace = (unit: UnitStateV7): void => {
+    current = {
+      ...current,
+      units: current.units.map((candidate) =>
+        candidate.id === unit.id ? unit : candidate,
+      ),
+    };
+  };
+  for (const { unitId } of state.monsters) {
+    const entry = monsterEntryV7(current, unitId);
+    const found = current.units.find(
+      (unit) => unit.id === unitId && unit.hp > 0,
+    );
+    if (entry === undefined || found === undefined) continue;
+    // Step 2: reset its activation.
+    let monster: UnitStateV7 = { ...found, activation: freshActivationV7() };
+    replace(monster);
+    const facts = {
+      board: current.board,
+      units: current.units,
+      burrowed: current.burrowed,
+      treasureChests: current.treasureChests,
+    };
+    const choice = monsterAttackChoiceV7(facts, monster, entry);
+    if (choice === null) {
+      // Section 8.4: no reachable provoker; wander one step or stay.
+      const to = monsterWanderV7(
+        current.setup.seed,
+        round,
+        monster.id,
+        monsterStepsV7(facts, monster, entry.home),
+      );
+      monster = {
+        ...monster,
+        at: to ?? monster.at,
+        activation: {
+          ...monster.activation,
+          moved: to !== null,
+          movedPathLength: to === null ? 0 : 1,
+          handled: true,
+        },
+      };
+      replace(monster);
+      if (to !== null)
+        events.push({ kind: "UNIT_MOVED", unitId: monster.id, path: [to] });
+      continue;
+    }
+    if (choice.step !== null) {
+      monster = {
+        ...monster,
+        at: choice.step,
+        activation: { ...monster.activation, moved: true, movedPathLength: 1 },
+      };
+      replace(monster);
+      events.push({
+        kind: "UNIT_MOVED",
+        unitId: monster.id,
+        path: [choice.step],
+      });
+    }
+    const target = requireValue(
+      current.units.find((unit) => unit.id === choice.target.id),
+    );
+    const exchange = resolveAttackExchangeV7(
+      current,
+      NEUTRAL_OWNER_ID_V7,
+      monster,
+      target,
+      unitRoleRuleV7(current, monster),
+      chebyshev(monster.at, target.at),
+    );
+    current = exchange.state;
+    events.push(...exchange.events);
+  }
+  // Step 3: regeneration and the cleared provocation list.
+  const pruned = prunedMonstersV7(current);
+  const regenerated = new Map<number, number>();
+  for (const entry of pruned.monsters) {
+    const unit = requireValue(
+      pruned.units.find((candidate) => candidate.id === entry.unitId),
+    );
+    const amount = Math.min(MONSTER_REGENERATION_V7, unit.maxHp - unit.hp);
+    if (amount <= 0) continue;
+    regenerated.set(unit.id, unit.hp + amount);
+    events.push({
+      kind: "MONSTER_REGENERATED",
+      unitId: unit.id,
+      amount,
+      hpAfter: unit.hp + amount,
+    });
+  }
+  current = {
+    ...pruned,
+    units: pruned.units.map((unit) => {
+      const hp = regenerated.get(unit.id);
+      return hp === undefined ? unit : { ...unit, hp };
+    }),
+    monsters: pruned.monsters.map((entry) =>
+      entry.provokedBy.length === 0 ? entry : { ...entry, provokedBy: [] },
+    ),
+  };
+  events.push({ kind: "NEUTRAL_TURN_ENDED", round });
+  return { state: current, events };
+}
+
+/** A unit activation with nothing done yet (a Start Turn reset). */
+function freshActivationV7(): UnitStateV7["activation"] {
+  return {
+    moved: false,
+    movedPathLength: 0,
+    attacked: false,
+    attacksUsed: 0,
+    tendedThisTurn: false,
+    inspired: false,
+    overrunActive: false,
+    escapeAvailable: false,
+    recovered: false,
+    captured: false,
+    handled: false,
+    specialActed: false,
+  };
 }
 
 function validateTileContext(
@@ -5329,7 +5565,26 @@ function applyWail(
     graves = chain.graves;
     nextEntityId = chain.nextEntityId;
     risings.push(...chain.risings);
-    const plunder = plunderAwardsV7(state, state.players, chain.credits);
+    // Map curiosities (section 8.7): the Banshee's owner is credited with a
+    // Monster the Wail kills (its bounty). Other Wail kills stay uncredited
+    // (an Undead seat never has Plunder).
+    const plunder = plunderAwardsV7(state, state.players, [
+      ...targets.flatMap((entry) => {
+        const victim = requireValue(
+          state.units.find((unit) => unit.id === entry.unitId),
+        );
+        return entry.dies && isNeutralOwnerV7(victim.ownerId)
+          ? [
+              {
+                creditedId: actor,
+                victimOwnerId: victim.ownerId,
+                victimUnitId: victim.id,
+              },
+            ]
+          : [];
+      }),
+      ...chain.credits,
+    ]);
     events.push(...plunder.events);
     let players = plunder.players;
     for (const risen of risings) {
@@ -5610,8 +5865,15 @@ function plunderAwardsV7(
   readonly events: readonly DomainEventV7[];
 } {
   const kills = new Map<PlayerId, number>();
+  const bounties: { readonly playerId: PlayerId; readonly unitId: UnitId }[] =
+    [];
   for (const death of deaths) {
+    // Map curiosities (section 8.7): kills by the neutral Monster are
+    // credited to no player.
+    if (isNeutralOwnerV7(death.creditedId)) continue;
     const credited = requirePlayer(state, death.creditedId);
+    if (isNeutralOwnerV7(death.victimOwnerId))
+      bounties.push({ playerId: death.creditedId, unitId: death.victimUnitId });
     if (
       technologyCapabilitiesV7(credited.researchedTechs, credited.faction)
         .plunderCoins > 0 &&
@@ -5619,7 +5881,7 @@ function plunderAwardsV7(
     )
       kills.set(death.creditedId, (kills.get(death.creditedId) ?? 0) + 1);
   }
-  if (kills.size === 0) return { players, events: [] };
+  if (kills.size === 0 && bounties.length === 0) return { players, events: [] };
   const events: DomainEventV7[] = [];
   let next = players;
   for (const [playerId, count] of [...kills].sort(([a], [b]) => a - b)) {
@@ -5634,6 +5896,20 @@ function plunderAwardsV7(
         : item,
     );
     events.push({ kind: "PLUNDER_AWARDED", playerId, kills: count, coins });
+  }
+  // Map curiosities (section 8.7): the bounty, right after Plunder.
+  for (const bounty of bounties) {
+    next = next.map((item) =>
+      item.id === bounty.playerId
+        ? { ...item, coins: nextSafeBy(item.coins, MONSTER_BOUNTY_V7) }
+        : item,
+    );
+    events.push({
+      kind: "MONSTER_BOUNTY_AWARDED",
+      playerId: bounty.playerId,
+      unitId: bounty.unitId,
+      coins: MONSTER_BOUNTY_V7,
+    });
   }
   return { players: next, events };
 }
@@ -6274,10 +6550,14 @@ function checked(state: GameStateV7): GameStateV7 {
   // The Ice Folk revision: drop the Chill entries of units that left it.
   // The Dwarf revision: drop the per-turn entries of units that left the
   // board.
+  // Map curiosities: drop the entries of Monsters that left the board and
+  // the provokers no longer on it.
   const result = parseGameStateV7(
-    prunedDwarfV7(
-      prunedIceFolkV7(
-        prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+    prunedMonstersV7(
+      prunedDwarfV7(
+        prunedIceFolkV7(
+          prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+        ),
       ),
     ),
   );

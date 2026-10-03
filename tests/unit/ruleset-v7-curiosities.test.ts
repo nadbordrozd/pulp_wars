@@ -246,12 +246,15 @@ describe("the Curiosities setup option (section 3)", () => {
 
 /** The 7r34 initial state, apart from the identity and the new keys. */
 function normalizedInitialState(state: GameStateV7): string {
+  // The Monster (`pulp_wars-737.3`) adds the `monsters` list, empty here.
   const {
     curiosities: _curiosities,
+    monsters: _monsters,
     rulesetId: _rulesetId,
     setup,
     ...rest
   } = state;
+  if (_monsters.length !== 0) throw new Error("a Monster with the option off");
   const {
     curiosities: _option,
     rulesetId: _setupRulesetId,
@@ -306,7 +309,7 @@ describe("generation (section 4)", () => {
   }, 120_000);
 
   it("on and off generate the same board, cities, units, entity IDs, chests, turn order, and PRNG; placement obeys section 4", () => {
-    const seen = new Set<CuriosityKindV7>();
+    const seen = new Set<CuriosityKindV7 | "MONSTER">();
     const counts: Record<number, number[]> = {};
     for (const mapType of MAP_TYPES)
       for (const [width, aiCount] of [
@@ -343,24 +346,44 @@ describe("generation (section 4)", () => {
           if (mapType === "DRY_LAND")
             expect(placed.some((entry) => entry.kind === "WRECK")).toBe(false);
           (counts[width] ??= []).push(placed.length);
-          // The initial states differ only in the option and the list.
+          const markers = placed.filter((entry) => entry.kind !== "MONSTER");
+          const lair = placed.find((entry) => entry.kind === "MONSTER");
+          // The initial states differ only in the option, the lists, the
+          // Monster unit (the last initial entity), and the next entity ID.
           const stateOn = createInitialMapStateV7(on);
           const stateOff = createInitialMapStateV7(off);
           if (!stateOn.ok || !stateOff.ok) throw new Error("state");
-          expect(stateOn.state.curiosities).toEqual(placed);
+          expect(stateOn.state.curiosities).toEqual(markers);
+          expect(stateOn.state.monsters.map((entry) => entry.home)).toEqual(
+            lair === undefined ? [] : [lair.at],
+          );
+          const monsterIds = new Set(
+            stateOn.state.monsters.map((entry) => entry.unitId),
+          );
+          expect(
+            stateOn.state.monsters.every(
+              (entry) => entry.unitId === stateOff.state.nextEntityId,
+            ),
+          ).toBe(true);
           expect({
             ...stateOn.state,
             setup: { ...stateOn.state.setup, curiosities: false },
             curiosities: [],
+            monsters: [],
+            units: stateOn.state.units.filter(
+              (unit) => !monsterIds.has(unit.id),
+            ),
+            nextEntityId: stateOff.state.nextEntityId,
           }).toEqual(stateOff.state);
           // The same setup gives the same curiosities.
           const again = generateInitialMapV7(on);
           if (!again.ok) throw new Error("again");
-          expect(again.map.curiosities).toEqual(placed);
+          expect(again.map.curiosities).toEqual(markers);
+          expect(again.map.monsterHome).toEqual(lair?.at ?? null);
         }
     // Rarity sanity (section 4.2): small boards usually none, large boards
     // at most two, and every kind appears somewhere.
-    expect([...seen].sort()).toEqual([...CURIOSITY_KINDS_V7].sort());
+    expect([...seen].sort()).toEqual(["MONSTER", ...CURIOSITY_KINDS_V7].sort());
     const mean = (values: readonly number[]) =>
       values.reduce((sum, value) => sum + value, 0) / values.length;
     expect(Math.max(...(counts[11] ?? []))).toBeLessThanOrEqual(1);
@@ -1175,9 +1198,10 @@ describe("public view, projection, events, and the state schema", () => {
 
 describe("saves and replays", () => {
   it("round-trips a generated match with curiosities, a Shrine claimed by Normal, through the replay and the save", () => {
-    // 16 x 16 Dry Land seed 10, Human v Goblin: one Shrine, which the
-    // Normal AI claims inside 30 rounds.
-    const setup = generatedSetup(10, "DRY_LAND", 16, 1, true, [
+    // 16 x 16 Dry Land seed 4, Human v Goblin: one Shrine, which the
+    // Normal AI claims inside 30 rounds (seed 10 until the Monster joined
+    // the kind draw at 7r36).
+    const setup = generatedSetup(4, "DRY_LAND", 16, 1, true, [
       "ORIGINAL",
       "GOBLIN",
     ]);

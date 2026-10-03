@@ -11,23 +11,27 @@ import { compareCoordsV7, sameCoordV7 } from "./schema";
 import {
   CURIOSITY_KINDS_V7,
   isAfloatFormV7,
+  isNeutralOwnerV7,
   type BoardStateV7,
   type CoordV7,
-  type CuriosityKindV7,
   type CuriosityV7,
   type GameStateV7,
   type MapTypeV7,
   type MatchSetupV7,
+  type MonsterStateV7,
   type TerrainIdV7,
   type UnitStateV7,
 } from "./types";
+import { tileOccupiedV7 } from "./units";
 
 /**
- * Map curiosities (`pulp_wars-737.2`, docs/product/RULESET_7_MAP_CURIOSITIES.md):
- * the rare neutral Fountain of Youth, Shrine, and Sunken Wreck. This module
- * holds their placement in map generation (section 4) and the rule helpers
- * that Start Turn (the Fountain) and `MOVE` (the Shrine and the Wreck) call.
- * The roaming Monster (section 8) belongs to a later revision.
+ * Map curiosities (`pulp_wars-737.2` and `pulp_wars-737.3`,
+ * docs/product/RULESET_7_MAP_CURIOSITIES.md): the rare neutral Fountain of
+ * Youth, Shrine, Sunken Wreck, and the Giant Spider (the Monster). This
+ * module holds their placement in map generation (section 4), the rule
+ * helpers that Start Turn (the Fountain) and `MOVE` (the Shrine and the
+ * Wreck) call, and the Monster's movement, targeting, wander draw, and
+ * provocation helpers that the neutral turn of `END_TURN` uses (section 8).
  */
 
 /** Section 5: the HP a Fountain heals at its occupant's Start Turn. */
@@ -45,17 +49,29 @@ export const CURIOSITY_CAPITAL_DISTANCE_V7 = 5;
 export const CURIOSITY_CAPITAL_SPREAD_V7 = 4;
 /** Section 4.3 rule 5: minimum Chebyshev distance between curiosities. */
 export const CURIOSITY_SPACING_V7 = 5;
+
 /**
- * Section 4.2: the kind weights, in the frozen kind order. The Monster
- * (weight 3, drawn first) joins with its own revision.
+ * Section 4.2: the kinds placement draws from, in the frozen draw order:
+ * the Monster (`pulp_wars-737.3`, a unit with its own list, never a tile
+ * marker) first, then the three tile markers of {@link CURIOSITY_KINDS_V7}.
  */
-export const CURIOSITY_WEIGHTS_V7: Readonly<Record<CuriosityKindV7, number>> =
-  Object.freeze({ FOUNTAIN: 3, SHRINE: 2, WRECK: 2 });
+export const CURIOSITY_PLACEMENT_KINDS_V7 = Object.freeze([
+  "MONSTER",
+  ...CURIOSITY_KINDS_V7,
+] as const);
+export type CuriosityPlacementKindV7 =
+  (typeof CURIOSITY_PLACEMENT_KINDS_V7)[number];
+
+/** Section 4.2: the kind weights (Monster 3, Fountain 3, Shrine 2, Wreck 2). */
+export const CURIOSITY_WEIGHTS_V7: Readonly<
+  Record<CuriosityPlacementKindV7, number>
+> = Object.freeze({ MONSTER: 3, FOUNTAIN: 3, SHRINE: 2, WRECK: 2 });
 
 /** The terrains a kind may stand on (section 4.4). */
 const CURIOSITY_TERRAINS_V7: Readonly<
-  Record<CuriosityKindV7, readonly TerrainIdV7[]>
+  Record<CuriosityPlacementKindV7, readonly TerrainIdV7[]>
 > = Object.freeze({
+  MONSTER: ["GRASS", "FOREST", "MOUNTAIN"],
   FOUNTAIN: ["GRASS"],
   SHRINE: ["GRASS", "FOREST"],
   WRECK: ["SHALLOW_WATER", "DEEP_WATER"],
@@ -63,11 +79,35 @@ const CURIOSITY_TERRAINS_V7: Readonly<
 
 /** Whether a curiosity of `kind` may stand on `terrain` (section 4.4). */
 export function curiosityTerrainLegalV7(
-  kind: CuriosityKindV7,
+  kind: CuriosityPlacementKindV7,
   terrain: TerrainIdV7,
 ): boolean {
   return CURIOSITY_TERRAINS_V7[kind].includes(terrain);
 }
+
+// ---------------------------------------------------------- Monster ---
+
+/** Section 8.2: the Giant Spider's maximum HP. */
+export const MONSTER_HP_V7 = 24;
+/** Section 8.2: its Attack in half-units (3). */
+export const MONSTER_ATTACK2_V7 = 6;
+/** Section 8.2: its Defense in half-units (2). */
+export const MONSTER_DEFENSE2_V7 = 4;
+/** Section 8.3: its area is every tile within this Chebyshev distance. */
+export const MONSTER_HOME_RADIUS_V7 = 2;
+/** Section 8.5: HP it regenerates at the end of each neutral turn. */
+export const MONSTER_REGENERATION_V7 = 4;
+/** Section 8.7: the Coins its credited killer's owner gains. */
+export const MONSTER_BOUNTY_V7 = 10;
+/** Section 4.4: the smallest board width that may have a Monster. */
+export const MONSTER_MINIMUM_WIDTH_V7 = 16;
+/** Section 4.4: minimum Chebyshev distance from home to every center. */
+export const MONSTER_CENTER_DISTANCE_V7 = 5;
+/**
+ * Section 4.4: of the 24 tiles around home, at least this many are Grass,
+ * Forest, or Mountain.
+ */
+export const MONSTER_LAND_AROUND_HOME_V7 = 12;
 
 /**
  * Section 3: whether a setup's map can carry curiosities: the option is on
@@ -136,7 +176,8 @@ export interface CuriositySiteContextV7 {
  * The connectivity facts every site check shares, computed once per board:
  * the eight-connected land components (Rifts excluded), the land tiles
  * reachable from a capital without Mountains (the treasure-chest route),
- * and the eight-connected water components.
+ * the eight-connected water components, and (for the Monster, section 4.4)
+ * the cut tiles of the land graph with and without Mountains.
  */
 interface CuriosityConnectivityV7 {
   readonly land: readonly number[];
@@ -146,6 +187,11 @@ interface CuriosityConnectivityV7 {
   readonly capitalLand: readonly number[];
   /** Per water component: the land components it touches orthogonally. */
   readonly waterTouches: ReadonlyMap<number, ReadonlySet<number>>;
+  /**
+   * Section 4.4: the cut tiles (articulation points) of the eight-connected
+   * land graph (Rifts excluded), and of the same graph without Mountains.
+   */
+  readonly cutTiles: ReadonlySet<number>;
 }
 
 function connectivityV7(
@@ -201,6 +247,10 @@ function connectivityV7(
       touched.add(near);
     }
   });
+  const cutTiles = new Set<number>([
+    ...articulationTilesV7(board, isLand),
+    ...articulationTilesV7(board, lowland),
+  ]);
   return {
     land,
     lowlandFromCapital,
@@ -209,7 +259,77 @@ function connectivityV7(
       (capital) => land[capital.y * board.width + capital.x] ?? -1,
     ),
     waterTouches,
+    cutTiles,
   };
+}
+
+/**
+ * Section 4.4: the cut tiles of the eight-connected graph of `member`
+ * tiles: removing one splits its component (Tarjan's articulation points,
+ * iterative).
+ */
+function articulationTilesV7(
+  board: BoardStateV7,
+  member: (index: number) => boolean,
+): readonly number[] {
+  const count = board.tiles.length;
+  const order = new Array<number>(count).fill(-1);
+  const low = new Array<number>(count).fill(0);
+  const cut = new Set<number>();
+  let time = 0;
+  for (let root = 0; root < count; root += 1) {
+    if (order[root] !== -1 || !member(root)) continue;
+    order[root] = time;
+    low[root] = time;
+    time += 1;
+    let rootChildren = 0;
+    const stack: { node: number; parent: number; next: number[] }[] = [
+      {
+        node: root,
+        parent: -1,
+        next: eightNeighbours(board, root).filter(member),
+      },
+    ];
+    while (stack.length > 0) {
+      const frame = stack[stack.length - 1] as (typeof stack)[number];
+      const child = frame.next.shift();
+      if (child === undefined) {
+        stack.pop();
+        const parent = stack[stack.length - 1];
+        if (parent !== undefined) {
+          low[parent.node] = Math.min(
+            low[parent.node] as number,
+            low[frame.node] as number,
+          );
+          if (
+            parent.parent !== -1 &&
+            (low[frame.node] as number) >= (order[parent.node] as number)
+          )
+            cut.add(parent.node);
+        }
+        continue;
+      }
+      if (child === frame.parent) continue;
+      if (order[child] !== -1) {
+        low[frame.node] = Math.min(
+          low[frame.node] as number,
+          order[child] as number,
+        );
+        continue;
+      }
+      order[child] = time;
+      low[child] = time;
+      time += 1;
+      if (frame.node === root) rootChildren += 1;
+      stack.push({
+        node: child,
+        parent: frame.node,
+        next: eightNeighbours(board, child).filter(member),
+      });
+    }
+    if (rootChildren > 1) cut.add(root);
+  }
+  return [...cut].sort((left, right) => left - right);
 }
 
 /**
@@ -219,13 +339,20 @@ function connectivityV7(
 function siteLegalV7(
   context: CuriositySiteContextV7,
   connectivity: CuriosityConnectivityV7,
-  kind: CuriosityKindV7,
-  placed: readonly CuriosityV7[],
+  kind: CuriosityPlacementKindV7,
+  placed: readonly PlacedCuriosityV7[],
   at: CoordV7,
 ): boolean {
   const { board } = context;
-  // Rule 1: off the edge ring.
-  if (at.x < 1 || at.y < 1 || at.x > board.width - 2 || at.y > board.height - 2)
+  // Rule 1: off the edge ring. Section 4.4: the Monster's whole area is on
+  // the board.
+  const margin = kind === "MONSTER" ? MONSTER_HOME_RADIUS_V7 : 1;
+  if (
+    at.x < margin ||
+    at.y < margin ||
+    at.x > board.width - 1 - margin ||
+    at.y > board.height - 1 - margin
+  )
     return false;
   const index = at.y * board.width + at.x;
   const tile = board.tiles[index];
@@ -241,10 +368,15 @@ function siteLegalV7(
     context.treasureChests.some((chest) => sameCoordV7(chest, at))
   )
     return false;
-  // Rule 3: 3 or more from every settlement center.
+  // Rule 3: 3 or more from every settlement center; section 4.4: the
+  // Monster's home 5 or more (its whole area stays 3 or more away).
+  const centerDistance =
+    kind === "MONSTER"
+      ? MONSTER_CENTER_DISTANCE_V7
+      : CURIOSITY_CENTER_DISTANCE_V7;
   if (
     [...context.capitals, ...context.villages].some(
-      (center) => chebyshevV7(center, at) < CURIOSITY_CENTER_DISTANCE_V7,
+      (center) => chebyshevV7(center, at) < centerDistance,
     )
   )
     return false;
@@ -273,14 +405,54 @@ function siteLegalV7(
     );
   }
   // Rule 6: a shared landmass reached from a capital without Mountains, or
-  // a neutral island (reached by sea).
+  // a neutral island (reached by sea). A Monster's Mountain home is reached
+  // when a tile next to it is (implementation note, section 17).
   const landmass = connectivity.land[index] ?? -1;
   if (landmass < 0) return false;
   const capitalsHere = connectivity.capitalLand.filter(
     (other) => other === landmass,
   ).length;
   if (capitalsHere === 1) return false;
-  return capitalsHere === 0 || connectivity.lowlandFromCapital.has(index);
+  const reached =
+    capitalsHere === 0 ||
+    connectivity.lowlandFromCapital.has(index) ||
+    (kind === "MONSTER" &&
+      tile.terrain === "MOUNTAIN" &&
+      eightNeighbours(board, index).some((near) =>
+        connectivity.lowlandFromCapital.has(near),
+      ));
+  if (!reached) return false;
+  return kind !== "MONSTER" || monsterAreaLegalV7(board, connectivity, at);
+}
+
+/**
+ * Section 4.4, the Monster's area: at least
+ * {@link MONSTER_LAND_AROUND_HOME_V7} of the 24 tiles around home are Grass,
+ * Forest, or Mountain, and no tile within {@link MONSTER_HOME_RADIUS_V7} of
+ * home is a cut tile of the land graph, with or without Mountains, so the
+ * Monster can never block a corridor. (The area is on the board: the caller
+ * checked the margin.)
+ */
+function monsterAreaLegalV7(
+  board: BoardStateV7,
+  connectivity: CuriosityConnectivityV7,
+  home: CoordV7,
+): boolean {
+  let land = 0;
+  for (let dy = -MONSTER_HOME_RADIUS_V7; dy <= MONSTER_HOME_RADIUS_V7; dy += 1)
+    for (
+      let dx = -MONSTER_HOME_RADIUS_V7;
+      dx <= MONSTER_HOME_RADIUS_V7;
+      dx += 1
+    ) {
+      const index = (home.y + dy) * board.width + home.x + dx;
+      if (connectivity.cutTiles.has(index)) return false;
+      if (dx === 0 && dy === 0) continue;
+      const terrain = board.tiles[index]?.terrain;
+      if (terrain === "GRASS" || terrain === "FOREST" || terrain === "MOUNTAIN")
+        land += 1;
+    }
+  return land >= MONSTER_LAND_AROUND_HOME_V7;
 }
 
 /**
@@ -290,10 +462,12 @@ function siteLegalV7(
  */
 export function curiositySitesV7(
   context: CuriositySiteContextV7,
-  kind: CuriosityKindV7,
-  placed: readonly CuriosityV7[] = [],
+  kind: CuriosityPlacementKindV7,
+  placed: readonly PlacedCuriosityV7[] = [],
 ): readonly CoordV7[] {
   if (kind === "WRECK" && context.mapType === "DRY_LAND") return [];
+  if (kind === "MONSTER" && context.board.width < MONSTER_MINIMUM_WIDTH_V7)
+    return [];
   if (placed.some((curiosity) => curiosity.kind === kind)) return [];
   const connectivity = connectivityV7(context);
   return context.board.tiles
@@ -301,26 +475,41 @@ export function curiositySitesV7(
     .filter((at) => siteLegalV7(context, connectivity, kind, placed, at));
 }
 
+/** A placed curiosity of any kind, the Monster's home included. */
+export interface PlacedCuriosityV7 {
+  readonly kind: CuriosityPlacementKindV7;
+  readonly at: CoordV7;
+}
+
+/**
+ * The result of placement: the tile markers (sorted by (y, x)) and the
+ * Monster's home, if a Monster was placed.
+ */
+export interface CuriosityPlacementV7 {
+  readonly curiosities: readonly CuriosityV7[];
+  readonly monsterHome: CoordV7 | null;
+}
+
 /**
  * Section 4: places the curiosities of a generated board. The target count
  * comes from {@link curiosityTargetCountV7}; each curiosity in turn draws
  * one kind by weight among the eligible kinds (not yet placed, allowed by
- * the board, with a legal site), in {@link CURIOSITY_KINDS_V7} order, then
- * one of its legal sites uniformly in (y, x) order. With no eligible kind
- * placement stops. The board is never changed or rejected.
+ * the board, with a legal site), in {@link CURIOSITY_PLACEMENT_KINDS_V7}
+ * order, then one of its legal sites uniformly in (y, x) order. With no
+ * eligible kind placement stops. The board is never changed or rejected.
  */
 export function placeCuriositiesV7(
   seed: number,
   context: CuriositySiteContextV7,
-): readonly CuriosityV7[] {
+): CuriosityPlacementV7 {
   const target = curiosityTargetCountV7(
     context.board.width,
     curiosityRandomStateV7(seed),
   );
   let random = target.random;
-  const placed: CuriosityV7[] = [];
+  const placed: PlacedCuriosityV7[] = [];
   while (placed.length < target.count) {
-    const eligible = CURIOSITY_KINDS_V7.flatMap((kind) => {
+    const eligible = CURIOSITY_PLACEMENT_KINDS_V7.flatMap((kind) => {
       const sites = curiositySitesV7(context, kind, placed);
       return sites.length === 0 ? [] : [{ kind, sites }];
     });
@@ -344,7 +533,300 @@ export function placeCuriositiesV7(
       at: chosen.sites[siteDraw.value] as CoordV7,
     });
   }
-  return [...placed].sort((left, right) => compareCoordsV7(left.at, right.at));
+  const curiosities: CuriosityV7[] = [];
+  for (const entry of placed)
+    if (entry.kind !== "MONSTER")
+      curiosities.push({ kind: entry.kind, at: entry.at });
+  return {
+    curiosities: curiosities.sort((left, right) =>
+      compareCoordsV7(left.at, right.at),
+    ),
+    monsterHome: placed.find((entry) => entry.kind === "MONSTER")?.at ?? null,
+  };
+}
+
+// ------------------------------------------------------ Monster rules ---
+
+/** The board facts the Monster's movement and targeting read (section 8). */
+export interface MonsterBoardFactsV7 {
+  readonly board: BoardStateV7;
+  readonly units: readonly UnitStateV7[];
+  readonly burrowed: GameStateV7["burrowed"];
+  readonly treasureChests: readonly CoordV7[];
+}
+
+/** The `monsters` entry of `unitId`, if any. */
+export function monsterEntryV7(
+  state: Pick<GameStateV7, "monsters">,
+  unitId: number,
+): MonsterStateV7 | undefined {
+  return state.monsters.length === 0
+    ? undefined
+    : state.monsters.find((entry) => entry.unitId === unitId);
+}
+
+/**
+ * Section 8.3: the Monster's area, every tile on the board within
+ * {@link MONSTER_HOME_RADIUS_V7} of `home`, in (y, x) order.
+ */
+export function monsterAreaV7(
+  board: Pick<BoardStateV7, "width" | "height">,
+  home: CoordV7,
+): readonly CoordV7[] {
+  const area: CoordV7[] = [];
+  for (
+    let y = home.y - MONSTER_HOME_RADIUS_V7;
+    y <= home.y + MONSTER_HOME_RADIUS_V7;
+    y += 1
+  )
+    for (
+      let x = home.x - MONSTER_HOME_RADIUS_V7;
+      x <= home.x + MONSTER_HOME_RADIUS_V7;
+      x += 1
+    )
+      if (x >= 0 && y >= 0 && x < board.width && y < board.height)
+        area.push({ x, y });
+  return area;
+}
+
+/**
+ * Section 8.3: whether the Monster whose home is `home` may stand on `at`:
+ * on the board, in its area, Grass, Forest, or Mountain (never a Rift or
+ * water), 3 or more from every settlement center, with no unit (other than
+ * `exceptUnitId`), mound, or treasure chest.
+ */
+export function monsterStandableV7(
+  facts: MonsterBoardFactsV7,
+  home: CoordV7,
+  at: CoordV7,
+  exceptUnitId?: UnitStateV7["id"],
+): boolean {
+  if (chebyshevV7(home, at) > MONSTER_HOME_RADIUS_V7) return false;
+  const { board } = facts;
+  if (at.x < 0 || at.y < 0 || at.x >= board.width || at.y >= board.height)
+    return false;
+  const tile = board.tiles[at.y * board.width + at.x];
+  if (
+    tile === undefined ||
+    tile.site !== null ||
+    (tile.terrain !== "GRASS" &&
+      tile.terrain !== "FOREST" &&
+      tile.terrain !== "MOUNTAIN")
+  )
+    return false;
+  for (const center of board.tiles)
+    if (
+      center.site !== null &&
+      chebyshevV7(center.at, at) < CURIOSITY_CENTER_DISTANCE_V7
+    )
+      return false;
+  return (
+    !tileOccupiedV7(facts, at, exceptUnitId) &&
+    !facts.treasureChests.some((chest) => sameCoordV7(chest, at))
+  );
+}
+
+/**
+ * Section 8.3: the tiles the Monster on `at` may step to, the standable
+ * Chebyshev neighbours of `at`, in (y, x) order.
+ */
+export function monsterStepsV7(
+  facts: MonsterBoardFactsV7,
+  monster: Pick<UnitStateV7, "id" | "at">,
+  home: CoordV7,
+): readonly CoordV7[] {
+  const steps: CoordV7[] = [];
+  for (let dy = -1; dy <= 1; dy += 1)
+    for (let dx = -1; dx <= 1; dx += 1) {
+      if (dx === 0 && dy === 0) continue;
+      const at = { x: monster.at.x + dx, y: monster.at.y + dy };
+      if (monsterStandableV7(facts, home, at, monster.id)) steps.push(at);
+    }
+  return steps;
+}
+
+/**
+ * Section 8.4: the provokers of a Monster at its turn: every unit on the
+ * board (never another neutral unit) that stands next to it, in any form,
+ * or is listed in its `provokedBy`, sorted by unit ID.
+ */
+export function monsterProvokersV7(
+  facts: Pick<MonsterBoardFactsV7, "units">,
+  monster: Pick<UnitStateV7, "id" | "at">,
+  provokedBy: readonly number[],
+): readonly UnitStateV7[] {
+  return facts.units.filter(
+    (unit) =>
+      unit.hp > 0 &&
+      unit.id !== monster.id &&
+      !isNeutralOwnerV7(unit.ownerId) &&
+      (chebyshevV7(unit.at, monster.at) === 1 || provokedBy.includes(unit.id)),
+  );
+}
+
+/**
+ * Section 8.4: the attack a Monster makes this turn, or null when no
+ * provoker is in reach. Candidates are the provokers adjacent now or
+ * adjacent to a tile it may step to; the target is the one with the lowest
+ * HP, ties broken by the lowest unit ID (a Shield does not count). When the
+ * target is not adjacent, `step` is the first step tile, in (y, x) order,
+ * next to it.
+ */
+export function monsterAttackChoiceV7(
+  facts: MonsterBoardFactsV7,
+  monster: Pick<UnitStateV7, "id" | "at">,
+  entry: Pick<MonsterStateV7, "home" | "provokedBy">,
+): { readonly target: UnitStateV7; readonly step: CoordV7 | null } | null {
+  const steps = monsterStepsV7(facts, monster, entry.home);
+  const candidates = monsterProvokersV7(
+    facts,
+    monster,
+    entry.provokedBy,
+  ).filter(
+    (unit) =>
+      chebyshevV7(unit.at, monster.at) === 1 ||
+      steps.some((step) => chebyshevV7(step, unit.at) === 1),
+  );
+  const target = [...candidates].sort(
+    (left, right) => left.hp - right.hp || left.id - right.id,
+  )[0];
+  if (target === undefined) return null;
+  if (chebyshevV7(target.at, monster.at) === 1) return { target, step: null };
+  const step = steps.find((at) => chebyshevV7(at, target.at) === 1);
+  return step === undefined ? null : { target, step };
+}
+
+/**
+ * Section 8.4: the stateless wander draw of a Monster with no reachable
+ * provoker. The options are "stay" (null) followed by its step tiles in
+ * (y, x) order, each equally likely, drawn by one `nextBounded` on a stream
+ * seeded from the setup seed, the round, and the unit ID. It never touches
+ * the match PRNG and needs no stored state.
+ */
+export function monsterWanderV7(
+  seed: number,
+  round: number,
+  unitId: number,
+  steps: readonly CoordV7[],
+): CoordV7 | null {
+  const options: (CoordV7 | null)[] = [null, ...steps];
+  const draw = nextBounded(
+    randomState(seedFromText(`pulp-wars-monster:${seed}:${round}:${unitId}`)),
+    options.length,
+  );
+  return options[draw.value] ?? null;
+}
+
+/**
+ * Section 10.2: drops the `monsters` entries of Monsters that left the
+ * board and, from every `provokedBy`, the units no longer on it. Returns
+ * `state` itself when nothing changes.
+ */
+export function prunedMonstersV7(state: GameStateV7): GameStateV7 {
+  if (state.monsters.length === 0) return state;
+  const onBoard = new Set(
+    state.units.filter((unit) => unit.hp > 0).map((unit) => unit.id),
+  );
+  let changed = false;
+  const monsters: MonsterStateV7[] = [];
+  for (const entry of state.monsters) {
+    const unit = state.units.find((candidate) => candidate.id === entry.unitId);
+    if (unit === undefined || unit.hp <= 0 || !isNeutralOwnerV7(unit.ownerId)) {
+      changed = true;
+      continue;
+    }
+    const provokedBy = entry.provokedBy.filter((id) => onBoard.has(id));
+    if (provokedBy.length !== entry.provokedBy.length) changed = true;
+    monsters.push(
+      provokedBy.length === entry.provokedBy.length
+        ? entry
+        : { ...entry, provokedBy },
+    );
+  }
+  return changed ? { ...state, monsters } : state;
+}
+
+/**
+ * Section 8.4: the units that dealt a Monster damage in `events`: the
+ * attacker of an `ATTACK` that hit it (as the target, by splash, Pierce, or
+ * Sweep), a Banshee whose Wail hit it, a Gyrocopter whose bomb hit it, and
+ * a Mole whose eruption hit it. Kabooms and death blasts are made by units
+ * that are dead by then, and Plague never reaches it, so they record
+ * nobody. Keyed by the Monster's unit ID.
+ */
+export function monsterDamageSourcesV7(
+  monsterIds: ReadonlySet<number>,
+  events: readonly DomainEventV7[],
+): ReadonlyMap<number, ReadonlySet<UnitStateV7["id"]>> {
+  const sources = new Map<number, Set<UnitStateV7["id"]>>();
+  const add = (monsterId: number, source: UnitStateV7["id"]): void => {
+    if (!monsterIds.has(monsterId) || monsterIds.has(source)) return;
+    let entry = sources.get(monsterId);
+    if (entry === undefined) {
+      entry = new Set();
+      sources.set(monsterId, entry);
+    }
+    entry.add(source);
+  };
+  for (const event of events) {
+    if (event.kind === "COMBAT_RESOLVED") {
+      const preview = event.preview;
+      if (preview.damageToDefender + preview.defenderShieldDamage > 0)
+        add(preview.targetUnitId, preview.attackerId);
+      for (const entry of preview.splash)
+        if (entry.damage + entry.shieldDamage > 0)
+          add(entry.unitId, preview.attackerId);
+    } else if (event.kind === "WAIL_RESOLVED") {
+      for (const entry of event.results)
+        if (entry.damage + entry.shieldDamage > 0)
+          add(entry.unitId, event.unitId);
+    } else if (event.kind === "UNIT_BOMBED") {
+      if (event.damage + event.shieldDamage > 0)
+        add(event.targetUnitId, event.unitId);
+    } else if (event.kind === "UNIT_SURFACED") {
+      for (const entry of event.results)
+        if (entry.damage + entry.shieldDamage > 0)
+          add(entry.unitId, event.unitId);
+    }
+  }
+  return sources;
+}
+
+/**
+ * Section 8.4: adds every unit on the board that damaged a Monster in
+ * `events` to its `provokedBy` (sorted, without duplicates). Returns
+ * `state` itself when nothing changes.
+ */
+export function withMonsterProvocationsV7(
+  state: GameStateV7,
+  events: readonly DomainEventV7[],
+): GameStateV7 {
+  if (state.monsters.length === 0) return state;
+  const sources = monsterDamageSourcesV7(
+    new Set(state.monsters.map((entry) => entry.unitId)),
+    events,
+  );
+  if (sources.size === 0) return state;
+  const onBoard = new Set(
+    state.units
+      .filter((unit) => unit.hp > 0 && !isNeutralOwnerV7(unit.ownerId))
+      .map((unit) => unit.id),
+  );
+  let changed = false;
+  const monsters = state.monsters.map((entry) => {
+    const added = [...(sources.get(entry.unitId) ?? [])].filter(
+      (id) => onBoard.has(id) && !entry.provokedBy.includes(id),
+    );
+    if (added.length === 0) return entry;
+    changed = true;
+    return {
+      ...entry,
+      provokedBy: [...entry.provokedBy, ...added].sort(
+        (left, right) => left - right,
+      ),
+    };
+  });
+  return changed ? { ...state, monsters } : state;
 }
 
 // ------------------------------------------------------------ Rules ---

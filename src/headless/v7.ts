@@ -12,6 +12,7 @@ import { nextBounded, nextUint32, randomState } from "../engine/random/random";
 import type { PlayerId, UnitId } from "../engine/model/ids";
 import { canonicalHash, canonicalJson } from "../engine/replay/canonical";
 import {
+  NEUTRAL_KIND_V7,
   ORIGINAL_BASELINE_V5_TREE,
   TECHNOLOGY_BRANCH_IDS_V7,
   unitFactionV7,
@@ -67,6 +68,7 @@ import {
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  isNeutralOwnerV7,
   type AchievementIdV7,
   type AiCountV7,
   type BoardSizeV7,
@@ -115,7 +117,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r35";
+  readonly rulesetId: "pulp-wars-poc-7r36";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -124,6 +126,19 @@ export interface HeadlessMetricsV7 {
    * the kinds the board started with, in (y, x) order of their tiles.
    */
   readonly curiosityKinds: readonly CuriosityKindV7[];
+  /**
+   * Map curiosities (section 8, `pulp_wars-737.3`): the Giant Spider of the
+   * match, if one was placed: the damage and kills it dealt (counted for no
+   * role or faction), the bounties paid for it, and the round it was slain
+   * (null while it lives or when none was placed).
+   */
+  readonly monsters: {
+    readonly placed: number;
+    damageDealt: number;
+    kills: number;
+    bountyCoins: number;
+    slainRound: number | null;
+  };
   finalPrngHash: string;
   commandHash: string;
   eventHash: string;
@@ -979,7 +994,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r35",
+              rulesetId: "pulp-wars-poc-7r36",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -1094,7 +1109,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r35",
+    rulesetId: "pulp-wars-poc-7r36",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1102,6 +1117,13 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
     }),
     postGenerationPrngHash: canonicalHash(state.random),
     curiosityKinds: state.curiosities.map((curiosity) => curiosity.kind),
+    monsters: {
+      placed: state.monsters.length,
+      damageDealt: 0,
+      kills: 0,
+      bountyCoins: 0,
+      slainRound: null,
+    },
     finalPrngHash: "",
     commandHash: "",
     eventHash: "",
@@ -1554,6 +1576,8 @@ function recordEventsV7(
       metrics.factionRoles[faction].trained[event.role] += 1;
       metrics.factionRoles[faction].trainingCoins[event.role] += event.cost;
     }
+    if (event.kind === "MONSTER_BOUNTY_AWARDED")
+      metrics.monsters.bountyCoins += event.coins;
     if (event.kind === "COMBAT_RESOLVED") {
       const preview = event.preview;
       const attacker = before.units.find(
@@ -1575,6 +1599,7 @@ function recordEventsV7(
         metrics.undead.splashKills += splashKills;
         if (
           attacker.role === "CATAPULT" &&
+          !isNeutralOwnerV7(attacker.ownerId) &&
           unitKind(before, attacker) === "UNDEAD"
         ) {
           metrics.undead.lichSplashDamage += splashDamage;
@@ -1723,7 +1748,9 @@ function recordEventsV7(
       const unit = allOwnedUnitsV7(before).find(
         (item) => item.id === removedUnitId,
       );
-      if (unit !== undefined) {
+      if (unit !== undefined && isNeutralOwnerV7(unit.ownerId))
+        metrics.monsters.slainRound = before.round;
+      else if (unit !== undefined) {
         metrics.roles.losses[unit.role] += 1;
         metrics.factionRoles[unitKind(before, unit)].losses[unit.role] += 1;
       }
@@ -2201,9 +2228,13 @@ function unitKind(
   state: GameStateV7,
   unit: Pick<GameStateV7["units"][number], "id" | "ownerId">,
 ): FactionIdV7 {
-  return state.players.some((player) => player.id === unit.ownerId)
+  // Map curiosities (section 10.5): a player-only reader; every caller skips
+  // the neutral Monster first (its numbers belong to no faction).
+  if (isNeutralOwnerV7(unit.ownerId)) throw new RangeError("NEUTRAL_UNIT");
+  const kind = state.players.some((player) => player.id === unit.ownerId)
     ? unitFactionV7(state, unit)
     : "ORIGINAL";
+  return kind === NEUTRAL_KIND_V7 ? "ORIGINAL" : kind;
 }
 
 function ownerFaction(state: GameStateV7, playerId: PlayerId): FactionIdV7 {
@@ -2222,6 +2253,13 @@ function creditDamage(
   damage: number,
   kills: number,
 ): void {
+  // Map curiosities: the neutral Monster's damage and kills belong to no
+  // role or faction (they are counted in `metrics.monsters`).
+  if (isNeutralOwnerV7(dealer.ownerId)) {
+    metrics.monsters.damageDealt += damage;
+    metrics.monsters.kills += kills;
+    return;
+  }
   const faction = metrics.factionRoles[unitKind(before, dealer)];
   metrics.roles.damage[dealer.role] += damage;
   metrics.roles.kills[dealer.role] += kills;

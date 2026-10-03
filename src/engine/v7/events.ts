@@ -820,6 +820,37 @@ export type DomainEventV7 =
     }
   | {
       /**
+       * Map curiosities (section 8.5): the neutral turn of the wilds after
+       * the last seat's turn of `round`, inside the `END_TURN` that ends the
+       * round. Every Monster acts between the two events; public to every
+       * viewer (they say only that the wilds took their turn).
+       */
+      readonly kind: "NEUTRAL_TURN_STARTED" | "NEUTRAL_TURN_ENDED";
+      readonly round: number;
+    }
+  | {
+      /**
+       * Map curiosities (section 8.5): the Monster `unitId` regenerated
+       * `amount` (1 to 4) to `hpAfter` at the end of the neutral turn.
+       */
+      readonly kind: "MONSTER_REGENERATED";
+      readonly unitId: UnitId;
+      readonly amount: number;
+      readonly hpAfter: number;
+    }
+  | {
+      /**
+       * Map curiosities (section 8.7): `playerId` was credited with the death
+       * of the Monster `unitId` and gained the bounty `coins` (10). Owner
+       * only, like Plunder.
+       */
+      readonly kind: "MONSTER_BOUNTY_AWARDED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly coins: 10;
+    }
+  | {
+      /**
        * Map curiosities (section 6): `unitId` of `playerId` ended a Move on
        * the Shrine at `at` and claimed it; the `UNIT_PROMOTED` of its
        * Promotion follows, and the Shrine is gone.

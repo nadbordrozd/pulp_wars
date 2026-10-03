@@ -34,7 +34,12 @@ import {
   isSafeIntegerV7,
   parseCoordV7,
 } from "./schema";
-import { FOUNTAIN_HEAL_V7, WRECK_COINS_V7 } from "./curiosities";
+import {
+  FOUNTAIN_HEAL_V7,
+  MONSTER_BOUNTY_V7,
+  MONSTER_REGENERATION_V7,
+  WRECK_COINS_V7,
+} from "./curiosities";
 
 const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   TURN_STARTED: ["kind", "playerId", "coins"],
@@ -44,10 +49,13 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   WINDMILL_HEALING_RESOLVED: ["kind", "playerId", "cityId", "at", "results"],
   FOUNTAIN_HEALED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
   UNITS_REGENERATED: ["kind", "playerId", "results"],
+  MONSTER_REGENERATED: ["kind", "unitId", "amount", "hpAfter"],
   SHIELDS_RECHARGED: ["kind", "playerId", "results"],
   INCOME_AWARDED: ["kind", "playerId", "totalCoins", "cities"],
   INCOME_PREVIEWED: ["kind", "playerId", "totalCoins", "cities"],
   TURN_ENDED: ["kind", "playerId"],
+  NEUTRAL_TURN_STARTED: ["kind", "round"],
+  NEUTRAL_TURN_ENDED: ["kind", "round"],
   TECH_RESEARCHED: ["kind", "playerId", "tech", "cost"],
   FRUIT_HARVESTED: [
     "kind",
@@ -330,6 +338,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   UNIT_DISBANDED: ["kind", "playerId", "unitId", "role", "coinDelta"],
   SPOILS_AWARDED: ["kind", "playerId", "cityId", "coins"],
   PLUNDER_AWARDED: ["kind", "playerId", "kills", "coins"],
+  MONSTER_BOUNTY_AWARDED: ["kind", "playerId", "unitId", "coins"],
   UNIT_RECOVERED: ["kind", "unitId", "amount", "automatic"],
   UNIT_WAITED: ["kind", "playerId", "unitId"],
   SHRINE_CLAIMED: ["kind", "playerId", "unitId", "at"],
@@ -722,6 +731,18 @@ function validPayload(
       );
     case "UNITS_REGENERATED":
       return id(e.playerId) && healingResults(e.results);
+    // Map curiosities (section 8.5).
+    case "MONSTER_REGENERATED":
+      return (
+        id(e.unitId) &&
+        pos(e.amount) &&
+        (e.amount as number) <= MONSTER_REGENERATION_V7 &&
+        pos(e.hpAfter) &&
+        (e.hpAfter as number) > (e.amount as number)
+      );
+    case "NEUTRAL_TURN_STARTED":
+    case "NEUTRAL_TURN_ENDED":
+      return pos(e.round);
     case "SHIELDS_RECHARGED":
       return id(e.playerId) && shieldResults(e.results);
     case "INCOME_AWARDED":
@@ -1159,6 +1180,9 @@ function validPayload(
       return id(e.playerId) && id(e.cityId) && e.coins === 2;
     case "PLUNDER_AWARDED":
       return id(e.playerId) && pos(e.kills) && e.coins === e.kills;
+    // Map curiosities (section 8.7).
+    case "MONSTER_BOUNTY_AWARDED":
+      return id(e.playerId) && id(e.unitId) && e.coins === MONSTER_BOUNTY_V7;
     case "UNIT_RECOVERED":
       return id(e.unitId) && pos(e.amount) && typeof e.automatic === "boolean";
     case "UNIT_WAITED":
