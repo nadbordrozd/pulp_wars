@@ -410,9 +410,10 @@ const ROSTER = [
     "FIGHTER",
     null,
     2,
-    10,
+    // The coarse balance (`pulp_wars-7g3.7`): 9 HP and Defense 1.5.
+    9,
     4,
-    4,
+    3,
     1,
     1,
     1,
@@ -979,8 +980,8 @@ describe("Ice Folk starting units and substitutions (section 10.12)", () => {
           form: "LAND",
           at: capital.at,
           homeCityId: capital.id,
-          hp: 10,
-          maxHp: 10,
+          hp: 9,
+          maxHp: 9,
         });
         expect(unitRoleRuleV7(state, must(own[0])).label).toBe("Yeti");
       });
@@ -1001,7 +1002,7 @@ describe("Ice Folk starting units and substitutions (section 10.12)", () => {
     expect(yetis[0]).toMatchObject({
       role: "FIGHTER",
       at: militiaCity.at,
-      hp: 10,
+      hp: 9,
       activation: { moved: true, attacked: true, handled: true },
     });
     const giant = rewardStateV7("JUGGERNAUT", "ICE_FOLK");

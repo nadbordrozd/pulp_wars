@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r26`, for all five playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r27`, for all five playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), and Martian
 (`MARTIAN`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
@@ -39,9 +39,10 @@ development flag. Every number below was checked against the engine code at
 `pulp-wars-poc-7r25`; `pulp-wars-poc-7r24` (`pulp_wars-7g3.3`) registers the
 Ice Folk overlay and changes no rule of the five factions, and
 `pulp-wars-poc-7r26` (`pulp_wars-9s0.2`) changes only Pangea map generation
-(the coast ring, [section 2.3](#23-map-types)).
+(the coast ring, [section 2.3](#23-map-types)), and `pulp-wars-poc-7r27`
+(`pulp_wars-7g3.7`) changes only the Ice Folk Yeti (9 HP, Defense 1.5).
 
-**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r26` also
+**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r27` also
 registers a sixth faction, `ICE_FOLK`, whose rules are in the
 [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (engine implemented by
 `pulp_wars-7g3.3` at `pulp-wars-poc-7r24`; its Normal AI and UI are in
@@ -97,7 +98,7 @@ placeholder-art plan, and Rift rules for a terrain that is not in the game;
 the values here are current. Where a document and the code
 disagreed, the code's behavior is the rule and is stated below;
 [Known discrepancies](#22-known-discrepancies) lists the open items as of
-`pulp-wars-poc-7r26`.
+`pulp-wars-poc-7r27`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague, and
@@ -149,10 +150,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                      |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Ruleset                                    | `pulp-wars-poc-7r26`                                                                                                                                                                                               |
+| Ruleset                                    | `pulp-wars-poc-7r27`                                                                                                                                                                                               |
 | Game-state schema                          | `7`                                                                                                                                                                                                                |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                |
-| Browser autosave                           | `pulpWars.save.v7r26.current`                                                                                                                                                                                      |
+| Browser autosave                           | `pulpWars.save.v7r27.current`                                                                                                                                                                                      |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                         |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK` (the last is the pending Ice Folk overlay)                                                                                                       |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`                                                                          |
@@ -189,8 +190,10 @@ separate [Ruleset 6](RULESET_6.md) route.
   the `UNITS_CHILLED` event. `pulp_wars-t6s.5` (`7r25`) changed only the
   Colossus Defense. `pulp_wars-9s0.2` (`7r26`) changed only Pangea map
   generation (the coast ring) and no shape; a stored state keeps its board.
+  `pulp_wars-7g3.7` (`7r27`) changed only the Ice Folk Yeti's HP and
+  Defense.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r25.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r26.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -3925,40 +3928,41 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
 
 ## 21. Revision history
 
-| Revision | Ruleset ID           | Main changes                                                                                                                                                                                        | Source                                                        |
-| -------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| 3        | `pulp-wars-poc-7r3`  | Original-faction baseline: four land branches, growth rewards, achievements, combat kernel                                                                                                          | [RULESET_7.md](RULESET_7.md)                                  |
-| 4        | `pulp-wars-poc-7r4`  | Regional biomes; Ore returns; Mine 5/+2; Forge +1 per Mine                                                                                                                                          | [revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)           |
-| 5        | `pulp-wars-poc-7r5`  | Explorer achievement; Monument placement flow                                                                                                                                                       | [revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md)            |
-| 6        | `pulp-wars-poc-7r6`  | Map types, water, Fish, Pearls, Ports, Naval branch, transport, Patrol Boat, Battleship                                                                                                             | [revision 6](RULESET_7_REVISION_6_WATER_NAVAL.md)             |
-| 7        | `pulp-wars-poc-7r7`  | Neutral Roads, automatic embark, Battleship splash, flat fortification levels, Field Defense; removed Saboteur                                                                                      | [revision 7](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md) |
-| 8        | `pulp-wars-poc-7r8`  | Adjacent shared processor contributors                                                                                                                                                              | [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)      |
-| 9        | `pulp-wars-poc-7r9`  | 23-node Human tree, Captain, Knight, Overrun, Land Grant, Shipyard, Market move, separate land/sea trade                                                                                            | [revision 9](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)        |
-| 10       | `pulp-wars-poc-7r10` | Road movement without capital connection; city-center spawning; full-turn Fortify                                                                                                                   | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)  |
-| 10 (fix) | `pulp-wars-poc-7r11` | An occupied center blocks land training; displacement applies only to reward units                                                                                                                  | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)  |
-| 11       | `pulp-wars-poc-7r11` | One city action per turn; Windmill healing; Road population; Commerce ×2 Market; Ore on Drill; Pillage on Raiding; tactical AI                                                                      | [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)     |
-| 12       | `pulp-wars-poc-7r12` | No starting technology; free first tier-1 research; Fruit always visible, Fertile Ground on Gathering; resources kept under improvements; AI opener; Raider Escape                                  | this document                                                 |
-| 13       | `pulp-wars-poc-7r13` | Undead faction (per-seat factions, roster, Graves, Restless, Frenzy, Raise Dead, Devour, Infect, Lifesteal, Wail, Lich splash)                                                                      | [revision 13](RULESET_7_REVISION_13_UNDEAD.md)                |
-| 14       | `pulp-wars-poc-7r14` | Plague (Lich) and Bitten (Zombie); Tend cures; unanswered Vampire; Lich Attack 3; +1 village; level income cap 5; Commerce no longer doubles Markets                                                | [revision 14](RULESET_7_REVISION_14_BALANCE.md)               |
-| 15       | `pulp-wars-poc-7r15` | Plague lasts three owner turns and spreads only on the first; Zombie 18 HP                                                                                                                          | [revision 15](RULESET_7_REVISION_15_BALANCE.md)               |
-| 16a      | `pulp-wars-poc-7r16` | Orthogonal Shallow Water (25% minimum); capital growth guarantee and `CAPITAL_GROWTH`; Normal AI growth-first opening                                                                               | [revision 16](RULESET_7_REVISION_16.md)                       |
-| 16b      | `pulp-wars-poc-7r16` | Patrol Boat and embarked Move 2; landing costs one movement point; landing preview                                                                                                                  | [revision 16](RULESET_7_REVISION_16.md)                       |
-| 16c      | `pulp-wars-poc-7r16` | Research tiers 5+1/7+3/12+5 per extra city; level income cap 4; Market cap 3                                                                                                                        | [revision 16](RULESET_7_REVISION_16.md)                       |
-| 17       | `pulp-wars-poc-7r17` | Goblin faction: roster, Warrens, Gang Up, Kaboom, death blasts and chains, friendly-fire bombs, Plunder, WAAAGH!, Troll regeneration; `END_TURN` blockade events                                    | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)               |
-| 17       | `pulp-wars-poc-7r17` | `pulp_wars-0ao.7` tuning: one starting Goblin; Goblin Attack 1.5, Defense 0.5, Kaboom 5; death blasts 2/4/4; Goblin-only Normal AI changes                                                          | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)               |
-| 17 (fix) | `pulp-wars-poc-7r17` | `pulp_wars-0ao.15`: landing ends the activation for every faction (no Attack, Kaboom, Move, or Disband after landing)                                                                               | [revision 16](RULESET_7_REVISION_16.md)                       |
-| 18       | `pulp-wars-poc-7r18` | Movement (`pulp_wars-6gd.2`): a Move passes through the mover's own units and never ends on one; the Road half cost depends only on the tile being left                                             | [revision 18](RULESET_7_REVISION_18.md)                       |
-| 18       | `pulp-wars-poc-7r18` | Showcase (`pulp_wars-6gd.3`): the fixed 16 x 16 `SHOWCASE` map type with three developed cities, every technology, and one unit of every role per seat                                              | [revision 18](RULESET_7_REVISION_18.md)                       |
-| 19       | `pulp-wars-poc-7r19` | Dinosaur faction (`pulp_wars-c87.2`–`c87.7`): roster, slots, Eggs, Shaman Hatch, Nesting, Grow, Wild, Acid, Armoured, Stampede, treasure Raptor                                                     | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)             |
-| 19       | `pulp-wars-poc-7r19` | `pulp_wars-c87.8` interim tuning: Caveman 12 HP; one-slot Triceratops hatching in one turn; Forest Stampede lanes; Dinosaur-only AI changes                                                         | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)             |
-| 20       | `pulp-wars-poc-7r20` | `pulp_wars-0hi.2`: Charge! replaces Stampede (Triceratops Move 2, 20 HP, 2 slots, hatch 2); T-Rex 14, hatch 4; Nesting slot; Wallbreaker; full heal                                                 | [revision 20](RULESET_7_REVISION_20.md)                       |
-| 21       | `pulp-wars-poc-7r21` | `pulp_wars-9s0.4`: Conqueror, Land Baron, Sea Dog, and Slayer achievements (seven entitlements per seat)                                                                                            | [revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md)          |
-| Martian  | `pulp-wars-poc-7r22` | Martian faction (`pulp_wars-t6s.2` engine): roster, Shields, Force Field(s), heat rays, Cooling, Pierce, Disintegrator, Stride, Flying, self-launch, Beam Down, Mind Control, Thralls, Tractor Beam | [Martian overlay](RULESET_7_MARTIANS.md)                      |
-| 20 (bal) | `pulp-wars-poc-7r23` | `pulp_wars-0hi.3` coarse Dry Land balance: Human Fighter, Raider, and Marksman 12 HP, Guard 17; Caveman 10                                                                                          | [revision 20](RULESET_7_REVISION_20.md#63-tuning-record)      |
-| Martian  | `pulp-wars-poc-7r23` | `pulp_wars-t6s.4` Martian UI (setup offers Martians; `t6s.6` production art) and `t6s.3` Martian Normal AI, no identity change                                                                      | [Martian overlay](RULESET_7_MARTIANS.md)                      |
-| —        | `pulp-wars-poc-7r24` | `pulp_wars-7g3.3`: Ice Folk faction engine, not offered in setup (AI and UI pending); **not folded** into this document                                                                             | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                     |
-| Martian  | `pulp-wars-poc-7r25` | `pulp_wars-t6s.5` coarse Dry Land Martian balance: Colossus Defense 2.5                                                                                                                             | [Martian balance](../validation/RULESET_7_MARTIAN_BALANCE.md) |
-| —        | `pulp-wars-poc-7r26` | `pulp_wars-9s0.2`: the Pangea coast ring (no land on the edge ring; Shallow circumnavigation; 59.5–72% land); other map types unchanged                                                             | [section 2.3](#23-map-types)                                  |
+| Revision | Ruleset ID           | Main changes                                                                                                                                                                                        | Source                                                          |
+| -------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 3        | `pulp-wars-poc-7r3`  | Original-faction baseline: four land branches, growth rewards, achievements, combat kernel                                                                                                          | [RULESET_7.md](RULESET_7.md)                                    |
+| 4        | `pulp-wars-poc-7r4`  | Regional biomes; Ore returns; Mine 5/+2; Forge +1 per Mine                                                                                                                                          | [revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)             |
+| 5        | `pulp-wars-poc-7r5`  | Explorer achievement; Monument placement flow                                                                                                                                                       | [revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md)              |
+| 6        | `pulp-wars-poc-7r6`  | Map types, water, Fish, Pearls, Ports, Naval branch, transport, Patrol Boat, Battleship                                                                                                             | [revision 6](RULESET_7_REVISION_6_WATER_NAVAL.md)               |
+| 7        | `pulp-wars-poc-7r7`  | Neutral Roads, automatic embark, Battleship splash, flat fortification levels, Field Defense; removed Saboteur                                                                                      | [revision 7](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md)   |
+| 8        | `pulp-wars-poc-7r8`  | Adjacent shared processor contributors                                                                                                                                                              | [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)        |
+| 9        | `pulp-wars-poc-7r9`  | 23-node Human tree, Captain, Knight, Overrun, Land Grant, Shipyard, Market move, separate land/sea trade                                                                                            | [revision 9](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)          |
+| 10       | `pulp-wars-poc-7r10` | Road movement without capital connection; city-center spawning; full-turn Fortify                                                                                                                   | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
+| 10 (fix) | `pulp-wars-poc-7r11` | An occupied center blocks land training; displacement applies only to reward units                                                                                                                  | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
+| 11       | `pulp-wars-poc-7r11` | One city action per turn; Windmill healing; Road population; Commerce ×2 Market; Ore on Drill; Pillage on Raiding; tactical AI                                                                      | [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)       |
+| 12       | `pulp-wars-poc-7r12` | No starting technology; free first tier-1 research; Fruit always visible, Fertile Ground on Gathering; resources kept under improvements; AI opener; Raider Escape                                  | this document                                                   |
+| 13       | `pulp-wars-poc-7r13` | Undead faction (per-seat factions, roster, Graves, Restless, Frenzy, Raise Dead, Devour, Infect, Lifesteal, Wail, Lich splash)                                                                      | [revision 13](RULESET_7_REVISION_13_UNDEAD.md)                  |
+| 14       | `pulp-wars-poc-7r14` | Plague (Lich) and Bitten (Zombie); Tend cures; unanswered Vampire; Lich Attack 3; +1 village; level income cap 5; Commerce no longer doubles Markets                                                | [revision 14](RULESET_7_REVISION_14_BALANCE.md)                 |
+| 15       | `pulp-wars-poc-7r15` | Plague lasts three owner turns and spreads only on the first; Zombie 18 HP                                                                                                                          | [revision 15](RULESET_7_REVISION_15_BALANCE.md)                 |
+| 16a      | `pulp-wars-poc-7r16` | Orthogonal Shallow Water (25% minimum); capital growth guarantee and `CAPITAL_GROWTH`; Normal AI growth-first opening                                                                               | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 16b      | `pulp-wars-poc-7r16` | Patrol Boat and embarked Move 2; landing costs one movement point; landing preview                                                                                                                  | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 16c      | `pulp-wars-poc-7r16` | Research tiers 5+1/7+3/12+5 per extra city; level income cap 4; Market cap 3                                                                                                                        | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 17       | `pulp-wars-poc-7r17` | Goblin faction: roster, Warrens, Gang Up, Kaboom, death blasts and chains, friendly-fire bombs, Plunder, WAAAGH!, Troll regeneration; `END_TURN` blockade events                                    | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
+| 17       | `pulp-wars-poc-7r17` | `pulp_wars-0ao.7` tuning: one starting Goblin; Goblin Attack 1.5, Defense 0.5, Kaboom 5; death blasts 2/4/4; Goblin-only Normal AI changes                                                          | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
+| 17 (fix) | `pulp-wars-poc-7r17` | `pulp_wars-0ao.15`: landing ends the activation for every faction (no Attack, Kaboom, Move, or Disband after landing)                                                                               | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 18       | `pulp-wars-poc-7r18` | Movement (`pulp_wars-6gd.2`): a Move passes through the mover's own units and never ends on one; the Road half cost depends only on the tile being left                                             | [revision 18](RULESET_7_REVISION_18.md)                         |
+| 18       | `pulp-wars-poc-7r18` | Showcase (`pulp_wars-6gd.3`): the fixed 16 x 16 `SHOWCASE` map type with three developed cities, every technology, and one unit of every role per seat                                              | [revision 18](RULESET_7_REVISION_18.md)                         |
+| 19       | `pulp-wars-poc-7r19` | Dinosaur faction (`pulp_wars-c87.2`–`c87.7`): roster, slots, Eggs, Shaman Hatch, Nesting, Grow, Wild, Acid, Armoured, Stampede, treasure Raptor                                                     | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
+| 19       | `pulp-wars-poc-7r19` | `pulp_wars-c87.8` interim tuning: Caveman 12 HP; one-slot Triceratops hatching in one turn; Forest Stampede lanes; Dinosaur-only AI changes                                                         | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
+| 20       | `pulp-wars-poc-7r20` | `pulp_wars-0hi.2`: Charge! replaces Stampede (Triceratops Move 2, 20 HP, 2 slots, hatch 2); T-Rex 14, hatch 4; Nesting slot; Wallbreaker; full heal                                                 | [revision 20](RULESET_7_REVISION_20.md)                         |
+| 21       | `pulp-wars-poc-7r21` | `pulp_wars-9s0.4`: Conqueror, Land Baron, Sea Dog, and Slayer achievements (seven entitlements per seat)                                                                                            | [revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md)            |
+| Martian  | `pulp-wars-poc-7r22` | Martian faction (`pulp_wars-t6s.2` engine): roster, Shields, Force Field(s), heat rays, Cooling, Pierce, Disintegrator, Stride, Flying, self-launch, Beam Down, Mind Control, Thralls, Tractor Beam | [Martian overlay](RULESET_7_MARTIANS.md)                        |
+| 20 (bal) | `pulp-wars-poc-7r23` | `pulp_wars-0hi.3` coarse Dry Land balance: Human Fighter, Raider, and Marksman 12 HP, Guard 17; Caveman 10                                                                                          | [revision 20](RULESET_7_REVISION_20.md#63-tuning-record)        |
+| Martian  | `pulp-wars-poc-7r23` | `pulp_wars-t6s.4` Martian UI (setup offers Martians; `t6s.6` production art) and `t6s.3` Martian Normal AI, no identity change                                                                      | [Martian overlay](RULESET_7_MARTIANS.md)                        |
+| —        | `pulp-wars-poc-7r24` | `pulp_wars-7g3.3`: Ice Folk faction engine, not offered in setup (AI and UI pending); **not folded** into this document                                                                             | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                       |
+| Martian  | `pulp-wars-poc-7r25` | `pulp_wars-t6s.5` coarse Dry Land Martian balance: Colossus Defense 2.5                                                                                                                             | [Martian balance](../validation/RULESET_7_MARTIAN_BALANCE.md)   |
+| —        | `pulp-wars-poc-7r26` | `pulp_wars-9s0.2`: the Pangea coast ring (no land on the edge ring; Shallow circumnavigation; 59.5–72% land); other map types unchanged                                                             | [section 2.3](#23-map-types)                                    |
+| —        | `pulp-wars-poc-7r27` | `pulp_wars-7g3.7` coarse Dry Land Ice Folk balance: Yeti 9 HP, Defense 1.5; **not folded** into this document                                                                                       | [Ice Folk balance](../validation/RULESET_7_ICE_FOLK_BALANCE.md) |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -4143,12 +4147,12 @@ the code's behavior is stated:
 
 ## 22. Known discrepancies
 
-No rule discrepancy is open: as of `pulp-wars-poc-7r26` the rules in this
+No rule discrepancy is open: as of `pulp-wars-poc-7r27` the rules in this
 document match the code for the five playable factions, including the
 Dinosaur faction of revisions 19 and 20, the achievements of revision 21,
 and the Martian faction of the Martian overlay.
 
-**Pending overlay in the code.** The engine at `pulp-wars-poc-7r26` also
+**Pending overlay in the code.** The engine at `pulp-wars-poc-7r27` also
 contains the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`,
 `7r24`), which this document does not describe: the `ICE_FOLK`
 faction and `ICE_FOLK_BASELINE_V1` tree, the commands `THROW_BOLAS` and

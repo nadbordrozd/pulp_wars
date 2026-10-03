@@ -30,11 +30,17 @@
  * with a Martian seat (`MHUG`, `DMHU`, `GDMH`, `UGDM`), and the Martian
  * section 16.2 telemetry (`MatrixEntry.martian`, `summary.martian`).
  *
+ * The Ice Folk balance (`pulp_wars-7g3.7`) adds the Ice Folk pairings `IH`,
+ * `HI`, `IU`, `UI`, `IG`, `GI`, `ID`, `DI`, `IM`, `MI`, and `II`, and a
+ * compact Ice Folk section 16.2 telemetry (`MatrixEntry.iceFolk`,
+ * `summary.iceFolk`). The other summaries leave the Ice Folk pairings out of
+ * their references.
+ *
  * Usage:
  *   npm run balance:ruleset7-undead -- [--seeds 30] [--multi-seeds 4]
  *     [--sizes 11,14] [--maps dry-land,pangea,continents,archipelago,lakes]
  *     [--pairings HU,UH,UU,HH,GH,HG,GU,UG,GG,DH,HD,DU,UD,DG,GD,DD,
- *       MH,HM,MU,UM,MG,GM,MD,DM,MM,HUHU,UHUH,GHUG,HUGH,UGHU,HUGD,DHUG,GDHU,UGDH,
+ *       MH,HM,MU,UM,MG,GM,MD,DM,MM,IH,HI,IU,UI,IG,GI,ID,DI,IM,MI,II,HUHU,UHUH,GHUG,HUGH,UGHU,HUGD,DHUG,GDHU,UGDH,
  *       MHUG,DMHU,GDMH,UGDM]
  *     [--max-rounds 150]
  *     [--multi-max-rounds 120] [--jobs N] [--output file.json]
@@ -60,6 +66,7 @@ import {
   type HeadlessMetricsV7,
   type UndeadMetricsV7,
 } from "../src/headless/v7";
+import type { IceFolkMetricsV7 } from "../src/headless/ice-folk-telemetry-v7";
 import {
   FACTION_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -136,6 +143,17 @@ const PAIRINGS = {
   MD: ["MARTIAN", "DINOSAUR"],
   DM: ["DINOSAUR", "MARTIAN"],
   MM: ["MARTIAN", "MARTIAN"],
+  IH: ["ICE_FOLK", "ORIGINAL"],
+  HI: ["ORIGINAL", "ICE_FOLK"],
+  IU: ["ICE_FOLK", "UNDEAD"],
+  UI: ["UNDEAD", "ICE_FOLK"],
+  IG: ["ICE_FOLK", "GOBLIN"],
+  GI: ["GOBLIN", "ICE_FOLK"],
+  ID: ["ICE_FOLK", "DINOSAUR"],
+  DI: ["DINOSAUR", "ICE_FOLK"],
+  IM: ["ICE_FOLK", "MARTIAN"],
+  MI: ["MARTIAN", "ICE_FOLK"],
+  II: ["ICE_FOLK", "ICE_FOLK"],
   HUHU: ["ORIGINAL", "UNDEAD", "ORIGINAL", "UNDEAD"],
   UHUH: ["UNDEAD", "ORIGINAL", "UNDEAD", "ORIGINAL"],
   GHUG: ["GOBLIN", "ORIGINAL", "UNDEAD", "GOBLIN"],
@@ -177,6 +195,17 @@ const ONE_VS_ONE: readonly PairingId[] = [
   "MD",
   "DM",
   "MM",
+  "IH",
+  "HI",
+  "IU",
+  "UI",
+  "IG",
+  "GI",
+  "ID",
+  "DI",
+  "IM",
+  "MI",
+  "II",
 ];
 const MULTI: readonly PairingId[] = [
   "HUHU",
@@ -222,6 +251,20 @@ const MARTIAN_ONE_VS_ONE: readonly PairingId[] = [
   "MM",
 ];
 const MARTIAN_MULTI: readonly PairingId[] = ["MHUG", "DMHU", "GDMH", "UGDM"];
+/** The Ice Folk 1v1 pairings (Ice Folk section 16.2). */
+const ICE_FOLK_ONE_VS_ONE: readonly PairingId[] = [
+  "IH",
+  "HI",
+  "IU",
+  "UI",
+  "IG",
+  "GI",
+  "ID",
+  "DI",
+  "IM",
+  "MI",
+  "II",
+];
 
 export interface MatrixCell {
   readonly pairing: PairingId;
@@ -292,6 +335,11 @@ export interface MatrixEntry extends MatrixCell {
    * absent in detail files written before it was added.
    */
   readonly martian?: MartianMatchStats | null;
+  /**
+   * `pulp_wars-7g3.7` Ice Folk telemetry; null without an Ice Folk seat,
+   * and absent in detail files written before it was added.
+   */
+  readonly iceFolk?: IceFolkMatchStats | null;
   /**
    * `pulp_wars-0hi.3` Promotions per faction (revision 20 section 8.2);
    * absent in detail files written before it was added.
@@ -1464,6 +1512,7 @@ const FACTION_INITIAL: Partial<Record<FactionIdV7, string>> = {
   GOBLIN: "G",
   DINOSAUR: "D",
   MARTIAN: "M",
+  ICE_FOLK: "I",
 };
 
 /**
@@ -1944,6 +1993,316 @@ function martianTelemetry(
 }
 
 /**
+ * Ice Folk section 16.2 telemetry for one Ice Folk seat of one match
+ * (`pulp_wars-7g3.7`), compact: units trained, kills and losses by role,
+ * the killer of every loss, Chill by source, Shatter kills by attacker and
+ * victim, Cold Snap, Bolas, Sweep, Rockfall, and the Witch's fate. The
+ * Shatter set-ups and the other mechanism counters are the headless match
+ * totals (`IceFolkMetricsV7`), which equal the seat's own in a match with
+ * one Ice Folk seat.
+ */
+interface IceFolkSeatStats {
+  seat: number;
+  /** Share of Mountain tiles within Chebyshev 4 of the starting capital. */
+  capitalMountainShare: number;
+  trained: Counts;
+  researchRound: Counts;
+  /** Hostile kills by the credited unit (attack, retaliation, splash). */
+  killsByRole: Counts;
+  /** Those kills that were Shatters, by attacker role. */
+  shatterKillsByRole: Counts;
+  /** Shattered hostile units by `<faction initial>:<role>`. */
+  shatterVictims: Counts;
+  /** Units lost other than by elimination, by role. */
+  lossesByRole: Counts;
+  /** Those losses by killer: `<initial>:<role>` with `:RET`, `:SPLASH`, `:BLAST`. */
+  killedBy: Counts;
+  /** Chill applications by source, and those that were a new freeze. */
+  chills: Counts;
+  newFreezes: number;
+  coldSnapCasts: number;
+  bolasThrows: number;
+  sweepAttacks: number;
+  sweepFlankHits: number;
+  sweepFlankKills: number;
+  rockfallShots: number;
+  rockfallKills: number;
+  witchesTrained: number;
+  witchDeaths: number;
+  /** Witch losses by killer, keyed as `killedBy`. */
+  witchKilledBy: Counts;
+  firstWitchRound: number | null;
+  witchesAliveAtEnd: number;
+  sledDeaths: number;
+  /** Cities this seat lost to another player. */
+  citiesLost: number;
+}
+
+/** Ice Folk telemetry for one match: one entry per Ice Folk seat. */
+interface IceFolkMatchStats {
+  readonly seats: IceFolkSeatStats[];
+  /** Headless match totals that the per-seat replay does not split. */
+  readonly match: Pick<
+    IceFolkMetricsV7,
+    | "shattersBySetup"
+    | "shattersByChillSource"
+    | "bolasFollowedByShatter"
+    | "sluggishTurns"
+    | "sluggishTurnsWithoutAction"
+    | "coldSnapTargets"
+    | "witchTurnsWithoutTarget"
+    | "snowCoverDamagePrevented"
+    | "blizzardDamagePrevented"
+    | "glideMoves"
+    | "deepSnowStoppedMoves"
+    | "mountainCrossings"
+    | "shatterRetaliationAvoided"
+  >;
+}
+
+/**
+ * Replays the accepted command log and attributes the Ice Folk events to
+ * their Ice Folk seat. Only called for matches with an Ice Folk seat.
+ */
+function iceFolkTelemetry(
+  setup: MatchSetupV7,
+  log: ReturnType<typeof runAiMatchV7>["commandLog"],
+  metrics: IceFolkMetricsV7,
+): IceFolkMatchStats {
+  const created = createPlayableGameV7(setup);
+  if (!created.ok) throw new Error(`CREATE_REJECTED:${created.error.code}`);
+  let state = created.state;
+  const seats = new Map<number, IceFolkSeatStats>();
+  const factionOf = new Map<number, FactionIdV7>();
+  for (const player of state.players) {
+    factionOf.set(player.id, player.faction);
+    if (player.faction !== "ICE_FOLK") continue;
+    const capital = state.cities.find(
+      (city) => city.ownerId === player.id && city.isCapital,
+    );
+    const near =
+      capital === undefined
+        ? []
+        : state.board.tiles.filter(
+            (tile) =>
+              Math.max(
+                Math.abs(tile.at.x - capital.at.x),
+                Math.abs(tile.at.y - capital.at.y),
+              ) <= 4,
+          );
+    seats.set(player.id, {
+      seat: player.seat,
+      capitalMountainShare:
+        share(
+          near.filter((tile) => tile.terrain === "MOUNTAIN").length,
+          near.length,
+        ) ?? 0,
+      trained: {},
+      researchRound: {},
+      killsByRole: {},
+      shatterKillsByRole: {},
+      shatterVictims: {},
+      lossesByRole: {},
+      killedBy: {},
+      chills: {},
+      newFreezes: 0,
+      coldSnapCasts: 0,
+      bolasThrows: 0,
+      sweepAttacks: 0,
+      sweepFlankHits: 0,
+      sweepFlankKills: 0,
+      rockfallShots: 0,
+      rockfallKills: 0,
+      witchesTrained: 0,
+      witchDeaths: 0,
+      witchKilledBy: {},
+      firstWitchRound: null,
+      witchesAliveAtEnd: 0,
+      sledDeaths: 0,
+      citiesLost: 0,
+    });
+  }
+  const initial = (playerId: number) => {
+    const faction = factionOf.get(playerId);
+    return faction === undefined
+      ? "?"
+      : (FACTION_INITIAL[faction] ?? faction.slice(0, 1));
+  };
+  const first = state.turnOrder[0];
+  let round = 1;
+  for (const record of log) {
+    const before = state;
+    const units = new Map(
+      before.units.map((unit) => [unit.id as number, unit]),
+    );
+    const command = record.command;
+    const actor = seats.get(record.playerId);
+    if (actor !== undefined && command.kind === "COLD_SNAP")
+      actor.coldSnapCasts += 1;
+    if (actor !== undefined && command.kind === "THROW_BOLAS")
+      actor.bolasThrows += 1;
+    const result = applyCommandV7(state, record.playerId, command);
+    if (!result.accepted) throw new Error("Ice Folk telemetry replay rejected");
+    state = result.state;
+    const after = new Map(state.units.map((unit) => [unit.id as number, unit]));
+    const unitOf = (unitId: number) => units.get(unitId) ?? after.get(unitId);
+    const hostile = (left: number, right: number | undefined) =>
+      right !== undefined &&
+      left !== right &&
+      !arePlayersAlliedV7(before, left as PlayerId, right as PlayerId);
+    const killedBy = new Map<number, string>();
+    const credit = (dealerId: number, victimId: number, shatter = false) => {
+      const dealer = unitOf(dealerId);
+      const victim = unitOf(victimId);
+      const seat = dealer === undefined ? undefined : seats.get(dealer.ownerId);
+      if (
+        dealer === undefined ||
+        victim === undefined ||
+        seat === undefined ||
+        !hostile(dealer.ownerId, victim.ownerId)
+      )
+        return;
+      bump(seat.killsByRole, dealer.role);
+      if (shatter) {
+        bump(seat.shatterKillsByRole, dealer.role);
+        bump(seat.shatterVictims, `${initial(victim.ownerId)}:${victim.role}`);
+      }
+    };
+    for (const event of record.events) {
+      if (event.kind === "TURN_STARTED" && event.playerId === first) round += 1;
+      if (event.kind === "TECH_RESEARCHED") {
+        const seat = seats.get(event.playerId);
+        if (seat !== undefined) seat.researchRound[event.tech] = round;
+      }
+      if (
+        event.kind === "UNIT_TRAINED" ||
+        event.kind === "NAVAL_UNIT_TRAINED" ||
+        event.kind === "UNIT_REWARD_GRANTED"
+      ) {
+        const seat = seats.get(event.playerId);
+        if (seat === undefined) continue;
+        bump(
+          seat.trained,
+          event.kind === "UNIT_REWARD_GRANTED"
+            ? `REWARD:${event.role}`
+            : event.role,
+        );
+        if (event.role === "CAPTAIN") {
+          seat.witchesTrained += 1;
+          seat.firstWitchRound ??= round;
+        }
+      }
+      if (event.kind === "UNITS_CHILLED") {
+        const seat = seats.get(event.playerId);
+        if (seat === undefined) continue;
+        bump(seat.chills, event.source, event.results.length);
+        for (const entry of event.results)
+          seat.newFreezes += Number(entry.sluggish);
+      }
+      if (event.kind === "COMBAT_RESOLVED") {
+        const preview = event.preview;
+        const attacker = unitOf(preview.attackerId);
+        const defender = unitOf(preview.targetUnitId);
+        const attackerSeat =
+          attacker === undefined ? undefined : seats.get(attacker.ownerId);
+        if (attackerSeat !== undefined) {
+          if (preview.rockfallApplied) {
+            attackerSeat.rockfallShots += 1;
+            attackerSeat.rockfallKills += Number(preview.defenderDies);
+          }
+          if (preview.sweep) {
+            attackerSeat.sweepAttacks += 1;
+            attackerSeat.sweepFlankHits += preview.splash.length;
+            attackerSeat.sweepFlankKills += preview.splash.filter(
+              (entry) => entry.dies,
+            ).length;
+          }
+        }
+        if (preview.defenderDies) {
+          credit(preview.attackerId, preview.targetUnitId, preview.shatters);
+          if (attacker !== undefined)
+            killedBy.set(
+              preview.targetUnitId,
+              `${initial(attacker.ownerId)}:${attacker.role}`,
+            );
+        }
+        if (preview.attackerDies) {
+          credit(preview.targetUnitId, preview.attackerId);
+          if (defender !== undefined)
+            killedBy.set(
+              preview.attackerId,
+              `${initial(defender.ownerId)}:${defender.role}:RET`,
+            );
+        }
+        for (const entry of preview.splash)
+          if (entry.dies) {
+            credit(preview.attackerId, entry.unitId);
+            if (attacker !== undefined)
+              killedBy.set(
+                entry.unitId,
+                `${initial(attacker.ownerId)}:${attacker.role}:SPLASH`,
+              );
+          }
+      }
+      if (event.kind === "WAIL_RESOLVED")
+        for (const entry of event.results)
+          if (entry.dies)
+            killedBy.set(entry.unitId, `${initial(event.playerId)}:WAIL`);
+      if (event.kind === "EXPLOSION_RESOLVED")
+        for (const entry of event.results)
+          if (entry.dies)
+            killedBy.set(
+              entry.unitId,
+              `${initial(event.playerId)}:${event.role}:BLAST`,
+            );
+      if (event.kind === "PLAGUE_DAMAGED")
+        for (const entry of event.results)
+          if (entry.dies) killedBy.set(entry.unitId, "PLAGUE");
+      if (event.kind === "CITY_CAPTURED" && event.from !== null) {
+        const seat = seats.get(event.from);
+        if (seat !== undefined && event.to !== event.from) seat.citiesLost += 1;
+      }
+      if (event.kind === "UNIT_DIED" && event.cause !== "ELIMINATION") {
+        const unit = unitOf(event.unitId);
+        const seat = unit === undefined ? undefined : seats.get(unit.ownerId);
+        if (unit === undefined || seat === undefined) continue;
+        bump(seat.lossesByRole, unit.role);
+        const by = killedBy.get(event.unitId) ?? event.cause;
+        bump(seat.killedBy, by);
+        if (unit.role === "CAPTAIN") {
+          seat.witchDeaths += 1;
+          bump(seat.witchKilledBy, by);
+        }
+        if (unit.role === "RAIDER") seat.sledDeaths += 1;
+      }
+    }
+  }
+  for (const [playerId, seat] of seats)
+    seat.witchesAliveAtEnd = state.units.filter(
+      (unit) =>
+        unit.ownerId === playerId && unit.hp > 0 && unit.role === "CAPTAIN",
+    ).length;
+  return {
+    seats: [...seats.values()],
+    match: {
+      shattersBySetup: metrics.shattersBySetup,
+      shattersByChillSource: metrics.shattersByChillSource,
+      bolasFollowedByShatter: metrics.bolasFollowedByShatter,
+      sluggishTurns: metrics.sluggishTurns,
+      sluggishTurnsWithoutAction: metrics.sluggishTurnsWithoutAction,
+      coldSnapTargets: metrics.coldSnapTargets,
+      witchTurnsWithoutTarget: metrics.witchTurnsWithoutTarget,
+      snowCoverDamagePrevented: metrics.snowCoverDamagePrevented,
+      blizzardDamagePrevented: metrics.blizzardDamagePrevented,
+      glideMoves: metrics.glideMoves,
+      deepSnowStoppedMoves: metrics.deepSnowStoppedMoves,
+      mountainCrossings: metrics.mountainCrossings,
+      shatterRetaliationAvoided: metrics.shatterRetaliationAvoided,
+    },
+  };
+}
+
+/**
  * Lich lifecycle statistics for one match (`pulp_wars-vkq.21`), summed over
  * every Undead seat.
  */
@@ -2128,7 +2487,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r26",
+    rulesetId: "pulp-wars-poc-7r27",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     seed: cell.seed,
     width: cell.size,
@@ -2208,6 +2567,9 @@ export function runCell(cell: MatrixCell): MatrixEntry {
       : null,
     martian: (factions as readonly FactionIdV7[]).includes("MARTIAN")
       ? martianTelemetry(setup, result.commandLog)
+      : null,
+    iceFolk: (factions as readonly FactionIdV7[]).includes("ICE_FOLK")
+      ? iceFolkTelemetry(setup, result.commandLog, metrics.iceFolk)
       : null,
     promotions: promotionTelemetry(setup, result.commandLog),
   };
@@ -2789,7 +3151,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r26",
+          rulesetId: "pulp-wars-poc-7r27",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -3259,6 +3621,7 @@ export function summarize(entries: readonly MatrixEntry[]) {
     goblin: goblinSummary(entries),
     dinosaur: dinosaurSummary(entries),
     martian: martianSummary(entries),
+    iceFolk: iceFolkSummary(entries),
     duel: {
       perPairing,
       undeadWinMixed: rateFor(mixed, undeadWon),
@@ -3964,12 +4327,13 @@ function dinosaurSummary(entries: readonly MatrixEntry[]) {
     };
   };
   // The reference: every 1v1 pairing of the same run without a Dinosaur or
-  // a Martian seat (the pre-Martian reference).
+  // a Martian or Ice Folk seat (the pre-Martian reference).
   const reference = capRateOf(
     duel.filter(
       (entry) =>
         !DINOSAUR_ONE_VS_ONE.includes(entry.pairing) &&
-        !MARTIAN_ONE_VS_ONE.includes(entry.pairing),
+        !MARTIAN_ONE_VS_ONE.includes(entry.pairing) &&
+        !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing),
     ),
   );
   const pairingCaps: Record<string, number | null> = Object.fromEntries(
@@ -4377,9 +4741,14 @@ function martianSummary(entries: readonly MatrixEntry[]) {
       opponent: opponentAggregate(group, opponent),
     };
   };
-  // The reference: every 1v1 pairing of the same run without a Martian seat.
+  // The reference: every 1v1 pairing of the same run without a Martian or
+  // an Ice Folk seat.
   const reference = capRateOf(
-    duel.filter((entry) => !MARTIAN_ONE_VS_ONE.includes(entry.pairing)),
+    duel.filter(
+      (entry) =>
+        !MARTIAN_ONE_VS_ONE.includes(entry.pairing) &&
+        !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing),
+    ),
   );
   const pairingCaps: Record<string, number | null> = Object.fromEntries(
     MARTIAN_ONE_VS_ONE.flatMap((pairing) => {
@@ -4442,6 +4811,211 @@ function martianSummary(entries: readonly MatrixEntry[]) {
   };
 }
 
+const iceFolkWon = (entry: MatrixEntry) => entry.winnerFaction === "ICE_FOLK";
+
+/**
+ * Compact Ice Folk section 16.2 telemetry summed over every Ice Folk seat of
+ * `group` (`pulp_wars-7g3.7`). The match totals (`match`) count both seats
+ * of a mirror.
+ */
+function iceFolkAggregate(group: readonly MatrixEntry[]) {
+  const seats = group.flatMap((entry) =>
+    (entry.iceFolk?.seats ?? []).map((seat) => ({ entry, seat })),
+  );
+  const all = seats.map((item) => item.seat);
+  const matches = group.flatMap((entry) =>
+    entry.iceFolk === null || entry.iceFolk === undefined
+      ? []
+      : [entry.iceFolk.match],
+  );
+  const total = (pick: (seat: IceFolkSeatStats) => number) =>
+    sum(all.map(pick));
+  const seatGames = (predicate: (seat: IceFolkSeatStats) => boolean) =>
+    all.filter(predicate).length;
+  const kills = sumCounts(all.map((seat) => seat.killsByRole));
+  const losses = sumCounts(all.map((seat) => seat.lossesByRole));
+  const totalKills = sum(Object.values(kills));
+  const shatters = total((seat) => sum(Object.values(seat.shatterKillsByRole)));
+  // Decided 1v1 seat-games with one Ice Folk seat.
+  const decided = seats.filter(
+    ({ entry }) =>
+      entry.aiCount === 1 &&
+      entry.factions.filter((faction) => faction === "ICE_FOLK").length === 1 &&
+      entry.winnerSeat !== null,
+  );
+  const winWhere = (predicate: (seat: IceFolkSeatStats) => boolean) => {
+    const items = decided.filter(({ seat }) => predicate(seat));
+    return wilson(
+      items.filter(({ entry }) => iceFolkWon(entry)).length,
+      items.length,
+      0,
+    );
+  };
+  return {
+    seatGames: all.length,
+    trained: sumCounts(all.map((seat) => seat.trained)),
+    trainedSeatGames: sumCounts(
+      all.map((seat) =>
+        Object.fromEntries(Object.keys(seat.trained).map((role) => [role, 1])),
+      ),
+    ),
+    killsByRole: kills,
+    lossesByRole: losses,
+    killsPerLoss: killsPerLoss(kills, losses),
+    killShare: Object.fromEntries(
+      Object.entries(kills).map(([role, value]) => [
+        role,
+        share(value, totalKills),
+      ]),
+    ),
+    killedBy: sumCounts(all.map((seat) => seat.killedBy)),
+    shatter: {
+      kills: shatters,
+      perSeatGame: share(shatters, all.length),
+      seatGamesWithShatter: seatGames(
+        (seat) => sum(Object.values(seat.shatterKillsByRole)) > 0,
+      ),
+      shareOfKills: share(shatters, totalKills),
+      byAttacker: sumCounts(all.map((seat) => seat.shatterKillsByRole)),
+      victims: sumCounts(all.map((seat) => seat.shatterVictims)),
+      bySetup: sumCounts(matches.map((match) => match.shattersBySetup)),
+      byChillSource: sumCounts(
+        matches.map((match) => match.shattersByChillSource),
+      ),
+      bolasFollowedByShatter: sum(
+        matches.map((match) => match.bolasFollowedByShatter),
+      ),
+      retaliationAvoided: sum(
+        matches.map((match) => match.shatterRetaliationAvoided),
+      ),
+    },
+    chill: {
+      bySource: sumCounts(all.map((seat) => seat.chills)),
+      newFreezes: total((seat) => seat.newFreezes),
+      coldSnapCasts: total((seat) => seat.coldSnapCasts),
+      coldSnapTargets: sum(matches.map((match) => match.coldSnapTargets)),
+      witchTurnsWithoutTarget: sum(
+        matches.map((match) => match.witchTurnsWithoutTarget),
+      ),
+      bolasThrows: total((seat) => seat.bolasThrows),
+      sluggishTurns: sum(matches.map((match) => match.sluggishTurns)),
+      sluggishTurnsWithoutAction: sum(
+        matches.map((match) => match.sluggishTurnsWithoutAction),
+      ),
+    },
+    sweep: {
+      attacks: total((seat) => seat.sweepAttacks),
+      flankHits: total((seat) => seat.sweepFlankHits),
+      flankKills: total((seat) => seat.sweepFlankKills),
+    },
+    rockfall: {
+      shots: total((seat) => seat.rockfallShots),
+      kills: total((seat) => seat.rockfallKills),
+      highMountainSeatGames: seatGames(
+        (seat) => seat.capitalMountainShare > 0.3,
+      ),
+      highMountainSeatGamesWithRockfall: seatGames(
+        (seat) => seat.capitalMountainShare > 0.3 && seat.rockfallShots > 0,
+      ),
+    },
+    witch: {
+      seatGames: seatGames((seat) => seat.witchesTrained > 0),
+      trained: total((seat) => seat.witchesTrained),
+      deaths: total((seat) => seat.witchDeaths),
+      seatGamesWitchKilled: seatGames((seat) => seat.witchDeaths > 0),
+      killedBy: sumCounts(all.map((seat) => seat.witchKilledBy)),
+      aliveAtEnd: total((seat) => seat.witchesAliveAtEnd),
+      firstRound: stats(
+        all.flatMap((seat) =>
+          seat.firstWitchRound === null ? [] : [seat.firstWitchRound],
+        ),
+      ),
+    },
+    sledDeaths: total((seat) => seat.sledDeaths),
+    citiesLost: total((seat) => seat.citiesLost),
+    seatGamesWithCityLost: seatGames((seat) => seat.citiesLost > 0),
+    protection: {
+      snowCoverDamagePrevented: sum(
+        matches.map((match) => match.snowCoverDamagePrevented),
+      ),
+      blizzardDamagePrevented: sum(
+        matches.map((match) => match.blizzardDamagePrevented),
+      ),
+      glideMoves: sum(matches.map((match) => match.glideMoves)),
+      deepSnowStoppedMoves: sum(
+        matches.map((match) => match.deepSnowStoppedMoves),
+      ),
+      mountainCrossings: sum(matches.map((match) => match.mountainCrossings)),
+    },
+    watch: {
+      winWithWitch: winWhere((seat) => seat.witchesTrained > 0),
+      winWithoutWitch: winWhere((seat) => seat.witchesTrained === 0),
+      winLowMountain: winWhere((seat) => seat.capitalMountainShare < 0.15),
+      winHighMountain: winWhere((seat) => seat.capitalMountainShare > 0.3),
+    },
+  };
+}
+
+/** Ice Folk section 16.4 win rates and compact section 16.2 telemetry. */
+function iceFolkSummary(entries: readonly MatrixEntry[]) {
+  const duel = entries.filter((entry) => entry.aiCount === 1);
+  const iceDuel = duel.filter((entry) =>
+    ICE_FOLK_ONE_VS_ONE.includes(entry.pairing),
+  );
+  const byKey = (
+    group: readonly MatrixEntry[],
+    key: (entry: MatrixEntry) => string,
+  ) =>
+    Object.fromEntries(
+      Object.entries(groupBy(group, key)).map(([name, items]) => [
+        name,
+        rateFor(items, iceFolkWon),
+      ]),
+    );
+  const against = (opponent: FactionIdV7) => {
+    const group = iceDuel.filter(
+      (entry) => entry.pairing !== "II" && entry.factions.includes(opponent),
+    );
+    return {
+      win: rateFor(group, iceFolkWon),
+      bySeat: byKey(group, (entry) => entry.pairing),
+      bySize: byKey(group, (entry) => String(entry.size)),
+      rounds: stats(group.map((entry) => entry.rounds)),
+      telemetry: iceFolkAggregate(group),
+      opponent: opponentAggregate(group, opponent),
+    };
+  };
+  const reference = capRateOf(
+    duel.filter((entry) => !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing)),
+  );
+  const mixed = iceDuel.filter((entry) => entry.pairing !== "II");
+  return {
+    versusHuman: against("ORIGINAL"),
+    versusUndead: against("UNDEAD"),
+    versusGoblin: against("GOBLIN"),
+    versusDinosaur: against("DINOSAUR"),
+    versusMartian: against("MARTIAN"),
+    allMixed: rateFor(mixed, iceFolkWon),
+    mirrorSeatZeroWin: rateFor(
+      duel.filter((entry) => entry.pairing === "II"),
+      seatZeroWon,
+    ),
+    capRates: {
+      nonIceFolkReference: reference,
+      byPairing: Object.fromEntries(
+        ICE_FOLK_ONE_VS_ONE.flatMap((pairing) => {
+          const group = duel.filter((entry) => entry.pairing === pairing);
+          return group.length === 0 ? [] : [[pairing, capRateOf(group)]];
+        }),
+      ) as Record<string, number | null>,
+    },
+    telemetry: {
+      allMixed: iceFolkAggregate(mixed),
+      mirror: iceFolkAggregate(duel.filter((entry) => entry.pairing === "II")),
+    },
+  };
+}
+
 function groupCount<T>(
   items: readonly T[],
   key: (item: T) => string,
@@ -4470,6 +5044,7 @@ function markdown(summary: ReturnType<typeof summarize>): string {
     ...goblinMarkdown(summary.goblin, pct),
     ...dinosaurMarkdown(summary.dinosaur, pct),
     ...martianMarkdown(summary.martian, pct),
+    ...iceFolkMarkdown(summary.iceFolk, pct),
     "| Pairing | Games | Undead win | Seat-0 win | First mover win | Rounds mean/median/p90 | Cap rate |",
     "| --- | ---: | --- | --- | --- | --- | ---: |",
     ...Object.entries(summary.duel.perPairing).map(
@@ -4581,6 +5156,46 @@ function martianMarkdown(
     `Thresholds: Saucer ${part(t.saucer)}, Beam Down ${part(t.beamDown)}, Projector ${part(t.shieldProjector)}, Force Field ${part(t.forceField)}, Ray Gunner ${part(t.rayGunner)} full ${t.rayGunnerFullShare}, Brain ${part(t.brain)}, Mind Control ${part(t.mindControl)}, Tripod ${part(t.tripod)}, Pierce ${part(t.pierce)}, Mothership (35+ rounds) ${part(t.mothershipLongGames)}, Tractor Beam ${part(t.tractorBeam)}, Colossi ${t.colossi}`,
     `Watch: win with/without Tripod ${pct(all.watch.winWithTripod)} / ${pct(all.watch.winWithoutTripod)}; with/without Mothership ${pct(all.watch.winWithMothership)} / ${pct(all.watch.winWithoutMothership)}; pull-then-capture ${all.watch.tractorCaptureShare}; focus fire ${part(all.watch.focusFireSeatGames)}`,
     `Pierce hostile ${all.pierce.hostile.hits} (${all.pierce.hostile.kills} kills), own ${all.pierce.own.hits} (${all.pierce.own.kills} kills); Mind Control ${all.mindControl.uses} (${flat(all.mindControl.victims)}); Beam Down ${all.beamDown.uses}; Tractor Beam own ${all.tractorBeam.own}, hostile ${all.tractorBeam.hostile}, off a center ${all.tractorBeam.offHostileCenter}`,
+    "",
+  ];
+}
+
+/** Ice Folk section 16.4 lines (empty without Ice Folk games). */
+function iceFolkMarkdown(
+  iceFolk: ReturnType<typeof iceFolkSummary>,
+  pct: (rate: Rate) => string,
+): string[] {
+  const all = iceFolk.telemetry.allMixed;
+  if (all.seatGames === 0 && iceFolk.telemetry.mirror.seatGames === 0)
+    return [];
+  const flat = (record: Record<string, number | null>) =>
+    Object.entries(record)
+      .map(([key, value]) => `${key} ${value}`)
+      .join(", ");
+  const versus = [
+    ["Human", iceFolk.versusHuman],
+    ["Undead", iceFolk.versusUndead],
+    ["Goblin", iceFolk.versusGoblin],
+    ["Dinosaur", iceFolk.versusDinosaur],
+    ["Martian", iceFolk.versusMartian],
+  ] as const;
+  return [
+    ...versus.map(
+      ([name, item]) =>
+        `Ice Folk win vs ${name}: ${pct(item.win)}; ${flat(
+          Object.fromEntries(
+            Object.entries(item.bySeat).map(([key, rate]) => [key, rate.rate]),
+          ),
+        )}; Witch killed in ${item.telemetry.witch.seatGamesWitchKilled}/${item.telemetry.witch.seatGames} Witch seat-games; Shatters ${item.telemetry.shatter.kills}; Ice Folk city lost in ${item.telemetry.seatGamesWithCityLost}/${item.telemetry.seatGames}`,
+    ),
+    `Ice Folk mirror seat 0: ${pct(iceFolk.mirrorSeatZeroWin)}; all mixed ${pct(iceFolk.allMixed)}`,
+    `Cap rates: non-Ice Folk reference ${iceFolk.capRates.nonIceFolkReference}; ${flat(iceFolk.capRates.byPairing)}`,
+    `Ice Folk (mixed 1v1) trained: ${flat(all.trained)}; seat-games ${all.seatGames}`,
+    `Ice Folk kills per loss: ${flat(all.killsPerLoss)}; kill share ${flat(all.killShare)}`,
+    `Shatter: ${all.shatter.kills} (${all.shatter.shareOfKills} of kills); set-ups ${flat(all.shatter.bySetup)}; chill sources ${flat(all.shatter.byChillSource)}; Bolas then Shatter ${all.shatter.bolasFollowedByShatter}`,
+    `Chill: ${flat(all.chill.bySource)}; Cold Snap ${all.chill.coldSnapCasts} casts; Bolas ${all.chill.bolasThrows}; sluggish turns ${all.chill.sluggishTurns} (${all.chill.sluggishTurnsWithoutAction} without action)`,
+    `Sweep ${all.sweep.attacks} attacks, ${all.sweep.flankHits} flank hits, ${all.sweep.flankKills} flank kills; Rockfall ${all.rockfall.shots} shots, ${all.rockfall.kills} kills`,
+    `Witch: in ${all.witch.seatGames}/${all.seatGames} seat-games, ${all.witch.trained} trained, ${all.witch.deaths} killed (${flat(all.witch.killedBy)}), ${all.witch.aliveAtEnd} alive at the end; win with/without ${pct(all.watch.winWithWitch)} / ${pct(all.watch.winWithoutWitch)}`,
     "",
   ];
 }

@@ -9,7 +9,9 @@ abilities, previews, cues and Help are wired in
 ([section 20](#20-ui-implementation-notes-pulp_wars-7g36)). **The Normal AI
 is implemented** (`pulp_wars-7g3.4`,
 [section 12.1](#121-implementation-status-pulp_wars-7g34)). **Coarse balance
-(`pulp_wars-7g3.7`) is pending.** What the engine implementation changed or
+is done** (`pulp_wars-7g3.7`, identity `pulp-wars-poc-7r27`: the Yeti has 9 HP
+and Defense 1.5; [section 16.5](#165-tuning-record) and the
+[Ice Folk balance report](../validation/RULESET_7_ICE_FOLK_BALANCE.md)). What the engine implementation changed or
 made precise is in [section 19](#19-implementation-notes-pulp_wars-7g33). It is an
 overlay over the rules in force when `pulp_wars-7g3.3` starts: the
 [Martian faction](RULESET_7_MARTIANS.md) (epic `pulp_wars-t6s`, whose engine
@@ -216,7 +218,7 @@ Every Ice Folk role uses one slot.
 
 | Unit         | Role          | Tech              | Cost | Slots |  HP | Attack (`attack2`)   | Defense (`defense2`) | Move | Range | Sight | Attack after Move | Capture | Its own thing                                              |
 | ------------ | ------------- | ----------------- | ---: | ----: | --: | -------------------- | -------------------: | ---: | ----: | ----: | ----------------- | ------- | ---------------------------------------------------------- |
-| Yeti         | `FIGHTER`     | start             |    2 |     1 |  10 | 2 (4)                |                2 (4) |    1 |    1² |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                  |
+| Yeti         | `FIGHTER`     | start             |    2 |     1 |   9 | 2 (4)                |              1.5 (3) |    1 |    1² |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                  |
 | Sled         | `RAIDER`      | Scouting          |    3 |     1 |  10 | 2 (4)                |                1 (2) |    2 |     1 |     2 | yes               | yes     | Bolas; Charge (Raiding); no Escape                         |
 | Snow Hunter  | `MARKSMAN`    | Marksmanship      |    3 |     1 |   8 | 2 (4)                |                1 (2) |    1 |   1–2 |    1¹ | yes               | yes     | Cold Blood                                                 |
 | Mammoth      | `GUARD`       | Drill             |    6 |     1 |  20 | 2.5 (5)              |                2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; no Field Defense                           |
@@ -231,14 +233,19 @@ Every Ice Folk role uses one slot.
 ² A Yeti standing on a Mountain may also attack at distance 2, at Attack 1.5
 (`attack2` 3): [section 7.2](#72-rockfall-yeti).
 
-These are the root's decided numbers, unchanged
-([section 17.1](#171-deviations-from-the-root-decisions)). They are starting
-values for `pulp_wars-7g3.7`, checked against the registry of commit
-`daceb4f` (`pulp-wars-poc-7r21`) and the Martian contract values.
+These are the root's decided numbers
+([section 17.1](#171-deviations-from-the-root-decisions)), checked against
+the registry of commit `daceb4f` (`pulp-wars-poc-7r21`) and the Martian
+contract values, except the **Yeti's 9 HP and Defense 1.5** (`defense2` 3):
+the coarse balance of `pulp_wars-7g3.7` (`pulp-wars-poc-7r27`) moved them
+from 10 HP and Defense 2 inside the bounds
+([section 16.5](#165-tuning-record)). The worked examples and the analysis
+of sections 5.6 and 9 were computed with the decided Yeti and were not
+re-run.
 
 - **Yeti** has Fighter parity (capture, Pillage with Raiding, Disband,
   ordinary Promotion, the advance after a melee kill) and the Fighter's
-  numbers. It cannot build Field Defense. It is Mountain-born and has
+  cost, Attack, and Move, with 9 HP and Defense 1.5. It cannot build Field Defense. It is Mountain-born and has
   Rockfall.
 - **Sled** (a dog sled and its driver) has Raider parity for Sight 2,
   capture, Pillage, the advance, Fieldcraft Forest freedom, and Charge with
@@ -2329,7 +2336,8 @@ measured deviations:
   247 decided games against 67 of 249 without them. Against each faction
   the Ice Folk win 64% (Undead) to 76% (Goblins): Goblins and Dinosaurs,
   and Martians on 11 x 11, are beyond 70/30, as under the generic policy
-  (`pulp_wars-7g3.7`).
+  (`pulp_wars-7g3.7`; after its Yeti change 52% to 57%,
+  [section 16.5](#165-tuning-record)).
 
 ## 13. UI requirements
 
@@ -2745,7 +2753,7 @@ of another faction, and any mechanic change needs root approval.
 
 | Parameter                                                    | Contract value         | Bounds                                      |
 | ------------------------------------------------------------ | ---------------------- | ------------------------------------------- |
-| Yeti HP / Defense / cost                                     | 10 / 2 / 2             | 9–11 / 1.5–2 / fixed                        |
+| Yeti HP / Defense / cost (tuned: 9 / 1.5 / 2)                | 10 / 2 / 2             | 9–11 / 1.5–2 / fixed                        |
 | Rockfall Attack                                              | 1.5                    | 1–2                                         |
 | Sled HP / cost / Bolas range                                 | 10 / 3 / 2             | 8–10 / 3–4 / 1–2                            |
 | Snow Hunter HP / cost / Cold Blood                           | 8 / 3 / +0.5           | 7–10 / 3–4 / 0 to +1                        |
@@ -2836,13 +2844,26 @@ and the water layer wait for the user.
 
 ### 16.5 Tuning record
 
-Empty until `pulp_wars-7g3.7` records the chosen numbers here.
+`pulp_wars-7g3.7` (identity `pulp-wars-poc-7r27`; a coarse Dry Land pass by
+the balance-testing policy, about 40 decided games per opponent; fine tuning
+is deferred by the user). Evidence:
+[Ice Folk balance report](../validation/RULESET_7_ICE_FOLK_BALANCE.md).
+
+| Parameter    | Contract | Chosen        | Why                                                                                                                                                                                                                  |
+| ------------ | -------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Yeti HP      | 10       | **9**         | The Ice Folk won 69% of decided games (62-74% per opponent), carried by a faster early expansion (Glide on home Snow) fought with cheap Yetis; Shatter, the Witch, the Sled, and Mountain-born screened as no cause. |
+| Yeti Defense | 2        | **1.5** (`3`) | Together with 9 HP: 56% overall, 52-57% against every faction (Defense 1.5 alone: 61%, Goblins and Dinosaurs 68%).                                                                                                   |
+| Every other  | —        | unchanged     | Screened without effect: Sled cost 4 (72%), Shatter threshold 2 with Brittle 3 (71%).                                                                                                                                |
+
+Named levers and AI work proposed to the root are in section 6 of the report
+(the Witch is almost never killed: an AI gap, not a number).
 
 ## 17. Decisions made in this spec
 
 ### 17.1 Deviations from the root decisions
 
-**No decided number is changed.** Every roster value, the threshold 3, the
+**No decided number is changed** by this contract (the coarse balance
+later moved the Yeti's HP and Defense: [section 16.5](#165-tuning-record)). Every roster value, the threshold 3, the
 Brittle threshold 4, Rockfall at Attack 1.5, Cold Blood at +0.5, and the
 one-slot Mammoth are the root's. The arithmetic found no unit dead or
 dominant with them ([section 9.14](#914-the-roots-decisions-checked)); the

@@ -220,12 +220,13 @@ describe("Shatter worked examples (section 5.6)", () => {
       shatters: true,
       damageToDefender: 6,
     });
-    // Unchilled the Yeti takes 10 and dies.
+    // Unchilled the Yeti takes 10, capped at its 9 HP (`pulp_wars-7g3.7`),
+    // and dies.
     const warm = checkedV7({ ...(second?.state as GameStateV7), chilled: [] });
     const walked = moveV7(warm, at(6, 9), [at(7, 9)]).state;
     expect(attackV7(walked, at(7, 9), at(8, 8)).combat).toMatchObject({
       shatters: false,
-      damageToAttacker: 10,
+      damageToAttacker: 9,
       attackerDies: true,
     });
   });
@@ -343,7 +344,7 @@ describe("Shatter worked examples (section 5.6)", () => {
       expect(kindsV7(run?.events ?? []), role).not.toContain(
         "EXPLOSION_RESOLVED",
       );
-      expect(unitAtV7(run?.state as GameStateV7, at(5, 3)).hp).toBe(10);
+      expect(unitAtV7(run?.state as GameStateV7, at(5, 3)).hp).toBe(9);
       // Killed by plain damage instead, the Rocket Cart explodes.
       const warm = checkedV7({
         ...against(
@@ -436,10 +437,11 @@ describe("Shatter exact points (section 5.5)", () => {
 
   it("only attacks: an Ice Folk unit's retaliation never shatters", () => {
     // A Chilled Human Fighter at 7 HP attacks a Yeti; the Yeti's
-    // retaliation leaves it inside the window but it does not shatter.
+    // retaliation (4 at Defense 1.5, `pulp_wars-7g3.7`) leaves it inside the
+    // window but it does not shatter.
     const state = iceFieldV7(
       [
-        { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 8, chill: CHILLED },
+        { seat: 1, role: "FIGHTER", at: at(4, 3), hp: 7, chill: CHILLED },
         { seat: 0, role: "FIGHTER", at: at(5, 3) },
       ],
       { activeSeat: 1 },
@@ -448,7 +450,7 @@ describe("Shatter exact points (section 5.5)", () => {
     expect(run.combat).toMatchObject({
       shatters: false,
       retaliation: true,
-      damageToAttacker: 5,
+      damageToAttacker: 4,
       attackerDies: false,
     });
     expect(run.attacker?.hp).toBe(3);

@@ -356,7 +356,7 @@ describe("Sweep and Trample (section 7.5)", () => {
         shieldDamage: 0,
       },
     ]);
-    expect(unitAtV7(run.state, at(5, 5)).hp).toBe(10);
+    expect(unitAtV7(run.state, at(5, 5)).hp).toBe(9);
     // A Martian Shield absorbs the flank hit first.
     const shielded = iceFieldV7(
       [

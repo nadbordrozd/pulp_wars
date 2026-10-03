@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r26`. Role facts resolve through the owner's
+previews under `pulp-wars-poc-7r27`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
 duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
@@ -1414,7 +1414,9 @@ generic policy on both sides, 11 x 11):
 
 Goblins and Dinosaurs (and Martians on 11 x 11) are beyond 70/30, as they
 already were under the generic policy; the numbers are the balance bead's
-(`pulp_wars-7g3.7`). The counterplay rules ("against the Ice Folk") were
+(`pulp_wars-7g3.7`, which gave the Yeti 9 HP and Defense 1.5 at `7r27`: 52%
+to 57% against every faction in the
+[Ice Folk balance report](../validation/RULESET_7_ICE_FOLK_BALANCE.md)). The counterplay rules ("against the Ice Folk") were
 measured by the same matchups with and without them for the other seat:
 the other factions won 73 of 247 decided games with them and 67 of 249
 without, a slight tendency.

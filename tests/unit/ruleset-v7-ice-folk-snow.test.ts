@@ -258,9 +258,10 @@ describe("Snow cover (section 6.2, 2)", () => {
       ],
       { activeSeat: 1, techs: { 0: ["DRILL", "FORTIFICATION"] } },
     );
+    // The Yeti's retaliation is 4 at Defense 1.5 (`pulp_wars-7g3.7`).
     expect(attackV7(snow, at(7, 5), at(7, 6)).combat).toMatchObject({
       damageToDefender: 4,
-      damageToAttacker: 5,
+      damageToAttacker: 4,
       snowCover: true,
       defenseBonusNumerator: 3,
       defenseBonusDenominator: 2,
