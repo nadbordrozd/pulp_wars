@@ -19,6 +19,7 @@ import {
   createReplayV7,
   effectiveRoleRuleV7,
   generateInitialMapV7,
+  generateInitialMapWithVillageCountV7,
   growthSpentV7,
   parseGameStateV7,
   parseMatchSetupV7,
@@ -29,6 +30,7 @@ import {
   roadPopulationForCityV7,
   runReplayV7,
   showcaseStripCenterXV7,
+  villageCountV7,
   spatialContributionAtV7,
   viewForV7,
   type AiCountV7,
@@ -165,6 +167,10 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
     // to the coast-ring state under the same normalization (it was
     // d22fa74ce92472cc9f874af7f85852871b8976bbb7a15c68b57d2fc7dac48e65); the
     // other four map types are unchanged.
+    // The Rift (`pulp_wars-9s0.5`) turns up to six land tiles of a 16 x 16
+    // board into Rift tiles and changes nothing else; the hashes return once
+    // each Rift tile gets back the terrain the generator without Rifts
+    // (`PANGEA_COAST_RING`) gives it.
     const pinned = {
       DRY_LAND:
         "82f66f98a5ee995551537573fd5644730860105cd5da95ce14774e1abd2659af",
@@ -215,8 +221,28 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       expect(fighters.length).toBeGreaterThan(0);
       for (const unit of fighters)
         expect([unit.hp, unit.maxHp]).toEqual([12, 12]);
+      const setupOf = showcaseSetup(THREE, {
+        mapType: mapType as MatchSetupV7["mapType"],
+      });
+      const withoutRifts = generateInitialMapWithVillageCountV7(
+        setupOf,
+        villageCountV7(setupOf),
+        "PANGEA_COAST_RING",
+      );
+      if (!withoutRifts.ok) throw new Error(`${mapType} base rejected`);
       const revision18State = {
         ...revision19State,
+        board: {
+          ...revision19State.board,
+          tiles: revision19State.board.tiles.map((tile, index) =>
+            tile.terrain === "RIFT"
+              ? {
+                  ...tile,
+                  terrain: withoutRifts.map.board.tiles[index]?.terrain,
+                }
+              : tile,
+          ),
+        },
         players: revision19State.players.map((player) => ({
           ...player,
           achievementEntitlements: player.achievementEntitlements.slice(0, 3),

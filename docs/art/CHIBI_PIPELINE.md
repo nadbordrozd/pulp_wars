@@ -1045,3 +1045,59 @@ review finds the masters by asset id, because the manifest module needs
 Vite's `import.meta.env`. Its captures start Vite on port 6530 unless
 `--port` says otherwise and need `CHROME_PATH`; `--copy-to DIR` copies the
 key sheets and captures.
+
+## The Rift (bead `pulp_wars-9s0.5`)
+
+Batch `rift` holds the six Rift pieces
+([terrain contract](classes/terrain-tiles.md#ruleset-7-rift-pulp_wars-9s05),
+[rules](../product/RULESET_7_RIFT.md)): one 1 x 3 crack per orientation,
+cut into its west/north, middle and east/south 80 x 80 `TERRAIN` pieces.
+It added the `rift` recipe class and three pipeline pieces:
+
+- **`groundStrip` edit source.** A rift recipe is an `edit-image-pixen`
+  edit whose source is not an earlier candidate but three copies of an
+  accepted ground tile (`chibi-grass-1`, found in batch 1), side by side
+  (240 x 80) or stacked (80 x 240). The record stores the strip's asset,
+  orientation, batch and PNG hash.
+- **`guide`.** Unguided edits of the plain grass strip drew side-view cliffs
+  and fire pits at the image's bottom edge. A `guide` (seed, half width,
+  inset, wander) draws a dark, deterministic crack on the strip first
+  (`riftGuideRaster`), and the instruction asks Pixen to restyle "the dark
+  shape" in place, from directly above; Pixen keeps its place, length and
+  width.
+- **`rift-strip` derivation.** The crack is the set of opaque candidate
+  pixels whose redmean distance from the ground strip exceeds the asset's
+  `riftStrip.threshold` (40), minus specks under `minComponent` (12), with
+  enclosed holes filled and grown by `dilate` (1); `margin` (4) pixels at
+  the strip's outer boundary are always ground. Crack pixels take the
+  candidate's colours and everything else is the accepted ground, exactly,
+  so the three pieces join and every outer edge is the ground tile's.
+  Each piece asset names its `piece` (0, 1, 2); the middle and end pieces
+  name the first piece's recipe (`riftStrip.recipe`) and are accepted from
+  it with `accept --asset`. `art:validate` re-derives every piece from the
+  recorded candidate and the recorded ground, and checks the crack size.
+
+Sixteen recipes were generated (see the records): six unguided edits
+(rejected: cliffs and fire pits), eight guided edits with an ember or a
+dark instruction on two guides (the ember ones put the glow at one end of
+the crack), and two guided "glow along the centre line" edits (a thin pure
+red line that reads as a CORAL border, and only a dash on the vertical).
+The accepted pieces are `rift-h-g1-dark` and `rift-v-g1-dark`, candidate 0:
+a pure-dark chasm with a brown rim and grey rock walls on guide g1 (seed 11,
+half width 9, inset 18, wander 3). Each was reviewed at 1:1 and x4, alone
+and in a 5 x 5 Grass scene with a Forest and a Mountain beside it, and on
+the board in the default look, the Classic look and LEGACY (desktop and
+phone) with a Saucer and a Mothership over the crack.
+
+`npm run review:ruleset7-rift-ui -- http://localhost:6173/` (bead
+`pulp_wars-9s0.5`, `scripts/browser-rift-review-v7.ts`, needs the Vite dev
+server and `CHROME_PATH`) mounts the Rift UI fixture
+(`tests/fixtures/v7-rift-ui.ts`: a horizontal Rift under a Saucer and a
+vertical one under a Mothership, Forest and Mountains beside them) and
+captures `rift-board-<look>-<size>-zoom-{1,0.75}.png`,
+`rift-saucer-reach-<look>-<size>.png` and `rift-tile-dock-<look>-<size>.png`
+for the default look, the Classic look and LEGACY on desktop and phone,
+with `evidence.json` (the planned pieces and the dock text). The default
+look tones terrain toward the Grass mean; a Rift piece keeps pixels darker
+than any Grass pixel (luma below 100) out of that toning, so the chasm keeps
+its depth while its Grass matches the cells around it.

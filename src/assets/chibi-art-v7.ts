@@ -22,6 +22,11 @@ export type ArtSetV7 = "LEGACY" | "CHIBI";
  */
 export type ArtSubjectV7 =
   | `TERRAIN:${TerrainIdV7 | "MINED_MOUNTAIN"}`
+  /**
+   * The Rift (bead pulp_wars-9s0.5): the three pieces of a 1 x 3 crack in
+   * each orientation, west to east and north to south.
+   */
+  | `TERRAIN:RIFT_${RiftPieceV7}`
   | `RESOURCE:${ResourceIdV7}`
   | `IMPROVEMENT:${ImprovementIdV7}`
   | `UNIT:${UnitRoleIdV7 | "EMBARKED_TRANSPORT"}`
@@ -54,6 +59,10 @@ export type ArtSubjectV7 =
   | ChibiEffectSubjectV7
   | MartianArtSubjectV7
   | IceFolkArtSubjectV7;
+
+/** The Rift pieces (bead pulp_wars-9s0.5, docs/art/classes/terrain-tiles.md). */
+export type RiftPieceV7 =
+  "H_WEST" | "H_MIDDLE" | "H_EAST" | "V_NORTH" | "V_MIDDLE" | "V_SOUTH";
 
 /**
  * Ice Folk art subjects (bead pulp_wars-7g3.5, ICE_FOLK.md): the units, their

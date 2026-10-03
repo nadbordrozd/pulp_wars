@@ -39,6 +39,7 @@ import {
   winterV7,
 } from "./ice-folk";
 import { absorbHitV7, pierceTileV7, rayPowerV7, shieldOfV7 } from "./martian";
+import { riftAtV7 } from "./rift";
 import { tileAtV7 } from "./spatial-economy";
 import {
   isAfloatFormV7,
@@ -486,6 +487,8 @@ export function calculateCombatPreviewV7(
     defenderShieldDamage,
     attackerDies,
     defenderDies,
+    attackerOnRift: riftAtV7(state.board, attacker.at),
+    defenderOnRift: riftAtV7(state.board, defender.at),
     splash,
     splashOwner: (unitId) =>
       state.units.find((unit) => unit.id === unitId)?.ownerId,
@@ -512,6 +515,9 @@ export function calculateCombatPreviewV7(
     attackerMechanics.advancesAfterKill &&
     attacker.form === "LAND" &&
     (defender.form === "LAND" || defender.form === "EGG") &&
+    // The Rift (RULESET_7_RIFT.md section 4): no attacker advances onto a
+    // Rift (only a flyer could stand there, and a flyer never advances).
+    !riftAtV7(state.board, defender.at) &&
     // The Ice Folk revision section 7.7: a Sabretooth never advances onto a
     // settlement center it does not own.
     advanceSiteAllowedV7(
@@ -530,6 +536,8 @@ export function calculateCombatPreviewV7(
     damageToAttacker,
     attackerDies,
     defenderDies,
+    attackerOnRift: riftAtV7(state.board, attacker.at),
+    defenderOnRift: riftAtV7(state.board, defender.at),
   });
   return {
     attackerId,
@@ -765,6 +773,9 @@ export function undeadCombatEffectsV7(input: {
   readonly damageToAttacker: number;
   readonly attackerDies: boolean;
   readonly defenderDies: boolean;
+  /** The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift. */
+  readonly attackerOnRift: boolean;
+  readonly defenderOnRift: boolean;
 }): Pick<
   CombatPreviewV7,
   "attackerHeal" | "defenderHeal" | "attackerInfected" | "defenderInfected"
@@ -787,10 +798,12 @@ export function undeadCombatEffectsV7(input: {
     attackerInfected:
       input.attackerDies &&
       input.attacker.form === "LAND" &&
+      !input.attackerOnRift &&
       input.defenderRule.abilities.includes("INFECT"),
     defenderInfected:
       input.defenderDies &&
       input.defender.form === "LAND" &&
+      !input.defenderOnRift &&
       input.attackerRule.abilities.includes("INFECT"),
   };
 }

@@ -6,7 +6,10 @@ import {
   canonicalMapRandomHashV7,
   capitalGrowthReadyV7,
   generateInitialMapV7,
+  generateInitialMapWithVillageCountV7,
+  villageCountV7,
   type CoordV7,
+  type GeneratedMapV7,
   type MapTypeV7,
 } from "../src/engine/index";
 
@@ -144,6 +147,46 @@ for (const [width, aiCount] of setups)
     pangeaRingCases += 1;
   }
 assert.equal(pangeaRingCases, setups.length * 56);
+// The Rift (docs/product/RULESET_7_RIFT.md section 5) across every map
+// type, size, and AI count, seeds 0-31, checked independently of the
+// engine's placement rules against the same map generated without Rifts.
+const riftCounts: Record<string, [number, number, number]> = {};
+let riftCases = 0;
+for (const mapType of mapTypes)
+  for (const [width, aiCount] of setups)
+    for (let seed = 0; seed < 32; seed += 1) {
+      const setup = {
+        rulesetId: RULESET_7_ID,
+        seed,
+        width,
+        height: width,
+        aiCount,
+        aiDifficulty: "NORMAL" as const,
+        aiMode: "RIVAL" as const,
+        humanColor: "CORAL" as const,
+        factions: Array.from(
+          { length: aiCount + 1 },
+          () => "ORIGINAL" as const,
+        ),
+        mapType,
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+      };
+      const current = generateInitialMapV7(setup);
+      const base = generateInitialMapWithVillageCountV7(
+        setup,
+        villageCountV7(setup),
+        "PANGEA_COAST_RING",
+      );
+      assert(current.ok && base.ok, `${mapType}/${width}/${seed} failed`);
+      const count = validateRifts(current.map, base.map, width);
+      const label = `${mapType}/${width}`;
+      const tally = (riftCounts[label] ??= [0, 0, 0]);
+      tally[count] = (tally[count] ?? 0) + 1;
+      if (width <= 14) assert.equal(count, 0, `${label}/${seed} has a Rift`);
+      assert(count <= (width === 25 ? 2 : 1), `${label}/${seed} Rift count`);
+      riftCases += 1;
+    }
+assert.equal(riftCases, mapTypes.length * setups.length * 32);
 assert.equal(Object.keys(dryParityActual).length, setups.length * 8);
 if (writeDryParity)
   writeFileSync(dryParityPath, `${JSON.stringify(dryParityActual, null, 2)}\n`);
@@ -158,10 +201,122 @@ console.log(
     cases,
     exactRepeats: cases,
     pangeaCoastRingCases: pangeaRingCases + setups.length * 16,
+    riftCases,
+    riftCounts,
     mapTypes,
     status: "PASS",
   }),
 );
+
+/**
+ * The Rift rules, checked independently: only Rift tiles differ from the
+ * map without Rifts (which was resource-free Grass, Forest, or Mountain),
+ * every other generated fact is equal, each Rift is a straight 1 x 3 run off
+ * the edge ring with only land around it, capitals are 3 or more and
+ * villages 2 or more away, Rifts are 4 or more apart, no chest is on one,
+ * and no land component (with or without Mountains) is split. Returns the
+ * number of Rifts.
+ */
+function validateRifts(
+  map: GeneratedMapV7,
+  base: GeneratedMapV7,
+  width: number,
+): number {
+  assert.deepEqual(map.capitals, base.capitals);
+  assert.deepEqual(map.villages, base.villages);
+  assert.deepEqual(map.treasureChests, base.treasureChests);
+  assert.deepEqual(map.turnOrderSeats, base.turnOrderSeats);
+  assert.deepEqual(map.random, base.random);
+  const rift = new Set<string>();
+  map.board.tiles.forEach((tile, index) => {
+    const before = base.board.tiles[index];
+    assert(before !== undefined);
+    if (tile.terrain !== "RIFT") {
+      assert.deepEqual(tile, before);
+      return;
+    }
+    rift.add(key(tile.at));
+    assert.deepEqual({ ...tile, terrain: before.terrain }, before);
+    assert(["GRASS", "FOREST", "MOUNTAIN"].includes(before.terrain));
+    assert.equal(before.resource, null);
+  });
+  if (rift.size === 0) {
+    assert.deepEqual(map, base, "a map without a Rift is byte-identical");
+    return 0;
+  }
+  const groups: CoordV7[][] = [];
+  const seen = new Set<string>();
+  for (const cell of rift) {
+    if (seen.has(cell)) continue;
+    const [y, x] = cell.split(",").map(Number) as [number, number];
+    const group = [{ x, y }];
+    seen.add(cell);
+    for (let cursor = 0; cursor < group.length; cursor += 1)
+      for (const near of orthogonalNeighbors(width, group[cursor] as CoordV7))
+        if (rift.has(key(near)) && !seen.has(key(near))) {
+          seen.add(key(near));
+          group.push(near);
+        }
+    groups.push(group);
+  }
+  for (const group of groups) {
+    assert.equal(group.length, 3, "a Rift is three tiles");
+    const xs = new Set(group.map((at) => at.x));
+    const ys = new Set(group.map((at) => at.y));
+    assert(
+      (xs.size === 1 && ys.size === 3) || (ys.size === 1 && xs.size === 3),
+      "a Rift is a straight run",
+    );
+    for (const at of group) {
+      assert(at.x > 0 && at.y > 0 && at.x < width - 1 && at.y < width - 1);
+      for (const near of neighbors(width, at)) {
+        const tile = map.board.tiles[near.y * width + near.x];
+        assert(tile?.biome !== null, "a Rift touches water");
+        if (tile?.terrain === "RIFT")
+          assert(group.some((own) => key(own) === key(near)));
+      }
+      const chebyshev = (other: CoordV7) =>
+        Math.max(Math.abs(other.x - at.x), Math.abs(other.y - at.y));
+      assert(map.capitals.every((capital) => chebyshev(capital) >= 3));
+      assert(map.villages.every((village) => chebyshev(village) >= 2));
+      assert(map.treasureChests.every((chest) => key(chest) !== key(at)));
+      for (const other of groups)
+        if (other !== group)
+          assert(other.every((there) => chebyshev(there) >= 4));
+    }
+  }
+  for (const lowland of [false, true]) {
+    const passable = (board: GeneratedMapV7["board"]) => (at: CoordV7) => {
+      const tile = board.tiles[at.y * width + at.x];
+      return (
+        tile !== undefined &&
+        tile.biome !== null &&
+        tile.terrain !== "RIFT" &&
+        (!lowland || tile.terrain !== "MOUNTAIN")
+      );
+    };
+    const before = passable(base.board);
+    const after = passable(map.board);
+    const cells = base.board.tiles.map((tile) => tile.at).filter(before);
+    const unvisited = new Set(cells.map(key));
+    while (unvisited.size > 0) {
+      const first = [...unvisited][0] as string;
+      const [y, x] = first.split(",").map(Number) as [number, number];
+      const component = flood(width, [{ x, y }], before, neighbors);
+      for (const cell of component) unvisited.delete(cell);
+      const remaining = [...component].filter((cell) => !rift.has(cell));
+      const start = remaining[0];
+      if (start === undefined) continue;
+      const [sy, sx] = start.split(",").map(Number) as [number, number];
+      const reached = flood(width, [{ x: sx, y: sy }], after, neighbors);
+      assert(
+        remaining.every((cell) => reached.has(cell)),
+        `a Rift splits a land component (${lowland ? "lowland" : "land"})`,
+      );
+    }
+  }
+  return groups.length;
+}
 
 function dryLandParityHash(
   map: Parameters<typeof canonicalMapRandomHashV7>[0],

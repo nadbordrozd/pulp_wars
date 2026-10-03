@@ -538,7 +538,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r27", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r28", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

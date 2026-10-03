@@ -120,6 +120,7 @@ import {
   type ChibiDomEnvironmentV7,
 } from "./chibi-dom-art-v7";
 import { RULESET7_PLAYER_COLORS } from "../canvas/owner-recolour-v7";
+import { riftPieceV7 } from "../canvas/rift-presentation-v7";
 import {
   DISBAND_BLOCKED_EXPLANATION_V7,
   RESTLESS_EXPLANATION_V7,
@@ -288,6 +289,12 @@ import {
 import type { IceFolkPickV7 } from "../canvas/ice-folk-board-plan-v7";
 
 const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
+/** The Rift (bead pulp_wars-9s0.5, RULESET_7_RIFT.md section 8). */
+export const RIFT_LABEL_V7 = "Only flyers";
+export const RIFT_TOOLTIP_V7 =
+  "A Rift: only flying units can cross or stand on it, and nothing can be built on it.";
+export const RIFT_HELP_TIP_V7 =
+  "Rift: a crack in the ground. Only flying units can cross or stand on it, and nothing can be built on it.";
 const COLORS: readonly PlayerColorV7[] = ["CORAL", "TEAL", "GOLD", "VIOLET"];
 const MAP_TYPES: readonly MapTypeV7[] = [
   "DRY_LAND",
@@ -2622,7 +2629,18 @@ export class Ruleset7DomAppView {
             ? improvementSubjectV7(tile.improvement)
             : tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
               ? `RESOURCE:${tile.resource}`
-              : `TERRAIN:${tile.terrain}`;
+              : tile.terrain === "RIFT"
+                ? `TERRAIN:RIFT_${riftPieceV7(tile.at, (at) => {
+                    const near = view.board.tiles.find((candidate) =>
+                      same(candidate.at, at),
+                    );
+                    return near === undefined
+                      ? false
+                      : near.explored
+                        ? near.terrain === "RIFT"
+                        : null;
+                  })}`
+                : `TERRAIN:${tile.terrain}`;
         const summary = el(this.#document, "div", "v7-selection-summary");
         summary.append(
           identity(
@@ -2644,6 +2662,14 @@ export class Ruleset7DomAppView {
         const details = el(this.#document, "div", "v7-selection-details");
         if (tile.road && name !== "Road")
           details.append(text(this.#document, "p", "Road", "v7-chip"));
+        // The Rift (bead pulp_wars-9s0.5): who may stand on it.
+        if (tile.terrain === "RIFT") {
+          const chip = text(this.#document, "p", RIFT_LABEL_V7, "v7-chip");
+          chip.dataset.rift = "true";
+          chip.title = RIFT_TOOLTIP_V7;
+          chip.setAttribute("aria-label", RIFT_TOOLTIP_V7);
+          details.append(chip);
+        }
         // The Ice Folk revision (section 13.2): what Snow and a Blizzard do
         // for the viewer's faction.
         for (const [shown, label, tooltip, kind] of [
@@ -3269,6 +3295,11 @@ export class Ruleset7DomAppView {
       ACHIEVEMENT_HELP_TIP_V7,
       "Capture every enemy city to win.",
       "Move a land unit onto your port to put it to sea.",
+      // The Rift (bead pulp_wars-9s0.5), once the viewer has seen one.
+      ...(view !== null &&
+      view.board.tiles.some((tile) => tile.explored && tile.terrain === "RIFT")
+        ? [RIFT_HELP_TIP_V7]
+        : []),
       ...(view !== null && view.setup.mapType !== "DRY_LAND"
         ? [
             AT_SEA_MOVE_TEXT_V7,
@@ -6060,7 +6091,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r27",
+    rulesetId: "pulp-wars-poc-7r28",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

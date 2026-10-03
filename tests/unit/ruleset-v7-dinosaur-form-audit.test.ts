@@ -508,7 +508,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // each in the reducer and the queries).
     "src/engine/v7/query.ts": 3,
     "src/engine/v7/reducer.ts": 17,
-    "src/engine/v7/state-schema.ts": 3,
+    // `pulp_wars-9s0.5`: only a land-form flyer stands on a Rift (an Egg,
+    // an embarked unit, and a boat must fail the state check).
+    "src/engine/v7/state-schema.ts": 4,
     "src/engine/v7/wail.ts": 1,
     "src/engine/rules/ruleset-v7.ts": 1,
     // `pulp_wars-c87.5`: the own land units counted for the Shaman training

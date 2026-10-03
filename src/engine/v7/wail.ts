@@ -155,6 +155,8 @@ export function publicWailLeavesGraveV7(
   return (
     tile?.explored === true &&
     tile.biome !== null &&
+    // The Rift (RULESET_7_RIFT.md section 4): no Grave lies on a Rift.
+    tile.terrain !== "RIFT" &&
     tile.site === null &&
     !view.treasureChests.some((chest) => same(chest, unit.at)) &&
     !view.graves.some((grave) => same(grave, unit.at))

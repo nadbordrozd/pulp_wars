@@ -75,6 +75,12 @@ export function afflictionCombatEffectsV7(input: {
   readonly defenderShieldDamage?: number;
   readonly attackerDies: boolean;
   readonly defenderDies: boolean;
+  /**
+   * The Rift (RULESET_7_RIFT.md section 4): whether the attacker or the
+   * defender stands on a Rift, where nothing rises.
+   */
+  readonly attackerOnRift: boolean;
+  readonly defenderOnRift: boolean;
   readonly splash: readonly CombatSplashEntryV7[];
   readonly splashOwner: (unitId: UnitId) => PlayerId | undefined;
   readonly plaguedUnitIds: ReadonlySet<UnitId>;
@@ -137,11 +143,13 @@ export function afflictionCombatEffectsV7(input: {
     defenderBittenRises:
       input.defenderDies &&
       input.defender.form === "LAND" &&
+      !input.defenderOnRift &&
       input.bittenUnitIds.has(input.defender.id) &&
       !input.attackerRule.abilities.includes("INFECT"),
     attackerBittenRises:
       input.attackerDies &&
       input.attacker.form === "LAND" &&
+      !input.attackerOnRift &&
       input.bittenUnitIds.has(input.attacker.id) &&
       !input.defenderRule.abilities.includes("INFECT"),
   };

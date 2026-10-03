@@ -47,6 +47,49 @@ being stripped. The ordinal source mapping is fixed: old Mountain 1/2/3 becomes
 uses these three assets for coordinate-selected live Mountain terrain. All
 earlier Original, Ruleset-6, and Candy terrain files stay byte-frozen.
 
+### Ruleset-7 Rift (`pulp_wars-9s0.5`)
+
+The Rift ([rules](../../product/RULESET_7_RIFT.md)) is a straight crack
+three cells long, horizontal or vertical, on inland ground. Its art is six
+80 x 80 CHIBI `TERRAIN` pieces, one crack per orientation cut into three:
+`TERRAIN:RIFT_H_WEST`, `_H_MIDDLE`, `_H_EAST` (`chibi-rift-h-*`) and
+`TERRAIN:RIFT_V_NORTH`, `_V_MIDDLE`, `_V_SOUTH` (`chibi-rift-v-*`), batch
+`rift` of the [chibi pipeline](../CHIBI_PIPELINE.md#the-rift-bead-pulp_wars-9s05).
+
+- **Look.** A dark jagged chasm seen from directly above: a crumbled brown
+  earth rim, grey rock walls stepping down, and near-black depth, with a
+  few hairline cracks running into the grass beside the horizontal one.
+  Pure dark, no glow: the sampled ember glows sat at one end of the crack
+  (Pixen read "bottom" as the image bottom), and the one glow along the
+  crack was a thin pure-red line that reads as a CORAL territory border.
+  The Undead violet was not tried for the same reason the accents stay
+  scarce: a violet chasm would read as an Undead effect.
+- **Joining.** Each orientation is one generated crack over a strip of
+  three copies of `chibi-grass-1`; the `rift-strip` derivation keeps only
+  the crack's pixels and the accepted grass everywhere else, so the three
+  pieces join without a seam and every outer edge is the grass tile's own
+  seamless edge. The crack tapers to points 18 px inside the strip's two
+  ends and keeps 4 px of plain grass at every outer edge.
+- **Neighbours.** A Rift never touches water and is at least three cells
+  from another Rift, so only land meets its edges: Grass and the Forest
+  ground (the same grass), and Mountains, whose rocky ground is cut back
+  against a Rift like against any non-Mountain land (the Mountain fringe).
+- **Placement.** The renderer picks the piece from the cell's explored
+  neighbours only (an unexplored neighbour is drawn as the crack running on
+  into the fog), so the art never reveals hidden terrain.
+- **Units.** Only Martian flyers stand on a Rift; the Saucer and the
+  Mothership hover over the dark crack with their usual shadow and read
+  clearly against it.
+- **The default look** tones terrain toward the Grass mean (contrast 65%),
+  which turned the near-black chasm into dark olive; a Rift piece keeps its
+  pixels darker than any Grass pixel (luma below 100, fully below 70) out
+  of that toning, so the chasm keeps its depth and its Grass is toned
+  exactly like the Grass beside it.
+- **LEGACY and the Classic look.** The Classic look draws the same CHIBI
+  pieces without the new direction's toning; LEGACY has no Rift raster and
+  draws the cell's Grass with a code-drawn crack of the same shape (brown
+  rim, near-black chasm, a dark ember line), as LEGACY draws Snow.
+
 ### Original square base-terrain family
 
 The accepted Original square family contains four Grass, four Forest, and

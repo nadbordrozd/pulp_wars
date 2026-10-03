@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r27`. Role facts resolve through the owner's
+previews under `pulp-wars-poc-7r28`. Role facts resolve through the owner's
 faction registration; the revision-13 Undead tactics, the revision-14
 Plague, Bitten, Tend-cure, and Vampire play, the revision-15 Plague
 duration valuation, the endgame siege mode (`pulp_wars-1mc`), the
@@ -1436,6 +1436,19 @@ under either. The longest synchronous decision in the head-to-head runs was
 374 ms on a loaded machine (four matches in parallel); the most accepted
 commands in one turn was 87 (an Ice Folk-Dinosaur match on 14 x 14), below
 the 128-command cap.
+
+## The Rift (`pulp_wars-9s0.5`)
+
+The policy plays the [Rift](../product/RULESET_7_RIFT.md) through the
+public queries, which offer only legal Moves, attacks, and abilities, so
+no unit is ever told to enter a Rift it cannot stand on and no building is
+ever planned on one. The policy's own estimates agree with the rule: the
+campaign and endgame distance maps and the naval plan's land components
+treat a Rift as impassable ground, the Road corridor never routes a Road
+over one, the threat estimate lets only a hostile flyer move over or end
+on a Rift, and no hostile Kaboom is expected from a Rift tile. Flyers are
+not sent to Rifts on purpose; they end there only when an ordinary move
+choice does.
 
 ## Revision-8 merged industry and processor adjacency
 

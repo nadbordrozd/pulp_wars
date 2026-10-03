@@ -1,0 +1,1228 @@
+{
+  "schemaVersion": 1,
+  "batch": "rift",
+  "recipes": {
+    "rift-h-dark-a": {
+      "id": "rift-h-dark-a",
+      "asset": "chibi-rift-h-west",
+      "jobId": "0f62ebf3-0d65-4c7f-98aa-5e46529f9788",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-h-west",
+        "subject": "TERRAIN:RIFT_H_WEST",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 240,
+          "height": 80
+        },
+        "seed": 95052,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Cut one long narrow jagged chasm into this grass, running horizontally through the middle from about 24 pixels inside the left edge to about 24 pixels inside the right edge, tapering to thin closed points at both ends. Crumbled brown earth lips and dark grey rock walls dropping into pure black depth. Keep all the grass around the chasm exactly unchanged."
+          }
+        ],
+        "prompt": "Cut one long narrow jagged chasm into this grass, running horizontally through the middle from about 24 pixels inside the left edge to about 24 pixels inside the right edge, tapering to thin closed points at both ends. Crumbled brown earth lips and dark grey rock walls dropping into pure black depth. Keep all the grass around the chasm exactly unchanged.",
+        "negativePrompt": "",
+        "description": "Cut one long narrow jagged chasm into this grass, running horizontally through the middle from about 24 pixels inside the left edge to about 24 pixels inside the right edge, tapering to thin closed points at both ends. Crumbled brown earth lips and dark grey rock walls dropping into pure black depth. Keep all the grass around the chasm exactly unchanged.",
+        "editInstruction": "Cut one long narrow jagged chasm into this grass, running horizontally through the middle from about 24 pixels inside the left edge to about 24 pixels inside the right edge, tapering to thin closed points at both ends. Crumbled brown earth lips and dark grey rock walls dropping into pure black depth. Keep all the grass around the chasm exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "HORIZONTAL",
+          "batch": "1",
+          "sha256": "96e853b3550610044f148ccac721e85f10911a769cacae9d4bde7a6f09892441"
+        }
+      },
+      "submittedAt": "2026-10-03T06:12:13.793Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 240,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-h-dark-a.png",
+      "rawSheetSha256": "6adf4061ffc2962cf3aaf67b514fe37915fc6326c8e89f93f905488834ca9825",
+      "completedAt": "2026-10-03T06:12:39.721Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Unguided edit of the plain grass strip: Pixen drew a side-view cliff or a fire pit at the image's bottom edge, not a top-down crack inside the strip; the crack is not contained in the three tiles. Replaced by the guided recipes.",
+        "reviewedAt": "2026-10-03T06:21:06.944Z"
+      }
+    },
+    "rift-h-ember-a": {
+      "id": "rift-h-ember-a",
+      "asset": "chibi-rift-h-west",
+      "jobId": "fc7c9d6f-77de-4ba8-9d60-905a8676a11e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-h-west",
+        "subject": "TERRAIN:RIFT_H_WEST",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 240,
+          "height": 80
+        },
+        "seed": 95051,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Cut one long narrow jagged crack into this grass, running horizontally through the middle from about 24 pixels inside the left edge to about 24 pixels inside the right edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged."
+          }
+        ],
+        "prompt": "Cut one long narrow jagged crack into this grass, running horizontally through the middle from about 24 pixels inside the left edge to about 24 pixels inside the right edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged.",
+        "negativePrompt": "",
+        "description": "Cut one long narrow jagged crack into this grass, running horizontally through the middle from about 24 pixels inside the left edge to about 24 pixels inside the right edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged.",
+        "editInstruction": "Cut one long narrow jagged crack into this grass, running horizontally through the middle from about 24 pixels inside the left edge to about 24 pixels inside the right edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "HORIZONTAL",
+          "batch": "1",
+          "sha256": "96e853b3550610044f148ccac721e85f10911a769cacae9d4bde7a6f09892441"
+        }
+      },
+      "submittedAt": "2026-10-03T06:11:42.034Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 240,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-h-ember-a.png",
+      "rawSheetSha256": "eba4cdb6e87c38171a49fd5b8565d74b7d32b42ed274a9b091ee3703678626fa",
+      "completedAt": "2026-10-03T06:12:13.789Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Unguided edit of the plain grass strip: Pixen drew a side-view cliff or a fire pit at the image's bottom edge, not a top-down crack inside the strip; the crack is not contained in the three tiles. Replaced by the guided recipes.",
+        "reviewedAt": "2026-10-03T06:21:06.683Z"
+      }
+    },
+    "rift-h-ember-b": {
+      "id": "rift-h-ember-b",
+      "asset": "chibi-rift-h-west",
+      "jobId": "69dccab7-eafe-485d-b823-7344594e932c",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-h-west",
+        "subject": "TERRAIN:RIFT_H_WEST",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 240,
+          "height": 80
+        },
+        "seed": 95053,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Draw a wide zigzag fissure split open in this meadow, running horizontally across the middle from about 20 pixels inside the left edge to about 20 pixels inside the right edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged."
+          }
+        ],
+        "prompt": "Draw a wide zigzag fissure split open in this meadow, running horizontally across the middle from about 20 pixels inside the left edge to about 20 pixels inside the right edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged.",
+        "negativePrompt": "",
+        "description": "Draw a wide zigzag fissure split open in this meadow, running horizontally across the middle from about 20 pixels inside the left edge to about 20 pixels inside the right edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged.",
+        "editInstruction": "Draw a wide zigzag fissure split open in this meadow, running horizontally across the middle from about 20 pixels inside the left edge to about 20 pixels inside the right edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "HORIZONTAL",
+          "batch": "1",
+          "sha256": "96e853b3550610044f148ccac721e85f10911a769cacae9d4bde7a6f09892441"
+        }
+      },
+      "submittedAt": "2026-10-03T06:12:39.725Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 240,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-h-ember-b.png",
+      "rawSheetSha256": "2b5269a1e12413476334b5d9f904d12486b9a6c368ef1abb449ebe4b1d18b648",
+      "completedAt": "2026-10-03T06:13:21.193Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Unguided edit of the plain grass strip: Pixen drew a side-view cliff or a fire pit at the image's bottom edge, not a top-down crack inside the strip; the crack is not contained in the three tiles. Replaced by the guided recipes.",
+        "reviewedAt": "2026-10-03T06:21:07.201Z"
+      }
+    },
+    "rift-h-g1-dark": {
+      "id": "rift-h-g1-dark",
+      "asset": "chibi-rift-h-west",
+      "jobId": "847a93de-63c0-4b3a-ae42-6aabd0a17aa9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-h-west",
+        "subject": "TERRAIN:RIFT_H_WEST",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 240,
+          "height": 80
+        },
+        "seed": 95202,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "HORIZONTAL",
+          "guide": {
+            "seed": 11,
+            "halfWidth": 9,
+            "inset": 18,
+            "wander": 3
+          },
+          "batch": "1",
+          "sha256": "f70a219e976840b5d68f8df1d0fb5e736cece8c37f86ccb8baecc81ffd650b42"
+        }
+      },
+      "submittedAt": "2026-10-03T06:16:24.225Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 240,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-h-g1-dark.png",
+      "rawSheetSha256": "31142db3d16dfea64cb1058d871a1df4d3c3c193df9ddac2ae65d47da0bcfe4b",
+      "completedAt": "2026-10-03T06:16:50.623Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Top-down jagged chasm on the g1 guide: crumbled brown rim, grey rock walls, near-black depth, a few hairline cracks into the grass; tapers to points 18 px inside both ends. Pure dark (no ember): the ember variants put the glow at one end and the glow variant reads as a red border line. The rift-strip derivation keeps only the crack over chibi-grass-1, so the three pieces join and every outer edge is the grass tile's own. Reviewed at 1x and 4x, alone and in a 5 x 5 grass scene with a Forest and a Mountain.",
+        "reviewedAt": "2026-10-03T06:21:10.328Z"
+      }
+    },
+    "rift-h-g1-ember": {
+      "id": "rift-h-g1-ember",
+      "asset": "chibi-rift-h-west",
+      "jobId": "24ec0ff6-dd80-47bb-bfc6-147eb5d1506b",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-h-west",
+        "subject": "TERRAIN:RIFT_H_WEST",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 240,
+          "height": 80
+        },
+        "seed": 95201,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "HORIZONTAL",
+          "guide": {
+            "seed": 11,
+            "halfWidth": 9,
+            "inset": 18,
+            "wander": 3
+          },
+          "batch": "1",
+          "sha256": "f70a219e976840b5d68f8df1d0fb5e736cece8c37f86ccb8baecc81ffd650b42"
+        }
+      },
+      "submittedAt": "2026-10-03T06:15:47.928Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 240,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-h-g1-ember.png",
+      "rawSheetSha256": "52aa26e451a47ed15d222e500be2ea5691b13d52f18e8f56478ce0a5ed9830f7",
+      "completedAt": "2026-10-03T06:16:24.220Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Guided, top-down and contained, but the ember glow sits at one end of the crack (Pixen read 'bottom' as the image bottom), so the two orientations would not match and the crack reads as a lava pit, not calm terrain.",
+        "reviewedAt": "2026-10-03T06:21:08.232Z"
+      }
+    },
+    "rift-h-g1-glow": {
+      "id": "rift-h-g1-glow",
+      "asset": "chibi-rift-h-west",
+      "jobId": "a0da0298-241f-48a4-8d7f-f39df3408374",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-h-west",
+        "subject": "TERRAIN:RIFT_H_WEST",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 240,
+          "height": 80
+        },
+        "seed": 95301,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into black, and one thin faint dull ember-red glowing line running along the whole centre line deep inside the crack, from end to end. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into black, and one thin faint dull ember-red glowing line running along the whole centre line deep inside the crack, from end to end. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into black, and one thin faint dull ember-red glowing line running along the whole centre line deep inside the crack, from end to end. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into black, and one thin faint dull ember-red glowing line running along the whole centre line deep inside the crack, from end to end. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "HORIZONTAL",
+          "guide": {
+            "seed": 11,
+            "halfWidth": 9,
+            "inset": 18,
+            "wander": 3
+          },
+          "batch": "1",
+          "sha256": "f70a219e976840b5d68f8df1d0fb5e736cece8c37f86ccb8baecc81ffd650b42"
+        }
+      },
+      "submittedAt": "2026-10-03T06:18:58.649Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 240,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-h-g1-glow.png",
+      "rawSheetSha256": "d091f0a9f3713030338ca1dc4aeceb3f1314a89294463de56e2b45a559d6d0c1",
+      "completedAt": "2026-10-03T06:19:24.991Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A thin bright red line along the crack's centre: it reads like a CORAL territory border line inside the chasm and is pure red, not ember; the vertical glow recipe drew only a short dash, so the orientations would not match. Pure dark was chosen.",
+        "reviewedAt": "2026-10-03T06:21:09.794Z"
+      }
+    },
+    "rift-h-g2-dark": {
+      "id": "rift-h-g2-dark",
+      "asset": "chibi-rift-h-west",
+      "jobId": "1124d7c5-0c71-419b-9413-b7d49d6e2c14",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-h-west",
+        "subject": "TERRAIN:RIFT_H_WEST",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 240,
+          "height": 80
+        },
+        "seed": 95204,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "HORIZONTAL",
+          "guide": {
+            "seed": 23,
+            "halfWidth": 11,
+            "inset": 16,
+            "wander": 4
+          },
+          "batch": "1",
+          "sha256": "edba00d6e218594fd41b1345b116e203429b514adbd1c3de9d7867281b243d39"
+        }
+      },
+      "submittedAt": "2026-10-03T06:17:27.188Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 240,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-h-g2-dark.png",
+      "rawSheetSha256": "13dc0a28c418df173f03b3c374d232ebc6b3eab4256083e68674205d65a21b2a",
+      "completedAt": "2026-10-03T06:17:58.562Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Good top-down chasm, smooth rim; the g1 guide (rift-h-g1-dark) matches the accepted vertical crack's shape and rim better, so this one is kept as history only.",
+        "reviewedAt": "2026-10-03T06:21:09.275Z"
+      }
+    },
+    "rift-h-g2-ember": {
+      "id": "rift-h-g2-ember",
+      "asset": "chibi-rift-h-west",
+      "jobId": "a8701518-12fe-4f55-b2ca-bb473118adfb",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-h-west",
+        "subject": "TERRAIN:RIFT_H_WEST",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 240,
+          "height": 80
+        },
+        "seed": 95203,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "HORIZONTAL",
+          "guide": {
+            "seed": 23,
+            "halfWidth": 11,
+            "inset": 16,
+            "wander": 4
+          },
+          "batch": "1",
+          "sha256": "edba00d6e218594fd41b1345b116e203429b514adbd1c3de9d7867281b243d39"
+        }
+      },
+      "submittedAt": "2026-10-03T06:16:50.628Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 240,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-h-g2-ember.png",
+      "rawSheetSha256": "f563d28b8b766ba22ad522e1ad6ce194a6aaeb5fc3e39c8f129a7f360bb28346",
+      "completedAt": "2026-10-03T06:17:27.184Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Guided, top-down and contained, but the ember glow sits at one end of the crack (Pixen read 'bottom' as the image bottom), so the two orientations would not match and the crack reads as a lava pit, not calm terrain.",
+        "reviewedAt": "2026-10-03T06:21:08.491Z"
+      }
+    },
+    "rift-v-dark-a": {
+      "id": "rift-v-dark-a",
+      "asset": "chibi-rift-v-north",
+      "jobId": "b64d47d0-e04e-4966-a704-e3ca479a18bb",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-v-north",
+        "subject": "TERRAIN:RIFT_V_NORTH",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 80,
+          "height": 240
+        },
+        "seed": 95152,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Cut one long narrow jagged chasm into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled brown earth lips and dark grey rock walls dropping into pure black depth. Keep all the grass around the chasm exactly unchanged."
+          }
+        ],
+        "prompt": "Cut one long narrow jagged chasm into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled brown earth lips and dark grey rock walls dropping into pure black depth. Keep all the grass around the chasm exactly unchanged.",
+        "negativePrompt": "",
+        "description": "Cut one long narrow jagged chasm into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled brown earth lips and dark grey rock walls dropping into pure black depth. Keep all the grass around the chasm exactly unchanged.",
+        "editInstruction": "Cut one long narrow jagged chasm into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled brown earth lips and dark grey rock walls dropping into pure black depth. Keep all the grass around the chasm exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "VERTICAL",
+          "batch": "1",
+          "sha256": "d44fc49e5ab25891c17f0ad595f632137a5411aac3b40f72196fec6846bf79ea"
+        }
+      },
+      "submittedAt": "2026-10-03T06:12:19.068Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 240
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-v-dark-a.png",
+      "rawSheetSha256": "4c946f69bd6fc7eede18a1f1fcf4e9a95971126305b291ec4ed8bba21bc81fe6",
+      "completedAt": "2026-10-03T06:12:50.207Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Unguided edit of the plain grass strip: Pixen drew a side-view cliff or a fire pit at the image's bottom edge, not a top-down crack inside the strip; the crack is not contained in the three tiles. Replaced by the guided recipes.",
+        "reviewedAt": "2026-10-03T06:21:07.713Z"
+      }
+    },
+    "rift-v-ember-a": {
+      "id": "rift-v-ember-a",
+      "asset": "chibi-rift-v-north",
+      "jobId": "31f8d87d-168d-493a-b7fe-c645985772ee",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-v-north",
+        "subject": "TERRAIN:RIFT_V_NORTH",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 80,
+          "height": 240
+        },
+        "seed": 95151,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Cut one long narrow jagged crack into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged."
+          }
+        ],
+        "prompt": "Cut one long narrow jagged crack into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged.",
+        "negativePrompt": "",
+        "description": "Cut one long narrow jagged crack into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged.",
+        "editInstruction": "Cut one long narrow jagged crack into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "VERTICAL",
+          "batch": "1",
+          "sha256": "d44fc49e5ab25891c17f0ad595f632137a5411aac3b40f72196fec6846bf79ea"
+        }
+      },
+      "submittedAt": "2026-10-03T06:11:42.034Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 240
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-v-ember-a.png",
+      "rawSheetSha256": "7d4e46655909f1ac094d31b5657cbb8f8a28b4b6d74f039b3dae2ae679e68ce4",
+      "completedAt": "2026-10-03T06:12:19.060Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Unguided edit of the plain grass strip: Pixen drew a side-view cliff or a fire pit at the image's bottom edge, not a top-down crack inside the strip; the crack is not contained in the three tiles. Replaced by the guided recipes.",
+        "reviewedAt": "2026-10-03T06:21:07.458Z"
+      }
+    },
+    "rift-v-ember-b": {
+      "id": "rift-v-ember-b",
+      "asset": "chibi-rift-v-north",
+      "jobId": "3dd39ca0-c173-42fb-a99b-51b68d1cb150",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-v-north",
+        "subject": "TERRAIN:RIFT_V_NORTH",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 80,
+          "height": 240
+        },
+        "seed": 95153,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Draw a wide zigzag fissure split open in this meadow, running vertically across the middle from about 20 pixels inside the top edge to about 20 pixels inside the bottom edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged."
+          }
+        ],
+        "prompt": "Draw a wide zigzag fissure split open in this meadow, running vertically across the middle from about 20 pixels inside the top edge to about 20 pixels inside the bottom edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged.",
+        "negativePrompt": "",
+        "description": "Draw a wide zigzag fissure split open in this meadow, running vertically across the middle from about 20 pixels inside the top edge to about 20 pixels inside the bottom edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged.",
+        "editInstruction": "Draw a wide zigzag fissure split open in this meadow, running vertically across the middle from about 20 pixels inside the top edge to about 20 pixels inside the bottom edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "VERTICAL",
+          "batch": "1",
+          "sha256": "d44fc49e5ab25891c17f0ad595f632137a5411aac3b40f72196fec6846bf79ea"
+        }
+      },
+      "submittedAt": "2026-10-03T06:12:50.210Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 240
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-v-ember-b.png",
+      "rawSheetSha256": "7e508aa929ee81ca9f4210b826f624447155d2231c47733b17797995e88fd707",
+      "completedAt": "2026-10-03T06:13:21.791Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Unguided edit of the plain grass strip: Pixen drew a side-view cliff or a fire pit at the image's bottom edge, not a top-down crack inside the strip; the crack is not contained in the three tiles. Replaced by the guided recipes.",
+        "reviewedAt": "2026-10-03T06:21:07.970Z"
+      }
+    },
+    "rift-v-g1-dark": {
+      "id": "rift-v-g1-dark",
+      "asset": "chibi-rift-v-north",
+      "jobId": "e347997f-a1e7-4461-ab9e-96b93145faa0",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-v-north",
+        "subject": "TERRAIN:RIFT_V_NORTH",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 80,
+          "height": 240
+        },
+        "seed": 95206,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "VERTICAL",
+          "guide": {
+            "seed": 11,
+            "halfWidth": 9,
+            "inset": 18,
+            "wander": 3
+          },
+          "batch": "1",
+          "sha256": "4bcedb1f177354bd49cfef0c93043abb838f17fba620b123f9df026cb6a05e13"
+        }
+      },
+      "submittedAt": "2026-10-03T06:16:18.996Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 240
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-v-g1-dark.png",
+      "rawSheetSha256": "9fd8e489bc18283eb98f2eb53ca2a819a7d061012c1057d77865f721c6bcf57e",
+      "completedAt": "2026-10-03T06:16:45.730Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Top-down wavy chasm on the g1 guide, same rim, walls and near-black depth as the horizontal piece; tapers to points 18 px inside both ends. Pure dark, as the horizontal set. The rift-strip derivation keeps only the crack over chibi-grass-1, so the three pieces join and every outer edge is the grass tile's own. Reviewed at 1x and 4x, alone and in a 5 x 5 grass scene with a Forest and a Mountain.",
+        "reviewedAt": "2026-10-03T06:21:11.167Z"
+      }
+    },
+    "rift-v-g1-ember": {
+      "id": "rift-v-g1-ember",
+      "asset": "chibi-rift-v-north",
+      "jobId": "073e91dd-7038-44a5-84f5-8e30e67a8995",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-v-north",
+        "subject": "TERRAIN:RIFT_V_NORTH",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 80,
+          "height": 240
+        },
+        "seed": 95205,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "VERTICAL",
+          "guide": {
+            "seed": 11,
+            "halfWidth": 9,
+            "inset": 18,
+            "wander": 3
+          },
+          "batch": "1",
+          "sha256": "4bcedb1f177354bd49cfef0c93043abb838f17fba620b123f9df026cb6a05e13"
+        }
+      },
+      "submittedAt": "2026-10-03T06:15:47.940Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 240
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-v-g1-ember.png",
+      "rawSheetSha256": "a594564929459be01cf23510161360745cbfd1066af749064ddfcc0abc02964c",
+      "completedAt": "2026-10-03T06:16:18.991Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Guided, top-down and contained, but the ember glow sits at one end of the crack (Pixen read 'bottom' as the image bottom), so the two orientations would not match and the crack reads as a lava pit, not calm terrain.",
+        "reviewedAt": "2026-10-03T06:21:08.749Z"
+      }
+    },
+    "rift-v-g1-glow": {
+      "id": "rift-v-g1-glow",
+      "asset": "chibi-rift-v-north",
+      "jobId": "5ac87367-c844-465e-b557-a4a1cee2aa49",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-v-north",
+        "subject": "TERRAIN:RIFT_V_NORTH",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 80,
+          "height": 240
+        },
+        "seed": 95302,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into black, and one thin faint dull ember-red glowing line running along the whole centre line deep inside the crack, from end to end. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into black, and one thin faint dull ember-red glowing line running along the whole centre line deep inside the crack, from end to end. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into black, and one thin faint dull ember-red glowing line running along the whole centre line deep inside the crack, from end to end. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into black, and one thin faint dull ember-red glowing line running along the whole centre line deep inside the crack, from end to end. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "VERTICAL",
+          "guide": {
+            "seed": 11,
+            "halfWidth": 9,
+            "inset": 18,
+            "wander": 3
+          },
+          "batch": "1",
+          "sha256": "4bcedb1f177354bd49cfef0c93043abb838f17fba620b123f9df026cb6a05e13"
+        }
+      },
+      "submittedAt": "2026-10-03T06:19:24.999Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 240
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-v-g1-glow.png",
+      "rawSheetSha256": "38862132d7fd8a70a818534311d8c35391959cb3be42e691c990f7b016d020b5",
+      "completedAt": "2026-10-03T06:19:50.903Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Only a short red dash in the middle of the chasm, not a glow along it; does not match the horizontal glow. Pure dark was chosen.",
+        "reviewedAt": "2026-10-03T06:21:10.053Z"
+      }
+    },
+    "rift-v-g2-dark": {
+      "id": "rift-v-g2-dark",
+      "asset": "chibi-rift-v-north",
+      "jobId": "96d215f5-a461-41ab-909a-3c2e839ba31e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-v-north",
+        "subject": "TERRAIN:RIFT_V_NORTH",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 80,
+          "height": 240
+        },
+        "seed": 95208,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "VERTICAL",
+          "guide": {
+            "seed": 23,
+            "halfWidth": 11,
+            "inset": 16,
+            "wander": 4
+          },
+          "batch": "1",
+          "sha256": "52a40e1605b55bb23432fe48041d0365fe02d7cd47d8047e27b37cc84cf07c9e"
+        }
+      },
+      "submittedAt": "2026-10-03T06:17:24.079Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 240
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-v-g2-dark.png",
+      "rawSheetSha256": "a0f13f175923cdd941167193bd9ecb8db7fc64d666a8603d7261374f43bcce8e",
+      "completedAt": "2026-10-03T06:17:50.033Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Good wavy chasm but wider and lumpier than the horizontal g1 crack, and its upper end has a stray grass tuft on the lip; rift-v-g1-dark matches the horizontal piece better.",
+        "reviewedAt": "2026-10-03T06:21:09.538Z"
+      }
+    },
+    "rift-v-g2-ember": {
+      "id": "rift-v-g2-ember",
+      "asset": "chibi-rift-v-north",
+      "jobId": "f3b85075-854f-4785-9b27-ae1705f4711c",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "rift",
+        "asset": "chibi-rift-v-north",
+        "subject": "TERRAIN:RIFT_V_NORTH",
+        "faction": "ORIGINAL",
+        "recipeClass": "rift",
+        "requestSize": {
+          "width": 80,
+          "height": 240
+        },
+        "seed": 95207,
+        "noBackground": false,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged."
+          }
+        ],
+        "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "negativePrompt": "",
+        "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+        "groundStrip": {
+          "asset": "chibi-grass-1",
+          "orientation": "VERTICAL",
+          "guide": {
+            "seed": 23,
+            "halfWidth": 11,
+            "inset": 16,
+            "wander": 4
+          },
+          "batch": "1",
+          "sha256": "52a40e1605b55bb23432fe48041d0365fe02d7cd47d8047e27b37cc84cf07c9e"
+        }
+      },
+      "submittedAt": "2026-10-03T06:16:45.734Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 240
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-rift/rift-v-g2-ember.png",
+      "rawSheetSha256": "0d2b11de35104b6c99e833f6620720aeddf2ff31a9fc72e159591ecf30c8a1c7",
+      "completedAt": "2026-10-03T06:17:24.075Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Guided, top-down and contained, but the ember glow sits at one end of the crack (Pixen read 'bottom' as the image bottom), so the two orientations would not match and the crack reads as a lava pit, not calm terrain.",
+        "reviewedAt": "2026-10-03T06:21:09.011Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-rift-h-east": {
+      "id": "chibi-rift-h-east",
+      "subject": "TERRAIN:RIFT_H_EAST",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "rift-h-g1-dark",
+      "candidate": 0,
+      "candidateSha256": "25b8c1d98d59ad903e4234a6f18f4d11e48b1c47809924a39dc274c5e849d25b",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-rift-h-east.png",
+        "sha256": "8621c1eaa6c6337f15fc5d370bdff76d39d5f9f319792fc57a08e44a88544ae6",
+        "pixelSha256": "c625fa47b3a79fe721b8d9a9e40ff556a8b55b06bf21827c27507f8780d77392",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "rift-strip",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        },
+        "riftStrip": {
+          "orientation": "HORIZONTAL",
+          "threshold": 40,
+          "minComponent": 12,
+          "dilate": 1,
+          "margin": 4,
+          "piece": 2,
+          "crackPixels": 6240
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Top-down jagged chasm on the g1 guide: crumbled brown rim, grey rock walls, near-black depth, a few hairline cracks into the grass; tapers to points 18 px inside both ends. Pure dark (no ember): the ember variants put the glow at one end and the glow variant reads as a red border line. The rift-strip derivation keeps only the crack over chibi-grass-1, so the three pieces join and every outer edge is the grass tile's own. Reviewed at 1x and 4x, alone and in a 5 x 5 grass scene with a Forest and a Mountain.",
+      "acceptedAt": "2026-10-03T06:21:10.885Z"
+    },
+    "chibi-rift-h-middle": {
+      "id": "chibi-rift-h-middle",
+      "subject": "TERRAIN:RIFT_H_MIDDLE",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "rift-h-g1-dark",
+      "candidate": 0,
+      "candidateSha256": "25b8c1d98d59ad903e4234a6f18f4d11e48b1c47809924a39dc274c5e849d25b",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-rift-h-middle.png",
+        "sha256": "03eb8e792f29604e1e6ca5dec2fe76c23864dc55e59cd040386b284a00766216",
+        "pixelSha256": "714a430b473c8c6128688aa7a19a33cde168c2fc12691c3c808b09ab94f160f7",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "rift-strip",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        },
+        "riftStrip": {
+          "orientation": "HORIZONTAL",
+          "threshold": 40,
+          "minComponent": 12,
+          "dilate": 1,
+          "margin": 4,
+          "piece": 1,
+          "crackPixels": 6240
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Top-down jagged chasm on the g1 guide: crumbled brown rim, grey rock walls, near-black depth, a few hairline cracks into the grass; tapers to points 18 px inside both ends. Pure dark (no ember): the ember variants put the glow at one end and the glow variant reads as a red border line. The rift-strip derivation keeps only the crack over chibi-grass-1, so the three pieces join and every outer edge is the grass tile's own. Reviewed at 1x and 4x, alone and in a 5 x 5 grass scene with a Forest and a Mountain.",
+      "acceptedAt": "2026-10-03T06:21:10.606Z"
+    },
+    "chibi-rift-h-west": {
+      "id": "chibi-rift-h-west",
+      "subject": "TERRAIN:RIFT_H_WEST",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "rift-h-g1-dark",
+      "candidate": 0,
+      "candidateSha256": "25b8c1d98d59ad903e4234a6f18f4d11e48b1c47809924a39dc274c5e849d25b",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-rift-h-west.png",
+        "sha256": "a8ded44b54778ae4af362c3ff11608222f137021c6ec44200c4765520d599c16",
+        "pixelSha256": "b53f2d72de1b75d88bcab9968132042cf9b7cb27d88d9d4f7fa08ed3514b0832",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "rift-strip",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        },
+        "riftStrip": {
+          "orientation": "HORIZONTAL",
+          "threshold": 40,
+          "minComponent": 12,
+          "dilate": 1,
+          "margin": 4,
+          "piece": 0,
+          "crackPixels": 6240
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Top-down jagged chasm on the g1 guide: crumbled brown rim, grey rock walls, near-black depth, a few hairline cracks into the grass; tapers to points 18 px inside both ends. Pure dark (no ember): the ember variants put the glow at one end and the glow variant reads as a red border line. The rift-strip derivation keeps only the crack over chibi-grass-1, so the three pieces join and every outer edge is the grass tile's own. Reviewed at 1x and 4x, alone and in a 5 x 5 grass scene with a Forest and a Mountain.",
+      "acceptedAt": "2026-10-03T06:21:10.328Z"
+    },
+    "chibi-rift-v-middle": {
+      "id": "chibi-rift-v-middle",
+      "subject": "TERRAIN:RIFT_V_MIDDLE",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "rift-v-g1-dark",
+      "candidate": 0,
+      "candidateSha256": "39cf4504ccb41ebd6f089ac882c38dcee29152dc213cf3b89a2e7e7f66420a5b",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-rift-v-middle.png",
+        "sha256": "e8d6bae08b9b8819c9b7423ff3346ab6f0af92f9692aee869eba72fc5f30f9f5",
+        "pixelSha256": "6047a2dc27aac5454bdeef56a4be7120b5fbdf9fc7f9921d45a5112710107e26",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "rift-strip",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        },
+        "riftStrip": {
+          "orientation": "VERTICAL",
+          "threshold": 40,
+          "minComponent": 12,
+          "dilate": 1,
+          "margin": 4,
+          "piece": 1,
+          "crackPixels": 6316
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Top-down wavy chasm on the g1 guide, same rim, walls and near-black depth as the horizontal piece; tapers to points 18 px inside both ends. Pure dark, as the horizontal set. The rift-strip derivation keeps only the crack over chibi-grass-1, so the three pieces join and every outer edge is the grass tile's own. Reviewed at 1x and 4x, alone and in a 5 x 5 grass scene with a Forest and a Mountain.",
+      "acceptedAt": "2026-10-03T06:21:11.447Z"
+    },
+    "chibi-rift-v-north": {
+      "id": "chibi-rift-v-north",
+      "subject": "TERRAIN:RIFT_V_NORTH",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "rift-v-g1-dark",
+      "candidate": 0,
+      "candidateSha256": "39cf4504ccb41ebd6f089ac882c38dcee29152dc213cf3b89a2e7e7f66420a5b",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-rift-v-north.png",
+        "sha256": "7ede1d443d3f2d1ee56200f0e93e02efb80e79ee50cfd4c8c205732be9ff0769",
+        "pixelSha256": "3360df3433fe84125ecf5b28dfad1b407b080bb6b4806571801deaaeb271248e",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "rift-strip",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        },
+        "riftStrip": {
+          "orientation": "VERTICAL",
+          "threshold": 40,
+          "minComponent": 12,
+          "dilate": 1,
+          "margin": 4,
+          "piece": 0,
+          "crackPixels": 6316
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Top-down wavy chasm on the g1 guide, same rim, walls and near-black depth as the horizontal piece; tapers to points 18 px inside both ends. Pure dark, as the horizontal set. The rift-strip derivation keeps only the crack over chibi-grass-1, so the three pieces join and every outer edge is the grass tile's own. Reviewed at 1x and 4x, alone and in a 5 x 5 grass scene with a Forest and a Mountain.",
+      "acceptedAt": "2026-10-03T06:21:11.167Z"
+    },
+    "chibi-rift-v-south": {
+      "id": "chibi-rift-v-south",
+      "subject": "TERRAIN:RIFT_V_SOUTH",
+      "assetClass": "TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "rift-v-g1-dark",
+      "candidate": 0,
+      "candidateSha256": "39cf4504ccb41ebd6f089ac882c38dcee29152dc213cf3b89a2e7e7f66420a5b",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-rift-v-south.png",
+        "sha256": "42df20374b20c300e1dca50d2e69a4e63361106e36e7420087bbc5ab6e8ef163",
+        "pixelSha256": "de48c40f0ee07eee7f83e99d0b45a8c9764fed30ec8076d1f8ef65aceab2969a",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "rift-strip",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        },
+        "riftStrip": {
+          "orientation": "VERTICAL",
+          "threshold": 40,
+          "minComponent": 12,
+          "dilate": 1,
+          "margin": 4,
+          "piece": 2,
+          "crackPixels": 6316
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Top-down wavy chasm on the g1 guide, same rim, walls and near-black depth as the horizontal piece; tapers to points 18 px inside both ends. Pure dark, as the horizontal set. The rift-strip derivation keeps only the crack over chibi-grass-1, so the three pieces join and every outer edge is the grass tile's own. Reviewed at 1x and 4x, alone and in a 5 x 5 grass scene with a Forest and a Mountain.",
+      "acceptedAt": "2026-10-03T06:21:11.727Z"
+    }
+  }
+}

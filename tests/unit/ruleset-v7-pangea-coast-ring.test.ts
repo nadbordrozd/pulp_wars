@@ -183,6 +183,8 @@ describe("Pangea coast ring", () => {
   });
 
   it("leaves every other map type byte-identical", () => {
+    // The coast-ring generator (`PANGEA_COAST_RING`, before the Rift of
+    // `pulp_wars-9s0.5`) against the one before it.
     for (const mapType of [
       "DRY_LAND",
       "CONTINENTS",
@@ -192,7 +194,13 @@ describe("Pangea coast ring", () => {
       for (const [width, aiCount] of SHAPES)
         for (const seed of [0, 1]) {
           const input = setup(mapType, width, aiCount, seed);
-          expect(generateInitialMapV7(input)).toEqual(
+          expect(
+            generateInitialMapWithVillageCountV7(
+              input,
+              villageCountV7(input),
+              "PANGEA_COAST_RING",
+            ),
+          ).toEqual(
             generateInitialMapWithVillageCountV7(
               input,
               villageCountV7(input),

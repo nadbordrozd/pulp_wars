@@ -1967,6 +1967,8 @@ A Rift tile (`pulp_wars-9s0.5`; only flyers stand on it) is never Snow, and
 Mountain-born does not cover it: no Ice Folk unit enters a Rift. A flyer on a
 Rift is in land form: it can be Chilled, attacked from an adjacent tile, and
 shattered; the attacker does not advance, because it cannot enter the tile.
+**Implemented** by `pulp_wars-9s0.5` (`pulp-wars-poc-7r28`;
+[Rift overlay](RULESET_7_RIFT.md)).
 
 ### 10.10 Fog and observation
 
@@ -3170,8 +3172,11 @@ remaining reads.
     the 10-HP Spitter for the Marksman, and a 17-HP Guard at 15 HP for the
     15-HP Guard; a Fighter on Field Defense now has 12 HP and is shattered
     by the second Yeti hit from 8 HP (would leave 3).
-11. **Rift.** There is no Rift terrain yet; "no Snow on a Rift" has no
-    test and goes to the Rift bead.
+11. **Rift.** There was no Rift terrain yet; "no Snow on a Rift" had no
+    test and went to the Rift bead. **Implemented** by `pulp_wars-9s0.5`
+    (`pulp-wars-poc-7r28`): territory, Deep Winter, and Blizzard Snow skip a
+    Rift tile (tested in `tests/unit/ruleset-v7-rift.test.ts`;
+    [Rift overlay](RULESET_7_RIFT.md)).
 
 ### 19.4 Left to the following beads
 

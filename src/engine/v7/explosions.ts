@@ -9,6 +9,7 @@ import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
 import { absorbHitV7, collapseThrallsV7, withShieldsV7 } from "./martian";
 import { exhaustedActivationV7 } from "./plague";
+import { riftAtV7 } from "./rift";
 import type {
   BittenStatusV7,
   BoardStateV7,
@@ -398,7 +399,12 @@ export function resolveStateExplosionChainV7(
         victimOwnerId: victim.ownerId,
       });
       const bite = biteOfV7(work, victim.id);
-      if (bite === undefined || victim.form !== "LAND") {
+      // The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift.
+      if (
+        bite === undefined ||
+        victim.form !== "LAND" ||
+        riftAtV7(board, victim.at)
+      ) {
         graves = recordCombatDeathV7(
           { setup: lookup.setup, board, treasureChests: lookup.treasureChests },
           graves,

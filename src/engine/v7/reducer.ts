@@ -148,6 +148,7 @@ import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
 import { wailResultEntriesV7, wailTargetsV7 } from "./wail";
+import { isRiftTerrainV7, riftAtV7 } from "./rift";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import {
   TECHNOLOGY_IDS_V7,
@@ -798,9 +799,11 @@ function applySpatial(
   if (!isExplored(player, command.at))
     return rejected(original, "TILE_UNEXPLORED");
   if (
-    tile.biome === null &&
-    (command.kind !== "REDEVELOP" ||
-      (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD"))
+    (tile.biome === null &&
+      (command.kind !== "REDEVELOP" ||
+        (tile.improvement !== "PORT" && tile.improvement !== "SHIPYARD"))) ||
+    // The Rift (RULESET_7_RIFT.md section 3): nothing is built on a Rift.
+    isRiftTerrainV7(tile.terrain)
   )
     return rejected(original, "INVALID_TILE", { action: command.kind });
   if (!player.researchedTechs.includes(rule.technology))
@@ -945,6 +948,7 @@ function applyMonument(
     return rejected(original, "TECH_REQUIRED", { tech: "ENGINEERING" });
   if (
     tile.biome === null ||
+    isRiftTerrainV7(tile.terrain) ||
     tile.site !== null ||
     observedResourceV7(player, tile) !== null ||
     tile.improvement !== null ||
@@ -1068,6 +1072,7 @@ function applyInfrastructure(
   if (
     command.kind === "BUILD_ROAD" &&
     (tile.biome === null ||
+      isRiftTerrainV7(tile.terrain) ||
       tile.site !== null ||
       tile.road ||
       (tile.terrain === "MOUNTAIN" &&
@@ -2232,13 +2237,14 @@ function applyMindControl(
     });
   if (!arePlayersHostileV7(state, actor, target.ownerId))
     return rejected(original, "TARGET_ALLIED");
-  // A unit on a Rift (pulp_wars-9s0.5) is immune as well: the Thrall could
-  // not stand there.
+  // A unit on a Rift (RULESET_7_RIFT.md section 4) is immune as well: the
+  // Thrall could not stand there.
   if (
     target.form !== "LAND" ||
     target.role === "JUGGERNAUT" ||
     unitCapacitySlotsV7(state, target) !== 1 ||
-    tileAtV7(state.board, target.at)?.site !== null
+    tileAtV7(state.board, target.at)?.site !== null ||
+    riftAtV7(state.board, target.at)
   )
     return rejected(original, "MIND_CONTROL_NOT_LEGAL", {
       reason: "TARGET_IMMUNE",
@@ -3346,7 +3352,8 @@ function applyAttack(
       calculated.advances &&
       isExplored(requirePlayer(state, actor), defender.at) &&
       destinationTile !== undefined &&
-      (destinationTile.terrain !== "MOUNTAIN" ||
+      ((destinationTile.terrain !== "MOUNTAIN" &&
+        !isRiftTerrainV7(destinationTile.terrain)) ||
         canEnterTerrainV7({
           terrain: destinationTile.terrain,
           movementMode: unitMovementModeV7(state, attacker),
@@ -3535,7 +3542,12 @@ function applyAttack(
       cause: "ATTACK" | "SPLASH" | "RETALIATION" | "SHATTER",
     ): void => {
       const bite = biteOfV7(state, victim.id);
-      if (bite === undefined || victim.form !== "LAND") {
+      // The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift.
+      if (
+        bite === undefined ||
+        victim.form !== "LAND" ||
+        riftAtV7(state.board, victim.at)
+      ) {
         // The Ice Folk revision section 5.5: a shattered unit leaves no
         // Grave.
         if (cause === "SHATTER")
@@ -4425,6 +4437,7 @@ function applyFieldDefense(
     !unitRoleMechanicsV7(state, unit).buildsFieldDefense ||
     tile === undefined ||
     tile.biome === null ||
+    isRiftTerrainV7(tile.terrain) ||
     territory?.ownerId !== actor ||
     !isExplored(player, unit.at) ||
     tile.fieldDefense
@@ -5012,9 +5025,14 @@ function applyWail(
       const victim = requireValue(
         state.units.find((unit) => unit.id === entry.unitId),
       );
-      // Revision 14 section 4.3: a bitten land-form victim rises instead.
+      // Revision 14 section 4.3: a bitten land-form victim rises instead
+      // (never on a Rift).
       const bite = biteOfV7(state, victim.id);
-      if (bite === undefined || victim.form !== "LAND") {
+      if (
+        bite === undefined ||
+        victim.form !== "LAND" ||
+        riftAtV7(state.board, victim.at)
+      ) {
         graves = recordCombatDeathV7(state, graves, victim, "WAIL", events);
         continue;
       }

@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r27`: Human, Undead, Goblin, Dinosaur, and Martian)
+## Current release contract (`pulp-wars-poc-7r28`: Human, Undead, Goblin, Dinosaur, and Martian)
 
-The current runtime is `pulp-wars-poc-7r27` (autosave
-`pulpWars.save.v7r27.current`; saves and replays of `pulp-wars-poc-7r26`
+The current runtime is `pulp-wars-poc-7r28` (autosave
+`pulpWars.save.v7r28.current`; saves and replays of `pulp-wars-poc-7r27`
 and earlier are refused, and startup removes their autosave keys). Its five
 playable factions, Human, Undead, Goblin, Dinosaur, and Martian, are
 described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -47,7 +47,13 @@ board's edge ring; the island can be circumnavigated in Shallow Water) and
 changes no other map type; `npm run validate:ruleset7-naval-maps` checks
 the ring on every size. `pulp_wars-7g3.7` (`7r27`) gives the Ice Folk Yeti
 9 HP and Defense 1.5
-([Ice Folk balance report](RULESET_7_ICE_FOLK_BALANCE.md)). The engine also
+([Ice Folk balance report](RULESET_7_ICE_FOLK_BALANCE.md)).
+`pulp_wars-9s0.5` (`7r28`) adds the Rift
+([Rift overlay](../product/RULESET_7_RIFT.md)): a 1 x 3 crack only flyers
+stand on, placed on 16 x 16 to 25 x 25 generated boards;
+`npm run validate:ruleset7-naval-maps` checks every Rift rule on every map
+type and size (seeds 0-31), and the Dry Land parity file was re-pinned for
+the 60 cells whose board gained a Rift. The engine also
 registers a sixth faction from the
 [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`,
 identity `7r24`), which is **not folded** into the current rules: its
@@ -67,7 +73,7 @@ does not rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r27` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r28` identity (ruleset ID, autosave key, the
   six-entry `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
   that the archived corpus below still carries the revision-2 identity, and
@@ -160,7 +166,7 @@ does not rerun their matrices.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (`7r27`) captures. The revision-2 validator described below as
+  (`7r28`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 

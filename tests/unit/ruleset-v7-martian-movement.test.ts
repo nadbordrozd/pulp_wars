@@ -225,8 +225,9 @@ describe("the shared terrain-entry rule", () => {
   //   embarked unit").
   // - reducer.ts (5): `DISEMBARK`; Beam Down; the advance after a kill;
   //   treasure-unit placement; reward displacement.
-  // - query.ts (4): the public landing tiles; the Beam Down offers; the
-  //   Tractor Beam target technology rule; the public advance.
+  // - query.ts (5): the public landing tiles; the Beam Down offers; the
+  //   Tractor Beam target technology rule; the public advance; the public
+  //   Push onto a Rift (`pulp_wars-9s0.5`: only a flyer).
   // - eggs.ts (2): the Ice Folk revision moved the nest-tile Mountain test
   //   (canonical and public) onto the helper.
   it("is the only terrain-entry rule: the audited call sites of canEnterTerrainV7", () => {
@@ -234,7 +235,7 @@ describe("the shared terrain-entry rule", () => {
       "src/engine/v7/combat.ts": 1,
       "src/engine/v7/eggs.ts": 2,
       "src/engine/v7/movement.ts": 3,
-      "src/engine/v7/query.ts": 4,
+      "src/engine/v7/query.ts": 5,
       "src/engine/v7/reducer.ts": 5,
     };
     for (const [file, count] of Object.entries(AUDITED)) {

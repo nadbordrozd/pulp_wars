@@ -398,6 +398,10 @@ export function meanColourV7(pixels: Uint8ClampedArray): RgbTripleV7 {
  * the outline search distance in pixels (the raster's density). `pivot`
  * is the colour that lower contrast pulls toward: the raster's own mean
  * unless given (parts cut from one master share the master's mean).
+ * `keepDarkBelow` (the Rift, bead pulp_wars-9s0.5) keeps the darkest pixels
+ * as they are: a pixel whose luma is at most 70% of it is untoned, one at
+ * or above it is fully toned, and those between are blended, so a chasm
+ * keeps its depth while the Grass around it is toned like every Grass tile.
  */
 export function tonePixelsV7(
   pixels: Uint8ClampedArray,
@@ -406,6 +410,7 @@ export function tonePixelsV7(
   tone: SpriteToneV7,
   radius = 1,
   pivot?: RgbTripleV7,
+  keepDarkBelow?: number,
 ): Uint8ClampedArray {
   const output = new Uint8ClampedArray(pixels);
   if (isUnchangedToneV7(tone)) return output;
@@ -476,6 +481,25 @@ export function tonePixelsV7(
       );
     }
   }
+  if (keepDarkBelow !== undefined && keepDarkBelow > 0)
+    for (let index = 0; index + 3 < output.length; index += 4) {
+      const original = luma(
+        pixels[index] ?? 0,
+        pixels[index + 1] ?? 0,
+        pixels[index + 2] ?? 0,
+      );
+      const floor = keepDarkBelow * 0.7;
+      const weight = Math.min(
+        1,
+        Math.max(0, (original - floor) / (keepDarkBelow - floor)),
+      );
+      for (let channel = 0; channel < 3; channel += 1) {
+        const before = pixels[index + channel] ?? 0;
+        output[index + channel] = Math.round(
+          before + ((output[index + channel] ?? 0) - before) * weight,
+        );
+      }
+    }
   const scale = clampPercent(tone.scale, 10, 100) / 100;
   if (scale === 1) return output;
   const scaled = new Uint8ClampedArray(output.length);
@@ -572,8 +596,26 @@ export const ACCENT_ROWS_V7: Readonly<Record<string, number>> = {
 const GRASS_PIVOT: RgbTripleV7 = [137, 183, 91];
 const ROCK_PIVOT: RgbTripleV7 = [162, 170, 182];
 
+/**
+ * The Rift (bead pulp_wars-9s0.5): its chasm keeps its depth under the
+ * terrain tone. Every Grass pixel has a luma of at least 102, so pixels
+ * below this luma are the crack's rim and depth only.
+ */
+export const RIFT_KEEP_DARK_LUMA_V7 = 100;
+
+export function terrainKeepDarkV7(subject: ArtSubjectV7): number | undefined {
+  return subject.startsWith("TERRAIN:RIFT_")
+    ? RIFT_KEEP_DARK_LUMA_V7
+    : undefined;
+}
+
 export function terrainPivotV7(subject: ArtSubjectV7): RgbTripleV7 | undefined {
-  if (subject === "TERRAIN:GRASS" || subject === "TERRAIN:FOREST")
+  // The Rift's pieces stand on the Grass tile (bead pulp_wars-9s0.5).
+  if (
+    subject === "TERRAIN:GRASS" ||
+    subject === "TERRAIN:FOREST" ||
+    subject.startsWith("TERRAIN:RIFT_")
+  )
     return GRASS_PIVOT;
   if (subject === "TERRAIN:MOUNTAIN" || subject === "TERRAIN:MINED_MOUNTAIN")
     return ROCK_PIVOT;
@@ -700,14 +742,15 @@ export function createDirectedChibiArtV7(input: {
     tone: SpriteToneV7,
     density: number,
     pivot?: RgbTripleV7,
+    keepDark?: number,
   ): CanvasImageSource =>
     isUnchangedToneV7(tone)
       ? image
       : derived(
           image,
-          `tone:${toneKey(tone)}:${pivot?.join(",") ?? ""}`,
+          `tone:${toneKey(tone)}:${pivot?.join(",") ?? ""}${keepDark === undefined ? "" : `:dark${keepDark}`}`,
           (pixels, width, height) =>
-            tonePixelsV7(pixels, width, height, tone, density, pivot),
+            tonePixelsV7(pixels, width, height, tone, density, pivot, keepDark),
         );
   /**
    * The piece with its owner mask in `colour`, and the rows above the
@@ -759,18 +802,19 @@ export function createDirectedChibiArtV7(input: {
     ready: Ready,
     tone: SpriteToneV7,
     fixedPivot?: RgbTripleV7,
+    keepDark?: number,
   ): Ready => {
     if (isUnchangedToneV7(tone)) return ready;
     // Parts and the body layer are cut from the master, so they share its
     // mean; the ground layer is a tile of its own.
     const pivot = fixedPivot ?? meanOf(ready.image);
     const copy = (image: CanvasImageSource, density: number) =>
-      toned(image, tone, density, pivot);
+      toned(image, tone, density, pivot, keepDark);
     const { layers, parts } = ready;
     return {
       ...ready,
       image: copy(ready.image, ready.density),
-      cacheKey: `${ready.cacheKey}|tone:${toneKey(tone)}`,
+      cacheKey: `${ready.cacheKey}|tone:${toneKey(tone)}${keepDark === undefined ? "" : `:dark${keepDark}`}`,
       ...(layers === undefined
         ? {}
         : {
@@ -821,7 +865,12 @@ export function createDirectedChibiArtV7(input: {
       if (group === "TERRAIN") {
         const resolved = base.resolve(request);
         return resolved.kind === "READY"
-          ? withTone(resolved, terrainTone, terrainPivotV7(request.subject))
+          ? withTone(
+              resolved,
+              terrainTone,
+              terrainPivotV7(request.subject),
+              terrainKeepDarkV7(request.subject),
+            )
           : resolved;
       }
       if (group === "UNIT") {

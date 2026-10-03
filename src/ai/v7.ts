@@ -1732,6 +1732,8 @@ function* roadCorridorWorkV7(
     view.board.tiles.flatMap((tile) =>
       tile.explored &&
       tile.biome !== null &&
+      // The Rift (RULESET_7_RIFT.md section 3): no Road on a Rift.
+      tile.terrain !== "RIFT" &&
       (tile.territoryOwnerId === null ||
         tile.territoryOwnerId === view.viewer.id) &&
       (tile.terrain !== "MOUNTAIN" ||
@@ -1842,6 +1844,8 @@ function* navalPlanWorkV7(
       (tile) =>
         tile.explored &&
         tile.biome !== null &&
+        // The Rift (RULESET_7_RIFT.md section 6): no ground route crosses it.
+        tile.terrain !== "RIFT" &&
         !(
           tile.territoryOwnerId !== null &&
           tile.territoryOwnerId !== view.viewer.id &&
@@ -2830,12 +2834,18 @@ function publicMovementTilePossible(
     // The Martian revision: a walker or flyer enters a Mountain without
     // Engineering and crosses Shallow Water (Deep Water needs its owner's
     // private Navigation, so the estimate leaves it out).
-    if (unitMovementModeV7(view, unit) !== "GROUND")
-      return tile.biome !== null || tile.terrain === "SHALLOW_WATER";
+    // The Rift (RULESET_7_RIFT.md section 4): flyers only.
+    const mode = unitMovementModeV7(view, unit);
+    if (mode !== "GROUND")
+      return (
+        (tile.biome !== null && (tile.terrain !== "RIFT" || mode === "FLY")) ||
+        tile.terrain === "SHALLOW_WATER"
+      );
     // The shared terrain-entry rule for a ground unit; the Ice Folk
     // revision: a Mountain-born unit enters a Mountain without Engineering.
     return (
       tile.biome !== null &&
+      tile.terrain !== "RIFT" &&
       (tile.terrain !== "MOUNTAIN" ||
         unitMayEnterMountainV7(
           view,
@@ -2860,6 +2870,8 @@ function machineMayEndForThreatV7(
   mode: "GROUND" | "STRIDE" | "FLY",
 ): boolean {
   if (!tile.explored || tile.biome === null) return false;
+  // The Rift (RULESET_7_RIFT.md section 4): only a flyer ends on a Rift.
+  if (tile.terrain === "RIFT") return mode === "FLY";
   if (mode !== "FLY" || tile.site === null) return true;
   return view.cities.some(
     (city) => same(city.at, tile.at) && city.ownerId === unit.ownerId,
@@ -6730,6 +6742,7 @@ function kaboomExposureV7(
       return (
         tile?.explored === true &&
         tile.biome !== null &&
+        tile.terrain !== "RIFT" &&
         !(context.threatLookup.occupantsByKey.get(coordKey(center)) ?? []).some(
           (occupant) => occupant.id !== unit.id,
         )

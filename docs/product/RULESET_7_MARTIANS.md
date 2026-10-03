@@ -753,6 +753,9 @@ A **Rift** is a terrain that `pulp_wars-9s0.5` adds before the Martian engine
 bead: a rare one-by-three crack in the ground on which nothing can be built
 and "no unit can stand ... except flying ones" (the user's words). That bead
 owns the terrain; this section fixes only what it means for Martians.
+**Implemented** by `pulp_wars-9s0.5` (`pulp-wars-poc-7r28`) exactly as
+written here; the [Rift overlay](RULESET_7_RIFT.md) rules the rest (no
+Grave lies on a Rift) and records the tests.
 
 - **Flyers** (Saucer, Mothership) in land form may enter a Rift tile, pass
   over it, and **end a Move on it**, at the ordinary cost. It never stops
@@ -2819,12 +2822,14 @@ The scripts and outputs are in the session scratch space under `t6s2/step0/`
    events they did.
 9. **Mind Control of a grown unit.** The Thrall's HP is the victim's HP,
    which the legality rule already limits to 6.
-10. **Rift.** The terrain of `pulp_wars-9s0.5` is not in the game yet. The
-    hook is the shared terrain rule `canEnterTerrainV7` (flyers may enter a
-    Rift, walkers and foot units may not), with the Beam Down and Mind
-    Control notes beside their checks. The Rift rows of
-    [section 15](#15-implementation-split-and-test-expectations) have no
-    tests and go to the Rift bead.
+10. **Rift.** The terrain of `pulp_wars-9s0.5` was not in the game when
+    this engine landed; the hook was the shared terrain rule
+    `canEnterTerrainV7`. **Implemented** at `pulp-wars-poc-7r28`: the
+    `RIFT` case of `canEnterTerrainV7` (land-form flyers only), Beam Down,
+    Mind Control (`TARGET_IMMUNE`), Tractor Beam and Push (`BLOCKED` for a
+    non-flyer), no rising and no Grave on a Rift, and no advance onto it,
+    tested in `tests/unit/ruleset-v7-rift.test.ts`
+    ([Rift overlay](RULESET_7_RIFT.md)).
 11. **One terrain rule.** Every "can this unit enter this tile" test (Move,
     landing, advance, Push, Charge! push, Tractor Beam, Beam Down, treasure
     unit placement, reward displacement, and their public twins) goes

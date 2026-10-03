@@ -1,0 +1,43 @@
+{
+  "id": "rift-v-g2-ember",
+  "jobId": "f3b85075-854f-4785-9b27-ae1705f4711c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "rift",
+    "asset": "chibi-rift-v-north",
+    "subject": "TERRAIN:RIFT_V_NORTH",
+    "faction": "ORIGINAL",
+    "recipeClass": "rift",
+    "requestSize": {
+      "width": 80,
+      "height": 240
+    },
+    "seed": 95207,
+    "noBackground": false,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged."
+      }
+    ],
+    "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+    "negativePrompt": "",
+    "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+    "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark rocky inner walls fading into black, a thin dull orange-red ember glow deep along the bottom of the crack. Keep all the grass exactly unchanged.",
+    "groundStrip": {
+      "asset": "chibi-grass-1",
+      "orientation": "VERTICAL",
+      "guide": {
+        "seed": 23,
+        "halfWidth": 11,
+        "inset": 16,
+        "wander": 4
+      },
+      "batch": "1",
+      "sha256": "52a40e1605b55bb23432fe48041d0365fe02d7cd47d8047e27b37cc84cf07c9e"
+    }
+  }
+}

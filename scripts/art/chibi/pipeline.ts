@@ -38,6 +38,7 @@ import {
   findRecipe,
   requestBody,
   requestSnapshot,
+  riftMaskKey,
   SEATED_BOTTOM_MARGIN,
   type ChibiAssetSpec,
   type ChibiBatchManifest,
@@ -70,12 +71,17 @@ import {
   paletteColours,
   paletteMapRaster,
   paletteSwapRaster,
+  groundStripRaster,
   plateCheck,
+  riftGuideRaster,
+  riftPieceWindow,
+  riftStripRaster,
   seatedRaster,
   transparentPixels,
   type CropRowsSpec,
   type CropWindow,
   type PlateCheck,
+  type RiftStripSpec,
 } from "./raster";
 
 export const CHIBI_API_BASE_URL = "https://api.pixellab.ai/v2";
@@ -355,12 +361,22 @@ export interface AssetRecord {
       | "ground-composite"
       | "palette-map"
       | "seated"
-      | "crop-rows";
+      | "crop-rows"
+      | "rift-strip";
     readonly crop?: CropWindow;
     /** seated: the margin used; the master is the bottom-centred window. */
     readonly seat?: { readonly bottomMargin: number };
     /** crop-rows: the stamps and calming the master was built with. */
     readonly cropRows?: CropRowsSpec;
+    /**
+     * rift-strip (bead pulp_wars-9s0.5): the strip's mask settings, this
+     * master's piece, and the crack pixels of the whole strip. The ground
+     * is `ground`.
+     */
+    readonly riftStrip?: RiftStripSpec & {
+      readonly piece: number;
+      readonly crackPixels: number;
+    };
     /** palette-map: the palette the master's colours were mapped to. */
     readonly palette?: { readonly path: string; readonly sha256: string };
     /** palette-map: the palette the candidate was mapped to before the swap. */
@@ -1148,6 +1164,33 @@ export async function generateRecipe(
       source: { ...recipe.source, sha256: sha256(sourceImage) },
     };
   }
+  if (recipe.groundStrip !== undefined) {
+    // Bead pulp_wars-9s0.5: the rift edit starts from three copies of the
+    // accepted ground tile, side by side or stacked.
+    const strip = await acceptedGroundStrip(
+      context,
+      records,
+      recipe.groundStrip.asset,
+      recipe.groundStrip.orientation,
+    );
+    sourceImage = await encodePng(
+      recipe.groundStrip.guide === undefined
+        ? strip.raster
+        : riftGuideRaster(
+            strip.raster,
+            recipe.groundStrip.orientation,
+            recipe.groundStrip.guide,
+          ),
+    );
+    request = {
+      ...request,
+      groundStrip: {
+        ...recipe.groundStrip,
+        ...(strip.batch === undefined ? {} : { batch: strip.batch }),
+        sha256: sha256(sourceImage),
+      },
+    };
+  }
   let colorImage: Buffer | undefined;
   if (recipe.colorImage !== undefined) {
     colorImage = await readFile(
@@ -1436,6 +1479,38 @@ async function acceptedGroundAsset(
   return undefined;
 }
 
+/**
+ * Bead pulp_wars-9s0.5: three copies of an accepted ground tile (its bytes
+ * checked against its record), side by side or stacked, and the batch the
+ * ground was accepted in when it is an earlier one.
+ */
+async function acceptedGroundStrip(
+  context: PipelineContext,
+  records: BatchRecords,
+  groundId: string,
+  orientation: RiftStripSpec["orientation"],
+): Promise<{
+  readonly raster: RgbaRaster;
+  readonly ground: AssetRecord;
+  readonly groundSha256: string;
+  readonly batch?: string;
+}> {
+  const found = await acceptedGroundAsset(context, records, groundId);
+  if (found === undefined)
+    throw new Error(`ground asset ${groundId} is not accepted`);
+  const bytes = await readFile(
+    path.join(context.root, found.ground.master.path),
+  );
+  if (sha256(bytes) !== found.ground.master.sha256)
+    throw new Error(`ground ${groundId} bytes changed`);
+  return {
+    raster: groundStripRaster(await readRaster(bytes), orientation),
+    ground: found.ground,
+    groundSha256: sha256(bytes),
+    ...(found.batch === undefined ? {} : { batch: found.batch }),
+  };
+}
+
 type DerivedMaster = {
   raster: RgbaRaster;
   derivation: AssetRecord["derivation"];
@@ -1516,6 +1591,45 @@ async function deriveClassMaster(
     return {
       raster: seatedRaster(candidate, asset.canvas, bottomMargin),
       derivation: { kind, seat: { bottomMargin } },
+    };
+  }
+  if (kind === "rift-strip") {
+    const spec = asset.riftStrip;
+    if (spec === undefined || asset.groundAsset === undefined)
+      throw new Error(`${asset.id}: no riftStrip or groundAsset`);
+    const strip = await acceptedGroundStrip(
+      context,
+      records,
+      asset.groundAsset,
+      spec.orientation,
+    );
+    const { raster, crackPixels } = riftStripRaster(
+      candidate,
+      strip.raster,
+      spec,
+    );
+    const { piece } = spec;
+    const mask: RiftStripSpec = {
+      orientation: spec.orientation,
+      threshold: spec.threshold,
+      minComponent: spec.minComponent,
+      dilate: spec.dilate,
+      margin: spec.margin,
+    };
+    return {
+      raster: cropRaster(
+        raster,
+        riftPieceWindow(asset.canvas, spec.orientation, piece),
+      ),
+      derivation: {
+        kind,
+        ground: {
+          asset: asset.groundAsset,
+          sha256: strip.groundSha256,
+          ...(strip.batch === undefined ? {} : { batch: strip.batch }),
+        },
+        riftStrip: { ...mask, piece, crackPixels },
+      },
     };
   }
   if (
@@ -1659,10 +1773,11 @@ export async function acceptRecipe(
   if (
     sharedField &&
     asset.fieldRecipe !== recipeId &&
-    asset.paletteRecipe !== recipeId
+    asset.paletteRecipe !== recipeId &&
+    asset.riftStrip?.recipe !== recipeId
   )
     throw new Error(
-      `${asset.id}: its fieldRecipe or paletteRecipe is not ${recipeId}, so it cannot be derived from it`,
+      `${asset.id}: its fieldRecipe, paletteRecipe or rift strip recipe is not ${recipeId}, so it cannot be derived from it`,
     );
   // The lock is held from reading the records to writing them, so a verdict
   // or recipe written by another run is never lost and the master, mask and
@@ -2019,6 +2134,7 @@ async function rederivedMasterProblems(
     record.status !== "ACCEPTED" ||
     (kind !== "seated" &&
       kind !== "crop-rows" &&
+      kind !== "rift-strip" &&
       accent === undefined &&
       swapFrom === undefined)
   )
@@ -2051,7 +2167,43 @@ async function rederivedMasterProblems(
         asset.canvas,
         asset.bottomMargin ?? SEATED_BOTTOM_MARGIN,
       );
-    else if (kind === "crop-rows")
+    else if (kind === "rift-strip") {
+      const spec = asset.riftStrip;
+      const ground = record.derivation.ground;
+      if (spec === undefined || ground === undefined)
+        return [`${label}: no riftStrip or ground to re-derive from`];
+      const recorded = record.derivation.riftStrip;
+      if (
+        recorded === undefined ||
+        recorded.piece !== spec.piece ||
+        riftMaskKey(recorded) !== riftMaskKey(spec) ||
+        ground.asset !== asset.groundAsset
+      )
+        return [`${label}: the recorded rift strip is not the manifest's`];
+      const groundFile = path.join(
+        root,
+        path.posix.join(
+          path.posix.dirname(record.master.path),
+          `${ground.asset}.png`,
+        ),
+      );
+      if (!(await exists(groundFile)))
+        return [`${label}: ground ${ground.asset} is missing`];
+      const groundBytes = await readFile(groundFile);
+      if (sha256(groundBytes) !== ground.sha256)
+        return [`${label}: ground ${ground.asset} changed`];
+      const strip = riftStripRaster(
+        candidate,
+        groundStripRaster(await readRaster(groundBytes), spec.orientation),
+        spec,
+      );
+      if (strip.crackPixels !== recorded.crackPixels)
+        return [`${label}: the crack differs from the record`];
+      derived = cropRaster(
+        strip.raster,
+        riftPieceWindow(asset.canvas, spec.orientation, spec.piece),
+      );
+    } else if (kind === "crop-rows")
       derived = cropRowsRaster(
         candidate,
         asset.canvas,

@@ -18,7 +18,12 @@ import {
 } from "../../../src/assets/chibi-art-v7";
 import { accentPreset } from "./accent";
 import { WAIVABLE_MASK_QA_CODES } from "./owner-mask";
-import type { CropRowsSpec } from "./raster";
+import type {
+  CropRowsSpec,
+  RiftGuideSpec,
+  RiftOrientation,
+  RiftStripSpec,
+} from "./raster";
 
 export interface Size {
   readonly width: number;
@@ -62,7 +67,12 @@ export type ChibiRecipeClass =
   /** A city or the Village in the same calm style, with no owner colour. */
   | "calm-settlement"
   /** The Farm as a seamless full-cell pattern of crop rows with gaps. */
-  | "crop-rows";
+  | "crop-rows"
+  /**
+   * The Rift (bead pulp_wars-9s0.5): one 1 x 3 crack drawn into a strip of
+   * three accepted ground tiles, cut into its three terrain pieces.
+   */
+  | "rift";
 
 export type ChibiEndpoint =
   "create-image-pixen" | "create-image-pixflux" | "edit-image-pixen";
@@ -93,7 +103,12 @@ export type ChibiDerivation =
    * Pieces of one crop row of the candidate stamped at a period that divides
    * the tile, on evenly pitched rows, then calmed (the Farm).
    */
-  | "crop-rows";
+  | "crop-rows"
+  /**
+   * The crack of a strip candidate kept over three copies of the accepted
+   * ground tile, and the asset's piece cut from it (the Rift).
+   */
+  | "rift-strip";
 
 export type ChibiCamera =
   "three-quarter" | "top-down" | "portrait" | "icon" | "flat" | "crop-pattern";
@@ -386,6 +401,27 @@ export const CHIBI_CLASS_RECIPES: Readonly<
       "create-image-pixen": { ...PIECE_OPTIONS, outline: "selective outline" },
     },
   },
+  // The Rift (bead pulp_wars-9s0.5): a crack drawn into a strip of three
+  // ground tiles. An edit of the ground strip (recipe `groundStrip`) keeps
+  // the grass; the rift-strip derivation keeps only the crack over the
+  // accepted ground, so the pieces join and their outer edges stay seamless.
+  rift: {
+    camera: "top-down",
+    factionLayer: false,
+    assetClasses: ["TERRAIN"],
+    generators: ["create-image-pixen", "create-image-pixflux"],
+    editPass: true,
+    noBackground: false,
+    derivation: "rift-strip",
+    options: {
+      "create-image-pixflux": {
+        shading: "flat shading",
+        detail: "low detail",
+        view: "high top-down",
+      },
+      "create-image-pixen": { detail: "low detail", view: "high top-down" },
+    },
+  },
   // The Farm of the new direction: rows of plump crops, each on its own
   // strip of tilled soil, with transparent gaps between the rows. An edit
   // thins the soil; the crop-rows derivation then makes the pattern tile.
@@ -485,7 +521,10 @@ export interface ChibiAssetSpec {
    * `<subject>/<VARIANT>` in the subjects file.
    */
   readonly subjectKey?: string;
-  /** ground-composite only: accepted TERRAIN asset drawn in the bottom cell. */
+  /**
+   * ground-composite: the accepted TERRAIN asset drawn in the bottom cell;
+   * rift-strip: the accepted TERRAIN asset the strip is made of.
+   */
   readonly groundAsset?: string;
   /**
    * seamless-crop only: the part of the field the seamless window is searched
@@ -503,6 +542,16 @@ export interface ChibiAssetSpec {
   readonly bottomMargin?: number;
   /** crop-rows only: how the candidate's crop row becomes the tile. */
   readonly cropRows?: CropRowsSpec;
+  /**
+   * rift-strip only (bead pulp_wars-9s0.5): the strip's crack mask and this
+   * asset's piece (0, 1, 2 from west or north). `recipe` names the recipe of
+   * another piece of the same strip whose candidate this piece is cut from;
+   * such a piece needs no recipe of its own. Ground: `groundAsset`.
+   */
+  readonly riftStrip?: RiftStripSpec & {
+    readonly piece: 0 | 1 | 2;
+    readonly recipe?: string;
+  };
   /**
    * palette-map only: the checked-in palette PNG (under
    * scripts/art/chibi/palettes/) every opaque master pixel is mapped to.
@@ -588,6 +637,17 @@ export interface ChibiRecipe {
      * to the recipe's own asset.
      */
     readonly sibling?: true;
+  };
+  /**
+   * edit-image-pixen, rift class only (bead pulp_wars-9s0.5): the edit
+   * source is three copies of an accepted ground tile, side by side or
+   * stacked, instead of an earlier candidate; `guide` draws a dark guide
+   * crack on it first (raster.ts riftGuideRaster).
+   */
+  readonly groundStrip?: {
+    readonly asset: string;
+    readonly orientation: RiftOrientation;
+    readonly guide?: RiftGuideSpec;
   };
   /** edit-image-pixen: defaults to fragments/edit-remove-ground.txt. */
   readonly editInstruction?: string;
@@ -812,6 +872,14 @@ export interface ChibiRequestSnapshot {
     /** Filled when the source bytes are resolved for submission. */
     readonly sha256?: string;
   };
+  /** The ground strip edited by a rift recipe, with its PNG's hash. */
+  readonly groundStrip?: {
+    readonly asset: string;
+    readonly orientation: RiftOrientation;
+    readonly guide?: RiftGuideSpec;
+    readonly batch?: string;
+    readonly sha256?: string;
+  };
 }
 
 export function findAsset(
@@ -880,6 +948,9 @@ export function requestSnapshot(
       description: instruction,
       editInstruction: instruction,
       ...(recipe.source === undefined ? {} : { source: recipe.source }),
+      ...(recipe.groundStrip === undefined
+        ? {}
+        : { groundStrip: recipe.groundStrip }),
     };
   }
   const layered = layeredPrompt(fragments, manifest, asset, recipe);
@@ -1209,8 +1280,39 @@ export function batchManifestProblems(
     if (classRecipe.derivation === "ground-composite") {
       if (asset.groundAsset === undefined)
         problems.push(`${label}: tall terrain needs a groundAsset`);
+    } else if (classRecipe.derivation === "rift-strip") {
+      const strip = asset.riftStrip;
+      if (asset.groundAsset === undefined)
+        problems.push(`${label}: a rift piece needs a groundAsset`);
+      if (strip === undefined)
+        problems.push(`${label}: a rift piece needs riftStrip`);
+      else {
+        if (
+          strip.orientation !== "HORIZONTAL" &&
+          strip.orientation !== "VERTICAL"
+        )
+          problems.push(`${label}: riftStrip orientation is unknown`);
+        if (![0, 1, 2].includes(strip.piece))
+          problems.push(`${label}: riftStrip piece must be 0, 1 or 2`);
+        if (
+          ![
+            strip.threshold,
+            strip.minComponent,
+            strip.dilate,
+            strip.margin,
+          ].every((value) => Number.isInteger(value) && value >= 0)
+        )
+          problems.push(
+            `${label}: riftStrip threshold, minComponent, dilate and margin must be non-negative integers`,
+          );
+      }
     } else if (asset.groundAsset !== undefined)
       problems.push(`${label}: groundAsset is only for tall terrain`);
+    if (
+      asset.riftStrip !== undefined &&
+      classRecipe.derivation !== "rift-strip"
+    )
+      problems.push(`${label}: riftStrip is only for the rift class`);
     if (asset.cropRegion !== undefined) {
       const region = asset.cropRegion;
       if (classRecipe.derivation !== "seamless-crop")
@@ -1275,7 +1377,29 @@ export function batchManifestProblems(
       if (!classRecipe.editPass)
         problems.push(`${label}: ${asset.recipeClass} has no edit pass`);
       const source = recipe.source;
-      if (source === undefined)
+      if (recipe.groundStrip !== undefined) {
+        if (source !== undefined)
+          problems.push(`${label}: an edit takes a source or a groundStrip`);
+        if (classRecipe.derivation !== "rift-strip")
+          problems.push(`${label}: only the rift class edits a ground strip`);
+        if (
+          recipe.groundStrip.orientation !== "HORIZONTAL" &&
+          recipe.groundStrip.orientation !== "VERTICAL"
+        )
+          problems.push(`${label}: groundStrip orientation is unknown`);
+        if (recipe.groundStrip.asset !== asset.groundAsset)
+          problems.push(`${label}: groundStrip must be the asset's ground`);
+        const guide = recipe.groundStrip.guide;
+        if (
+          guide !== undefined &&
+          ![guide.seed, guide.halfWidth, guide.inset, guide.wander].every(
+            (value) => Number.isInteger(value) && value >= 0,
+          )
+        )
+          problems.push(
+            `${label}: guide seed, halfWidth, inset and wander must be non-negative integers`,
+          );
+      } else if (source === undefined)
         problems.push(`${label}: an edit needs a source recipe`);
       else if (source.batch !== undefined && source.batch !== manifest.batch) {
         // A cross-batch source is resolved and size-checked at generation
@@ -1317,7 +1441,11 @@ export function batchManifestProblems(
         problems.push(
           `${label}: ${asset.recipeClass} does not generate with ${recipe.endpoint}`,
         );
-      if (recipe.source !== undefined || recipe.editInstruction !== undefined)
+      if (
+        recipe.source !== undefined ||
+        recipe.editInstruction !== undefined ||
+        recipe.groundStrip !== undefined
+      )
         problems.push(`${label}: only edits take a source or instruction`);
     }
     if (recipe.colorImage !== undefined) {
@@ -1346,6 +1474,20 @@ export function batchManifestProblems(
         problems.push(
           `${label}: terrain fields must be at least twice the tile in each direction`,
         );
+    } else if (classRecipe.derivation === "rift-strip") {
+      const strip =
+        asset.riftStrip?.orientation === "VERTICAL"
+          ? { width: asset.canvas.width, height: asset.canvas.height * 3 }
+          : { width: asset.canvas.width * 3, height: asset.canvas.height };
+      if (width !== strip.width || height !== strip.height)
+        problems.push(
+          `${label}: a rift strip request ${width}x${height} must be the ${strip.width}x${strip.height} strip`,
+        );
+      if (
+        recipe.groundStrip !== undefined &&
+        recipe.groundStrip.orientation !== asset.riftStrip?.orientation
+      )
+        problems.push(`${label}: groundStrip orientation is not the asset's`);
     } else if (classRecipe.derivation === "seated") {
       // A pure bottom-centred crop: the request may be larger, never smaller.
       if (width < asset.canvas.width || height < asset.canvas.height)
@@ -1390,6 +1532,27 @@ export function batchManifestProblems(
         problems.push(`${label}: a shared field needs its own cropRegion`);
       continue;
     }
+    if (asset.riftStrip?.recipe !== undefined) {
+      const label = `${at} asset ${asset.id}`;
+      const shared = manifest.recipes.find(
+        (recipe) => recipe.id === asset.riftStrip?.recipe,
+      );
+      const owner = manifest.assets.find((entry) => entry.id === shared?.asset);
+      if (shared === undefined || owner === undefined)
+        problems.push(
+          `${label}: unknown rift strip recipe ${asset.riftStrip.recipe}`,
+        );
+      else if (
+        owner.groundAsset !== asset.groundAsset ||
+        owner.riftStrip === undefined ||
+        riftMaskKey(owner.riftStrip) !== riftMaskKey(asset.riftStrip) ||
+        owner.riftStrip.piece === asset.riftStrip.piece
+      )
+        problems.push(
+          `${label}: a rift strip recipe must belong to another piece of the same strip, ground and mask`,
+        );
+      continue;
+    }
     if (asset.paletteRecipe !== undefined) {
       const label = `${at} asset ${asset.id}`;
       const shared = manifest.recipes.find(
@@ -1414,6 +1577,17 @@ export function batchManifestProblems(
       problems.push(`${at} asset ${asset.id}: no recipe generates it`);
   }
   return problems;
+}
+
+/** The strip and mask settings two rift pieces of one strip must share. */
+export function riftMaskKey(spec: RiftStripSpec): string {
+  return JSON.stringify([
+    spec.orientation,
+    spec.threshold,
+    spec.minComponent,
+    spec.dilate,
+    spec.margin,
+  ]);
 }
 
 /** Runtime placement recorded with every accepted asset. */

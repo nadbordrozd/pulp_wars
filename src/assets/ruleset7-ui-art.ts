@@ -133,6 +133,9 @@ export const RULESET7_TERRAIN_ART_IDS = {
   MOUNTAIN: "terrain-ruleset7-revision3-mountain-1",
   SHALLOW_WATER: "terrain-ruleset7-water-shallow",
   DEEP_WATER: "terrain-ruleset7-water-deep",
+  // The Rift (bead pulp_wars-9s0.5) has no legacy raster: its legacy art is
+  // the Grass tile, and the LEGACY board draws the crack over it in code.
+  RIFT: "terrain-ruleset7-original-grass-1",
 } as const satisfies Readonly<Record<TerrainIdV7, string>>;
 
 const STATIC_COMMAND_ART_IDS: Readonly<

@@ -1,0 +1,37 @@
+{
+  "id": "rift-h-ember-b",
+  "jobId": "69dccab7-eafe-485d-b823-7344594e932c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "rift",
+    "asset": "chibi-rift-h-west",
+    "subject": "TERRAIN:RIFT_H_WEST",
+    "faction": "ORIGINAL",
+    "recipeClass": "rift",
+    "requestSize": {
+      "width": 240,
+      "height": 80
+    },
+    "seed": 95053,
+    "noBackground": false,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Draw a wide zigzag fissure split open in this meadow, running horizontally across the middle from about 20 pixels inside the left edge to about 20 pixels inside the right edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged."
+      }
+    ],
+    "prompt": "Draw a wide zigzag fissure split open in this meadow, running horizontally across the middle from about 20 pixels inside the left edge to about 20 pixels inside the right edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged.",
+    "negativePrompt": "",
+    "description": "Draw a wide zigzag fissure split open in this meadow, running horizontally across the middle from about 20 pixels inside the left edge to about 20 pixels inside the right edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged.",
+    "editInstruction": "Draw a wide zigzag fissure split open in this meadow, running horizontally across the middle from about 20 pixels inside the left edge to about 20 pixels inside the right edge, about 20 pixels wide at its widest and closing to points at both ends. Broken dark earth edges, steep shadowed walls, glowing dull orange-red embers deep at the bottom. Keep all the grass around the fissure exactly unchanged.",
+    "groundStrip": {
+      "asset": "chibi-grass-1",
+      "orientation": "HORIZONTAL",
+      "batch": "1",
+      "sha256": "96e853b3550610044f148ccac721e85f10911a769cacae9d4bde7a6f09892441"
+    }
+  }
+}

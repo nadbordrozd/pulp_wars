@@ -159,6 +159,7 @@ import type {
   ArtSetV7,
   ArtSubjectV7,
   ChibiArtAssetV7,
+  RiftPieceV7,
 } from "../../assets/chibi-art-v7";
 import {
   chibiOverflowV7,
@@ -187,6 +188,7 @@ import {
   snapCameraToDevicePixels,
 } from "./chibi-geometry-v7";
 import { chibiMountainFringeEdgesV7 } from "./chibi-terrain-fringe-v7";
+import { drawLegacyRiftV7, riftPieceV7 } from "./rift-presentation-v7";
 import { RULESET7_PLAYER_COLORS } from "./owner-recolour-v7";
 import {
   CALM_ROAD_STROKES_V7,
@@ -453,6 +455,11 @@ export interface BoardRenderPlanEntryV7 {
   /** TERRAIN only, the Ice Folk revision: the cell is in a known Blizzard. */
   readonly blizzard?: true;
   /**
+   * TERRAIN only, the Rift (bead pulp_wars-9s0.5): the piece of the crack
+   * this cell shows. LEGACY draws it in code over the cell's Grass.
+   */
+  readonly riftPiece?: RiftPieceV7;
+  /**
    * UNIT only, the Ice Folk revision: the Chill markers, the HP bar's
    * Shatter window and the Witch of a visible unit (any owner).
    */
@@ -498,6 +505,18 @@ export function buildBoardRenderPlanV7(
   // (a match without an Ice Folk seat has neither).
   const iceFolkMatch = matchHasIceFolkSeatV7(view);
   const winter = iceFolkMatch ? iceFolkTerrainCellsV7(view) : null;
+  // The Rift (bead pulp_wars-9s0.5): a piece read from explored cells only.
+  const riftAt = (at: CoordV7): boolean | null => {
+    if (
+      at.x < 0 ||
+      at.y < 0 ||
+      at.x >= view.board.width ||
+      at.y >= view.board.height
+    )
+      return false;
+    const near = view.board.tiles[at.y * view.board.width + at.x];
+    return near?.explored === true ? near.terrain === "RIFT" : null;
+  };
   for (const tile of view.board.tiles) {
     if (!tile.explored) {
       entries.push({
@@ -508,13 +527,15 @@ export function buildBoardRenderPlanV7(
       });
       continue;
     }
+    const riftPiece =
+      tile.terrain === "RIFT" ? riftPieceV7(tile.at, riftAt) : undefined;
     entries.push({
       key: `terrain:${tile.at.x},${tile.at.y}`,
       kind: "TERRAIN",
       layer: 1,
       at: tile.at,
       assetId:
-        tile.terrain === "GRASS"
+        tile.terrain === "GRASS" || tile.terrain === "RIFT"
           ? `terrain-ruleset7-original-grass-${variant(tile.at, 3)}`
           : tile.terrain === "FOREST"
             ? suppressesForestCanopyV7(tile.improvement)
@@ -526,11 +547,15 @@ export function buildBoardRenderPlanV7(
                 ? "terrain-ruleset7-water-shallow"
                 : "terrain-ruleset7-water-deep",
       artSubject:
-        tile.terrain === "FOREST" && suppressesForestCanopyV7(tile.improvement)
-          ? "TERRAIN:GRASS"
-          : tile.terrain === "MOUNTAIN" && tile.improvement === "MINE"
-            ? "TERRAIN:MINED_MOUNTAIN"
-            : `TERRAIN:${tile.terrain}`,
+        riftPiece !== undefined
+          ? `TERRAIN:RIFT_${riftPiece}`
+          : tile.terrain === "FOREST" &&
+              suppressesForestCanopyV7(tile.improvement)
+            ? "TERRAIN:GRASS"
+            : tile.terrain === "MOUNTAIN" && tile.improvement === "MINE"
+              ? "TERRAIN:MINED_MOUNTAIN"
+              : `TERRAIN:${tile.terrain}`,
+      ...(riftPiece === undefined ? {} : { riftPiece }),
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
       ...(winter === null
@@ -1633,6 +1658,16 @@ export function drawBoardV7(input: {
               entry,
               sceneAlpha,
             });
+          // The Rift (bead pulp_wars-9s0.5): LEGACY (and a CHIBI piece
+          // that is missing) draws the crack in code over the Grass.
+          if (entry.riftPiece !== undefined)
+            drawLegacyRiftV7(
+              context,
+              { x, y },
+              size,
+              entry.riftPiece,
+              sceneAlpha,
+            );
           // The Ice Folk revision: Snow and the Blizzard over the ground.
           drawWinterGround(entry, x, y);
         } else {

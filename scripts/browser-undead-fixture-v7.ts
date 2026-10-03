@@ -39,6 +39,12 @@ export function ruleset7FixtureMountExpressionV7(options: {
   readonly global: string;
   /** Object-literal members evaluated with `fixtures` in scope. */
   readonly extras: string;
+  /**
+   * The settings storage of the mounted view (default none). The Rift review
+   * (bead pulp_wars-9s0.5) passes the page's localStorage so the developer
+   * option "Classic look" stored there applies.
+   */
+  readonly settingsStorage?: "localStorage";
 }): string {
   const global = JSON.stringify(options.global);
   return `(async () => {
@@ -88,7 +94,7 @@ export function ruleset7FixtureMountExpressionV7(options: {
       };
       const root = document.querySelector('#app');
       const boardHost = new CanvasBoardHostV7(document);
-      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: null, artSet: ${JSON.stringify(options.artSet)} });
+      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, settingsStorage: ${options.settingsStorage === "localStorage" ? "localStorage" : "null"}, artSet: ${JSON.stringify(options.artSet)} });
       globalThis[${global}] = { boardHost, traces, view, snapshotView: () => snapshot().view, ${options.extras} };
     })()`;
 }

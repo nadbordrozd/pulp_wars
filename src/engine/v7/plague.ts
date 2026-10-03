@@ -17,6 +17,7 @@ import type { DomainEventV7, PlagueDamageEntryV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
 import { collapseThrallsV7 } from "./martian";
 import { unitSightRadiusAtV7 } from "./movement";
+import { riftAtV7 } from "./rift";
 import type {
   CoordV7,
   GameStateV7,
@@ -90,7 +91,12 @@ export function resolveStartTurnPlagueV7(
     const victim = state.units.find((unit) => unit.id === entry.unitId);
     if (victim === undefined) throw new RangeError("INVALID_STATE");
     const bite = biteOfV7(state, victim.id);
-    if (bite !== undefined && victim.form === "LAND") {
+    // The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift.
+    if (
+      bite !== undefined &&
+      victim.form === "LAND" &&
+      !riftAtV7(state.board, victim.at)
+    ) {
       const allocation = allocateUnitId(nextEntityId);
       nextEntityId = allocation.nextEntityId;
       const rising = recordBittenRisingV7(

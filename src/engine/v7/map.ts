@@ -10,6 +10,7 @@ import {
 import { placeTreasureChestsV6 } from "../v6/map";
 import { initialAchievementEntitlementsV7 } from "./achievements";
 import { withFullShieldsV7 } from "./martian";
+import { placeRiftsV7 } from "./rift";
 import { parseMatchSetupV7 } from "./setup";
 import {
   createShowcaseEntitiesV7,
@@ -192,11 +193,7 @@ export function generateInitialMapV7(input: unknown): GenerateMapResultV7 {
   if (setup === null)
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   if (setup.mapType === "SHOWCASE") return showcaseMapV7(setup);
-  return generateMapWithVillageCountV7(
-    setup,
-    villageCount(setup),
-    "PANGEA_COAST_RING",
-  );
+  return generateMapWithVillageCountV7(setup, villageCount(setup), "RIFTS");
 }
 
 /**
@@ -225,9 +222,16 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
 }
 
 /**
- * Generation rules a parity call reproduces. `PANGEA_COAST_RING` is the
- * current generator: the `REVISION_16` generator except that a Pangea keeps
- * its land off the board's edge ring, with {@link pangeaLandCountV7} land
+ * Generation rules a parity call reproduces. `RIFTS` is the current
+ * generator: the `PANGEA_COAST_RING` generator followed by Rift placement
+ * (docs/product/RULESET_7_RIFT.md section 5) on its accepted board. Rift
+ * placement draws only from its own stream and changes only the terrain of
+ * the Rift tiles, so a `RIFTS` map without a Rift (every 11 x 11 and
+ * 14 x 14 map, and the 16, 20, and 25 maps whose draw or sites give none)
+ * is byte-identical to its `PANGEA_COAST_RING` map. `PANGEA_COAST_RING` is
+ * the generator before the Rift: the `REVISION_16` generator except that a
+ * Pangea keeps its land off the board's edge ring, with
+ * {@link pangeaLandCountV7} land
  * cells, and must pass the `COAST_RING` invariant; every other map type is
  * byte-identical under the two. `REVISION_16` is the generator before the
  * coast ring (Pangea land on 72% of the board, edge cells included).
@@ -236,7 +240,12 @@ function showcaseMapV7(setup: MatchSetupV7): GenerateMapResultV7 {
  * `CAPITAL_GROWTH` invariant.
  */
 export type MapGenerationRulesV7 =
-  "REVISION_15" | "REVISION_16" | "PANGEA_COAST_RING";
+  "REVISION_15" | "REVISION_16" | "PANGEA_COAST_RING" | "RIFTS";
+
+/** Whether `rules` keep the Pangea coast ring (`PANGEA_COAST_RING`, `RIFTS`). */
+function coastRingRulesV7(rules: MapGenerationRulesV7): boolean {
+  return rules === "PANGEA_COAST_RING" || rules === "RIFTS";
+}
 
 /**
  * Pangea land cells under the coast ring: 72% of the board, capped at 90% of
@@ -261,7 +270,7 @@ export function pangeaLandCountV7(width: number, height: number): number {
 export function generateInitialMapWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "PANGEA_COAST_RING",
+  rules: MapGenerationRulesV7 = "RIFTS",
 ): GenerateMapResultV7 {
   const setup = parseMatchSetupV7(input);
   if (
@@ -272,7 +281,8 @@ export function generateInitialMapWithVillageCountV7(
     villages < 0 ||
     (rules !== "REVISION_15" &&
       rules !== "REVISION_16" &&
-      rules !== "PANGEA_COAST_RING")
+      rules !== "PANGEA_COAST_RING" &&
+      rules !== "RIFTS")
   )
     return { ok: false, error: { code: "INVALID_SETUP", params: {} } };
   return generateMapWithVillageCountV7(setup, villages, rules);
@@ -315,10 +325,21 @@ function generateMapWithVillageCountV7(
         candidate.capitals,
         random,
       );
+      // RULESET_7_RIFT.md section 5: the Rifts go on the accepted board,
+      // after the treasure chests, from their own stream.
+      const board =
+        rules === "RIFTS"
+          ? placeRiftsV7(setup.seed, {
+              board: candidate.board,
+              capitals: candidate.capitals,
+              villages: candidate.villages,
+              treasureChests: treasure.treasureChests,
+            }).board
+          : candidate.board;
       return {
         ok: true,
         map: deepFreeze({
-          board: candidate.board,
+          board,
           capitals: candidate.capitals,
           villages: candidate.villages,
           capitalAssignments: candidate.capitalAssignments,
@@ -1263,7 +1284,7 @@ function topologyMaskV7(
     // The coast ring (PANGEA_COAST_RING rules): no land on the board's edge
     // ring, so water surrounds the island. Filtering the edge cells out keeps
     // the jittered radial order of every interior cell.
-    const ring = rules === "PANGEA_COAST_RING";
+    const ring = coastRingRulesV7(rules);
     const wanted = ring
       ? pangeaLandCountV7(width, height)
       : Math.floor(width * height * 0.72);
@@ -1424,7 +1445,7 @@ function validateNavalCandidate(
       : REVISION_15_SHALLOW_WATER_MINIMUM_SHARE_V7;
   const land = board.tiles.filter((tile) => tile.biome !== null);
   const water = board.tiles.filter((tile) => tile.biome === null);
-  const coastRing = setup.mapType === "PANGEA" && rules === "PANGEA_COAST_RING";
+  const coastRing = setup.mapType === "PANGEA" && coastRingRulesV7(rules);
   const bounds =
     setup.mapType === "PANGEA"
       ? [0.68, 0.76]
@@ -1996,7 +2017,7 @@ export function createInitialMapStateV7(
 export function createInitialMapStateWithVillageCountV7(
   input: unknown,
   villages: number,
-  rules: MapGenerationRulesV7 = "PANGEA_COAST_RING",
+  rules: MapGenerationRulesV7 = "RIFTS",
 ): CreateInitialMapStateResultV7 {
   const setup = parseMatchSetupV7(input);
   if (setup === null)

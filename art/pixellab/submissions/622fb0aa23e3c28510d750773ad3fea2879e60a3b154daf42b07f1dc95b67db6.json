@@ -1,0 +1,37 @@
+{
+  "id": "rift-v-ember-a",
+  "jobId": "31f8d87d-168d-493a-b7fe-c645985772ee",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "rift",
+    "asset": "chibi-rift-v-north",
+    "subject": "TERRAIN:RIFT_V_NORTH",
+    "faction": "ORIGINAL",
+    "recipeClass": "rift",
+    "requestSize": {
+      "width": 80,
+      "height": 240
+    },
+    "seed": 95151,
+    "noBackground": false,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Cut one long narrow jagged crack into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged."
+      }
+    ],
+    "prompt": "Cut one long narrow jagged crack into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged.",
+    "negativePrompt": "",
+    "description": "Cut one long narrow jagged crack into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged.",
+    "editInstruction": "Cut one long narrow jagged crack into this grass, running vertically through the middle from about 24 pixels inside the top edge to about 24 pixels inside the bottom edge, tapering to thin closed points at both ends. Crumbled dark brown earth lips, the walls dropping into deep near-black shadow, a faint deep orange-red ember glow far down inside. Keep all the grass around the crack exactly unchanged.",
+    "groundStrip": {
+      "asset": "chibi-grass-1",
+      "orientation": "VERTICAL",
+      "batch": "1",
+      "sha256": "d44fc49e5ab25891c17f0ad595f632137a5411aac3b40f72196fec6846bf79ea"
+    }
+  }
+}

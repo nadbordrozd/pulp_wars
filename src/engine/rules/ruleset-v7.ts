@@ -2690,10 +2690,11 @@ export function halfPowerAttack2V7(attack2: number): number {
  * - Shallow Water: afloat units only.
  * - Deep Water: afloat units whose owner has Navigation.
  *
- * Rift (the terrain of `pulp_wars-9s0.5`, not in the game yet) belongs here
- * when it lands: **flyers may enter and end a Move on a Rift; walkers, foot
- * units, and afloat units may not** (`!afloat && movementMode === "FLY"`).
- * Stride is Forest, Mountain, and Shallow Water, nothing else (section 7.4).
+ * - Rift (`pulp_wars-9s0.5`, docs/product/RULESET_7_RIFT.md): **flyers in
+ *   land form only** (`!afloat && movementMode === "FLY"`). Walkers, foot
+ *   units, Mountain-born units, Eggs, and afloat units may not; Stride is
+ *   Forest, Mountain, and Shallow Water, nothing else (the Martian revision
+ *   section 7.4).
  *
  * Occupancy, settlement sites, territory, and exploration are not terrain
  * and stay with each caller.
@@ -2721,6 +2722,8 @@ export function canEnterTerrainV7(input: {
       return input.afloat;
     case "DEEP_WATER":
       return input.afloat && input.navigation;
+    case "RIFT":
+      return !input.afloat && input.movementMode === "FLY";
   }
 }
 

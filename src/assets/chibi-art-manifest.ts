@@ -120,6 +120,57 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 80,
     url: chibiArtUrl("assets/chibi/terrain/chibi-deep-water-2.png"),
   },
+  // Bead pulp_wars-9s0.5: the Rift, one 1 x 3 crack per orientation cut into
+  // its west/north, middle and east/south pieces over chibi-grass-1 (batch
+  // rift, the rift-strip derivation).
+  {
+    id: "chibi-rift-h-west",
+    subject: "TERRAIN:RIFT_H_WEST",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-rift-h-west.png"),
+  },
+  {
+    id: "chibi-rift-h-middle",
+    subject: "TERRAIN:RIFT_H_MIDDLE",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-rift-h-middle.png"),
+  },
+  {
+    id: "chibi-rift-h-east",
+    subject: "TERRAIN:RIFT_H_EAST",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-rift-h-east.png"),
+  },
+  {
+    id: "chibi-rift-v-north",
+    subject: "TERRAIN:RIFT_V_NORTH",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-rift-v-north.png"),
+  },
+  {
+    id: "chibi-rift-v-middle",
+    subject: "TERRAIN:RIFT_V_MIDDLE",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-rift-v-middle.png"),
+  },
+  {
+    id: "chibi-rift-v-south",
+    subject: "TERRAIN:RIFT_V_SOUTH",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-rift-v-south.png"),
+  },
   {
     id: "chibi-village",
     subject: "SITE:VILLAGE",

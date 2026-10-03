@@ -106,6 +106,7 @@ import {
   shieldOfV7,
   tractorBeamDestinationV7,
 } from "./martian";
+import { riftAtV7 } from "./rift";
 import { grownHpV7 } from "./growth";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
 import type { CombatPreviewV7, DomainEventV7 } from "./events";
@@ -408,6 +409,7 @@ function appendPublicTileCommandsV7(
     publicCityDevelopmentFootprintKnown(view, monumentCity) &&
     !view.pendingChoices.some((choice) => choice.cityId === monumentCity.id) &&
     tile.biome !== null &&
+    tile.terrain !== "RIFT" &&
     (tile.terrain !== "MOUNTAIN" ||
       view.viewer.researchedTechs.includes("ENGINEERING")) &&
     !view.treasureChests.some((chest) => same(chest, tile.at)) &&
@@ -895,6 +897,7 @@ function appendPublicUnitCommandsV7(
     player.researchedTechs.includes("FORTIFICATION") &&
     tile?.explored === true &&
     tile.biome !== null &&
+    tile.terrain !== "RIFT" &&
     tile.territoryOwnerId === player.id &&
     !tile.fieldDefense &&
     player.coins >= 3
@@ -1017,6 +1020,8 @@ function publicMindControlTargetsV7(
         unitCapacitySlotsV7(view, target) === 1 &&
         tile?.explored === true &&
         tile.site === null &&
+        // The Rift (RULESET_7_RIFT.md section 4): immune on a Rift.
+        tile.terrain !== "RIFT" &&
         chebyshev(brain.at, target.at) <= MIND_CONTROL_RANGE_V7 &&
         target.hp <= MIND_CONTROL_HP_V7
       );
@@ -1601,6 +1606,8 @@ export function previewWailV7(
         target.dies &&
         unit !== undefined &&
         unit.form === "LAND" &&
+        // The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift.
+        !riftAtV7(view.board, unit.at) &&
         view.bitten.some((entry) => entry.unitId === target.unitId);
       return {
         ...target,
@@ -4133,6 +4140,8 @@ function appendPublicPlacementsForTileV7(
     developmentAllowedCityIds,
   } = enumeration;
   const beforeLength = placements.length;
+  // The Rift (RULESET_7_RIFT.md section 3): nothing is built on a Rift.
+  if (tile.terrain === "RIFT") return;
   if (
     tile.explored &&
     tile.territoryOwnerId === null &&
@@ -5157,6 +5166,8 @@ function publicTileCommandLegal(
   unlocked: ReadonlySet<string>,
 ): boolean {
   if (!unlocked.has(kind)) return false;
+  // The Rift (RULESET_7_RIFT.md section 3): no tile command targets a Rift.
+  if (tile.terrain === "RIFT") return false;
   if (
     tile.biome === null &&
     !["HARVEST_FISH", "GATHER_PEARLS", "BUILD_PORT", "BUILD_SHIPYARD"].includes(
@@ -5684,6 +5695,8 @@ function publicCombatPreviewCore(
     defenderShieldDamage,
     attackerDies,
     defenderDies,
+    attackerOnRift: riftAtV7(view.board, attacker.at),
+    defenderOnRift: riftAtV7(view.board, target.at),
     splash,
     splashOwner: (unitId) =>
       view.units.find((unit) => unit.id === unitId)?.ownerId,
@@ -5710,6 +5723,8 @@ function publicCombatPreviewCore(
     attackerMechanics.advancesAfterKill &&
     attacker.form === "LAND" &&
     (target.form === "LAND" || target.form === "EGG") &&
+    // The Rift (RULESET_7_RIFT.md section 4): never onto a Rift.
+    !riftAtV7(view.board, target.at) &&
     publicAdvanceDestinationLegal(view, attacker, target.at) &&
     // The Ice Folk revision section 7.7: never onto a foreign center.
     advanceSiteAllowedV7(
@@ -5785,6 +5800,8 @@ function publicCombatPreviewCore(
       damageToAttacker,
       attackerDies,
       defenderDies,
+      attackerOnRift: riftAtV7(view.board, attacker.at),
+      defenderOnRift: riftAtV7(view.board, target.at),
     }),
     ...afflictions,
     runUp: runUpAttack2 / 2,
@@ -6246,7 +6263,7 @@ function publicAdvanceDestinationLegal(
   // Colossus enters a Mountain without Engineering).
   return (
     tile?.explored === true &&
-    (tile.terrain !== "MOUNTAIN" ||
+    ((tile.terrain !== "MOUNTAIN" && tile.terrain !== "RIFT") ||
       canEnterTerrainV7({
         terrain: tile.terrain,
         movementMode: unitMovementModeV7(view, attacker),
@@ -6298,6 +6315,20 @@ function publicPushState(
     ) ||
     (tile.territoryOwnerId !== null &&
       publicAllied(view, defender.ownerId, tile.territoryOwnerId))
+  )
+    return "BLOCKED";
+  // The Rift (RULESET_7_RIFT.md section 4): only a flyer is pushed onto a
+  // Rift (the shared `canEnterTerrainV7`; movement modes are public).
+  if (
+    tile.terrain === "RIFT" &&
+    !canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: unitMovementModeV7(view, defender),
+      afloat: false,
+      engineering: false,
+      navigation: false,
+      mountainBorn: false,
+    })
   )
     return "BLOCKED";
   // The Martian revision: a walker or flyer is pushed onto a Mountain

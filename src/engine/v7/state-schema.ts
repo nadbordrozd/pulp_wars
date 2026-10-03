@@ -364,7 +364,14 @@ function parseTile(input: unknown): TileStateV7 | null {
       (terrain !== "GRASS" ||
         resource !== null ||
         improvement !== null ||
-        input.road))
+        input.road)) ||
+    // The Rift (RULESET_7_RIFT.md section 3): land with nothing on it.
+    (terrain === "RIFT" &&
+      (resource !== null ||
+        improvement !== null ||
+        input.road ||
+        input.fieldDefense ||
+        input.site !== null))
   )
     return null;
   return {
@@ -1277,7 +1284,11 @@ function validateCrossReferences(value: CrossInput): boolean {
       isAfloatFormV7(unit.form) !== (tile.biome === null) ||
       (isAfloatFormV7(unit.form) &&
         tile.terrain === "DEEP_WATER" &&
-        !owner.researchedTechs.includes("NAVIGATION"))
+        !owner.researchedTechs.includes("NAVIGATION")) ||
+      // The Rift (RULESET_7_RIFT.md section 4): only a land-form flyer.
+      (tile.terrain === "RIFT" &&
+        (unit.form !== "LAND" ||
+          roleMechanicsV7(unit.role, owner.faction).movementMode !== "FLY"))
     )
       return false;
   }
@@ -1378,6 +1389,7 @@ function validateCrossReferences(value: CrossInput): boolean {
       tile === undefined ||
       tile.biome === null ||
       tile.terrain === "MOUNTAIN" ||
+      tile.terrain === "RIFT" ||
       tile.site !== null ||
       tile.resource !== null ||
       tile.improvement !== null ||
@@ -1393,6 +1405,7 @@ function validateCrossReferences(value: CrossInput): boolean {
     if (
       tile === undefined ||
       tile.biome === null ||
+      tile.terrain === "RIFT" ||
       tile.site !== null ||
       treasureChests.some((chest) => sameCoordV7(chest, grave))
     )

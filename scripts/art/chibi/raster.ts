@@ -580,3 +580,271 @@ export function periodMismatch(
     }
   return count;
 }
+
+/** The Rift (bead pulp_wars-9s0.5): how a strip of three tiles is laid out. */
+export type RiftOrientation = "HORIZONTAL" | "VERTICAL";
+
+/**
+ * The rift-strip derivation (bead pulp_wars-9s0.5). One candidate holds a
+ * whole 1 x 3 crack drawn into a strip of three ground tiles; the crack is
+ * kept and everything else is the accepted ground, exactly, so the three
+ * pieces join into one crack and every outer edge is the ground tile's own
+ * seamless edge.
+ */
+export interface RiftStripSpec {
+  readonly orientation: RiftOrientation;
+  /** Redmean RGB distance from the ground above which a pixel is crack. */
+  readonly threshold: number;
+  /** 8-connected crack components smaller than this are dropped. */
+  readonly minComponent: number;
+  /** Rings of pixels grown round the crack (its rim). */
+  readonly dilate: number;
+  /** Pixels along the strip's outer boundary that are always ground. */
+  readonly margin: number;
+}
+
+/** The strip's size: three tiles side by side or stacked. */
+export function riftStripSize(
+  tile: { readonly width: number; readonly height: number },
+  orientation: RiftOrientation,
+): { readonly width: number; readonly height: number } {
+  return orientation === "HORIZONTAL"
+    ? { width: tile.width * 3, height: tile.height }
+    : { width: tile.width, height: tile.height * 3 };
+}
+
+/** Three copies of the ground tile, side by side or stacked. */
+export function groundStripRaster(
+  ground: RgbaRaster,
+  orientation: RiftOrientation,
+): RgbaRaster {
+  const size = riftStripSize(ground, orientation);
+  const data = new Uint8Array(size.width * size.height * 4);
+  for (let y = 0; y < size.height; y += 1)
+    for (let x = 0; x < size.width; x += 1) {
+      const from =
+        ((y % ground.height) * ground.width + (x % ground.width)) * 4;
+      data.set(ground.data.subarray(from, from + 4), (y * size.width + x) * 4);
+    }
+  return { ...size, data };
+}
+
+/** The window of piece 0, 1, or 2 (west/north to east/south) of a strip. */
+export function riftPieceWindow(
+  tile: { readonly width: number; readonly height: number },
+  orientation: RiftOrientation,
+  piece: number,
+): { left: number; top: number; width: number; height: number } {
+  return orientation === "HORIZONTAL"
+    ? { left: piece * tile.width, top: 0, ...tile }
+    : { left: 0, top: piece * tile.height, ...tile };
+}
+
+/**
+ * The crack mask of a candidate over its ground strip, then the composite:
+ * a pixel is crack when it is opaque (alpha >= 128) and its redmean distance
+ * from the ground exceeds `threshold`; components smaller than
+ * `minComponent` are dropped, enclosed holes are filled, the mask grows by
+ * `dilate` rings, and the outer `margin` stays ground. Crack pixels take the
+ * candidate's colour, fully opaque; every other pixel is the ground's.
+ */
+export function riftStripRaster(
+  candidate: RgbaRaster,
+  groundStrip: RgbaRaster,
+  spec: RiftStripSpec,
+): { readonly raster: RgbaRaster; readonly crackPixels: number } {
+  const { width, height } = groundStrip;
+  if (candidate.width !== width || candidate.height !== height)
+    throw new Error(
+      `rift candidate ${candidate.width}x${candidate.height} is not the ${width}x${height} strip`,
+    );
+  const count = width * height;
+  let mask = new Uint8Array(count);
+  for (let index = 0; index < count; index += 1) {
+    const offset = index * 4;
+    if ((candidate.data[offset + 3] ?? 0) < 128) continue;
+    const r = candidate.data[offset] ?? 0;
+    const g = candidate.data[offset + 1] ?? 0;
+    const b = candidate.data[offset + 2] ?? 0;
+    const gr = groundStrip.data[offset] ?? 0;
+    const gg = groundStrip.data[offset + 1] ?? 0;
+    const gb = groundStrip.data[offset + 2] ?? 0;
+    const mean = (r + gr) / 2;
+    const distance = Math.sqrt(
+      (2 + mean / 256) * (r - gr) ** 2 +
+        4 * (g - gg) ** 2 +
+        (2 + (255 - mean) / 256) * (b - gb) ** 2,
+    );
+    if (distance > spec.threshold) mask[index] = 1;
+  }
+  const neighbours = (index: number): number[] => {
+    const x = index % width;
+    const y = Math.floor(index / width);
+    const result: number[] = [];
+    for (let dy = -1; dy <= 1; dy += 1)
+      for (let dx = -1; dx <= 1; dx += 1) {
+        if (dx === 0 && dy === 0) continue;
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx >= 0 && ny >= 0 && nx < width && ny < height)
+          result.push(ny * width + nx);
+      }
+    return result;
+  };
+  // Drop small specks (8-connected components of the mask).
+  const seen = new Uint8Array(count);
+  for (let start = 0; start < count; start += 1) {
+    if (mask[start] !== 1 || seen[start] === 1) continue;
+    const component = [start];
+    seen[start] = 1;
+    for (let cursor = 0; cursor < component.length; cursor += 1)
+      for (const near of neighbours(component[cursor] as number))
+        if (mask[near] === 1 && seen[near] === 0) {
+          seen[near] = 1;
+          component.push(near);
+        }
+    if (component.length < spec.minComponent)
+      for (const index of component) mask[index] = 0;
+  }
+  // Fill enclosed holes: ground pixels not 4-connected to the boundary.
+  const outside = new Uint8Array(count);
+  const queue: number[] = [];
+  for (let index = 0; index < count; index += 1) {
+    const x = index % width;
+    const y = Math.floor(index / width);
+    if (
+      mask[index] === 0 &&
+      (x === 0 || y === 0 || x === width - 1 || y === height - 1)
+    ) {
+      outside[index] = 1;
+      queue.push(index);
+    }
+  }
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const index = queue[cursor] as number;
+    const x = index % width;
+    const y = Math.floor(index / width);
+    for (const [nx, ny] of [
+      [x - 1, y],
+      [x + 1, y],
+      [x, y - 1],
+      [x, y + 1],
+    ] as const) {
+      if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+      const near = ny * width + nx;
+      if (mask[near] === 0 && outside[near] === 0) {
+        outside[near] = 1;
+        queue.push(near);
+      }
+    }
+  }
+  for (let index = 0; index < count; index += 1)
+    if (outside[index] === 0) mask[index] = 1;
+  for (let ring = 0; ring < spec.dilate; ring += 1) {
+    const grown = new Uint8Array(mask);
+    for (let index = 0; index < count; index += 1)
+      if (mask[index] === 1)
+        for (const near of neighbours(index)) grown[near] = 1;
+    mask = grown;
+  }
+  const data = new Uint8Array(groundStrip.data);
+  let crackPixels = 0;
+  for (let index = 0; index < count; index += 1) {
+    const x = index % width;
+    const y = Math.floor(index / width);
+    if (
+      mask[index] !== 1 ||
+      x < spec.margin ||
+      y < spec.margin ||
+      x >= width - spec.margin ||
+      y >= height - spec.margin
+    )
+      continue;
+    const offset = index * 4;
+    data[offset] = candidate.data[offset] ?? 0;
+    data[offset + 1] = candidate.data[offset + 1] ?? 0;
+    data[offset + 2] = candidate.data[offset + 2] ?? 0;
+    data[offset + 3] = 255;
+    crackPixels += 1;
+  }
+  return { raster: { width, height, data }, crackPixels };
+}
+
+/**
+ * A guide crack drawn on the ground strip before the rift edit (bead
+ * pulp_wars-9s0.5): Pixen's edit keeps a shape's place and extent far better
+ * than it follows words, so the strip it edits already holds a dark crack of
+ * the wanted length, width and orientation, and the instruction restyles it.
+ * Deterministic: a Mulberry32 walk from `seed`.
+ */
+export interface RiftGuideSpec {
+  readonly seed: number;
+  /** Half the crack's width at its widest, in pixels. */
+  readonly halfWidth: number;
+  /** Ground left between each end of the crack and the strip's end. */
+  readonly inset: number;
+  /** Largest sideways step of the centre line between two knots. */
+  readonly wander: number;
+}
+
+export function riftGuideRaster(
+  groundStrip: RgbaRaster,
+  orientation: RiftOrientation,
+  guide: RiftGuideSpec,
+): RgbaRaster {
+  let state = guide.seed >>> 0;
+  const next = (): number => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1) >>> 0;
+    value ^= (value + Math.imul(value ^ (value >>> 7), value | 61)) >>> 0;
+    return ((value ^ (value >>> 14)) >>> 0) / 0x1_0000_0000;
+  };
+  const along =
+    orientation === "HORIZONTAL" ? groundStrip.width : groundStrip.height;
+  const across =
+    orientation === "HORIZONTAL" ? groundStrip.height : groundStrip.width;
+  const start = guide.inset;
+  const end = along - guide.inset;
+  const knotStep = 10;
+  const knots: number[] = [];
+  let offset = 0;
+  for (let t = start; t <= end + knotStep; t += knotStep) {
+    knots.push(offset);
+    offset += Math.round((next() * 2 - 1) * guide.wander);
+    offset = Math.max(-across / 6, Math.min(across / 6, offset));
+  }
+  // Width jitter in runs of four pixels, so the rim is jagged, not hairy.
+  const jitter: number[] = [];
+  let run = 0;
+  for (let t = 0; t < along; t += 1) {
+    if (t % 4 === 0) run = Math.round(next() * 2) - 1;
+    jitter.push(run);
+  }
+  const data = new Uint8Array(groundStrip.data);
+  for (let t = start; t < end; t += 1) {
+    const k = (t - start) / knotStep;
+    const k0 = Math.floor(k);
+    const a = knots[k0] ?? 0;
+    const b = knots[k0 + 1] ?? a;
+    const centre = across / 2 + a + (b - a) * (k - k0);
+    const phase = (t - start) / (end - start);
+    const half = Math.max(
+      0.5,
+      guide.halfWidth * Math.sin(Math.PI * phase) ** 0.6 + (jitter[t] ?? 0),
+    );
+    for (let s = 0; s < across; s += 1) {
+      const distance = Math.abs(s + 0.5 - centre);
+      if (distance > half) continue;
+      const x = orientation === "HORIZONTAL" ? t : s;
+      const y = orientation === "HORIZONTAL" ? s : t;
+      const index = (y * groundStrip.width + x) * 4;
+      const core = distance <= half - 2.5;
+      data[index] = core ? 0x2a : 0x3b;
+      data[index + 1] = core ? 0x12 : 0x2a;
+      data[index + 2] = core ? 0x10 : 0x22;
+      data[index + 3] = 255;
+    }
+  }
+  return { width: groundStrip.width, height: groundStrip.height, data };
+}

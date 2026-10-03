@@ -37,9 +37,11 @@ export function deathCreatesGraveV7(
 ): boolean {
   if (!gravesEnabledV7(context.setup) || unit.form !== "LAND") return false;
   const tile = tileAtV7(context.board, unit.at);
+  // The Rift (RULESET_7_RIFT.md section 4): no Grave lies on a Rift.
   return (
     tile !== undefined &&
     tile.biome !== null &&
+    tile.terrain !== "RIFT" &&
     tile.site === null &&
     !context.treasureChests.some((chest) => sameCoordV7(chest, unit.at)) &&
     !graves.some((grave) => sameCoordV7(grave, unit.at))

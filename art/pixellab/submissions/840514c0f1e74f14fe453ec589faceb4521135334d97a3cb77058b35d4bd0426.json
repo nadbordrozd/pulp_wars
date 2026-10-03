@@ -1,0 +1,43 @@
+{
+  "id": "rift-h-g2-dark",
+  "jobId": "1124d7c5-0c71-419b-9413-b7d49d6e2c14",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "rift",
+    "asset": "chibi-rift-h-west",
+    "subject": "TERRAIN:RIFT_H_WEST",
+    "faction": "ORIGINAL",
+    "recipeClass": "rift",
+    "requestSize": {
+      "width": 240,
+      "height": 80
+    },
+    "seed": 95204,
+    "noBackground": false,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged."
+      }
+    ],
+    "prompt": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+    "negativePrompt": "",
+    "description": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+    "editInstruction": "This is a top-down map tile seen from directly above. Turn the dark shape into a deep jagged crack in the ground: keep its exact outline, place and size. Crumbled brown earth along its rim, dark grey rocky inner walls fading into pure black depth. Keep all the grass exactly unchanged.",
+    "groundStrip": {
+      "asset": "chibi-grass-1",
+      "orientation": "HORIZONTAL",
+      "guide": {
+        "seed": 23,
+        "halfWidth": 11,
+        "inset": 16,
+        "wander": 4
+      },
+      "batch": "1",
+      "sha256": "edba00d6e218594fd41b1345b116e203429b514adbd1c3de9d7867281b243d39"
+    }
+  }
+}

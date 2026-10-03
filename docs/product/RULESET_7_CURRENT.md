@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r27`, for all five playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r28`, for all five playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), and Martian
 (`MARTIAN`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
@@ -39,10 +39,15 @@ development flag. Every number below was checked against the engine code at
 `pulp-wars-poc-7r25`; `pulp-wars-poc-7r24` (`pulp_wars-7g3.3`) registers the
 Ice Folk overlay and changes no rule of the five factions, and
 `pulp-wars-poc-7r26` (`pulp_wars-9s0.2`) changes only Pangea map generation
-(the coast ring, [section 2.3](#23-map-types)), and `pulp-wars-poc-7r27`
-(`pulp_wars-7g3.7`) changes only the Ice Folk Yeti (9 HP, Defense 1.5).
+(the coast ring, [section 2.3](#23-map-types)), `pulp-wars-poc-7r27`
+(`pulp_wars-7g3.7`) changes only the Ice Folk Yeti (9 HP, Defense 1.5),
+and `pulp-wars-poc-7r28` (`pulp_wars-9s0.5`) adds the **Rift** terrain,
+folded in directly here (sections [2.3](#23-map-types),
+[2.4](#24-biomes-terrain-and-resources), [8.1](#81-common-placement-gates),
+[12.1](#121-movement), and [13.4](#134-after-combat)); its full ruling of
+every interaction is the [Rift overlay](RULESET_7_RIFT.md).
 
-**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r27` also
+**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r28` also
 registers a sixth faction, `ICE_FOLK`, whose rules are in the
 [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (engine implemented by
 `pulp_wars-7g3.3` at `pulp-wars-poc-7r24`; its Normal AI and UI are in
@@ -94,11 +99,12 @@ hatching in one turn), revision 20 keeps the Human HP
 before `pulp_wars-0hi.3` (Fighter, Raider, and Marksman 10, Guard 15) in its
 bounds, and the Martian overlay keeps the contract's Colossus Defense 3 in
 its tuning bounds, examples computed against 10-HP Human units, its
-placeholder-art plan, and Rift rules for a terrain that is not in the game;
+placeholder-art plan, and Rift rules written before the terrain existed
+(the [Rift overlay](RULESET_7_RIFT.md) implements and completes them);
 the values here are current. Where a document and the code
 disagreed, the code's behavior is the rule and is stated below;
 [Known discrepancies](#22-known-discrepancies) lists the open items as of
-`pulp-wars-poc-7r27`.
+`pulp-wars-poc-7r28`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague, and
@@ -150,10 +156,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                      |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Ruleset                                    | `pulp-wars-poc-7r27`                                                                                                                                                                                               |
+| Ruleset                                    | `pulp-wars-poc-7r28`                                                                                                                                                                                               |
 | Game-state schema                          | `7`                                                                                                                                                                                                                |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                |
-| Browser autosave                           | `pulpWars.save.v7r27.current`                                                                                                                                                                                      |
+| Browser autosave                           | `pulpWars.save.v7r28.current`                                                                                                                                                                                      |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                         |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK` (the last is the pending Ice Folk overlay)                                                                                                       |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`                                                                          |
@@ -191,9 +197,11 @@ separate [Ruleset 6](RULESET_6.md) route.
   Colossus Defense. `pulp_wars-9s0.2` (`7r26`) changed only Pangea map
   generation (the coast ring) and no shape; a stored state keeps its board.
   `pulp_wars-7g3.7` (`7r27`) changed only the Ice Folk Yeti's HP and
-  Defense.
+  Defense. `pulp_wars-9s0.5` (`7r28`) appended the terrain `RIFT` to the
+  frozen terrain order and changed map generation (the Rift); no field was
+  added, and a stored state keeps its board.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r26.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r27.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -357,6 +365,23 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   orthogonally adjacent to the main landmass lie in one eight-connected
   Shallow Water body that encloses the landmass. Every other map type is
   byte-identical to the generator before the ring.
+- **Rifts** (`pulp_wars-9s0.5`, [Rift overlay](RULESET_7_RIFT.md)
+  section 5). After a generated board is accepted (and after its treasure
+  chests), Rift placement turns one or two straight 1 x 3 runs of land,
+  horizontal or vertical, into `RIFT` tiles. It draws from its own
+  Mulberry32 stream, seeded with `seedFromText("pulp-wars-rift:" + seed)`,
+  never from the match stream, and never rejects a board, so a board
+  without a Rift is byte-identical to the board before the Rift. The target
+  count is 0 on 11 x 11 and 14 x 14; on 16 x 16 one with probability 1/2;
+  on 20 x 20 one; on 25 x 25 two with probability 1/3, otherwise one; the
+  Showcase has none. A Rift's tiles are resource-free Grass, Forest, or
+  Mountain off the edge ring (they keep their biome); every tile around
+  them is land (a Rift never touches water) and no other Rift; no capital
+  is within Chebyshev 2 and no village within 1 of a Rift tile; two Rifts
+  are at least 4 apart; and removing the tiles splits no land component,
+  with or without Mountains. Each Rift is drawn uniformly from the legal
+  runs; with none left, fewer are placed (mostly on Archipelago, where
+  islands rarely hold a run with land all round it).
 - A water cell is `SHALLOW_WATER` if and only if at least one of its four
   orthogonal neighbours on the board is land; every other water cell,
   including water that touches land only diagonally, is `DEEP_WATER`.
@@ -397,6 +422,11 @@ terrain and resource from these exact tables.
 | Shallow Water |  28% |    10% |  62% |
 | Deep Water    |   0% |    16% |  84% |
 
+- **Rift** (`RIFT`, the sixth terrain): land that keeps its biome, with
+  no resource, improvement, Road, Field Defense, site, treasure chest, or
+  Grave, ever. Only a flyer in land form (the Martian Saucer and
+  Mothership) may enter, cross, or stand on it; nothing can be built on it.
+  It is never Snow. It is made only by generation, and nothing changes it.
 - A settlement-ring floor then guarantees family minimums by the settlement's
   biome: Plains 2 Agriculture + 1 Timber; Woodland 1 Agriculture + 2 Timber;
   Highlands 1 Timber + 2 Metal (Ore).
@@ -1117,7 +1147,11 @@ Tile economy targets an explored tile assigned to one of the actor's cities
 that is not besieged and has no pending reward. No unit is needed. Resource
 actions, buildings, and Monuments never target a site (city center or village)
 or a treasure tile. Mountain targets for buildings, Monuments, and Roads
-require Engineering. Roads always coexist.
+require Engineering. Roads always coexist. **No tile command targets a
+Rift**: buildings, Monuments, and Roads are rejected with `INVALID_TILE`
+(the Forest actions with `FOREST_ACTION_INVALID_TILE`), and the query
+offers none. A Rift may lie in territory (a Land Grant claims it) and adds
+nothing to its city.
 
 ### 8.2 Resource and basic actions
 
@@ -1665,6 +1699,14 @@ General roster rules:
   Navigation, and Mountain-born, an input of the Ice Folk overlay that is
   false for every role of the five factions), and "does entering this tile
   end the Move" through `terrainStopsMoveV7`.
+- **Rift.** `canEnterTerrainV7` admits a Rift for a land-form flyer only:
+  a flyer enters, crosses, and ends a Move on it at the ordinary cost
+  (never stopped, never a Road node); every other unit (foot units,
+  walkers, afloat units, Eggs) neither enters nor paths through it, the
+  rejection and interruption reason being the impassable-terrain reason
+  `ENGINEERING_REQUIRED`. A Rift exerts no ZOC and blocks no sight or
+  range. Push, the Charge! push, the Tractor Beam, and treasure or reward
+  placement put only a flyer on it; Beam Down never targets it.
 - **Occupancy and friendly pass-through** (revision 18). A unit never ends a
   Move on an occupied tile. A step that holds a visible unit of another
   player, allied or hostile, is illegal (`OCCUPIED`) anywhere in the path. An
@@ -1893,7 +1935,9 @@ applied.
   cell if explored and enterable (Mountain needs Engineering unless the
   attacker strides), then reveals sight. It does not advance when the
   defender rises in place (an Infect or Bitten rising), and it stands on any
-  Grave the death left.
+  Grave the death left. Nothing advances onto a **Rift** (only a flyer
+  stands there, and flyers never advance), so a kill there continues no
+  Overrun and a Charge! does not follow a target pushed off a Rift.
 - **Push:** a Juggernaut, Abomination, Troll, Brontosaurus, or Colossus
   pushes a surviving adjacent target one cell directly away (never at range 2) if the cell is on the
   board, explored by the attacker, empty, not a settlement, the same
@@ -1959,7 +2003,9 @@ applied.
   ([section 19.8](#198-grow)).
 - **Deaths.** A combat death leaves a Grave, an Infect rising, or a Bitten
   rising as [section 17](#17-undead-faction-rules) describes; a destroyed Egg
-  leaves none of them. A Brain's death collapses its Thralls (`UNIT_DIED`
+  leaves none of them, and neither does a death on a **Rift** (any cause:
+  no Grave, no Infect or Bitten rising). A unit on a Rift is also immune to
+  Mind Control. A Brain's death collapses its Thralls (`UNIT_DIED`
   cause `BRAIN_LOST`) right after the death events and before the advance,
   Push, and any chain ([section 20.9](#209-thralls)). An exploding
   Goblin unit (the defender, a splash victim, or the attacker) then explodes,
@@ -3653,10 +3699,12 @@ interrupted as usual.
 - **Foot units** embark at an own active, empty Port or Shipyard with
   Shorecraft, exactly like Human land units.
 
-There is no Rift terrain in the game: the overlay's Rift rules
-([Martian overlay section 7.4](RULESET_7_MARTIANS.md#74-rift)) wait for the
-Rift bead (`pulp_wars-9s0.5`), and `canEnterTerrainV7` documents where they
-will go.
+**Rifts** (`pulp_wars-9s0.5`): a flyer may enter, cross, and end a Move on
+a Rift, and land on it or be pushed, pulled, or placed there; a walker or
+foot unit never; a unit on a Rift is immune to Mind Control, a flyer
+killed there does not rise, and Beam Down never targets a Rift
+([Rift overlay](RULESET_7_RIFT.md), implementing
+[Martian overlay section 7.4](RULESET_7_MARTIANS.md#74-rift)).
 
 ### 20.7 Beam Down
 
@@ -3963,6 +4011,7 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
 | Martian  | `pulp-wars-poc-7r25` | `pulp_wars-t6s.5` coarse Dry Land Martian balance: Colossus Defense 2.5                                                                                                                             | [Martian balance](../validation/RULESET_7_MARTIAN_BALANCE.md)   |
 | —        | `pulp-wars-poc-7r26` | `pulp_wars-9s0.2`: the Pangea coast ring (no land on the edge ring; Shallow circumnavigation; 59.5–72% land); other map types unchanged                                                             | [section 2.3](#23-map-types)                                    |
 | —        | `pulp-wars-poc-7r27` | `pulp_wars-7g3.7` coarse Dry Land Ice Folk balance: Yeti 9 HP, Defense 1.5; **not folded** into this document                                                                                       | [Ice Folk balance](../validation/RULESET_7_ICE_FOLK_BALANCE.md) |
+| —        | `pulp-wars-poc-7r28` | `pulp_wars-9s0.5`: the Rift (a 1 x 3 crack only flyers stand on; nothing built on it; 0-2 per generated board by width); other rules unchanged                                                      | [Rift overlay](RULESET_7_RIFT.md)                               |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -4112,9 +4161,10 @@ the code's behavior is stated:
   seat's Thralls are removed with cause `ELIMINATION`; `PLAGUE_DAMAGED`
   carries no `shieldDamage`; the Thrall's HP is the victim's;
 - the overlay's Rift rules (sections 7.4, 8.1 row 7, 8.2 row 9, 10.1, and
-  the Rift parts of 7.2 and 8.4) describe a terrain that is not in the game
-  (`pulp_wars-9s0.5` has not landed; the map revision is still
-  `REGIONAL_BIOMES_NAVAL_V2`), so they are not stated here;
+  the Rift parts of 7.2 and 8.4) are implemented by `pulp_wars-9s0.5`
+  (`7r28`) as written, with the rest of the Rift's rules in the
+  [Rift overlay](RULESET_7_RIFT.md); the map revision stays
+  `REGIONAL_BIOMES_NAVAL_V2`;
 - the blockade recompute after `DISBAND` (overlay 10.7 and 19.2 note 8)
   runs after every `DISBAND` while the state has any Thrall, not only after
   one that collapsed a Thrall; the events are emitted only on a change, and
@@ -4147,12 +4197,12 @@ the code's behavior is stated:
 
 ## 22. Known discrepancies
 
-No rule discrepancy is open: as of `pulp-wars-poc-7r27` the rules in this
+No rule discrepancy is open: as of `pulp-wars-poc-7r28` the rules in this
 document match the code for the five playable factions, including the
 Dinosaur faction of revisions 19 and 20, the achievements of revision 21,
 and the Martian faction of the Martian overlay.
 
-**Pending overlay in the code.** The engine at `pulp-wars-poc-7r27` also
+**Pending overlay in the code.** The engine at `pulp-wars-poc-7r28` also
 contains the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`,
 `7r24`), which this document does not describe: the `ICE_FOLK`
 faction and `ICE_FOLK_BASELINE_V1` tree, the commands `THROW_BOLAS` and

@@ -357,7 +357,9 @@ export function winterV7(state: WinterFactsV7): WinterV7 {
   const groundSnow = new Set<number>();
   for (let index = 0; index < tiles.length; index += 1) {
     const tile = tiles[index];
-    if (tile === undefined || tile.biome === null) continue;
+    // Section 6.1: Water and Rift tiles are never Snow.
+    if (tile === undefined || tile.biome === null || tile.terrain === "RIFT")
+      continue;
     if (tile.territoryCityId !== null) {
       if (iceCityIds.has(tile.territoryCityId)) groundSnow.add(index);
       continue;
@@ -391,7 +393,11 @@ export function winterV7(state: WinterFactsV7): WinterV7 {
         blizzard.add(y * width + x);
   const snow = new Set(groundSnow);
   for (const index of blizzard)
-    if (tiles[index]?.biome !== null && tiles[index] !== undefined)
+    if (
+      tiles[index] !== undefined &&
+      tiles[index]?.biome !== null &&
+      tiles[index]?.terrain !== "RIFT"
+    )
       snow.add(index);
   const result: WinterV7 = {
     snow,
@@ -486,7 +492,11 @@ export function knownWinterV7(
   }
   const snow = new Set(winter.groundSnow);
   for (const index of blizzard)
-    if (tiles[index] !== undefined && tiles[index]?.biome !== null)
+    if (
+      tiles[index] !== undefined &&
+      tiles[index]?.biome !== null &&
+      tiles[index]?.terrain !== "RIFT"
+    )
       snow.add(index);
   return { snow, blizzard };
 }
