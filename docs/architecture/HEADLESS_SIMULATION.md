@@ -4,13 +4,12 @@ The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) for six
-factions (Human, Undead, Goblin, Dinosaur, Martian, and Ice Folk;
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) for all seven
+factions (Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf;
 `pulp_wars-t6s.7` folded the
-[Martian overlay](../product/RULESET_7_MARTIANS.md) and `pulp_wars-7g3.8`
-the [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md) into it); the Dwarf
-seats below follow the pending
-[Dwarf overlay](../product/RULESET_7_DWARVES.md). The headless CLI
+[Martian overlay](../product/RULESET_7_MARTIANS.md), `pulp_wars-7g3.8` the
+[Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), and `pulp_wars-78i.8`
+the [Dwarf overlay](../product/RULESET_7_DWARVES.md) into it). The headless CLI
 accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r31`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
 [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md) the
@@ -262,9 +261,10 @@ and `II` and writes a compact per-seat Ice Folk telemetry
 ## Dwarf seats (`pulp_wars-78i.3`)
 
 `--factions` also accepts `dwarf`
-([Dwarf overlay](../product/RULESET_7_DWARVES.md), section 19.1), on every
-map type including `showcase`; the browser setup does not offer the faction
-until its UI bead (`pulp_wars-78i.6`):
+([current rules section 22](../product/RULESET_7_CURRENT.md#22-dwarf-faction-rules);
+[Dwarf overlay](../product/RULESET_7_DWARVES.md), section 19.1), on every
+map type including `showcase`; the browser setup offers the faction since
+its UI bead (`pulp_wars-78i.6`):
 
 ```bash
 npm run headless -- match --ruleset pulp-wars-poc-7r31 --map-type dry-land --factions dwarf,original --seed 3 --max-rounds 150

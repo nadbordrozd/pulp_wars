@@ -4,14 +4,14 @@
 
 The current client runs `pulp-wars-poc-7r31` (autosave
 `pulpWars.save.v7r31.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r30.current`), whose rules for six of the seven
-factions the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian,
-and Ice Folk, are described by
+through `pulpWars.save.v7r30.current`), whose rules for all seven factions
+the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk,
+and Dwarf, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
 (`pulp_wars-c87.9` folded revisions 19–21 into it, `pulp_wars-t6s.7` the
-[Martian overlay](../product/RULESET_7_MARTIANS.md), and `pulp_wars-7g3.8`
-the [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md); the Dwarves follow
-the pending [Dwarf overlay](../product/RULESET_7_DWARVES.md)). The Dinosaur faction of
+[Martian overlay](../product/RULESET_7_MARTIANS.md), `pulp_wars-7g3.8` the
+[Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), and `pulp_wars-78i.8`
+the [Dwarf overlay](../product/RULESET_7_DWARVES.md)). The Dinosaur faction of
 the [revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
 (`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured;
 `pulp_wars-c87.3`: Eggs, Shaman Hatch, and Nesting, with their public
@@ -315,8 +315,11 @@ fifteen times a second for the flakes (full motion only).
 ## Dwarf engine boundary (`pulp_wars-78i.3`)
 
 The engine registers a seventh faction, `DWARF`
-([Dwarf overlay](../product/RULESET_7_DWARVES.md)), with every rule of that
-document, under `pulp-wars-poc-7r30`. Since the Dwarf UI bead
+([Dwarf overlay](../product/RULESET_7_DWARVES.md), folded by
+`pulp_wars-78i.8` into
+[current rules section 22](../product/RULESET_7_CURRENT.md#22-dwarf-faction-rules)),
+with every rule of that document, under `pulp-wars-poc-7r30` (and the
+`pulp_wars-78i.7` bomb of `7r31`). Since the Dwarf UI bead
 (`pulp_wars-78i.6`) the setup screen offers it for every seat (`FACTIONS`
 in `src/render/dom/app-view-v7.ts`), and the client draws and plays it as
 the

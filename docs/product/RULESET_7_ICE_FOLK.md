@@ -6,7 +6,7 @@ current rules describe the running six-faction game, with the Ice Folk in
 their [section 21](RULESET_7_CURRENT.md#21-ice-folk-faction-rules), and win
 wherever this document differs; the fold's corrections of this text are
 listed in their
-[known discrepancies](RULESET_7_CURRENT.md#23-known-discrepancies).
+[known discrepancies](RULESET_7_CURRENT.md#24-known-discrepancies).
 Contract (`pulp_wars-7g3.2`); **the engine is implemented**
 (`pulp_wars-7g3.3`, identity `pulp-wars-poc-7r24`: every rule, command, event,
 query, and state shape of this document). **The UI is implemented**

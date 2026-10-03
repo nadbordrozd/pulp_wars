@@ -808,7 +808,9 @@ This overlay implements
 [Dwarf spec section 16](../product/RULESET_7_DWARVES.md#16-ui-requirements)
 (`pulp_wars-78i.6`) with the production art of the
 [Dwarf art fragment](../art/factions/DWARF.md) (bead `pulp_wars-78i.5`) and
-its code-drawn pieces. Every cue reads only public views (`view.burrowed`,
+its code-drawn pieces. The Dwarf rules are part of
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md#22-dwarf-faction-rules).
+Every cue reads only public views (`view.burrowed`,
 `view.surfacedThisTurn`, `view.bombedThisTurn`), the public unit stats'
 `dwarf` block and per-turn flags, the public previews (`previewTunnelV7`,
 `previewBombRunV7`, `previewAssembleV7`, `queryAssembleUnavailableReasonV7`,

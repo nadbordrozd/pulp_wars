@@ -1,9 +1,9 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r31`, for six playable factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r31`, for all seven playable factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
-(`MARTIAN`), and Ice Folk (`ICE_FOLK`). It folds in
+(`MARTIAN`), Ice Folk (`ICE_FOLK`), and Dwarf (`DWARF`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
 opening research, and Raider Escape; no separate overlay document) and the
@@ -33,7 +33,7 @@ Defense 2.5, from its
 [tuning record](RULESET_7_MARTIANS.md#165-tuning-record) and its
 implementation notes in
 [section 19](RULESET_7_MARTIANS.md#19-implementation-notes-pulp_wars-t6s2)),
-and the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (the Ice Folk faction:
+the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (the Ice Folk faction:
 engine `pulp_wars-7g3.3` at `pulp-wars-poc-7r24`, Normal AI
 `pulp_wars-7g3.4`, UI `pulp_wars-7g3.6` with the production art of
 `pulp_wars-7g3.5`, the root rulings of its
@@ -44,12 +44,27 @@ and Defense 1.5, from its
 notes in
 [section 19](RULESET_7_ICE_FOLK.md#19-implementation-notes-pulp_wars-7g33)
 and its UI notes in
-[section 20](RULESET_7_ICE_FOLK.md#20-ui-implementation-notes-pulp_wars-7g36)).
-The Undead, the Goblins, the Dinosaurs, the Martians, and the Ice Folk are
-part of the ordinary game: faction choice is offered in every match setup,
-with no development flag. The numbers of the first five factions were
-checked against the engine code at `pulp-wars-poc-7r25` and those of the Ice
-Folk at `pulp-wars-poc-7r30` (`pulp_wars-7g3.8`); `pulp-wars-poc-7r24`
+[section 20](RULESET_7_ICE_FOLK.md#20-ui-implementation-notes-pulp_wars-7g36)),
+and the [Dwarf overlay](RULESET_7_DWARVES.md) (the Steampunk Dwarf faction:
+engine `pulp_wars-78i.3` at `pulp-wars-poc-7r30`, Normal AI
+`pulp_wars-78i.4`, UI `pulp_wars-78i.6` with the production art of
+`pulp_wars-78i.5`, the root rulings of its
+[section 20.5](RULESET_7_DWARVES.md#205-root-rulings), and the
+`pulp_wars-78i.7` coarse balance numbers of `pulp-wars-poc-7r31`, the bomb 5
+and 6 with Dive, from its
+[tuning record](RULESET_7_DWARVES.md#195-tuning-record), with its Normal AI
+notes in
+[section 15.1](RULESET_7_DWARVES.md#151-implementation-status-pulp_wars-78i4),
+its engine notes in
+[section 22](RULESET_7_DWARVES.md#22-implementation-notes-pulp_wars-78i3),
+and its UI notes in
+[section 23](RULESET_7_DWARVES.md#23-ui-implementation-notes-pulp_wars-78i6)).
+The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, and the
+Dwarves are part of the ordinary game: faction choice is offered in every
+match setup, with no development flag. The numbers of the first five
+factions were checked against the engine code at `pulp-wars-poc-7r25`, those
+of the Ice Folk at `pulp-wars-poc-7r30` (`pulp_wars-7g3.8`), and those of
+the Dwarves at `pulp-wars-poc-7r31` (`pulp_wars-78i.8`); `pulp-wars-poc-7r24`
 (`pulp_wars-7g3.3`) registers the Ice Folk and changes no rule of the other
 factions, `pulp-wars-poc-7r26` (`pulp_wars-9s0.2`) changes only Pangea map
 generation (the coast ring, [section 2.3](#23-map-types)),
@@ -62,22 +77,23 @@ every interaction is the [Rift overlay](RULESET_7_RIFT.md),
 `pulp-wars-poc-7r29` (`pulp_wars-w5j.1`) makes every player play a
 different faction, folded in directly in [section 2.1](#21-match-setup)
 from the [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md), and
-`pulp-wars-poc-7r30` (`pulp_wars-78i.3`) registers the Dwarf overlay and
-changes no rule of the six factions, nor does `pulp-wars-poc-7r31`
-(`pulp_wars-78i.7`, the Dwarf coarse balance: the Gyrocopter's bomb and Dive).
+`pulp-wars-poc-7r30` (`pulp_wars-78i.3`) registers the Dwarves and changes
+no rule of the other factions (the per-unit living test, the one occupancy
+predicate, and the board-or-all-units accessors it introduced return what
+the former rules returned in a match without a Dwarf seat), and
+`pulp-wars-poc-7r31` (`pulp_wars-78i.7`) changes only the Dwarf
+Gyrocopter's bomb (5, and 6 with Dive).
 
-**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r31` also
-registers a seventh faction, `DWARF`, whose rules are in the
-[Dwarf overlay](RULESET_7_DWARVES.md): its engine (`pulp_wars-78i.3`), its
-Normal AI (`pulp_wars-78i.4`), and its UI (`pulp_wars-78i.6`, with the
-production art of `pulp_wars-78i.5`) are live at `pulp-wars-poc-7r30`, so
-the browser setup offers it; its coarse balance (`pulp_wars-78i.7`) is live
-at `pulp-wars-poc-7r31`, and its fold into this document is in progress. This document does not describe it:
-wherever it lists "every faction", it means the six factions above; the
-Dwarf additions (the `burrowed`, `surfacedThisTurn`, and `bombedThisTurn`
-lists, the two per-unit flags and the `dwarf` block of the unit stats, and
-three combat-preview fields) are neutral in a match without a Dwarf seat
-([section 23](#23-known-discrepancies)).
+**No pending faction overlay.** Every faction the engine registers is
+described here. The [Dwarf overlay](RULESET_7_DWARVES.md) was the last
+pending one; `pulp_wars-78i.8` folded it in as
+[section 22](#22-dwarf-faction-rules). (The
+[Mind Control overlay](RULESET_7_MIND_CONTROL.md) is a contract whose
+engine is not implemented, so this document does not describe it.) The Dwarf additions (the `burrowed`,
+`surfacedThisTurn`, and `bombedThisTurn` lists, the two per-unit flags and
+the `dwarf` block of the unit stats, and three combat-preview fields) are
+neutral in a match without a Dwarf seat
+([section 22.14](#2214-commands-events-errors-and-queries)).
 
 **Supersedes for current play:** [Ruleset 7 baseline](RULESET_7.md) and its
 overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
@@ -97,8 +113,9 @@ overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
 [19](RULESET_7_REVISION_19_DINOSAURS.md),
 [20](RULESET_7_REVISION_20.md), and
 [21](RULESET_7_REVISION_21_ACHIEVEMENTS.md), with the
-[Martian overlay](RULESET_7_MARTIANS.md) and the
-[Ice Folk overlay](RULESET_7_ICE_FOLK.md). Those documents remain as design
+[Martian overlay](RULESET_7_MARTIANS.md), the
+[Ice Folk overlay](RULESET_7_ICE_FOLK.md), and the
+[Dwarf overlay](RULESET_7_DWARVES.md). Those documents remain as design
 history, exact schema/ordering detail, measurements, and acceptance
 provenance. When one of them disagrees with this document, this document
 describes the current rules. In particular, the [baseline](RULESET_7.md)
@@ -123,17 +140,23 @@ the Ice Folk overlay keeps the contract's 10-HP, Defense-2 Yeti in its
 tuning bounds, worked examples and per-unit analysis computed with that
 Yeti and with 10-HP Human Fighters, Raiders, and Marksmen and 15-HP Guards,
 a setup in which every combination of factions is legal, and its
-placeholder-art plan; the values here are current. Where a document and the
-code disagreed, the code's behavior is the rule and is stated below;
-[Known discrepancies](#23-known-discrepancies) lists the open items as of
-`pulp-wars-poc-7r30`.
+placeholder-art plan, and the Dwarf overlay keeps the root's decided bomb of
+4 (5 with Dive) in its decisions, tuning bounds, per-unit analysis, and
+some Help text, an identity written as `7rNN`, and a fallback-art plan; the
+values here are current. Where a document and the code disagreed, the
+code's behavior is the rule and is stated below;
+[Known discrepancies](#24-known-discrepancies) lists the open items as of
+`pulp-wars-poc-7r31`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
-**Living** has the narrower revision-13 meaning used by Wail, Plague, and
-Bitten: a unit whose owner's faction is not `UNDEAD`. Undead units are
-therefore never living, whatever their HP; Human, Goblin, Dinosaur,
-Martian, and Ice Folk units are living (an Egg is living but takes no
-status, [section 19.3](#193-eggs)).
+**Living** has the narrower revision-13 meaning used by Wail, Plague,
+Bitten, and Infect, read per unit (`isLivingUnitV7`): a unit whose owner's
+faction is not `UNDEAD` and whose role is not a **construct** under its
+owner's registration. Undead units are therefore never living, whatever
+their HP, and neither are the Dwarf Clockwork Gunner and Brass Titan;
+Human, Goblin, Dinosaur, Martian, and Ice Folk units and every other Dwarf
+unit are living (an Egg is living but takes no status,
+[section 19.3](#193-eggs)).
 **Goblin-crewed** units are the Goblin seat's Goblin, Wolf Rider, Bomb
 Chucker, Rocket Cart, and Scrap Buggy (they can Kaboom); **exploding units**
 are its Bomb Chucker, Rocket Cart, and Scrap Buggy (they also explode when
@@ -155,7 +178,14 @@ roles of an Ice Folk seat in land form (never a boat or an embarked unit);
 of any faction is **Chilled** while its `chilled` entry has `turnsLeft` of
 at least 1 and **sluggish** (Frozen) on the turn of a new freeze; **Snow**
 is a derived property of land tiles
-([section 21](#21-ice-folk-faction-rules)).
+([section 21](#21-ice-folk-faction-rules)). **Dwarf units** are the land
+roles of a Dwarf seat in land form (never a boat or an embarked unit);
+**constructs** are its Clockwork Gunner and Brass Titan; **Dwarf machines**
+(for Repair only) are its Gyrocopter, Clockwork Gunner, Steam Mole, Steam
+Cannon, Steam Tank, and Brass Titan, which is not the Martian meaning of
+"machine" (a movement mode); a **burrowed** unit is one in the `burrowed`
+list, off the board, shown as a **mound** on its tile
+([section 22](#22-dwarf-faction-rules)).
 
 **Source of truth in code:** `src/engine/rules/ruleset-v7.ts` (technology,
 faction registrations, roles and role mechanics, faction rules, action
@@ -165,10 +195,13 @@ the shared terrain rules `canEnterTerrainV7`, `terrainStopsMoveV7`, and
 combat, Graves, Infect, Wail, Plague and Bitten afflictions, explosions,
 Eggs, growth, Shields, Cooling, Thralls, and Mind Control cooldowns
 (`martian.ts`), Chill, Snow, the Blizzard, and the Cold Aura
-(`ice-folk.ts`), achievements, movement, map generation, queries, views),
-and `src/ai/v7.ts` with its `src/ai/v7-*.ts` helpers (Normal AI, including
-`src/ai/v7-goblin.ts`, `src/ai/v7-dinosaur.ts`, `src/ai/v7-martian.ts`, and
-`src/ai/v7-ice-folk.ts`).
+(`ice-folk.ts`), Dig In, clockwork, Knockback, and the rider brake
+(`dwarf.ts`), Tunnel, surfacing, Bomb Run, and Assemble
+(`dwarf-reducer.ts`), the board and owned-unit accessors and the occupancy
+predicate (`units.ts`), achievements, movement, map generation, queries,
+views), and `src/ai/v7.ts` with its `src/ai/v7-*.ts` helpers (Normal AI,
+including `src/ai/v7-goblin.ts`, `src/ai/v7-dinosaur.ts`,
+`src/ai/v7-martian.ts`, `src/ai/v7-ice-folk.ts`, and `src/ai/v7-dwarf.ts`).
 
 **Not covered here:** production art specifications
 ([Art Direction](../art/ART_DIRECTION.md) and
@@ -184,25 +217,24 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 ## 1. Identity and compatibility
 
-| Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r31`                                                                                                                                                                                                                                                                                                            |
-| Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                             |
-| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                             |
-| Browser autosave                           | `pulpWars.save.v7r31.current`                                                                                                                                                                                                                                                                                                   |
-| Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                                                                                      |
-| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF` (the last is the pending Dwarf overlay)                                                                                                                                                                                                              |
-| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`                                                                                                                                                                  |
-| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`                                                                               |
-| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"                                                                                                                                                               |
-| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                   |
-| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, described here; the browser setup, the engine, and the headless tools also offer `DWARF` ([Dwarf overlay](RULESET_7_DWARVES.md)), not folded here                                                                                                            |
-| Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
-| Pending overlay                            | Dwarf (`7r30`): engine, Normal AI, UI, and coarse balance (`7r31`) live; fold in progress                                                                                                                                                                                                                                       |
+| Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ruleset                                    | `pulp-wars-poc-7r31`                                                                                                                                                                                                                                                                                                                                                                              |
+| Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                               |
+| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                               |
+| Browser autosave                           | `pulpWars.save.v7r31.current`                                                                                                                                                                                                                                                                                                                                                                     |
+| Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                                                                                                                                                        |
+| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`                                                                                                                                                                                                                                                                                                                        |
+| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`                                                                                                                                                                                                                                    |
+| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`                                                                                                                                                 |
+| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"                                                                                                                                                                                                                                 |
+| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                                                                                     |
+| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, all described here and offered by the browser setup, the engine, and the headless tools                                                                                                                                                                                                                               |
+| Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); Dwarf ([section 22](#22-dwarf-faction-rules), `pulp_wars-78i.8`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r29`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r30`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -242,19 +274,28 @@ separate [Ruleset 6](RULESET_6.md) route.
   refuses a setup in which two seats play the same faction
   (`DUPLICATE_FACTION`) and added the optional headless and test only setup
   field `allowDuplicateFactions: true`; no state, command, event, or view
-  shape changed. `pulp_wars-78i.3` (`7r30`) registered the seventh faction,
-  `DWARF`, with its own state lists, commands, events, and preview fields,
-  all neutral without a Dwarf seat (the pending
-  [Dwarf overlay](RULESET_7_DWARVES.md)); its Normal AI and UI
-  (`pulp_wars-78i.4` and `78i.6`) changed no shape.
+  shape changed. The Dwarf overlay (`pulp_wars-78i.3`, `7r30`) registered
+  the seventh faction with the `burrowed`, `surfacedThisTurn`, and
+  `bombedThisTurn` state and view lists, the `TUNNEL`, `BOMB_RUN`, and
+  `ASSEMBLE` commands, the `UNIT_ASSEMBLED`, `UNIT_TUNNELLED`,
+  `UNIT_SURFACED`, and `UNIT_BOMBED` events, the `UNIT_DIED` causes `BOMB`
+  and `ERUPTION`, the `FIELD_DEFENSE_DESTROYED` reason `UNDERMINED`, the
+  movement failure and `UNIT_MOVE_INTERRUPTED` reason `MOUND`, the errors
+  `TUNNEL_NOT_LEGAL`, `BOMB_RUN_NOT_LEGAL`, and `ASSEMBLE_NOT_LEGAL` and
+  the `RECOVER_NOT_LEGAL` reason `CONSTRUCT`, three combat-preview fields,
+  the `bombedThisTurn` and `surfacedThisTurn` unit stat flags, and the
+  `dwarf` public unit stats block
+  ([section 22.14](#2214-commands-events-errors-and-queries)); its Normal
+  AI and UI (`pulp_wars-78i.4` and `78i.6`) changed no shape.
+  `pulp_wars-78i.7` (`7r31`) changed only the Dwarf bomb's damage.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r29.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r30.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
   error. There is no other rules parameter: the former `?undead=1`
   development flag is gone, and a save or replay with Undead, Goblin,
-  Dinosaur, Martian, or Ice Folk seats loads like any other.
+  Dinosaur, Martian, Ice Folk, or Dwarf seats loads like any other.
 - All arithmetic is safe-integer and atomic: a rejected command changes no
   state and consumes no Coins, city action, or PRNG draw.
 - **Factions.** Each seat has one faction, fixed for the match. A player
@@ -271,19 +312,22 @@ separate [Ruleset 6](RULESET_6.md) route.
   cross-faction fallback. Units never change owner; Infect, Bitten, and Mind
   Control remove the victim and create a new unit. An Egg hatches in place
   into its unit with the same ID ([section 19.5](#195-hatching)).
-- The Undead, Goblin, Dinosaur, Martian, and Ice Folk technology graphs,
-  economy, and every non-unit rule are identical to the Human ones; the
-  differences are the unit rosters ([section 11](#11-unit-roster)), the
+- The Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf technology
+  graphs, economy, and every non-unit rule are identical to the Human ones;
+  the differences are the unit rosters ([section 11](#11-unit-roster)), the
   technology unlocks of [section 6.2](#62-technology-tree) (two for the
   Undead and the Goblins, plus the Goblin name Plunder for Commerce; Nesting
   and Wallbreaker for the Dinosaurs; Brain support, no Overrun, Force
   Fields, and the Disintegrator for the Martians; Witch support, no Overrun,
-  Deep Winter, and Brittle for the Ice Folk), and the faction rules of
+  Deep Winter, and Brittle for the Ice Folk; Engineer support, Assemble,
+  Dive, no Overrun, Dig In, and Blasting Charges for the Dwarves), and the
+  faction rules of
   [section 17](#17-undead-faction-rules) (Undead),
   [section 18](#18-goblin-faction-rules) (Goblin),
   [section 19](#19-dinosaur-faction-rules) (Dinosaur),
-  [section 20](#20-martian-faction-rules) (Martian), and
-  [section 21](#21-ice-folk-faction-rules) (Ice Folk).
+  [section 20](#20-martian-faction-rules) (Martian),
+  [section 21](#21-ice-folk-faction-rules) (Ice Folk), and
+  [section 22](#22-dwarf-faction-rules) (Dwarf).
 - `GameStateV7` has no Goblin field: explosions resolve inside one command or
   Start Turn and leave no persistent state; Plunder changes Coins and Troll
   regeneration changes HP. Its only Dinosaur field is `eggs`, the Egg
@@ -296,7 +340,14 @@ separate [Ruleset 6](RULESET_6.md) route.
   only Ice Folk field is `chilled`, the Chill entries sorted by unit ID
   ([section 21.2](#212-chill)); Snow and the Blizzard are derived on every
   read and never stored, and Mountain-born, Glide, Prowl, and the other unit
-  rules are registration values.
+  rules are registration values. Its Dwarf fields are three lists:
+  `burrowed`, the off-board records `{ unit, moleUnitId }` sorted by unit ID
+  ([section 22.2](#222-the-tunnel-and-burrowed-units)), and
+  `surfacedThisTurn` and `bombedThisTurn`, sorted unit IDs of the active
+  seat's turn ([sections 22.3](#223-the-mound-surfacing-and-the-eruption)
+  and [22.5](#225-gyrocopters-and-the-bombing-run)); Dig In is derived from
+  the existing `moved` flag and stores nothing, and no unit or activation
+  key was added.
 
 ## 2. Setup and map generation
 
@@ -305,15 +356,15 @@ separate [Ruleset 6](RULESET_6.md) route.
 A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 `COOPERATIVE` mode, on a square board.
 
-| Setup field | Legal values                                                                                                                                                         |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                                                                                           |
-| Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                                                                                                      |
-| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only)                                                                     |
-| AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                    |
-| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                                                                                    |
-| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, or `ICE_FOLK` (or the pending `DWARF`); no two seats alike |
-| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                               |
+| Setup field | Legal values                                                                                                                                         |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                                                                           |
+| Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                                                                                      |
+| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only)                                                     |
+| AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                    |
+| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                                                                    |
+| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, or `DWARF`; no two seats alike |
+| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                               |
 
 - **Faction choice.** `factions` is a dense array; index `i` is seat `i`'s
   faction. **Every seat plays a different faction**
@@ -330,9 +381,10 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   played it to a free faction), and defaults to Human, Undead, Goblin, and
   Dinosaur for seats 0–3. The
   headless tools default to the same distinct factions and accept
-  `original` (alias `human`), `undead`, `goblin`, `dinosaur`, `martian`, and
-  `ice` (alias `ice_folk`) in `--factions`, and `dwarf` for the pending
-  [Dwarf overlay](RULESET_7_DWARVES.md). Faction choice never
+  `original` (alias `human`), `undead`, `goblin`, `dinosaur`, `martian`,
+  `ice` (alias `ice_folk`), and `dwarf` in `--factions` (the balance tools'
+  pairing letter for the Dwarves is `W`; `D` is the Dinosaur's). Faction
+  choice never
   affects map generation, capital placement, turn order, treasure placement,
   or any PRNG draw: setups that differ only in `factions` generate
   byte-identical boards, turn orders, and treasures.
@@ -389,10 +441,11 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   or a full-HP exhausted unit of the mover's faction's **treasure role**
   (faction rule `treasureUnitRole`: the `KNIGHT` role for Human, Undead, and
   Goblin, so a Knight, Vampire, or Scrap Buggy; the `RAIDER` role for
-  Dinosaur, Martian, and Ice Folk, so a Raptor, a Saucer, or a Sled) on the
-  first legal adjacent
+  Dinosaur, Martian, Ice Folk, and Dwarf, so a Raptor, a Saucer, a Sled, or
+  a Gyrocopter) on the first legal adjacent
   land cell (entered under the treasure unit's own movement mode, so a
-  Saucer needs no Engineering for a Mountain), homed to the
+  Saucer or a Gyrocopter needs no Engineering for a Mountain; never a mound
+  tile), homed to the
   mover's home city first and then by city ID among cities with enough free
   capacity slots for it ([section 4.4](#44-unit-capacity)); if no placement
   exists the chest gives 5 Coins. A Martian treasure unit arrives at full
@@ -587,8 +640,8 @@ for them.
   `population = permanent + live − growthSpent(level)`.
 - First income ([section 4.3](#43-income)): the capital pays 4 + 1 + 2
   (Market); North 4 + 1 land trade; Coast 3 + 1 land trade: 16 Coins for a
-  Human, Undead, Dinosaur, Martian, or Ice Folk seat and 14 for a Goblin
-  seat (Plunder
+  Human, Undead, Dinosaur, Martian, Ice Folk, or Dwarf seat and 14 for a
+  Goblin seat (Plunder
   replaces land trade). No city has sea trade: the Port and Shipyard belong
   to one city.
 
@@ -614,7 +667,15 @@ center (its whole strip from `y = 1` to `y = 11`, the neutral columns
 beside it, and the Road tiles between the cities). The Yeti on its Walled
 capital center has fortification 2 and no Snow cover, while its units on
 the neutral rows `y = 5` and `y = 9` stand on Snow with cover
-([section 21.5](#215-snow)).
+([section 21.5](#215-snow)). A Dwarf seat's units are on the board (nothing
+is burrowed, and `surfacedThisTurn` and `bombedThisTurn` are empty); with
+every technology known, Dig In, Blasting Charges (eruption 3, the Steam
+Cannon ignores fortification), Dive (bomb 6), and Assemble apply from the
+first turn. Its Hammerer on the Walled capital center has not moved, so it
+is dug in with fortification 3 (Walls 2, Dig In 1) from the first enemy
+turn if it stays, while its Steam Mole on `(cx + 1, 5)`, two tiles from the
+North and Capital centers, is not dug in
+([section 22.7](#227-dig-in)).
 
 | Role          | Tile          | Form  | Home city |
 | ------------- | ------------- | ----- | --------- |
@@ -639,9 +700,10 @@ the neutral rows `y = 5` and `y = 9` stand on Snow with cover
   Coast (2 of 6) can lay every Egg from the first turn. A Martian seat's
   capital is exactly full at 7 of 7 (Grunt, Brain, and Tripod 1 each,
   Mothership and Colossus 2 each), so it cannot train until a slot frees;
-  North (3 of 6) and Coast (2 of 5) can train. An Ice Folk seat's units all
-  use one slot (Capital 5 of 7, North 3 of 6, Coast 2 of 5). Both docks
-  start empty.
+  North (3 of 6) and Coast (2 of 5) can train. An Ice Folk or Dwarf seat's
+  units all use one slot (Capital 5 of 7, North 3 of 6, Coast 2 of 5), so
+  the Dwarf Engineer, homed to the Capital, can Assemble from the first
+  turn. Both docks start empty.
 - **Entity IDs.** Seat `s` has capital ID `2s + 1` and `FIGHTER` ID `2s + 2`.
   Then, each pass in seat order: every seat's North and Coast cities; then
   every seat's ledger records (per city in the order capital, North, Coast:
@@ -662,7 +724,7 @@ the neutral rows `y = 5` and `y = 9` stand on Snow with cover
 - Every seat starts with 5 Coins, no technology, a level-1 capital, one
   full-HP unit of its faction's `FIGHTER` role (Fighter for Human, Skeleton
   for Undead, Goblin for Goblin, Caveman for Dinosaur, Grunt at full Shield
-  for Martian, Yeti for Ice Folk) on the capital and
+  for Martian, Yeti for Ice Folk, Hammerer for Dwarf) on the capital and
   homed there, seven locked achievement entitlements, and every cell within
   radius 2 of its capital explored. A Dinosaur seat starts with no Egg. A
   Goblin seat, too, starts with a single Goblin: `pulp_wars-0ao.7`
@@ -687,7 +749,9 @@ the neutral rows `y = 5` and `y = 9` stand on Snow with cover
   seat's Mind Control cooldowns ([section 20.8](#208-mind-control)); recharge
   the seat's Shields ([section 20.2](#202-shields)); apply the Cold Aura of
   the seat's Frost Giants ([section 21.12](#2112-prowl-and-the-cold-aura));
-  resolve the
+  surface the seat's burrowed Steam Moles and their riders, with each
+  eruption, its deaths, and its chain
+  ([section 22.3](#223-the-mound-surfacing-and-the-eruption)); resolve the
   seat's Plague ([section 17.8](#178-plague)); explode the seat's exploding
   units that Plague killed, with any chain reaction and its Plunder
   ([section 18.7](#187-where-chains-run-and-event-order)); count down and
@@ -696,7 +760,11 @@ the neutral rows `y = 5` and `y = 9` stand on Snow with cover
   ([section 18.10](#1810-waaagh-ram-and-troll-regeneration)); award income;
   settle pending city rewards; evaluate achievements. Events:
   `TURN_STARTED`, then `SHIELDS_RECHARGED`, then one `UNITS_CHILLED` per
-  Frost Giant that chilled a unit, then `PLAGUE_DAMAGED`, deaths,
+  Frost Giant that chilled a unit, then one block per surfacing Mole
+  (`UNIT_SURFACED`, `FIELD_DEFENSE_DESTROYED` reason `UNDERMINED`, the
+  eruption's deaths, risings, and collapses, its chain, `PLUNDER_AWARDED`,
+  and `TILES_REVEALED`) and the economy changes of the surfacing, then
+  `PLAGUE_DAMAGED`, deaths,
   risings, and Thrall collapses (`BRAIN_LOST`), `PLAGUE_SPREAD`,
   `PLAGUE_EXPIRED`, rising reveals and economy changes, then the chain
   events, `PLUNDER_AWARDED`, and the chain's rising reveals and economy
@@ -707,14 +775,20 @@ the neutral rows `y = 5` and `y = 9` stand on Snow with cover
   that city's income this turn, and Plunder from a Start Turn chain is added
   before income. A unit that hatched this Start Turn counts for that turn's
   Muster evaluation. The cooldown and Shield steps do nothing in a match
-  without a Martian seat, and the Cold Aura step nothing in a match without
-  an Ice Folk seat.
-- **End Turn** (in order): auto-recover idle damaged units; expire Inspired and
+  without a Martian seat, the Cold Aura step nothing in a match without an
+  Ice Folk seat, and the surfacing step nothing in a match without a Dwarf
+  seat (a seat has one faction, so the Cold Aura and the surfacing never
+  both run in one Start Turn).
+- **End Turn** (in order): auto-recover idle damaged units (never a Dwarf
+  construct); expire Inspired and
   Overrun; run the player's Cooling step
   ([section 20.4](#204-heat-rays-and-cooling)); with Force Fields, recharge
   the player's Shields again ([section 20.3](#203-force-field-and-force-fields));
-  count down the Chill entries of the player's units
-  ([section 21.2](#212-chill), no event); preview next income; advance to
+  count down the Chill entries of the player's units, burrowed ones
+  included ([section 21.2](#212-chill), no event); empty
+  `surfacedThisTurn` and `bombedThisTurn`
+  ([section 22](#22-dwarf-faction-rules), no event); preview next income;
+  advance to
   the next active seat and run its Start Turn. Events: the recovery events,
   `SHIELDS_RECHARGED` (Force Fields), `INCOME_PREVIEWED`, `TURN_ENDED`, then
   the next Start Turn's.
@@ -727,8 +801,8 @@ the neutral rows `y = 5` and `y = 9` stand on Snow with cover
 - The first seat's first Start Turn runs when the match is created, so every
   seat's first turn includes ordinary income.
 - **Elimination:** a player owning zero cities is eliminated immediately; its
-  units, Eggs and Thralls included, are removed (with their Chill entries;
-  `UNIT_DIED` cause
+  units, Eggs, Thralls, and burrowed units included, are removed (with
+  their Chill entries; `UNIT_DIED` cause
   `ELIMINATION`, never `BRAIN_LOST`, leaving no Graves and setting off no
   death blasts) and its future turns skipped. Plague
   from its removed Liches and the bites it inflicted end
@@ -813,11 +887,15 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   2 (role mechanic `capacitySlots`), so for a Human, Undead, or Goblin city
   the used slots equal the unit count. Land and naval units share capacity;
   orphaned units (no home city) use no slots anywhere, and a Thrall never
-  has a home city ([section 20.9](#209-thralls)). Martian and Ice Folk
-  cities have no capacity bonus, and every Ice Folk role uses 1 slot.
-- `TRAIN`, `TRAIN_NAVAL`, `LAY_EGG`, and a treasure unit need
-  `used + slots(role) <= capacity`, otherwise `CITY_CAPACITY_FULL` (or the
-  5-Coin chest). Reward units (a two-slot Brontosaurus or Colossus too) and
+  has a home city ([section 20.9](#209-thralls)). A burrowed Dwarf unit
+  keeps its home and its slot while it is off the board
+  ([section 22.2](#222-the-tunnel-and-burrowed-units)). Martian, Ice Folk,
+  and Dwarf cities have no capacity bonus, and every Ice Folk and Dwarf role
+  uses 1 slot.
+- `TRAIN`, `TRAIN_NAVAL`, `LAY_EGG`, `ASSEMBLE` (in the Engineer's home
+  city, [section 22.8](#228-engineer-repair-and-assemble)), and a treasure
+  unit need `used + slots(role) <= capacity`, otherwise
+  `CITY_CAPACITY_FULL` (or the 5-Coin chest). Reward units (a two-slot Brontosaurus or Colossus too) and
   Undead risings ([section 17.3](#173-risings)) may exceed capacity; a
   capturing unit is re-homed with its own slots (a Thrall stays homeless) and
   may put its new city over capacity; capacity loss never removes a unit or
@@ -832,8 +910,8 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 - The action becomes available at the owner's Start Turn. A captured city's
   action is unavailable until its new owner's next Start Turn.
 - Research, construction, harvesting, unit commands (Beam Down, Mind
-  Control, the Tractor Beam, Bolas, and Cold Snap included), and reward
-  choices never
+  Control, the Tractor Beam, Bolas, Cold Snap, Tunnel, Bomb Run, and
+  Assemble included), and reward choices never
   spend it; reward units still appear after the action is spent.
 - The flag is visible only to the city's owner.
 
@@ -852,19 +930,20 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   role is rejected with `UNIT_ROLE_INVALID { role }` and never offered.
 - **Arms Industry:** while a Forge in the training city has positive output,
   every land role trains (and every Egg is laid) for 1 Coin less (minimum 1,
-  so the 1-Coin Goblin stays at 1).
+  so the 1-Coin Goblin stays at 1); an Assemble costs 1 less when the
+  Engineer's home city has such a Forge.
 - **Naval training** happens on a selected active, empty Port or Shipyard
   assigned to the city ([section 14](#14-naval-rules)).
 - **Reward units** (the Militia `FIGHTER` and the level-5+ `JUGGERNAUT`, in
-  the owner's faction: Fighter, Skeleton, Goblin, Caveman, Grunt, or Yeti;
-  Juggernaut, Abomination, Troll, Brontosaurus, Colossus, or Frost Giant)
-  always appear
+  the owner's faction: Fighter, Skeleton, Goblin, Caveman, Grunt, Yeti, or
+  Hammerer; Juggernaut, Abomination, Troll, Brontosaurus, Colossus, Frost
+  Giant, or Brass Titan) always appear
   on the city center, hatched (no reward ever creates an Egg) and at full
   Shield. An existing occupant moves to
   the first free adjacent land cell in `(y, x)` order that it can legally
   enter (Engineering for Mountain unless it strides, flies, or is
-  Mountain-born, no unit or
-  Egg, no treasure, not allied territory); an Egg is never displaced. If
+  Mountain-born, no unit, Egg, or mound, no treasure, not allied
+  territory); an Egg is never displaced. If
   none exists, the occupant is removed with no refund or kill credit (and
   no Grave or death blast; a removed Brain's Thralls collapse).
 - **Goblin Militia** is two Goblins (`MILITIA_FIGHTERS_V7`): the first
@@ -883,14 +962,17 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   and hatch. A Martian flyer never stands on a hostile or neutral center
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)), so it
   never besieges, and neither does a Sabretooth
-  ([section 21.12](#2112-prowl-and-the-cold-aura)). A besieged Ice Folk
-  city is still Snow.
+  ([section 21.12](#2112-prowl-and-the-cold-aura)) or a Dwarf Gyrocopter (a
+  flyer). A mound never stands on a center, so a burrowed unit never
+  besieges, and a siege its Mole or rider made ends when it tunnels. A
+  besieged Ice Folk city is still Snow.
 - **Capture** requires a capture-capable land unit (Human Fighter, Raider,
   Marksman, Guard, or Juggernaut; Undead Skeleton, Ghoul, Banshee, Zombie, or
   Abomination; Goblin Goblin, Wolf Rider, Bomb Chucker, Orc Brute, or Troll;
   Dinosaur Caveman, Raptor, Spitter, Ankylosaurus, or Brontosaurus; Martian
   Grunt, Ray Gunner, Shield Projector, Colossus, or Thrall; Ice Folk Yeti,
-  Sled, Snow Hunter, Mammoth, or Frost Giant)
+  Sled, Snow Hunter, Mammoth, or Frost Giant; Dwarf Hammerer, Clockwork
+  Gunner, Steam Mole, or Brass Titan)
   that began its owner's turn on a neutral
   village or hostile city center, stands there alone, and has not moved or used
   a primary action this turn. Capture is terminal.
@@ -922,7 +1004,8 @@ Each reached level grants exactly one reward, chosen by the owner:
   a Dinosaur Juggernaut reward is a Brontosaurus (2 slots, hatched); a
   Martian Militia is one Grunt and a Martian Juggernaut reward is a Colossus
   (2 slots, full Shield); an Ice Folk Militia is one Yeti and an Ice Folk
-  Juggernaut reward is a Frost Giant. Reward
+  Juggernaut reward is a Frost Giant; a Dwarf Militia is one Hammerer and a
+  Dwarf Juggernaut reward is a Brass Titan. Reward
   IDs (`MILITIA`, `JUGGERNAUT`) are the same for every faction.
 - Rewards settle only for the active player's cities, by city ID then level;
   the first unrewarded level becomes the single pending choice, which blocks
@@ -972,11 +1055,13 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
 - **Land Baron** counts the cities the player owns, the capital included,
   however gained. **Sea Dog** counts the player's Patrol Boats and
   Battleships on the board (an embarked land unit, a self-launched Martian
-  machine included, is `EMBARKED` and does not count; it cannot be completed
+  machine or Dwarf Gyrocopter included, is `EMBARKED` and does not count; it
+  cannot be completed
   on `DRY_LAND`). **Slayer** reads the largest
   `kills` of one unit on the board, with the ordinary kill credit
   ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)): explosions
   credit no unit, a Shatter and a hostile Sweep kill credit the attacker,
+  an eruption kill credits the Mole and a bomb kill the Gyrocopter,
   a rising or a Thrall starts at 0, an Egg has 0, a Mind
   Control or a Thrall collapse is a removal and no kill, kills of different
   units never add up, and a Promotion or growth stage does not reset the
@@ -991,9 +1076,12 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   Martians: Grunt, Saucer, Ray Gunner, Shield Projector, Brain, Tripod,
   Mothership, Patrol Boat, Battleship, with the Colossus excluded; for the
   Ice Folk: Yeti, Sled, Snow Hunter, Mammoth, Ice Witch, Boulder Yeti,
-  Sabretooth, Patrol Boat, Battleship, with the Frost Giant excluded). Risings,
-  Thralls (as the `FIGHTER` role), and hatched units count; an Egg does not
-  count until it hatches.
+  Sabretooth, Patrol Boat, Battleship, with the Frost Giant excluded; for
+  the Dwarves: Hammerer, Gyrocopter, Clockwork Gunner, Steam Mole, Engineer,
+  Steam Cannon, Steam Tank, Patrol Boat, Battleship, with the Brass Titan
+  excluded). Risings, Thralls (as the `FIGHTER` role), hatched units, and
+  assembled Gunners count; an Egg does not count until it hatches, and a
+  burrowed unit, which is off the board, not until it surfaces.
 - Each unlocked, unspent entitlement funds one `BUILD_MONUMENT`: 0 Coins, +3
   live population, on an explored owned land tile with no site, resource,
   improvement, or treasure (Mountain needs Engineering), at most one Monument
@@ -1215,6 +1303,48 @@ Human table are:
 | Fortification  | Deep Winter   | Snow spreads two tiles from your city centers; Recover heals 6 in your territory       |
 | Explosives     | Brittle       | Blast Mountain; melee attacks destroy Field Defense; Shatter at 4 HP or less           |
 
+The Dwarf tree (`DWARF_BASELINE_V1`) has the same graph, tiers,
+prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
+the Human one, with six unlock differences. **Administration** grants
+`ENGINEER_SUPPORT` (the Engineer's Repair) instead of Captain support (no
+Rally). **Marksmanship** also grants `ASSEMBLE`: the player's Engineers may
+Assemble Clockwork Gunners
+([section 22.8](#228-engineer-repair-and-assemble)). **Raiding** grants
+`DIVE` instead of the Charge bonus and keeps Pillage: the player's bombs
+deal 6 instead of 5 ([section 22.5](#225-gyrocopters-and-the-bombing-run)).
+**Chivalry** grants no Overrun (the Undead, Martian, and Ice Folk
+precedent). **Fortification**, displayed as **Dig In**, grants `DIG_IN`
+instead of the Field Defense command: an unmoved Hammerer or Steam Mole on
+or next to an own city center has one fortification level
+([section 22.7](#227-dig-in)). **Explosives**, displayed as **Blasting
+Charges**, keeps Blast Mountain and the melee Field Defense demolition and
+adds `BLASTING_CHARGES`: the player's eruptions deal 3 instead of 2, and its
+Steam Cannon shots ignore the defender's fortification
+([sections 22.3](#223-the-mound-surfacing-and-the-eruption) and
+[22.9](#229-steam-cannon-knockback)). `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7`
+holds `DWARF: { FORTIFICATION: "Dig In", EXPLOSIVES: "Blasting Charges" }`,
+resolved by `technologyNameV7`. Fieldcraft's Forest freedom matters only to
+the Clockwork Gunner (the Gyrocopter flies), Engineering's Mountain entry
+to every Dwarf ground unit (a Mole and a rider tunnel to a Mountain only
+with it; the Gyrocopter needs none), Raiding's Pillage reaches every Dwarf
+land role but the Gyrocopter (a flyer) and the Brass Titan, Arms Industry
+also lowers the Assemble cost, and every technology still has a live
+unlock for a Dwarf seat. The Dwarf unlocks that read differently from the
+Human table are:
+
+| Technology     | Dwarf name       | Dwarf unlocks                                                                               |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------------- |
+| Administration | same             | Engineer (Repair); Market; Disband                                                          |
+| Sawmilling     | same             | Sawmill; Steam Cannon (Knockback)                                                           |
+| Marksmanship   | same             | Clockwork Gunner (two shots standing still); Engineers Assemble Gunners                     |
+| Fieldcraft     | same             | Replant Forest; Gunners ignore Forest movement stops; Gunner Sight 2                        |
+| Scouting       | same             | Gyrocopter (Bomb Run); Gyrocopter Sight 2                                                   |
+| Raiding        | same             | Pillage; Dive: bombs deal 6                                                                 |
+| Chivalry       | same             | Steam Tank (Plated); Cultivate Forest                                                       |
+| Drill          | same             | reveal Ore; Steam Mole (Tunnel); first-hostile-capture Spoils (2 Coins)                     |
+| Fortification  | Dig In           | Hammerers and Moles that stand still on or next to your city centers are dug in             |
+| Explosives     | Blasting Charges | Blast Mountain; melee attacks destroy Field Defense; eruptions deal 3; Cannons ignore Walls |
+
 The other technologies read the same for every faction. The engine, query,
 and AI checks of land trade read the technology capability
 `landTradeIncomeCoins` (never a raw `COMMERCE` test), and Plunder is the
@@ -1222,9 +1352,11 @@ capability `plunderCoins`. Nesting and Wallbreaker are likewise read through
 the capabilities `eggHpBonus` (0 or 4), `eggHatchTurnReduction` (0 or 1),
 `nestingCityCapacityBonus` (0 or 1), and `ignoresCityWalls`, and Force
 Fields and the Disintegrator through `shieldsRechargeAtEndTurn` and
-`raysIgnoreFortification`, and Deep Winter and Brittle through `deepWinter`
-and `shatterThreshold` (3 or 4), never through a raw `FORTIFICATION` or
-`EXPLOSIVES` test.
+`raysIgnoreFortification`, Deep Winter and Brittle through `deepWinter`
+and `shatterThreshold` (3 or 4), and the Dwarf unlocks through `digIn`,
+`assemble`, `bombDamage` (5 or 6), `eruptionDamage` (2 or 3), and
+`cannonIgnoresFortification`, never through a raw `FORTIFICATION`,
+`EXPLOSIVES`, `RAIDING`, or `MARKSMANSHIP` test.
 
 ## 7. Resources and visibility
 
@@ -1278,7 +1410,10 @@ Rift**: buildings, Monuments, and Roads are rejected with `INVALID_TILE`
 offers none. A Rift may lie in territory (a Land Grant claims it) and adds
 nothing to its city. Snow ([section 21.5](#215-snow)) lies on Roads,
 improvements, resources, Field Defense, and centers alike and changes no
-tile command.
+tile command, and so does a Dwarf mound
+([section 22.3](#223-the-mound-surfacing-and-the-eruption)): its tile keeps
+its terrain, Road, improvement, resource, Field Defense, Grave, and Snow,
+and no tile command changes a tile into water, a Rift, or a site.
 
 ### 8.2 Resource and basic actions
 
@@ -1361,8 +1496,11 @@ tile command.
   city center reaches a dock beside that center and embarks in one Move.
 - Movement edges need no connection to the capital.
 - The half cost applies to every land-form unit, Martian walkers and flyers
-  included; the Road-edge exemption is moot for them, since terrain never
-  stops them ([section 20.6](#206-movement-stride-flying-and-crossing-water)).
+  and the Dwarf Gyrocopter included; the Road-edge exemption is moot for
+  them, since terrain never stops them
+  ([section 20.6](#206-movement-stride-flying-and-crossing-water)). A Dwarf
+  Tunnel and a bombing run are not Moves and ignore Roads
+  ([section 22](#22-dwarf-faction-rules)).
 - **Glide** ([section 21.5](#215-snow)): for a land-form Ice Folk unit
   other than the Sabretooth, a step also costs half when the tile being
   left is Snow; Snow and a Road do not add up, so a Road on Snow gains it
@@ -1419,23 +1557,23 @@ market income = min(3, 1 + distinct adjacent families)
 
 ## 10. Recovery and support
 
-| Healing source                  | Amount                                                                                                  | When                                                                         |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Recover or idle recovery, land  | 4 in own territory (6 for an Ice Folk unit with Deep Winter); 2 elsewhere (Undead: Restless, see below) | explicit terminal `RECOVER`, or End Turn for a unit that did not move or act |
-| Recover or idle recovery, naval | 4 on or adjacent to an own active Port/Shipyard; otherwise illegal / 0                                  | same                                                                         |
-| Embarked unit                   | none                                                                                                    | —                                                                            |
-| Windmill (Milling)              | up to 6                                                                                                 | Start Turn, once per unit                                                    |
-| Troll regeneration (Goblin)     | up to 4, any tile and form; cures nothing                                                               | Start Turn, after Windmill healing                                           |
-| Tend Wounded (Captain, Shaman)  | up to 2, and cures Plague, Bitten, and Chill                                                            | Captain or Shaman action, once per unit per owner turn                       |
-| Promotion, growth stage         | full heal to the new maximum HP; cures nothing                                                          | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs)  |
-| Egg                             | none: no healing source ever heals an Egg                                                               | —                                                                            |
+| Healing source                                    | Amount                                                                                                                           | When                                                                         |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Recover or idle recovery, land                    | 4 in own territory (6 for an Ice Folk unit with Deep Winter); 2 elsewhere (Undead: Restless, see below); never a Dwarf construct | explicit terminal `RECOVER`, or End Turn for a unit that did not move or act |
+| Recover or idle recovery, naval                   | 4 on or adjacent to an own active Port/Shipyard; otherwise illegal / 0                                                           | same                                                                         |
+| Embarked unit                                     | none                                                                                                                             | —                                                                            |
+| Windmill (Milling)                                | up to 6; never a Dwarf construct                                                                                                 | Start Turn, once per unit                                                    |
+| Troll regeneration (Goblin)                       | up to 4, any tile and form; cures nothing                                                                                        | Start Turn, after Windmill healing                                           |
+| Tend Wounded (Captain, Shaman, Engineer's Repair) | up to 2 (the Engineer: 4 on a Dwarf machine), and cures Plague, Bitten, and Chill                                                | Captain, Shaman, or Engineer action, once per unit per owner turn            |
+| Promotion, growth stage                           | full heal to the new maximum HP; cures nothing (a Dwarf construct's only full heal)                                              | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs)  |
+| Egg                                               | none: no healing source ever heals an Egg                                                                                        | —                                                                            |
 
 - **Windmill healing:** at the owner's Start Turn, each Windmill in the
   owner's territory heals damaged own units (any form) on its eight
   neighbors. A unit next to several Windmills heals once, assigned to the first
   Windmill in `(y, x)` order. Output does not matter, and healing needs no
   technology, so a captured Windmill heals its new owner's units even without
-  Milling.
+  Milling. It skips Dwarf constructs.
 - **Restless (Undead):** a land-form unit of an Undead seat recovers only in
   its owner's territory. An explicit `RECOVER` elsewhere is rejected
   atomically with `RECOVER_NOT_LEGAL { reason: "RESTLESS" }` and is never
@@ -1460,6 +1598,13 @@ market income = min(3, 1 + distinct adjacent families)
   Ice Folk unit 6 in its owner's territory (`DEEP_WINTER_RECOVER_V7`);
   elsewhere 2, Snow or not. An Ice Folk seat has no healer and no cure for
   Plague, Bitten, or Chill (the Ice Witch has no Tend Wounded).
+- **Dwarf recovery** is the Human rule (the Dwarves are not Restless), except
+  that the two **constructs**, the Clockwork Gunner and the Brass Titan,
+  never mend themselves: an explicit `RECOVER` is rejected with
+  `RECOVER_NOT_LEGAL { reason: "CONSTRUCT" }` and never offered, and idle
+  recovery and Windmill healing skip them. They heal only by an Engineer's
+  Repair and by a Promotion ([section 22.6](#226-clockwork)). A burrowed
+  unit is off the board and has moved, so it never recovers idle.
 - **Captain** (Human `CAPTAIN`): may Move, then use one primary action:
   Attack, Rally, or Tend Wounded. The Dinosaur Shaman has the same three
   (Rally labelled **War Drums**) plus Hatch
@@ -1470,9 +1615,12 @@ market income = min(3, 1 + distinct adjacent families)
   Martian Brain has Attack, Psychic Command, and Mind Control
   ([section 20.8](#208-mind-control)), and the Ice Folk Ice Witch has
   Attack and Cold Snap and no Rally
-  ([section 21.6](#216-the-blizzard-and-cold-snap)); none of them has
+  ([section 21.6](#216-the-blizzard-and-cold-snap)); none of these four has
   Tend Wounded (`TEND_WOUNDED` is never offered and is rejected with
-  `UNIT_ROLE_INVALID`).
+  `UNIT_ROLE_INVALID`). The Dwarf Engineer has Attack, **Repair** (its
+  Tend Wounded), and Assemble, and no Rally (`RALLY` is never offered and
+  is rejected with `UNIT_ROLE_INVALID`;
+  [section 22.8](#228-engineer-repair-and-assemble)).
 - **Rally** (Undead: **Frenzy**, labelled "Frenzied"; Goblin: **WAAAGH!**;
   Dinosaur: **War Drums**; Martian: **Psychic Command**; all with the same
   command `RALLY`, flag `inspired`, and event `UNITS_RALLIED`): every
@@ -1487,7 +1635,8 @@ market income = min(3, 1 + distinct adjacent families)
   and not-already-Inspired requirements. Inspired expires at End Turn, does
   not stack, and never affects Wail, Kaboom, or blasts. With no eligible
   target the command rejects with `HEAL_TARGET_NOT_FOUND`.
-- **Tend Wounded** (Human Captain, Dinosaur Shaman): targets every adjacent
+- **Tend Wounded** (Human Captain, Dinosaur Shaman, Dwarf Engineer as
+  **Repair**): targets every adjacent
   own land-form unit (other than the tender, not yet tended this turn) that
   is damaged, plagued, bitten, or Chilled; such a unit is a target even at
   full HP. Each target heals `min(2, maxHp - hp)` (possibly 0), loses both
@@ -1497,14 +1646,18 @@ market income = min(3, 1 + distinct adjacent families)
   its owner's next End Turn does not slow it (`WOUNDED_TENDED` results carry
   `curedPlague`, `curedBitten`, and `curedChill`). It does not use the
   target's action. The tender cannot
-  tend itself, and an Egg is never a target.
+  tend itself, and an Egg is never a target. An Engineer's Repair heals a
+  Dwarf machine `min(4, maxHp - hp)` instead (role mechanic
+  `repairMachineHeal`, `REPAIR_MACHINE_V7`); `WOUNDED_TENDED` keeps its
+  shape.
 - **Disband** (Administration): an own land-form trainable unit that has not
   used a primary action (it may have moved) removes itself for
   `floor(printed cost / 2)` Coins (a Goblin refunds 0 and is still offered
   Disband; a Chilled unit may Disband). Juggernaut, Abomination, Troll,
-  Brontosaurus, Colossus, Frost Giant, naval,
+  Brontosaurus, Colossus, Frost Giant, Brass Titan, naval,
   and embarked units cannot Disband, nor can a Thrall
-  (`DISBAND_NOT_LEGAL` reason `THRALL`, never offered). Disband never
+  (`DISBAND_NOT_LEGAL` reason `THRALL`, never offered) or a burrowed unit
+  (every command naming it is `UNIT_ALREADY_HANDLED`). Disband never
   explodes, and disbanding a Brain collapses its Thralls. A plagued or bitten unit
   cannot Disband: it is not offered and is rejected with `DISBAND_NOT_LEGAL`
   (reason `PLAGUED`, reported first, or `BITTEN`). An own Egg may also be
@@ -1512,7 +1665,8 @@ market income = min(3, 1 + distinct adjacent families)
 - **Promotion:** a unit with at least 3 kills may Promote once for free:
   +5 maximum HP and a **full heal** (its HP becomes the new maximum;
   revision 20). Plague, Bitten, and Chill stay, and a Martian unit's Shield
-  is neither raised nor recharged. It is an explicit command,
+  is neither raised nor recharged; for a Dwarf construct it is the only full
+  heal. It is an explicit command,
   independent of the activation; embarked units cannot Promote, and neither
   a growing unit (a dinosaur), which grows instead
   ([section 19.8](#198-grow)), nor a Thrall ever can: `PROMOTE` for them is
@@ -1879,6 +2033,91 @@ units cross Mountains without Engineering and without stopping
   through the `iceFolk` block of the public unit stats
   ([section 21.15](#2115-commands-events-errors-and-queries)).
 
+The Dwarf (`DWARF`) roster, by mechanical role, with the
+`pulp-wars-poc-7r31` values (`DWARF_ROLE_RULES_V7` and
+`DWARF_ROLE_MECHANICS_V7`). Every role uses one slot; "Kind" marks the two
+**constructs** and the **machines** Repair heals by 4
+([section 22.1](#221-roles-constructs-machines-and-labels)):
+
+| Unit             | Role          | Tech              | Cost |  HP |    Attack | Defense | Move | Range | Sight | Kind               | Attack after Move    | Capture | Abilities                                                        |
+| ---------------- | ------------- | ----------------- | ---: | --: | --------: | ------: | ---: | ----: | ----: | ------------------ | -------------------- | ------- | ---------------------------------------------------------------- |
+| Hammerer         | `FIGHTER`     | start             |    2 |  12 |     2 (4) |   2 (4) |    1 |     1 |     1 | living             | yes                  | yes     | rides the tunnel; Dig In; no Field Defense                       |
+| Gyrocopter       | `RAIDER`      | Scouting          |    4 |   8 | 1.5 (3)¹¹ |   1 (2) |    3 |  bomb |     2 | living; machine    | the bomb is its Move | no      | flies; Bomb Run (5, Dive 6¹²), once per target per turn          |
+| Clockwork Gunner | `MARKSMAN`    | Marksmanship      |    3 |  10 |   1.5 (3) |   1 (2) |    1 |   1–2 |   1¹⁰ | construct; machine | yes, one shot        | yes     | two shots if it has not moved; never moves after firing          |
+| Steam Mole       | `GUARD`       | Drill             |    5 |  16 |     2 (4) | 2.5 (5) |    1 |     1 |     1 | living; machine    | yes                  | yes     | Tunnel 3 with a rider; Eruption 2 (3); Dig In; no Field Defense  |
+| Engineer         | `CAPTAIN`     | Administration    |    5 |  10 |     1 (2) |   1 (2) |    1 |     1 |     1 | living             | yes                  | no      | Repair; Assemble; no Rally                                       |
+| Steam Cannon     | `CATAPULT`    | Sawmilling        |    8 |  10 |   3.5 (7) | 0.5 (1) |    1 |   2–3 |     1 | living; machine    | no                   | no      | Knockback; with Blasting Charges ignores Walls and Field Defense |
+| Steam Tank       | `KNIGHT`      | Chivalry          |    9 |  16 |     3 (6) |   2 (4) |    2 |     1 |     1 | living; machine    | yes                  | no      | Plated 4; no Overrun                                             |
+| Brass Titan      | `JUGGERNAUT`  | reward only       |    — |  36 |     4 (8) |   3 (6) |    1 |     1 |     1 | construct; machine | yes                  | yes     | Push                                                             |
+| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |  10 |     2 (4) |   2 (4) |    2 |     1 |     2 | —                  | yes                  | no      | naval                                                            |
+| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |  25 |    6 (12) |   4 (8) |    2 |   1–3 |     3 | —                  | no                   | no      | naval; splash                                                    |
+
+¹⁰ Clockwork Gunner Sight becomes 2 with Fieldcraft.
+¹¹ The Gyrocopter has no `ATTACK` ability: its Attack is used only when it
+retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run)).
+¹² [Dwarf tuning record](RULESET_7_DWARVES.md#195-tuning-record)
+(`pulp_wars-78i.7`, `pulp-wars-poc-7r31`): the bomb deals 5 and 6 with Dive
+(`BOMB_DAMAGE_V7`, `DIVE_BOMB_DAMAGE_V7`; decided values 4 and 5).
+
+- **Hammerer** has Fighter parity (cost, HP, Attack, Defense, Move; capture,
+  Pillage with Raiding, Disband, ordinary Promotion, the advance after a
+  melee kill). It cannot build Field Defense. It rides a Mole's tunnel
+  ([section 22.4](#224-the-rider)) and digs in ([section 22.7](#227-dig-in)).
+- **Gyrocopter** (a goggled dwarf under a rotor) flies like a Martian flyer
+  ([section 20.6](#206-movement-stride-flying-and-crossing-water)), with
+  Sight 2 and no capture, Pillage, Escape, or advance. It has no `ATTACK`:
+  `ATTACK` is never offered for it and is rejected with `UNIT_ROLE_INVALID`.
+  Its one primary action is the bombing run
+  ([section 22.5](#225-gyrocopters-and-the-bombing-run)).
+- **Clockwork Gunner** is a construct with Marksman parity for range 1–2
+  (minimum range 1), capture, Pillage, Disband, and Fieldcraft Forest
+  freedom and Sight. It shoots twice on a turn on which it has not moved,
+  once after moving, never moves after firing, and never advances after a
+  kill ([section 22.6](#226-clockwork)).
+- **Steam Mole** (a squat riveted tub on tracks with a drill nose) has Guard
+  parity for capture only: unlike the Guard it may attack after moving and
+  advances after a melee kill. It cannot build Field Defense. It may move
+  underground with `TUNNEL` instead of a Move
+  ([section 22.2](#222-the-tunnel-and-burrowed-units)), erupts when it
+  surfaces, and digs in.
+- **Engineer** has Captain parity for no capture and the Captain's body. It
+  has no Rally (`RALLY` is never offered and is rejected with
+  `UNIT_ROLE_INVALID`); its Tend Wounded is **Repair**, and it has
+  **Assemble** ([section 22.8](#228-engineer-repair-and-assemble)).
+- **Steam Cannon** has Catapult parity (range 2–3, minimum range 2, cannot
+  attack after moving, no capture, never advances, Field Defense
+  destruction on the target tile with reason `CATAPULT`) plus **Knockback**
+  ([section 22.9](#229-steam-cannon-knockback)).
+- **Steam Tank** has Knight parity for no capture and the advance after a
+  melee kill, with 16 HP, Defense 2, and Move 2. It has no Overrun and is
+  **Plated** ([section 22.10](#2210-steam-tank-plated-and-the-brass-titan)).
+- **Brass Titan** has Juggernaut parity (reward only, capture, Push on an
+  adjacent surviving target, the advance, no Pillage, no Disband) with
+  36 HP, Attack 4, and Defense 3, and the construct rules.
+- **Patrol Boat and Battleship** are the Human units (drawn in the Dwarf
+  style). Dwarf faction rules do not apply to them: no Dig In, no Repair
+  (it targets land-form units only), one slot, the ordinary Promotion.
+- **No Dwarf unit builds Field Defense** (`buildsFieldDefense` false for
+  every role, and the tree has no `BUILD_FIELD_DEFENSE` unlock).
+- Dwarf Disband refunds: Hammerer and Clockwork Gunner 1; Gyrocopter, Steam
+  Mole, and Engineer 2; Steam Cannon and Steam Tank 4. The Brass Titan and
+  a burrowed unit cannot Disband.
+- **Public abilities** (the role rule's `abilities`): Hammerer `ATTACK`,
+  `CAPTURE`, `RIDES_TUNNEL`, `DIG_IN`; Gyrocopter `FLY`, `BOMB_RUN`;
+  Clockwork Gunner `ATTACK`, `CAPTURE`, `CLOCKWORK`, `TWIN_SHOT`; Steam Mole
+  `ATTACK`, `CAPTURE`, `TUNNEL`, `ERUPTION`, `DIG_IN`; Engineer `ATTACK`,
+  `TEND_WOUNDED` (labelled Repair), `ASSEMBLE`; Steam Cannon `ATTACK`,
+  `KNOCKBACK`; Steam Tank `ATTACK`, `PLATED`; Brass Titan `ATTACK`,
+  `CAPTURE`, `PUSH`, `CLOCKWORK`; boats `ATTACK`. Constructs, Unflinching,
+  machines, the Repair amount, Dig In, the tunnel range, the ride, the
+  bombing run, the Gunner's shots, Knockback, Plated, and the advance are
+  role mechanics (`construct`, `unflinchingAttack`, `repairsAsMachine`,
+  `repairMachineHeal`, `digsIn`, `tunnelRange`, `ridesTunnel`, `bombs`,
+  `unmovedShots`, `knockback`, `plated`, `advancesAfterKill`, with
+  `movementMode` `FLY` for the Gyrocopter), exposed through the `dwarf`
+  block of the public unit stats
+  ([section 22.14](#2214-commands-events-errors-and-queries)).
+
 General roster rules:
 
 - An **embarked** land unit of any faction has Move 2 on water (landing
@@ -1890,18 +2129,21 @@ General roster rules:
   growth, an embarked Martian unit keeps its slots, its Cooling, and its
   Shield, which still absorbs damage and recharges, and an embarked unit
   cannot be Chilled, while a Chilled unit that embarks keeps a dormant
-  entry that still counts down ([section 21.2](#212-chill)).
+  entry that still counts down ([section 21.2](#212-chill)). It has no
+  Dwarf ability either (no Tunnel, ride, Bomb Run, Assemble, Repair, Dig
+  In, or eruption); a self-launched Gyrocopter is an ordinary embarked unit.
 - Base Sight gains +1 while standing on a Mountain with Engineering.
 - Minimum range limits only the chosen target: a Catapult, Lich, Rocket Cart,
-  or Bomb Chucker cannot target an adjacent unit but may still fire at
-  another target in range.
+  Steam Cannon, or Bomb Chucker cannot target an adjacent unit but may still
+  fire at another target in range.
 - Tactical-role labels (`LINE`, `SKIRMISHER`, and so on) are display metadata
   with no combat effect, except that Rally (Frenzy, War Drums, Psychic
   Command) skips the `SUPPORT` and `SIEGE` labels
   ([section 10](#10-recovery-and-support)). The registry requires every
   faction's role to carry the Human label of the same mechanical role, so
-  the Triceratops, the Tripod, and the Boulder Yeti are `SIEGE`, the Brain
-  and the Ice Witch `SUPPORT`, and the Mammoth `DEFENDER`.
+  the Triceratops, the Tripod, the Boulder Yeti, and the Steam Cannon are
+  `SIEGE`, the Brain, the Ice Witch, and the Engineer `SUPPORT`, the
+  Mammoth and the Steam Mole `DEFENDER`, and the Gyrocopter `SKIRMISHER`.
 
 ## 12. Movement and unit actions
 
@@ -1920,30 +2162,36 @@ General roster rules:
   unit of any faction but the Ice Folk (**deep snow**, unless a Road edge or
   the same Fieldcraft freedom; `SNOW_STOPS_MOVE`), or a cell in hostile ZOC
   (never for a Sabretooth, which Prowls). A path that continues past such a
-  stop is illegal. A Martian walker or flyer is never stopped by terrain,
-  Snow included, and a flyer not by ZOC
+  stop is illegal. A Martian walker or flyer and a Dwarf Gyrocopter (a
+  flyer) are never stopped by terrain, Snow included, and a flyer not by ZOC
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)). Snow is
-  read once per `MOVE`, from the state before the command.
-- Land units need Engineering to enter Mountain (Martian walkers and flyers
-  and Ice Folk Mountain-born units do not) and cannot enter water except by
-  embarking (Martian machines also
+  read once per `MOVE`, from the state before the command. Deep snow ends
+  the Move of a Dwarf ground unit like any other faction's; it matters to
+  the Move-2 Steam Tank, since the others have Move 1.
+- Land units need Engineering to enter Mountain (Martian walkers and flyers,
+  the Dwarf Gyrocopter, and Ice Folk Mountain-born units do not) and cannot
+  enter water except by embarking (Martian machines and the Gyrocopter also
   cross water inside a Move and self-launch). Every "can this unit stand on
   this tile" test (`MOVE`, `DISEMBARK`, the advance, Push and the Charge!
-  push, the Tractor Beam, Beam Down, treasure-unit placement, reward
+  push, the Tractor Beam, Knockback, Beam Down, a tunnel or rider
+  destination, an Assemble tile, treasure-unit placement, reward
   displacement, and their public twins) goes through the one shared terrain
   rule `canEnterTerrainV7` (terrain, movement mode, afloat, Engineering,
   Navigation, and Mountain-born, true only for a land-form Yeti, Boulder
   Yeti, or Frost Giant), and "does entering this tile end the Move" through
   `terrainStopsMoveV7`.
-- **Rift.** `canEnterTerrainV7` admits a Rift for a land-form flyer only:
+- **Rift.** `canEnterTerrainV7` admits a Rift for a land-form flyer only
+  (the Martian Saucer and Mothership and the Dwarf Gyrocopter):
   a flyer enters, crosses, and ends a Move on it at the ordinary cost
   (never stopped, never a Road node); every other unit (foot units,
   walkers, afloat units, Eggs) neither enters nor paths through it, the
   rejection and interruption reason being the impassable-terrain reason
   `ENGINEERING_REQUIRED`; Mountain-born does not cover a Rift, and a Rift
   is never Snow. A Rift exerts no ZOC and blocks no sight or
-  range. Push, the Charge! push, the Tractor Beam, and treasure or reward
-  placement put only a flyer on it; Beam Down never targets it.
+  range. Push, the Charge! push, Knockback, the Tractor Beam, and treasure
+  or reward placement put only a flyer on it; Beam Down, a tunnel or rider
+  destination, and an Assemble tile never target it (a tunnel may pass
+  under it, [section 22.2](#222-the-tunnel-and-burrowed-units)).
 - **Occupancy and friendly pass-through** (revision 18). A unit never ends a
   Move on an occupied tile. A step that holds a visible unit of another
   player, allied or hostile, is illegal (`OCCUPIED`) anywhere in the path. An
@@ -1968,15 +2216,31 @@ General roster rules:
   its owner always sees, can be passed. The one exception is a Martian
   flyer, which passes over a unit of any owner and still never ends on one
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)); no other
-  player's unit passes a Martian unit. An own unit standing on a Snow tile
-  where a non-Ice-Folk mover would have to stop cannot be passed either.
+  player's unit passes a Martian unit. A Dwarf Gyrocopter is such a flyer
+  too. An own unit standing on a Snow tile where a non-Ice-Folk mover would
+  have to stop cannot be passed either.
+- **Mounds** ([section 22.3](#223-the-mound-surfacing-and-the-eruption)). A
+  burrowed Dwarf unit stands on no tile, but its mound reserves one: the one
+  occupancy predicate `tileOccupiedV7` is true for a tile with a unit or a
+  mound, and every placement rule asks it. No `MOVE` ends on a mound tile
+  (`MOVEMENT_ILLEGAL` reason `MOUND`, never offered); a Move may pass over
+  one, since nothing stands there. No advance, Push, Charge! push or
+  follow, Knockback, Tractor Beam, Beam Down, landing, reward unit or
+  displacement, treasure unit, rising, Raise Dead, Egg, hatching, Assemble,
+  tunnel destination, or bombing-run landing ends on one.
+- **The rider brake.** A Hammerer that surfaced this turn as a Mole's rider
+  never ends a Move, or advances, on a settlement center its owner does not
+  own (a neutral village, or a center of a city its owner does not own):
+  `MOVEMENT_ILLEGAL` reason `SETTLEMENT_FORBIDDEN`, never offered
+  ([section 22.4](#224-the-rider)).
 - **Interrupted Moves.** A hidden occupant on the next step (`OCCUPIED`),
   impassable terrain that was unexplored before the command
   (`ENGINEERING_REQUIRED`), hostile ZOC first seen during the Move (`ZOC`),
   or, for a mover that deep snow stops, a Snow tile it could not know about
   (the Blizzard of an Ice Witch hidden before the command: `SNOW`, reported
-  also when the step is a ZOC stop too) interrupts the Move, which is still
-  accepted. The mover stands on the last
+  also when the step is a ZOC stop too), or a mound on a tile the mover had
+  not explored, met on the last tile of the Move (`MOUND`, naming the
+  mound tile), interrupts the Move, which is still accepted. The mover stands on the last
   tile it entered; if that tile holds an own unit, it ends on the last tile
   of the entered path that holds no unit, or on its starting tile if there
   is none. `UNIT_MOVED.path` is the entered path cut to that tile (omitted
@@ -1997,20 +2261,26 @@ General roster rules:
 - **ZOC:** a hostile land unit projects ZOC onto adjacent land cells. A naval
   unit projects it onto adjacent water it could enter. A land unit projects
   onto adjacent water only against an afloat unit it could attack at range 1.
-  Embarked units, Eggs, and Martian flyers project none, and a flyer ignores
-  hostile ZOC; a Sabretooth projects it but is never stopped by it, and a
-  Chilled unit projects it as usual. Leaving ZOC is free.
+  Embarked units, Eggs, Martian flyers, the Dwarf Gyrocopter, and mounds
+  project none, and a flyer ignores hostile ZOC; a Sabretooth projects it
+  but is never stopped by it, and a Chilled unit projects it as usual. A
+  tunnel ignores ZOC. Leaving ZOC is free.
 
 ### 12.2 Activation
 
-- Each unit may Move once per turn, and cannot Move after a primary action.
+- Each unit may Move once per turn, and cannot Move after a primary action
+  (so a Clockwork Gunner that has fired cannot move). A Dwarf Steam Mole's
+  `TUNNEL` is its Move made underground, and a Gyrocopter's `BOMB_RUN` is
+  its Move and its primary action at once
+  ([section 22](#22-dwarf-faction-rules)).
 - Primary actions are Attack, Recover, Capture, and specials
-  (Rally/Frenzy/WAAAGH!/War Drums/Psychic Command, Tend, Field Defense,
-  Pillage, Raise Dead, Devour, Wail, Kaboom, Hatch, Beam Down, Mind Control,
-  Tractor Beam, Bolas, Cold Snap). Guard, Zombie, Orc Brute, Ankylosaurus,
-  Shield Projector, Catapult, Lich, Rocket Cart, and Battleship cannot
-  attack after moving; the Triceratops (revision 20), the Tripod, the
-  Mammoth, and the Boulder Yeti can. Every read of this role flag for a unit
+  (Rally/Frenzy/WAAAGH!/War Drums/Psychic Command, Tend and Repair, Field
+  Defense, Pillage, Raise Dead, Devour, Wail, Kaboom, Hatch, Beam Down, Mind
+  Control, Tractor Beam, Bolas, Cold Snap, Bomb Run, Assemble). Guard,
+  Zombie, Orc Brute, Ankylosaurus, Shield Projector, Catapult, Lich, Rocket
+  Cart, Steam Cannon, and Battleship cannot attack after moving; the
+  Triceratops (revision 20), the Tripod, the Mammoth, the Boulder Yeti, and
+  the Steam Mole can. Every read of this role flag for a unit
   goes through the single rule `unitMayActAfterMoveV7`: the role's
   `mayUsePrimaryActionAfterMove`, and not sluggish.
 - **Sluggish** ([section 21.3](#213-sluggish-move-or-act-not-both)): a
@@ -2019,7 +2289,15 @@ General roster rules:
   and Pillage included, and a sluggish unit is never granted Escape. So on
   its sluggish turn it either moves or acts. Landing, Promote, Disband, and
   Wait are unaffected, and the advance, an Overrun continuation, a Push, and
-  a Charge! follow are not Moves.
+  a Charge! follow are not Moves. A sluggish Gyrocopter cannot make a
+  bombing run (`BOMB_RUN_NOT_LEGAL` reason `SLUGGISH`); a sluggish Steam Mole
+  may tunnel and a sluggish Hammerer may ride (the tunnel is a Move); a
+  sluggish Clockwork Gunner that has not moved fires twice, one that moved
+  cannot fire; a sluggish Engineer that moved can neither Repair nor
+  Assemble.
+- **Burrowed units** have no activation on the board: every command naming
+  one is rejected with `UNIT_ALREADY_HANDLED` and never offered
+  ([section 22.2](#222-the-tunnel-and-burrowed-units)).
 - **Eggs** have no activation of their own: an Egg carries an exhausted
   activation at all times and never needs handling. Every unit command
   naming an own Egg as `unitId` is rejected with `UNIT_IS_EGG { unitId }`
@@ -2027,7 +2305,7 @@ General roster rules:
   [section 19.7](#197-egg-destruction-capture-and-abandon-egg)).
 - `WAIT` only marks the unit handled (it also declines an available Escape).
 - **Escape** (Human Raider, innate; the Ghoul, Wolf Rider, Raptor, Saucer,
-  and Sled have none; never granted to a sluggish Raider):
+  Sled, and Gyrocopter have none; never granted to a sluggish Raider):
   after an accepted
   Attack that the Raider survives, including after a melee kill with its
   ordinary advance, the Raider may make exactly one more ordinary `MOVE` this
@@ -2044,8 +2322,8 @@ General roster rules:
   status reads "Escape: may move again", and the public command query offers the
   escape Moves.
 - **Pillage** (Raiding): an own land-form unit other than a Juggernaut,
-  Abomination, Troll, Brontosaurus, Colossus, or Frost Giant, or a Martian
-  flyer (rejected
+  Abomination, Troll, Brontosaurus, Colossus, Frost Giant, or Brass Titan,
+  or a flyer (a Martian Saucer or Mothership, a Dwarf Gyrocopter; rejected
   with `PILLAGE_INVALID_TARGET` and never offered), standing on an
   improvement in hostile territory
   destroys it for +1
@@ -2057,19 +2335,22 @@ General roster rules:
 
 - `BUILD_FIELD_DEFENSE` (Fortification, 3 Coins) needs a unit whose role
   mechanics allow it (`buildsFieldDefense`: Fighter, Guard, Skeleton, Zombie,
-  or Orc Brute; never the Goblin, and no Dinosaur, Martian, or Ice Folk
-  unit) in land
+  or Orc Brute; never the Goblin, and no Dinosaur, Martian, Ice Folk, or
+  Dwarf unit) in land
   form that has neither moved nor acted this turn, standing on an explored
   land tile of its owner's territory without Field Defense. It uses the
   unit's whole turn. A Goblin, a Caveman, an Ankylosaurus, a Grunt, a
-  Shield Projector, a Yeti, or a Mammoth is never offered it and is
-  rejected like any other role that cannot build it (`INVALID_TILE` with
-  `action: "BUILD_FIELD_DEFENSE"`); the Dinosaur, Martian, and Ice Folk
-  trees also have no Field Defense unlock (their Fortification is Nesting,
-  Force Fields, and Deep Winter). Field Defense that already stands in
-  territory a Dinosaur, Martian, or Ice Folk seat captures fortifies its
-  units as usual (never a Martian walker or flyer, which is never
-  fortified; an Ice Folk unit fortified there has no Snow cover).
+  Shield Projector, a Yeti, a Mammoth, a Hammerer, or a Steam Mole is never
+  offered it and is rejected like any other role that cannot build it
+  (`INVALID_TILE` with `action: "BUILD_FIELD_DEFENSE"`); the Dinosaur,
+  Martian, Ice Folk, and Dwarf trees also have no Field Defense unlock
+  (their Fortification is Nesting, Force Fields, Deep Winter, and Dig In).
+  Field Defense that already stands in territory a Dinosaur, Martian, Ice
+  Folk, or Dwarf seat captures fortifies its units as usual (never a
+  Martian walker or flyer or a Gyrocopter, which is never fortified; an Ice
+  Folk unit fortified there has no Snow cover; a dug-in Dwarf unit there
+  gets one level from the two, never two,
+  [section 22.7](#227-dig-in)).
 - Every explosion destroys Field Defense on every tile of its blast area,
   whoever owns the tile (reason `EXPLOSION`,
   [section 18.6](#186-blast-resolution)), every Triceratops, Tripod, or
@@ -2077,7 +2358,13 @@ General roster rules:
   [sections 19.11](#1911-charge), [20.5](#205-pierce-and-the-disintegrator),
   and [21.11](#2111-boulders-and-planted)), and every Mammoth attack
   destroys it there too (reason `TRAMPLE`,
-  [section 21.10](#2110-sweep-and-trample)).
+  [section 21.10](#2110-sweep-and-trample)). A Steam Cannon attack destroys
+  it on the target tile (reason `CATAPULT`), a surfacing Steam Mole on its
+  own tile and the eight around it, whoever owns them (reason `UNDERMINED`,
+  [section 22.3](#223-the-mound-surfacing-and-the-eruption)), and an
+  Assembled Gunner on its tile in territory hostile to its owner (reason
+  `OCCUPATION`, [section 22.8](#228-engineer-repair-and-assemble)). A bomb
+  destroys none.
 - Field Defense is a tile layer, not an improvement: it coexists with Roads,
   resources, improvements, and cities, transfers with the tile, and cannot be
   stacked, pillaged, redeveloped, or removed voluntarily.
@@ -2086,9 +2373,12 @@ General roster rules:
 
 ### 13.1 Legality
 
-- The attacker needs the `ATTACK` ability (the Banshee has none). The target
-  must be a visible, non-allied unit on the board within the attacker's
-  minimum–maximum range. Embarked units and Eggs cannot attack. An Egg is a
+- The attacker needs the `ATTACK` ability (the Banshee and the Dwarf
+  Gyrocopter have none; the Gyrocopter's `ATTACK` is rejected with
+  `UNIT_ROLE_INVALID`). The target must be a visible, non-allied unit on the
+  board within the attacker's minimum–maximum range; a burrowed unit is off
+  the board and never a target. An unmoved Clockwork Gunner may attack
+  twice in a turn ([section 22.6](#226-clockwork)). Embarked units and Eggs cannot attack. An Egg is a
   legal target like any unit. A land-form Yeti standing on a Mountain also
   reaches distance 2 (Rockfall, [section 21.8](#218-mountain-born-and-rockfall));
   its own retaliation range stays 1.
@@ -2108,7 +2398,7 @@ cover   = 1.5 on Forest or Mountain for land-form ground defenders
           (never a Martian walker or flyer), or on Snow for an Ice Folk
           defender with no fortification of its own, else 1
 
-attackForce  = attack  * attacker.hp / attacker.maxHp
+attackForce  = attack  * attacker.hp / attacker.maxHp   (a Dwarf construct: attack)
 defenseForce = defense * defender.hp / defender.maxHp * cover
 total        = attackForce + defenseForce
 
@@ -2125,14 +2415,18 @@ damageToAttacker = roundHalfUp(defenseForce / total * defense * 4.5)
   retaliation, [section 21.4](#214-shatter)). An Armoured unit (the
   Ankylosaurus) takes
   `d − 1` (minimum 1) of every hit `d` of 2 or more, before the cap
-  ([section 19.9](#199-acid-and-armoured)). A Martian unit's Shield then
+  ([section 19.9](#199-acid-and-armoured)). A Plated unit (the Dwarf Steam
+  Tank, in land form) then takes at most 4 of any one hit
+  ([section 22.10](#2210-steam-tank-plated-and-the-brass-titan)). A Martian
+  unit's Shield then
   absorbs the hit first, so its cap is Shield plus HP; `damageToDefender`
   and `damageToAttacker` are HP damage, and the absorbed parts are
   `defenderShieldDamage` and `attackerShieldDamage`
   ([section 20.2](#202-shields)).
-- A surviving defender retaliates only if it has the `ATTACK` ability and an
-  Attack above 0, is not embarked or an Egg, the attacker is within its own
-  range, and the attacker is not `UNANSWERED` (a Vampire). The preview then
+- A surviving defender retaliates only if it has the `ATTACK` ability (or
+  `BOMB_RUN`: a Dwarf Gyrocopter strikes back at distance 1 with Attack
+  1.5) and an Attack above 0, is not embarked or an Egg, the attacker is
+  within its own range, and the attacker is not `UNANSWERED` (a Vampire). The preview then
   reports `noRetaliationReason` `DEFENDER_DIED`, `UNANSWERED`, or
   `OUT_OF_RANGE` (the last also for an embarked defender, an Egg, or a
   defender without Attack).
@@ -2169,6 +2463,12 @@ damageToAttacker = roundHalfUp(defenseForce / total * defense * 4.5)
   preview carries `rockfallApplied`, `plantedApplied`, and
   `coldBloodApplied`, and `attack2` includes them. None applies to
   retaliation.
+- **Unflinching** (a Dwarf construct in land form,
+  [section 22.6](#226-clockwork)): when a Clockwork Gunner or Brass Titan
+  makes an `ATTACK`, its own force uses its maximum HP instead of its
+  current HP; as a defender and when it retaliates it is an ordinary unit.
+  The preview carries `unflinchingApplied` (true for every such attack, at
+  full HP too).
 - **Lifesteal** (Vampire): after the exchange, a surviving Vampire heals by
   the HP damage it dealt (as attacker or retaliating defender; never what a
   Shield absorbed), capped at its
@@ -2180,27 +2480,35 @@ damageToAttacker = roundHalfUp(defenseForce / total * defense * 4.5)
 For a land-form defender standing in its owner's territory:
 
 ```text
-fortification level = 2 (own city center with Walls) + 1 (tile has Field Defense)
+fortification level = 2 (own city center with Walls)
+                    + max(1 if the tile has Field Defense, 1 if the unit is dug in)
 ```
 
 Each level adds 1 flat Defense before cover. Naval, embarked, and foreign
-units, Eggs, and Martian walkers and flyers on the tile receive none. There
-is no other city-center defense bonus. Three Dinosaur attacks, a Martian
-heat ray fired with the Disintegrator, and every Boulder Yeti attack remove
-levels for the whole exchange (the reduced Defense applies to the damage
-taken **and** to the retaliation), without destroying Walls
+units, Eggs, and Martian walkers and flyers and the Dwarf Gyrocopter on the
+tile receive none. A Dwarf Hammerer or Steam Mole that is **dug in** has the
+Field Defense level wherever it stands within 1 of an own city center,
+whatever the tile's territory, and never a second one from Field Defense
+([section 22.7](#227-dig-in)); the preview carries `dugIn`. There is no
+other city-center defense bonus. Three Dinosaur attacks, a Martian heat ray
+fired with the Disintegrator, every Boulder Yeti attack, and a Steam Cannon
+shot fired with Blasting Charges remove levels (Dig In included) for the
+whole exchange (the reduced Defense applies to the damage taken **and** to
+the retaliation), without destroying Walls
 ([sections 19](#19-dinosaur-faction-rules),
-[20.5](#205-pierce-and-the-disintegrator), and
-[21.11](#2111-boulders-and-planted)):
+[20.5](#205-pierce-and-the-disintegrator),
+[21.11](#2111-boulders-and-planted), and
+[22.9](#229-steam-cannon-knockback)):
 
-| Attack                                                    | Fortification applied           | Cover      | Preview fields                                   |
-| --------------------------------------------------------- | ------------------------------- | ---------- | ------------------------------------------------ |
-| Spitter (Acid)                                            | none                            | none (× 1) | `acid: true`, `fortificationIgnored: 0`          |
-| Triceratops (Charge!)                                     | none                            | kept       | `fortificationIgnored`: the levels removed (0–3) |
-| heat ray (full or half) whose owner has the Disintegrator | none                            | kept       | `fortificationIgnored`: the levels removed (0–3) |
-| Boulder Yeti (Boulders)                                   | none                            | kept       | `fortificationIgnored`: the levels removed (0–3) |
-| any other dinosaur whose owner has Wallbreaker            | Field Defense only (Walls gone) | kept       | `fortificationIgnored`: 2 on a Walled center     |
-| every other attack                                        | full                            | kept       | `acid: false`, `fortificationIgnored: 0`         |
+| Attack                                                    | Fortification applied                     | Cover      | Preview fields                                   |
+| --------------------------------------------------------- | ----------------------------------------- | ---------- | ------------------------------------------------ |
+| Spitter (Acid)                                            | none                                      | none (× 1) | `acid: true`, `fortificationIgnored: 0`          |
+| Triceratops (Charge!)                                     | none                                      | kept       | `fortificationIgnored`: the levels removed (0–3) |
+| heat ray (full or half) whose owner has the Disintegrator | none                                      | kept       | `fortificationIgnored`: the levels removed (0–3) |
+| Boulder Yeti (Boulders)                                   | none                                      | kept       | `fortificationIgnored`: the levels removed (0–3) |
+| Steam Cannon whose owner has Blasting Charges             | none                                      | kept       | `fortificationIgnored`: the levels removed (0–3) |
+| any other dinosaur whose owner has Wallbreaker            | Field Defense or Dig In only (Walls gone) | kept       | `fortificationIgnored`: 2 on a Walled center     |
+| every other attack                                        | full                                      | kept       | `acid: false`, `fortificationIgnored: 0`         |
 
 `fortificationLevel` in the combat preview is always the level actually
 applied. An Ice Folk defender's Snow cover is read from its own
@@ -2211,25 +2519,37 @@ Disintegrator ([section 21.5](#215-snow)).
 ### 13.4 After combat
 
 - **Advance:** a surviving adjacent land attacker (not a Catapult, Lich,
-  Rocket Cart, Zombie, Tripod, Saucer, Mothership, or Boulder Yeti; the
-  Triceratops, the Ray Gunner, and the Colossus do advance; role mechanic
-  `advancesAfterKill`) that kills a land defender or an Egg moves into its
-  cell if explored and enterable (Mountain needs Engineering unless the
-  attacker strides or is Mountain-born), then reveals sight. It does not
+  Rocket Cart, Zombie, Tripod, Saucer, Mothership, Boulder Yeti, Clockwork
+  Gunner, or Steam Cannon; the Triceratops, the Ray Gunner, the Colossus,
+  and the Steam Mole do advance; role mechanic `advancesAfterKill`) that
+  kills a land defender or an Egg moves into its cell if explored and
+  enterable (Mountain needs Engineering unless the attacker strides or is
+  Mountain-born), then reveals sight. It does not
   advance when the defender rises in place (an Infect or Bitten rising, a
-  shattered Bitten unit too), a Sabretooth never advances onto a settlement
-  center its owner does not own, and the attacker stands on any Grave the
-  death left. Nothing advances onto a **Rift** (only a flyer
+  shattered Bitten unit too), a Sabretooth or a rider on its surfacing turn
+  never advances onto a settlement center its owner does not own, and the
+  attacker stands on any Grave the death left. A Hammerer's or a Steam
+  Mole's advance sets its `moved` flag (Dig In,
+  [section 22.7](#227-dig-in)); no other unit's advance does. Nothing advances onto a **Rift** (only a flyer
   stands there, and flyers never advance), so a kill there continues no
   Overrun and a Charge! does not follow a target pushed off a Rift.
-- **Push:** a Juggernaut, Abomination, Troll, Brontosaurus, Colossus, or
-  Frost Giant pushes a surviving adjacent target one cell directly away
-  (never at range 2) if the cell is on the board, explored by the attacker,
-  empty, not a settlement, the same land/water kind as the target,
+- **Push:** a Juggernaut, Abomination, Troll, Brontosaurus, Colossus, Frost
+  Giant, or Brass Titan pushes a surviving adjacent target one cell directly
+  away (never at range 2) if the cell is on the board, explored by the
+  attacker, empty (no unit, no mound), not a settlement, the same land/water
+  kind as the target,
   enterable by the target's owner (a walker, flyer, or Mountain-born unit
   needs no Engineering for a Mountain), and not in territory allied to the
   target. It never pushes an Egg, and the pusher stays where it is. A pushed
-  unit keeps its Chill.
+  unit keeps its Chill and its `moved` flag (a Dwarf unit's Dig In is read
+  on its new tile).
+- **Knockback** (the Dwarf Steam Cannon,
+  [section 22.9](#229-steam-cannon-knockback)): a target that survives a
+  land-form Steam Cannon's attack is pushed one tile directly away from the
+  Cannon under the Push conditions and the Tractor Beam's chest condition;
+  a `JUGGERNAUT`-role unit, a two-slot unit, and an Egg are never knocked
+  back. It is the Push step (the same place, `UNIT_PUSHED`, and the preview
+  field `push`).
 - **Charge! Push and follow** (the Triceratops): a surviving target is
   pushed under the same conditions, and the Triceratops, if it survived,
   follows into the vacated tile under the advance conditions
@@ -2272,8 +2592,8 @@ Disintegrator ([section 21.5](#215-snow)).
   ([sections 17.6](#176-infect) and [17.7](#177-bitten)).
 - **Field Defense destruction:** after an attack against a unit on a Field
   Defense tile, it is destroyed for the first applicable reason: a unit of
-  the `CATAPULT` role (Catapult, Lich, Rocket Cart, Triceratops, Tripod, or
-  Boulder Yeti) attacked
+  the `CATAPULT` role (Catapult, Lich, Rocket Cart, Triceratops, Tripod,
+  Boulder Yeti, or Steam Cannon) attacked
   (reason `CATAPULT`, whether or not either unit survives); a land-form
   Mammoth attacked (reason `TRAMPLE`, whether or not either unit survives;
   the Field Defense still counted for the exchange); a surviving Inspired
@@ -2287,9 +2607,10 @@ Disintegrator ([section 21.5](#215-snow)).
   only when the tile's territory belongs to a player hostile to the mover; a
   Martian flyer never does (it is not on the ground).
 - Kills are counted for promotion, growth, and Slayer, including retaliation
-  and hostile splash, Pierce, and Sweep kills, Shatters, kills whose victim
-  rises, and destroyed Eggs (not friendly bomb-splash or Pierce kills,
-  explosion kills,
+  and hostile splash, Pierce, and Sweep kills, Shatters, Dwarf eruption
+  kills (credited to the Mole) and bomb kills (credited to the Gyrocopter),
+  kills whose victim rises, and destroyed Eggs (not friendly bomb-splash or
+  Pierce kills, explosion kills,
   or the removals of Mind Control and a Thrall collapse). A dinosaur that reaches
   Big or Alpha grows at once, after the exchange's damage, Lifesteal, and
   kill credit and before the advance, Push, follow, and any chain
@@ -2299,7 +2620,9 @@ Disintegrator ([section 21.5](#215-snow)).
   leaves none of them, and neither does a death on a **Rift** (any cause:
   no Grave, no Infect or Bitten rising). A shattered unit (`UNIT_DIED`
   cause `SHATTER`) leaves no Grave and has no death blast; a shattered
-  Bitten unit still rises. A unit on a Rift is also immune to
+  Bitten unit still rises. A Dwarf construct leaves no Grave on any death
+  and never rises ([section 22.6](#226-clockwork)). A unit on a Rift is
+  also immune to
   Mind Control. A Brain's death collapses its Thralls (`UNIT_DIED`
   cause `BRAIN_LOST`) right after the death events and before the advance,
   Push, and any chain ([section 20.9](#209-thralls)). An exploding
@@ -2314,15 +2637,17 @@ Disintegrator ([section 21.5](#215-snow)).
   and [section 19.11](#1911-charge) here (growth, Push, and follow); a
   Martian attack then spends the Shields the exchange absorbed and records
   the Cooling of a full-power ray; the Ice Folk steps are in
-  [section 21.13](#2113-attack-resolution-order).
+  [section 21.13](#2113-attack-resolution-order) and the Dwarf steps in
+  [section 22.11](#2211-resolution-order).
 
 ## 14. Naval rules
 
 - **Water movement:** only naval and embarked units stand on water. Shallow
   Water needs Shorecraft (via embarking or training), Deep Water needs
-  Navigation. A Martian machine is the exception for entering: it crosses
-  water inside a Move in land form and **self-launches** (embarks) where a
-  Move ends on water, with no Port and without Shorecraft
+  Navigation. A Martian machine or a Dwarf Gyrocopter is the exception for
+  entering: it crosses water inside a Move in land form and
+  **self-launches** (embarks) where a Move (or, for the Gyrocopter, a
+  bombing run) ends on water, with no Port and without Shorecraft
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)).
   Every step that leaves a water tile costs a full movement point. Patrol
   Boats, Battleships, and embarked units all have Move 2. A naval or embarked
@@ -2338,10 +2663,10 @@ Disintegrator ([section 21.5](#215-snow)).
 - **Disembarking:** on a later turn an embarked unit may move through water,
   then `DISEMBARK` onto an adjacent (Chebyshev 1) empty land cell it can enter
   (Mountain needs Engineering unless the unit strides, flies, or is
-  Mountain-born; no allied territory; a Martian flyer or an Ice Folk
-  Sabretooth never lands on a neutral village center or a center it does
-  not own: `MOVEMENT_ILLEGAL` with reason `SETTLEMENT_FORBIDDEN`, never
-  offered). Landing costs one of the
+  Mountain-born; no allied territory; no mound; a Martian flyer, a Dwarf
+  Gyrocopter, or an Ice Folk Sabretooth never lands on a neutral village
+  center or a center it does not own: `MOVEMENT_ILLEGAL` with reason
+  `SETTLEMENT_FORBIDDEN`, never offered). Landing costs one of the
   unit's two movement points: `DISEMBARK` is legal only while
   `spent = moved ? movedPathLength : 0` is at most 1, and is otherwise rejected
   atomically with `MOVEMENT_ILLEGAL` and not offered. So from its start-of-turn
@@ -2405,14 +2730,26 @@ Disintegrator ([section 21.5](#215-snow)).
   deferred ([Ice Folk overlay section 17.3](RULESET_7_ICE_FOLK.md#173-deferred-the-floe)).
   `THROW_BOLAS` and `COLD_SNAP` move no unit, so they are not on the
   blockade-event list below.
+- **Dwarf boats** are the Human Patrol Boat and Battleship too (drawn in the
+  Dwarf style): one slot, ordinary Promotion, no Dwarf rule. Dwarf foot
+  units and machines other than the Gyrocopter embark at an own active,
+  empty Port or Shipyard with Shorecraft like Human units; the Gyrocopter
+  flies over Shallow Water (Deep Water with Navigation) and self-launches
+  where a Move or a bombing run ends on water. Afloat, a Dwarf unit is an
+  ordinary embarked unit (Move 2, no bomb, Tunnel, Repair, or Assemble,
+  never dug in) and lands with `DISEMBARK`. A tunnel never passes under
+  water; an eruption never hits a naval or embarked unit; a bomb may target
+  one. `TUNNEL` and `ASSEMBLE` never touch water, so they are not on the
+  blockade-event list below; `BOMB_RUN` is.
 - **Blockade events.** `PORT_BLOCKADE_CHANGED` and `SEA_NETWORK_CHANGED` are
   recomputed after `ATTACK`, `BUILD_PORT`, `BUILD_ROAD`, `CAPTURE`,
   `DISEMBARK`, `MOVE`, `REDEVELOP`, `WAIL`, `KABOOM`, `MIND_CONTROL`,
-  `TRACTOR_BEAM`, `END_TURN`, `LAND_GRANT`, research of Roads, Shorecraft,
-  or Navigation, and `DISBAND` while the state has a Thrall (a disbanded
-  Brain's embarked Thrall may have been a blockader). `KABOOM` and
-  `END_TURN` joined the list in revision 17 and the three Martian entries
-  with the Martian overlay; with `END_TURN`, a blockade lifted by a
+  `TRACTOR_BEAM`, `BOMB_RUN`, `END_TURN`, `LAND_GRANT`, research of Roads,
+  Shorecraft, or Navigation, and `DISBAND` while the state has a Thrall (a
+  disbanded Brain's embarked Thrall may have been a blockader). `KABOOM` and
+  `END_TURN` joined the list in revision 17, the three Martian entries
+  with the Martian overlay, and `BOMB_RUN` with the Dwarf overlay (a bomb
+  can kill an embarked blockader, and a self-launch can start a blockade); with `END_TURN`, a blockade lifted by a
   death at the next seat's Start Turn (Plague or a Plague-started chain) is
   reported in that command instead of silently. The events are emitted only
   when a dock or network changed.
@@ -2488,6 +2825,33 @@ Disintegrator ([section 21.5](#215-snow)).
   and halve a ranged hit. No event reveals a hidden Witch; a Move that
   meets her Blizzard is interrupted (`SNOW`) and reveals her only through
   the mover's own sight.
+- **Dwarf mounds and per-turn lists.** A mound is public on every explored
+  tile, like a unit there: `PlayerViewV7.burrowed` lists each burrowed
+  record whose mound tile the viewer has explored (the ordinary public unit
+  fields: owner, role, HP, maximum HP, kills, statuses, and `moleUnitId`),
+  so the tile and turn of every eruption are known in advance. The
+  `surfacedThisTurn` and `bombedThisTurn` entries of visible units are
+  public, and so are a visible Dwarf unit's `eruptionDamage` and
+  `bombDamage` (they tell an opponent whether the seat has Blasting Charges
+  and Dive) and whether it is dug in. `UNIT_TUNNELLED` reaches the actor and
+  every viewer that has explored one of its four tiles (`from`, `to`,
+  `riderFrom`, `riderTo`), with the tiles that viewer has not explored
+  null. `UNIT_SURFACED` reaches the owner in full, a viewer that has
+  explored the Mole's tile with the results of units it owns or can see
+  (the rider null unless its tile is explored too), and a viewer that owns
+  a victim but has not explored the Mole's tile with its own entries only
+  and the Mole, its tile, and the rider null. `UNIT_BOMBED` reaches the
+  actor and every viewer that sees both the Gyrocopter and the target
+  before or after the command; the target's owner who does not receives
+  the hit as a `COMBAT_SPLASH_DAMAGE` entry. `UNIT_ASSEMBLED` is
+  owner-private like `UNIT_TRAINED` (the Gunner is revealed to other
+  viewers as an ordinary unit). A Move that meets a mound on a tile the
+  mover had not explored is interrupted (`MOUND`). Every Dwarf preview is
+  exact except the tunnel preview's eruption, a forecast on the current
+  board (`projected: true`), and a Knockback onto a Mountain or Deep Water
+  behind another player's unit (`UNKNOWN_BEHIND_FOG`,
+  [section 22.9](#229-steam-cannon-knockback)); see
+  [section 22.14](#2214-commands-events-errors-and-queries).
 - Exact projection rules are in
   [baseline §9](RULESET_7.md#9-observation-safe-views-events-queries-and-artifacts)
   and the relevant overlay sections.
@@ -2678,6 +3042,48 @@ Disintegrator ([section 21.5](#215-snow)).
   Witch without route progress. The overlay's Goblin Kaboom rule is not
   implemented. Details and measurements:
   [Normal AI Ice Folk play](../architecture/NORMAL_AI.md#ice-folk-play-pulp_wars-7g34).
+- **Dwarf play** (`pulp_wars-78i.4`). Every Dwarf heuristic is gated on a
+  match with a Dwarf seat or on a fact only such a match has (a mound in
+  `view.burrowed`, a `dwarf` stat block, a `bombedThisTurn` entry;
+  `src/ai/v7-dwarf.ts`), so matches without one are byte-identical. Shared
+  estimates count each hostile mound's eruption on the eight tiles around
+  it and its surfacing reach (the tiles within 2), one bomb of a visible,
+  non-sluggish Gyrocopter on every unit within 2 of it (once per unit,
+  whatever the number of Gyrocopters), the Steam Tank's Plated cap, a
+  construct's Unflinching attack, and Dig In from the public `dugIn` (never
+  after a planned Move). As the Dwarves, Normal plans one `TUNNEL` per Mole
+  (defence: it walks to an invader within 2 and tunnels toward one 3 or 4
+  tiles away; offence: on a Pressure job with a route of 4 or more steps or
+  one blocked by terrain, to the destination with the best eruption score
+  plus route progress, never next to three or more hostile melee units
+  unless next to the target's center), takes an adjacent fresh Hammerer
+  along on the rider tile next to the most hostile units, and never tunnels
+  off an own center it garrisons alone; it never tunnels for expansion
+  (the optional rule lost its head-to-head test and is off). It scores each
+  offered bombing run by the damage, a kill bonus, and a `CATAPULT`,
+  `MARKSMAN`, or `CAPTAIN` bonus minus half the preview's `landingThreat`,
+  and never lands where that threat is 8 or more unless the bomb kills a
+  `CATAPULT` or `CAPTAIN`-role unit; holds an unmoved Gunner that has a
+  target so that it fires twice; Assembles at the front (on a Pressure job
+  or within 3 of a visible hostile unit, on the offered tile nearest the
+  target that is not next to a hostile melee unit) at the land-production
+  priority; Repairs, valuing construct HP double; holds a dug-in Hammerer or
+  Mole that has a visible hostile unit within 3; prefers Steam Cannon shots
+  whose Knockback empties a hostile center, clears Field Defense, or pushes
+  the target next to its melee units; trains a first unit of each role
+  (Gyrocopters and Engineers only once at war with four front units); and
+  researches Drill first after the ordinary free opener, Dig In once an own
+  city is threatened, Marksmanship and (with a Gyrocopter) Raiding with two
+  cities, Administration once it owns a Gunner or two Moles, and Blasting
+  Charges against a visible Walled city or a Martian seat. Against the
+  Dwarves, Normal never ends a routine Move with a ground unit next to a
+  hostile mound whose eruption kills it, steps such a unit out of the ring,
+  and values a visible Engineer (plus the constructs near it) and a
+  Gyrocopter that landed next to an own unit as targets; the exact previews
+  already show that a surfaced unit abroad is not dug in. The Brass Titan
+  and the Steam Tank use the generic Juggernaut and Knight play. Details
+  and measurements:
+  [Normal AI Dwarf play](../architecture/NORMAL_AI.md#dwarf-play-pulp_wars-78i4).
 - **Promotion** (revision 20, every faction and match): a wounded unit that
   can be promoted is promoted before any attack, capture, or End Turn, so the
   full heal is not wasted; the policy never holds a Promotion back. This is
@@ -2746,7 +3152,13 @@ every Ice Folk rule against Undead opponents and are living: they leave
 Graves, are plagued, bitten, infected, and wailed, and have no cure; Undead
 units are Chilled and shattered like any unit, and a shattered unit leaves
 no Grave (a shattered Bitten unit still rises)
-([section 21.14](#2114-interactions-with-other-rules)).
+([section 21.14](#2114-interactions-with-other-rules)). Dwarf units keep
+every Dwarf rule against Undead opponents; every Dwarf unit but the two
+constructs is living and leaves Graves, is plagued, bitten, infected, and
+wailed, and the Engineer's Repair cures Plague and bites, while the
+Clockwork Gunner and Brass Titan are not living: never wailed, plagued,
+bitten, or infected, and they leave no Grave
+([section 22.13](#2213-interactions-with-other-rules)).
 Specifications and exact event shapes:
 [revision 13](RULESET_7_REVISION_13_UNDEAD.md),
 [revision 14](RULESET_7_REVISION_14_BALANCE.md), and
@@ -2759,15 +3171,17 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
 
 - **Creation.** When a unit dies, one Grave is created on its death tile when
   all of these hold: the unit was in land form (not embarked or naval), of
-  any owner and faction; it died with cause `ATTACK`, `RETALIATION`,
-  `SPLASH` (Battleship, Lich, or Bomb Chucker), `WAIL`, `PLAGUE`, `KABOOM`
-  (its own Kaboom), or `EXPLOSION` (hit by a blast); the tile is land and is
+  any owner and faction but not a Dwarf construct; it died with cause
+  `ATTACK`, `RETALIATION`, `SPLASH` (Battleship, Lich, or Bomb Chucker),
+  `WAIL`, `PLAGUE`, `KABOOM` (its own Kaboom), `EXPLOSION` (hit by a blast),
+  `BOMB`, or `ERUPTION` (a Dwarf bomb or eruption); the tile is land and is
   not a settlement site (capital, city, or village center); the death did not
   rise (Infect or Bitten); and the tile has no Grave yet.
 - **No Grave** comes from a water, embarked, or naval death, an Egg's death
   (form `EGG`), Disband, reward displacement removal, elimination removal,
   the destruction of Eggs with a captured city, a Mind Control, a Thrall
-  collapse (`BRAIN_LOST`), a Shatter (`SHATTER`), or a death that rises. A
+  collapse (`BRAIN_LOST`), a Shatter (`SHATTER`), the death of a Dwarf
+  construct, or a death that rises. A
   chest
   is consumed by the unit that enters its tile, so no Grave shares a tile
   with a chest.
@@ -2789,8 +3203,8 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
 - **Raise Dead** (`RAISE_DEAD { unitId }`, Necromancer primary action, 0
   Coins). Legal for an own land-form Necromancer that has not used its
   primary action (it may have moved) when at least one **eligible Grave**
-  exists: a Grave on one of its eight neighbours with no unit of any owner on
-  it (no cap, no terrain or territory filter). In `(y, x)` order each
+  exists: a Grave on one of its eight neighbours with no unit of any owner
+  and no Dwarf mound on it (no cap, no terrain or territory filter). In `(y, x)` order each
   eligible Grave is removed and replaced by a Skeleton rising at 5 of 10 HP,
   taking consecutive new unit IDs. The Necromancer is then handled. With no
   eligible Grave the command is rejected with `RAISE_DEAD_NOT_LEGAL`
@@ -2842,7 +3256,7 @@ Zombie of the Zombie's owner at 10 of 18 HP on its tile, with no Grave. The
 victim may be of any faction and any land role, on any land tile,
 including a city or village center. The killing Zombie never advances.
 Naval and embarked victims, splash, Wail, Kaboom, and explosions never
-infect. Event
+infect, and a Dwarf construct never rises. Event
 `UNIT_INFECTED`; the combat preview carries `attackerInfected` and
 `defenderInfected`.
 
@@ -2855,8 +3269,8 @@ infect. Event
   Embarked and naval units are never bitten; splash, Wail, and explosions are
   not Zombie damage.
 - **Rising.** When a Bitten unit dies in land form from `ATTACK`,
-  `RETALIATION`, `SPLASH`, `WAIL`, `PLAGUE`, `KABOOM`, `EXPLOSION`, or
-  `SHATTER`,
+  `RETALIATION`, `SPLASH`, `WAIL`, `PLAGUE`, `KABOOM`, `EXPLOSION`,
+  `SHATTER`, `BOMB`, or `ERUPTION`,
   whoever killed it, it rises
   on its tile as a Zombie owned by the biter player at 10 of 18 HP
   ([section 17.3](#173-risings)), with no Grave; the killer keeps the kill.
@@ -2867,7 +3281,8 @@ infect. Event
   `BITTEN_UNIT_RISEN`.
 - **End.** Bitten persists through embarking and disembarking and ends when
   the unit leaves the board, its biter player is eliminated, or a Human
-  Captain's or Dinosaur Shaman's Tend Wounded cures it. A Bitten unit cannot Disband (it may
+  Captain's or Dinosaur Shaman's Tend Wounded or a Dwarf Engineer's Repair
+  cures it. A burrowed unit keeps its entry. A Bitten unit cannot Disband (it may
   Kaboom, and then rises as its biter's Zombie).
 - **Previews and state.** The combat preview carries `attackerBitten`,
   `defenderBitten`, `attackerBittenRises`, and `defenderBittenRises`; the
@@ -2913,7 +3328,10 @@ infect. Event
   its source Lich leaves the board for any reason, a Mind Control included
   (every unit it plagued is
   cured, `PLAGUE_CLEARED` at the end of the command's events), or when a
-  Human Captain's or Dinosaur Shaman's Tend Wounded cures it. A unit whose
+  Human Captain's or Dinosaur Shaman's Tend Wounded or a Dwarf Engineer's
+  Repair cures it. A burrowed unit keeps its entry and, surfacing before
+  Plague resolves, takes its damage on the board; Plague never spreads to or
+  from a mound. A unit whose
   Plague ended can be
   plagued again with a fresh 3 turns. A plagued unit cannot Disband.
 - **State and view.** `GameStateV7.plagued` lists
@@ -2930,11 +3348,14 @@ infect. Event
   `WAIL_NOT_LEGAL` (`NO_TARGET`).
 - **Targets.** Every unit that is on the board, hostile, living, visible to
   the Banshee's owner, and within Chebyshev 2 of the Banshee, in any form;
-  allies never.
+  allies never (nor a Dwarf construct, which is not living, nor a mound,
+  which is off the board).
 - **Damage.** Per target, the ordinary damage formula
   ([section 13.2](#132-damage)) with the Banshee attacking at Attack 1 at its
   current HP (no Charge or Inspired/Frenzied bonus) against the target's own
-  Defense, fortification, embarked Defense 1, and cover. Damage may be 0; such
+  Defense, fortification (a dug-in Dwarf unit's Dig In level included),
+  embarked Defense 1, and cover (an Ice Folk unit's Snow cover included).
+  Damage may be 0; such
   a target still counts. A Martian target's Shield absorbs the hit first
   (each result carries `shieldDamage`). All targets resolve together from
   the pre-Wail state.
@@ -2943,11 +3364,13 @@ infect. Event
   Bitten risings, Goblin exploding units it kills explode, and a Brain it
   kills takes its Thralls with it; the Banshee
   is handled. Event `WAIL_RESOLVED` (then
-  `UNIT_DIED` with cause `WAIL` per death); the preview `previewWailV7`
-  equals the result because only visible units are targets, except that it
-  reads an Ice Folk target's Snow cover from the viewer's `snow` flags, so a
-  hidden Ice Witch's Blizzard can make it inexact, with no flag
-  ([section 23](#23-known-discrepancies)).
+  `UNIT_DIED` with cause `WAIL` per death). The preview `previewWailV7`
+  lists exactly the resolved targets (only visible units are targets), but
+  it reads cover only from Forest and Mountain and fortification only from
+  the tile (Walls and Field Defense in the target's own territory): it
+  leaves out an Ice Folk target's Snow cover and a Dwarf target's Dig In, so
+  for such a target it can show more damage than the Wail deals, with no
+  flag ([section 24](#24-known-discrepancies)).
 
 ### 17.10 Commands, events, and queries
 
@@ -2977,13 +3400,15 @@ without one no Kaboom is offered, no explosion occurs, no Plunder is
 awarded, no Troll exists, Warrens never apply, and every combat preview's
 `gangUp` is 0. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, `GOBLIN_ROLE_RULES_V7`, `GOBLIN_ROLE_MECHANICS_V7`).
-Human, Undead, Dinosaur, Martian, and Ice Folk units keep every ability
-against Goblins, and blasts hit them like any unit (Eggs included; an
-Ankylosaurus takes 1 less, [section 19.12](#1912-interactions-with-other-rules);
+Human, Undead, Dinosaur, Martian, Ice Folk, and Dwarf units keep every
+ability against Goblins, and blasts hit them like any unit (Eggs included;
+an Ankylosaurus takes 1 less, [section 19.12](#1912-interactions-with-other-rules);
 a Martian Shield absorbs first,
 [section 20.11](#2011-interactions-with-other-rules); a blast ignores Snow
 cover and the Blizzard,
-[section 21.14](#2114-interactions-with-other-rules)). Specification,
+[section 21.14](#2114-interactions-with-other-rules); a Steam Tank takes at
+most 4, and a blast never finds a mound,
+[section 22.13](#2213-interactions-with-other-rules)). Specification,
 decisions, and the tuning record:
 [revision 17](RULESET_7_REVISION_17_GOBLINS.md) and the
 [Goblin balance report](../validation/RULESET_7_GOBLIN_BALANCE.md).
@@ -3060,7 +3485,8 @@ whatever killed it and wherever it stands (land, a city or village center,
 embarked on water), with its death-blast damage (Bomb Chucker 2, Rocket Cart
 4, Scrap Buggy 4): killed as a defender (`ATTACK`), while attacking
 (`RETALIATION`), by splash (`SPLASH`), by Wail (`WAIL`), by Plague (`PLAGUE`,
-at its owner's Start Turn), or by another blast (`EXPLOSION`). A unit
+at its owner's Start Turn), by another blast (`EXPLOSION`), or by a Dwarf
+bomb (`BOMB`) or eruption (`ERUPTION`). A unit
 explodes at most once: a Kaboom is that unit's explosion. Disband, reward
 displacement removal, and elimination removal are removals, not deaths, and
 never explode. Goblins and Wolf Riders never explode on death, and neither
@@ -3126,6 +3552,16 @@ A chain runs after the effect that caused the deaths has fully resolved:
   reveals, and the economy; then Windmill healing, Troll regeneration,
   income, rewards, and achievements
   ([section 3](#3-players-turns-and-victory)).
+- **`BOMB_RUN`** (Dwarf): after the bomb's death and its Grave, rising, or
+  collapse, the chain of a killed exploding target (the Gyrocopter on its
+  landing tile beside it is in the blast), then `PLUNDER_AWARDED`, reveals,
+  the self-launch, and the tail
+  ([section 22.5](#225-gyrocopters-and-the-bombing-run)).
+- **Start Turn surfacing** (Dwarf): for each surfacing Mole, after the
+  eruption's deaths and their Graves, risings, and collapses, the chain of
+  the exploding victims (the surfaced Mole and rider are in its blasts),
+  then `PLUNDER_AWARDED` and reveals, before Plague and its own chain
+  ([section 22.3](#223-the-mound-surfacing-and-the-eruption)).
 
 Chain events: for each explosion in chain order `EXPLOSION_RESOLVED`, then
 its `FIELD_DEFENSE_DESTROYED` events, then for each death in its results
@@ -3159,6 +3595,8 @@ Every death is credited to at most one player:
 | ------------------------------ | -------------------------------- | ---------------------------------- |
 | `ATTACK`                       | the attacker's owner             | the attacker                       |
 | `SHATTER`                      | the attacker's owner             | the attacker                       |
+| `BOMB`                         | the Gyrocopter's owner           | the Gyrocopter                     |
+| `ERUPTION`                     | the Mole's owner                 | the Mole                           |
 | `RETALIATION`                  | the retaliating defender's owner | the defender                       |
 | `SPLASH`                       | the attacker's owner             | the attacker, hostile victims only |
 | `WAIL`                         | the Banshee's owner              | the Banshee                        |
@@ -3223,6 +3661,7 @@ Every death is credited to at most one player:
 | Dinosaurs               | Blasts hit Dinosaur units and Eggs with fixed damage (an Ankylosaurus takes 1 less; an Egg killed by a blast dies with cause `EXPLOSION`); a destroyed Egg is a credited hostile kill for Plunder. Eggs never help Gang Up. No Dinosaur attack has Gang Up.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Martians                | A Martian Shield absorbs blast and bomb-splash damage first (a Kaboom of 5 costs a Grunt 3 HP and a Grunt in a Force Field or a Mothership 1; a death blast of 2 costs a unit with a full Shield nothing). A Brain killed by a blast takes its Thralls with it, which earns no Plunder. A mind-controlled Bomb Chucker, Rocket Cart, or Scrap Buggy is removed, not killed, and does not explode. No Martian attack has Gang Up.                                                                                                                                                                                                                                                                                               |
 | Ice Folk                | Blasts and bomb splash ignore Snow cover and the Blizzard (fixed damage); a Bomb Chucker or Rocket Cart shot from distance 2 on an Ice Folk unit in its own Witch's Blizzard is halved, and the bomb splash derives from the halved hit. A shattered exploding unit does not explode (one Yeti hit shatters a Chilled full-HP Bomb Chucker or Rocket Cart); killed any other way it explodes as usual. A sluggish goblin-crewed unit that moved cannot Kaboom. Wolf Riders and Scrap Buggies end a Move on entering Snow (Fieldcraft waives it for the Wolf Rider and the Bomb Chucker). A Troll is Chilled but never shattered. Plunder counts Ice Folk kills; a Shatter is an Ice Folk kill. No Ice Folk attack has Gang Up. |
+| Dwarves                 | A blast and a Kaboom are fixed damage: they ignore Dig In and Walls, and a Steam Tank takes at most 4 of one (Plated). No Kaboom or blast ever finds a mound, but a blast destroys Field Defense on a mound tile like on any tile. An exploding unit killed by a bomb or an eruption explodes as usual: its blast hits the Gyrocopter on its landing tile, or the surfaced Mole and its rider. A Goblin seat earns Plunder for every Dwarf unit its units or blasts kill, constructs included. Gang Up does not ignore Dig In. A Dwarf construct leaves no Grave when a blast kills it. No Dwarf attack has Gang Up.                                                                                                           |
 
 ### 18.12 Commands, events, errors, and queries
 
@@ -3298,9 +3737,9 @@ role, no Nesting slot or Wallbreaker applies, and every combat preview has
 `runUp: 0`, `fortificationIgnored: 0`, `acid: false`, and both Armoured
 flags false. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, `DINOSAUR_ROLE_RULES_V7`, `DINOSAUR_ROLE_MECHANICS_V7`).
-Human, Undead, Goblin, Martian, and Ice Folk units keep every ability
-against Dinosaurs, and Eggs are targets like any unit (never Chilled or
-shattered). Specification, decisions, and tuning
+Human, Undead, Goblin, Martian, Ice Folk, and Dwarf units keep every
+ability against Dinosaurs, and Eggs are targets like any unit (never Chilled
+or shattered; hit by an eruption and a bomb). Specification, decisions, and tuning
 records: [revision 19](RULESET_7_REVISION_19_DINOSAURS.md),
 [revision 20](RULESET_7_REVISION_20.md), the
 [Dinosaur balance report](../validation/RULESET_7_DINOSAUR_BALANCE.md) (the
@@ -3310,16 +3749,16 @@ records: [revision 19](RULESET_7_REVISION_19_DINOSAURS.md),
 
 ### 19.1 Roles, Wild, and labels
 
-| Mechanical role | Human      | Undead      | Goblin       | Dinosaur     | Martian            | Ice Folk     |
-| --------------- | ---------- | ----------- | ------------ | ------------ | ------------------ | ------------ |
-| `FIGHTER`       | Fighter    | Skeleton    | Goblin       | Caveman      | Grunt (and Thrall) | Yeti         |
-| `RAIDER`        | Raider     | Ghoul       | Wolf Rider   | Raptor       | Saucer             | Sled         |
-| `MARKSMAN`      | Marksman   | Banshee     | Bomb Chucker | Spitter      | Ray Gunner         | Snow Hunter  |
-| `GUARD`         | Guard      | Zombie      | Orc Brute    | Ankylosaurus | Shield Projector   | Mammoth      |
-| `CAPTAIN`       | Captain    | Necromancer | Orc Warboss  | Shaman       | Brain              | Ice Witch    |
-| `CATAPULT`      | Catapult   | Lich        | Rocket Cart  | Triceratops  | Tripod             | Boulder Yeti |
-| `KNIGHT`        | Knight     | Vampire     | Scrap Buggy  | T-Rex        | Mothership         | Sabretooth   |
-| `JUGGERNAUT`    | Juggernaut | Abomination | Troll        | Brontosaurus | Colossus           | Frost Giant  |
+| Mechanical role | Human      | Undead      | Goblin       | Dinosaur     | Martian            | Ice Folk     | Dwarf            |
+| --------------- | ---------- | ----------- | ------------ | ------------ | ------------------ | ------------ | ---------------- |
+| `FIGHTER`       | Fighter    | Skeleton    | Goblin       | Caveman      | Grunt (and Thrall) | Yeti         | Hammerer         |
+| `RAIDER`        | Raider     | Ghoul       | Wolf Rider   | Raptor       | Saucer             | Sled         | Gyrocopter       |
+| `MARKSMAN`      | Marksman   | Banshee     | Bomb Chucker | Spitter      | Ray Gunner         | Snow Hunter  | Clockwork Gunner |
+| `GUARD`         | Guard      | Zombie      | Orc Brute    | Ankylosaurus | Shield Projector   | Mammoth      | Steam Mole       |
+| `CAPTAIN`       | Captain    | Necromancer | Orc Warboss  | Shaman       | Brain              | Ice Witch    | Engineer         |
+| `CATAPULT`      | Catapult   | Lich        | Rocket Cart  | Triceratops  | Tripod             | Boulder Yeti | Steam Cannon     |
+| `KNIGHT`        | Knight     | Vampire     | Scrap Buggy  | T-Rex        | Mothership         | Sabretooth   | Steam Tank       |
+| `JUGGERNAUT`    | Juggernaut | Abomination | Troll        | Brontosaurus | Colossus           | Frost Giant  | Brass Titan      |
 
 - **Cavemen** (Caveman and Shaman) are trained on the city center with
   `TRAIN` and keep the ordinary Promotion. **Dinosaurs** (the six growing
@@ -3696,6 +4135,7 @@ Attack 3, Defense 2):
 | Achievements, Promotion | Muster counts hatched Dinosaur roles, never an Egg; Slayer counts a dinosaur's kills (growth does not reset them); a destroyed Egg is a kill for its killer. Promotion stays for the Caveman, the Shaman, and the boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Martians                | Martian attacks, rays, and Pierce hit an Egg like any unit (Defense 1, no retaliation); an Egg is never a Mind Control or Tractor Beam target, and its tile never a Beam Down or pull destination. A Charge! on a Martian unit is absorbed by the Shield first and pushes and follows whatever it absorbed; Acid and Wallbreaker reach only a Martian foot unit's cover and Walls (machines have neither). An Ankylosaurus takes 1 less from every Martian hit. The two-slot Triceratops, T-Rex, and Brontosaurus are immune to Mind Control and the Tractor Beam; a Raptor, Spitter, or Ankylosaurus at 6 HP or less is not, and its Thrall has no growth. A collapsed Thrall and a mind-controlled unit are no kill for growth.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Ice Folk                | An Egg cannot be Chilled (a Bolas on it is `TARGET_IMMUNE`; Cold Snap and the Cold Aura skip it) and is never shattered; it is an ordinary target of Ice Folk attacks (Defense 1, no retaliation), and a Sweep flank hit deals it 2. Dinosaurs are Chilled and shattered like any unit, the two-slot ones included (a Chilled T-Rex only by the hit that leaves it at 1 to 3 of its HP); a Brontosaurus (`JUGGERNAUT`) never. Growth from killing Ice Folk units is ordinary; its full heal takes a unit out of the Shatter window but removes no Chill. A Triceratops's Move ends on its first Snow tile, so its run-up inside Snow is at most the tiles up to that one; its Charge! ignores an Ice Folk defender's fortification, not its Snow cover, and a pushed unit keeps its Chill (a Mountain-born one may be pushed onto a Mountain). A Raptor's Pounce needs its first tile off Snow (Fieldcraft waives deep snow); a sluggish Raptor cannot Pounce, and a sluggish T-Rex that attacks without moving still Rampages. Acid ignores Snow cover; a Spitter's shot from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved. An Ankylosaurus takes 1 from a Sweep flank hit, Armoured applying before the Shatter test. Wallbreaker removes Walls levels, and the Ice Folk defender on that center still has no Snow cover. The Shaman's Tend Wounded cures Chill; War Drums and Hatch are primary actions a sluggish Shaman that moved cannot use. |
+| Dwarves                 | Dinosaur-faction units and Eggs on the eight tiles around a surfacing Steam Mole take its eruption (2, 3 with Blasting Charges): an Ankylosaurus 1 (2), a 6-HP Egg is left at 4 (3), a 10-HP Egg with Nesting at 8 (7). A bomb hits any form: it leaves a 6-HP Egg at 1 (a Dive bomb destroys it) and takes 4 (Dive 5) from an Ankylosaurus. A destroyed Egg is the Mole's or the Gyrocopter's kill; a dinosaur grows from killing Dwarf units as from any kill. No Egg is laid, and no hatching, Push, Charge! push or follow, or Rampage ends, on a mound tile. The Triceratops's Charge! and Acid ignore Dig In with the rest of the fortification; Wallbreaker removes only the Walls levels, so Dig In stays. A two-slot dinosaur and an Egg are never knocked back by the Steam Cannon.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ### 19.13 Commands, events, errors, and queries
 
@@ -3780,11 +4220,13 @@ accepted, every role has movement mode `GROUND`, and every combat preview
 has `rayPower: "NONE"`, `coolingApplied: false`, and both Shield damages 0.
 Each rule resolves through the owner's registration (`FACTION_RULES_V7`,
 `MARTIAN_ROLE_RULES_V7`, `MARTIAN_ROLE_MECHANICS_V7`) and the helpers of
-`src/engine/v7/martian.ts`. Human, Undead, Goblin, Dinosaur, and Ice Folk
-units keep every ability against Martians, with the Shield rules of
+`src/engine/v7/martian.ts`. Human, Undead, Goblin, Dinosaur, Ice Folk, and
+Dwarf units keep every ability against Martians, with the Shield rules of
 [section 20.2](#202-shields) applied to the damage they deal (Chill is not
 damage and ignores Shields,
-[section 21.14](#2114-interactions-with-other-rules)).
+[section 21.14](#2114-interactions-with-other-rules); a Shield absorbs an
+eruption and a bomb first,
+[section 22.13](#2213-interactions-with-other-rules)).
 Specification, per-unit battle analysis, decisions, and the tuning record:
 the [Martian overlay](RULESET_7_MARTIANS.md) and the
 [Martian balance report](../validation/RULESET_7_MARTIAN_BALANCE.md) (the
@@ -3872,10 +4314,11 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
   Shield absorbs its share. Plague spread is not damage and ignores Shields.
   Kill credit, growth, Plunder, Graves, and death blasts follow deaths as
   usual.
-- **Not damage, so never absorbed:** Push, the Charge! push and follow, the
-  Tractor Beam, Mind Control, Chill (a Bolas, a Cold Snap, or a Cold Aura),
-  Field Defense destruction, and removals. A Shield absorbs a Sweep flank
-  hit like any damage, and Shatter reads the HP left after the Shield.
+- **Not damage, so never absorbed:** Push, the Charge! push and follow,
+  Knockback, the Tractor Beam, Mind Control, Chill (a Bolas, a Cold Snap, or
+  a Cold Aura), Field Defense destruction, and removals. A Shield absorbs a
+  Sweep flank hit, a Dwarf eruption, and a Dwarf bomb like any damage, and
+  Shatter reads the HP left after the Shield.
   Recovery, Windmill healing, Tend Wounded, Troll regeneration, Promotion,
   and growth change HP only.
 
@@ -4035,7 +4478,10 @@ A **walker** (Tripod, Colossus) in land form:
 - exerts and suffers ZOC, uses Roads, passes only its owner's units, and is
   blocked by other units like any land unit.
 
-A **flyer** (Saucer, Mothership) in land form has every walker rule, and:
+A **flyer** (Saucer, Mothership, and the Dwarf Gyrocopter, which has the
+same `FLY` movement mode,
+[section 22.5](#225-gyrocopters-and-the-bombing-run)) in land form has every
+walker rule, and:
 
 - **passes over any unit:** a step onto a tile that holds a unit of any
   owner is entered as if it were empty, at any point of the path except the
@@ -4138,19 +4584,19 @@ being the (atomic) rejection:
 Brain: a weakened enemy becomes a Thrall. It is not an Attack and costs no
 Coins. Legality, in this order (all rejections atomic):
 
-| #   | Requirement                                                                                                                              | Rejection                                             |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                                           | the ordinary unit errors                              |
-| 2   | Its role has `MIND_CONTROL`.                                                                                                             | `UNIT_ROLE_INVALID { role }`                          |
-| 3   | It has not used a primary action and has not landed this turn (it may have moved).                                                       | `UNIT_ALREADY_ACTED`                                  |
-| 4   | It is in land form.                                                                                                                      | `MIND_CONTROL_NOT_LEGAL { reason: "EMBARKED" }`       |
-| 5   | It has no entry in `mindControlCooldowns`.                                                                                               | `MIND_CONTROL_NOT_LEGAL { reason: "COOLDOWN" }`       |
-| 6   | It controls fewer than `MIND_CONTROL_THRALL_LIMIT_V7` (2) Thralls.                                                                       | `MIND_CONTROL_NOT_LEGAL { reason: "THRALL_LIMIT" }`   |
-| 7   | `targetUnitId` is a unit on the board that the actor can see.                                                                            | `TARGET_NOT_FOUND`                                    |
-| 8   | It is hostile to the actor.                                                                                                              | `TARGET_ALLIED`                                       |
-| 9   | It is in land form (not embarked, naval, or an Egg), its role is not `JUGGERNAUT`, it uses one slot, and it is not on a settlement site. | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
-| 10  | It is within Chebyshev distance 2 of the Brain (`MIND_CONTROL_RANGE_V7`).                                                                | `MIND_CONTROL_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
-| 11  | Its HP is at most `MIND_CONTROL_HP_V7` (6); a Shield does not count.                                                                     | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_HEALTHY" }` |
+| #   | Requirement                                                                                                                                                                     | Rejection                                             |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                  | the ordinary unit errors                              |
+| 2   | Its role has `MIND_CONTROL`.                                                                                                                                                    | `UNIT_ROLE_INVALID { role }`                          |
+| 3   | It has not used a primary action and has not landed this turn (it may have moved).                                                                                              | `UNIT_ALREADY_ACTED`                                  |
+| 4   | It is in land form.                                                                                                                                                             | `MIND_CONTROL_NOT_LEGAL { reason: "EMBARKED" }`       |
+| 5   | It has no entry in `mindControlCooldowns`.                                                                                                                                      | `MIND_CONTROL_NOT_LEGAL { reason: "COOLDOWN" }`       |
+| 6   | It controls fewer than `MIND_CONTROL_THRALL_LIMIT_V7` (2) Thralls.                                                                                                              | `MIND_CONTROL_NOT_LEGAL { reason: "THRALL_LIMIT" }`   |
+| 7   | `targetUnitId` is a unit on the board that the actor can see.                                                                                                                   | `TARGET_NOT_FOUND`                                    |
+| 8   | It is hostile to the actor.                                                                                                                                                     | `TARGET_ALLIED`                                       |
+| 9   | It is in land form (not embarked, naval, or an Egg), its role is not `JUGGERNAUT`, it uses one slot, it is not on a settlement site or a Rift, and it is not a Dwarf construct. | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
+| 10  | It is within Chebyshev distance 2 of the Brain (`MIND_CONTROL_RANGE_V7`).                                                                                                       | `MIND_CONTROL_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
+| 11  | Its HP is at most `MIND_CONTROL_HP_V7` (6); a Shield does not count.                                                                                                            | `MIND_CONTROL_NOT_LEGAL { reason: "TARGET_HEALTHY" }` |
 
 - **Result.** The target leaves the board as a **removal, not a death**: no
   `UNIT_DIED`, Grave, rising, death blast, kill credit, growth, or Plunder.
@@ -4286,6 +4732,7 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
 | Boats, water            | Martian boats are the Human boats. Foot units embark at Ports; machines self-launch on any water they may enter. An embarked Martian unit keeps its Shield, cannot attack, retaliate, or use an ability, and can be pulled from water to water.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Achievements, Promotion | Muster counts a Thrall as the `FIGHTER` role and excludes the Colossus; Sea Dog never counts an afloat machine. Promotion (3 kills, +5 maximum HP, full heal of HP, Shield unchanged) applies to every Martian unit except the Thrall; ray, hostile Pierce, and retaliation kills count; Mind Control is not a kill.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Ice Folk                | Chill is not damage and ignores Shields: a shielded unit is Chilled whatever its Shield. Shatter reads the HP after the Shield, so a Chilled unit at 1 to 3 HP is shattered by a hit its full Shield absorbs entirely; a Shield absorbs a Sweep flank hit, a Rockfall, and a Boulder like any damage (in a Force Field a Chilled Grunt takes three Yeti hits, not two). A ray fired from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved after its full or half power, and a Pierce hit derives from the halved hit; the Disintegrator leaves an Ice Folk unit on its Walled center with neither fortification nor Snow cover. Martian walkers and flyers ignore deep snow, and flyers ZOC; they are Chilled and shattered like any unit (the Mothership too), never the Colossus. A ray unit that stands still loses nothing to frost; a sluggish Saucer cannot Strafe, and a sluggish Brain or Mothership that moved cannot use Mind Control, Psychic Command, or the Tractor Beam. A Chilled unit may be mind-controlled (its entry ends; the Thrall is a new, unchilled Martian unit), a mind-controlled or shattered Witch takes her Blizzard with her, a shattered Brain's Thralls collapse, and the Frost Giant is immune to Mind Control and the Tractor Beam (`JUGGERNAUT`). The Tractor Beam pulls an Ice Folk unit off Snow, out of a Blizzard, or off Walls, and a Mountain-born unit onto a Mountain; a pulled or beamed unit keeps its Chill. A self-launched machine cannot be Chilled or shattered while afloat. |
+| Dwarves                 | A Shield absorbs an eruption and a bomb first: an eruption of 2 does nothing to a full Shield of 2 (3 puts 1 through); a bomb of 5 puts 3 through a Shield of 2 (Dive 6: 4) and 1 through a Force Field's 4 (Dive: 2); an eruption at the Dwarves' Start Turn strips a Shield for the rest of their turn. Eruptions never hit flyers (Saucer, Mothership) but hit walkers (Tripod, Colossus), foot units, and Thralls; bombs hit any form. The two constructs are immune to Mind Control (`TARGET_IMMUNE`); every other Dwarf land role is a target under the ordinary conditions (the Gyrocopter not on a Rift), and a Thrall made from a Dwarf unit has no Dwarf rule. A mound is never a Mind Control, Tractor Beam, or Pierce target, and no pull or Beam Down ends on one; a pulled Dwarf unit keeps its `moved` flag, and its Dig In is read on its new tile. The Disintegrator ignores Dig In like all fortification. The Saucer and the Gyrocopter share the flight rule; a Saucer with Strafe kills a landed Gyrocopter (8 of 8).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 ### 20.12 Commands, events, errors, and queries
 
@@ -4293,7 +4740,8 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
   `MIND_CONTROL { kind, unitId, targetUnitId }`, and
   `TRACTOR_BEAM { kind, unitId, targetUnitId }`, in that order right after
   `HATCH` in `COMMAND_KIND_ORDER_V7` (the Ice Folk `THROW_BOLAS` and
-  `COLD_SNAP` follow them). `MOVE` accepts a machine's path over and onto
+  `COLD_SNAP`, then the Dwarf `TUNNEL`, `BOMB_RUN`, and `ASSEMBLE` follow
+  them). `MOVE` accepts a machine's path over and onto
   water and a flyer's path over units, with an unchanged shape. A pending
   city reward blocks the three commands like every command.
 - **Events** (`DOMAIN_EVENT_KIND_ORDER_V7`): `SHIELDS_RECHARGED` right after
@@ -4393,8 +4841,8 @@ and Engineering returned before, every `curedChill` is false, every unit's
 false. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, whose `snow` rule is true only for the Ice Folk,
 `ICE_FOLK_ROLE_RULES_V7`, `ICE_FOLK_ROLE_MECHANICS_V7`) and the helpers of
-`src/engine/v7/ice-folk.ts`. Human, Undead, Goblin, Dinosaur, and Martian
-units keep every ability against the Ice Folk, with the rulings of
+`src/engine/v7/ice-folk.ts`. Human, Undead, Goblin, Dinosaur, Martian, and
+Dwarf units keep every ability against the Ice Folk, with the rulings of
 [section 21.14](#2114-interactions-with-other-rules). Specification,
 per-unit battle analysis, decisions, root rulings, and the tuning record:
 the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
@@ -4887,21 +5335,22 @@ tail.
 
 ### 21.14 Interactions with other rules
 
-| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Graves, Raise Dead      | Ice Folk land-form units leave Graves like any unit; a shattered unit of any faction leaves none; a unit killed by plain damage, a Sweep flank hit, a Rockfall, a shot, or a throw leaves an ordinary Grave. Raise Dead is unchanged on Snow; a risen Skeleton is not Chilled.                                                                                                                                                                                                                                |
-| Infect, Bitten          | An Ice Folk unit killed by a Zombie rises as an ordinary Zombie; a Witch that rises has left the board, so her Blizzard ends. A Zombie's kill is never a Shatter. A Bitten unit that is shattered still rises as its biter's Zombie in place (no Chill entry), and the attacker does not advance. No Ice Folk unit cures a bite.                                                                                                                                                                              |
-| Plague, Wail            | Plague applies to Ice Folk units; its damage and spread are not attacks, so the Blizzard does not halve them. Wail is not an attack (never halved) and uses the target's cover, so Snow cover counts: 2 on a Yeti in the open, 1 on Snow. A Lich's hit on an Ice Folk unit in its Witch's Blizzard is halved (8 on a Yeti on Snow becomes 4) and its splash derives from the halved hit.                                                                                                                      |
-| Lifesteal, Unanswered   | A Vampire is a melee attacker, never halved; an Ice Folk unit never retaliates against it.                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| Undead actions          | Frenzy, Raise Dead, Devour, and Wail are primary actions a sluggish Necromancer, Ghoul, or Banshee that moved cannot use. Undead units are Chilled like anyone; a Chilled Zombie or Lich, which already cannot act after moving, only becomes Shatter-eligible. Restless is not an Ice Folk rule.                                                                                                                                                                                                             |
-| Goblin rules            | [Section 18.11](#1811-interactions-with-other-rules): blasts ignore Snow cover and the Blizzard, a shattered exploding unit does not explode, a sluggish goblin-crewed unit that moved cannot Kaboom, and Gang Up beats cover (a Goblin with two helpers deals a Yeti 11 in the open and 10 on Snow, either way more than its 9 HP).                                                                                                                                                                          |
-| Dinosaur rules          | [Section 19.12](#1912-interactions-with-other-rules): Eggs are never Chilled or shattered; deep snow cuts a run-up and a Pounce short; Charge! and Wallbreaker ignore fortification but not Snow cover, which is read from the defender's own fortification.                                                                                                                                                                                                                                                  |
-| Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Chill ignores Shields; Shatter reads the HP after the Shield; walkers and flyers ignore deep snow; the Frost Giant is immune to Mind Control and the Tractor Beam.                                                                                                                                                                                                                                                                                      |
-| Human abilities         | Field Defense and Walls give a defender their bonus against every Ice Folk attack except a Boulder Yeti's; a Mammoth's attack tramples the Field Defense on the target tile after the exchange; with Brittle, Ice Folk melee attackers demolish Field Defense like any owner of Explosives. A sluggish Captain that moved cannot Rally; a sluggish Knight that attacks without moving still Overruns. A Catapult always shoots from distance 2 or 3 and a Marksman from 2 is halved against a protected unit. |
-| Cities, siege, capacity | An Ice Folk unit on a hostile center besieges it (never a Sabretooth). Capture needs no Move, so a sluggish unit that began its turn on a center captures as usual. Every Ice Folk role uses one slot; a reward Frost Giant may exceed capacity. Land Grant, Spoils, rewards, and the city action are unchanged; Bolas and Cold Snap spend no city action.                                                                                                                                                    |
-| Boats, water            | Ice Folk boats are the Human boats. Land units embark at Ports with Shorecraft. No embarked or naval unit is Chilled or shattered; an attack from the shore on an embarked unit never shatters it, and a naval attack from distance 2 or more on a protected unit is halved (a Battleship's splash from the halved hit). The `blizzard` flag covers water tiles for drawing only.                                                                                                                             |
-| Rift                    | A Rift is never Snow and Mountain-born does not cover it, so no Ice Folk unit enters one. A flyer on a Rift is in land form: it can be Chilled, attacked from an adjacent tile, and shattered; the attacker does not advance.                                                                                                                                                                                                                                                                                 |
-| Achievements, Promotion | Promotion is the ordinary rule for every Ice Folk unit (3 kills, +5 maximum HP, a full heal that takes a unit out of the Shatter window but removes no Chill). Shatter, hostile Sweep, Rockfall, Boulder, and retaliation kills are credited; a Bolas and a Cold Snap are not kills. Muster counts the Ice Folk trainable roles and excludes the Frost Giant; Slayer counts Shatter and Sweep kills.                                                                                                          |
+| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Graves, Raise Dead      | Ice Folk land-form units leave Graves like any unit; a shattered unit of any faction leaves none; a unit killed by plain damage, a Sweep flank hit, a Rockfall, a shot, or a throw leaves an ordinary Grave. Raise Dead is unchanged on Snow; a risen Skeleton is not Chilled.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Infect, Bitten          | An Ice Folk unit killed by a Zombie rises as an ordinary Zombie; a Witch that rises has left the board, so her Blizzard ends. A Zombie's kill is never a Shatter. A Bitten unit that is shattered still rises as its biter's Zombie in place (no Chill entry), and the attacker does not advance. No Ice Folk unit cures a bite.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Plague, Wail            | Plague applies to Ice Folk units; its damage and spread are not attacks, so the Blizzard does not halve them. Wail is not an attack (never halved) and uses the target's cover, so Snow cover counts: 2 on a Yeti in the open, 1 on Snow. A Lich's hit on an Ice Folk unit in its Witch's Blizzard is halved (8 on a Yeti on Snow becomes 4) and its splash derives from the halved hit.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Lifesteal, Unanswered   | A Vampire is a melee attacker, never halved; an Ice Folk unit never retaliates against it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Undead actions          | Frenzy, Raise Dead, Devour, and Wail are primary actions a sluggish Necromancer, Ghoul, or Banshee that moved cannot use. Undead units are Chilled like anyone; a Chilled Zombie or Lich, which already cannot act after moving, only becomes Shatter-eligible. Restless is not an Ice Folk rule.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Goblin rules            | [Section 18.11](#1811-interactions-with-other-rules): blasts ignore Snow cover and the Blizzard, a shattered exploding unit does not explode, a sluggish goblin-crewed unit that moved cannot Kaboom, and Gang Up beats cover (a Goblin with two helpers deals a Yeti 11 in the open and 10 on Snow, either way more than its 9 HP).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Dinosaur rules          | [Section 19.12](#1912-interactions-with-other-rules): Eggs are never Chilled or shattered; deep snow cuts a run-up and a Pounce short; Charge! and Wallbreaker ignore fortification but not Snow cover, which is read from the defender's own fortification.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Chill ignores Shields; Shatter reads the HP after the Shield; walkers and flyers ignore deep snow; the Frost Giant is immune to Mind Control and the Tractor Beam.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Human abilities         | Field Defense and Walls give a defender their bonus against every Ice Folk attack except a Boulder Yeti's; a Mammoth's attack tramples the Field Defense on the target tile after the exchange; with Brittle, Ice Folk melee attackers demolish Field Defense like any owner of Explosives. A sluggish Captain that moved cannot Rally; a sluggish Knight that attacks without moving still Overruns. A Catapult always shoots from distance 2 or 3 and a Marksman from 2 is halved against a protected unit.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Cities, siege, capacity | An Ice Folk unit on a hostile center besieges it (never a Sabretooth). Capture needs no Move, so a sluggish unit that began its turn on a center captures as usual. Every Ice Folk role uses one slot; a reward Frost Giant may exceed capacity. Land Grant, Spoils, rewards, and the city action are unchanged; Bolas and Cold Snap spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Boats, water            | Ice Folk boats are the Human boats. Land units embark at Ports with Shorecraft. No embarked or naval unit is Chilled or shattered; an attack from the shore on an embarked unit never shatters it, and a naval attack from distance 2 or more on a protected unit is halved (a Battleship's splash from the halved hit). The `blizzard` flag covers water tiles for drawing only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Rift                    | A Rift is never Snow and Mountain-born does not cover it, so no Ice Folk unit enters one. A flyer on a Rift is in land form: it can be Chilled, attacked from an adjacent tile, and shattered; the attacker does not advance.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Achievements, Promotion | Promotion is the ordinary rule for every Ice Folk unit (3 kills, +5 maximum HP, a full heal that takes a unit out of the Shatter window but removes no Chill). Shatter, hostile Sweep, Rockfall, Boulder, and retaliation kills are credited; a Bolas and a Cold Snap are not kills. Muster counts the Ice Folk trainable roles and excludes the Frost Giant; Slayer counts Shatter and Sweep kills.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Dwarf rules             | [Section 22.13](#2213-interactions-with-other-rules): tunnels ignore Snow, and a surfaced unit stands on Snow like any ground unit; deep snow ends a Dwarf ground unit's Move (only the Move-2 Steam Tank notices), and the Gyrocopter flies over it. Every Dwarf land unit can be Chilled, constructs and the Brass Titan included, and shattered, except the Brass Titan (`JUGGERNAUT`); a mound is neither; a burrowed unit's Chill entry keeps counting down at its owner's End Turn, and the Engineer's Repair cures Chill. A sluggish Gyrocopter cannot bomb; a sluggish Mole may tunnel and a sluggish Hammerer ride; a sluggish unmoved Gunner fires twice; a sluggish Engineer that moved can neither Repair nor Assemble. The Shatter test reads a Steam Tank's HP after the Plated cap. The Blizzard halves a Gunner's or a Steam Cannon's shot from distance 2 or more, never a bomb or an eruption (not attacks); bombs and eruptions also ignore Snow cover. |
 
 ### 21.15 Commands, events, errors, and queries
 
@@ -4988,47 +5437,759 @@ tail.
 - `PublicPlayerV7` and the leaderboard carry `ICE_FOLK` and
   `ICE_FOLK_BASELINE_V1`.
 
-## 22. Revision history
+## 22. Dwarf faction rules
 
-| Revision | Ruleset ID           | Main changes                                                                                                                                                                                                               | Source                                                          |
-| -------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 3        | `pulp-wars-poc-7r3`  | Original-faction baseline: four land branches, growth rewards, achievements, combat kernel                                                                                                                                 | [RULESET_7.md](RULESET_7.md)                                    |
-| 4        | `pulp-wars-poc-7r4`  | Regional biomes; Ore returns; Mine 5/+2; Forge +1 per Mine                                                                                                                                                                 | [revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)             |
-| 5        | `pulp-wars-poc-7r5`  | Explorer achievement; Monument placement flow                                                                                                                                                                              | [revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md)              |
-| 6        | `pulp-wars-poc-7r6`  | Map types, water, Fish, Pearls, Ports, Naval branch, transport, Patrol Boat, Battleship                                                                                                                                    | [revision 6](RULESET_7_REVISION_6_WATER_NAVAL.md)               |
-| 7        | `pulp-wars-poc-7r7`  | Neutral Roads, automatic embark, Battleship splash, flat fortification levels, Field Defense; removed Saboteur                                                                                                             | [revision 7](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md)   |
-| 8        | `pulp-wars-poc-7r8`  | Adjacent shared processor contributors                                                                                                                                                                                     | [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)        |
-| 9        | `pulp-wars-poc-7r9`  | 23-node Human tree, Captain, Knight, Overrun, Land Grant, Shipyard, Market move, separate land/sea trade                                                                                                                   | [revision 9](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)          |
-| 10       | `pulp-wars-poc-7r10` | Road movement without capital connection; city-center spawning; full-turn Fortify                                                                                                                                          | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
-| 10 (fix) | `pulp-wars-poc-7r11` | An occupied center blocks land training; displacement applies only to reward units                                                                                                                                         | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
-| 11       | `pulp-wars-poc-7r11` | One city action per turn; Windmill healing; Road population; Commerce ×2 Market; Ore on Drill; Pillage on Raiding; tactical AI                                                                                             | [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)       |
-| 12       | `pulp-wars-poc-7r12` | No starting technology; free first tier-1 research; Fruit always visible, Fertile Ground on Gathering; resources kept under improvements; AI opener; Raider Escape                                                         | this document                                                   |
-| 13       | `pulp-wars-poc-7r13` | Undead faction (per-seat factions, roster, Graves, Restless, Frenzy, Raise Dead, Devour, Infect, Lifesteal, Wail, Lich splash)                                                                                             | [revision 13](RULESET_7_REVISION_13_UNDEAD.md)                  |
-| 14       | `pulp-wars-poc-7r14` | Plague (Lich) and Bitten (Zombie); Tend cures; unanswered Vampire; Lich Attack 3; +1 village; level income cap 5; Commerce no longer doubles Markets                                                                       | [revision 14](RULESET_7_REVISION_14_BALANCE.md)                 |
-| 15       | `pulp-wars-poc-7r15` | Plague lasts three owner turns and spreads only on the first; Zombie 18 HP                                                                                                                                                 | [revision 15](RULESET_7_REVISION_15_BALANCE.md)                 |
-| 16a      | `pulp-wars-poc-7r16` | Orthogonal Shallow Water (25% minimum); capital growth guarantee and `CAPITAL_GROWTH`; Normal AI growth-first opening                                                                                                      | [revision 16](RULESET_7_REVISION_16.md)                         |
-| 16b      | `pulp-wars-poc-7r16` | Patrol Boat and embarked Move 2; landing costs one movement point; landing preview                                                                                                                                         | [revision 16](RULESET_7_REVISION_16.md)                         |
-| 16c      | `pulp-wars-poc-7r16` | Research tiers 5+1/7+3/12+5 per extra city; level income cap 4; Market cap 3                                                                                                                                               | [revision 16](RULESET_7_REVISION_16.md)                         |
-| 17       | `pulp-wars-poc-7r17` | Goblin faction: roster, Warrens, Gang Up, Kaboom, death blasts and chains, friendly-fire bombs, Plunder, WAAAGH!, Troll regeneration; `END_TURN` blockade events                                                           | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
-| 17       | `pulp-wars-poc-7r17` | `pulp_wars-0ao.7` tuning: one starting Goblin; Goblin Attack 1.5, Defense 0.5, Kaboom 5; death blasts 2/4/4; Goblin-only Normal AI changes                                                                                 | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
-| 17 (fix) | `pulp-wars-poc-7r17` | `pulp_wars-0ao.15`: landing ends the activation for every faction (no Attack, Kaboom, Move, or Disband after landing)                                                                                                      | [revision 16](RULESET_7_REVISION_16.md)                         |
-| 18       | `pulp-wars-poc-7r18` | Movement (`pulp_wars-6gd.2`): a Move passes through the mover's own units and never ends on one; the Road half cost depends only on the tile being left                                                                    | [revision 18](RULESET_7_REVISION_18.md)                         |
-| 18       | `pulp-wars-poc-7r18` | Showcase (`pulp_wars-6gd.3`): the fixed 16 x 16 `SHOWCASE` map type with three developed cities, every technology, and one unit of every role per seat                                                                     | [revision 18](RULESET_7_REVISION_18.md)                         |
-| 19       | `pulp-wars-poc-7r19` | Dinosaur faction (`pulp_wars-c87.2`–`c87.7`): roster, slots, Eggs, Shaman Hatch, Nesting, Grow, Wild, Acid, Armoured, Stampede, treasure Raptor                                                                            | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
-| 19       | `pulp-wars-poc-7r19` | `pulp_wars-c87.8` interim tuning: Caveman 12 HP; one-slot Triceratops hatching in one turn; Forest Stampede lanes; Dinosaur-only AI changes                                                                                | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
-| 20       | `pulp-wars-poc-7r20` | `pulp_wars-0hi.2`: Charge! replaces Stampede (Triceratops Move 2, 20 HP, 2 slots, hatch 2); T-Rex 14, hatch 4; Nesting slot; Wallbreaker; full heal                                                                        | [revision 20](RULESET_7_REVISION_20.md)                         |
-| 21       | `pulp-wars-poc-7r21` | `pulp_wars-9s0.4`: Conqueror, Land Baron, Sea Dog, and Slayer achievements (seven entitlements per seat)                                                                                                                   | [revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md)            |
-| Martian  | `pulp-wars-poc-7r22` | Martian faction (`pulp_wars-t6s.2` engine): roster, Shields, Force Field(s), heat rays, Cooling, Pierce, Disintegrator, Stride, Flying, self-launch, Beam Down, Mind Control, Thralls, Tractor Beam                        | [Martian overlay](RULESET_7_MARTIANS.md)                        |
-| 20 (bal) | `pulp-wars-poc-7r23` | `pulp_wars-0hi.3` coarse Dry Land balance: Human Fighter, Raider, and Marksman 12 HP, Guard 17; Caveman 10                                                                                                                 | [revision 20](RULESET_7_REVISION_20.md#63-tuning-record)        |
-| Martian  | `pulp-wars-poc-7r23` | `pulp_wars-t6s.4` Martian UI (setup offers Martians; `t6s.6` production art) and `t6s.3` Martian Normal AI, no identity change                                                                                             | [Martian overlay](RULESET_7_MARTIANS.md)                        |
-| Ice Folk | `pulp-wars-poc-7r24` | Ice Folk faction (`pulp_wars-7g3.3` engine): roster, Chill and Shatter, Snow, Glide, the Blizzard, Cold Snap, Bolas, Mountain-born, Rockfall, Cold Blood, Sweep, Trample, Boulders, Prowl, Cold Aura, Deep Winter, Brittle | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                       |
-| Martian  | `pulp-wars-poc-7r25` | `pulp_wars-t6s.5` coarse Dry Land Martian balance: Colossus Defense 2.5                                                                                                                                                    | [Martian balance](../validation/RULESET_7_MARTIAN_BALANCE.md)   |
-| Ice Folk | `pulp-wars-poc-7r25` | `pulp_wars-7g3.6` Ice Folk UI (setup offers the Ice Folk; `7g3.5` production art) and `7g3.4` Ice Folk Normal AI, no identity change                                                                                       | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                       |
-| —        | `pulp-wars-poc-7r26` | `pulp_wars-9s0.2`: the Pangea coast ring (no land on the edge ring; Shallow circumnavigation; 59.5–72% land); other map types unchanged                                                                                    | [section 2.3](#23-map-types)                                    |
-| Ice Folk | `pulp-wars-poc-7r27` | `pulp_wars-7g3.7` coarse Dry Land Ice Folk balance: Yeti 9 HP, Defense 1.5                                                                                                                                                 | [Ice Folk balance](../validation/RULESET_7_ICE_FOLK_BALANCE.md) |
-| —        | `pulp-wars-poc-7r28` | `pulp_wars-9s0.5`: the Rift (a 1 x 3 crack only flyers stand on; nothing built on it; 0-2 per generated board by width); other rules unchanged                                                                             | [Rift overlay](RULESET_7_RIFT.md)                               |
-| —        | `pulp-wars-poc-7r29` | `pulp_wars-w5j.1`: every player plays a different faction (`DUPLICATE_FACTION`; the headless and test only `allowDuplicateFactions`)                                                                                       | [unique factions](RULESET_7_UNIQUE_FACTIONS.md)                 |
-| —        | `pulp-wars-poc-7r30` | `pulp_wars-78i.3`: Dwarf faction engine, then its Normal AI (`78i.4`) and UI (`78i.6`, `78i.5` art) under the same identity; **not folded** into this document                                                             | [Dwarf overlay](RULESET_7_DWARVES.md)                           |
+Humans are sustain, Undead are attrition, Goblins are a reckless horde,
+Dinosaurs are few, big, and growing, Martians are a small high-tech
+invasion force, the Ice Folk are the things from the peaks, and the
+Steampunk Dwarves are **heavy, slow, and built to last; they come from above
+and below**: Hammerers hold their cities dug in, Gyrocopters fly over the
+enemy line and drop a bomb on whoever stands behind it, Steam Moles drill
+under the line carrying a Hammerer and burst out of the ground next to the
+back line, Engineers wind up clockwork Gunners at the front and keep the
+machines patched, and a clockwork Brass Titan hits as hard at the end of a
+fight as at the start. They are strong at home, against a soft back line,
+and wherever a visible two-turn blow lands; they are slow to expand, weak
+against Shields and units that step away from a mound, exposed on the turn
+after every surfacing, and they lose their clockwork for good if the
+Engineers die. Every rule in this section applies only to units of a
+`DWARF` seat, except where a rule names its target (an eruption and a bomb
+hit other players' units, and a mound reserves its tile for everyone); in a
+match without one the lists `burrowed`, `surfacedThisTurn`, and
+`bombedThisTurn` are empty, no tile holds a mound, no `TUNNEL`, `BOMB_RUN`,
+or `ASSEMBLE` is offered or accepted, every role has `construct` false, the
+per-unit living test returns what the per-owner test returned, the two
+per-unit stat flags and the `dwarf` stat block are absent, and the three
+Dwarf combat-preview fields are false. Each rule resolves through the
+owner's registration (`FACTION_RULES_V7`, `DWARF_ROLE_RULES_V7`,
+`DWARF_ROLE_MECHANICS_V7`) and the helpers of `src/engine/v7/dwarf.ts`,
+`src/engine/v7/dwarf-reducer.ts`, and `src/engine/v7/units.ts`. Human,
+Undead, Goblin, Dinosaur, Martian, and Ice Folk units keep every ability
+against the Dwarves, with the rulings of
+[section 22.13](#2213-interactions-with-other-rules). Specification,
+per-unit battle analysis, decisions, root rulings, and the tuning record:
+the [Dwarf overlay](RULESET_7_DWARVES.md) and the
+[Dwarf balance report](../validation/RULESET_7_DWARF_BALANCE.md) (the `7r31`
+coarse pass on Dry Land).
+
+### 22.1 Roles, constructs, machines, and labels
+
+| Mechanical role | Dwarf unit       | Kind                                                            |
+| --------------- | ---------------- | --------------------------------------------------------------- |
+| `FIGHTER`       | Hammerer         | rides the tunnel; Dig In                                        |
+| `RAIDER`        | Gyrocopter       | machine; flies; Bomb Run; no `ATTACK`                           |
+| `MARKSMAN`      | Clockwork Gunner | construct; machine; two shots standing still                    |
+| `GUARD`         | Steam Mole       | machine; Tunnel and eruption; Dig In                            |
+| `CAPTAIN`       | Engineer         | Repair; Assemble; no Rally                                      |
+| `CATAPULT`      | Steam Cannon     | machine; Knockback; with Blasting Charges ignores fortification |
+| `KNIGHT`        | Steam Tank       | machine; Plated 4; no Overrun                                   |
+| `JUGGERNAUT`    | Brass Titan      | construct; machine; Push                                        |
+
+- **Dwarf units** are the eight land roles in land form. The Dwarf rules
+  never apply to a Dwarf boat (the Human Patrol Boat and Battleship) or to
+  an embarked unit, except where a rule says so.
+- **Constructs** (role mechanic `construct`) are the Clockwork Gunner and
+  the Brass Titan: fully mechanical, no dwarf inside
+  ([section 22.6](#226-clockwork)). Every other Dwarf unit is living.
+  **Living** is read per unit (`isLivingUnitV7`): the owner's faction is not
+  `UNDEAD` **and** the role is not a construct under the owner's
+  registration. Plague, Bitten, Infect, Wail, and their previews read it;
+  in a match without a Dwarf seat it equals the per-owner test.
+- **Machines** (role mechanic `repairsAsMachine`, for Repair only,
+  [section 22.8](#228-engineer-repair-and-assemble)) are every Dwarf land
+  role but the Hammerer and the Engineer. This is not the Martian meaning
+  of "machine" ([section 20.1](#201-roles-machines-and-labels)), which is a
+  movement mode: of the Dwarf units only the Gyrocopter has a non-ground
+  movement mode (`FLY`), and only it gets the flyer rules (no cover or
+  fortification, no Port needed, self-launch on water).
+- **Diggers** (role mechanic `digsIn`) are the Hammerer and the Steam Mole
+  ([section 22.7](#227-dig-in)).
+- Tactical labels are those of the same mechanical role (the registry
+  requires it): the Gyrocopter is `SKIRMISHER`, the Clockwork Gunner
+  `RANGED`, the Steam Mole `DEFENDER`, the Engineer `SUPPORT`, and the
+  Steam Cannon `SIEGE`. The Normal AI judges them by their abilities, not
+  by these labels.
+
+### 22.2 The Tunnel and burrowed units
+
+`TUNNEL { kind, unitId, to, rider }` is the Steam Mole's Move, made
+underground; `rider` is `null` or `{ unitId, to }`. It is not an Attack and
+costs no Coins.
+
+A **tunnel tile for a unit `u`** is a tile on the board, explored by the
+actor, land and not a Rift (Grass, Forest, or Mountain), enterable by `u`
+under `canEnterTerrainV7` (a Mountain needs its owner's Engineering), with
+no unit of any owner, no mound, and no treasure chest, that is not a
+settlement site (a village, city, or capital center of any owner) and not
+in territory allied to the actor (a cooperative partner's; own territory is
+allowed).
+
+Legality, in this order (all rejections atomic):
+
+| #   | Requirement                                                                                                                                                                                                                                                        | Rejection                                                        |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                                     | the ordinary unit errors; a burrowed unit `UNIT_ALREADY_HANDLED` |
+| 2   | Its role has `TUNNEL`.                                                                                                                                                                                                                                             | `UNIT_ROLE_INVALID { role }`                                     |
+| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                     | `UNIT_ALREADY_ACTED`                                             |
+| 4   | It is in land form.                                                                                                                                                                                                                                                | `TUNNEL_NOT_LEGAL { reason: "EMBARKED" }`                        |
+| 5   | It is not in `surfacedThisTurn`.                                                                                                                                                                                                                                   | `TUNNEL_NOT_LEGAL { reason: "SURFACED" }`                        |
+| 6   | `to` is a tunnel tile for the Mole, and a sequence of at most `TUNNEL_RANGE_V7` (3) steps between Chebyshev neighbours leads from the Mole's tile to `to` with every tile after the first explored by the actor and land (Grass, Forest, Mountain, or Rift).       | `TUNNEL_NOT_LEGAL { reason: "DESTINATION" }`                     |
+| 7   | If `rider` is not null: `rider.unitId` is another own unit on the board whose role has `RIDES_TUNNEL` (a Hammerer), in land form, Chebyshev-adjacent to the Mole, that has not moved, used a primary action, or landed this turn and is not in `surfacedThisTurn`. | `TUNNEL_NOT_LEGAL { reason: "RIDER" }`                           |
+| 8   | If `rider` is not null: `rider.to` is a tunnel tile for the Hammerer, Chebyshev-adjacent to `to`, and not `to`.                                                                                                                                                    | `TUNNEL_NOT_LEGAL { reason: "RIDER_DESTINATION" }`               |
+
+- **Underground** units, zones of control, terrain stops, Snow, Roads, and
+  territory do not matter along the way; each step costs one; passing under
+  a Mountain needs no Engineering and passing under a Rift is allowed; water
+  is never part of a tunnel; nothing is revealed along the way. The command
+  carries no path, so the command query offers one entry per destination
+  and rider tile (and the rider-less entry).
+- **A sluggish Mole may tunnel** and a sluggish Hammerer may ride: the
+  tunnel is a Move, not a primary action.
+- **Result.** The Mole leaves `units` and enters `burrowed` as
+  `{ unit: { …mole, at: to }, moleUnitId: null }`; the rider, if any,
+  enters as `{ unit: { …hammerer, at: rider.to }, moleUnitId: mole.id }`.
+  Both records keep their HP, kills, home city, and every status entry
+  (Plague, Bitten, Chill) and get the exhausted activation and
+  `captureEligible` false. The actor explores every tile within 1 of each
+  mound. Nothing else changes on the board: Field Defense on a mound tile
+  stays until the surfacing, and a siege the Mole or the rider was making
+  ends because nobody stands on that center any more. Events:
+  `UNIT_TUNNELLED` (the rider fields null without a rider), then
+  `TILES_REVEALED`, then the ordinary economy, reward, and achievement tail.
+  A tunnel never touches water, so `TUNNEL` is not on the blockade-event
+  list. Every tile it reads is explored, so the command is exact.
+- **State.** `GameStateV7.burrowed` is
+  `readonly { unit: UnitStateV7, moleUnitId: UnitId | null }[]`, sorted by
+  `unit.id`; `unit.at` is the **mound tile**. A Mole entry has `moleUnitId`
+  null; a rider entry names a burrowed Mole of the same owner next to it.
+  Entries exist only between a `TUNNEL` and the owner's next Start Turn.
+  State parsing rejects a duplicate or unsorted entry, a unit ID that is
+  also in `units`, an owner that is not a Dwarf seat, a Mole entry whose role
+  lacks `TUNNEL` or whose `moleUnitId` is not null, a rider entry whose role
+  lacks `RIDES_TUNNEL`, whose `moleUnitId` is not a burrowed Mole of the
+  same owner, or whose tile is not next to that Mole's, two riders for one
+  Mole, a form other than `LAND`, a mound tile that is off the board, water,
+  a Rift, or a settlement site, that holds a unit or a chest, or that
+  another entry shares, and any entry in a match without a Dwarf seat. Unit
+  IDs are unique across `units` and `burrowed`, and the next entity ID is
+  above all of them.
+- **The two accessors.** `state.units` keeps its meaning (the board), and
+  every reader of a unit list chooses between `boardUnitsV7` (what stands on
+  the board) and `allOwnedUnitsV7` (the board plus the burrowed records): a
+  checked-in classification of every reader, enforced by a test, fails when
+  a reader appears without a class. Combat, targeting, adjacency abilities,
+  splash, Pierce, Wail, blasts, Plague spread, movement, ZOC, siege,
+  training spawn, capture, the activation reset and every other Start Turn
+  step, idle recovery, Muster, the player view's `units`, the command
+  query, and selection are board-only. Capacity and used slots, orphaning
+  on a capture, the treasure unit's slot check, elimination, the status
+  lists and the Chill countdown, the leaderboard and headless metrics, and
+  state parsing, hashing, saves, replays, and entity-ID uniqueness read all
+  owned units. Victory and defeat still read cities only, so a seat with
+  only burrowed units and a city is alive.
+
+### 22.3 The mound, surfacing, and the eruption
+
+- **Visible.** Each burrowed unit is a **mound** on its tile, public to
+  every viewer who has explored that tile: owner, unit, HP, statuses, and
+  whether it is the Mole or its rider
+  ([section 15](#15-fog-and-observation)). The mound announces the exact
+  tile and turn of the eruption.
+- **Untouchable.** A burrowed unit is not in `units`, so no attack, bomb,
+  splash, Pierce, Sweep, Kaboom or death blast, Wail, Plague spread, Bolas,
+  Cold Snap, Cold Aura, Mind Control, Tractor Beam, Push, Charge! push,
+  Knockback, or Overrun finds it. It exerts no ZOC, never besieges, and
+  never blocks training, capture, or Land Grant. Every command naming it is
+  rejected with `UNIT_ALREADY_HANDLED` and never offered.
+- **Reserved.** The one occupancy predicate `tileOccupiedV7(state | view,
+at)` is true when a unit stands on the tile **or a mound is on it**, and
+  every rule that places a unit or ends a unit's step asks it
+  ([section 12.1](#121-movement)). A Move may pass over a mound tile. A
+  mound on a tile the mover has not explored can be met only on the last
+  tile of a Move; the Move is accepted and interrupted there
+  (`UNIT_MOVE_INTERRUPTED` reason `MOUND`, naming the mound tile), the
+  mover staying on the last tile it entered on which it may end.
+- **The tile** keeps its terrain, Road, improvement, resource, Field Defense,
+  Grave, and Snow; tile actions on it are unaffected, and none changes a
+  tile into water, a Rift, or a site. So a mound tile is never occupied when
+  it surfaces (the surfacing asserts it).
+
+**Surfacing.** At its owner's **Start Turn**, after the activation reset,
+the city actions, the Mind Control cooldowns, the Shield recharge, and the
+Cold Aura (which never runs in the same Start Turn: a seat has one faction)
+and before Plague, each burrowed Mole of that seat surfaces, in unit-ID
+order:
+
+1. **Return.** The Mole, then its rider, leave `burrowed` and enter `units`
+   on their mound tiles with the Start Turn activation (nothing moved or
+   used) and `captureEligible` false; both join `surfacedThisTurn`.
+2. **Eruption.** Every unit on the eight tiles around the Mole that is
+   hostile to the Mole's owner and **on the ground** takes the owner's
+   `eruptionDamage`: **2** (`ERUPTION_DAMAGE_V7`), **3** with Blasting
+   Charges (`BLASTING_ERUPTION_DAMAGE_V7`). On the ground means a land-form
+   unit whose movement mode is not `FLY` (foot units, walkers, Thralls) or
+   an Egg; never a flyer, a naval unit, or an embarked unit. The damage is
+   fixed: no retaliation, Attack, Defense, cover, fortification, Walls,
+   Snow, or Blizzard; Armoured takes 1 off, then Plated caps it, then a
+   Shield absorbs first; it is capped at the victim's HP. Every victim is
+   hit at once. The rider never erupts, and own and allied units are never
+   hit.
+3. **Undermining.** Field Defense on the Mole's tile and on the eight tiles
+   around it is destroyed, whoever owns it and whether or not anything was
+   hit (`FIELD_DEFENSE_DESTROYED` reason `UNDERMINED`).
+4. **Deaths,** in `(y, x, id)` order: cause `ERUPTION`, kill credit to the
+   Mole (Promotion and Slayer count it, a destroyed Egg too), then each
+   death's Grave or Bitten rising under the ordinary rules (none on a Rift,
+   none for a construct), and a Brain's Thralls collapse.
+5. **Death blasts.** Exploding victims explode as a chain
+   ([section 18.7](#187-where-chains-run-and-event-order)); the blasts hit
+   everyone in their areas, the surfaced Mole and rider included, and a
+   Goblin seat earns Plunder for its blasts' kills.
+6. **Reveals.** Each surfaced unit (and rising) reveals its sight.
+
+Events, one block per Mole, after `SHIELDS_RECHARGED` and the Cold Aura's
+`UNITS_CHILLED` and before `PLAGUE_DAMAGED`: `UNIT_SURFACED` (its `results`
+in `(y, x, id)` order, `damage` being HP damage), `FIELD_DEFENSE_DESTROYED`
+(`UNDERMINED`) per tile in `(y, x)` order, `UNIT_DIED` (cause `ERUPTION`)
+with `GRAVE_CREATED`, `BITTEN_UNIT_RISEN`, and `BRAIN_LOST` collapses as
+they apply, the chain events, `PLUNDER_AWARDED`, and `TILES_REVEALED`; then
+the economy changes of the surfacing.
+
+**On the surfacing turn** the Mole and the rider may Move overland and
+attack as usual, but neither can capture (`captureEligible` false: they
+began the turn underground), the Mole cannot tunnel
+(`TUNNEL_NOT_LEGAL` reason `SURFACED`), and the rider is braked
+([section 22.4](#224-the-rider)). `surfacedThisTurn` is emptied at its
+owner's End Turn, and an entry leaves it when its unit leaves the board.
+If the owner is eliminated, its burrowed units are removed with the rest of
+its units (`UNIT_DIED` cause `ELIMINATION`, no Grave, no blast).
+
+### 22.4 The rider
+
+- The rider uses its own slot and keeps its home city; a capture of that
+  city orphans it while it is underground, like any unit.
+- It travels with the Mole: it needs no path of its own and ignores
+  Mountains, Forests, units, and ZOC on the way; its destination must be a
+  tile it could stand on (a Mountain needs Engineering). With no free rider
+  tile next to the destination, the Mole tunnels alone.
+- It surfaces right after its Mole, never erupts, and is in the blast of an
+  exploding unit the eruption killed.
+- **The rider brake** (root ruling 1). On its surfacing turn it never ends a
+  Move, or advances, on a settlement center its owner does not own (a
+  neutral village, or a center of a city its owner does not own):
+  `MOVEMENT_ILLEGAL` reason `SETTLEMENT_FORBIDDEN`, never offered. Its own
+  centers are allowed, and the Mole is not braked. It cannot ride again
+  that turn. Abroad it is never dug in; at home it is dug in if it then
+  stands still within 1 of an own center.
+- A ride moves a Hammerer up to 5 tiles in one turn (one to the Mole, three
+  under, one beside the destination); with the brake, a rider captures a
+  village at the Raider's pace from 5 or 6 tiles out and a turn earlier from
+  7 (the [Dwarf overlay's](RULESET_7_DWARVES.md#55-the-rider) village race).
+
+### 22.5 Gyrocopters and the bombing run
+
+- **Flight.** The Gyrocopter has the Martian `FLY` movement mode, unchanged
+  ([section 20.6](#206-movement-stride-flying-and-crossing-water)): it
+  passes over units, ignores terrain stops and hostile ZOC, exerts no ZOC,
+  has no cover or fortification, enters Mountains without Engineering, may
+  stand on a Rift, never ends a Move on a neutral village center or a
+  center of a city its owner does not own (so it never besieges or
+  captures), never advances, cannot Pillage, crosses Shallow Water (Deep
+  Water with Navigation), and self-launches where a Move ends on water. It
+  takes a treasure chest by ending a Move on it.
+- **No ordinary attack.** Its abilities are `FLY` and `BOMB_RUN`, with no
+  `ATTACK`: `ATTACK` is never offered for it and is rejected with
+  `UNIT_ROLE_INVALID`, and no reader that asks "can this unit attack" sees
+  an attack.
+- **It retaliates.** The retaliation test accepts `ATTACK` **or
+  `BOMB_RUN`** (`roleRetaliatesV7`): a Gyrocopter attacked at distance 1
+  strikes back with Attack 1.5 under the ordinary formula.
+
+`BOMB_RUN { kind, unitId, targetUnitId, to }` is the Gyrocopter's Move and
+its primary action at once. It is not an `ATTACK` and costs no Coins.
+Legality, in this order (all rejections atomic):
+
+| #   | Requirement                                                                                                                                                                                                                                                                                                                                       | Rejection                                         |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                                                                                                                    | the ordinary unit errors                          |
+| 2   | Its role has `BOMB_RUN`.                                                                                                                                                                                                                                                                                                                          | `UNIT_ROLE_INVALID { role }`                      |
+| 3   | It has not moved, has not used a primary action, and has not landed this turn.                                                                                                                                                                                                                                                                    | `UNIT_ALREADY_ACTED`                              |
+| 4   | It is in land form.                                                                                                                                                                                                                                                                                                                               | `BOMB_RUN_NOT_LEGAL { reason: "EMBARKED" }`       |
+| 5   | It is not sluggish.                                                                                                                                                                                                                                                                                                                               | `BOMB_RUN_NOT_LEGAL { reason: "SLUGGISH" }`       |
+| 6   | `targetUnitId` is a unit on the board the actor can see.                                                                                                                                                                                                                                                                                          | `TARGET_NOT_FOUND`                                |
+| 7   | It is hostile to the actor.                                                                                                                                                                                                                                                                                                                       | `TARGET_ALLIED`                                   |
+| 8   | It is within Chebyshev distance `BOMB_RANGE_V7` (2) of the Gyrocopter; distance 1 is legal.                                                                                                                                                                                                                                                       | `BOMB_RUN_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
+| 9   | It is not in `bombedThisTurn`.                                                                                                                                                                                                                                                                                                                    | `BOMB_RUN_NOT_LEGAL { reason: "ALREADY_BOMBED" }` |
+| 10  | `to` is Chebyshev-adjacent to the target, strictly farther (Chebyshev) from the Gyrocopter's tile than the target is, explored, holds no treasure chest, and is a tile on which an ordinary `MOVE` of this Gyrocopter could end this turn (within Move 3 under the flyer rules: no unit, no mound, not a forbidden center, not allied territory). | `BOMB_RUN_NOT_LEGAL { reason: "LANDING" }`        |
+
+The target may be in any form (a land unit, a flyer, an Egg, an embarked
+unit, or a boat). "Beyond the target" is the whole geometry rule: the
+landing is next to the target and farther from the start; no flight path is
+fixed. **Result,** in order:
+
+1. **The flight.** The Gyrocopter stands on `to`. It is not a `MOVE`: the
+   event carries `from` and `to` and no path, nothing about the way
+   matters, it takes no chest, and it reveals its sight from `to`.
+2. **The bomb** hits the target for the owner's `bombDamage`: **5**
+   (`BOMB_DAMAGE_V7`), **6** with Dive (`DIVE_BOMB_DAMAGE_V7`, Raiding; the
+   `pulp_wars-78i.7` values). Nothing else changes it: no Inspired, Gang Up,
+   Charge, cover, fortification, Walls, Field Defense, Dig In, Snow,
+   Blizzard, Defense, or HP ratio. Armoured takes 1 off, then Plated caps
+   it, then a Shield absorbs first; it is capped at the target's HP. **It is
+   never answered:** no retaliation.
+3. The target joins `bombedThisTurn`.
+4. **A kill** has cause `BOMB` and credits the Gyrocopter (Promotion,
+   Slayer; a destroyed Egg counts), then the death's Grave or Bitten rising
+   under the ordinary rules, and a Brain's Thralls collapse. There is no
+   advance.
+5. **A death blast** of an exploding target resolves as a chain: the
+   Gyrocopter, standing next to it, is in the blast.
+6. **Water.** If `to` is water and the Gyrocopter survived, it self-launches
+   there (form `EMBARKED`, `UNIT_EMBARKED`).
+7. The Gyrocopter has used its Move and its primary action and is handled.
+
+A bomb destroys no Field Defense, inflicts no Plague, bite, or Infect, never
+shatters, and is never halved by a Blizzard (it is not an `ATTACK`).
+Events: `UNIT_BOMBED`, then `UNIT_DIED` (cause `BOMB`) with its Grave,
+rising, or `BRAIN_LOST` events, the chain events, `PLUNDER_AWARDED`,
+`TILES_REVEALED`, `UNIT_EMBARKED`, the naval blockade and sea-network
+events (`BOMB_RUN` is on the recompute list), and the economy, reward, and
+achievement tail. The preview is exact: every tile of a landing is
+explored, the target is visible, and the damage is fixed.
+
+`GameStateV7.bombedThisTurn` (sorted unit IDs) is emptied at the active
+player's End Turn, and an entry leaves it when its unit leaves the board;
+state parsing rejects a duplicate or unsorted entry, an ID that is not a
+unit on the board, and any entry while the active player is not a Dwarf
+seat. The limit is **per target and per turn across all of the seat's
+Gyrocopters**: a unit loses at most 5 HP a turn to bombs (6 with Dive),
+however many Gyrocopters there are, so no swarm of bombs kills a fresh unit
+of 7 HP or more.
+
+HP left after one bomb on a fresh target (Shield absorbed in brackets):
+
+| Target (HP)                                                                                                                          | Bomb 5 | Dive 6 |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ |
+| Fighter, Marksman, Raptor (12)                                                                                                       | 7      | 6      |
+| Guard (17)                                                                                                                           | 12     | 11     |
+| Captain, Catapult, Knight, Skeleton, Ghoul, Necromancer, Lich, Vampire, Wolf Rider, Scrap Buggy, Caveman, Spitter, Shaman, Sled (10) | 5      | 4      |
+| Banshee, Bomb Chucker, Rocket Cart, Snow Hunter (8)                                                                                  | 3      | 2      |
+| Goblin (6), Egg (6)                                                                                                                  | 1      | killed |
+| Ankylosaurus (20, Armoured)                                                                                                          | 16     | 15     |
+| Grunt (10, Shield 2)                                                                                                                 | 7 (2)  | 6 (2)  |
+| Ray Gunner, Brain, Saucer (8, Shield 2)                                                                                              | 5 (2)  | 4 (2)  |
+| Grunt in a Force Field (10, Shield 4)                                                                                                | 9 (4)  | 8 (4)  |
+| Yeti (9)                                                                                                                             | 4      | 3      |
+
+### 22.6 Clockwork
+
+- **Unflinching, on attack only.** When a construct (Clockwork Gunner,
+  Brass Titan) in land form makes an `ATTACK`, its own force uses its
+  maximum HP instead of its current HP (the attacker term
+  `attack × hp / maxHp` of [section 13.2](#132-damage) becomes `attack`).
+  As a defender and when it retaliates it is an ordinary unit, so wounded
+  clockwork is finished like any wounded unit. The combat preview reports
+  `unflinchingApplied`.
+- **Not living:** Wail never targets a construct, Plague is never applied
+  to or spread onto it, it is never Bitten, it never rises (a Zombie that
+  kills it gets no Zombie), and it leaves no Grave on any death.
+- **Mind Control** rejects it with `MIND_CONTROL_NOT_LEGAL` reason
+  `TARGET_IMMUNE` (the Titan is immune anyway as a `JUGGERNAUT`).
+- **What still applies:** Chill (the Titan too) and Shatter (never the
+  Titan), Push, the Tractor Beam, Knockback, Kaboom and blasts, splash,
+  Pierce, Sweep, Acid, and Lifesteal.
+- **Never mends itself:** no explicit Recover
+  (`RECOVER_NOT_LEGAL { reason: "CONSTRUCT" }`, never offered), no idle
+  recovery, no Windmill healing. It heals only by an Engineer's Repair (+4,
+  it is a machine) and by a Promotion (a full heal to the new maximum). A
+  Gunner can be disbanded like any trainable unit (refund 1).
+- **The Clockwork Gunner's two shots.** When the Gunner fires its first
+  shot its allowance is 2 (`GUNNER_UNMOVED_SHOTS_V7`, role mechanic
+  `unmovedShots`) if its `moved` flag is false and 1 otherwise. Each shot is
+  an ordinary `ATTACK` (range 1–2, retaliation, Unflinching, kill credit,
+  the Field Defense rules) at any legal target. A Gunner that has fired
+  cannot move (`MOVE` is rejected with `UNIT_ALREADY_ACTED` and never
+  offered), and it never advances after a kill, so both shots come from the
+  tile where it stood. A Gunner that landed this turn cannot fire; a
+  sluggish Gunner that has not moved fires twice, one that moved cannot
+  fire. An assembled or trained Gunner is exhausted until its owner's next
+  Start Turn. The combat preview's `attacksRemaining` is 1 after the first
+  shot of an unmoved Gunner and 0 otherwise; the unit stats carry
+  `shotsLeft`.
+
+### 22.7 Dig In
+
+A land-form unit whose role has `digsIn` (Hammerer, Steam Mole), owned by a
+seat with the `digIn` capability (Dig In, the Dwarf Fortification), **is dug
+in** (`unitIsDugInV7`) when both hold:
+
+1. its activation's `moved` is false: during its owner's turn it has not
+   moved this turn; during any other player's turn it did not move on its
+   owner's last turn (the flag is reset only at its owner's Start Turn).
+   Activations are public, so every preview equals its result;
+2. it stands within Chebyshev 1 (`DIG_IN_RADIUS_V7`) of the center of a city
+   its owner owns, whatever the tile's territory.
+
+A dug-in unit has **one fortification level in the Field Defense part** of
+its fortification (`fortificationPartsForUnitV7`):
+`fieldDefense = max(Field Defense on its own-territory tile ? 1 : 0, dug in ? 1 : 0)`.
+So Dig In and Field Defense never stack, and Walls add to it as they add to
+Field Defense: a dug-in Hammerer on its Walled center has fortification 3.
+Dig In is computed before the territory checks that gate Walls and Field
+Defense, so a dug-in unit on a ring tile in another city's footprint keeps
+its level. It is exactly Field Defense for free, but only while standing
+still and only on the nine tiles around each own center: a Fighter deals a
+dug-in Hammerer 4 and takes 8 (in the open 5 and 5).
+
+- **What counts as moving:** a `MOVE` (an interrupted one too), a `TUNNEL`,
+  a ride, a landing, and **an advance after a kill: a Hammerer's or a
+  Mole's advance sets its `moved` flag** (no other unit's advance does). An
+  attack without an advance, Recover, Wait, Pillage, and a capture are not
+  moves. A Push, a pull, a Knockback, and a displacement are not Moves
+  either: the unit keeps its `moved` flag, and Dig In is read on the tile
+  where it now stands.
+- **Units that arrive this turn are not dug in:** a trained, rewarded,
+  treasure, or assembled unit has the exhausted activation (`moved` true)
+  until its owner's next Start Turn. A unit that surfaced this turn has the
+  fresh activation, so it is dug in if it then stands still within 1 of an
+  own center.
+- **Ignored by everything that ignores fortification:** Charge!, Acid, the
+  Disintegrator, Boulders, and a Steam Cannon with Blasting Charges remove
+  it with the rest of the fortification. Wallbreaker removes only the Walls
+  levels, so Dig In stays. Dig In is not a tile layer: no attack destroys
+  it. The combat preview carries `dugIn`, and its level is in
+  `fortificationLevel`. Fixed damage (eruptions, bombs, blasts, Kaboom,
+  Sweep, Plague) ignores it; Wail, which uses the ordinary formula, reads
+  it.
+
+### 22.8 Engineer: Repair and Assemble
+
+The Engineer has the Captain's body (5 Coins, 10 HP, Attack 1, Defense 1,
+Move 1, no capture), no Rally, and two support actions. A sluggish
+Engineer that moved can use neither.
+
+- **Repair** is `TEND_WOUNDED` under the Dwarf label, with the Tend Wounded
+  rules of [section 10](#10-recovery-and-support) (every adjacent own
+  land-form unit other than the Engineer, not yet tended this turn, that is
+  damaged, plagued, bitten, or Chilled; it cures Plague and bites and sets
+  a Chill entry to thawing), except that a **machine** heals
+  `min(REPAIR_MACHINE_V7 (4), maxHp − hp)` instead of 2 (role mechanic
+  `repairMachineHeal` on the Engineer). `WOUNDED_TENDED` keeps its shape,
+  and `previewTendWoundedV7` previews the 4.
+
+`ASSEMBLE { kind, unitId, to }` is a primary action of the Engineer: it
+builds a Clockwork Gunner on a free tile next to itself. Legality, in this
+order (all rejections atomic):
+
+| #   | Requirement                                                                                                                                                                                                                                    | Rejection                                   |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                                                                                                                 | the ordinary unit errors                    |
+| 2   | Its role has `ASSEMBLE`.                                                                                                                                                                                                                       | `UNIT_ROLE_INVALID { role }`                |
+| 3   | The actor has the `assemble` capability (Marksmanship).                                                                                                                                                                                        | `TECH_REQUIRED { tech: "MARKSMANSHIP" }`    |
+| 4   | It has not used a primary action and has not landed this turn; a sluggish Engineer has not moved.                                                                                                                                              | `UNIT_ALREADY_ACTED`                        |
+| 5   | It is in land form.                                                                                                                                                                                                                            | `ASSEMBLE_NOT_LEGAL { reason: "EMBARKED" }` |
+| 6   | It has a home city owned by the actor (an orphaned Engineer cannot Assemble).                                                                                                                                                                  | `ASSEMBLE_NOT_LEGAL { reason: "NO_HOME" }`  |
+| 7   | That city has a free slot for a Gunner (`used + 1 <= capacity`, [section 4.4](#44-unit-capacity)).                                                                                                                                             | `CITY_CAPACITY_FULL`                        |
+| 8   | The actor has at least the cost in Coins.                                                                                                                                                                                                      | `INSUFFICIENT_COINS`                        |
+| 9   | `to` is one of the eight tiles around the Engineer, land and not a Rift, enterable by a Gunner (a Mountain needs Engineering), with no unit, no mound, and no treasure chest, not a settlement site, and not in territory allied to the actor. | `INVALID_TILE { action: "ASSEMBLE" }`       |
+
+- **Cost:** `ASSEMBLE_COST_V7` **4** Coins (1 more than training a Gunner),
+  1 less when the Engineer's home city has a Forge with positive output (the
+  Arms Industry rule of [section 4.6](#46-training-and-city-center-spawning)).
+- **Result.** The Coins are spent. A new Clockwork Gunner with the next
+  entity ID stands on `to`: owned by the actor, homed to the Engineer's
+  home city, at full HP, with zero kills, the exhausted activation, and
+  `captureEligible` false. Field Defense on `to` is destroyed when the
+  tile's territory belongs to a player hostile to the actor (reason
+  `OCCUPATION`, the Beam Down precedent). The Gunner reveals its sight. The
+  Engineer has used its primary action and is handled. Events:
+  `UNIT_ASSEMBLED`, `FIELD_DEFENSE_DESTROYED`, `TILES_REVEALED`, then the
+  economy, reward, and achievement tail.
+- It spends **no city action**, and a siege of the home city does not block
+  it; a pending city reward blocks it like every command. It may follow a
+  Move. Every tile around the Engineer is explored by its owner, so the
+  command is exact.
+
+### 22.9 Steam Cannon: Knockback
+
+- **Knockback** (role mechanic `knockback`). After an `ATTACK` by a
+  land-form Steam Cannon (always at distance 2 or 3), a target that survives
+  is pushed one tile **directly away**: to its tile plus
+  `(sign(dx), sign(dy))`, where `(dx, dy)` is the target's offset from the
+  Cannon. The push happens only under the Push conditions of
+  [section 13.4](#134-after-combat) (on the board, explored by the attacker,
+  no unit and no mound, not a settlement site, the same land or water kind,
+  enterable by the target, not in territory allied to the target) and with
+  no treasure chest there. A `JUGGERNAUT`-role unit, a two-slot unit, and an
+  Egg are never knocked back. It is the Push step: the same place in the
+  resolution order, the same `UNIT_PUSHED` event, and the preview field
+  `push`. As for the Charge! push, an unexplored tile reads
+  `UNKNOWN_BEHIND_FOG` and never pushes, and a Mountain or Deep Water behind
+  another player's unit reads `UNKNOWN_BEHIND_FOG` in the public preview
+  (that owner's Engineering and Navigation are private; a Mountain behind a
+  walker, flyer, or Mountain-born unit is exact), while the resolution
+  reads the owner's technologies. The target keeps its HP, statuses,
+  activation, and Chill and gets
+  `captureEligible` false; Dig In is read on its new tile. A Knockback can
+  empty a center; a capture still needs a unit that begins its turn there.
+- **Otherwise a Catapult:** 8 Coins, 10 HP, Attack 3.5, Defense 0.5, range
+  2–3, no attack after moving, no capture, no advance, and every attack
+  destroys Field Defense on the target tile (reason `CATAPULT`).
+- **Blasting Charges** (capability `cannonIgnoresFortification`): its
+  attacks ignore fortification (Walls, Field Defense, and Dig In) for the
+  damage and the retaliation, with the Boulders convention: cover stays,
+  Walls are not destroyed, and the preview reports the removed levels in
+  `fortificationIgnored` ([section 13.3](#133-fortification)).
+
+### 22.10 Steam Tank: Plated, and the Brass Titan
+
+- **Plated** (role mechanic `plated: 4`, `PLATED_CAP_V7`): every single
+  instance of damage to a land-form Steam Tank is capped at 4 HP: an attack
+  hit, retaliation, splash, Pierce, a Sweep flank hit, Wail, Kaboom, a death
+  blast, a bomb, an eruption, and Plague. The cap applies after Armoured and
+  before a Shield (the Tank has neither). The combat preview's damage is the
+  capped value, with `platedApplied`; the Shatter test reads the HP after the
+  cap. Every unit in the game needs at least four hits to kill a fresh Tank.
+- The **Steam Tank** otherwise has Knight parity for no capture: 9 Coins,
+  16 HP, Attack 3, Defense 2, **Move 2**, the advance after a melee kill,
+  and **no Overrun**.
+- The **Brass Titan** is the level-5 reward unit: 36 HP, Attack 4, Defense
+  3, Move 1, Push on an adjacent surviving target, capture, the advance, no
+  Pillage, no Disband, and the construct rules (Unflinching on attack only,
+  no self-repair, no Grave, not living, Mind Control-immune). It arrives on
+  the city center at full HP and exhausted, like every reward unit.
+
+### 22.11 Resolution order
+
+**An attack** is the ordinary resolution of
+[section 13](#13-combat-and-fortification) with the Ice Folk steps of
+[section 21.13](#2113-attack-resolution-order), and these Dwarf steps:
+
+1. Attack: **Unflinching** (a construct attacker's force uses its maximum
+   HP). Defense: fortification with **Dig In** in the Field Defense part (0
+   for Acid, Charge!, Boulders, the Disintegrator, and a Steam Cannon with
+   Blasting Charges), then cover.
+2. Damage both ways from pre-combat HP; the Blizzard; Armoured; **Plated**;
+   Martian Shields absorb.
+3. The Shatter test; Lifesteal; Sweep; kill credit; growth.
+4. Field Defense destroyed on the target tile under the ordinary reasons
+   (`CATAPULT` for a Steam Cannon).
+5. Deaths in order, each with its Grave or rising (none for a construct).
+6. The Push and **Knockback**, then the advance (never for a Clockwork
+   Gunner; a Hammerer's or a Mole's advance sets its `moved` flag).
+7. Death-blast chains, Plunder, reveals, and the ordinary tail.
+
+**Start Turn** for the active seat:
+
+```text
+reset activations and capture eligibility → city actions available →
+Mind Control cooldowns → Shield recharge → Cold Aura → SURFACING →
+Plague and its chain → hatching → Windmill healing (constructs skipped) →
+Troll regeneration → income → rewards → achievements
+```
+
+**End Turn** for the active seat:
+
+```text
+idle recovery (constructs skipped) → Inspired and Overrun expire → Cooling →
+Force Fields → Chill countdown (burrowed units included) →
+empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Start Turn
+```
+
+### 22.12 Starting units, rewards, and treasure
+
+| Source                             | Dwarf                          |
+| ---------------------------------- | ------------------------------ |
+| Starting unit                      | one Hammerer                   |
+| Level-3 Militia reward (`MILITIA`) | one Hammerer                   |
+| Level-5+ reward (`JUGGERNAUT`)     | Brass Titan                    |
+| Treasure chest unit                | **Gyrocopter** (role `RAIDER`) |
+
+- A Dwarf seat starts with one Hammerer on its capital at full HP, 5 Coins,
+  and no technology (`STARTING_FIGHTERS_V7` and `MILITIA_FIGHTERS_V7` are 1).
+  The starting Hammerer has the fresh setup activation, so once the seat has
+  Dig In it is dug in on its capital center if it does not move.
+- Reward and treasure units arrive at full HP and exhausted until their
+  owner's next Start Turn (so a Militia Hammerer is not dug in on its first
+  enemy turn). `treasureUnitRole` is `RAIDER`; a treasure Gyrocopter needs a
+  city with a free slot, otherwise the chest gives 5 Coins.
+- There is no Dwarf mirror in the browser or the balance matrix (one
+  faction per player, [section 2.1](#21-match-setup)); every Dwarf rule is
+  written per seat (`bombedThisTurn` and `surfacedThisTurn` belong to the
+  active seat, Dig In reads its own owner's cities), so a headless or test
+  mirror with `allowDuplicateFactions` stays correct.
+
+### 22.13 Interactions with other rules
+
+| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Graves, Raise Dead      | A Dwarf land unit leaves a Grave like any unit, except a construct (never); eruption and bomb kills of other factions' units leave ordinary Graves (none on a Rift). Raise Dead never raises onto a mound tile: a Grave under a mound cannot be raised until the mound surfaces.                                                                                                                                                                                                                                                                                                                               |
+| Infect, Bitten          | A living Dwarf unit killed by a Zombie rises as the Zombie's owner's Zombie; a construct never rises and is never bitten. A Bitten victim of an eruption or a bomb rises as its biter's Zombie. A burrowed unit cannot be infected, and its Bitten entry stays. Repair cures bites.                                                                                                                                                                                                                                                                                                                            |
+| Plague, Wail            | Plague applies to living Dwarf units, never to constructs; a burrowed plagued unit keeps its entry and, surfacing before Plague resolves, takes its damage on the board; Plague never spreads to or from a mound; Repair cures it. Wail targets living Dwarf units only, never a construct or a mound; it is not an attack, so it reads Dig In with the rest of the fortification (1 on a dug-in Hammerer, 2 in the open).                                                                                                                                                                                     |
+| Lifesteal, Undead       | A Vampire heals by the damage it deals any Dwarf unit, constructs included, and draws no retaliation. Restless is an Undead rule only: Dwarf units recover under the Human rule, except constructs, which never recover. Frenzy is ordinary.                                                                                                                                                                                                                                                                                                                                                                   |
+| Goblin rules            | [Section 18.11](#1811-interactions-with-other-rules): blasts and Kaboom are fixed damage (they ignore Dig In and Walls; a Steam Tank takes at most 4), never find a mound, and hit the Gyrocopter beside a bombed exploding unit or the surfaced pair beside an erupted one; Gang Up does not ignore Dig In; Plunder counts Dwarf kills, constructs included.                                                                                                                                                                                                                                                  |
+| Dinosaur rules          | [Section 19.12](#1912-interactions-with-other-rules): eruptions hit Eggs; a bomb leaves a 6-HP Egg at 1 (a Dive bomb destroys it); Armoured takes 1 off an eruption and a bomb; Charge! and Acid ignore Dig In, Wallbreaker keeps it; two-slot dinosaurs and Eggs are never knocked back; nothing ends on a mound.                                                                                                                                                                                                                                                                                             |
+| Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Shields absorb eruptions and bombs first; eruptions never hit flyers but hit walkers; constructs are immune to Mind Control; a mound is never a Mind Control, Tractor Beam, or Pierce target; the Disintegrator ignores Dig In; the Saucer and the Gyrocopter share the flight rule.                                                                                                                                                                                                                                                                     |
+| Ice Folk rules          | [Section 21.14](#2114-interactions-with-other-rules): tunnels ignore Snow; deep snow stops only the Move-2 Steam Tank; every Dwarf unit can be Chilled (the Titan too) and shattered (never the Titan); a sluggish Gyrocopter cannot bomb, a sluggish Mole may tunnel; the Shatter test reads a Tank's HP after the cap; the Blizzard halves a Gunner's or Cannon's shot from distance 2 or more, never a bomb or eruption.                                                                                                                                                                                    |
+| Human abilities         | An eruption undermines Field Defense on nine tiles, whoever owns it; Walls are untouched; bombs and eruptions ignore both; Dig In and Field Defense never stack. A Catapult destroys Field Defense, never Dig In, and out-ranges every Dwarf unit but the Steam Cannon. A Juggernaut pushes a Dwarf unit under the ordinary conditions (Dig In read on the new tile), never onto a mound. A Knight's kill of a surfaced Mole may continue its Overrun; the Steam Tank has none. An Escape Move never ends on a mound. Human and Dinosaur healers tend only their own units.                                    |
+| Cities, siege, capacity | Capture-capable: Hammerer, Clockwork Gunner, Steam Mole, Brass Titan. A Dwarf unit on a hostile center besieges it; a mound and a Gyrocopter never do. The Mole may step onto a center on its surfacing turn and capture on the next; the rider may not. Every Dwarf role uses one slot; a burrowed unit keeps its slot and home; Assemble uses the Engineer's home city's slot; Dwarf cities have no capacity bonus. Dig In counts around the seat's own centers only: a captured city's ring stops counting at once, and a captured one starts at once. Tunnel, Bomb Run, and Assemble spend no city action. |
+| Boats, water            | Dwarf boats are the Human boats. Foot units and machines but the Gyrocopter embark at Ports with Shorecraft; the Gyrocopter flies over water and self-launches. A tunnel never passes under water; eruptions skip naval and embarked units; bombs may target them. An embarked unit is never dug in.                                                                                                                                                                                                                                                                                                           |
+| Rift                    | Tunnels pass under a Rift but never end there, and a rider's tile is never one. A Gyrocopter may stand on a Rift as a flyer (it lands there from a bombing run as from a Move); there it is attacked, bombed, and Chilled like any unit, leaves no Grave, and is immune to Mind Control. No eruption case arises (a unit on a Rift flies). Assemble and Knockback never put a ground unit on a Rift.                                                                                                                                                                                                           |
+| ZOC, Roads              | Tunnels and bombing runs ignore ZOC and Roads; a mound exerts no ZOC; surfaced units exert and suffer it; a Gyrocopter ignores hostile ZOC and exerts none. A Move may pass over a mound tile.                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Achievements, Promotion | Promotion is the ordinary rule for every Dwarf unit (3 kills, +5 maximum HP, a full heal), constructs included: it is a construct's only full heal. Eruption, bomb, and retaliation kills are credited. Muster counts the Dwarf trainable roles on the board (a burrowed unit when it surfaces; an assembled Gunner at once); Slayer counts eruption and bomb kills.                                                                                                                                                                                                                                           |
+
+### 22.14 Commands, events, errors, and queries
+
+- **Commands:** `TUNNEL { kind, unitId, to, rider: null | { unitId, to } }`,
+  `BOMB_RUN { kind, unitId, targetUnitId, to }`, and
+  `ASSEMBLE { kind, unitId, to }`, in that order right after `COLD_SNAP` in
+  `COMMAND_KIND_ORDER_V7`. `MOVE` refuses mound tiles, the rider's foreign
+  centers on its surfacing turn, and a Gunner after a shot; `ATTACK` allows
+  the Gunner's second shot and is refused for a Gyrocopter; `TEND_WOUNDED`
+  heals machines 4 for an Engineer; `RECOVER` is refused for constructs. A
+  pending city reward blocks the three commands like every command.
+- **State:** `burrowed`, `surfacedThisTurn`, and `bombedThisTurn`, hashed,
+  saved, and replayed like `chilled`; `PlayerViewV7` carries the same three,
+  filtered by visibility ([section 15](#15-fog-and-observation)). Dig In
+  stores nothing.
+- **Events** (`DOMAIN_EVENT_KIND_ORDER_V7`):
+
+  ```text
+  UNIT_ASSEMBLED { playerId, unitId, assembledUnitId, at, cityId, cost }          // after UNIT_TRAINED
+  UNIT_TUNNELLED { playerId, unitId, from, to, riderUnitId, riderFrom, riderTo }  // after UNIT_PULLED
+  UNIT_SURFACED  { playerId, unitId, at, riderUnitId, riderAt, eruptionDamage,
+                   results: [{ unitId, at, damage, dies, shieldDamage }] }        // after UNIT_TUNNELLED
+  UNIT_BOMBED    { playerId, unitId, from, to, targetUnitId, at, damage,
+                   shieldDamage, killed }                                         // after COMBAT_RESOLVED
+  ```
+
+  `UNIT_DIED.cause` gains `BOMB` and `ERUPTION`;
+  `FIELD_DEFENSE_DESTROYED.reason` gains `UNDERMINED`;
+  `UNIT_MOVE_INTERRUPTED.reason` and the movement failure reasons gain
+  `MOUND`. Knockback reuses `UNIT_PUSHED` and Repair `WOUNDED_TENDED`. There
+  is no event for Dig In, which is derived.
+
+- **Combat preview** (`CombatPreviewV7`, so also `COMBAT_RESOLVED`), three
+  fields, all false for an attack that involves no Dwarf unit: `dugIn` (the
+  defender is dug in; its level is in `fortificationLevel`),
+  `unflinchingApplied` (the attacker is a land-form construct), and
+  `platedApplied` (a hit on a Plated unit was capped; the damages are the
+  capped values). Blasting Charges reports its removed levels in
+  `fortificationIgnored`, Knockback uses `push`, and `attacksRemaining`
+  reports the Gunner's second shot.
+- **Errors:** `TUNNEL_NOT_LEGAL` (reasons `EMBARKED`, `SURFACED`,
+  `DESTINATION`, `RIDER`, `RIDER_DESTINATION`), `BOMB_RUN_NOT_LEGAL`
+  (`EMBARKED`, `SLUGGISH`, `OUT_OF_RANGE`, `ALREADY_BOMBED`, `LANDING`), and
+  `ASSEMBLE_NOT_LEGAL` (`EMBARKED`, `NO_HOME`); `RECOVER_NOT_LEGAL` gains
+  `CONSTRUCT`. A command naming a burrowed unit is `UNIT_ALREADY_HANDLED`;
+  the rider's forbidden center is `MOVEMENT_ILLEGAL` reason
+  `SETTLEMENT_FORBIDDEN`.
+- **Registration:** faction `DWARF`, tree `DWARF_BASELINE_V1`, display name
+  "Dwarf"; unlock kinds `ENGINEER_SUPPORT`, `ASSEMBLE`, `DIVE`, `DIG_IN`, and
+  `BLASTING_CHARGES`; capabilities `digIn`, `assemble`, `bombDamage`,
+  `eruptionDamage`, and `cannonIgnoresFortification`; abilities
+  `RIDES_TUNNEL`, `DIG_IN`, `BOMB_RUN`, `CLOCKWORK`, `TWIN_SHOT`, `TUNNEL`,
+  `ERUPTION`, `ASSEMBLE`, `KNOCKBACK`, and `PLATED` (Repair keeps the
+  `TEND_WOUNDED` literal); role mechanics `construct`, `unflinchingAttack`,
+  `repairsAsMachine`, `repairMachineHeal`, `digsIn`, `tunnelRange`,
+  `ridesTunnel`, `bombs`, `unmovedShots`, `knockback`, and `plated`, with
+  `buildsFieldDefense` false for the Hammerer and the Mole and
+  `advancesAfterKill` false for the Gyrocopter, the Gunner, and the Cannon;
+  faction rules `snow` false and `treasureUnitRole` `RAIDER`; constants
+  `TUNNEL_RANGE_V7` 3, `ERUPTION_DAMAGE_V7` 2, `BLASTING_ERUPTION_DAMAGE_V7`
+  3, `BOMB_RANGE_V7` 2, `BOMB_DAMAGE_V7` 5, `DIVE_BOMB_DAMAGE_V7` 6,
+  `GUNNER_UNMOVED_SHOTS_V7` 2, `DIG_IN_RADIUS_V7` 1, `REPAIR_MACHINE_V7` 4,
+  `ASSEMBLE_COST_V7` 4, and `PLATED_CAP_V7` 4.
+- **Derived queries** for a state and a view: `boardUnitsV7`,
+  `allOwnedUnitsV7`, and `tileOccupiedV7`; `isLivingUnitV7`;
+  `unitIsDugInV7` (canonical) and `publicUnitIsDugInV7` (from the public
+  stats).
+- **`queryPlayerCommandsV7`** offers, for a Dwarf seat, `TUNNEL` for every
+  legal `(Mole, to, rider)` (one entry per destination and per rider tile,
+  plus the rider-less entry), `BOMB_RUN` for every legal
+  `(Gyrocopter, target, to)`, `ASSEMBLE` for every legal `(Engineer, to)`,
+  the Gunner's second shot, and Repair. It never offers `ATTACK` for a
+  Gyrocopter, `RECOVER` for a construct, `MOVE` for a Gunner that fired, a
+  Move onto a mound, a rider's foreign center on its surfacing turn, any
+  command for a burrowed unit, or Field Defense or Rally to a Dwarf seat.
+  Every offered command is accepted.
+- **Previews,** each null unless the command is offered:
+  `previewTunnelV7(view, command)` →
+  `{ unitId, to, riderUnitId, riderTo, eruptionDamage, projected: true, eruptionTargets, undermines }`,
+  the eruption **as if it happened on the current board** (the targets may
+  move first; `eruptionTargets` are the visible hostile ground units around
+  `to`, `undermines` the explored Field Defense tiles);
+  `previewBombRunV7(view, command)` →
+  `{ unitId, targetUnitId, to, damage, shieldDamage, kills, blast, landingThreat }`,
+  the exact bomb, the blasts of a killed exploding target, and
+  `landingThreat`, the sum over every visible hostile unit whose threatened
+  tiles include `to` of one full-strength hit on the Gyrocopter there (a
+  hostile Gyrocopter's public bomb), capped at its HP; and
+  `previewAssembleV7(view, unitId)` →
+  `{ unitId, cost, cityId, usedSlots, capacity, tiles }`.
+  `queryAssembleUnavailableReasonV7` tells the UI why an own Engineer cannot
+  Assemble.
+- `queryCombatPreviewV7` and `estimateCombatV7` include Dig In (from the
+  defender's current `moved` flag and the public `dugIn`), Unflinching,
+  Plated, Blasting Charges, the Gunner's allowance, and Knockback.
+  `queryThreatenedTilesV7` gives a visible, non-sluggish Gyrocopter its
+  bombing reach (every tile within 2) and no ordinary attack reach, each
+  mound its eruption ring and surfacing reach (the tiles within 2 of the
+  mound), and a Gunner range 2 from every tile it can reach.
+- **Public unit stats** carry, for every unit when the match has a Dwarf
+  seat, `bombedThisTurn` and `surfacedThisTurn` (booleans), and for units
+  of a Dwarf seat the `dwarf` block: `construct`, `machine`, `dugIn`,
+  `digsIn`, `shotsLeft` (a Gunner's shots left this turn on its owner's
+  turn, otherwise on its owner's next turn if it does not move; null for
+  every other role), `plated` (4 or null), `tunnelRange` (3 for the Mole, 0
+  otherwise), the owner's `eruptionDamage` and `bombDamage`, and `burrowed`
+  (true for a mound's record).
+- `PublicPlayerV7` and the leaderboard carry `DWARF` and `DWARF_BASELINE_V1`;
+  the leaderboard counts all owned units, burrowed ones included.
+
+## 23. Revision history
+
+| Revision | Ruleset ID           | Main changes                                                                                                                                                                                                                                                                                                             | Source                                                          |
+| -------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| 3        | `pulp-wars-poc-7r3`  | Original-faction baseline: four land branches, growth rewards, achievements, combat kernel                                                                                                                                                                                                                               | [RULESET_7.md](RULESET_7.md)                                    |
+| 4        | `pulp-wars-poc-7r4`  | Regional biomes; Ore returns; Mine 5/+2; Forge +1 per Mine                                                                                                                                                                                                                                                               | [revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)             |
+| 5        | `pulp-wars-poc-7r5`  | Explorer achievement; Monument placement flow                                                                                                                                                                                                                                                                            | [revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md)              |
+| 6        | `pulp-wars-poc-7r6`  | Map types, water, Fish, Pearls, Ports, Naval branch, transport, Patrol Boat, Battleship                                                                                                                                                                                                                                  | [revision 6](RULESET_7_REVISION_6_WATER_NAVAL.md)               |
+| 7        | `pulp-wars-poc-7r7`  | Neutral Roads, automatic embark, Battleship splash, flat fortification levels, Field Defense; removed Saboteur                                                                                                                                                                                                           | [revision 7](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md)   |
+| 8        | `pulp-wars-poc-7r8`  | Adjacent shared processor contributors                                                                                                                                                                                                                                                                                   | [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)        |
+| 9        | `pulp-wars-poc-7r9`  | 23-node Human tree, Captain, Knight, Overrun, Land Grant, Shipyard, Market move, separate land/sea trade                                                                                                                                                                                                                 | [revision 9](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)          |
+| 10       | `pulp-wars-poc-7r10` | Road movement without capital connection; city-center spawning; full-turn Fortify                                                                                                                                                                                                                                        | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
+| 10 (fix) | `pulp-wars-poc-7r11` | An occupied center blocks land training; displacement applies only to reward units                                                                                                                                                                                                                                       | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
+| 11       | `pulp-wars-poc-7r11` | One city action per turn; Windmill healing; Road population; Commerce ×2 Market; Ore on Drill; Pillage on Raiding; tactical AI                                                                                                                                                                                           | [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)       |
+| 12       | `pulp-wars-poc-7r12` | No starting technology; free first tier-1 research; Fruit always visible, Fertile Ground on Gathering; resources kept under improvements; AI opener; Raider Escape                                                                                                                                                       | this document                                                   |
+| 13       | `pulp-wars-poc-7r13` | Undead faction (per-seat factions, roster, Graves, Restless, Frenzy, Raise Dead, Devour, Infect, Lifesteal, Wail, Lich splash)                                                                                                                                                                                           | [revision 13](RULESET_7_REVISION_13_UNDEAD.md)                  |
+| 14       | `pulp-wars-poc-7r14` | Plague (Lich) and Bitten (Zombie); Tend cures; unanswered Vampire; Lich Attack 3; +1 village; level income cap 5; Commerce no longer doubles Markets                                                                                                                                                                     | [revision 14](RULESET_7_REVISION_14_BALANCE.md)                 |
+| 15       | `pulp-wars-poc-7r15` | Plague lasts three owner turns and spreads only on the first; Zombie 18 HP                                                                                                                                                                                                                                               | [revision 15](RULESET_7_REVISION_15_BALANCE.md)                 |
+| 16a      | `pulp-wars-poc-7r16` | Orthogonal Shallow Water (25% minimum); capital growth guarantee and `CAPITAL_GROWTH`; Normal AI growth-first opening                                                                                                                                                                                                    | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 16b      | `pulp-wars-poc-7r16` | Patrol Boat and embarked Move 2; landing costs one movement point; landing preview                                                                                                                                                                                                                                       | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 16c      | `pulp-wars-poc-7r16` | Research tiers 5+1/7+3/12+5 per extra city; level income cap 4; Market cap 3                                                                                                                                                                                                                                             | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 17       | `pulp-wars-poc-7r17` | Goblin faction: roster, Warrens, Gang Up, Kaboom, death blasts and chains, friendly-fire bombs, Plunder, WAAAGH!, Troll regeneration; `END_TURN` blockade events                                                                                                                                                         | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
+| 17       | `pulp-wars-poc-7r17` | `pulp_wars-0ao.7` tuning: one starting Goblin; Goblin Attack 1.5, Defense 0.5, Kaboom 5; death blasts 2/4/4; Goblin-only Normal AI changes                                                                                                                                                                               | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
+| 17 (fix) | `pulp-wars-poc-7r17` | `pulp_wars-0ao.15`: landing ends the activation for every faction (no Attack, Kaboom, Move, or Disband after landing)                                                                                                                                                                                                    | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 18       | `pulp-wars-poc-7r18` | Movement (`pulp_wars-6gd.2`): a Move passes through the mover's own units and never ends on one; the Road half cost depends only on the tile being left                                                                                                                                                                  | [revision 18](RULESET_7_REVISION_18.md)                         |
+| 18       | `pulp-wars-poc-7r18` | Showcase (`pulp_wars-6gd.3`): the fixed 16 x 16 `SHOWCASE` map type with three developed cities, every technology, and one unit of every role per seat                                                                                                                                                                   | [revision 18](RULESET_7_REVISION_18.md)                         |
+| 19       | `pulp-wars-poc-7r19` | Dinosaur faction (`pulp_wars-c87.2`–`c87.7`): roster, slots, Eggs, Shaman Hatch, Nesting, Grow, Wild, Acid, Armoured, Stampede, treasure Raptor                                                                                                                                                                          | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
+| 19       | `pulp-wars-poc-7r19` | `pulp_wars-c87.8` interim tuning: Caveman 12 HP; one-slot Triceratops hatching in one turn; Forest Stampede lanes; Dinosaur-only AI changes                                                                                                                                                                              | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
+| 20       | `pulp-wars-poc-7r20` | `pulp_wars-0hi.2`: Charge! replaces Stampede (Triceratops Move 2, 20 HP, 2 slots, hatch 2); T-Rex 14, hatch 4; Nesting slot; Wallbreaker; full heal                                                                                                                                                                      | [revision 20](RULESET_7_REVISION_20.md)                         |
+| 21       | `pulp-wars-poc-7r21` | `pulp_wars-9s0.4`: Conqueror, Land Baron, Sea Dog, and Slayer achievements (seven entitlements per seat)                                                                                                                                                                                                                 | [revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md)            |
+| Martian  | `pulp-wars-poc-7r22` | Martian faction (`pulp_wars-t6s.2` engine): roster, Shields, Force Field(s), heat rays, Cooling, Pierce, Disintegrator, Stride, Flying, self-launch, Beam Down, Mind Control, Thralls, Tractor Beam                                                                                                                      | [Martian overlay](RULESET_7_MARTIANS.md)                        |
+| 20 (bal) | `pulp-wars-poc-7r23` | `pulp_wars-0hi.3` coarse Dry Land balance: Human Fighter, Raider, and Marksman 12 HP, Guard 17; Caveman 10                                                                                                                                                                                                               | [revision 20](RULESET_7_REVISION_20.md#63-tuning-record)        |
+| Martian  | `pulp-wars-poc-7r23` | `pulp_wars-t6s.4` Martian UI (setup offers Martians; `t6s.6` production art) and `t6s.3` Martian Normal AI, no identity change                                                                                                                                                                                           | [Martian overlay](RULESET_7_MARTIANS.md)                        |
+| Ice Folk | `pulp-wars-poc-7r24` | Ice Folk faction (`pulp_wars-7g3.3` engine): roster, Chill and Shatter, Snow, Glide, the Blizzard, Cold Snap, Bolas, Mountain-born, Rockfall, Cold Blood, Sweep, Trample, Boulders, Prowl, Cold Aura, Deep Winter, Brittle                                                                                               | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                       |
+| Martian  | `pulp-wars-poc-7r25` | `pulp_wars-t6s.5` coarse Dry Land Martian balance: Colossus Defense 2.5                                                                                                                                                                                                                                                  | [Martian balance](../validation/RULESET_7_MARTIAN_BALANCE.md)   |
+| Ice Folk | `pulp-wars-poc-7r25` | `pulp_wars-7g3.6` Ice Folk UI (setup offers the Ice Folk; `7g3.5` production art) and `7g3.4` Ice Folk Normal AI, no identity change                                                                                                                                                                                     | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                       |
+| —        | `pulp-wars-poc-7r26` | `pulp_wars-9s0.2`: the Pangea coast ring (no land on the edge ring; Shallow circumnavigation; 59.5–72% land); other map types unchanged                                                                                                                                                                                  | [section 2.3](#23-map-types)                                    |
+| Ice Folk | `pulp-wars-poc-7r27` | `pulp_wars-7g3.7` coarse Dry Land Ice Folk balance: Yeti 9 HP, Defense 1.5                                                                                                                                                                                                                                               | [Ice Folk balance](../validation/RULESET_7_ICE_FOLK_BALANCE.md) |
+| —        | `pulp-wars-poc-7r28` | `pulp_wars-9s0.5`: the Rift (a 1 x 3 crack only flyers stand on; nothing built on it; 0-2 per generated board by width); other rules unchanged                                                                                                                                                                           | [Rift overlay](RULESET_7_RIFT.md)                               |
+| —        | `pulp-wars-poc-7r29` | `pulp_wars-w5j.1`: every player plays a different faction (`DUPLICATE_FACTION`; the headless and test only `allowDuplicateFactions`)                                                                                                                                                                                     | [unique factions](RULESET_7_UNIQUE_FACTIONS.md)                 |
+| Dwarf    | `pulp-wars-poc-7r30` | Dwarf faction (`pulp_wars-78i.3` engine): roster, Tunnel, mounds, surfacing and the eruption, the rider and its brake, Bomb Run, constructs and Unflinching, the Gunner's two shots, Dig In, Repair, Assemble, Knockback, Plated, Dive, Blasting Charges; the board and owned-unit accessors and the occupancy predicate | [Dwarf overlay](RULESET_7_DWARVES.md)                           |
+| Dwarf    | `pulp-wars-poc-7r30` | `pulp_wars-78i.6` Dwarf UI (setup offers the Dwarves; `78i.5` production art) and `78i.4` Dwarf Normal AI, no identity change                                                                                                                                                                                            | [Dwarf overlay](RULESET_7_DWARVES.md)                           |
+| Dwarf    | `pulp-wars-poc-7r31` | `pulp_wars-78i.7` coarse Dry Land Dwarf balance: the bomb deals 5, 6 with Dive                                                                                                                                                                                                                                           | [Dwarf balance](../validation/RULESET_7_DWARF_BALANCE.md)       |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -5237,7 +6398,7 @@ reducer, the state schema, event projection, unit stats, and the public
 queries; the worked examples were recomputed with the engine formula at the
 current HP. Where the overlay and the code differ, the code's behavior is
 stated here, and each difference is listed in
-[section 23](#23-known-discrepancies). The fold also corrected this
+[section 24](#24-known-discrepancies). The fold also corrected this
 document's own stale values: the prior-identity list runs through `7r29`
 (not `7r25`), the obsolete autosave keys through `v7r29` (not `v7r28`), the
 revision history gains its missing `7r29` and `7r30` rows, the browser
@@ -5245,24 +6406,68 @@ setup offers seven factions (the Ice Folk since `pulp_wars-7g3.6` and the
 Dwarves since `pulp_wars-78i.6`), and the Dwarf overlay's Normal AI and UI
 are live, not pending.
 
-## 23. Known discrepancies
+**Dwarf release fold (2026-10-03, `pulp_wars-78i.8`, no ruleset or identity
+change):** the [Dwarf overlay](RULESET_7_DWARVES.md) (`pulp-wars-poc-7r30`,
+implemented by `pulp_wars-78i.3`, with the Normal AI of `pulp_wars-78i.4`,
+the UI of `pulp_wars-78i.6`, and the production art of `pulp_wars-78i.5`),
+including its root rulings (section 20.5), its Normal AI notes (section
+15.1), its engine notes (section 22), its UI notes (section 23), and the
+`pulp_wars-78i.7` tuning record (`pulp-wars-poc-7r31`: the bomb 5, and 6
+with Dive), was folded into this document for all seven factions, with a
+Dwarf roster table, the Dwarf technology differences,
+[section 22](#22-dwarf-faction-rules), the surfacing step of Start Turn, the
+emptying of the per-turn lists at End Turn, the per-unit living test, the
+mound and the rider brake in [section 12.1](#121-movement), Dig In in
+[section 13.3](#133-fortification), Knockback, Unflinching, and Plated in
+[section 13](#13-combat-and-fortification), and the Dwarf interactions in
+the shared sections; the former sections 22 (revision history) and 23
+(known discrepancies) became 23 and 24. The Dwarf values were checked at
+`pulp-wars-poc-7r31` against `DWARF_ROLE_RULES_V7`,
+`DWARF_ROLE_MECHANICS_V7`, the Dwarf tree and `technologyCapabilitiesV7`,
+`FACTION_RULES_V7`, `STARTING_FIGHTERS_V7`, `MILITIA_FIGHTERS_V7`, the Dwarf
+constants of `ruleset-v7.ts` (with `armouredDamageV7` and
+`platedCapAppliesV7`), `dwarf.ts`, `dwarf-reducer.ts`, `units.ts`,
+`combat.ts` (Dig In, Unflinching, Knockback, Blasting Charges), the reducer
+(Start Turn and End Turn, Recover, Repair, Mind Control, Pillage, the
+blockade list), `graves.ts`, `wail.ts`, event projection, unit stats, the
+view, and the public queries. Where the overlay and the code differ, the
+code's behavior is stated here, and each difference is listed in
+[section 24](#24-known-discrepancies). The fold also corrected this
+document's own stale values: the prior-identity list runs through `7r30`
+(not `7r29`), the obsolete autosave keys through `v7r30` (not `v7r29`), the
+revision history gains its missing `7r31` row and the Dwarf rows replace
+the "not folded" `7r30` row, and the public Wail preview reads no Snow
+cover at all (not the viewer's `snow` flags, as the Ice Folk fold wrote).
 
-As of `pulp-wars-poc-7r30` the rules in this document match the code for
-the six factions it describes, including the Dinosaur faction of revisions
+## 24. Known discrepancies
+
+As of `pulp-wars-poc-7r31` the rules in this document match the code for
+the seven factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
-Martian overlay, and the Ice Folk faction of the Ice Folk overlay, with one
-open item: the public Wail preview below.
+Martian overlay, the Ice Folk faction of the Ice Folk overlay, and the
+Dwarf faction of the Dwarf overlay, with one open item: the public Wail
+preview below.
 
 **Open.**
 
-- **An inexact Wail preview without a flag.** The overlay's section 11 says
-  every preview equals its resolution except one flagged
-  `hiddenBlizzardPossible` or `touchesUnexplored`. `previewWailV7` reads an
-  Ice Folk target's Snow cover from the viewer's `snow` flags, so a hidden
-  Ice Witch's Blizzard next to the target can make the canonical Wail deal
-  less than the preview, and the preview carries no flag (overlay section
-  19.3 note 6, recorded by the engine bead and not resolved;
-  [section 17.9](#179-wail) states the code's behavior).
+- **An inexact Wail preview without a flag.** The Ice Folk overlay's section
+  11 says every preview equals its resolution except one flagged
+  `hiddenBlizzardPossible` or `touchesUnexplored`, and the Dwarf overlay's
+  section 14 says every Dwarf-related preview is exact (a Wail reads Dig In,
+  its section 13.2). The canonical Wail (`wailTargetsV7`) reads each
+  target's cover and fortification with the combat helpers, Snow cover and
+  Dig In included, but the public `previewWailV7` (`publicWailTargetsV7`)
+  reads cover only from Forest and Mountain and fortification only from the
+  view tile's `fortificationLevel` (Walls and Field Defense in the target's
+  own territory). So for an Ice Folk target with Snow cover, and for a
+  dug-in Dwarf Hammerer or Steam Mole, the preview shows more damage than
+  the Wail deals (a fresh Banshee on a fresh dug-in Hammerer, or on a fresh
+  Yeti on its Snow: preview 2, Wail 1), with no flag. The Ice Folk engine bead recorded
+  a narrower form of this (overlay section 19.3 note 6: a hidden Witch's
+  Blizzard), and the Ice Folk fold stated it as a reading of the viewer's
+  `snow` flags, which the code does not do; this fold measured both cases
+  against the code ([section 17.9](#179-wail) states the code's behavior).
+  It is not resolved here (a code change).
 
 **Ice Folk overlay against the code** (`pulp_wars-7g3.8`; resolved by
 stating the code's behavior):
@@ -5325,21 +6530,80 @@ stating the code's behavior):
   (`7r24`), and the Rift notes written before the terrain existed (sections
   10.9 and 19.3 note 11, implemented by `pulp_wars-9s0.5`).
 
-**Pending overlay in the code.** The engine at `pulp-wars-poc-7r30` also
-contains the [Dwarf overlay](RULESET_7_DWARVES.md) (`pulp_wars-78i.3`, with
-the Normal AI of `78i.4` and the UI of `78i.6`), which this document does
-not describe: the `DWARF` faction and `DWARF_BASELINE_V1` tree, its
-commands, events, state and view lists, per-unit flags, `dwarf` stats
-block, and combat-preview fields. In a match without a Dwarf seat every one
-of them is empty, false, absent, or never offered. The browser setup offers
-the faction; its coarse balance and its fold are in progress.
+**Dwarf overlay against the code** (`pulp_wars-78i.8`; resolved by stating
+the code's behavior):
 
-The revision 13–21 overlays and the Martian and Ice Folk overlays keep
+- **Numbers.** The `7r31` bomb (5, and 6 with Dive) replaces the root's
+  decided 4 and 5, which the overlay keeps in its decision D1, its
+  section 20.1, its tuning-bounds row (with "tuned: 5 / 6" beside it), its
+  per-unit analysis and its check of the root's decisions (sections 12 and
+  12.12, which its section 3 says were not re-run), its concern 4, and its
+  Help text (section 16.3: "bombs it for 4 (5 with Dive)"). The live Help,
+  tooltips, and unlock text are built from the constants and say 5 and 6.
+  The overlay's bomb tables (sections 6.4 and 13) were already recomputed
+  for 5 and 6.
+- **The Knockback preview.** The overlay's sections 13.11 and 14 call every
+  Dwarf preview exact but the tunnel forecast. The public Knockback
+  (`push`) reads `UNKNOWN_BEHIND_FOG` for an unexplored tile (which never
+  pushes, as in the canonical rule) and for a Mountain or Deep Water behind
+  another player's unit, whose Engineering or Navigation is private (a
+  Mountain is exact for a unit that strides, flies, or is Mountain-born);
+  the resolution then reads the owner's technologies and may push. This is the
+  Charge! precedent ([section 19.11](#1911-charge)), stated in
+  [section 22.9](#229-steam-cannon-knockback).
+- **The Brass Titan and Chill.** The overlay's sections 7.2 and 13.6 say
+  "Chill and Shatter (never for the Titan, a `JUGGERNAUT`)". The code Chills
+  any hostile land-form unit (`canBeChilledV7`), the Titan included, and
+  only Shatter excludes the `JUGGERNAUT` role; this document states the
+  code's reading ([sections 22.6](#226-clockwork) and
+  [21.14](#2114-interactions-with-other-rules)).
+- **Projection.** The overlay's section 13.11 projects `UNIT_BOMBED` like
+  `COMBAT_RESOLVED` (each viewer the fields about what it can see). The
+  code projects it whole to the actor and to every viewer that sees both
+  the Gyrocopter and the target before or after the command, as a
+  `COMBAT_SPLASH_DAMAGE` entry to the target's owner otherwise, and not at
+  all to anyone else ([section 15](#15-fog-and-observation)).
+- **Normal AI.** The overlay's section 15 asks for Scouting as the free
+  opening technology (Drill with a hostile unit in sight), Raiding and
+  Marksmanship with two cities, and the whole landing threat in the
+  Gyrocopter's score. The policy keeps the ordinary opener scorer and puts
+  Drill first in its plan, waits with Raiding for a Gyrocopter, trains the
+  first Gyrocopter and Engineer only at war with four front units, and
+  subtracts half the landing threat; the optional expansion tunnel lost its
+  head-to-head test and is off; the "against the Dwarves" rules are kept
+  although neutral on wins; the Brass Titan and the Steam Tank have no play
+  of their own; and the section 15 scenarios are unit tests, not tactical
+  benchmark cases (overlay section 15.1;
+  [section 16](#16-normal-ai-summary)).
+- **Readings of the engine bead** (overlay section 22.3), stated in this
+  document: allied territory for a tunnel, rider, or Assemble tile is a
+  cooperative partner's (a Mole may tunnel into its own territory); a hidden
+  mound's `UNIT_MOVE_INTERRUPTED` names the mound tile; `unflinchingApplied`
+  is true for every land-form construct's attack, at full HP too; the
+  `dwarf` stat block carries the owner's `eruptionDamage` and `bombDamage`
+  for every Dwarf unit, `tunnelRange` 0 for every role but the Mole, and the
+  Gunner's `shotsLeft` as defined in
+  [section 22.14](#2214-commands-events-errors-and-queries); `landingThreat`
+  sums one full-strength hit of each visible hostile unit that threatens the
+  landing, capped at the Gyrocopter's HP. The UI bead's Repair preview
+  correction (`previewTendWoundedV7` previews 4 on a machine) is stated in
+  [section 22.8](#228-engineer-repair-and-assemble).
+- **Superseded overlay text:** its status line ("over the Ice Folk overlay
+  (`7r24` to `7r27`, not yet folded), over current rules (five factions)"),
+  the `7rNN` identity (`7r30`, then `7r31` for the balance), its section
+  22.3 note 8 ("except the browser setup select, which offers it from the UI
+  bead: until then no browser match has a Dwarf seat"), section 18's "No UI
+  offers the faction until `pulp_wars-78i.6`", and the fallback-art plan of
+  section 16.4 (the production art of `pulp_wars-78i.5` is wired in; the
+  Human sprite with a badge remains only the Classic and legacy look).
+
+The revision 13–21 overlays and the Martian, Ice Folk, and Dwarf overlays keep
 superseded values (for example the Lich's Attack 2.5 and 20-HP Zombie in
 revision 13, unlimited Plague in revision 14, "Move 3" for embarked units in
 revision 13, the pre-tuning Goblin contract values in the revision-17 bounds
 and decisions, the Stampede and the interim Dinosaur numbers in revision
 19, the pre-`0hi.3` Human HP in revision 20's bounds, the contract's
 Colossus Defense 3, the Rift rules, and the placeholder-art plan in the
-Martian overlay, and the contract's Yeti and the examples above in the Ice
-Folk overlay) as design history; this document states the current values.
+Martian overlay, the contract's Yeti and the examples above in the Ice
+Folk overlay, and the decided bomb of 4 and 5 in the Dwarf overlay) as
+design history; this document states the current values.

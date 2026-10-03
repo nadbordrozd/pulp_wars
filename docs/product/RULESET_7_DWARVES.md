@@ -1,6 +1,13 @@
 # Ruleset 7: Steampunk Dwarf faction
 
-**Status:** contract (`pulp_wars-78i.2`); **the engine is implemented**
+**Status:** **folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
+(kept as history)** by `pulp_wars-78i.8` at `pulp-wars-poc-7r31`: the
+current rules describe the running seven-faction game, with the Dwarves in
+their [section 22](RULESET_7_CURRENT.md#22-dwarf-faction-rules), and win
+wherever this document differs; the fold's corrections of this text are
+listed in their
+[known discrepancies](RULESET_7_CURRENT.md#24-known-discrepancies).
+Contract (`pulp_wars-78i.2`); **the engine is implemented**
 (`pulp_wars-78i.3`, identity `pulp-wars-poc-7r30`: every rule, command, event,
 query, and state shape of this document) and **the UI is implemented**
 (`pulp_wars-78i.6`: the browser setup offers the faction, with the production

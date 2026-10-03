@@ -16,14 +16,19 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r30`: Human, Undead, Goblin, Dinosaur, Martian, and Ice Folk)
+## Current release contract (`pulp-wars-poc-7r31`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
 
-The current runtime is `pulp-wars-poc-7r30` (autosave
-`pulpWars.save.v7r30.current`; saves and replays of `pulp-wars-poc-7r29`
-and earlier are refused, and startup removes their autosave keys). Its six
-folded factions, Human, Undead, Goblin, Dinosaur, Martian, and Ice Folk, are
-described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
-into which `pulp_wars-7g3.8` folded the
+The current runtime is `pulp-wars-poc-7r31` (autosave
+`pulpWars.save.v7r31.current`; saves and replays of `pulp-wars-poc-7r30`
+and earlier are refused, and startup removes their autosave keys). Its seven
+factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf, are
+all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
+into which `pulp_wars-78i.8` folded the
+[Dwarf overlay](../product/RULESET_7_DWARVES.md) (engine `pulp_wars-78i.3`
+at `7r30`, Normal AI `pulp_wars-78i.4`, UI `pulp_wars-78i.6` with the
+production art of `pulp_wars-78i.5`, and the `pulp_wars-78i.7` coarse
+balance numbers of `7r31`, the bomb 5 and 6 with Dive), after
+`pulp_wars-7g3.8` folded the
 [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md) (engine
 `pulp_wars-7g3.3` at `7r24`, Normal AI `pulp_wars-7g3.4`, UI
 `pulp_wars-7g3.6` with the production art of `pulp_wars-7g3.5`, and the
@@ -59,14 +64,11 @@ the 60 cells whose board gained a Rift. `pulp_wars-w5j.1` (`7r29`) makes
 every player play a different faction
 ([unique-factions overlay](../product/RULESET_7_UNIQUE_FACTIONS.md)); the
 browser smoke launches only distinct factions. `pulp_wars-78i.3` (`7r30`)
-registers a seventh faction from the
-[Dwarf overlay](../product/RULESET_7_DWARVES.md), which is **not folded**
-into the current rules: its engine, Normal AI (`pulp_wars-78i.4`), and UI
-(`pulp_wars-78i.6`, with the production art of `pulp_wars-78i.5`) are live,
-so match setup offers it and the browser smoke probes it, while its coarse
-balance and its fold are in progress.
-The Undead, the Goblins, the Dinosaurs, the Martians, and the Ice Folk are
-part of the default route: match setup always offers a
+registers the seventh faction, the Dwarves, and `pulp_wars-78i.7` (`7r31`)
+changes only the Dwarf bomb
+([Dwarf balance report](RULESET_7_DWARF_BALANCE.md)).
+The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, and the
+Dwarves are part of the default route: match setup always offers a
 Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf choice for the human and
 each AI seat (distinct by default: Human, Undead, Goblin, Dinosaur), and
 there is no development flag (`pulp_wars-vkq.16` removed `?undead=1`; the
@@ -74,13 +76,14 @@ later factions never had one). Balance evidence is the
 [Goblin balance report](RULESET_7_GOBLIN_BALANCE.md), the
 [Dinosaur balance report](RULESET_7_DINOSAUR_BALANCE.md), the coarse
 [revision-20 balance report](RULESET_7_REVISION_20_BALANCE.md), and the
-coarse [Martian](RULESET_7_MARTIAN_BALANCE.md) and
-[Ice Folk](RULESET_7_ICE_FOLK_BALANCE.md) balance reports; the release
-does not rerun their matrices.
+coarse [Martian](RULESET_7_MARTIAN_BALANCE.md),
+[Ice Folk](RULESET_7_ICE_FOLK_BALANCE.md), and
+[Dwarf](RULESET_7_DWARF_BALANCE.md) balance reports; the release does not
+rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r30` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r31` identity (ruleset ID, autosave key, the
   seven-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
@@ -90,8 +93,10 @@ does not rerun their matrices.
   Dinosaur faction, rules, Eggs, form-audit, and AI-basics suites, the
   revision-20 rules, Charge!, and Industry suites, the revision-21
   achievement suite, the `7r23` sturdiness suite, the Martian engine suites,
-  the Ice Folk engine suites, the Dwarf engine suites, persistence, and the
-  DOM shell and landing tests (the Goblin explosion, the other AI, and the
+  the Ice Folk engine suites, the Dwarf engine suites (the unit-reader
+  classification, identity, faction, Tunnel, bomb, units, interactions,
+  persistence, and headless suites), persistence, and the DOM shell and
+  landing tests (the Goblin explosion, the other AI, and the
   presentation suites run in `npm run check`). It
   keeps no checked corpus or fingerprint of its own and has no `:refresh`
   variant, so a release has nothing to regenerate there.
@@ -152,44 +157,56 @@ does not rerun their matrices.
     (checking the "Sled chilled a" announcement and a sluggish Chill entry
     on the target), and resumes the save with its Ice Folk seat and the
     Chill on a fresh default-route load.
-  - The **Dwarf probe** (`pulp_wars-78i.6`, the pending
-    [Dwarf overlay](../product/RULESET_7_DWARVES.md)) launches a Showcase
-    with a Dwarf human seat, tunnels the Steam Mole through its Tunnel
-    button with the eruption forecast in the dock, checks the mound, and
-    resumes the save with the mound.
+  - The **Dwarf probe** (`pulp_wars-78i.6`) checks the same seven faction
+    options, launches a Showcase with a Dwarf human seat against Undead,
+    Goblin, and Human seats from the production setup (the human's "D"
+    typeahead passes Dinosaur, whose seat takes the freed Human), selects
+    the Steam Mole from the keyboard, arms its Tunnel button, checks the
+    eruption forecast ("If they stay:") on an offered destination in the
+    dock, tunnels there (checking the "Steam Mole tunnelled" announcement
+    and the mound in the view's `burrowed` list, with the Mole off the
+    board), and resumes the save with its Dwarf seat and the mound on a
+    fresh default-route load.
   - The **Showcase probe** (`pulp_wars-6gd.3`) launches the Showcase map
     (16 x 16 only, no seed control), checks the ten own units, three own
     cities, and every technology, ends one turn, and resumes.
 
   These six probes use no fixture, so they run unchanged with
   `--deployed`. They do not play their matches to an outcome: complete
-  Goblin, Dinosaur, Martian, and Ice Folk matches (every pairing of the six
-  factions, and four-seat mixes; the Martian and Ice Folk pairings on Dry
-  Land) were played headlessly by the balance matrices, and
-  `npm run check` runs bounded headless Goblin, Dinosaur, Martian, and Ice
-  Folk matches and replays. Mind Control and the Tractor Beam are covered by
-  the engine, AI, and UI tests and the `review:ruleset7-martian-ui`
-  captures, and Cold Snap, Shatter, Sweep, and a Frozen unit refused an
-  attack after moving by the engine, AI, and UI tests and the
-  `review:ruleset7-ice-folk-ui` captures, not by the smoke.
+  Goblin, Dinosaur, Martian, Ice Folk, and Dwarf matches (every pairing of
+  the seven factions, and four-seat mixes; the Martian, Ice Folk, and Dwarf
+  pairings on Dry Land) were played headlessly by the balance matrices, and
+  `npm run check` runs bounded headless Goblin, Dinosaur, Martian, Ice
+  Folk, and Dwarf matches and replays. Mind Control and the Tractor Beam
+  are covered by the engine, AI, and UI tests and the
+  `review:ruleset7-martian-ui` captures, Cold Snap, Shatter, Sweep, and a
+  Frozen unit refused an attack after moving by the engine, AI, and UI
+  tests and the `review:ruleset7-ice-folk-ui` captures, and the rider, the
+  surfacing and its eruption, the bombing run, Assemble, Repair, Dig In,
+  and Knockback by the engine, AI, and UI tests and the
+  `review:ruleset7-dwarf-ui` captures, not by the smoke.
 
 - `npm run art:chibi-goblin-review` (`scripts/art/chibi-goblin-review.ts`,
   `pulp_wars-0ao.8`, `3tq.9`), `npm run art:chibi-dinosaur-review`
   (`scripts/art/chibi-dinosaur-review.ts`, `pulp_wars-c87.7`, `3tq.13`),
   `npm run art:chibi-martian-direction-review`
-  (`scripts/art/chibi-martian-direction-review.ts`, `pulp_wars-t6s.6`), and
+  (`scripts/art/chibi-martian-direction-review.ts`, `pulp_wars-t6s.6`),
   `npm run art:chibi-ice-folk-direction-review`
-  (`scripts/art/chibi-ice-folk-direction-review.ts`, `pulp_wars-7g3.5`)
-  recheck the PixelLab Goblin, Dinosaur, Martian, and Ice Folk unit
+  (`scripts/art/chibi-ice-folk-direction-review.ts`, `pulp_wars-7g3.5`), and
+  `npm run art:chibi-dwarf-direction-review`
+  (`scripts/art/chibi-dwarf-direction-review.ts`, `pulp_wars-78i.5`)
+  recheck the PixelLab Goblin, Dinosaur, Martian, Ice Folk, and Dwarf unit
   sprites, portraits, cities, and (for the Dinosaurs) the Egg and command
   icons (for the Martians the icons, effects, palette, and readability; for
   the Ice Folk also the Snow overlay tiles, the Chill markers, and the
-  Shatter frames), and rewrite the review evidence under
-  `art/pixellab/reviews/chibi-batch-goblin/`,
+  Shatter frames; for the Dwarves also the 32 px lineup, the mounds, the
+  Dig In earthwork, the eruption frames, and the Dwarf fleet), and rewrite
+  the review evidence under `art/pixellab/reviews/chibi-batch-goblin/`,
   `art/pixellab/reviews/chibi-batch-dinosaur/`,
-  `art/pixellab/reviews/chibi-batch-direction-martian/`, and
-  `art/pixellab/reviews/chibi-batch-direction-ice-folk/`; inspect it with
-  the other art reviews.
+  `art/pixellab/reviews/chibi-batch-direction-martian/`,
+  `art/pixellab/reviews/chibi-batch-direction-ice-folk/`, and
+  `art/pixellab/reviews/chibi-batch-direction-dwarf/`; inspect it with the
+  other art reviews.
 - **Gate order.** Run `npm run check` **before** the art review commands,
   then restore the checked-in review evidence with `git checkout -- art/`
   after them: on macOS Chrome the reviews rewrite tracked review evidence,
@@ -203,13 +220,14 @@ does not rerun their matrices.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (`7r30`) captures. The revision-2 validator described below as
+  (`7r31`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 
 The current release gates, in the order they are run from the reviewed
 release revision (the `cross-cutting/release` profile plus the Ruleset 7,
-Goblin, Dinosaur, Martian, and Ice Folk additions). `npm run check` runs
+Goblin, Dinosaur, Martian, Ice Folk, and Dwarf additions). `npm run check`
+runs
 before the art
 reviews, and `git checkout -- art/` restores the evidence they rewrite
 before the browser smokes (see the gate-order note above):
@@ -237,6 +255,7 @@ npm run art:chibi-goblin-review
 npm run art:chibi-dinosaur-review
 npm run art:chibi-martian-direction-review
 npm run art:chibi-ice-folk-direction-review
+npm run art:chibi-dwarf-direction-review
 git checkout -- art/
 npm run smoke:browser
 npm run smoke:browser:legacy-v5
@@ -247,7 +266,8 @@ git diff --check
 The results of a release run are recorded on its bead
 (`pulp_wars-0ao.9` for revision 17, `pulp_wars-c87.9` for the four-faction
 `7r23` fold, `pulp_wars-t6s.7` for the five-faction `7r25` fold,
-`pulp_wars-7g3.8` for the six-faction `7r30` fold), not in this document;
+`pulp_wars-7g3.8` for the six-faction `7r30` fold, `pulp_wars-78i.8` for
+the seven-faction `7r31` fold), not in this document;
 the
 [final release gates](#final-release-gates) and
 [root verification status](#root-verification-status) below are the frozen
@@ -255,8 +275,8 @@ revision-2 record.
 
 The revision-16 contract (`pulp-wars-poc-7r16`, Human and Undead), the
 revision-17 and revision-18 three-faction contracts, the four-faction
-`7r23` contract, and the five-faction `7r25`–`7r29` contract are superseded
-by this one; their validator and smoke were extended in place, not kept as
+`7r23` contract, the five-faction `7r25`–`7r29` contract, and the
+six-faction `7r30` contract are superseded by this one; their validator and smoke were extended in place, not kept as
 separate commands.
 
 For that revision-2 release, Ruleset 7 was the normal browser default and the
