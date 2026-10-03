@@ -26,17 +26,20 @@
  *                                  a real Showcase match with a Dinosaur
  *                                  viewer against Human, Undead and Goblin:
  *                                  all four converted factions
- *   showcase-dinosaur-four-{desktop,phone}-zoom-{1,0.75}.png
- *                                  the same map with four Dinosaur seats
  *   showcase-dinosaur-classic-desktop-zoom-1.png   the mixed match with the
  *                                  Classic look developer option on
  *   showcase-dinosaur-{dock,lay,tech,help}-desktop.png
  *                                  the interface in the default look
- *   scene-{four,mixed}-{desktop,phone}-zoom-{1,0.75}.png,
- *   scene-four-classic-desktop-zoom-1.png
- *                                  the scenes of
+ *   scene-mixed-{desktop,phone}-zoom-{1,0.75}.png,
+ *   scene-mixed-classic-desktop-zoom-1.png
+ *                                  the MIXED scene of
  *                                  scripts/art/chibi/review-dinosaur-direction-scene-v7.ts
  *                                  drawn by the real board host
+ *
+ * Since bead pulp_wars-w5j.3 the four-Dinosaur Showcase and the FOUR scene
+ * (four Dinosaur players) are no longer captured: every player plays a
+ * different faction (pulp_wars-w5j.1). Their earlier captures stay as
+ * history.
  *   index.json                     sizes and hashes
  *
  * `--dinosaur-only` is accepted and changes nothing: this command writes
@@ -1100,7 +1103,6 @@ const BOARD = `document.querySelector('canvas.board-canvas-v7')`;
 const SCENE = `globalThis.__DINOSAUR_DIRECTION_SCENE__`;
 const CLASSIC_LOOK_KEY = "pulpWars.ruleset7.boardClassicLook.v1";
 const MIXED_FACTIONS = ["DINOSAUR", "ORIGINAL", "UNDEAD", "GOBLIN"] as const;
-const FOUR_FACTIONS = ["DINOSAUR", "DINOSAUR", "DINOSAUR", "DINOSAUR"] as const;
 
 async function zoomTo(
   connection: Connection,
@@ -1300,7 +1302,10 @@ async function captures(directory: string, baseUrl: string): Promise<string[]> {
         await shot("showcase-dinosaur-help-desktop.png");
         await pressKey(connection, "Escape");
       }
-      for (const kind of ["FOUR", "MIXED"] as const) {
+      // The FOUR scene (four Dinosaur players) is no longer captured:
+      // every player plays a different faction since bead pulp_wars-w5j.1
+      // (dropped in pulp_wars-w5j.3).
+      for (const kind of ["MIXED"] as const) {
         await showScene(connection, `{ kind: '${kind}' }`);
         for (const step of ["1", "0.75"]) {
           await zoomTo(connection, step, true);
@@ -1311,19 +1316,14 @@ async function captures(directory: string, baseUrl: string): Promise<string[]> {
         }
       }
       if (viewport.name === "desktop") {
-        await showScene(connection, `{ kind: 'FOUR', classic: true }`);
+        await showScene(connection, `{ kind: 'MIXED', classic: true }`);
         await zoomTo(connection, "1", true);
         await delay(700);
-        await shot("scene-four-classic-desktop-zoom-1.png");
+        await shot("scene-mixed-classic-desktop-zoom-1.png");
       }
       await clearScene(connection);
-      // The same map with four Dinosaur seats.
-      await setup(connection, url.href, false, FOUR_FACTIONS);
-      await launch(connection);
-      for (const step of ["1", "0.75"]) {
-        await zoomTo(connection, step, false);
-        await shot(`showcase-dinosaur-four-${viewport.name}-zoom-${step}.png`);
-      }
+      // The former "four Dinosaur seats" Showcase is gone: the setup form
+      // keeps every seat's faction distinct (pulp_wars-w5j.1).
       if (viewport.name === "desktop") {
         // The mixed match in the classic look (the previous art).
         await setup(connection, url.href, true);
@@ -1397,7 +1397,7 @@ async function main(): Promise<void> {
       if (server !== null) stopDevServer(server);
     }
     captureNote =
-      "showcase-dinosaur-*: a Showcase match (16 x 16) launched from the setup form with ?art=chibi in the default look, with a Dinosaur viewer against Human, Undead and Goblin (all four converted factions); 'four' has four Dinosaur seats; 'classic' is the mixed match with Settings > Developer tools > Classic look (previous art) ON. scene-*: the scenes of scripts/art/chibi/review-dinosaur-direction-scene-v7.ts drawn by the real board host with the look the game draws.";
+      "showcase-dinosaur-*: a Showcase match (16 x 16) launched from the setup form with ?art=chibi in the default look, with a Dinosaur viewer against Human, Undead and Goblin (all four converted factions; the former four-Dinosaur match is gone, every player plays a different faction since pulp_wars-w5j.1); 'classic' is the mixed match with Settings > Developer tools > Classic look (previous art) ON. scene-*: the MIXED scene of scripts/art/chibi/review-dinosaur-direction-scene-v7.ts drawn by the real board host with the look the game draws (no base plates since pulp_wars-w5j.3), and in the Classic look.";
   }
   const images = await Promise.all(
     outputs

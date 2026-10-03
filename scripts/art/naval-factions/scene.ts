@@ -1,34 +1,32 @@
 /**
  * Review scenes of the faction-styled naval art (bead pulp_wars-w5j.2,
- * docs/art/NAVAL_FACTIONS.md). Loaded in the browser through the Vite dev
- * server by scripts/art/chibi-naval-faction-review.ts and drawn by the real
- * CanvasBoardHostV7 with the CHIBI art set and the live look, **minus the
- * base plates and rings** (`unit.base: "NONE"`): bead pulp_wars-w5j.3
- * removes them, and the ships must carry their owner's faction without
- * them. Nothing here is part of the game build.
+ * docs/art/NAVAL_FACTIONS.md), wired in by bead pulp_wars-w5j.3. Loaded in
+ * the browser through the Vite dev server by
+ * scripts/art/chibi-naval-faction-review.ts (and
+ * scripts/art/faction-looks-review.ts) and drawn by the real
+ * CanvasBoardHostV7 with the CHIBI art set and the live look exactly as the
+ * game passes it (`liveBoardLookV7`): no base plates and no rings, every
+ * faction's ships from the live registry under the subjects the game asks
+ * for (`UNIT:<ROLE>` for the Humans, `UNIT:<FACTION>:<ROLE>` for the
+ * others). Ships are naval-form Patrol Boats and Battleships, and the
+ * transport is an embarked Fighter. Nothing here is part of the game build.
  *
- * **Stand-ins.** The naval art is not registered under any subject yet
- * (the ship subjects are shared by every faction until w5j.3 wires the
- * faction art in), so each faction's Patrol Boat, Battleship and embarked
- * transport are registered under three of that faction's own land
- * subjects: the Patrol Boat as its FIGHTER, the Battleship as its GUARD and
- * the transport as its MARKSMAN (`UNIT:<ROLE>` for the Humans,
- * `UNIT:<FACTION>:<ROLE>` for the others). A scene unit of that role, in
- * land form on a water cell, is drawn with the ship's raster, its own
- * canvas and anchor. Those three land subjects are left out of the
- * scene's registry, and nothing else changes: cities, pennants, borders and
- * the board host are the game's own.
+ * The viewer is seat 0 (Human): its ships are ready (unmoved, with a Move
+ * offered), so they carry the ready cue; the others are spent. Ships marked
+ * damaged in a layout are at half their HP, so the HP bar shows.
  *
  * - COAST: six players, one per faction (Human, Undead, Goblin, Dinosaur,
- *   Martian, Ice Folk), each with a coastal City 2 on Grass and its three
- *   naval sprites on Shallow Water in its own territory and on Deep Water
- *   beyond it.
+ *   Martian, Ice Folk), each with a coastal City 2 on Grass and a Port in
+ *   front of it with its Patrol Boat docked, its Battleship and transport on
+ *   Shallow Water in its own territory, and its three naval sprites again on
+ *   Deep Water beyond it (the Patrol Boat and Battleship there damaged).
  * - MIXED: a sea of Shallow and Deep Water with the six factions' ships
  *   mixed together, two coastal cities, so the factions are told apart ship
  *   by ship.
  */
 import type {
   CityId,
+  CommandV7,
   CoordV7,
   FactionIdV7,
   PlayerColorV7,
@@ -37,23 +35,7 @@ import type {
   TerrainIdV7,
   UnitRoleIdV7,
 } from "../../../src/engine/index";
-import {
-  buildChibiArtRegistryV7,
-  type ArtSubjectV7,
-  type ChibiArtAssetV7,
-} from "../../../src/assets/chibi-art-v7";
-import {
-  CHIBI_DIRECTION_ART_ASSETS_V7,
-  CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7,
-} from "../../../src/assets/chibi-direction-art-manifest";
-import { CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7 } from "../../../src/assets/chibi-direction-dinosaur-art-manifest";
-import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "../../../src/assets/chibi-direction-ice-folk-art-manifest";
-import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "../../../src/assets/chibi-direction-martian-art-manifest";
-import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "../../../src/assets/chibi-direction-undead-art-manifest";
-import {
-  CHIBI_NAVAL_FACTION_ART_ASSETS_V7,
-  type NavalArtRoleV7,
-} from "../../../src/assets/chibi-naval-faction-art-manifest";
+import type { NavalArtRoleV7 } from "../../../src/assets/chibi-naval-faction-art-manifest";
 import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
 import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
 
@@ -79,25 +61,22 @@ const COLOURS: readonly PlayerColorV7[] = [
   "CORAL",
 ];
 
-/** The land role whose subject carries each naval sprite in the scenes. */
-export const NAVAL_STAND_IN_ROLE_V7: Readonly<
-  Record<NavalArtRoleV7, UnitRoleIdV7>
+/** The role and form of a scene unit of each naval sprite. */
+const NAVAL_UNIT_V7: Readonly<
+  Record<
+    NavalArtRoleV7,
+    { readonly role: UnitRoleIdV7; readonly form: "NAVAL" | "EMBARKED" }
+  >
 > = {
-  PATROL_BOAT: "FIGHTER",
-  BATTLESHIP: "GUARD",
-  EMBARKED_TRANSPORT: "MARKSMAN",
+  PATROL_BOAT: { role: "PATROL_BOAT", form: "NAVAL" },
+  BATTLESHIP: { role: "BATTLESHIP", form: "NAVAL" },
+  EMBARKED_TRANSPORT: { role: "FIGHTER", form: "EMBARKED" },
 };
 const ROLE_LETTER: Readonly<Record<string, NavalArtRoleV7>> = {
   P: "PATROL_BOAT",
   B: "BATTLESHIP",
   T: "EMBARKED_TRANSPORT",
 };
-
-function landSubject(faction: FactionIdV7, role: UnitRoleIdV7): ArtSubjectV7 {
-  return (
-    faction === "ORIGINAL" ? `UNIT:${role}` : `UNIT:${faction}:${role}`
-  ) as ArtSubjectV7;
-}
 
 const TERRAIN: Readonly<Record<string, TerrainIdV7>> = {
   g: "GRASS",
@@ -107,17 +86,18 @@ const TERRAIN: Readonly<Record<string, TerrainIdV7>> = {
 
 /**
  * One cell: `<terrain><territory seat 0-5 or ->` then `/`-separated items:
- * `city<level>` (a city of the territory's seat) or a ship
- * `<P|B|T>:<seat>` (Patrol Boat, Battleship, transport).
+ * `city<level>` (a city of the territory's seat), `port` (a Port), or a
+ * ship `<P|B|T>:<seat>` (Patrol Boat, Battleship, transport), damaged with
+ * a trailing `*`.
  */
 function coastLayout(): string[][] {
   return NAVAL_SCENE_FACTIONS_V7.map((_, seat) => [
     `g${seat}/city2`,
-    `s${seat}/P:${seat}`,
+    `s${seat}/port/P:${seat}`,
     `s${seat}/B:${seat}`,
     `s${seat}/T:${seat}`,
-    `d-/P:${seat}`,
-    `d-/B:${seat}`,
+    `d-/P:${seat}*`,
+    `d-/B:${seat}*`,
     `d-/T:${seat}`,
   ]);
 }
@@ -138,7 +118,8 @@ function mixedLayout(): string[][] {
       const water = (x + y) % 3 === 0 || y >= 4 ? "d" : "s";
       const seat = (x + 2 * y) % 6;
       const role = "PBT"[(x + y) % 3] ?? "P";
-      row.push(`${water}-/${role}:${seat}`);
+      const damaged = (x * 3 + y) % 5 === 0 ? "*" : "";
+      row.push(`${water}-/${role}:${seat}${damaged}`);
     }
     rows.push(row);
   }
@@ -151,9 +132,11 @@ interface ParsedCell {
   readonly terrain: TerrainIdV7;
   readonly seat: number | null;
   readonly city: number | null;
+  readonly port: boolean;
   readonly ship: {
     readonly role: NavalArtRoleV7;
     readonly seat: number;
+    readonly damaged: boolean;
   } | null;
 }
 
@@ -162,56 +145,33 @@ function parse(cell: string): ParsedCell {
   const terrain = TERRAIN[head[0] ?? "g"] ?? "GRASS";
   const seat = head[1] === "-" ? null : Number.parseInt(head.slice(1), 10);
   let city: number | null = null;
+  let port = false;
   let ship: ParsedCell["ship"] = null;
   for (const item of items) {
     if (item.startsWith("city")) city = Number.parseInt(item.slice(4), 10);
+    else if (item === "port") port = true;
     else {
       const [letter = "", owner = ""] = item.split(":");
       const role = ROLE_LETTER[letter];
       if (role === undefined) throw new Error(`unknown scene item ${item}`);
-      ship = { role, seat: Number.parseInt(owner, 10) };
+      ship = {
+        role,
+        seat: Number.parseInt(owner, 10),
+        damaged: owner.endsWith("*"),
+      };
     }
   }
-  return { terrain, seat, city, ship };
-}
-
-/**
- * The scene's direction art: the game's production art, minus the three
- * land subjects of each faction that carry its naval sprites, plus the
- * naval sprites under those subjects.
- */
-export function navalSceneArtV7(): readonly ChibiArtAssetV7[] {
-  const carriers = new Set<string>();
-  const naval: ChibiArtAssetV7[] = [];
-  for (const faction of NAVAL_SCENE_FACTIONS_V7)
-    for (const [role, standIn] of Object.entries(NAVAL_STAND_IN_ROLE_V7)) {
-      const subject = landSubject(faction, standIn);
-      carriers.add(subject);
-      const asset = CHIBI_NAVAL_FACTION_ART_ASSETS_V7.find(
-        (entry) =>
-          entry.faction === faction &&
-          entry.role === role &&
-          entry.kind === "UNIT",
-      );
-      if (asset === undefined)
-        throw new Error(`no naval art for ${faction} ${role}`);
-      naval.push({ ...asset.asset, subject });
-    }
-  const live = [
-    ...CHIBI_DIRECTION_ART_ASSETS_V7,
-    ...CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7,
-    ...CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7,
-    ...CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7,
-    ...CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7,
-    ...CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7,
-  ].filter((asset) => !carriers.has(asset.subject));
-  return [...live, ...naval];
+  return { terrain, seat, city, port, ship };
 }
 
 export function navalSceneViewV7(
   live: PlayerViewV7,
   kind: NavalSceneKindV7,
-): { readonly view: PlayerViewV7; readonly capitalAt: CoordV7 } {
+): {
+  readonly view: PlayerViewV7;
+  readonly capitalAt: CoordV7;
+  readonly offeredCommands: readonly CommandV7[];
+} {
   const layout = kind === "COAST" ? coastLayout() : mixedLayout();
   const rows = layout.length;
   const columns = layout[0]?.length ?? 0;
@@ -285,7 +245,7 @@ export function navalSceneViewV7(
       biome: null,
       terrain: cell?.terrain ?? "DEEP_WATER",
       resource: null,
-      improvement: null,
+      improvement: cell?.port === true ? "PORT" : null,
       road: false,
       fieldDefense: false,
       fortificationLevel: null,
@@ -300,6 +260,7 @@ export function navalSceneViewV7(
   });
   const cities: PlayerViewV7["cities"][number][] = [];
   const units: PlayerViewV7["units"][number][] = [];
+  const offeredCommands: CommandV7[] = [];
   layout.forEach((row, y) =>
     row.forEach((text, x) => {
       const cell = parse(text);
@@ -315,18 +276,21 @@ export function navalSceneViewV7(
           isCapital: false,
         });
       if (cell.ship === null) return;
+      const id = (9000 + y * columns + x) as typeof template.id;
+      const ready = cell.ship.seat === 0;
       units.push({
         ...template,
-        id: (9000 + y * columns + x) as typeof template.id,
+        id,
         ownerId: playerId(cell.ship.seat),
-        role: NAVAL_STAND_IN_ROLE_V7[cell.ship.role],
-        // Land form, so the stand-in subject is asked for; the raster is
-        // the ship's (see the module comment).
-        form: "LAND",
+        ...NAVAL_UNIT_V7[cell.ship.role],
         at,
-        hp: template.maxHp,
-        activation: { ...template.activation, handled: true },
+        hp: cell.ship.damaged
+          ? Math.max(1, Math.round(template.maxHp / 2))
+          : template.maxHp,
+        activation: { ...template.activation, handled: !ready },
       });
+      // A ready ship: unmoved, with a Move offered (the plan's ready rule).
+      if (ready) offeredCommands.push({ kind: "MOVE", unitId: id, path: [at] });
     }),
   );
   const tileAt = new Map(
@@ -374,6 +338,7 @@ export function navalSceneViewV7(
     }
   return {
     capitalAt: { x: origin.x + CAPITAL.x, y: origin.y + CAPITAL.y },
+    offeredCommands,
     view: {
       ...live,
       viewer: { ...live.viewer, faction: "ORIGINAL" },
@@ -393,7 +358,7 @@ export function navalSceneViewV7(
 
 /**
  * Mounts a full-screen CHIBI board host over the page showing the scene,
- * in the live look with no base plates and no rings.
+ * in the live look the game draws.
  */
 export function showNavalSceneV7(
   live: PlayerViewV7,
@@ -417,16 +382,10 @@ export function showNavalSceneV7(
     onCommand: () => undefined,
   });
   const scene = navalSceneViewV7(live, options.kind);
-  const look = liveBoardLookV7("CHIBI");
-  const direction = look.visualDirection;
-  if (direction === undefined)
-    throw new Error("the live look has no direction");
-  const art = buildChibiArtRegistryV7(navalSceneArtV7());
-  if (art.problems.length > 0) throw new Error(art.problems.join("; "));
   host.update({
     matchInstanceId: `naval-factions-${options.kind}`,
     view: scene.view,
-    offeredCommands: [],
+    offeredCommands: scene.offeredCommands,
     interaction: {
       selection: null,
       selectedUnitId: null,
@@ -438,12 +397,7 @@ export function showNavalSceneV7(
     presentationPaused: true,
     highContrast: false,
     artSet: "CHIBI",
-    ...look,
-    visualDirection: {
-      ...direction,
-      unit: { ...direction.unit, base: "NONE" },
-    },
-    visualDirectionArt: art.registry,
+    ...liveBoardLookV7("CHIBI"),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

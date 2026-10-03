@@ -12,7 +12,7 @@ import {
 /**
  * Ice Folk UI visual review (bead pulp_wars-7g3.6). It captures the
  * default-route setup with an Ice Folk seat; real Showcase launches (the Ice
- * Folk against Humans, four Ice Folk players, and the Ice Folk beside every
+ * Folk against Humans, and the Ice Folk beside every
  * other faction) at zoom steps 1 and 0.75; and, on the Ice Folk UI
  * fixtures, the Snow overlay over Grass, Forest, Mountain and Roads, the
  * Witch's Blizzard (over her own Snow and over enemy land), the Frosted and
@@ -311,10 +311,9 @@ async function fixtureTour(
   await activate(connection, victim.witch as Coord);
   evidence[`${suffix}EnemyWitchDock`] = await dockText(connection);
   await capture(connection, `enemy-witch-ring-${suffix}.png`);
-  // Two Ice Folk seats: two Snow territories side by side.
-  await mount(connection, art, "iceFolkMirrorFixtureV7");
-  await focusCell(connection, { x: 5, y: 7 });
-  await capture(connection, `mirror-${suffix}.png`);
+  // The former two-Ice-Folk "mirror" capture is gone: every player plays a
+  // different faction since pulp_wars-w5j.1, so no match has two Ice Folk
+  // Snow territories (dropped in pulp_wars-w5j.3).
 
   await mount(connection, art, "iceFolkUiFixtureV7");
   const at = (await evaluate(connection, `${REVIEW}.at`)) as Record<

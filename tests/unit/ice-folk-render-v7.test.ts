@@ -193,21 +193,25 @@ describe("Ice Folk art wiring (ICE_FOLK.md wiring steps 1-3, 5)", () => {
     expect(
       unitArtSubjectV7({ role: "GUARD", form: "LAND", faction: "ICE_FOLK" }),
     ).toBe("UNIT:ICE_FOLK:GUARD");
-    // Boats and embarked units are the shared subjects.
+    // Since bead pulp_wars-w5j.3 boats and embarked units are the Ice
+    // Folk's own naval subjects.
     expect(
       unitArtSubjectV7({
         role: "PATROL_BOAT",
         form: "NAVAL",
         faction: "ICE_FOLK",
       }),
-    ).toBe("UNIT:PATROL_BOAT");
+    ).toBe("UNIT:ICE_FOLK:PATROL_BOAT");
     expect(
       unitArtSubjectV7({
         role: "FIGHTER",
         form: "EMBARKED",
         faction: "ICE_FOLK",
       }),
-    ).toBe("UNIT:EMBARKED_TRANSPORT");
+    ).toBe("UNIT:ICE_FOLK:EMBARKED_TRANSPORT");
+    expect(portraitSubjectV7("BATTLESHIP", "ICE_FOLK")).toBe(
+      "PORTRAIT:ICE_FOLK:BATTLESHIP",
+    );
     expect(cityArtSubjectV7({ artLevel: 2, faction: "ICE_FOLK" })).toBe(
       "CITY:ICE_FOLK:2",
     );

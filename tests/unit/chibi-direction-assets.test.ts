@@ -112,17 +112,24 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
     expect(
       registry.variants("IMPROVEMENT:FARM").map((asset) => asset.id),
     ).toEqual(["chibi-direction-farm"]);
-    // Ships are shared by every faction and are the only units not
-    // converted. The Goblins have their own list since bead
-    // pulp_wars-3tq.9 (tested below), the Undead since bead
-    // pulp_wars-3tq.12 and the Dinosaurs since bead pulp_wars-3tq.13, each
-    // in a module of their own that the registry adds.
-    for (const subject of [
-      "UNIT:PATROL_BOAT",
-      "UNIT:BATTLESHIP",
-      "UNIT:EMBARKED_TRANSPORT",
-    ] as const)
-      expect(registry.variants(subject), subject).toHaveLength(0);
+    // The Goblins have their own list since bead pulp_wars-3tq.9 (tested
+    // below), the Undead since bead pulp_wars-3tq.12 and the Dinosaurs
+    // since bead pulp_wars-3tq.13, each in a module of their own that the
+    // registry adds. Since bead pulp_wars-w5j.3 the shared ship subjects
+    // hold the Human naval art (chibi-naval-faction-art-manifest.ts), not
+    // an entry of this list.
+    const own = new Set(CHIBI_DIRECTION_ART_ASSETS_V7.map((asset) => asset.id));
+    for (const [subject, id] of [
+      ["UNIT:PATROL_BOAT", "chibi-naval-human-patrol-boat"],
+      ["UNIT:BATTLESHIP", "chibi-naval-human-battleship"],
+      ["UNIT:EMBARKED_TRANSPORT", "chibi-naval-human-transport"],
+    ] as const) {
+      expect(
+        registry.variants(subject).map((asset) => asset.id),
+        subject,
+      ).toEqual([id]);
+      expect(own.has(id), id).toBe(false);
+    }
     for (const subject of [
       "UNIT:UNDEAD:FIGHTER",
       "CITY:UNDEAD:1",
@@ -732,15 +739,20 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
         registry.variants(subject).map((asset) => asset.id),
         subject,
       ).toEqual([id]);
-    // The Human art is still there; the Goblin command icons and the shared
-    // ships are not part of the batch.
+    // The Human art is still there; the Goblin command icons are not part
+    // of the batch, nor are the Goblin ships (the naval list of bead
+    // pulp_wars-w5j.2, wired in by pulp_wars-w5j.3).
     expect(registry.variants("UNIT:FIGHTER")).toHaveLength(1);
     for (const subject of [
       "ICON:ACTION:KABOOM",
       "ICON:ACTION:GOBLIN:RALLY",
-      "UNIT:PATROL_BOAT",
     ] as const)
       expect(registry.variants(subject), subject).toHaveLength(0);
+    expect(
+      CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7.some((asset) =>
+        asset.subject.endsWith("PATROL_BOAT"),
+      ),
+    ).toBe(false);
     // The classic Goblin art stays registered, masked, for the Classic look.
     const defaults = new Set(CHIBI_ART_ASSETS_V7.map((asset) => asset.id));
     for (const asset of CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7)

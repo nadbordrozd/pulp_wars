@@ -178,7 +178,8 @@ describe("Dinosaur interface art in the new direction (pulp_wars-3tq.13)", () =>
       factionArt: false,
     });
     // After this bead every faction's land units resolve to fixed-colour
-    // art in the default look; only the shared ships keep an owner area.
+    // art in the default look, and since bead pulp_wars-w5j.3 so do every
+    // faction's ships, transport and ship portraits.
     for (const [subject, id] of [
       ["PORTRAIT:FIGHTER", "chibi-direction-portrait-fighter"],
       ["PORTRAIT:GOBLIN:FIGHTER", "chibi-direction-portrait-goblin-goblin"],
@@ -186,13 +187,37 @@ describe("Dinosaur interface art in the new direction (pulp_wars-3tq.13)", () =>
       ["UNIT:JUGGERNAUT", "chibi-direction-juggernaut"],
       ["UNIT:GOBLIN:JUGGERNAUT", "chibi-direction-goblin-troll"],
       ["UNIT:UNDEAD:JUGGERNAUT", "chibi-direction-undead-abomination"],
+      ["UNIT:PATROL_BOAT", "chibi-naval-human-patrol-boat"],
+      ["UNIT:BATTLESHIP", "chibi-naval-human-battleship"],
+      ["UNIT:EMBARKED_TRANSPORT", "chibi-naval-human-transport"],
+      ["UNIT:DINOSAUR:PATROL_BOAT", "chibi-naval-dinosaur-patrol-boat"],
+      ["UNIT:DINOSAUR:EMBARKED_TRANSPORT", "chibi-naval-dinosaur-transport"],
+      [
+        "PORTRAIT:DINOSAUR:BATTLESHIP",
+        "chibi-naval-dinosaur-portrait-battleship",
+      ],
     ] as const)
       expect(resolve(subject), subject).toMatchObject({ id, url: KEY });
-    for (const subject of [
-      "UNIT:PATROL_BOAT",
-      "UNIT:BATTLESHIP",
-      "UNIT:EMBARKED_TRANSPORT",
-    ] as const)
-      expect(resolve(subject), subject).toMatchObject({ url: RECOLOURED });
+    // A Dinosaur ship whose own raster fails is the classic shared ship in
+    // the owner's colour, never the Human (crimson) ship of the direction.
+    expect(
+      resolve("PORTRAIT:DINOSAUR:BATTLESHIP", {
+        failing: "chibi-naval-dinosaur-portrait-battleship.",
+      }),
+    ).toEqual({
+      id: "chibi-portrait-battleship",
+      url: RECOLOURED,
+      factionArt: true,
+    });
+    expect(
+      resolve("UNIT:DINOSAUR:EMBARKED_TRANSPORT", {
+        failing: "chibi-naval-dinosaur-transport.",
+      }),
+    ).toMatchObject({ id: "chibi-embarked-transport", url: RECOLOURED });
+    // The Classic look never sees the naval art: the shared ship in the
+    // owner's colour, as before.
+    expect(
+      resolve("UNIT:DINOSAUR:PATROL_BOAT", { classic: true }),
+    ).toMatchObject({ id: "chibi-patrol-boat", url: RECOLOURED });
   });
 });

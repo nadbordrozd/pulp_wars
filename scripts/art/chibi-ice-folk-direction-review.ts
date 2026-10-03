@@ -23,9 +23,10 @@
  *   city's territory with Roads, Forest and Mountain, and a Witch's
  *   Blizzard over enemy land);
  * - `palette.{png,json}` and `readability.json`, measured on the masters;
- * - `scene-{four,mixed-a,mixed-b}-{desktop,phone}-zoom-{1,0.75}.png`: the
+ * - `scene-{mixed-a,mixed-b}-{desktop,phone}-zoom-{1,0.75}.png`: the mixed
  *   scenes of scripts/art/ice-folk-direction/scene.ts drawn by the real
- *   board host with the default look;
+ *   board host with the default look (the four-Ice-Folk scene is no longer
+ *   captured since bead pulp_wars-w5j.3);
  * - `index.json`.
  *
  * The faction is not in the renderer yet: the scenes register the Ice Folk
@@ -1783,7 +1784,10 @@ const VIEWPORTS = [
   { name: "phone", width: 390, height: 844, dpr: 3, mobile: true },
 ] as const;
 const ZOOMS = ["1", "0.75"] as const;
-const SCENES = ["FOUR", "MIXED_A", "MIXED_B"] as const;
+// The FOUR scene (four Ice Folk players) is no longer captured: every
+// player plays a different faction since bead pulp_wars-w5j.1 (dropped in
+// pulp_wars-w5j.3; its earlier captures stay as history).
+const SCENES = ["MIXED_A", "MIXED_B"] as const;
 const SCENE = `globalThis.__ICE_FOLK_SCENE__`;
 
 async function captureAll(baseUrl: string): Promise<void> {
@@ -1963,7 +1967,6 @@ const KEY_SHEETS = [
   "snow-board-zoom-1.png",
   "snow-board-zoom-0.75.png",
   "palette.png",
-  "scene-four-desktop-zoom-1.png",
   "scene-mixed-a-desktop-zoom-1.png",
   "scene-mixed-b-desktop-zoom-0.75.png",
   "scene-mixed-a-phone-zoom-0.75.png",

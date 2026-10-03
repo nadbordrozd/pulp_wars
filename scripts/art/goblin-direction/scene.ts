@@ -18,9 +18,11 @@
  *   its role, for cross-faction contrast (hazard yellow against Human gold
  *   and against the Gold plate).
  *
- * - ROSTER (bead pulp_wars-3tq.9): four Goblin players with the whole
- *   roster, a damaged and a ready unit of most roles, and a Goblin city of
- *   each tier with a garrison (the capital is the level-3 camp).
+ * - ROSTER (bead pulp_wars-3tq.9): four players with every role, a damaged
+ *   and a ready unit of most roles, and a city of each tier with a garrison
+ *   (the capital is the Goblin level-3 camp). Since bead pulp_wars-w5j.3
+ *   the seats are one faction each (Goblin, Human, Undead, Dinosaur), as a
+ *   match must be; until then all four were Goblin.
  *
  * `study: false` draws the same scene with the classic Goblin sprites (the
  * before of a before/after pair): only the three study sprites differ.
@@ -72,11 +74,13 @@ const SEATING: Readonly<
     { faction: "GOBLIN", color: "TEAL" },
     { faction: "ORIGINAL", color: "VIOLET" },
   ],
+  // One faction per player since bead pulp_wars-w5j.3 (pulp_wars-w5j.1
+  // made four Goblin players impossible).
   ROSTER: [
     { faction: "GOBLIN", color: "CORAL" },
-    { faction: "GOBLIN", color: "TEAL" },
-    { faction: "GOBLIN", color: "GOLD" },
-    { faction: "GOBLIN", color: "VIOLET" },
+    { faction: "ORIGINAL", color: "TEAL" },
+    { faction: "UNDEAD", color: "GOLD" },
+    { faction: "DINOSAUR", color: "VIOLET" },
   ],
 };
 

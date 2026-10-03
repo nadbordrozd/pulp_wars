@@ -29,6 +29,7 @@ import {
 } from "../../src/render/canvas/undead-canvas-v7";
 import {
   BASELINE_DIRECTION_V7,
+  DIRECTED_GROUND_SHADOW_COLOUR_V7,
   DIRECTION_FLAG_ANCHORS_V7,
   HUMAN_DEMO_DIRECTION_V7,
   LIVE_DIRECTION_V7,
@@ -307,13 +308,15 @@ describe("Undead art in the live default look (pulp_wars-3tq.12)", () => {
     expect(drawPieces([skeleton], { direction: null }).images).toEqual([
       raster(`classic:UNIT:UNDEAD:FIGHTER#${CORAL}`),
     ]);
-    // The unit still stands on its player's plate.
+    // Since bead pulp_wars-w5j.3 the unit stands on no plate: the faint
+    // neutral shadow, nothing in the player colour.
     const fills = drawPieces([skeleton], {
       samples: directionArt(UNDEAD_SUBJECTS),
     })
       .log.filter((call) => call[0] === "set" && call[1] === "fillStyle")
       .map((call) => call[2]);
-    expect(fills).toContain(CORAL);
+    expect(fills).not.toContain(CORAL);
+    expect(fills).toContain(DIRECTED_GROUND_SHADOW_COLOUR_V7);
   });
 
   it("draws an Undead city's direction art with the pennant on its tower, and the classic city with its crown when it fails", () => {

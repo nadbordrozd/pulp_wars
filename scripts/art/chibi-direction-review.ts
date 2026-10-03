@@ -30,9 +30,11 @@
  *                                    it at x2 with the cell boundaries marked
  *   showcase-{human,mixed}-{desktop,phone}-zoom-{1,0.75}.png
  *                                    a real Showcase match in the default
- *                                    look (bead pulp_wars-3tq.6): every seat
- *                                    Human, and Human, Undead, Goblin,
- *                                    Dinosaur
+ *                                    look (bead pulp_wars-3tq.6): a Human
+ *                                    viewer against Martian, Ice Folk and
+ *                                    Goblin seats (every seat Human until
+ *                                    bead pulp_wars-w5j.3), and Human,
+ *                                    Undead, Goblin, Dinosaur
  *   showcase-human-today-desktop-zoom-1.png   the same match in the classic
  *                                    look (Settings > Developer tools >
  *                                    Classic look), the art before this batch
@@ -62,8 +64,6 @@
  *                                    a real Showcase match in the default
  *                                    look with a Goblin viewer against a
  *                                    Human, an Undead and a Dinosaur seat
- *   showcase-goblin-four-{desktop,phone}-zoom-{1,0.75}.png
- *                                    the same with four Goblin seats
  *   showcase-goblin-today-desktop-zoom-1.png  the Goblin match in the classic
  *                                    look (the previous Goblin art)
  *   showcase-goblin-{dock,tech}-desktop.png   the interface in the default look
@@ -71,10 +71,13 @@
  *                                    the ROSTER and MIXED scenes of
  *                                    scripts/art/goblin-direction/scene.ts
  *                                    drawn by the real board host as the
- *                                    game draws them: four Goblin players
- *                                    with the whole roster and a garrisoned
- *                                    city of each tier, and Goblin against
- *                                    Human
+ *                                    game draws them: every role across
+ *                                    four players, one faction each (Goblin,
+ *                                    Human, Undead, Dinosaur), with a
+ *                                    garrisoned city of each tier; and the
+ *                                    Goblin study's MIXED review state (two
+ *                                    Goblin and two Human seats, which no
+ *                                    match can have since pulp_wars-w5j.1)
  *   index.json                       sizes and hashes
  *
  * No PixelLab call is made. Captures start Vite on --port (never 6173).
@@ -917,7 +920,9 @@ const BOARD = `document.querySelector('canvas.board-canvas-v7')`;
 const SCENE = `globalThis.__CHIBI_DIRECTION_SCENE__`;
 const GOBLIN_MATCHES = [
   { name: "goblin", factions: ["GOBLIN", "ORIGINAL", "UNDEAD", "DINOSAUR"] },
-  { name: "goblin-four", factions: ["GOBLIN", "GOBLIN", "GOBLIN", "GOBLIN"] },
+  // The former "goblin-four" match (four Goblin seats) is gone: every
+  // player plays a different faction since bead pulp_wars-w5j.1, so the
+  // setup form cannot launch it (bead pulp_wars-w5j.3).
 ] as const;
 const CLASSIC_LOOK_KEY = "pulpWars.ruleset7.boardClassicLook.v1";
 
@@ -945,9 +950,12 @@ async function zoomTo(
 }
 
 const MATCHES = [
+  // A Human viewer against the other three factions (it was every seat
+  // Human until bead pulp_wars-w5j.3: every player plays a different
+  // faction since pulp_wars-w5j.1). With "mixed" it fields all six.
   {
     name: "human",
-    factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
+    factions: ["ORIGINAL", "MARTIAN", "ICE_FOLK", "GOBLIN"],
   },
   { name: "mixed", factions: ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"] },
 ] as const;
@@ -1177,8 +1185,8 @@ async function captures(
             );
             await pressKey(connection, "Escape");
           }
-          // The whole roster for four Goblin players with a garrisoned city
-          // of each tier, and Goblin against Human, with the game's own art.
+          // Every role across four factions with a garrisoned city of each
+          // tier, and the Goblin study's MIXED state, with the game's own art.
           for (const kind of ["ROSTER", "MIXED"] as const) {
             await evaluate(
               connection,
@@ -1220,7 +1228,7 @@ async function captures(
         }
       }
       if (viewport.name === "desktop" && !farmsOnly && goblin?.only !== true) {
-        // The same all-Human match in the classic look (the previous art).
+        // The same "human" match in the classic look (the previous art).
         await launch(connection, url.href, MATCHES[0].factions, true);
         await zoomTo(connection, "1", false);
         files.push(
@@ -1319,9 +1327,9 @@ async function main(): Promise<void> {
       stopDevServer(server);
     }
     goblinCaptureNote =
-      "showcase-goblin-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look, with a Goblin viewer against a Human, an Undead and a Dinosaur seat; 'four' is four Goblin seats; 'today' is the Goblin match with Settings > Developer tools > Classic look (previous art) ON. ingame-goblin-*: the ROSTER and MIXED scenes of scripts/art/goblin-direction/scene.ts drawn by the real board host with the live direction and the game's own art (the Goblin production art of bead pulp_wars-3tq.9).";
+      "showcase-goblin-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look, with a Goblin viewer against a Human, an Undead and a Dinosaur seat (the former four-Goblin match is gone: every player plays a different faction since pulp_wars-w5j.1); 'today' is the Goblin match with Settings > Developer tools > Classic look (previous art) ON. ingame-goblin-*: the ROSTER scene (every role across four factions, one per player) and the MIXED review state (two Goblin and two Human seats) of scripts/art/goblin-direction/scene.ts drawn by the real board host with the live direction and the game's own art (the Goblin production art of bead pulp_wars-3tq.9; no base plates since pulp_wars-w5j.3).";
     captureNote =
-      "showcase-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look (the new visual direction, bead pulp_wars-3tq.6); 'human' is every seat Human, 'mixed' is Human, Undead, Goblin and Dinosaur; 'today' is the same all-Human match with Settings > Developer tools > Classic look (previous art) ON. ingame-farms-*: the FARMS patch of scripts/art/visual-direction/scene.ts drawn by the real board host with the live direction and the game's own art; the Farm is the vegetable beds the user chose (bead pulp_wars-9s0.7).";
+      "showcase-*: a Showcase match (16 x 16, three rivals) launched from the setup form with ?art=chibi in the default look (the new visual direction, bead pulp_wars-3tq.6); 'human' is a Human viewer against Martian, Ice Folk and Goblin seats (every seat Human until pulp_wars-w5j.3), 'mixed' is Human, Undead, Goblin and Dinosaur; no unit stands on a base plate since pulp_wars-w5j.3; 'today' is the same 'human' match with Settings > Developer tools > Classic look (previous art) ON. ingame-farms-*: the FARMS patch of scripts/art/visual-direction/scene.ts drawn by the real board host with the live direction and the game's own art; the Farm is the vegetable beds the user chose (bead pulp_wars-9s0.7).";
   }
   const describe = (files: readonly string[]) =>
     Promise.all(

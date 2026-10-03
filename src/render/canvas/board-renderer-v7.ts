@@ -1893,7 +1893,7 @@ export function drawBoardV7(input: {
               camera.zoom,
             );
           // The Martian revision: a flyer casts a ground shadow (over land
-          // or water) and is drawn lifted above it; the plate stays put.
+          // or water) and is drawn lifted above it; the ground cue stays put.
           if (entry.kind === "UNIT" && entry.martian?.flyer === true) {
             drawFlyerShadowV7(
               context,
@@ -1923,8 +1923,11 @@ export function drawBoardV7(input: {
             // The ready cue is the attached outline alone: in both art sets
             // the sprite stays opaque at its own size, so neither it nor the
             // city under it is hidden. Widths follow the sprite's own scale.
+            // A direction may move the cue to the base (BASE) or the ground
+            // (GROUND, the live look since bead pulp_wars-w5j.3).
             const readiness =
-              entry.ready && direction?.chrome.ready !== "BASE"
+              entry.ready &&
+              (direction === undefined || direction.chrome.ready === "GLOW")
                 ? readinessUnitStyleV7(
                     input.readinessElapsedMs ?? 0,
                     input.reducedMotion ?? false,

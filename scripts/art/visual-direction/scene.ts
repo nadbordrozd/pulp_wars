@@ -6,9 +6,11 @@
  * over a running match. Nothing here is part of the game build.
  *
  * BUSY is one deterministic developed map, 13 x 11 cells written around the
- * viewer's capital: four players who ALL play Human (seats A-D in Coral,
- * Teal, Gold and Violet), a city each at levels 1-3, a neutral Village,
- * every improvement, Roads, Forest, Mountains and a coast, and Fighters,
+ * viewer's capital: four players, one per faction (seats A-D: Human in
+ * Coral, Undead in Teal, Goblin in Gold and Dinosaur in Violet; until bead
+ * pulp_wars-w5j.3 all four played Human, which the game no longer allows
+ * since pulp_wars-w5j.1), a city each at levels 1-3, a neutral Village,
+ * every improvement, Roads, Forest, Mountains and a coast, and the Fighters,
  * Marksmen and Knights of all four players intermixed: on open ground, on
  * improvements, in cities, on a Field Defense, damaged, ready and spent.
  * NO_UNITS is the same map without units (the unit mask for the contrast
@@ -53,7 +55,10 @@ export type VisualDirectionSceneKindV7 =
   | "DEMO_MARKER"
   /** The Farm patch (beads pulp_wars-9s0.6 and .7), see FARMS. */
   | "FARMS"
-  /** The running match exactly as it is (an all-Human Showcase). */
+  /**
+   * The running match exactly as it is (the demo's Showcase: a Human viewer
+   * against Undead, Goblin and Dinosaur seats).
+   */
   | "LIVE";
 
 const TERRAIN: Readonly<Record<string, TerrainIdV7>> = {
@@ -503,6 +508,8 @@ const FARMS: readonly (readonly string[])[] = [
 const FARMS_CAPITAL: CoordV7 = { x: 5, y: 5 };
 const SEATS: readonly Seat[] = ["A", "B", "C", "D"];
 const COLOURS = ["CORAL", "TEAL", "GOLD", "VIOLET"] as const;
+/** Every player plays a different faction (bead pulp_wars-w5j.1). */
+const SEAT_FACTIONS = ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"] as const;
 
 interface ParsedCell {
   readonly terrain: TerrainIdV7;
@@ -617,14 +624,14 @@ export function visualDirectionSceneViewV7(
       Math.min(live.board.height - rows, liveCapital.at.y - CAPITAL_AT.y),
     ),
   };
-  // Seat A is the viewer; B-D are synthetic Human seats.
+  // Seat A is the viewer; B-D are synthetic seats, one faction each.
   const firstFreeId = Math.max(...live.players.map((player) => player.id)) + 1;
   const players = SEATS.map((_, index) => ({
     ...viewer,
     id: (index === 0 ? viewerId : firstFreeId + index) as PlayerId,
     seat: index,
     color: COLOURS[index] ?? "CORAL",
-    faction: "ORIGINAL" as const,
+    faction: SEAT_FACTIONS[index] ?? "ORIGINAL",
     controller: index === 0 ? viewer.controller : ("AI" as const),
   }));
   const playerId = (seat: Seat): PlayerId =>

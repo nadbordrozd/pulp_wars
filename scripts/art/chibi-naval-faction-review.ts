@@ -18,9 +18,11 @@
  *   and how far apart the six factions' ships are, measured on the masters;
  * - `scene-{coast,mixed}-{desktop,phone}-zoom-{1,0.75}.png`: the scenes of
  *   scripts/art/naval-factions/scene.ts drawn by the real board host in the
- *   live look **without base plates or rings**: each faction's ships on
- *   Shallow and Deep Water beside its coastal city, and the six fleets
- *   mixed;
+ *   live look the game draws since bead pulp_wars-w5j.3 (the naval art
+ *   wired in, no base plates or rings): each faction's ships on Shallow
+ *   and Deep Water beside its coastal city, its Patrol Boat docked at a
+ *   Port, the Human (viewer's) ships with the ready ring, some damaged; and
+ *   the six fleets mixed;
  * - `index.json`.
  *
  * Captures start Vite on port 6530 unless `--port` says otherwise, need
@@ -925,7 +927,7 @@ async function main(): Promise<void> {
           "naval-ice-folk",
         ],
         command: "npm run art:chibi-naval-faction-review",
-        note: "The scene-* captures draw the live look without base plates or rings, with each faction's naval sprites registered under three of its land subjects (scripts/art/naval-factions/scene.ts): the art is not wired in yet.",
+        note: "The scene-* captures draw the live look the game draws since bead pulp_wars-w5j.3: the naval art wired in under the subjects the game asks for, no base plates or rings, the viewer's (Human) ships with the ready ring, Patrol Boats docked at Ports and some ships damaged (scripts/art/naval-factions/scene.ts).",
         files,
       },
       null,

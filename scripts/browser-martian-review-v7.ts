@@ -12,7 +12,7 @@ import {
 /**
  * Martian UI visual review (bead pulp_wars-t6s.4). It captures the
  * default-route setup with a Martian seat; real Showcase launches (the
- * Martians against Humans, four Martian players, and the Martians beside
+ * Martians against Humans, and the Martians beside
  * every other faction) at zoom steps 1 and 0.75; and, on the Martian UI
  * fixtures, the board markers (Shield bars, Cooling, the Thrall collar,
  * flyers over land and water, machines afloat), the attack previews

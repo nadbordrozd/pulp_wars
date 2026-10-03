@@ -33,21 +33,28 @@ outline glow as the ready cue, dashed territory borders or black-cased
 Roads, that text now describes the **Classic look** developer option
 ([section 11](#11-settings-and-pause)); the LEGACY art set is unchanged.
 
-- **Units stand on a base plate** in their player's colour with a rim in a
-  darker tone of it, about 52 x 18 CSS px at zoom 1, drawn under the sprite.
-  The plate has the seat's shape: round, pointed, square, swallow-tailed for
-  seats 1 to 4, so players differ without relying on colour. A ship (and the
-  embarked transport) has no plate: it keeps its player-coloured sail and
-  stands in a thin round ring in the player colour.
+- **No base plates; the faction says whose a unit is** (bead
+  `pulp_wars-w5j.3`, [section 20 of the visual direction](../art/VISUAL_DIRECTION_2026-10.md#20-faction-looks-instead-of-base-plates)).
+  Every player plays a different faction, and every faction's units,
+  portraits, cities and ships are in fixed faction colours, so the look
+  tells players apart. A land unit (and an Egg) stands on a faint neutral
+  ground shadow; a unit on water and a flyer have none. Ships and the
+  embarked transport are the owner faction's own (a Human cog, an Undead
+  ghost ship, a Martian hover-boat, ...), with no ring and no
+  player-coloured sail. The player colour stays on the territory border and
+  the city pennant only. (Until w5j.3 units stood on a seat-shaped plate in
+  the player colour, and ships kept a player-coloured sail in a thin ring.)
 - **No numbered seat badge** is drawn on units or cities.
-- **HP bar only when damaged:** a short horizontal bar on the plate (dark
+- **HP bar only when damaged:** a short horizontal bar under the feet (dark
   track; green, amber at two thirds or less, red at one third or less). A
   unit at full health has no bar. A garrisoned unit's bar is shorter and
   sits under its reduced sprite. The bar stays inside the cell, above the
   territory border and the selection outline.
-- **Ready cue on the plate:** a unit that can still act has a bright
-  warm-white rim round its plate (round its ring for a ship). The outline
-  glow is not drawn; the dock still says **Needs action** or **Handled**.
+- **Ready cue on the ground:** a unit that can still act has a thin cream
+  ring on the ground round its feet (round its hull for a ship), in no
+  player colour; it is an ellipse, never the square cell outline of the
+  selection. The outline glow is not drawn; the dock still says **Needs
+  action** or **Handled**.
 - **Cities.** A Human city flies a code-drawn swallow-tailed pennant in the
   player colour from its tower, carrying the seat's shape in cream, or in
   gold for the capital (which then has no separate crown). A Goblin city
@@ -92,8 +99,9 @@ Roads, that text now describes the **Classic look** developer option
   the cavemen, one red-orange accent, and a body pattern per species) for
   every player, on the board and in the docks, Lay Egg cards, technology
   cards and Help. An Egg is cream with orange speckles and carries no player
-  colour: it stands on a plate as wide as a large unit's, in its owner's seat
-  shape and colour, and its countdown chip keeps the owner-coloured ring. A
+  colour: it stood on a plate as wide as a large unit's until bead
+  `pulp_wars-w5j.3` (now the neutral ground shadow: an Egg is always the
+  Dinosaur player's), and its countdown chip keeps the owner-coloured ring. A
   Dinosaur city is the bone-and-hide camp with tawny tents and flies the
   same code-drawn pennant as a Human city (seat shape in cream, gold for the
   capital, no separate crown). The growth chevrons and scale, the Charge!,
@@ -176,13 +184,15 @@ an Undead seat looks and behaves exactly as in revision 12.
   status reads "Player N (Human|Undead) is playing…".
 - Art: CHIBI paints the approved Undead unit, portrait, Frenzy icon, and
   Grave rasters ([Undead faction art](../art/factions/UNDEAD.md)). LEGACY,
-  and any CHIBI Undead subject without a usable raster (including the Patrol
-  Boat and Battleship, which share the Human ship art), uses the placeholder:
+  and any CHIBI Undead land subject without a usable raster, uses the
+  placeholder (Undead ships are the Undead ghost ships in the default look
+  since bead `pulp_wars-w5j.3`, and the shared Human ship art in the
+  Classic look and LEGACY):
   the Human sprite of the role plus a bone skull badge on a near-black disc
   (legacy: right of the sprite above the HP bar; CHIBI: the cell's top-left
   corner), distinct from owner colour. In the default CHIBI look that
-  stand-in is the Human direction sprite (crimson and gold) on the owner's
-  plate. DOM unit art, training buttons,
+  stand-in is the Human direction sprite (crimson and gold). DOM unit art,
+  training buttons,
   recruit help and reward art follow the same rule. An explored Grave is a
   small code-drawn tombstone marker in its tile's bottom-right corner, drawn
   above units (see the
@@ -458,13 +468,13 @@ seat looks as in revision 18 apart from the extra faction option.
 - **Eggs on the board.** Every visible Egg of any owner shows its owner:
   the default CHIBI look draws the `UNIT:DINOSAUR:EGG` sprite of the new
   direction (cream with orange speckles, the same for every player; bead
-  `pulp_wars-3tq.13`) on a plate in the owner's colour; the Classic look
+  `pulp_wars-3tq.13`; no plate since `pulp_wars-w5j.3`); the Classic look
   draws the classic sprite with its band and nest cloth in the owner's
   colour, and LEGACY (and CHIBI without a raster) a code-drawn speckled egg
   with a painted band in a bone nest. A charcoal chip with an owner-colour ring beside it shows the
   countdown number (never smaller than a 10 px number). An Egg shows its HP
   bar only when damaged, wears its owner's seat badge (LEGACY and the Classic
-  look; in the default CHIBI look its nest sits on the owner's plate) and
+  look; the default CHIBI look has no badge and no plate) and
   never a faction badge. Selecting one opens its dock: "{Unit} Egg", the faction chip,
   "Hatches in N turns", "N slots", HP and Defense only, the sentence "Hatches
   into a {Unit} in N turns. Cannot move or fight.", and for an own Egg
@@ -503,7 +513,7 @@ seat looks as in revision 18 apart from the extra faction option.
   full heal" for every faction.
 - **Growth.** A Big unit wears one upward rank chevron and an Alpha two,
   cream with a black outline, right of its HP bar in both art sets (in the
-  default CHIBI look, which draws no side bar, at the left end of the plate;
+  default CHIBI look, which draws no side bar, left of the feet;
   the shape carries the meaning, so it holds in high contrast and for every owner
   colour). In CHIBI the sprite is also drawn x1.125 (Big) or x1.25 (Alpha)
   about its feet, capped at a drawn width of 96 CSS px, so the Brontosaurus
@@ -586,7 +596,7 @@ without a Martian seat looks as before apart from the extra faction option.
     dark track, magenta when filled, the Force Field's extra segments in the
     paler glow, empty ones dark with a magenta rim. It is always shown,
     because the Shield changes how the unit is best attacked. The default
-    look draws it on the plate (directly above the HP bar while that
+    look draws it under the feet (directly above the HP bar while that
     shows), the Classic look as a column beside the vertical HP bar, LEGACY
     as a row under its HP bar (above it are the seat and faction badges).
   - **Cooling**: three grey heat lines on a gunmetal chip right of the
@@ -596,12 +606,14 @@ without a Martian seat looks as before apart from the extra faction option.
     slot (a Thrall has no ray). Selecting a Thrall draws a dashed magenta
     link to its Brain with a ring round it; selecting a Brain links each of
     its Thralls.
-  - **Flying**: the Saucer and the Mothership are drawn lifted above their
-    plate with a soft ground shadow (`MARTIAN_FLYER_PRESENTATION_V7`), over
+  - **Flying**: the Saucer and the Mothership are drawn lifted above a soft
+    ground shadow of their own (`MARTIAN_FLYER_PRESENTATION_V7`), over
     land and water. LEGACY lifts the stand-in a little over the same shadow.
-  - **Machines afloat**: a self-launched machine is drawn as itself in the
-    ships' thin ring (never as the transport); a wading Tripod or Colossus
-    gets two white ripple arcs. Embarked foot units keep the transport.
+  - **Machines afloat**: a self-launched machine is drawn as itself on the
+    water (never as the transport; no ring since bead `pulp_wars-w5j.3`); a
+    wading Tripod or Colossus gets two white ripple arcs. Embarked foot
+    units keep the transport: the Martian saucer-barge in the default look,
+    an embarked Thrall included (its collar still says Thrall).
   - **Force Field**: selecting a land-form Shield Projector tints the eight
     tiles around it in the pale magenta glow with an outer dashed edge.
 - **Dock and unit info.** Chips beside the name: "Shield 2 / 2" ("Shield 4 /
@@ -715,7 +727,7 @@ from the extra faction option.
   for the others.
 - **Blizzard** (`ICE_FOLK_BLIZZARD_V7`): every explored tile whose flag
   `blizzard` is true, water included, gets a faint white veil and nine calm
-  falling flakes, over the Snow and under the plates and units. The flakes
+  falling flakes, over the Snow and under the units. The flakes
   move with full motion (a slow redraw, about fifteen frames a second, while
   a Blizzard is in view) and stand still for reduced motion. The selected or
   hovered Witch draws the white dashed outline of her nine tiles. A
@@ -913,8 +925,8 @@ both art sets. Where an older section below disagrees, this overlay wins.
   with a cross, dark outline) in the **bottom-right corner** of its tile, 18
   CSS px on an 80 CSS px tile and scaling with zoom, in both art sets. That
   corner is free of the seat badge and HP bar (left or below the sprite; in
-  the default CHIBI look the marker overlaps only the right tip of the base
-  plate and is drawn above it), the
+  the default CHIBI look the marker may touch the right end of the ready
+  ring and is drawn above it), the
   faction, Field Defense and affliction markers (left and top), and status
   chips and the capital crown (top). On a city tile the CHIBI marker sits
   just left of the population column. Markers are drawn after every unit and

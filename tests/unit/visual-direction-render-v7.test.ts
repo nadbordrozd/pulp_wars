@@ -40,6 +40,8 @@ import {
   BASELINE_DIRECTION_V7,
   DIRECTION_FLAG_ANCHORS_V7,
   DIRECTED_BASE_HP_BAR_TOP_V7,
+  DIRECTED_GROUND_SHADOW_COLOUR_V7,
+  DIRECTED_READY_RING_COLOUR_V7,
   HUMAN_DEMO_DIRECTION_V7,
   LIVE_DIRECTION_V7,
   RECOMMENDED_DIRECTION_V7,
@@ -639,33 +641,54 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
     );
   });
 
-  it("gives a Human unit without a sample the faction crimson, and leaves a ship's sail to the player", () => {
+  it("gives a Human unit or ship without a sample the faction crimson, and a faction ship without one the shared ship in the player colour", () => {
     const base = chibiArt();
     const art = createDirectedChibiArtV7({
       base,
       direction: HUMAN_DEMO_DIRECTION_V7,
       environment,
     });
+    // Since bead pulp_wars-w5j.3 a Human ship is no exception: the sail is
+    // no owner marker, so the classic ship takes the Human crimson.
+    for (const subject of [
+      "UNIT:GUARD",
+      "UNIT:PATROL_BOAT",
+      "UNIT:BATTLESHIP",
+      "UNIT:EMBARKED_TRANSPORT",
+    ] as const) {
+      art.resolve({ subject, at, ownerColor: CORAL, deviceScale: 1 });
+      expect(base.requests.at(-1)?.ownerColor, subject).toBe(
+        HUMAN_DEMO_DIRECTION_V7.unit.owner,
+      );
+    }
     art.resolve({
-      subject: "UNIT:GUARD",
+      subject: "UNIT:UNDEAD:FIGHTER",
       at,
       ownerColor: CORAL,
       deviceScale: 1,
     });
-    expect(base.requests.at(-1)?.ownerColor).toBe(
-      HUMAN_DEMO_DIRECTION_V7.unit.owner,
-    );
-    for (const subject of [
-      "UNIT:PATROL_BOAT",
-      "UNIT:BATTLESHIP",
-      "UNIT:EMBARKED_TRANSPORT",
-      "UNIT:UNDEAD:FIGHTER",
+    expect(base.requests.at(-1)?.ownerColor).toBe(CORAL);
+    // Another faction's ship without its own raster is the shared ship in
+    // the owner's colour, never the Human one.
+    for (const [subject, shared] of [
+      ["UNIT:GOBLIN:PATROL_BOAT", "UNIT:PATROL_BOAT"],
+      ["UNIT:MARTIAN:BATTLESHIP", "UNIT:BATTLESHIP"],
+      ["UNIT:ICE_FOLK:EMBARKED_TRANSPORT", "UNIT:EMBARKED_TRANSPORT"],
     ] as const) {
       art.resolve({ subject, at, ownerColor: CORAL, deviceScale: 1 });
-      expect(base.requests.at(-1)?.ownerColor, subject).toBe(CORAL);
+      expect(base.requests.at(-1), subject).toMatchObject({
+        subject: shared,
+        ownerColor: CORAL,
+      });
     }
-    expect(directionUnitAfloatV7("UNIT:PATROL_BOAT")).toBe(true);
+    for (const subject of [
+      "UNIT:PATROL_BOAT",
+      "UNIT:GOBLIN:BATTLESHIP",
+      "UNIT:DINOSAUR:EMBARKED_TRANSPORT",
+    ] as const)
+      expect(directionUnitAfloatV7(subject), subject).toBe(true);
     expect(directionUnitAfloatV7("UNIT:FIGHTER")).toBe(false);
+    expect(directionUnitAfloatV7("PORTRAIT:PATROL_BOAT")).toBe(false);
     expect(directionUnitAfloatV7(undefined)).toBe(false);
   });
 
@@ -804,7 +827,7 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
     }
   });
 
-  it("draws a plate with a rim in a darker player tone, and a round unfilled ring under a ship", () => {
+  it("draws a plate with a rim in a darker player tone, and no plate or ring under a ship (pulp_wars-w5j.3)", () => {
     const sprite = { x: 0, y: 0, width: 56, height: 80 };
     const base = (piece: BoardRenderPlanEntryV7) => {
       const { context, log } = recordingContext();
@@ -843,16 +866,35 @@ describe("Human demo of the visual direction (pulp_wars-3tq.3)", () => {
       }),
     );
     expect(fills(ready)).toContain("#fff6cf");
-    const ship = base(
-      entry("UNIT", 0, 0, "unit-patrol-boat", "UNIT:PATROL_BOAT", {
-        ownerColor: teal,
-        ownerSeat: 1,
-      }),
-    );
-    // Whatever the seat, the ship's ring is an ellipse and nothing is filled.
-    expect(count(ship, "ellipse")).toBe(1);
-    expect(count(ship, "fill")).toBe(0);
-    expect(count(ship, "stroke")).toBe(2);
+    // Since bead pulp_wars-w5j.3 a ship (of any faction) stands on the
+    // water with no ring: its faction's art says whose it is. A ready ship
+    // has the cream ready ring round its hull, in no player colour.
+    for (const subject of [
+      "UNIT:PATROL_BOAT",
+      "UNIT:GOBLIN:BATTLESHIP",
+    ] as const) {
+      const ship = base(
+        entry("UNIT", 0, 0, "unit-patrol-boat", subject, {
+          ownerColor: teal,
+          ownerSeat: 1,
+        }),
+      );
+      expect(ship, subject).toEqual([]);
+      const readyShip = base(
+        entry("UNIT", 0, 0, "unit-patrol-boat", subject, {
+          ownerColor: teal,
+          ownerSeat: 1,
+          ready: true,
+        }),
+      );
+      expect(count(readyShip, "ellipse")).toBe(1);
+      expect(count(readyShip, "fill")).toBe(0);
+      const strokes = readyShip
+        .filter((call) => call[0] === "set" && call[1] === "strokeStyle")
+        .map((call) => call[2]);
+      expect(strokes).toContain("#fff6cf");
+      expect(strokes).not.toContain(teal);
+    }
   });
 
   it("the demo direction draws the board with plates, pennants and no stock chrome", () => {
@@ -960,15 +1002,17 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     expect(liveBoardLookV7("CHIBI", true)).toEqual({});
     expect(liveBoardLookV7("LEGACY")).toEqual({});
     expect(liveBoardLookV7(undefined)).toEqual({});
+    // Since bead pulp_wars-w5j.3: no plate (a faint neutral shadow), and
+    // the ready cue is a cream ring on the ground.
     expect(LIVE_DIRECTION_V7).toMatchObject({
-      unit: { base: "PLATE", baseShape: "SEAT", samples: true },
+      unit: { base: "SHADOW", samples: true },
       building: { samples: true, flags: true },
       city: { samples: true, banner: true, factionCities: "CLASSIC" },
       chrome: {
         hp: "DAMAGED",
         hpPlacement: "BASE",
         badge: "NONE",
-        ready: "BASE",
+        ready: "GROUND",
         roads: "CALM",
         borders: "SOLID",
       },
@@ -1014,7 +1058,7 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     ]);
   });
 
-  it("leaves a faction without direction art unconverted: player-coloured units on plates, classic cities with the crown and no pennant", () => {
+  it("leaves a faction without direction art unconverted: player-coloured units, classic cities with the crown and no pennant", () => {
     // Undead and Dinosaur have no direction art; here the Goblin subjects
     // have none either (the fixture registers Human art only), which is
     // also what a Goblin piece falls back to when its raster fails.
@@ -1157,17 +1201,23 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     ]);
     // The Undead are converted since bead pulp_wars-3tq.12 and the
     // Dinosaurs since bead pulp_wars-3tq.13, each from a list of their own;
-    // only the shared ships are left with an owner-coloured part.
+    // since bead pulp_wars-w5j.3 so are the ships: the Human ones on the
+    // shared subjects, the others on their faction's.
     for (const subject of ["UNIT:DINOSAUR:FIGHTER", "CITY:DINOSAUR:1"] as const)
       expect(LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject)[0]?.id).toContain(
         "chibi-direction-dinosaur-",
       );
-    for (const subject of [
-      "UNIT:PATROL_BOAT",
-      "UNIT:BATTLESHIP",
-      "UNIT:EMBARKED_TRANSPORT",
+    for (const [subject, id] of [
+      ["UNIT:PATROL_BOAT", "chibi-naval-human-patrol-boat"],
+      ["UNIT:BATTLESHIP", "chibi-naval-human-battleship"],
+      ["UNIT:EMBARKED_TRANSPORT", "chibi-naval-human-transport"],
+      ["UNIT:GOBLIN:PATROL_BOAT", "chibi-naval-goblin-patrol-boat"],
     ] as const)
-      expect(LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject)).toHaveLength(0);
+      expect(
+        LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject).map(
+          (asset) => asset.id,
+        ),
+      ).toEqual([id]);
     for (const subject of ["UNIT:UNDEAD:FIGHTER", "CITY:UNDEAD:1"] as const)
       expect(LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject)[0]?.id).toContain(
         "chibi-direction-undead-",
@@ -1182,13 +1232,14 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       maxHp: 6,
     });
     // Live look: the direction sprite as authored (no owner colour in its
-    // cache key), on a plate in the player colour.
+    // cache key); since bead pulp_wars-w5j.3 on no plate, only the neutral
+    // shadow.
     const live = drawLive([goblin], {
       samples: directionArt(["UNIT:GOBLIN:FIGHTER"]),
     });
     expect(live.images).toEqual([raster("direction:UNIT:GOBLIN:FIGHTER")]);
-    expect(fills(live.log)).toContain(CORAL);
-    expect(fills(live.log)).toContain(darkerColourV7(CORAL));
+    expect(fills(live.log)).not.toContain(CORAL);
+    expect(fills(live.log)).toContain(DIRECTED_GROUND_SHADOW_COLOUR_V7);
     // No seat number, no faction badge, no full HP bar.
     expect(live.log.filter((call) => call[0] === "fillText")).toEqual([]);
     expect(fills(live.log)).not.toContain("#101718");
@@ -1373,7 +1424,7 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     expect(pennantRim(classic.log)).toBe(0);
   });
 
-  it("draws other factions' units and the Egg on the board with a plate, without a seat number", () => {
+  it("draws other factions' units and the Egg on the board without a plate or a seat number (pulp_wars-w5j.3)", () => {
     const pieces = [
       entry("UNIT", 0, 0, "unit-fighter", "UNIT:UNDEAD:FIGHTER", {
         key: "unit:1",
@@ -1398,8 +1449,18 @@ describe("live default look (pulp_wars-3tq.6)", () => {
       raster(`UNIT:UNDEAD:FIGHTER#${CORAL}`),
       raster("UNIT:DINOSAUR:EGG##28b7a4"),
     ]);
-    expect(fills(live.log)).toContain(darkerColourV7(CORAL));
-    expect(fills(live.log)).toContain(darkerColourV7("#28b7a4"));
+    // No plate: no player colour (or its darker rim) is filled under the
+    // units; each stands on the faint neutral shadow alone. The Egg's
+    // countdown keeps the owner's ring (a stroke).
+    for (const colour of [CORAL, "#28b7a4"]) {
+      expect(fills(live.log)).not.toContain(colour);
+      expect(fills(live.log)).not.toContain(darkerColourV7(colour));
+    }
+    expect(
+      fills(live.log).filter(
+        (fill) => fill === DIRECTED_GROUND_SHADOW_COLOUR_V7,
+      ),
+    ).toHaveLength(2);
     // The only text left is the Egg's countdown.
     expect(
       live.log.filter((call) => call[0] === "fillText").map((call) => call[1]),
@@ -1407,6 +1468,220 @@ describe("live default look (pulp_wars-3tq.6)", () => {
     // Full health: no HP bar for either.
     expect(fills(live.log)).not.toContain("#65d889");
     expect(fills(live.log)).not.toContain("#101718");
+  });
+
+  describe("faction looks instead of plates (pulp_wars-w5j.3)", () => {
+    const strokes = (log: readonly LogEntry[]) =>
+      log
+        .filter((call) => call[0] === "set" && call[1] === "strokeStyle")
+        .map((call) => call[2]);
+    const units = (ready: boolean): readonly BoardRenderPlanEntryV7[] => [
+      entry("UNIT", 0, 0, "unit-fighter", "UNIT:FIGHTER", {
+        key: "unit:1",
+        ownerColor: CORAL,
+        ownerSeat: 0,
+        hp: 10,
+        maxHp: 10,
+        ready,
+      }),
+      entry("UNIT", 1, 0, "unit-fighter", "UNIT:GOBLIN:FIGHTER", {
+        key: "unit:2",
+        ownerColor: "#28b7a4",
+        ownerSeat: 1,
+        faction: "GOBLIN",
+        hp: 10,
+        maxHp: 10,
+      }),
+    ];
+    /** drawBoardV7 with a glow-cache spy, in the live, classic or LEGACY look. */
+    const drawWithGlow = (
+      look: "LIVE" | "CLASSIC" | "LEGACY",
+      entries: readonly BoardRenderPlanEntryV7[],
+    ) => {
+      const { context, log } = recordingContext();
+      const glow = vi.fn();
+      const base = chibiArt();
+      drawBoardV7({
+        context,
+        viewport: { width: 800, height: 600 },
+        devicePixelRatio: 1,
+        camera: { zoom: 1, offsetX: 200, offsetY: 200 },
+        plan: { version: 7, entries, targets: [] },
+        images: { resolve: (id) => raster(`legacy:${id}`) },
+        glowCache: { draw: glow } as never,
+        artSet: look === "LEGACY" ? "LEGACY" : "CHIBI",
+        ...(look === "LEGACY" ? {} : { chibiArt: base }),
+        reducedMotion: true,
+        ...(look === "LIVE"
+          ? {
+              direction: {
+                spec: LIVE_DIRECTION_V7,
+                art: createDirectedChibiArtV7({
+                  base,
+                  direction: LIVE_DIRECTION_V7,
+                  environment,
+                }),
+              },
+            }
+          : {}),
+      });
+      return { log, glow };
+    };
+
+    it("draws no plate in the live look, and the classic look and LEGACY are unchanged", () => {
+      const live = drawWithGlow("LIVE", units(false));
+      // No base in any player colour, no seat-shaped path: a faint neutral
+      // shadow ellipse under each unit.
+      for (const colour of [CORAL, "#28b7a4"]) {
+        expect(fills(live.log)).not.toContain(colour);
+        expect(fills(live.log)).not.toContain(darkerColourV7(colour));
+      }
+      expect(live.log.filter((call) => call[0] === "closePath")).toEqual([]);
+      expect(
+        fills(live.log).filter(
+          (fill) => fill === DIRECTED_GROUND_SHADOW_COLOUR_V7,
+        ),
+      ).toHaveLength(2);
+      // The Human demo the study benches draw keeps its plates.
+      const demo = draw(HUMAN_DEMO_DIRECTION_V7);
+      expect(fills(demo)).toContain(darkerColourV7(CORAL));
+      // The classic look and LEGACY draw no shadow, no plate and no ring:
+      // their frame is the stock one (the seat badge and the glow).
+      for (const look of ["CLASSIC", "LEGACY"] as const) {
+        const frame = drawWithGlow(look, units(true));
+        expect(fills(frame.log), look).not.toContain(
+          DIRECTED_GROUND_SHADOW_COLOUR_V7,
+        );
+        expect(strokes(frame.log), look).not.toContain(
+          DIRECTED_READY_RING_COLOUR_V7,
+        );
+        expect(
+          frame.log.filter((call) => call[0] === "ellipse"),
+          look,
+        ).toEqual([]);
+        expect(frame.glow, look).toHaveBeenCalledTimes(2);
+        // The seat number of both units.
+        expect(
+          frame.log.filter((call) => call[0] === "fillText"),
+          look,
+        ).toHaveLength(2);
+      }
+    });
+
+    it("marks a ready unit with a thin cream ring on the ground, not the glow, a plate or the selection's rectangle", () => {
+      const idle = drawWithGlow("LIVE", units(false));
+      const ready = drawWithGlow("LIVE", units(true));
+      expect(ready.glow).not.toHaveBeenCalled();
+      expect(strokes(idle.log)).not.toContain(DIRECTED_READY_RING_COLOUR_V7);
+      // One ring for the one ready unit: a dark casing, then the cream line,
+      // both on the ground ellipse; no player colour in it.
+      expect(
+        strokes(ready.log).filter(
+          (stroke) => stroke === DIRECTED_READY_RING_COLOUR_V7,
+        ),
+      ).toHaveLength(1);
+      expect(strokes(ready.log)).not.toContain(CORAL);
+      const ellipses = (log: readonly LogEntry[]) =>
+        log.filter((call) => call[0] === "ellipse");
+      expect(ellipses(ready.log)).toHaveLength(ellipses(idle.log).length + 1);
+      const cream = ready.log.findIndex(
+        (call) =>
+          call[0] === "set" &&
+          call[1] === "strokeStyle" &&
+          call[2] === DIRECTED_READY_RING_COLOUR_V7,
+      );
+      const ring = ellipses(ready.log.slice(0, cream)).at(-1) ?? [];
+      // Wider than tall, centred on the unit's cell column, under its feet.
+      const [, cx, cy, rx, ry] = ring as number[];
+      expect(cx).toBe(200);
+      expect((rx ?? 0) / (ry ?? 1)).toBeCloseTo(1 / 0.34, 5);
+      expect((cy ?? 0) - 200).toBeGreaterThan(25);
+      expect(ready.log.filter((call) => call[0] === "strokeRect")).toEqual([]);
+      // A ready ship has its ring round the hull, and no shadow on water.
+      const ship = drawWithGlow("LIVE", [
+        entry("UNIT", 0, 0, "unit-patrol-boat", "UNIT:GOBLIN:PATROL_BOAT", {
+          key: "unit:3",
+          ownerColor: CORAL,
+          ownerSeat: 0,
+          faction: "GOBLIN",
+          hp: 10,
+          maxHp: 10,
+          ready: true,
+        }),
+      ]);
+      expect(fills(ship.log)).not.toContain(DIRECTED_GROUND_SHADOW_COLOUR_V7);
+      expect(strokes(ship.log)).toContain(DIRECTED_READY_RING_COLOUR_V7);
+    });
+
+    it("draws each faction's own ship, and a missing one as the shared ship in the owner's colour, never the Human ship", () => {
+      const goblinShip = entry(
+        "UNIT",
+        0,
+        0,
+        "unit-patrol-boat",
+        "UNIT:GOBLIN:PATROL_BOAT",
+        {
+          key: "unit:4",
+          ownerColor: CORAL,
+          ownerSeat: 0,
+          faction: "GOBLIN",
+          hp: 10,
+          maxHp: 10,
+        },
+      );
+      const own = drawLive([goblinShip], {
+        samples: directionArt(["UNIT:GOBLIN:PATROL_BOAT", "UNIT:PATROL_BOAT"]),
+      });
+      expect(own.images).toEqual([raster("direction:UNIT:GOBLIN:PATROL_BOAT")]);
+      // The Goblin raster failed: the classic shared ship with the player's
+      // sail, not the registered Human (crimson) direction ship.
+      const failed = drawLive([goblinShip], {
+        samples: directionArt(["UNIT:PATROL_BOAT"]),
+      });
+      expect(failed.images).toEqual([raster(`UNIT:PATROL_BOAT#${CORAL}`)]);
+      // A Human ship is drawn from the Human naval art as authored.
+      const human = drawLive(
+        [
+          entry("UNIT", 0, 0, "unit-patrol-boat", "UNIT:PATROL_BOAT", {
+            key: "unit:5",
+            ownerColor: CORAL,
+            ownerSeat: 0,
+            hp: 10,
+            maxHp: 10,
+          }),
+        ],
+        { samples: directionArt(["UNIT:PATROL_BOAT"]) },
+      );
+      expect(human.images).toEqual([raster("direction:UNIT:PATROL_BOAT")]);
+      // The live registry holds every faction's three map sprites and two
+      // portraits; the Humans' on the shared subjects.
+      for (const faction of [
+        "UNDEAD",
+        "GOBLIN",
+        "DINOSAUR",
+        "MARTIAN",
+        "ICE_FOLK",
+      ] as const) {
+        for (const role of [
+          "PATROL_BOAT",
+          "BATTLESHIP",
+          "EMBARKED_TRANSPORT",
+        ] as const)
+          expect(
+            LIVE_DIRECTION_ART_REGISTRY_V7.variants(
+              `UNIT:${faction}:${role}`,
+            )[0]?.fixedColours,
+            `${faction} ${role}`,
+          ).toBe(true);
+        for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const)
+          expect(
+            LIVE_DIRECTION_ART_REGISTRY_V7.variants(
+              `PORTRAIT:${faction}:${role}`,
+            )[0]?.fixedColours,
+            `${faction} portrait ${role}`,
+          ).toBe(true);
+      }
+    });
   });
 
   it("keeps the damaged HP bar on the base, clear of the cell's bottom edge", () => {

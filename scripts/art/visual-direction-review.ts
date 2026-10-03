@@ -1,7 +1,10 @@
 /**
  * Visual-direction test bench (bead pulp_wars-3tq.1): renders one busy,
- * deterministic four-player all-Human map through the real board host in
+ * deterministic four-player map (one faction per player: Human, Undead,
+ * Goblin, Dinosaur; it was all-Human until bead pulp_wars-w5j.3, since
+ * every player plays a different faction) through the real board host in
  * many rendering variants and writes comparison sheets and measurements.
+ * Sheets checked in before bead pulp_wars-w5j.3 show the all-Human bench.
  *
  *   npm run art:visual-direction-review -- [--port 6451]
  *       [--variants today,recommended] [--viewports desktop,phone]
@@ -15,8 +18,8 @@
  *       direction at 1:1 device pixels (the phone cropped to the board)
  *   factors-desktop.png          one lever changed at a time
  *   candidates-desktop.png, candidates-phone-zoom-0.75.png
- *   same-unit-phone-zoom-0.75.png  the hard case: four players' Fighters,
- *       as seen and under simulated deuteranopia and protanopia
+ *   same-unit-phone-zoom-0.75.png  four players' Fighters (one per
+ *       faction), as seen and under simulated deuteranopia and protanopia
  *   empty-map-desktop.png        the bare terrain and the map without units
  *   sample-units-x4.png          per unit, x4 nearest, in the key colour and
  *       the four player colours: A the production sprite, B the same sprite
@@ -26,7 +29,8 @@
  *
  * With --demo (npm run art:visual-direction-demo-review, bead
  * pulp_wars-3tq.3) it writes the Human demo's evidence instead, to
- * art/explorations/human-demo-2026-10/review, from an all-Human Showcase:
+ * art/explorations/human-demo-2026-10/review, from a Showcase with a Human
+ * viewer against Undead, Goblin and Dinosaur seats:
  *
  *   before-after-busy-<viewport>-zoom-<step>.png      the busy bench
  *   before-after-showcase-<viewport>-zoom-<step>.png  the Showcase itself
@@ -356,10 +360,12 @@ async function captureAll(
       // every run frames the scene identically.
       await evaluate(
         connection,
-        // The demo plays an all-Human Showcase: three rivals, every seat
-        // Human, so the LIVE captures show one faction in four colours.
+        // The demo plays a Showcase with three rivals: a Human viewer
+        // against the default Undead, Goblin and Dinosaur seats (every
+        // player plays a different faction since bead pulp_wars-w5j.1; it
+        // was an all-Human Showcase until bead pulp_wars-w5j.3).
         DEMO_MODE
-          ? `(() => { const change = (element, value) => { element.value = value; element.dispatchEvent(new Event('change', { bubbles: true })); }; change(document.querySelector('#v7-ai-count'), '3'); change(document.querySelector('#v7-map-type'), 'SHOWCASE'); for (const seat of [0, 1, 2, 3]) change(document.querySelector('#v7-faction-' + seat), 'ORIGINAL'); document.querySelector('[data-action="launch"]').click(); return true; })()`
+          ? `(() => { const change = (element, value) => { element.value = value; element.dispatchEvent(new Event('change', { bubbles: true })); }; change(document.querySelector('#v7-ai-count'), '3'); change(document.querySelector('#v7-map-type'), 'SHOWCASE'); change(document.querySelector('#v7-faction-0'), 'ORIGINAL'); document.querySelector('[data-action="launch"]').click(); return true; })()`
           : `(() => { const type = document.querySelector('#v7-map-type'); type.value = 'SHOWCASE'; type.dispatchEvent(new Event('change', { bubbles: true })); document.querySelector('[data-action="launch"]').click(); return true; })()`,
       );
       await waitFor(
@@ -1394,7 +1400,7 @@ async function composeDemo(): Promise<void> {
         if (!existsSync(file)) return null;
         const raster = await loadRaster(file);
         return {
-          label: `${variant.label} · all-Human Showcase`,
+          label: `${variant.label} · Showcase, four factions`,
           raster: centred(
             raster,
             size.width * viewport.dpr,

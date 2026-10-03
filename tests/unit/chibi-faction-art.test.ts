@@ -67,7 +67,7 @@ const request = (subject: ArtSubjectV7) => ({
 });
 
 describe("Faction-aware chibi subjects", () => {
-  it("gives Undead land units their own subject and keeps shared art for ships and transports", () => {
+  it("gives Undead land units, ships and transports their own subject, and the Humans the shared ships (pulp_wars-w5j.3)", () => {
     expect(
       unitArtSubjectV7({ role: "FIGHTER", form: "LAND", faction: "UNDEAD" }),
     ).toBe("UNIT:UNDEAD:FIGHTER");
@@ -77,17 +77,39 @@ describe("Faction-aware chibi subjects", () => {
     expect(
       unitArtSubjectV7({ role: "FIGHTER", form: "LAND", faction: "ORIGINAL" }),
     ).toBe("UNIT:FIGHTER");
-    for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const)
+    // Since bead pulp_wars-w5j.3 every faction sails its own ships; the
+    // Humans keep the shared subjects.
+    for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const) {
       expect(unitArtSubjectV7({ role, form: "NAVAL", faction: "UNDEAD" })).toBe(
+        `UNIT:UNDEAD:${role}`,
+      );
+      expect(
+        unitArtSubjectV7({ role, form: "NAVAL", faction: "ORIGINAL" }),
+      ).toBe(`UNIT:${role}`);
+      expect(chibiFallbackSubjectV7(`UNIT:UNDEAD:${role}`)).toBe(
         `UNIT:${role}`,
       );
+      expect(chibiFallbackSubjectV7(`PORTRAIT:UNDEAD:${role}`)).toBe(
+        `PORTRAIT:${role}`,
+      );
+    }
     expect(
       unitArtSubjectV7({
         role: "FIGHTER",
         form: "EMBARKED",
         faction: "UNDEAD",
       }),
+    ).toBe("UNIT:UNDEAD:EMBARKED_TRANSPORT");
+    expect(
+      unitArtSubjectV7({
+        role: "FIGHTER",
+        form: "EMBARKED",
+        faction: "ORIGINAL",
+      }),
     ).toBe("UNIT:EMBARKED_TRANSPORT");
+    expect(chibiFallbackSubjectV7("UNIT:UNDEAD:EMBARKED_TRANSPORT")).toBe(
+      "UNIT:EMBARKED_TRANSPORT",
+    );
   });
 
   it("falls back from an Undead subject to the Human subject of the role only", () => {
@@ -245,7 +267,7 @@ describe("Faction-aware chibi subjects", () => {
 });
 
 describe("Goblin faction art (pulp_wars-0ao.8)", () => {
-  it("gives Goblin land units their own subject and keeps shared art for ships and transports", () => {
+  it("gives Goblin land units, ships and transports their own subject (pulp_wars-w5j.3)", () => {
     expect(
       unitArtSubjectV7({ role: "FIGHTER", form: "LAND", faction: "GOBLIN" }),
     ).toBe("UNIT:GOBLIN:FIGHTER");
@@ -254,11 +276,11 @@ describe("Goblin faction art (pulp_wars-0ao.8)", () => {
     ).toBe("UNIT:GOBLIN:JUGGERNAUT");
     for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const)
       expect(unitArtSubjectV7({ role, form: "NAVAL", faction: "GOBLIN" })).toBe(
-        `UNIT:${role}`,
+        `UNIT:GOBLIN:${role}`,
       );
     expect(
       unitArtSubjectV7({ role: "RAIDER", form: "EMBARKED", faction: "GOBLIN" }),
-    ).toBe("UNIT:EMBARKED_TRANSPORT");
+    ).toBe("UNIT:GOBLIN:EMBARKED_TRANSPORT");
     expect(chibiFallbackSubjectV7("UNIT:GOBLIN:CATAPULT")).toBe(
       "UNIT:CATAPULT",
     );
@@ -340,10 +362,11 @@ describe("Dinosaur faction art (pulp_wars-c87.7)", () => {
     expect(
       unitArtSubjectV7({ role: "RAIDER", form: "EGG", faction: "DINOSAUR" }),
     ).toBe("UNIT:DINOSAUR:EGG");
+    // Since bead pulp_wars-w5j.3 the Dinosaurs sail their own ships.
     for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const)
       expect(
         unitArtSubjectV7({ role, form: "NAVAL", faction: "DINOSAUR" }),
-      ).toBe(`UNIT:${role}`);
+      ).toBe(`UNIT:DINOSAUR:${role}`);
     expect(chibiFallbackSubjectV7("UNIT:DINOSAUR:CATAPULT")).toBe(
       "UNIT:CATAPULT",
     );

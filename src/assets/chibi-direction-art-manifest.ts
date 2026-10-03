@@ -8,6 +8,7 @@ import { CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7 } from "./chibi-direction-dinosa
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "./chibi-direction-ice-folk-art-manifest";
 import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "./chibi-direction-martian-art-manifest";
 import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "./chibi-direction-undead-art-manifest";
+import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "./chibi-naval-faction-art-manifest";
 
 /**
  * Production art of the new visual direction (bead pulp_wars-3tq.5, batch
@@ -23,10 +24,11 @@ import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "./chibi-direction-undead-a
  * CHIBI set and resolves it first, on the board and in the interface
  * (src/render/canvas/live-board-look-v7.ts); a raster that fails to load
  * falls back to the default asset of that subject. Units, cities and
- * portraits have no owner area: `fixedColours` instead of a mask. Ships
- * and terrain are not converted; the Goblins (the list below this one),
- * the Undead, the Dinosaurs, the Martians and the Ice Folk (their own
- * modules) are.
+ * portraits have no owner area: `fixedColours` instead of a mask. Terrain
+ * is not converted; the Goblins (the list below this one), the Undead, the
+ * Dinosaurs, the Martians and the Ice Folk (their own modules) are, and so
+ * is every faction's naval art (chibi-naval-faction-art-manifest.ts, bead
+ * pulp_wars-w5j.3).
  */
 export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   {
@@ -543,6 +545,9 @@ export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
     ...CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7,
     // --- Ice Folk (pulp_wars-7g3.5 art, wired in by pulp_wars-7g3.6) ---
     ...CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7,
+    // --- Naval, every faction (pulp_wars-w5j.2 art, wired in by
+    // pulp_wars-w5j.3): the Human entries take the shared ship subjects.
+    ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
   ]);
   if (built.problems.length > 0) throw new Error(built.problems.join("; "));
   return built.registry;

@@ -692,7 +692,7 @@ describe("ruleset-7 Dinosaur roster", () => {
     ).toEqual(EGG_LAID_ROLES);
   });
 
-  it("keeps the Human boats and maps Dinosaur land units to their own art subject", () => {
+  it("keeps the Human boats' rules and maps Dinosaur units and boats to their own art subject", () => {
     for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const)
       expect(effectiveRoleRuleV7(role, "DINOSAUR")).toEqual(
         effectiveRoleRuleV7(role, "ORIGINAL"),
@@ -706,14 +706,15 @@ describe("ruleset-7 Dinosaur roster", () => {
         form: "NAVAL",
         faction: "DINOSAUR",
       }),
-    ).toBe("UNIT:BATTLESHIP");
+      // The Dinosaurs' own ships since bead pulp_wars-w5j.3 (same rules).
+    ).toBe("UNIT:DINOSAUR:BATTLESHIP");
     expect(
       unitArtSubjectV7({
         role: "RAIDER",
         form: "EMBARKED",
         faction: "DINOSAUR",
       }),
-    ).toBe("UNIT:EMBARKED_TRANSPORT");
+    ).toBe("UNIT:DINOSAUR:EMBARKED_TRANSPORT");
   });
 
   it("refunds half the printed cost on Disband and never disbands a Brontosaurus", () => {

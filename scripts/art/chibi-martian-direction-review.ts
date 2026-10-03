@@ -16,9 +16,10 @@
  *   the flyers with their code-drawn ground shadow);
  * - `portraits-x4.png`, `icons-x4.png`, `effects-x3.png`, `cities-x3.png`;
  * - `palette.{png,json}` and `readability.json`, measured on the masters;
- * - `scene-{four,mixed-a,mixed-b}-{desktop,phone}-zoom-{1,0.75}.png`: the
+ * - `scene-{mixed-a,mixed-b}-{desktop,phone}-zoom-{1,0.75}.png`: the mixed
  *   scenes of scripts/art/martian-direction/scene.ts drawn by the real board
- *   host with the default look;
+ *   host with the default look (the four-Martian scene is no longer
+ *   captured since bead pulp_wars-w5j.3);
  * - `index.json`.
  *
  * The faction is not in the engine yet, so nothing here launches a Martian
@@ -1388,7 +1389,10 @@ const VIEWPORTS = [
   { name: "phone", width: 390, height: 844, dpr: 3, mobile: true },
 ] as const;
 const ZOOMS = ["1", "0.75"] as const;
-const SCENES = ["FOUR", "MIXED_A", "MIXED_B"] as const;
+// The FOUR scene (four Martian players) is no longer captured: every player
+// plays a different faction since bead pulp_wars-w5j.1 (dropped in
+// pulp_wars-w5j.3; its earlier captures stay as history).
+const SCENES = ["MIXED_A", "MIXED_B"] as const;
 const SCENE = `globalThis.__MARTIAN_SCENE__`;
 
 async function captureAll(baseUrl: string): Promise<void> {

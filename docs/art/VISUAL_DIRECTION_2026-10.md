@@ -10,7 +10,9 @@ what the developer toggle draws. The user then chose the direction
 bead `pulp_wars-3tq.6` made the direction the default look of the CHIBI art
 set. Sections 1 to 12 are kept as written at the time: where they say
 "today", "by default" or "the developer toggle", read them as history;
-section 13 is the current behaviour.
+section 13 is the current behaviour, except for what
+[section 20](#20-faction-looks-instead-of-base-plates) changed (bead
+`pulp_wars-w5j.3`): the base plates, the ready cue and the ships.
 [Section 14](#14-goblin-study) is a study of the Goblin faction in the same
 direction (bead `pulp_wars-3tq.8`), and
 [section 16](#16-goblin-production) is the Goblin production art that
@@ -21,12 +23,16 @@ the Undead study and production (beads `pulp_wars-3tq.11` and
 [section 19](#19-dinosaur-production) the Dinosaur study and production
 (beads `pulp_wars-3tq.14` and `pulp_wars-3tq.13`).
 
-**All four factions are converted** (since bead `pulp_wars-3tq.13`): every
-land unit, portrait and city of the Humans, Goblins, Undead and Dinosaurs
-is drawn in fixed faction colours in the default look, and the player is
-read from the plate, the pennant and the border. Only the shared ships
-still carry a player-coloured part, the sail. Where an earlier section says
-a faction is "not converted", read it as history.
+**Every faction is converted** (since bead `pulp_wars-3tq.13` for the first
+four; the Martians and the Ice Folk followed): every land unit, portrait
+and city is drawn in fixed faction colours in the default look. **Since bead
+`pulp_wars-w5j.3`** every player plays a different faction, so the faction's
+look says whose a unit is: the coloured base plates are retired, every
+faction sails its own fixed-colour ships, and the player colour stays on
+the territory border and the city pennant only
+([section 20](#20-faction-looks-instead-of-base-plates)). Where an earlier
+section says a faction is "not converted", or reads the player from the
+plate or a ship's sail, read it as history.
 
 The [chibi art direction](CHIBI_ART_DIRECTION.md) governs production art;
 its section 4a holds the rules this direction changed.
@@ -124,7 +130,10 @@ Chrome and writes the comparison sheets and `metrics.json`.
   a Village, all eleven improvements, Roads, Forest, Mountains, coast.
   Thirty-six Fighters, Marksmen and Knights of the four players intermixed:
   on open ground, on improvements, in cities, on a Field Defense, damaged,
-  ready and spent. It is deliberately denser than a real game.
+  ready and spent. It is deliberately denser than a real game. (Since bead
+  `pulp_wars-w5j.3` the bench seats one faction per player, Human, Undead,
+  Goblin and Dinosaur, as a match must; the sheets below show the
+  all-Human bench of the time.)
 - **Views:** desktop 1440 x 900 at DPR 1 and phone 390 x 844 at DPR 3, each
   at zoom 1 and 0.75, plus the map without units and the bare terrain.
 - **Variants:** a `BoardVisualDirectionV7` value
@@ -3110,4 +3119,138 @@ The Martian faction's production art in this direction (bead
 
 The Ice Folk faction's direction and production art (bead `pulp_wars-7g3.5`, not live yet) is described in [factions/ICE_FOLK.md](factions/ICE_FOLK.md).
 
-The faction-styled naval units of every faction (bead `pulp_wars-w5j.2`, not live yet: the ships keep the shared art until `pulp_wars-w5j.3`) are described in [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md).
+The faction-styled naval units of every faction (bead `pulp_wars-w5j.2`, live since `pulp_wars-w5j.3`) are described in [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md).
+
+## 20. Faction looks instead of base plates
+
+**Status:** bead `pulp_wars-w5j.3` (epic `pulp_wars-w5j`). The user
+(2026-10-03): "We have enough factions now that we can enforce that every
+player plays a different faction. we can get rid of the colored base plates
+and just let the faction esthetics do the job. the exception are the naval
+units. you'll have to generate new sprites for the naval stuff in the style
+of each faction." Bead `pulp_wars-w5j.1` made the rule (no two seats play
+the same faction, [RULESET_7_UNIQUE_FACTIONS.md](../product/RULESET_7_UNIQUE_FACTIONS.md));
+bead `pulp_wars-w5j.2` made the ships. This section changes the **default
+(live) look only**: the Classic look (Settings > Developer tools) and the
+LEGACY art set are drawn exactly as before, and the study benches'
+directions (`HUMAN_DEMO_DIRECTION_V7`, `RECOMMENDED_DIRECTION_V7`) keep
+their plates.
+
+### What the default look draws now
+
+| Piece                              | Default look since `pulp_wars-w5j.3`                                                                                                                                                         |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Who owns a unit                    | its faction's look: every player plays a different faction, and every faction's units, portraits, cities and ships are in fixed faction colours                                              |
+| Under a land unit and the Egg      | no plate: a faint neutral ground shadow (`#12161e` at 24%, 78% of the old plate's width), so the unit stands on the ground; none on water and none under a flyer, which casts its own shadow |
+| Ships and the embarked transport   | the owner faction's own ship (NAVAL_FACTIONS.md), drawn as authored; no ring and no player-coloured sail                                                                                     |
+| Ready cue                          | a thin cream ring on the ground round the feet (round the hull afloat); no plate rim, no outline glow                                                                                        |
+| Selected unit                      | unchanged: the cream outline of the whole cell (and the jump on selection)                                                                                                                   |
+| HP bar                             | unchanged: only when damaged, a short bar under the feet, 6 world units above the cell's bottom edge                                                                                         |
+| Martian Shield bar                 | unchanged: on the HP bar's line under the feet while HP is full, directly above it while the HP bar shows                                                                                    |
+| Chilled, Frozen, growth, Egg chips | unchanged (the frost glyph and the ice casing, the growth chevrons, the Egg's countdown chip with its owner-coloured ring)                                                                   |
+| Territory border, city pennant     | unchanged, in the player colour: the only player colour left on the board                                                                                                                    |
+
+### What the plate carried, and where it went
+
+- **Owner.** The faction look carries it: no two players share a faction,
+  so no two players share a look. The territory border and the city
+  pennant keep the player colour (the pennant still reads: it is on every
+  city, faction cities included, at its authored anchor), and the selection
+  dock names a foreign unit's owner and faction.
+- **Seat shape.** The plate's round, pointed, square and swallow-tailed
+  shapes told players apart without colour. With one faction each the
+  faction is a stronger tell than a shape; the pennant keeps the seat shape
+  for cities.
+- **Ready.** The plate's bright rim becomes the GROUND ready ring below.
+- **HP bar, Shield bar.** They were drawn at fixed offsets from the cell
+  centre, not from the plate, so they did not move; without the plate under
+  them they read as before (dark track, green, amber, red; magenta pips).
+- **The Egg's larger plate** (bead `pulp_wars-3tq.13`) told whose Egg it is
+  when the shell carried no player colour. An Egg is always the Dinosaur
+  player's, and its countdown chip keeps the owner-coloured ring.
+- **The Martian flyer** casts its own shadow (`drawFlyerShadowV7`); the
+  neutral shadow is not drawn under it.
+- **The ship's ring and sail** said whose a shared ship was. Every faction
+  now sails its own ships, so both are gone.
+
+### The ready cue
+
+A **thin cream ring on the ground** (`#fff6cf`, 2.25 px wide at zoom 1, on a
+4.5 px near-black casing at 55%): an ellipse 28 master px wide each side of
+a standard unit's centre and a third as tall, centred under the feet
+(the hull's 44% afloat, the nest's width for an Egg). It is drawn before the
+sprite, so the feet stand inside it and its two ends and its front arc show.
+
+- **Readable at zoom 0.75 on a phone:** 1.7 CSS px (5 device px at DPR 3)
+  of cream against grass, snow, sand and both waters; checked in the
+  captures below.
+- **Calm:** static, with no pulse and no glow; units that have acted have
+  none, so the cue thins out as the turn goes on.
+- **Not the selection:** the selection is the cream outline of the whole
+  cell, a square; the ready cue is an ellipse at the feet. A selected ready
+  unit shows both.
+- **Not a player colour:** the same cream for every player; only the
+  viewer's units are ever ready.
+
+Considered and rejected: the classic outline glow (the halo the direction
+removed as clutter), a pip over the head (it collides with the status chips
+in the top-right strip and with the unit to the north), and a bob (motion
+on every idle unit is not calm).
+
+### Own units at a glance
+
+**Decided: no own-side cue.** The faction look tells the viewer's units
+from everyone else's (every faction's palette is its own: crimson and gold,
+black and violet, olive and brown, blue and orange, chrome and magenta,
+cream and ice blue; the naval measure in NAVAL_FACTIONS.md has no two
+factions' ships closer than 10.4 in CIE76 colour difference, "clear at a
+glance"), and during the viewer's turn the ready ring marks every own unit
+that can still act. The captures were checked for a viewer's spent unit in
+a crowd of three other factions: it reads as the viewer's by its faction.
+An own-side marker would bring back exactly the per-unit chrome the
+direction removed.
+
+### Runtime
+
+- `LIVE_DIRECTION_V7` (`src/render/canvas/visual-direction-v7.ts`) sets
+  `unit.base: "SHADOW"` and `chrome.ready: "GROUND"`; `drawDirectedUnitBaseV7`
+  draws the shadow and the ring for SHADOW and NONE (`DIRECTED_GROUND_SHADOW_COLOUR_V7`,
+  `DIRECTED_READY_RING_COLOUR_V7`). A unit afloat gets no plate and no ring
+  in any direction; a ready one gets the ready ring round its hull.
+- The board draws the sprite's outline glow only with no direction or a
+  GLOW direction, so the live look has no glow.
+- `createDirectedChibiArtV7` no longer exempts ships from the faction
+  colour (a Human ship whose raster fails takes the Human crimson, like a
+  Human land unit), and resolves a faction's ship whose own raster is
+  missing to the classic shared ship in the owner's colour, never the Human
+  direction ship. The interface does the same (`createChibiDomArtV7`).
+
+### Evidence
+
+`npm run art:faction-looks-review -- --out DIR` captures, in the default
+look at desktop and phone widths and zoom steps 1 and 0.75: two Showcase
+launches with four different factions each (all six across the two), four
+factions' armies in contact on the fixtures of
+[`tests/fixtures/v7-faction-looks.ts`](../../tests/fixtures/v7-faction-looks.ts)
+(ready, spent and damaged units, Shields, Frosted and Frozen units, Big and
+Alpha dinosaurs, Eggs, flyers), a selected unit, the ships of six factions
+at sea and docked, and the contact in the Classic look for comparison.
+`npm run art:chibi-naval-faction-review` re-drew its scenes with the wired
+art.
+
+![The six factions' ships, the Human (viewer's) ships with the ready ring, Patrol Boats docked at Ports](../../art/pixellab/reviews/chibi-batch-naval-factions/scene-coast-desktop-zoom-1.png)
+
+### Weak spots
+
+- **The HP bar crosses the ready ring's front arc** on a damaged ready
+  unit; both still read (the bar is dark-cased, the ring shows at its
+  ends).
+- **The shadow is faint on Grass** and clearer on Snow and sand; it grounds
+  the units but does not separate them.
+- **Mirror matches** (headless and test only, `allowDuplicateFactions`)
+  have no owner cue on units but the border; the browser never launches
+  one.
+- **The Port is mostly hidden** under a docked ship, as it was.
+- **Earlier review evidence** (the study sheets, the faction direction
+  reviews' captures) still shows plates; the review scripts no longer
+  capture four players of one faction.

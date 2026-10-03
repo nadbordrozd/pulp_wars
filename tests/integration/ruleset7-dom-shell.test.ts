@@ -1113,16 +1113,18 @@ describe("Ruleset 7 DOM shell", () => {
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => first.controller.snapshot().phase === "ACTIVE");
-    // A fresh player gets the new look: plates, pennants, calm chrome, and
-    // the direction's own art, loaded with the rest of the CHIBI set.
+    // A fresh player gets the new look: no plates (a neutral shadow, since
+    // bead pulp_wars-w5j.3), pennants, calm chrome with the ground ready
+    // ring, and the direction's own art, loaded with the rest of the CHIBI
+    // set.
     expect(host.model?.artSet).toBe("CHIBI");
     expect(host.model?.visualDirection).toEqual(LIVE_DIRECTION_V7);
-    expect(host.model?.visualDirection?.unit.base).toBe("PLATE");
+    expect(host.model?.visualDirection?.unit.base).toBe("SHADOW");
     expect(host.model?.visualDirection?.chrome).toEqual({
       hp: "DAMAGED",
       hpPlacement: "BASE",
       badge: "NONE",
-      ready: "BASE",
+      ready: "GROUND",
       roads: "CALM",
       borders: "SOLID",
     });

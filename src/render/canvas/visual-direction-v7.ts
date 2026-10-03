@@ -1,4 +1,8 @@
-import type { ArtSubjectV7 } from "../../assets/chibi-art-v7";
+import {
+  navalArtRoleOfSubjectV7,
+  navalSharedSubjectV7,
+  type ArtSubjectV7,
+} from "../../assets/chibi-art-v7";
 import { ICE_FOLK_FLAG_ANCHORS_V7 } from "../../assets/chibi-direction-ice-folk-presentation";
 import { MARTIAN_FLAG_ANCHORS_V7 } from "../../assets/chibi-direction-martian-presentation";
 import type { BoardRenderPlanEntryV7 } from "./board-renderer-v7";
@@ -108,9 +112,13 @@ export interface BoardVisualDirectionV7 {
      * DISC is the study's heavy filled ellipse with a near-black outline,
      * RING its outline alone; PLATE is the demo's lighter plate: smaller,
      * with a rim in a darker tone of the player colour instead of black.
-     * A ship's base is always a wake-like ring, whatever the style.
+     * SHADOW (the live look since bead pulp_wars-w5j.3) is no plate: a
+     * faint neutral ground shadow, with no player colour; NONE draws
+     * nothing. A unit afloat (a ship, the transport, a Martian machine on
+     * water) never gets a plate or a ring (bead pulp_wars-w5j.3): its
+     * faction's art says whose it is.
      */
-    readonly base: "NONE" | "DISC" | "RING" | "PLATE";
+    readonly base: "NONE" | "SHADOW" | "DISC" | "RING" | "PLATE";
     /** SEAT gives each seat's base its own outline (round, pointed, ...). */
     readonly baseShape: "ROUND" | "SEAT";
     /** A light rim outside the black outline, where the canvas has room. */
@@ -121,8 +129,12 @@ export interface BoardVisualDirectionV7 {
     /** SIDE is the vertical bar; BASE a short bar under the unit's feet. */
     readonly hpPlacement: "SIDE" | "BASE";
     readonly badge: "SQUARE" | "SHAPE" | "NONE";
-    /** GLOW is the sprite outline; BASE brightens the base rim instead. */
-    readonly ready: "GLOW" | "BASE";
+    /**
+     * GLOW is the sprite outline; BASE brightens the base rim instead;
+     * GROUND (the live look since bead pulp_wars-w5j.3) is a thin cream ring
+     * on the ground round the feet, with no plate and no player colour.
+     */
+    readonly ready: "GLOW" | "BASE" | "GROUND";
     readonly roads: "BOLD" | "CALM";
     readonly borders: "DASHED" | "SOLID";
   };
@@ -277,16 +289,24 @@ export const HUMAN_DEMO_DIRECTION_V7: BoardVisualDirectionV7 = {
  * of a raster that fails to load.
  * Goblins are converted since bead pulp_wars-3tq.9: their units,
  * portraits and cities resolve from the direction art registry in fixed
- * faction colours, and their cities fly the pennant. Ships keep the
- * player-coloured sail and stand in a thin ring.
+ * faction colours, and their cities fly the pennant.
  *
  * Since bead pulp_wars-3tq.12 the Undead are converted too, by the same
  * mechanism: the art registry the game passes holds their units, portraits,
  * cities and effects, and their cities fly the pennant.
+ *
+ * Since bead pulp_wars-w5j.3 every player plays a different faction, so
+ * the faction's look says whose a unit is: the coloured, seat-shaped base
+ * plates are retired (a faint neutral ground shadow instead), every
+ * faction's ships are its own fixed-colour art, and a ready unit has a thin
+ * cream ring on the ground round its feet (GROUND). Territory borders and
+ * city pennants keep the player colour.
  */
 export const LIVE_DIRECTION_V7: BoardVisualDirectionV7 = {
   ...HUMAN_DEMO_DIRECTION_V7,
   city: { ...HUMAN_DEMO_DIRECTION_V7.city, factionCities: "CLASSIC" },
+  unit: { ...HUMAN_DEMO_DIRECTION_V7.unit, base: "SHADOW" },
+  chrome: { ...HUMAN_DEMO_DIRECTION_V7.chrome, ready: "GROUND" },
   // Undead (bead pulp_wars-3tq.12): the faction's magic is violet.
   undeadAccent: "VIOLET",
 };
@@ -761,13 +781,10 @@ export function createDirectedChibiArtV7(input: {
     colour: OwnerAreaColourV7,
     accent: boolean,
   ): ChibiResolutionV7 => {
-    // A ship's sail stays in the player colour: ships are shared by every
-    // faction, and on water the sail is the marker a base cannot be.
-    if (
-      colour === "PLAYER" ||
-      !humanPiece(request.subject) ||
-      directionUnitAfloatV7(request.subject)
-    )
+    // Since bead pulp_wars-w5j.3 a ship is no exception: every faction has
+    // its own fixed-colour ships, so a Human ship drawn from its classic
+    // raster takes the Human colour like a Human land unit.
+    if (colour === "PLAYER" || !humanPiece(request.subject))
       return base.resolve(request);
     const fixed = base.resolve({ ...request, ownerColor: colour });
     if (fixed.kind !== "READY" || !accent || request.ownerColor === undefined)
@@ -878,10 +895,24 @@ export function createDirectedChibiArtV7(input: {
           direction.unit.samples && input.samples !== undefined
             ? input.samples.resolve(request)
             : null;
+        // A faction's ship or transport without its own raster (none
+        // registered, or it failed to load) is the classic shared ship with
+        // its sail in the owner's colour, never the Human direction ship,
+        // whose crimson would say "Human" (bead pulp_wars-w5j.3).
+        const navalStandIn =
+          sample !== null && sample.kind !== "MISSING"
+            ? null
+            : navalSharedSubjectV7(request.subject);
         const resolved =
           sample !== null && sample.kind !== "MISSING"
             ? sample
-            : ownerAreas(request, direction.unit.owner, direction.unit.accent);
+            : navalStandIn !== null
+              ? base.resolve({ ...request, subject: navalStandIn })
+              : ownerAreas(
+                  request,
+                  direction.unit.owner,
+                  direction.unit.accent,
+                );
         if (resolved.kind !== "READY" || !direction.unit.halo) return resolved;
         return {
           ...resolved,
@@ -949,9 +980,112 @@ export interface DirectedRectV7 {
 export const DIRECTION_EGG_PLATE_RADIUS_SHARE_V7 = 29 / 48;
 
 /**
+ * The ground under a unit in the live look (bead pulp_wars-w5j.3): a faint
+ * neutral shadow (SHADOW), never on water or under a flyer, which casts its
+ * own; and, for a ready unit, the GROUND ready cue: a thin cream ring with
+ * a soft dark casing round the feet (or round the hull on the water). The
+ * ring is an ellipse on the ground, so it is never taken for the selection,
+ * which outlines the whole cell. In world terms the ring is 28 master px
+ * wide each side of a standard unit's centre (wider than its feet, so both
+ * ends show), the hull's 44% of its width afloat, and the Egg's nest width.
+ */
+export const DIRECTED_GROUND_SHADOW_COLOUR_V7 = "rgba(18, 22, 30, 0.24)";
+export const DIRECTED_READY_RING_COLOUR_V7 = READY_RIM;
+
+/** The ground ellipse of a unit: centred under the feet, in CSS px. */
+export function directedUnitGroundV7(
+  entry: BoardRenderPlanEntryV7,
+  sprite: DirectedRectV7,
+  share: number,
+): {
+  readonly centreX: number;
+  readonly centreY: number;
+  readonly radiusX: number;
+  readonly radiusY: number;
+  readonly afloat: boolean;
+} {
+  const scale = sprite.height / 80;
+  const afloat =
+    directionUnitAfloatV7(entry.artSubject) || entry.martian?.afloat === true;
+  const egg = entry.kind === "UNIT" && entry.egg !== undefined;
+  const radiusX =
+    (afloat
+      ? sprite.width * 0.44
+      : egg
+        ? sprite.width * DIRECTION_EGG_PLATE_RADIUS_SHARE_V7
+        : Math.min(sprite.width * 0.5, 28 * scale)) * share;
+  const radiusY = radiusX * (afloat ? 0.3 : 0.34);
+  return {
+    centreX: sprite.x + sprite.width / 2,
+    // The feet stand about 5 master pixels above the canvas bottom.
+    centreY: sprite.y + sprite.height - radiusY - 1 * scale,
+    radiusX,
+    radiusY,
+    afloat,
+  };
+}
+
+function drawDirectedGroundV7(
+  context: CanvasRenderingContext2D,
+  direction: BoardVisualDirectionV7,
+  entry: BoardRenderPlanEntryV7,
+  sprite: DirectedRectV7,
+  zoom: number,
+): void {
+  const ground = directedUnitGroundV7(entry, sprite, 1);
+  const flyer = entry.martian?.flyer === true;
+  const shadowed = direction.unit.base === "SHADOW" && !ground.afloat && !flyer;
+  const ring = entry.ready === true && direction.chrome.ready !== "GLOW";
+  // Nothing to draw: leave the context untouched (the baseline direction
+  // draws exactly the stock frame).
+  if (!shadowed && !ring) return;
+  context.save();
+  if (shadowed) {
+    const shadow = directedUnitGroundV7(entry, sprite, 0.78);
+    context.beginPath();
+    context.ellipse(
+      shadow.centreX,
+      ground.centreY,
+      shadow.radiusX,
+      shadow.radiusY,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    context.fillStyle = DIRECTED_GROUND_SHADOW_COLOUR_V7;
+    context.fill();
+  }
+  if (ring) {
+    context.beginPath();
+    context.ellipse(
+      ground.centreX,
+      ground.centreY,
+      ground.radiusX,
+      ground.radiusY,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    context.globalAlpha *= 0.55;
+    context.strokeStyle = OUTLINE;
+    context.lineWidth = 4.5 * zoom;
+    context.stroke();
+    context.globalAlpha /= 0.55;
+    context.strokeStyle = READY_RIM;
+    context.lineWidth = 2.25 * zoom;
+    context.stroke();
+  }
+  context.restore();
+}
+
+/**
  * The base under a unit's feet: a flat ellipse in the player colour (DISC)
  * or its outline alone (RING), centred on the sprite's bottom edge. A ready
  * unit's base has a bright rim when the direction moves the ready cue there.
+ * SHADOW and NONE draw no base (the live look, bead pulp_wars-w5j.3): the
+ * faint neutral shadow and the GROUND ready ring. A unit afloat gets no
+ * plate and no ring in any direction since bead pulp_wars-w5j.3; a ready
+ * one has the ready ring round its hull.
  */
 export function drawDirectedUnitBaseV7(
   context: CanvasRenderingContext2D,
@@ -960,14 +1094,16 @@ export function drawDirectedUnitBaseV7(
   sprite: DirectedRectV7,
   zoom: number,
 ): void {
-  if (direction.unit.base === "NONE" || entry.ownerColor === undefined) return;
   const style = direction.unit.base;
-  const scale = sprite.height / 80;
-  const centreX = sprite.x + sprite.width / 2;
-  // A Martian machine afloat stands in the ships' ring, so the water shows
-  // (bead pulp_wars-t6s.4).
   const afloat =
     directionUnitAfloatV7(entry.artSubject) || entry.martian?.afloat === true;
+  if (style === "NONE" || style === "SHADOW" || afloat) {
+    drawDirectedGroundV7(context, direction, entry, sprite, zoom);
+    return;
+  }
+  if (entry.ownerColor === undefined) return;
+  const scale = sprite.height / 80;
+  const centreX = sprite.x + sprite.width / 2;
   // --- Dinosaur (bead pulp_wars-3tq.13) ---
   // The Egg's 48 px sprite is a nest that fills its canvas, wider than the
   // 31 px plate its height would give it, so that plate would be hidden. It
@@ -975,19 +1111,14 @@ export function drawDirectedUnitBaseV7(
   // the nest: the shell carries no player colour.
   const egg = entry.kind === "UNIT" && entry.egg !== undefined;
   // --- end Dinosaur ---
-  const radiusX = afloat
-    ? sprite.width * 0.44
-    : egg
-      ? sprite.width * DIRECTION_EGG_PLATE_RADIUS_SHARE_V7
-      : Math.min(sprite.width * 0.5, (style === "PLATE" ? 26 : 30) * scale);
-  const radiusY = radiusX * (afloat ? 0.3 : style === "PLATE" ? 0.34 : 0.36);
+  const radiusX = egg
+    ? sprite.width * DIRECTION_EGG_PLATE_RADIUS_SHARE_V7
+    : Math.min(sprite.width * 0.5, (style === "PLATE" ? 26 : 30) * scale);
+  const radiusY = radiusX * (style === "PLATE" ? 0.34 : 0.36);
   // The feet stand about 5 master pixels above the canvas bottom.
   const centreY = sprite.y + sprite.height - radiusY - 1 * scale;
   const ready = entry.ready === true && direction.chrome.ready === "BASE";
-  // A ship's ring is always round: a wake has no corners, and its sail
-  // already shows the player.
-  const seat =
-    direction.unit.baseShape === "SEAT" && !afloat ? (entry.ownerSeat ?? 0) : 0;
+  const seat = direction.unit.baseShape === "SEAT" ? (entry.ownerSeat ?? 0) : 0;
   const ellipse = (grow: number): void =>
     seatBasePath(
       context,
@@ -998,13 +1129,10 @@ export function drawDirectedUnitBaseV7(
       radiusY + grow * zoom,
     );
   context.save();
-  if (style === "RING" || afloat) {
-    // A hull stands in this ring like in its own wake; nothing is filled,
-    // so the water stays visible.
-    const thin = style === "PLATE";
+  if (style === "RING") {
     ellipse(0);
-    context.strokeStyle = thin ? darkerColourV7(entry.ownerColor) : OUTLINE;
-    context.lineWidth = (ready ? 10 : thin ? 5 : 7) * zoom;
+    context.strokeStyle = OUTLINE;
+    context.lineWidth = (ready ? 10 : 7) * zoom;
     context.stroke();
     if (ready) {
       context.strokeStyle = READY_RIM;
@@ -1012,7 +1140,7 @@ export function drawDirectedUnitBaseV7(
       context.stroke();
     }
     context.strokeStyle = entry.ownerColor;
-    context.lineWidth = (thin ? 3 : 4) * zoom;
+    context.lineWidth = 4 * zoom;
     context.stroke();
     context.restore();
     return;
@@ -1052,15 +1180,16 @@ export function drawDirectedUnitBaseV7(
   context.restore();
 }
 
-/** Ships and the embarked transport: their base is a ring on the water. */
+/**
+ * Ships and the embarked transport, of any faction (bead pulp_wars-w5j.3):
+ * they stand on the water, so they get no plate and no shadow.
+ */
 export function directionUnitAfloatV7(
   subject: ArtSubjectV7 | undefined,
 ): boolean {
-  return (
-    subject === "UNIT:PATROL_BOAT" ||
-    subject === "UNIT:BATTLESHIP" ||
-    subject === "UNIT:EMBARKED_TRANSPORT"
-  );
+  return subject?.startsWith("UNIT:") === true
+    ? navalArtRoleOfSubjectV7(subject) !== null
+    : false;
 }
 
 /** A darker tone of a `#rrggbb` colour, for rims that are not black. */

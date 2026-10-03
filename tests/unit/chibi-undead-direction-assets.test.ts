@@ -156,13 +156,22 @@ describe("Undead production art of the new visual direction (pulp_wars-3tq.12)",
         subject,
       ).toEqual([id]);
     expect(CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7).toHaveLength(expected.length);
-    // Ships are shared and stay as they are; the Plague and Bitten markers,
-    // the cure sparkle and the Grave are not converted; no other faction's
-    // art is in this list.
+    // The Plague and Bitten markers, the cure sparkle and the Grave are not
+    // converted; no other faction's art is in this list. Ships are the naval
+    // list's (bead pulp_wars-w5j.2, wired in by pulp_wars-w5j.3), so the
+    // shared ship subjects hold the Human naval art and no Undead entry.
     for (const subject of [
       "UNIT:PATROL_BOAT",
       "UNIT:BATTLESHIP",
       "UNIT:EMBARKED_TRANSPORT",
+    ] as const)
+      expect(
+        registry.variants(subject).map((asset) => asset.id),
+        subject,
+      ).toEqual([
+        expect.stringMatching(/^chibi-naval-human-/) as unknown as string,
+      ]);
+    for (const subject of [
       "STATUS:PLAGUED",
       "STATUS:BITTEN",
       "EFFECT:CURE",

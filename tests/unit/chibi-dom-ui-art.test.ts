@@ -135,7 +135,11 @@ describe("CHIBI interface subjects", () => {
     expect(technologySubjectV7("SCOUTING", "UNDEAD")).toBe(
       "PORTRAIT:UNDEAD:RAIDER",
     );
+    // Since bead pulp_wars-w5j.3 every faction has its own Battleship.
     expect(technologySubjectV7("NAVAL_ENGINEERING", "UNDEAD")).toBe(
+      "UNIT:UNDEAD:BATTLESHIP",
+    );
+    expect(technologySubjectV7("NAVAL_ENGINEERING", "ORIGINAL")).toBe(
       "UNIT:BATTLESHIP",
     );
     expect(technologySubjectV7("DRILL", "ORIGINAL")).toBe("UNIT:GUARD");
@@ -228,9 +232,30 @@ describe("CHIBI interface subjects", () => {
     expect(commandSubjectV7(commands[13] as CommandV7, "UNDEAD")).toBe(
       "PORTRAIT:UNDEAD:GUARD",
     );
+    // Since bead pulp_wars-w5j.3 the faction's own ship portrait.
     expect(commandSubjectV7(commands[14] as CommandV7, "UNDEAD")).toBe(
-      "PORTRAIT:BATTLESHIP",
+      "PORTRAIT:UNDEAD:BATTLESHIP",
     );
+    expect(
+      commandSubjectV7(
+        {
+          kind: "DISEMBARK",
+          unitId: 1 as never,
+          at: { x: 0, y: 0 },
+        } as CommandV7,
+        "GOBLIN",
+      ),
+    ).toBe("UNIT:GOBLIN:EMBARKED_TRANSPORT");
+    expect(
+      commandSubjectV7(
+        {
+          kind: "DISEMBARK",
+          unitId: 1 as never,
+          at: { x: 0, y: 0 },
+        } as CommandV7,
+        "ORIGINAL",
+      ),
+    ).toBe("UNIT:EMBARKED_TRANSPORT");
     for (const kind of ["MOVE", "BUILD_FIELD_DEFENSE"] as const)
       expect(
         commandSubjectV7(
@@ -266,7 +291,11 @@ describe("CHIBI interface subjects", () => {
       "PORTRAIT:UNDEAD:FIGHTER",
       "PORTRAIT:UNDEAD:JUGGERNAUT",
     ]);
+    // Since bead pulp_wars-w5j.3 every faction's ship has its own portrait.
     expect(portraitSubjectV7("PATROL_BOAT", "UNDEAD")).toBe(
+      "PORTRAIT:UNDEAD:PATROL_BOAT",
+    );
+    expect(portraitSubjectV7("PATROL_BOAT", "ORIGINAL")).toBe(
       "PORTRAIT:PATROL_BOAT",
     );
     expect(portraitSubjectV7("KNIGHT", "UNDEAD")).toBe(

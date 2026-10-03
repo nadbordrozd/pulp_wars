@@ -17,8 +17,10 @@ import {
   liveBoardLookV7,
 } from "../../src/render/canvas/live-board-look-v7";
 import {
+  DIRECTED_GROUND_SHADOW_COLOUR_V7,
   DIRECTION_EGG_PLATE_RADIUS_SHARE_V7,
   DIRECTION_FLAG_ANCHORS_V7,
+  HUMAN_DEMO_DIRECTION_V7,
   LIVE_DIRECTION_V7,
   createDirectedChibiArtV7,
   drawDirectedFlagV7,
@@ -297,9 +299,11 @@ describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
       samples: directionArt(DINOSAUR_SUBJECTS),
     });
     expect(live.images).toEqual([raster("direction:UNIT:DINOSAUR:RAIDER")]);
-    // The unit stands on its player's plate, and wears no faction badge
-    // (the footprint badge is for a Dinosaur drawn with Human art).
-    expect(fillsOf(live.log)).toContain(CORAL);
+    // The unit stands on no plate since bead pulp_wars-w5j.3 (the faint
+    // neutral shadow, no player colour), and wears no faction badge (the
+    // footprint badge is for a Dinosaur drawn with Human art).
+    expect(fillsOf(live.log)).not.toContain(CORAL);
+    expect(fillsOf(live.log)).toContain(DIRECTED_GROUND_SHADOW_COLOUR_V7);
     expect(fillsOf(live.log)).not.toContain("#33363d");
     // Loading: no sprite, never a flash of the classic one.
     expect(
@@ -353,7 +357,7 @@ describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
     expect(strokes(undefined)).not.toContain("#efe6c8");
   });
 
-  it("draws the Egg's direction sprite with no owner colour, on a plate as wide as a unit's, with the owner's ring on its countdown", () => {
+  it("draws the Egg's direction sprite with no owner colour and no plate, with the owner's ring on its countdown", () => {
     const egg = entry("UNIT", "UNIT:DINOSAUR:EGG", {
       ownerColor: TEAL,
       ownerSeat: 0,
@@ -366,9 +370,11 @@ describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
       samples: directionArt(DINOSAUR_SUBJECTS),
     });
     expect(live.images).toEqual([raster("direction:UNIT:DINOSAUR:EGG")]);
-    // The plate is filled in the player colour and the countdown chip keeps
-    // its owner-coloured ring and its number.
-    expect(fillsOf(live.log)).toContain(TEAL);
+    // No plate since bead pulp_wars-w5j.3: nothing is filled in the player
+    // colour (the Dinosaur look is the Dinosaur player's); the countdown
+    // chip keeps its owner-coloured ring and its number.
+    expect(fillsOf(live.log)).not.toContain(TEAL);
+    expect(fillsOf(live.log)).toContain(DIRECTED_GROUND_SHADOW_COLOUR_V7);
     expect(
       live.log
         .filter((call) => call[0] === "set" && call[1] === "strokeStyle")
@@ -387,14 +393,15 @@ describe("Dinosaur art in the live default look (pulp_wars-3tq.13)", () => {
         raster(`classic:UNIT:DINOSAUR:EGG#${TEAL}`),
       ]);
 
-    // The plate: the Egg's 48 px master gets a 58 px plate (about a large
-    // unit's), so its ends show beside the nest that fills the canvas; any
-    // other sprite keeps the rule.
+    // The plate of the study benches' direction (the live look has none
+    // since bead pulp_wars-w5j.3): the Egg's 48 px master gets a 58 px
+    // plate (about a large unit's), so its ends show beside the nest that
+    // fills the canvas; any other sprite keeps the rule.
     const radius = (plan: BoardRenderPlanEntryV7): number => {
       const { context, log } = recordingContext();
       drawDirectedUnitBaseV7(
         context,
-        LIVE_DIRECTION_V7,
+        HUMAN_DEMO_DIRECTION_V7,
         plan,
         { x: 0, y: 0, width: 48, height: 48 },
         1,

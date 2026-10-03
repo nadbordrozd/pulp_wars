@@ -386,8 +386,9 @@ describe("Revision 17 Goblin presentation text", () => {
     expect(portraitSubjectV7("FIGHTER", "GOBLIN")).toBe(
       "PORTRAIT:GOBLIN:FIGHTER",
     );
+    // And since bead pulp_wars-w5j.3 their ships too.
     expect(portraitSubjectV7("BATTLESHIP", "GOBLIN")).toBe(
-      "PORTRAIT:BATTLESHIP",
+      "PORTRAIT:GOBLIN:BATTLESHIP",
     );
     expect(portraitSubjectV7("FIGHTER", "ORIGINAL")).toBe("PORTRAIT:FIGHTER");
     expect(technologySubjectV7("DRILL", "GOBLIN")).toBe("UNIT:GOBLIN:GUARD");

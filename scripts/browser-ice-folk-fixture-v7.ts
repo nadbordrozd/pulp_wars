@@ -8,7 +8,7 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * snapshotView, at, victim }). Used by the Ice Folk review script.
  */
 export type IceFolkUiFixtureNameV7 =
-  "iceFolkUiFixtureV7" | "iceFolkVictimFixtureV7" | "iceFolkMirrorFixtureV7";
+  "iceFolkUiFixtureV7" | "iceFolkVictimFixtureV7";
 
 export function iceFolkFixtureMountExpressionV7(
   fixture: IceFolkUiFixtureNameV7,

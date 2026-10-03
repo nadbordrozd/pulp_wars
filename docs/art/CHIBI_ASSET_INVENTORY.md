@@ -634,9 +634,9 @@ and described in [ICE_FOLK.md](factions/ICE_FOLK.md#code-drawn-pieces).
 
 Each faction's own Patrol Boat, Battleship, embarked transport and the two
 warship portraits, in fixed faction colours with no owner mask, on the
-canvases and anchors of the shared ships. **Not registered yet** (bead
-`pulp_wars-w5j.3` wires them in and removes the ships' rings): the entries
-are in
+canvases and anchors of the shared ships. **Registered in the direction
+registry since bead `pulp_wars-w5j.3`** (the default look draws them; the
+ships' rings are gone): the entries are in
 [`chibi-naval-faction-art-manifest.ts`](../../src/assets/chibi-naval-faction-art-manifest.ts).
 See [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md).
 

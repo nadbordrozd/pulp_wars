@@ -1006,10 +1006,10 @@ Battleship and embarked transport (`ship` class, the shared ships' canvases)
 and the two warship portraits (`portrait` class), `fixedFactionColours`,
 every asset `ownerColour: false`. 30 assets from 48 recipes, all new
 PixelLab calls. A batch is one faction, so the six factions are six
-batches. **Nothing registers them yet:** the entries are in
+batches. The entries are in
 [`chibi-naval-faction-art-manifest.ts`](../../src/assets/chibi-naval-faction-art-manifest.ts),
-which no game module imports until bead `pulp_wars-w5j.3`. They added no
-pipeline piece:
+which the direction registry loads since bead `pulp_wars-w5j.3`. They added
+no pipeline piece:
 
 - **Every accepted recipe is an `edit-image-pixen` edit** of the accepted
   batch-4 ships (`"source": { "batch": "4", … }`) or batch-5 portraits, or
@@ -1038,9 +1038,9 @@ six factions), `readability.json` (each fleet against both waters, and a
 palette distance for every pair of factions per role, also under
 deuteranopia), `scene-{coast,mixed}-{desktop,phone}-zoom-{1,0.75}.png` (the
 scenes of [`scene.ts`](../../scripts/art/naval-factions/scene.ts) drawn by
-the real board host in the live look with `unit.base: "NONE"`, so no
-plates and no rings; the ships are registered under three land subjects of
-their faction until the naval subjects exist) and `index.json`. The
+the real board host in the live look the game draws: since bead
+`pulp_wars-w5j.3` the naval art is wired in under its own subjects and
+there are no plates and no rings) and `index.json`. The
 review finds the masters by asset id, because the manifest module needs
 Vite's `import.meta.env`. Its captures start Vite on port 6530 unless
 `--port` says otherwise and need `CHROME_PATH`; `--copy-to DIR` copies the

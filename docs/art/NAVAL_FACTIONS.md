@@ -1,18 +1,21 @@
 # Faction-styled naval units
 
-**Status:** art made in bead `pulp_wars-w5j.2` (epic `pulp_wars-w5j`), **not
-wired in yet**. The user (2026-10-03): "We have enough factions now that we
-can enforce that every player plays a different faction. we can get rid of
-the colored base plates and just let the faction esthetics do the job. the
-exception are the naval units. you'll have to generate new sprites for the
-naval stuff in the style of each faction." Bead `pulp_wars-w5j.3` removes the
-base plates and the ships' rings and wires this art in (see the
-[wiring list](#wiring-list-for-pulp_wars-w5j3)). The Dwarf naval units come
-with the Dwarf art bead.
+**Status:** art made in bead `pulp_wars-w5j.2` (epic `pulp_wars-w5j`),
+**wired in by bead `pulp_wars-w5j.3`**: in the default (live) look every
+faction sails its own ships, transport and ship portraits, with no ring and
+no player-coloured sail (see the [wiring](#wiring-done-in-pulp_wars-w5j3)).
+The user (2026-10-03): "We have enough factions now that we can enforce
+that every player plays a different faction. we can get rid of the colored
+base plates and just let the faction esthetics do the job. the exception
+are the naval units. you'll have to generate new sprites for the naval
+stuff in the style of each faction." The base plates went in the same bead
+([VISUAL_DIRECTION_2026-10.md section 20](VISUAL_DIRECTION_2026-10.md#20-faction-looks-instead-of-base-plates)).
+The Dwarf naval units come with the Dwarf art bead; the wiring is by
+faction, so they need only their registry entries.
 
-Until then every faction sails the shared ships of batch 4: one hull per
+The Classic look and LEGACY keep the shared ships of batch 4: one hull per
 role, a sail (or tarp) in the owner key colour recoloured to the player
-colour, standing in a thin player-coloured ring on the water.
+colour (the Classic look never had the ring).
 
 ![Every naval sprite: today for a Coral and a Teal player, then the six factions, on Shallow and Deep Water](../../art/pixellab/reviews/chibi-batch-naval-factions/naval-sheet-x4.png)
 
@@ -22,7 +25,7 @@ From the engine (`src/engine/rules/ruleset-v7.ts`) and the art subjects
 (`unitArtSubjectV7` in `src/assets/chibi-art-v7.ts`, `portraitSubjectV7` in
 `src/assets/chibi-ui-art-v7.ts`):
 
-| Piece                | Engine                                                                  | Today's subject and asset                             | Canvas, class         |
+| Piece                | Engine                                                                  | Shared subject and asset (Classic look)               | Canvas, class         |
 | -------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------- | --------------------- |
 | Patrol Boat          | role `PATROL_BOAT` (Shorecraft), every faction, identical rules         | `UNIT:PATROL_BOAT`, `chibi-patrol-boat`               | 72 x 88, `LARGE_UNIT` |
 | Battleship           | role `BATTLESHIP` (Naval Engineering), every faction                    | `UNIT:BATTLESHIP`, `chibi-battleship`                 | 88 x 96, `GIANT_UNIT` |
@@ -153,7 +156,7 @@ Undead Patrol Boats (both dark; the goblin and the skull decide) and the
 Human and Dinosaur transports (same barge; before the plesiosaur neck it was
 the closest pair, 9.9 and 4.8 for a deuteranope).
 
-![The six factions' ships beside their coastal cities, without plates or rings](../../art/pixellab/reviews/chibi-batch-naval-factions/scene-coast-desktop-zoom-1.png)
+![The six factions' ships beside their coastal cities as the live look draws them: no plates or rings, the Human (viewer's) ships with the ready ring, Patrol Boats docked](../../art/pixellab/reviews/chibi-batch-naval-factions/scene-coast-desktop-zoom-1.png)
 
 ![The six fleets mixed on Shallow and Deep Water at zoom 0.75](../../art/pixellab/reviews/chibi-batch-naval-factions/scene-mixed-desktop-zoom-0.75.png)
 
@@ -209,10 +212,15 @@ lines (`UNIT:<FACTION>:<ROLE>`, `PORTRAIT:<FACTION>:<ROLE>`, and
 `readability.json`, `scene-{coast,mixed}-{desktop,phone}-zoom-{1,0.75}.png`
 and `index.json`. The scenes
 ([`scene.ts`](../../scripts/art/naval-factions/scene.ts)) are drawn by the
-real board host in the live look **with `unit.base: "NONE"`**: no plates and
-no rings. Since the naval subjects are not wired, each faction's three
-sprites are registered under three of its own land subjects (FIGHTER,
-GUARD, MARKSMAN) and drawn as land-form units on water cells.
+real board host in the live look exactly as the game passes it (since bead
+`pulp_wars-w5j.3`): the naval art from the live registry under the
+subjects the game asks for, naval-form Patrol Boats and Battleships and an
+embarked Fighter as the transport, no plates and no rings. Each faction's
+Patrol Boat is docked at a Port in front of its city, the viewer's (Human)
+ships carry the ready ring, and some ships are damaged (until w5j.3 the
+art was registered under three land subjects of each faction and drawn
+without the ready cue). `npm run art:faction-looks-review` captures the
+same scenes beside the land armies.
 
 ## Weak spots
 
@@ -232,46 +240,53 @@ GUARD, MARKSMAN) and drawn as land-form units on water cells.
   lightness (contrast 1.0 to 1.2): they read by hue, not by value.
 - **The Undead Battleship portrait** has no skull at 48 px.
 
-## Wiring list for `pulp_wars-w5j.3`
+## Wiring (done in `pulp_wars-w5j.3`)
 
 The art is in
 [`chibi-naval-faction-art-manifest.ts`](../../src/assets/chibi-naval-faction-art-manifest.ts)
 (`CHIBI_NAVAL_FACTION_ART_ASSETS_V7`, 30 entries with `faction`, `role`,
-`kind` and `asset`), which no game module imports.
+`kind` and `asset`). The wiring list of bead `pulp_wars-w5j.2`, as done:
 
-1. **Subjects.** Add `UNIT:<FACTION>:PATROL_BOAT|BATTLESHIP|EMBARKED_TRANSPORT`
-   and `PORTRAIT:<FACTION>:PATROL_BOAT|BATTLESHIP` for `UNDEAD`, `GOBLIN`,
-   `DINOSAUR`, `MARTIAN` and `ICE_FOLK` to `ArtSubjectV7`
-   (`src/assets/chibi-art-v7.ts`); `NavalFactionArtSubjectV7` lists them.
-   Then `ChibiNavalArtAssetV7` can become `ChibiArtAssetV7`.
-2. **Map sprites.** In `unitArtSubjectV7`, return the faction subject for
-   the two naval roles and for the `EMBARKED` form of a non-Human faction;
-   the Humans keep `UNIT:PATROL_BOAT`, `UNIT:BATTLESHIP` and
-   `UNIT:EMBARKED_TRANSPORT`. Keep the two Martian rules first: a
-   self-launched machine afloat is drawn as itself, and a Thrall returns
-   `UNIT:MARTIAN:THRALL` before the embarked check today (decide whether an
-   embarked Thrall should be a Martian transport instead).
-3. **Portraits.** `portraitSubjectV7` (`src/assets/chibi-ui-art-v7.ts`)
-   returns `PORTRAIT:<ROLE>` for the naval roles of every faction
-   (`NAVAL_ROLES`); return
-   `PORTRAIT:<FACTION>:<ROLE>` for the five non-Human factions.
-4. **Registry.** Add `CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) =>
-entry.asset)` to the direction registry (`chibiDirectionArtRegistryV7`).
-   The Human entries take the shared subjects in the direction registry, as
-   the Human land units do, so a Human ship is drawn crimson and gold.
-5. **Fallback.** `chibiFallbackSubjectV7` already maps `UNIT:GOBLIN:PATROL_BOAT`
-   to `UNIT:PATROL_BOAT`. Check what a failed faction raster then resolves
-   to: through the direction registry it would be the **Human** crimson
-   ship; it should be the classic masked ship in the owner colour (or the
-   faction's look should fail as a whole).
-6. **Plates and rings.** Remove the ships' ring and the sail exception:
-   `directionUnitAfloatV7`, the afloat branch of `drawDirectedUnitBaseV7`
-   and the ship case of `ownerAreas` in
-   `src/render/canvas/visual-direction-v7.ts`. With fixed colours the sail
-   is no longer the owner's marker; a new ready cue is part of w5j.3.
-7. **Tests to update:** the Dinosaur production test that finds the ships
-   alone without a fixed-colour asset; `chibi-naval-faction-assets.test.ts`
-   ("is not wired in") turns round, as the Martian and Ice Folk tests did.
-8. **Review.** Rerun `npm run art:chibi-naval-faction-review`; its scene can
-   then register the art under the real subjects instead of the land
-   stand-ins.
+1. **Subjects.** `ArtSubjectV7` (`src/assets/chibi-art-v7.ts`) includes
+   `NavalFactionArtSubjectV7`: `UNIT:<FACTION>:PATROL_BOAT|BATTLESHIP|EMBARKED_TRANSPORT`
+   and `PORTRAIT:<FACTION>:PATROL_BOAT|BATTLESHIP` for **every faction but
+   the Humans**, defined by `FactionIdV7`, so a faction the engine adds
+   (the Dwarves) has its naval subjects at once. `navalArtSubjectV7(faction,
+kind, role)` names them (the shared subject for the Humans);
+   `ChibiNavalArtAssetV7` is gone, the entries are `ChibiArtAssetV7`.
+2. **Map sprites.** `unitArtSubjectV7` returns the owner faction's subject
+   for the two naval roles and for the `EMBARKED` form; the Humans keep
+   `UNIT:PATROL_BOAT`, `UNIT:BATTLESHIP` and `UNIT:EMBARKED_TRANSPORT`. The
+   Martian machine rule stays first: a self-launched machine afloat is
+   drawn as itself. **An embarked Thrall draws the Martian transport**
+   (decided in w5j.3): a Thrall is a foot unit, and "embarked foot units
+   keep the transport" ([RULESET_7_MARTIANS.md section 13.1](../product/RULESET_7_MARTIANS.md#131-surfaces));
+   its collar marker still says Thrall. On land it keeps its own sprite.
+3. **Portraits.** `portraitSubjectV7` returns `PORTRAIT:<FACTION>:<ROLE>`
+   for the naval roles (the Humans' `PORTRAIT:<ROLE>`). By the same rule
+   the Naval Engineering card shows the faction's Battleship and the
+   Disembark command its transport.
+4. **Registry.** `chibiDirectionArtRegistryV7` adds every entry, so the
+   live look (board and interface) resolves them first; the Human entries
+   take the shared subjects, so a Human ship is drawn crimson and gold. The
+   Classic look and LEGACY never see them.
+5. **Fallback.** `chibiFallbackSubjectV7` maps any faction's naval subject
+   to the shared one (`navalSharedSubjectV7`). A faction's ship whose own
+   raster is missing or failed to load is drawn as the **classic shared
+   ship with its sail in the owner's colour**, never the Human direction
+   ship: `createDirectedChibiArtV7` (board) and `createChibiDomArtV7`
+   (interface) resolve that stand-in from the classic art.
+6. **Plates and rings.** The ships' ring, the afloat branch of the plate and
+   the sail exception of `ownerAreas` are gone: a unit afloat gets no plate
+   and no ring in any direction (a ready one has the ready ring round its
+   hull), and `directionUnitAfloatV7` recognises every faction's naval
+   subject. The new ready cue is the ground ring of
+   [VISUAL_DIRECTION_2026-10.md section 20](VISUAL_DIRECTION_2026-10.md#20-faction-looks-instead-of-base-plates).
+7. **Tests.** The Dinosaur production test finds no owned subject without
+   a fixed-colour asset; `chibi-naval-faction-assets.test.ts` checks that
+   the live registry holds every entry on the subject the game asks for
+   and the classic registry none; `visual-direction-render-v7.test.ts`
+   draws a faction's ship and its stand-in.
+8. **Review.** `npm run art:chibi-naval-faction-review` was rerun; its
+   scene registers nothing of its own and draws the live look as the game
+   does (see [Evidence](#evidence)).

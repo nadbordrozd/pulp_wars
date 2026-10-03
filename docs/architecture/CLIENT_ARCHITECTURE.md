@@ -1303,7 +1303,10 @@ rasters are phase-free and cached per sprite size; the shared 1.6-second loop
 changes only their composite opacity (aura 0.3 to 1, band 0.88 to 1). Reduced
 motion draws one static strong frame. High contrast uses a solid white band
 with a thicker black rim at full opacity. The outline is attached to the
-sprite, not a detached ring or tile badge.
+sprite, not a detached ring or tile badge. This is the cue of LEGACY and the
+CHIBI Classic look; the CHIBI default look draws a static cream ring on the
+ground under a ready unit instead (bead `pulp_wars-w5j.3`, see
+[Ruleset 7 art sets](#ruleset-7-art-sets)).
 
 `COMBAT_RESOLVED` presentation plans retain public pre/post render snapshots.
 When the public attacker archetype is Archer, Full/Normal motion draws a
@@ -1409,6 +1412,23 @@ CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
 - A subject with no registered raster, or whose raster fails to load, draws
   its legacy asset at the chibi geometry. A registered raster that is still
   loading draws nothing, as legacy images do.
+- **The default look** of the CHIBI set is the visual direction
+  ([VISUAL_DIRECTION_2026-10.md](../art/VISUAL_DIRECTION_2026-10.md)):
+  `liveBoardLookV7` (`src/render/canvas/live-board-look-v7.ts`) gives the
+  board host `LIVE_DIRECTION_V7` and the direction art registry
+  (`chibiDirectionArtRegistryV7`), which the board and the interface
+  (`createChibiDomArtV7`'s `preferred`) resolve before the default
+  registry; the Classic look developer option and LEGACY get neither. Since
+  bead `pulp_wars-w5j.3` (every player plays a different faction) the
+  faction's look carries ownership: no base plates (`unit.base: "SHADOW"`,
+  a faint neutral ground shadow), the ready cue is a cream ring on the
+  ground (`chrome.ready: "GROUND"`, in place of the outline glow described
+  above), and every faction's ships, transport and ship portraits are its
+  own (`navalArtSubjectV7`: `UNIT:<FACTION>:<ROLE>`, the Humans' shared
+  `UNIT:<ROLE>`). A faction's naval subject without a usable raster stands
+  in with the classic shared ship in the owner's colour
+  (`navalSharedSubjectV7`), never the Human direction ship. The player
+  colour stays on territory borders and city pennants.
 
 ## 9. Application and screen state
 

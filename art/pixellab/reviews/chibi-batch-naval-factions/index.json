@@ -9,7 +9,7 @@
     "naval-ice-folk"
   ],
   "command": "npm run art:chibi-naval-faction-review",
-  "note": "The scene-* captures draw the live look without base plates or rings, with each faction's naval sprites registered under three of its land subjects (scripts/art/naval-factions/scene.ts): the art is not wired in yet.",
+  "note": "The scene-* captures draw the live look the game draws since bead pulp_wars-w5j.3: the naval art wired in under the subjects the game asks for, no base plates or rings, the viewer's (Human) ships with the ready ring, Patrol Boats docked at Ports and some ships damaged (scripts/art/naval-factions/scene.ts).",
   "files": [
     "naval-sheet-1x.png",
     "naval-sheet-x4.png",

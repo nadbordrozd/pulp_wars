@@ -1,5 +1,6 @@
 import {
   buildChibiArtRegistryV7,
+  navalSharedSubjectV7,
   type ArtSubjectV7,
   type ChibiArtAssetV7,
   type ChibiArtRegistryV7,
@@ -180,7 +181,18 @@ export function createChibiDomArtV7(input: {
       : {
           resolve(request) {
             const first = preferred.resolve(request);
-            return first.kind === "MISSING" ? standard.resolve(request) : first;
+            if (first.kind !== "MISSING") return first;
+            const second = standard.resolve(request);
+            // A faction's ship portrait without its own raster stands in
+            // with the classic shared one in the owner's colour, never the
+            // preferred Human ship (bead pulp_wars-w5j.3).
+            const naval =
+              second.kind === "MISSING"
+                ? navalSharedSubjectV7(request.subject)
+                : null;
+            return naval === null
+              ? second
+              : standard.resolve({ ...request, subject: naval });
           },
         };
   const trimmed = new Map<string, TrimmedArt | null>();

@@ -191,7 +191,8 @@ describe("Martian art wiring (MARTIAN.md wiring steps 1-4, 6)", () => {
       }),
     ).toBe("UNIT:MARTIAN:THRALL");
     // A machine afloat is drawn as itself; a foot unit at sea as the
-    // transport; a ship as the shared ship.
+    // Martian transport and a ship as the Martian ship (bead
+    // pulp_wars-w5j.3).
     expect(
       unitArtSubjectV7({
         role: "CATAPULT",
@@ -206,14 +207,24 @@ describe("Martian art wiring (MARTIAN.md wiring steps 1-4, 6)", () => {
         form: "EMBARKED",
         faction: "MARTIAN",
       }),
-    ).toBe("UNIT:EMBARKED_TRANSPORT");
+    ).toBe("UNIT:MARTIAN:EMBARKED_TRANSPORT");
+    // An embarked Thrall is a foot unit afloat: the Martian transport, not
+    // the Thrall standing on the water (its collar still says Thrall).
+    expect(
+      unitArtSubjectV7({
+        role: "FIGHTER",
+        form: "EMBARKED",
+        faction: "MARTIAN",
+        thrall: true,
+      }),
+    ).toBe("UNIT:MARTIAN:EMBARKED_TRANSPORT");
     expect(
       unitArtSubjectV7({
         role: "PATROL_BOAT",
         form: "NAVAL",
         faction: "MARTIAN",
       }),
-    ).toBe("UNIT:PATROL_BOAT");
+    ).toBe("UNIT:MARTIAN:PATROL_BOAT");
     expect(cityArtSubjectV7({ artLevel: 2, faction: "MARTIAN" })).toBe(
       "CITY:MARTIAN:2",
     );

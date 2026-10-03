@@ -174,15 +174,21 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
     expect(CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7).toHaveLength(
       expected.length,
     );
-    // Not converted: the shared ships (the one owner-coloured part left in
-    // the default look) and the War Drums icon, which shows no hide.
+    // Not converted: the War Drums icon, which shows no hide. The ships are
+    // not in this list: since bead pulp_wars-w5j.3 every faction's ships,
+    // the Dinosaurs' included, are the naval list's (bead pulp_wars-w5j.2).
+    expect(registry.variants("ICON:ACTION:DINOSAUR:RALLY")).toHaveLength(0);
     for (const subject of [
-      "UNIT:PATROL_BOAT",
-      "UNIT:BATTLESHIP",
-      "UNIT:EMBARKED_TRANSPORT",
-      "ICON:ACTION:DINOSAUR:RALLY",
+      "UNIT:DINOSAUR:PATROL_BOAT",
+      "UNIT:DINOSAUR:BATTLESHIP",
+      "UNIT:DINOSAUR:EMBARKED_TRANSPORT",
     ] as const)
-      expect(registry.variants(subject), subject).toHaveLength(0);
+      expect(
+        registry.variants(subject).map((asset) => asset.id),
+        subject,
+      ).toEqual([
+        expect.stringMatching(/^chibi-naval-dinosaur-/) as unknown as string,
+      ]);
     for (const asset of CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7)
       expect(
         /^(UNIT|PORTRAIT|CITY):DINOSAUR:|^ICON:ACTION:(LAY_EGG|HATCH|STAMPEDE)$/.test(
@@ -203,14 +209,10 @@ describe("Dinosaur production art of the new visual direction (pulp_wars-3tq.13)
     const notConverted = [...new Set(owned)]
       .filter((subject) => registry.variants(subject).length === 0)
       .sort();
-    // Ships only: the shared boats, their portraits and the embarked form.
-    expect(notConverted).toEqual([
-      "PORTRAIT:BATTLESHIP",
-      "PORTRAIT:PATROL_BOAT",
-      "UNIT:BATTLESHIP",
-      "UNIT:EMBARKED_TRANSPORT",
-      "UNIT:PATROL_BOAT",
-    ]);
+    // None left: until bead pulp_wars-w5j.3 the shared boats, their
+    // portraits and the embarked form were the only owned subjects without
+    // a fixed-colour asset; the naval art of every faction converts them.
+    expect(notConverted).toEqual([]);
     for (const subject of new Set(owned)) {
       const converted = registry.variants(subject)[0];
       if (converted === undefined) continue;

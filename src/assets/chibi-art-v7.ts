@@ -58,7 +58,87 @@ export type ArtSubjectV7 =
   | UiArtSubjectV7
   | ChibiEffectSubjectV7
   | MartianArtSubjectV7
-  | IceFolkArtSubjectV7;
+  | IceFolkArtSubjectV7
+  | NavalFactionArtSubjectV7;
+
+/**
+ * The naval sprites a player sees (bead pulp_wars-w5j.2, NAVAL_FACTIONS.md):
+ * the two warships and the embarked transport, which any land unit afloat
+ * draws.
+ */
+export type NavalArtRoleV7 =
+  "PATROL_BOAT" | "BATTLESHIP" | "EMBARKED_TRANSPORT";
+
+/** Naval roles with an interface portrait (the transport has none). */
+export type NavalPortraitRoleV7 = Exclude<NavalArtRoleV7, "EMBARKED_TRANSPORT">;
+
+/** Every faction but the Humans, whose ships keep the shared subjects. */
+export type NavalArtFactionV7 = Exclude<FactionIdV7, "ORIGINAL">;
+
+/**
+ * Faction-styled naval art (bead pulp_wars-w5j.2, wired in by
+ * pulp_wars-w5j.3): `UNIT:<FACTION>:<ROLE>` and `PORTRAIT:<FACTION>:<ROLE>`
+ * for every faction but the Humans, whose ships are `UNIT:<ROLE>` and
+ * `PORTRAIT:<ROLE>`. Defined by faction, so a faction added to the engine
+ * has its naval subjects at once; one without registered art falls back to
+ * the shared ship (chibiFallbackSubjectV7).
+ */
+export type NavalFactionArtSubjectV7 =
+  | `UNIT:${NavalArtFactionV7}:${NavalArtRoleV7}`
+  | `PORTRAIT:${NavalArtFactionV7}:${NavalPortraitRoleV7}`;
+
+const NAVAL_ART_ROLES_V7: readonly NavalArtRoleV7[] = [
+  "PATROL_BOAT",
+  "BATTLESHIP",
+  "EMBARKED_TRANSPORT",
+];
+
+/**
+ * The subject of a faction's naval sprite (UNIT) or portrait (PORTRAIT):
+ * the shared subject for the Humans, `<KIND>:<FACTION>:<ROLE>` for every
+ * other faction.
+ */
+export function navalArtSubjectV7(
+  faction: FactionIdV7,
+  kind: "UNIT" | "PORTRAIT",
+  role: NavalArtRoleV7,
+): ArtSubjectV7 {
+  return (
+    faction === "ORIGINAL" ? `${kind}:${role}` : `${kind}:${faction}:${role}`
+  ) as ArtSubjectV7;
+}
+
+/**
+ * The naval role a subject depicts, shared or faction-styled
+ * (`UNIT:PATROL_BOAT`, `UNIT:GOBLIN:EMBARKED_TRANSPORT`,
+ * `PORTRAIT:MARTIAN:BATTLESHIP`), or null for every other subject.
+ */
+export function navalArtRoleOfSubjectV7(
+  subject: ArtSubjectV7 | undefined,
+): NavalArtRoleV7 | null {
+  if (subject === undefined) return null;
+  const parts = subject.split(":");
+  if (parts[0] !== "UNIT" && parts[0] !== "PORTRAIT") return null;
+  if (parts.length !== 2 && parts.length !== 3) return null;
+  const role = parts[parts.length - 1] as NavalArtRoleV7;
+  return NAVAL_ART_ROLES_V7.includes(role) ? role : null;
+}
+
+/**
+ * The shared (classic) ship subject that a faction's naval subject stands
+ * in with (`UNIT:GOBLIN:PATROL_BOAT` to `UNIT:PATROL_BOAT`), or null when
+ * the subject is not a faction's naval subject.
+ */
+export function navalSharedSubjectV7(
+  subject: ArtSubjectV7 | undefined,
+): ArtSubjectV7 | null {
+  if (subject === undefined) return null;
+  const parts = subject.split(":");
+  const role = navalArtRoleOfSubjectV7(subject);
+  return role === null || parts.length !== 3
+    ? null
+    : (`${parts[0] as "UNIT" | "PORTRAIT"}:${role}` as ArtSubjectV7);
+}
 
 /** The Rift pieces (bead pulp_wars-9s0.5, docs/art/classes/terrain-tiles.md). */
 export type RiftPieceV7 =
@@ -164,9 +244,9 @@ export type UiArtSubjectV7 =
   | `ICON:HUD:${"COIN" | "POPULATION"}`;
 
 /**
- * Roles with their own Undead art (docs/art/factions/UNDEAD.md). Patrol
- * Boat and Battleship reuse the Human ship art, so they have no Undead
- * subject.
+ * Roles with their own Undead land art (docs/art/factions/UNDEAD.md). The
+ * Patrol Boat and the Battleship are naval subjects of their own
+ * (NavalFactionArtSubjectV7, bead pulp_wars-w5j.3).
  */
 export type UndeadArtRoleV7 = Exclude<
   UnitRoleIdV7,
@@ -175,13 +255,13 @@ export type UndeadArtRoleV7 = Exclude<
 
 /**
  * Roles with their own Goblin art (docs/art/factions/GOBLIN.md): the same
- * land roles as the Undead; Goblin ships reuse the Human ship art.
+ * land roles as the Undead; Goblin ships are naval subjects.
  */
 export type GoblinArtRoleV7 = UndeadArtRoleV7;
 
 /**
  * Roles with their own Dinosaur art (docs/art/factions/DINOSAUR.md): the same
- * land roles; Dinosaur ships reuse the Human ship art.
+ * land roles; Dinosaur ships are naval subjects.
  */
 export type DinosaurArtRoleV7 = UndeadArtRoleV7;
 
@@ -219,13 +299,18 @@ const SHARED_ART_ROLES_V7: readonly UnitRoleIdV7[] = [
 ];
 
 /**
- * The art subject of a unit on the map: the embarked transport, the
- * owner faction's own art for the role, or the shared (Human) art.
+ * The art subject of a unit on the map: the owner faction's embarked
+ * transport, the owner faction's own art for the role (its ships included,
+ * bead pulp_wars-w5j.3), or the shared (Human) art.
  *
- * The Martian revision (bead pulp_wars-t6s.4): a Thrall (`thrall`) is drawn
- * with its own sprite, and a self-launched Martian machine (`machine`: its
- * role walks or flies) afloat is drawn as itself over the water, never as
- * the transport (RULESET_7_MARTIANS.md section 13.1).
+ * The Martian revision (bead pulp_wars-t6s.4): a self-launched Martian
+ * machine (`machine`: its role walks or flies) afloat is drawn as itself
+ * over the water, never as the transport (RULESET_7_MARTIANS.md section
+ * 13.1), and a Thrall (`thrall`) is drawn with its own sprite on land. An
+ * embarked Thrall is a foot unit afloat, so it draws its owner's (the
+ * Martian) transport like every embarked foot unit ("embarked foot units
+ * keep the transport"); its collar marker still says Thrall (bead
+ * pulp_wars-w5j.3).
  */
 export function unitArtSubjectV7(unit: {
   readonly role: UnitRoleIdV7;
@@ -234,8 +319,6 @@ export function unitArtSubjectV7(unit: {
   readonly thrall?: boolean;
   readonly machine?: boolean;
 }): ArtSubjectV7 {
-  if (unit.faction === "MARTIAN" && unit.thrall === true)
-    return "UNIT:MARTIAN:THRALL";
   if (
     unit.form === "EMBARKED" &&
     unit.faction === "MARTIAN" &&
@@ -243,10 +326,18 @@ export function unitArtSubjectV7(unit: {
     !SHARED_ART_ROLES_V7.includes(unit.role)
   )
     return `UNIT:MARTIAN:${unit.role as MartianArtRoleV7}`;
-  if (unit.form === "EMBARKED") return "UNIT:EMBARKED_TRANSPORT";
+  if (unit.form === "EMBARKED")
+    return navalArtSubjectV7(unit.faction, "UNIT", "EMBARKED_TRANSPORT");
+  if (unit.faction === "MARTIAN" && unit.thrall === true)
+    return "UNIT:MARTIAN:THRALL";
   // Revision 19: one Egg sprite for every role inside.
   if (unit.form === "EGG") return "UNIT:DINOSAUR:EGG";
-  if (SHARED_ART_ROLES_V7.includes(unit.role)) return `UNIT:${unit.role}`;
+  if (SHARED_ART_ROLES_V7.includes(unit.role))
+    return navalArtSubjectV7(
+      unit.faction,
+      "UNIT",
+      unit.role as NavalPortraitRoleV7,
+    );
   if (unit.faction === "UNDEAD")
     return `UNIT:UNDEAD:${unit.role as UndeadArtRoleV7}`;
   if (unit.faction === "GOBLIN")
@@ -281,13 +372,18 @@ export function unitArtSubjectV7(unit: {
  * (bead pulp_wars-7g3.6): `UNIT:ICE_FOLK:<ROLE>`, `PORTRAIT:ICE_FOLK:<ROLE>`
  * and `CITY:ICE_FOLK:<level>` fall back like the other factions'; Deep
  * Winter and Brittle (`ICON:TECH:ICE_FOLK:*`) to the Human Fortification
- * and Explosives art. Every other subject (the Martian and Ice Folk
- * ability, status and effect icons included) has no fallback.
+ * and Explosives art. A faction's naval subject (`UNIT:<FACTION>:<ROLE>`
+ * or `PORTRAIT:<FACTION>:<ROLE>` of a ship or the transport, bead
+ * pulp_wars-w5j.3) falls back to the shared ship, for any faction. Every
+ * other subject (the Martian and Ice Folk ability, status and effect icons
+ * included) has no fallback.
  */
 export function chibiFallbackSubjectV7(
   subject: ArtSubjectV7,
 ): ArtSubjectV7 | null {
   if (subject === "UNIT:DINOSAUR:EGG") return null;
+  const naval = navalSharedSubjectV7(subject);
+  if (naval !== null) return naval;
   if (subject === "UNIT:MARTIAN:THRALL") return "UNIT:FIGHTER";
   if (subject === "PORTRAIT:MARTIAN:THRALL") return "PORTRAIT:FIGHTER";
   if (subject === "ICON:TECH:ICE_FOLK:FORTIFICATION")

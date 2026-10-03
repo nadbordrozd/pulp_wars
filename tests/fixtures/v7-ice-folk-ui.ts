@@ -222,22 +222,3 @@ export function iceFolkVictimFixtureV7(): GameStateV7 {
     { factions: ["ORIGINAL", "ICE_FOLK"] },
   );
 }
-
-/**
- * Four Ice Folk seats are covered by the Showcase launches of the review;
- * this two-seat mirror shows an Ice Folk viewer's Snow beside an enemy Ice
- * Folk seat's Snow (each a territory of its own, cut at the border).
- */
-export function iceFolkMirrorFixtureV7(): GameStateV7 {
-  return iceFolkUiFieldV7(
-    [
-      { seat: 0, role: "FIGHTER", at: { x: 7, y: 6 } },
-      { seat: 1, role: "FIGHTER", at: { x: 3, y: 6 } },
-    ],
-    {
-      factions: ["ICE_FOLK", "ICE_FOLK"],
-      forest: [{ x: 2, y: 7 }],
-      mountain: [{ x: 1, y: 9 }],
-    },
-  );
-}

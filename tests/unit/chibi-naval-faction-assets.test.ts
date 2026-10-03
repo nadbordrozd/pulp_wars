@@ -1,13 +1,15 @@
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { CHIBI_ART_ASSETS_V7 } from "../../src/assets/chibi-art-manifest";
 import {
   buildChibiArtRegistryV7,
   chibiAnchorV7,
+  unitArtSubjectV7,
   type ArtSubjectV7,
   type ChibiArtAssetV7,
 } from "../../src/assets/chibi-art-v7";
+import { portraitSubjectV7 } from "../../src/assets/chibi-ui-art-v7";
 import {
   CHIBI_DIRECTION_ART_ASSETS_V7,
   chibiDirectionArtRegistryV7,
@@ -78,7 +80,7 @@ function opaqueBottom(raster: RgbaRaster): number {
   return -1;
 }
 
-/** The registry form of a naval entry (its subject may be a proposal). */
+/** The registry form of a naval entry or of a pipeline record's entry. */
 const asRegistered = (asset: { readonly subject: string }): ChibiArtAssetV7 =>
   asset as unknown as ChibiArtAssetV7;
 
@@ -116,34 +118,59 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
     expect(built.problems).toEqual([]);
   });
 
-  it("is not wired in: no game module imports it and no live registry holds it", async () => {
+  it("is wired in (pulp_wars-w5j.3): the live registry holds every entry on the subject the game asks for, the classic registry none", async () => {
     const ids = new Set(
       CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset.id),
     );
+    // The classic look and LEGACY never see the naval art, and it is a list
+    // of its own, not part of the Human direction list.
     for (const asset of [
       ...CHIBI_ART_ASSETS_V7,
       ...CHIBI_DIRECTION_ART_ASSETS_V7,
     ])
       expect(ids.has(asset.id), asset.id).toBe(false);
+    // The live (direction) registry resolves each faction's own raster, on
+    // the subject unitArtSubjectV7 and portraitSubjectV7 return for it.
     const live = chibiDirectionArtRegistryV7();
-    for (const subject of [
-      "UNIT:PATROL_BOAT",
-      "UNIT:BATTLESHIP",
-      "UNIT:EMBARKED_TRANSPORT",
-      "PORTRAIT:PATROL_BOAT",
-      "PORTRAIT:BATTLESHIP",
-    ] as const)
-      for (const asset of live.variants(subject))
-        expect(ids.has(asset.id), subject).toBe(false);
-    const files = (await readdir(path.join(ROOT, "src"), { recursive: true }))
-      .filter((file) => /\.tsx?$/.test(file))
-      .filter((file) => !file.endsWith("chibi-naval-faction-art-manifest.ts"));
-    for (const file of files) {
-      const text = await readFile(path.join(ROOT, "src", file), "utf8");
-      expect(text.includes("chibi-naval-faction-art-manifest"), file).toBe(
-        false,
-      );
+    for (const entry of CHIBI_NAVAL_FACTION_ART_ASSETS_V7) {
+      const subject =
+        entry.kind === "PORTRAIT"
+          ? portraitSubjectV7(
+              entry.role as Exclude<NavalArtRoleV7, "EMBARKED_TRANSPORT">,
+              entry.faction,
+            )
+          : entry.role === "EMBARKED_TRANSPORT"
+            ? unitArtSubjectV7({
+                role: "FIGHTER",
+                form: "EMBARKED",
+                faction: entry.faction,
+              })
+            : unitArtSubjectV7({
+                role: entry.role,
+                form: "NAVAL",
+                faction: entry.faction,
+              });
+      expect(subject, entry.asset.id).toBe(entry.asset.subject);
+      expect(
+        live.variants(subject).map((asset) => asset.id),
+        subject,
+      ).toEqual([entry.asset.id]);
     }
+    // A Martian machine afloat is still drawn as itself, never a boat.
+    expect(
+      unitArtSubjectV7({
+        role: "CATAPULT",
+        form: "EMBARKED",
+        faction: "MARTIAN",
+        machine: true,
+      }),
+    ).toBe("UNIT:MARTIAN:CATAPULT");
+    // The registry is the one the game loads (live-board-look-v7.ts).
+    const look = await readFile(
+      path.join(ROOT, "src/assets/chibi-direction-art-manifest.ts"),
+      "utf8",
+    );
+    expect(look).toContain("CHIBI_NAVAL_FACTION_ART_ASSETS_V7");
   });
 
   it("matches the accepted records of the six batches: no mask, no owner area", async () => {

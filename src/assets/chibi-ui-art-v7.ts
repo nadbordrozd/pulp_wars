@@ -6,13 +6,15 @@ import type {
   TechnologyIdV7,
   UnitRoleIdV7,
 } from "../engine/index";
-import type {
-  ArtSubjectV7,
-  DinosaurArtRoleV7,
-  GoblinArtRoleV7,
-  IceFolkArtRoleV7,
-  MartianArtRoleV7,
-  UndeadArtRoleV7,
+import {
+  navalArtSubjectV7,
+  type ArtSubjectV7,
+  type DinosaurArtRoleV7,
+  type GoblinArtRoleV7,
+  type IceFolkArtRoleV7,
+  type MartianArtRoleV7,
+  type NavalPortraitRoleV7,
+  type UndeadArtRoleV7,
 } from "./chibi-art-v7";
 
 /**
@@ -32,18 +34,19 @@ const NAVAL_ROLES: readonly UnitRoleIdV7[] = ["PATROL_BOAT", "BATTLESHIP"];
 
 /**
  * The portrait of a role for a faction: Undead, (revision 17, bead
- * pulp_wars-0ao.8) Goblin, (revision 19, bead pulp_wars-c87.7) Dinosaur
- * and (bead pulp_wars-t6s.4) Martian land roles have their own; naval roles
- * share the Human ship portraits; so do the Ice Folk land roles (bead
- * pulp_wars-7g3.6). The Thrall's portrait,
- * `PORTRAIT:MARTIAN:THRALL`, is asked for by subject (the Mind Control
- * preview).
+ * pulp_wars-0ao.8) Goblin, (revision 19, bead pulp_wars-c87.7) Dinosaur,
+ * (bead pulp_wars-t6s.4) Martian and (bead pulp_wars-7g3.6) Ice Folk land
+ * roles have their own; so does every faction's Patrol Boat and Battleship
+ * (`PORTRAIT:<FACTION>:<ROLE>`, the Humans' `PORTRAIT:<ROLE>`, bead
+ * pulp_wars-w5j.3). The Thrall's portrait, `PORTRAIT:MARTIAN:THRALL`, is
+ * asked for by subject (the Mind Control preview).
  */
 export function portraitSubjectV7(
   role: UnitRoleIdV7,
   faction: FactionIdV7,
 ): ArtSubjectV7 {
-  if (NAVAL_ROLES.includes(role)) return `PORTRAIT:${role}`;
+  if (NAVAL_ROLES.includes(role))
+    return navalArtSubjectV7(faction, "PORTRAIT", role as NavalPortraitRoleV7);
   if (faction === "UNDEAD") return `PORTRAIT:UNDEAD:${role as UndeadArtRoleV7}`;
   if (faction === "GOBLIN") return `PORTRAIT:GOBLIN:${role as GoblinArtRoleV7}`;
   if (faction === "DINOSAUR")
@@ -134,6 +137,10 @@ export function technologySubjectV7(
     if (faction === "ICE_FOLK") return `UNIT:ICE_FOLK:${role}`;
     return `UNIT:GOBLIN:${role}`;
   }
+  // Naval Engineering shows the faction's own Battleship (bead
+  // pulp_wars-w5j.3).
+  if (subject === "UNIT:BATTLESHIP")
+    return navalArtSubjectV7(faction, "UNIT", "BATTLESHIP");
   return subject;
 }
 
@@ -143,7 +150,6 @@ const RESOURCE_COMMANDS: Partial<Record<CommandV7["kind"], ArtSubjectV7>> = {
   HARVEST_FISH: "RESOURCE:FISH",
   GATHER_PEARLS: "RESOURCE:PEARLS",
   CAPTURE: "SITE:VILLAGE",
-  DISEMBARK: "UNIT:EMBARKED_TRANSPORT",
   LAND_GRANT: "ICON:REWARD:EXPAND",
   BUILD_MONUMENT: "IMPROVEMENT:MONUMENT",
 };
@@ -163,7 +169,8 @@ const RESOURCE_COMMANDS: Partial<Record<CommandV7["kind"], ArtSubjectV7>> = {
  * Rally is Psychic Command (`ICON:ACTION:MARTIAN:RALLY`); Beam Down, Mind
  * Control and Tractor Beam are `ICON:ACTION:<KIND>` (bead pulp_wars-t6s.4),
  * as are the Ice Folk Bolas and Cold Snap (`ICON:ACTION:THROW_BOLAS`,
- * `ICON:ACTION:COLD_SNAP`, bead pulp_wars-7g3.6).
+ * `ICON:ACTION:COLD_SNAP`, bead pulp_wars-7g3.6). Disembark shows the
+ * faction's transport (bead pulp_wars-w5j.3).
  */
 export function commandSubjectV7(
   command: CommandV7,
@@ -179,6 +186,9 @@ export function commandSubjectV7(
     case "TRAIN":
     case "TRAIN_NAVAL":
       return portraitSubjectV7(command.role, faction);
+    // The faction's own transport (bead pulp_wars-w5j.3).
+    case "DISEMBARK":
+      return navalArtSubjectV7(faction, "UNIT", "EMBARKED_TRANSPORT");
     case "CHOOSE_CITY_REWARD":
       return rewardSubjectV7(command.reward, faction);
     case "RALLY":
