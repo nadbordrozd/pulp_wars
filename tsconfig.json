@@ -24,6 +24,7 @@
   "include": [
     "src",
     "tests",
+    "scripts/benchmark-board-presentation-v7.ts",
     "scripts/browser-smoke.ts",
     "scripts/browser-smoke-v6.ts",
     "scripts/browser-smoke-v6-contract.ts",

@@ -3,6 +3,12 @@ import { cpus, loadavg, release, tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { launchSmokeBrowser, navigateSmokePage } from "./browser-smoke-startup";
+import {
+  BOARD_PRESENTATION_BUSY_UNITS_V7,
+  buildBoardPresentationFixtureV7,
+  mixedTerrainV7,
+  readyUnitCountV7,
+} from "./board-presentation-fixture-v7";
 
 // Read-only public-view fixture. It intentionally does not modify any save.
 // Each invocation owns its Chrome process and writes only to a unique temp path.
@@ -24,6 +30,15 @@ const instrumentGlow =
 const chrome = process.env.CHROME_PATH;
 if (chrome === undefined)
   throw new Error("Set CHROME_PATH to a headless Chrome executable.");
+// Built before Chrome starts so that a fixture the engine rejects fails fast.
+const busyFixture = buildBoardPresentationFixtureV7();
+const mixedFixture = buildBoardPresentationFixtureV7(mixedTerrainV7);
+for (const [label, fixture] of [
+  ["busy", busyFixture],
+  ["mixed", mixedFixture],
+] as const)
+  if (readyUnitCountV7(fixture) !== BOARD_PRESENTATION_BUSY_UNITS_V7)
+    throw new Error(`${label} fixture does not have 60 ready units`);
 const port = 11_000 + (process.pid % 1_000);
 await mkdir(outputRoot);
 const browser = await launchSmokeBrowser({
@@ -331,26 +346,18 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
     "({events:__boardPerf.events,calls:__boardPerf.calls,frames:__boardPerf.frames,selected:__model.interaction.selectedUnitId,units:__model.view.units.length,commands:__model.offeredCommands.length,readyUnits:0,glow:__glowPerf.snapshot()})",
   );
 
-  // Synthetic public-view renderer stress: 25 x 25 explored Grass and 60
-  // ready human units. No state is dispatched or persisted for this fixture.
-  await evaluate(`(async()=>{
-    const query=await import('/src/engine/v7/query.ts');
-    const base=structuredClone(__earlySnapshot);
-    const view=base.view;
-    const unit=view.units.find(u=>u.ownerId===view.viewer.id);
-    const tile=view.board.tiles.find(t=>t.explored&&t.terrain==='GRASS');
-    view.board={width:25,height:25,tiles:Array.from({length:625},(_,n)=>({...tile,at:{x:n%25,y:Math.floor(n/25)},resource:null,improvement:null,road:false,site:null,territoryCityId:null,territoryOwnerId:null}))};
-    view.units=Array.from({length:60},(_,n)=>({...unit,id:500+n,at:n===0?view.cities[0].at:{x:2+(n%10)*2,y:2+Math.floor(n/10)*2}}));
-    const occupied=new Set();
-    for(const current of view.units){
-      while(occupied.has(current.at.x+','+current.at.y))current.at={x:current.at.x,y:current.at.y+1};
-      occupied.add(current.at.x+','+current.at.y);
-    }
-    globalThis.__busySnapshot={...base,view,offeredCommands:query.queryPlayerCommandsV7(view)};
+  // Renderer stress fixtures projected by the engine (see
+  // board-presentation-fixture-v7.ts). No state is dispatched or persisted.
+  await evaluate(`(()=>{
+    globalThis.__busySnapshot={...structuredClone(__earlySnapshot),view:${JSON.stringify(busyFixture.view)},offeredCommands:${JSON.stringify(busyFixture.offeredCommands)}};
+    globalThis.__mixedFixture={view:${JSON.stringify(mixedFixture.view)},offeredCommands:${JSON.stringify(mixedFixture.offeredCommands)}};
     __PULP_WARS_APP__.view.destroy();
   })()`);
-  const busy: Record<string, Capture> = {};
-  const ambient: Record<string, ReturnType<typeof summarize>> = {};
+  const busy = {} as Record<"FULL" | "REDUCED", Capture>;
+  const ambient = {} as Record<
+    "FULL" | "REDUCED",
+    ReturnType<typeof summarize>
+  >;
   for (const motion of ["FULL", "REDUCED"] as const) {
     await connection.send("Emulation.setEmulatedMedia", {
       features: [
@@ -416,13 +423,9 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
     const glow=globalThis.__glowModule;
     const geometry=await import('/src/render/canvas/geometry.ts');
     const art=await import('/src/assets/generated-art-manifest.ts');
-    const view=structuredClone(__busySnapshot.view);
-    view.board.tiles=view.board.tiles.map(tile=>({
-      ...tile,
-      terrain:tile.at.x%7===2&&tile.at.y%4===1?'MOUNTAIN':tile.at.x%5===0&&tile.at.y%3===0?'FOREST':tile.terrain
-    }));
+    const view=__mixedFixture.view;
     const first=view.units[0];
-    const plan=renderer.buildBoardRenderPlanV7(view,__busySnapshot.offeredCommands,{
+    const plan=renderer.buildBoardRenderPlanV7(view,__mixedFixture.offeredCommands,{
       selection:{kind:'UNIT',unitId:first.id},selectedUnitId:first.id,selectedAchievement:null,cursor:first.at
     });
     const ids=[...new Set(plan.entries.map(entry=>entry.assetId).filter(Boolean))];
@@ -542,7 +545,8 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
   const evidence = {
     fixture: {
       natural: "seed 20, opening 11 x 11 board",
-      busy: "synthetic public view, 25 x 25 fully explored Grass, 60 ready human units",
+      busy: "engine-projected public view: seed 20, 25 x 25 Human vs Undead, every cell explored, non-site land Grass, 60 ready Human Fighters",
+      mixed: "the busy fixture with regular Forest and Mountain cells",
       samplesPerClickConfiguration: 25,
       warmupClicksPerConfiguration: 5,
       clickIntervalMs: 300,
@@ -671,6 +675,13 @@ EventTarget.prototype.addEventListener=function(type,fn,options){
   process.stdout.write(
     `${JSON.stringify(evidence.summary, null, 2)}\nEvidence: ${outputRoot}\n`,
   );
+} catch (error) {
+  process.stderr.write(
+    `${error instanceof Error ? (error.stack ?? error.message) : String(error)}\n`,
+  );
+  process.exitCode = 1;
 } finally {
   browser.close();
 }
+// Exit explicitly: a failed probe must not hang on an open handle or exit 0.
+process.exit(process.exitCode ?? 0);

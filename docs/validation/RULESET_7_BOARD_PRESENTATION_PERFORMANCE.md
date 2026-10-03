@@ -19,9 +19,16 @@ glow cache; it omits the direct draw and pixel-comparison portions only. Chrome
 uses an isolated temporary profile; the probe never touches the user's browser
 profile or save. It writes no checked-in review evidence.
 
-The natural opening uses seed 20. The synthetic public-view fixture has 625
-explored Grass cells and 60 ready human units. It is a renderer stress fixture,
-not a playable or serialized game state. Each motion setting has five warmup
+The natural opening uses seed 20. The busy fixture is built in Node by
+`scripts/board-presentation-fixture-v7.ts` from a real engine match (seed 20,
+25 × 25, Human against Undead): every cell is explored, non-site land is Grass,
+and the Human has 60 ready Fighters. The derived state must pass the strict
+state parser, and the view and offered commands are the engine's public
+projection of it, so the fixture follows the public view shape. It is a
+renderer stress fixture, not a playable match.
+`tests/unit/board-presentation-benchmark-fixture-v7.test.ts` builds both
+fixtures and draws each once, so `npm test` catches a broken fixture. The probe
+exits non-zero when any check fails. Each motion setting has five warmup
 clicks and 25 measured clicks with 300 ms between clicks. Measurements report
 the Canvas pointer handler, host update, and time from handler start to the next
 `requestAnimationFrame` callback. That last number is a scheduling proxy; it
