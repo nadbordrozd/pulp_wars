@@ -1,9 +1,9 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r30`, for all five playable factions, Human (`ORIGINAL`),
-Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), and Martian
-(`MARTIAN`). It folds in
+`pulp-wars-poc-7r30`, for six playable factions, Human (`ORIGINAL`),
+Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
+(`MARTIAN`), and Ice Folk (`ICE_FOLK`). It folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
 opening research, and Raider Escape; no separate overlay document) and the
@@ -24,7 +24,7 @@ and the full heal of a Promotion or growth stage),
 Dog, and Slayer achievements), the `pulp_wars-0hi.3` coarse balance
 numbers of `pulp-wars-poc-7r23`
 ([revision 20 section 6.3](RULESET_7_REVISION_20.md#63-tuning-record): Human
-Fighter, Raider, and Marksman 12 HP, Guard 17, Caveman 10), and the
+Fighter, Raider, and Marksman 12 HP, Guard 17, Caveman 10), the
 [Martian overlay](RULESET_7_MARTIANS.md) (the Martian faction: engine
 `pulp_wars-t6s.2` at `pulp-wars-poc-7r22`, Normal AI `pulp_wars-t6s.3`, UI
 `pulp_wars-t6s.4` with the production art of `pulp_wars-t6s.6`, and the
@@ -32,47 +32,51 @@ Fighter, Raider, and Marksman 12 HP, Guard 17, Caveman 10), and the
 Defense 2.5, from its
 [tuning record](RULESET_7_MARTIANS.md#165-tuning-record) and its
 implementation notes in
-[section 19](RULESET_7_MARTIANS.md#19-implementation-notes-pulp_wars-t6s2)).
-The Undead, the Goblins, the Dinosaurs, and the Martians are part of the
-ordinary game: faction choice is offered in every match setup, with no
-development flag. Every number below was checked against the engine code at
-`pulp-wars-poc-7r25`; `pulp-wars-poc-7r24` (`pulp_wars-7g3.3`) registers the
-Ice Folk overlay and changes no rule of the five factions, and
-`pulp-wars-poc-7r26` (`pulp_wars-9s0.2`) changes only Pangea map generation
-(the coast ring, [section 2.3](#23-map-types)), `pulp-wars-poc-7r27`
-(`pulp_wars-7g3.7`) changes only the Ice Folk Yeti (9 HP, Defense 1.5),
-`pulp-wars-poc-7r28` (`pulp_wars-9s0.5`) adds the **Rift** terrain,
-folded in directly here (sections [2.3](#23-map-types),
+[section 19](RULESET_7_MARTIANS.md#19-implementation-notes-pulp_wars-t6s2)),
+and the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (the Ice Folk faction:
+engine `pulp_wars-7g3.3` at `pulp-wars-poc-7r24`, Normal AI
+`pulp_wars-7g3.4`, UI `pulp_wars-7g3.6` with the production art of
+`pulp_wars-7g3.5`, the root rulings of its
+[section 17.5](RULESET_7_ICE_FOLK.md#175-root-rulings), and the
+`pulp_wars-7g3.7` coarse balance numbers of `pulp-wars-poc-7r27`, Yeti 9 HP
+and Defense 1.5, from its
+[tuning record](RULESET_7_ICE_FOLK.md#165-tuning-record), with its engine
+notes in
+[section 19](RULESET_7_ICE_FOLK.md#19-implementation-notes-pulp_wars-7g33)
+and its UI notes in
+[section 20](RULESET_7_ICE_FOLK.md#20-ui-implementation-notes-pulp_wars-7g36)).
+The Undead, the Goblins, the Dinosaurs, the Martians, and the Ice Folk are
+part of the ordinary game: faction choice is offered in every match setup,
+with no development flag. The numbers of the first five factions were
+checked against the engine code at `pulp-wars-poc-7r25` and those of the Ice
+Folk at `pulp-wars-poc-7r30` (`pulp_wars-7g3.8`); `pulp-wars-poc-7r24`
+(`pulp_wars-7g3.3`) registers the Ice Folk and changes no rule of the other
+factions, `pulp-wars-poc-7r26` (`pulp_wars-9s0.2`) changes only Pangea map
+generation (the coast ring, [section 2.3](#23-map-types)),
+`pulp-wars-poc-7r27` (`pulp_wars-7g3.7`) changes only the Ice Folk Yeti (9
+HP, Defense 1.5), `pulp-wars-poc-7r28` (`pulp_wars-9s0.5`) adds the **Rift**
+terrain, folded in directly here (sections [2.3](#23-map-types),
 [2.4](#24-biomes-terrain-and-resources), [8.1](#81-common-placement-gates),
 [12.1](#121-movement), and [13.4](#134-after-combat)); its full ruling of
-every interaction is the [Rift overlay](RULESET_7_RIFT.md), and
+every interaction is the [Rift overlay](RULESET_7_RIFT.md),
 `pulp-wars-poc-7r29` (`pulp_wars-w5j.1`) makes every player play a
 different faction, folded in directly in [section 2.1](#21-match-setup)
 from the [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md), and
 `pulp-wars-poc-7r30` (`pulp_wars-78i.3`) registers the Dwarf overlay and
-changes no rule of the five factions.
+changes no rule of the six factions.
 
-**Pending overlays, not folded.** The engine at `pulp-wars-poc-7r30` also
-registers a sixth faction, `ICE_FOLK`, whose rules are in the
-[Ice Folk overlay](RULESET_7_ICE_FOLK.md) (engine implemented by
-`pulp_wars-7g3.3` at `pulp-wars-poc-7r24`; its Normal AI and UI are in
-progress, so the browser setup does not offer it), and a seventh, `DWARF`,
-whose rules are in the [Dwarf overlay](RULESET_7_DWARVES.md) (engine
-implemented by `pulp_wars-78i.3` at `pulp-wars-poc-7r30`; its Normal AI and
-UI are pending, so the browser setup does not offer it, and a Dwarf seat
-plays with the generic Normal policy). This document does not describe
-those factions: wherever it lists "every faction", it means the five
-playable ones; the Dwarf additions (the `burrowed`, `surfacedThisTurn`, and
-`bombedThisTurn` lists, the two per-unit flags and the `dwarf` block of the
-unit stats, and three combat-preview fields) are neutral in a match without
-a Dwarf seat, and the Ice Folk additions (the `chilled` list, the `snow` and
-`blizzard` tile flags, the `chill` unit stat, `curedChill`, and eight
-combat-preview fields) are neutral in a match without an Ice Folk seat
-([section 22](#22-known-discrepancies)). The shared helpers that the Ice
-Folk engine added are named only where they word a shared rule: the single
-"may act after moving" rule `unitMayActAfterMoveV7`
-([section 12.2](#122-activation)) and the Mountain-born input of the shared
-terrain rule `canEnterTerrainV7` ([section 12.1](#121-movement)).
+**Pending overlay, not folded.** The engine at `pulp-wars-poc-7r30` also
+registers a seventh faction, `DWARF`, whose rules are in the
+[Dwarf overlay](RULESET_7_DWARVES.md): its engine (`pulp_wars-78i.3`), its
+Normal AI (`pulp_wars-78i.4`), and its UI (`pulp_wars-78i.6`, with the
+production art of `pulp_wars-78i.5`) are live at `pulp-wars-poc-7r30`, so
+the browser setup offers it, while its coarse balance and its fold into
+this document are in progress. This document does not describe it:
+wherever it lists "every faction", it means the six factions above; the
+Dwarf additions (the `burrowed`, `surfacedThisTurn`, and `bombedThisTurn`
+lists, the two per-unit flags and the `dwarf` block of the unit stats, and
+three combat-preview fields) are neutral in a match without a Dwarf seat
+([section 23](#23-known-discrepancies)).
 
 **Supersedes for current play:** [Ruleset 7 baseline](RULESET_7.md) and its
 overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
@@ -92,7 +96,8 @@ overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
 [19](RULESET_7_REVISION_19_DINOSAURS.md),
 [20](RULESET_7_REVISION_20.md), and
 [21](RULESET_7_REVISION_21_ACHIEVEMENTS.md), with the
-[Martian overlay](RULESET_7_MARTIANS.md). Those documents remain as design
+[Martian overlay](RULESET_7_MARTIANS.md) and the
+[Ice Folk overlay](RULESET_7_ICE_FOLK.md). Those documents remain as design
 history, exact schema/ordering detail, measurements, and acceptance
 provenance. When one of them disagrees with this document, this document
 describes the current rules. In particular, the [baseline](RULESET_7.md)
@@ -112,18 +117,22 @@ before `pulp_wars-0hi.3` (Fighter, Raider, and Marksman 10, Guard 15) in its
 bounds, and the Martian overlay keeps the contract's Colossus Defense 3 in
 its tuning bounds, examples computed against 10-HP Human units, its
 placeholder-art plan, and Rift rules written before the terrain existed
-(the [Rift overlay](RULESET_7_RIFT.md) implements and completes them);
-the values here are current. Where a document and the code
-disagreed, the code's behavior is the rule and is stated below;
-[Known discrepancies](#22-known-discrepancies) lists the open items as of
-`pulp-wars-poc-7r29`.
+(the [Rift overlay](RULESET_7_RIFT.md) implements and completes them), and
+the Ice Folk overlay keeps the contract's 10-HP, Defense-2 Yeti in its
+tuning bounds, worked examples and per-unit analysis computed with that
+Yeti and with 10-HP Human Fighters, Raiders, and Marksmen and 15-HP Guards,
+a setup in which every combination of factions is legal, and its
+placeholder-art plan; the values here are current. Where a document and the
+code disagreed, the code's behavior is the rule and is stated below;
+[Known discrepancies](#23-known-discrepancies) lists the open items as of
+`pulp-wars-poc-7r30`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague, and
 Bitten: a unit whose owner's faction is not `UNDEAD`. Undead units are
-therefore never living, whatever their HP; Human, Goblin, Dinosaur, and
-Martian units are living (an Egg is living but takes no status,
-[section 19.3](#193-eggs)).
+therefore never living, whatever their HP; Human, Goblin, Dinosaur,
+Martian, and Ice Folk units are living (an Egg is living but takes no
+status, [section 19.3](#193-eggs)).
 **Goblin-crewed** units are the Goblin seat's Goblin, Wolf Rider, Bomb
 Chucker, Rocket Cart, and Scrap Buggy (they can Kaboom); **exploding units**
 are its Bomb Chucker, Rocket Cart, and Scrap Buggy (they also explode when
@@ -139,18 +148,26 @@ Mothership (**flyers**) and its Tripod and Colossus (**walkers**); **foot
 units** are its Grunt, Ray Gunner, Shield Projector, Brain, and Thrall;
 **ray units** are its Ray Gunner, Tripod, and Colossus; a **Thrall** is a
 `FIGHTER`-role unit of a Martian seat listed in `thralls`
-([section 20](#20-martian-faction-rules)).
+([section 20](#20-martian-faction-rules)). **Ice Folk units** are the land
+roles of an Ice Folk seat in land form (never a boat or an embarked unit);
+**Mountain-born** units are its Yeti, Boulder Yeti, and Frost Giant; a unit
+of any faction is **Chilled** while its `chilled` entry has `turnsLeft` of
+at least 1 and **sluggish** (Frozen) on the turn of a new freeze; **Snow**
+is a derived property of land tiles
+([section 21](#21-ice-folk-faction-rules)).
 
 **Source of truth in code:** `src/engine/rules/ruleset-v7.ts` (technology,
 faction registrations, roles and role mechanics, faction rules, action
-costs, and the shared terrain rules `canEnterTerrainV7`,
-`terrainStopsMoveV7`, and `canCrossWaterV7`), `src/engine/v7/` (reducer,
-economy, spatial economy, combat, Graves, Infect, Wail, Plague and Bitten
-afflictions, explosions, Eggs, growth, Shields, Cooling, Thralls, and Mind
-Control cooldowns (`martian.ts`), achievements, movement, map generation,
-queries, views), and `src/ai/v7.ts` with its `src/ai/v7-*.ts` helpers
-(Normal AI, including `src/ai/v7-goblin.ts`, `src/ai/v7-dinosaur.ts`, and
-`src/ai/v7-martian.ts`).
+costs, the shared "may act after moving" rule `unitMayActAfterMoveV7`, and
+the shared terrain rules `canEnterTerrainV7`, `terrainStopsMoveV7`, and
+`canCrossWaterV7`), `src/engine/v7/` (reducer, economy, spatial economy,
+combat, Graves, Infect, Wail, Plague and Bitten afflictions, explosions,
+Eggs, growth, Shields, Cooling, Thralls, and Mind Control cooldowns
+(`martian.ts`), Chill, Snow, the Blizzard, and the Cold Aura
+(`ice-folk.ts`), achievements, movement, map generation, queries, views),
+and `src/ai/v7.ts` with its `src/ai/v7-*.ts` helpers (Normal AI, including
+`src/ai/v7-goblin.ts`, `src/ai/v7-dinosaur.ts`, `src/ai/v7-martian.ts`, and
+`src/ai/v7-ice-folk.ts`).
 
 **Not covered here:** production art specifications
 ([Art Direction](../art/ART_DIRECTION.md) and
@@ -166,23 +183,25 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 ## 1. Identity and compatibility
 
-| Boundary                                   | Current value                                                                                                                                                                                                                                                         |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r30`                                                                                                                                                                                                                                                  |
-| Game-state schema                          | `7`                                                                                                                                                                                                                                                                   |
-| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                   |
-| Browser autosave                           | `pulpWars.save.v7r30.current`                                                                                                                                                                                                                                         |
-| Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                            |
-| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF` (the last two are the pending Ice Folk and Dwarf overlays)                                                                                                                                 |
-| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`                                                                                                        |
-| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`                     |
-| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"                                                                                                     |
-| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                         |
-| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`: the browser setup offers these five; the engine and the headless tools also accept `ICE_FOLK` ([Ice Folk overlay](RULESET_7_ICE_FOLK.md)) and `DWARF` ([Dwarf overlay](RULESET_7_DWARVES.md)), not folded here |
+| Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ruleset                                    | `pulp-wars-poc-7r30`                                                                                                                                                                                                                                                                                                            |
+| Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                             |
+| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                             |
+| Browser autosave                           | `pulpWars.save.v7r30.current`                                                                                                                                                                                                                                                                                                   |
+| Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                                                                                      |
+| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF` (the last is the pending Dwarf overlay)                                                                                                                                                                                                              |
+| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`                                                                                                                                                                  |
+| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`                                                                               |
+| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"                                                                                                                                                               |
+| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                   |
+| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, described here; the browser setup, the engine, and the headless tools also offer `DWARF` ([Dwarf overlay](RULESET_7_DWARVES.md)), not folded here                                                                                                            |
+| Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
+| Pending overlay                            | Dwarf (`7r30`): engine, Normal AI, and UI live; coarse balance and fold in progress                                                                                                                                                                                                                                             |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r25`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r29`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -204,9 +223,16 @@ separate [Ruleset 6](RULESET_6.md) route.
   shape.
   `pulp_wars-0hi.3` (`7r23`) changed only numbers (Human and Caveman HP)
   and no shape. The Ice Folk overlay (`7r24`) registered the sixth faction
-  with the `chilled` list, the `THROW_BOLAS` and `COLD_SNAP` commands, and
-  the `UNITS_CHILLED` event. `pulp_wars-t6s.5` (`7r25`) changed only the
-  Colossus Defense. `pulp_wars-9s0.2` (`7r26`) changed only Pangea map
+  with the `chilled` state and view list, the `snow` and `blizzard` view
+  tile flags, the `THROW_BOLAS` and `COLD_SNAP` commands, the
+  `UNITS_CHILLED` event, the `UNIT_DIED` cause `SHATTER`, the
+  `FIELD_DEFENSE_DESTROYED` reason `TRAMPLE`, the `UNIT_MOVE_INTERRUPTED`
+  reason `SNOW`, `curedChill` in Tend results, eight combat-preview fields,
+  the `chill` unit stat, and the `iceFolk` public unit stats block
+  ([section 21.15](#2115-commands-events-errors-and-queries)); its Normal
+  AI and UI (`pulp_wars-7g3.4` and `7g3.6`, landed at `7r25`) changed no
+  shape. `pulp_wars-t6s.5` (`7r25`) changed only the Colossus Defense.
+  `pulp_wars-9s0.2` (`7r26`) changed only Pangea map
   generation (the coast ring) and no shape; a stored state keeps its board.
   `pulp_wars-7g3.7` (`7r27`) changed only the Ice Folk Yeti's HP and
   Defense. `pulp_wars-9s0.5` (`7r28`) appended the terrain `RIFT` to the
@@ -215,15 +241,19 @@ separate [Ruleset 6](RULESET_6.md) route.
   refuses a setup in which two seats play the same faction
   (`DUPLICATE_FACTION`) and added the optional headless and test only setup
   field `allowDuplicateFactions: true`; no state, command, event, or view
-  shape changed.
+  shape changed. `pulp_wars-78i.3` (`7r30`) registered the seventh faction,
+  `DWARF`, with its own state lists, commands, events, and preview fields,
+  all neutral without a Dwarf seat (the pending
+  [Dwarf overlay](RULESET_7_DWARVES.md)); its Normal AI and UI
+  (`pulp_wars-78i.4` and `78i.6`) changed no shape.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r28.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r29.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
   error. There is no other rules parameter: the former `?undead=1`
   development flag is gone, and a save or replay with Undead, Goblin,
-  Dinosaur, or Martian seats loads like any other.
+  Dinosaur, Martian, or Ice Folk seats loads like any other.
 - All arithmetic is safe-integer and atomic: a rejected command changes no
   state and consumes no Coins, city action, or PRNG draw.
 - **Factions.** Each seat has one faction, fixed for the match. A player
@@ -240,17 +270,19 @@ separate [Ruleset 6](RULESET_6.md) route.
   cross-faction fallback. Units never change owner; Infect, Bitten, and Mind
   Control remove the victim and create a new unit. An Egg hatches in place
   into its unit with the same ID ([section 19.5](#195-hatching)).
-- The Undead, Goblin, Dinosaur, and Martian technology graphs, economy, and
-  every non-unit rule are identical to the Human ones; the differences are
-  the unit rosters ([section 11](#11-unit-roster)), the technology unlocks
-  of [section 6.2](#62-technology-tree) (two for the Undead and the Goblins,
-  plus the Goblin name Plunder for Commerce; Nesting and Wallbreaker for the
-  Dinosaurs; Brain support, no Overrun, Force Fields, and the Disintegrator
-  for the Martians), and the faction rules of
+- The Undead, Goblin, Dinosaur, Martian, and Ice Folk technology graphs,
+  economy, and every non-unit rule are identical to the Human ones; the
+  differences are the unit rosters ([section 11](#11-unit-roster)), the
+  technology unlocks of [section 6.2](#62-technology-tree) (two for the
+  Undead and the Goblins, plus the Goblin name Plunder for Commerce; Nesting
+  and Wallbreaker for the Dinosaurs; Brain support, no Overrun, Force
+  Fields, and the Disintegrator for the Martians; Witch support, no Overrun,
+  Deep Winter, and Brittle for the Ice Folk), and the faction rules of
   [section 17](#17-undead-faction-rules) (Undead),
   [section 18](#18-goblin-faction-rules) (Goblin),
-  [section 19](#19-dinosaur-faction-rules) (Dinosaur), and
-  [section 20](#20-martian-faction-rules) (Martian).
+  [section 19](#19-dinosaur-faction-rules) (Dinosaur),
+  [section 20](#20-martian-faction-rules) (Martian), and
+  [section 21](#21-ice-folk-faction-rules) (Ice Folk).
 - `GameStateV7` has no Goblin field: explosions resolve inside one command or
   Start Turn and leave no persistent state; Plunder changes Coins and Troll
   regeneration changes HP. Its only Dinosaur field is `eggs`, the Egg
@@ -259,7 +291,11 @@ separate [Ruleset 6](RULESET_6.md) route.
   registration values. Its Martian fields are four side lists sorted by unit
   ID, `shields`, `cooling`, `thralls`, and `mindControlCooldowns`
   ([section 20](#20-martian-faction-rules)); no unit key was added, and the
-  Shield maximum, movement mode, and Pierce are registration values.
+  Shield maximum, movement mode, and Pierce are registration values. Its
+  only Ice Folk field is `chilled`, the Chill entries sorted by unit ID
+  ([section 21.2](#212-chill)); Snow and the Blizzard are derived on every
+  read and never stored, and Mountain-born, Glide, Prowl, and the other unit
+  rules are registration values.
 
 ## 2. Setup and map generation
 
@@ -268,15 +304,15 @@ separate [Ruleset 6](RULESET_6.md) route.
 A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 `COOPERATIVE` mode, on a square board.
 
-| Setup field | Legal values                                                                                                                    |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                                                      |
-| Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                                                                 |
-| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only)                                |
-| AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                               |
-| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                                               |
-| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, or `MARTIAN`; no two seats alike |
-| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                          |
+| Setup field | Legal values                                                                                                                                                         |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Board width | 11, 14, 16, 20, or 25 (height equals width); minimum 11/14/16 for 1/2/3 AI                                                                                           |
+| Auto size   | 11, 14, or 16 for 1, 2, or 3 AI                                                                                                                                      |
+| Map type    | `DRY_LAND`, `PANGEA`, `CONTINENTS` (default), `ARCHIPELAGO`, `LAKES`, `SHOWCASE` (width 16 only)                                                                     |
+| AI          | `aiCount` 1–3, difficulty `NORMAL`, mode `RIVAL` or `COOPERATIVE`                                                                                                    |
+| Human color | `CORAL`, `TEAL`, `GOLD`, `VIOLET`                                                                                                                                    |
+| Factions    | one per seat (`aiCount + 1`, seat 0 is the human): `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, or `ICE_FOLK` (or the pending `DWARF`); no two seats alike |
+| Seed        | uint32; equal setups and seeds generate byte-identical maps, turn order, and treasures                                                                               |
 
 - **Faction choice.** `factions` is a dense array; index `i` is seat `i`'s
   faction. **Every seat plays a different faction**
@@ -287,16 +323,15 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   Only headless and test setups may lift the rule, with
   `allowDuplicateFactions: true`, which the browser never builds and
   refuses to launch or resume. The browser setup always offers one
-  Human/Undead/Goblin/Dinosaur/Martian select per seat ("Your faction",
-  "Player N faction"), with the factions other seats play disabled in the
-  opponents' selects (the human's pick moves an opponent who played it to a
-  free faction), and defaults to Human, Undead, Goblin, and Dinosaur for
-  seats 0–3. The
+  Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf select per seat
+  ("Your faction", "Player N faction"), with the factions other seats play
+  disabled in the opponents' selects (the human's pick moves an opponent who
+  played it to a free faction), and defaults to Human, Undead, Goblin, and
+  Dinosaur for seats 0–3. The
   headless tools default to the same distinct factions and accept
-  `original` (alias `human`), `undead`, `goblin`, `dinosaur`, and `martian`
-  in `--factions`. The engine and the headless tools also accept `ICE_FOLK`
-  (`ice` or `ice_folk`), which the browser does not offer
-  ([Ice Folk overlay](RULESET_7_ICE_FOLK.md)). Faction choice never
+  `original` (alias `human`), `undead`, `goblin`, `dinosaur`, `martian`, and
+  `ice` (alias `ice_folk`) in `--factions`, and `dwarf` for the pending
+  [Dwarf overlay](RULESET_7_DWARVES.md). Faction choice never
   affects map generation, capital placement, turn order, treasure placement,
   or any PRNG draw: setups that differ only in `factions` generate
   byte-identical boards, turn orders, and treasures.
@@ -353,7 +388,8 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   or a full-HP exhausted unit of the mover's faction's **treasure role**
   (faction rule `treasureUnitRole`: the `KNIGHT` role for Human, Undead, and
   Goblin, so a Knight, Vampire, or Scrap Buggy; the `RAIDER` role for
-  Dinosaur and Martian, so a Raptor or a Saucer) on the first legal adjacent
+  Dinosaur, Martian, and Ice Folk, so a Raptor, a Saucer, or a Sled) on the
+  first legal adjacent
   land cell (entered under the treasure unit's own movement mode, so a
   Saucer needs no Engineering for a Mountain), homed to the
   mover's home city first and then by city ID among cities with enough free
@@ -452,7 +488,9 @@ terrain and resource from these exact tables.
   no resource, improvement, Road, Field Defense, site, treasure chest, or
   Grave, ever. Only a flyer in land form (the Martian Saucer and
   Mothership) may enter, cross, or stand on it; nothing can be built on it.
-  It is never Snow. It is made only by generation, and nothing changes it.
+  It is never Snow, and Mountain-born does not cover it
+  ([section 21.5](#215-snow)). It is made only by generation, and nothing
+  changes it.
 - A settlement-ring floor then guarantees family minimums by the settlement's
   biome: Plains 2 Agriculture + 1 Timber; Woodland 1 Agriculture + 2 Timber;
   Highlands 1 Timber + 2 Metal (Ore).
@@ -548,7 +586,8 @@ for them.
   `population = permanent + live − growthSpent(level)`.
 - First income ([section 4.3](#43-income)): the capital pays 4 + 1 + 2
   (Market); North 4 + 1 land trade; Coast 3 + 1 land trade: 16 Coins for a
-  Human, Undead, Dinosaur, or Martian seat and 14 for a Goblin seat (Plunder
+  Human, Undead, Dinosaur, Martian, or Ice Folk seat and 14 for a Goblin
+  seat (Plunder
   replaces land trade). No city has sea trade: the Port and Shipyard belong
   to one city.
 
@@ -566,7 +605,15 @@ hatched (no Egg exists at setup) and at growth stage 0. A Martian seat's
 units are at full Shield, with no Thrall, no Cooling entry, and no Mind
 Control cooldown; the first seat's first Start Turn recharges its Shields
 under the Force Field rule like any Start Turn, and with every technology
-known, Force Fields and the Disintegrator apply from the first turn.
+known, Force Fields and the Disintegrator apply from the first turn. An Ice
+Folk seat's units start with no Chill entry; with every technology known,
+Deep Winter and Brittle apply from the first turn, so its Snow is the three
+cities' footprints plus every neutral land tile within two tiles of a
+center (its whole strip from `y = 1` to `y = 11`, the neutral columns
+beside it, and the Road tiles between the cities). The Yeti on its Walled
+capital center has fortification 2 and no Snow cover, while its units on
+the neutral rows `y = 5` and `y = 9` stand on Snow with cover
+([section 21.5](#215-snow)).
 
 | Role          | Tile          | Form  | Home city |
 | ------------- | ------------- | ----- | --------- |
@@ -591,7 +638,9 @@ known, Force Fields and the Disintegrator apply from the first turn.
   Coast (2 of 6) can lay every Egg from the first turn. A Martian seat's
   capital is exactly full at 7 of 7 (Grunt, Brain, and Tripod 1 each,
   Mothership and Colossus 2 each), so it cannot train until a slot frees;
-  North (3 of 6) and Coast (2 of 5) can train. Both docks start empty.
+  North (3 of 6) and Coast (2 of 5) can train. An Ice Folk seat's units all
+  use one slot (Capital 5 of 7, North 3 of 6, Coast 2 of 5). Both docks
+  start empty.
 - **Entity IDs.** Seat `s` has capital ID `2s + 1` and `FIGHTER` ID `2s + 2`.
   Then, each pass in seat order: every seat's North and Coast cities; then
   every seat's ledger records (per city in the order capital, North, Coast:
@@ -612,7 +661,7 @@ known, Force Fields and the Disintegrator apply from the first turn.
 - Every seat starts with 5 Coins, no technology, a level-1 capital, one
   full-HP unit of its faction's `FIGHTER` role (Fighter for Human, Skeleton
   for Undead, Goblin for Goblin, Caveman for Dinosaur, Grunt at full Shield
-  for Martian) on the capital and
+  for Martian, Yeti for Ice Folk) on the capital and
   homed there, seven locked achievement entitlements, and every cell within
   radius 2 of its capital explored. A Dinosaur seat starts with no Egg. A
   Goblin seat, too, starts with a single Goblin: `pulp_wars-0ao.7`
@@ -635,7 +684,9 @@ known, Force Fields and the Disintegrator apply from the first turn.
   activations and capture eligibility (an Egg keeps its exhausted
   activation); set every owned city's city action available; count down the
   seat's Mind Control cooldowns ([section 20.8](#208-mind-control)); recharge
-  the seat's Shields ([section 20.2](#202-shields)); resolve the
+  the seat's Shields ([section 20.2](#202-shields)); apply the Cold Aura of
+  the seat's Frost Giants ([section 21.12](#2112-prowl-and-the-cold-aura));
+  resolve the
   seat's Plague ([section 17.8](#178-plague)); explode the seat's exploding
   units that Plague killed, with any chain reaction and its Plunder
   ([section 18.7](#187-where-chains-run-and-event-order)); count down and
@@ -643,7 +694,8 @@ known, Force Fields and the Disintegrator apply from the first turn.
   healing; regenerate Trolls
   ([section 18.10](#1810-waaagh-ram-and-troll-regeneration)); award income;
   settle pending city rewards; evaluate achievements. Events:
-  `TURN_STARTED`, then `SHIELDS_RECHARGED`, then `PLAGUE_DAMAGED`, deaths,
+  `TURN_STARTED`, then `SHIELDS_RECHARGED`, then one `UNITS_CHILLED` per
+  Frost Giant that chilled a unit, then `PLAGUE_DAMAGED`, deaths,
   risings, and Thrall collapses (`BRAIN_LOST`), `PLAGUE_SPREAD`,
   `PLAGUE_EXPIRED`, rising reveals and economy changes, then the chain
   events, `PLUNDER_AWARDED`, and the chain's rising reveals and economy
@@ -654,17 +706,17 @@ known, Force Fields and the Disintegrator apply from the first turn.
   that city's income this turn, and Plunder from a Start Turn chain is added
   before income. A unit that hatched this Start Turn counts for that turn's
   Muster evaluation. The cooldown and Shield steps do nothing in a match
-  without a Martian seat. (The Ice Folk overlay adds its Cold Aura step
-  after the Shield recharge and its Chill countdown at End Turn after the
-  Force Fields recharge; they do nothing in a match without an Ice Folk
-  seat.)
+  without a Martian seat, and the Cold Aura step nothing in a match without
+  an Ice Folk seat.
 - **End Turn** (in order): auto-recover idle damaged units; expire Inspired and
   Overrun; run the player's Cooling step
   ([section 20.4](#204-heat-rays-and-cooling)); with Force Fields, recharge
   the player's Shields again ([section 20.3](#203-force-field-and-force-fields));
-  preview next income; advance to the next active seat and run its
-  Start Turn. Events: the recovery events, `SHIELDS_RECHARGED` (Force
-  Fields), `INCOME_PREVIEWED`, `TURN_ENDED`, then the next Start Turn's.
+  count down the Chill entries of the player's units
+  ([section 21.2](#212-chill), no event); preview next income; advance to
+  the next active seat and run its Start Turn. Events: the recovery events,
+  `SHIELDS_RECHARGED` (Force Fields), `INCOME_PREVIEWED`, `TURN_ENDED`, then
+  the next Start Turn's.
   End Turn is unavailable while a city reward choice is pending.
   Since revision 17, `END_TURN` is one of the commands after which naval
   blockade and sea-network changes are reported
@@ -674,7 +726,8 @@ known, Force Fields and the Disintegrator apply from the first turn.
 - The first seat's first Start Turn runs when the match is created, so every
   seat's first turn includes ordinary income.
 - **Elimination:** a player owning zero cities is eliminated immediately; its
-  units, Eggs and Thralls included, are removed (`UNIT_DIED` cause
+  units, Eggs and Thralls included, are removed (with their Chill entries;
+  `UNIT_DIED` cause
   `ELIMINATION`, never `BRAIN_LOST`, leaving no Graves and setting off no
   death blasts) and its future turns skipped. Plague
   from its removed Liches and the bites it inflicted end
@@ -759,8 +812,8 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   2 (role mechanic `capacitySlots`), so for a Human, Undead, or Goblin city
   the used slots equal the unit count. Land and naval units share capacity;
   orphaned units (no home city) use no slots anywhere, and a Thrall never
-  has a home city ([section 20.9](#209-thralls)). Martian cities have no
-  capacity bonus.
+  has a home city ([section 20.9](#209-thralls)). Martian and Ice Folk
+  cities have no capacity bonus, and every Ice Folk role uses 1 slot.
 - `TRAIN`, `TRAIN_NAVAL`, `LAY_EGG`, and a treasure unit need
   `used + slots(role) <= capacity`, otherwise `CITY_CAPACITY_FULL` (or the
   5-Coin chest). Reward units (a two-slot Brontosaurus or Colossus too) and
@@ -778,7 +831,8 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 - The action becomes available at the owner's Start Turn. A captured city's
   action is unavailable until its new owner's next Start Turn.
 - Research, construction, harvesting, unit commands (Beam Down, Mind
-  Control, and the Tractor Beam included), and reward choices never
+  Control, the Tractor Beam, Bolas, and Cold Snap included), and reward
+  choices never
   spend it; reward units still appear after the action is spent.
 - The flag is visible only to the city's owner.
 
@@ -801,12 +855,14 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
 - **Naval training** happens on a selected active, empty Port or Shipyard
   assigned to the city ([section 14](#14-naval-rules)).
 - **Reward units** (the Militia `FIGHTER` and the level-5+ `JUGGERNAUT`, in
-  the owner's faction: Fighter, Skeleton, Goblin, Caveman, or Grunt;
-  Juggernaut, Abomination, Troll, Brontosaurus, or Colossus) always appear
+  the owner's faction: Fighter, Skeleton, Goblin, Caveman, Grunt, or Yeti;
+  Juggernaut, Abomination, Troll, Brontosaurus, Colossus, or Frost Giant)
+  always appear
   on the city center, hatched (no reward ever creates an Egg) and at full
   Shield. An existing occupant moves to
   the first free adjacent land cell in `(y, x)` order that it can legally
-  enter (Engineering for Mountain unless it strides or flies, no unit or
+  enter (Engineering for Mountain unless it strides, flies, or is
+  Mountain-born, no unit or
   Egg, no treasure, not allied territory); an Egg is never displaced. If
   none exists, the occupant is removed with no refund or kill credit (and
   no Grave or death blast; a removed Brain's Thralls collapse).
@@ -825,12 +881,15 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   Pending rewards can still be chosen, and the city's Eggs still count down
   and hatch. A Martian flyer never stands on a hostile or neutral center
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)), so it
-  never besieges.
+  never besieges, and neither does a Sabretooth
+  ([section 21.12](#2112-prowl-and-the-cold-aura)). A besieged Ice Folk
+  city is still Snow.
 - **Capture** requires a capture-capable land unit (Human Fighter, Raider,
   Marksman, Guard, or Juggernaut; Undead Skeleton, Ghoul, Banshee, Zombie, or
   Abomination; Goblin Goblin, Wolf Rider, Bomb Chucker, Orc Brute, or Troll;
   Dinosaur Caveman, Raptor, Spitter, Ankylosaurus, or Brontosaurus; Martian
-  Grunt, Ray Gunner, Shield Projector, Colossus, or Thrall)
+  Grunt, Ray Gunner, Shield Projector, Colossus, or Thrall; Ice Folk Yeti,
+  Sled, Snow Hunter, Mammoth, or Frost Giant)
   that began its owner's turn on a neutral
   village or hostile city center, stands there alone, and has not moved or used
   a primary action this turn. Capture is terminal.
@@ -861,7 +920,8 @@ Each reached level grants exactly one reward, chosen by the owner:
   Goblin Juggernaut reward is a Troll; a Dinosaur Militia is one Caveman and
   a Dinosaur Juggernaut reward is a Brontosaurus (2 slots, hatched); a
   Martian Militia is one Grunt and a Martian Juggernaut reward is a Colossus
-  (2 slots, full Shield). Reward
+  (2 slots, full Shield); an Ice Folk Militia is one Yeti and an Ice Folk
+  Juggernaut reward is a Frost Giant. Reward
   IDs (`MILITIA`, `JUGGERNAUT`) are the same for every faction.
 - Rewards settle only for the active player's cities, by city ID then level;
   the first unrewarded level becomes the single pending choice, which blocks
@@ -915,7 +975,8 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   on `DRY_LAND`). **Slayer** reads the largest
   `kills` of one unit on the board, with the ordinary kill credit
   ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)): explosions
-  credit no unit, a rising or a Thrall starts at 0, an Egg has 0, a Mind
+  credit no unit, a Shatter and a hostile Sweep kill credit the attacker,
+  a rising or a Thrall starts at 0, an Egg has 0, a Mind
   Control or a Thrall collapse is a removal and no kill, kills of different
   units never add up, and a Promotion or growth stage does not reset the
   count.
@@ -927,7 +988,9 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
   Dinosaurs: Caveman, Raptor, Spitter, Ankylosaurus, Shaman, Triceratops,
   T-Rex, Patrol Boat, Battleship, with the Brontosaurus excluded; for
   Martians: Grunt, Saucer, Ray Gunner, Shield Projector, Brain, Tripod,
-  Mothership, Patrol Boat, Battleship, with the Colossus excluded). Risings,
+  Mothership, Patrol Boat, Battleship, with the Colossus excluded; for the
+  Ice Folk: Yeti, Sled, Snow Hunter, Mammoth, Ice Witch, Boulder Yeti,
+  Sabretooth, Patrol Boat, Battleship, with the Frost Giant excluded). Risings,
   Thralls (as the `FIGHTER` role), and hatched units count; an Egg does not
   count until it hatches.
 - Each unlocked, unspent entitlement funds one `BUILD_MONUMENT`: 0 Coins, +3
@@ -1117,6 +1180,40 @@ differently from the Human table are:
 | Fortification  | Force Fields  | Shields also recharge at the end of your turn                                                 |
 | Explosives     | Disintegrator | Blast Mountain; melee attacks destroy Field Defense; heat rays ignore Walls and Field Defense |
 
+The Ice Folk tree (`ICE_FOLK_BASELINE_V1`) has the same graph, tiers,
+prerequisites, costs, free opener, Dry Land Naval rule, and technology IDs as
+the Human one, with four unlock differences. **Administration** grants
+`WITCH_SUPPORT` (the Ice Witch's Cold Snap; her Blizzard needs no unlock)
+instead of Captain support. **Chivalry** grants no Overrun (the Undead
+precedent). **Fortification**, displayed as **Deep Winter**, grants
+`DEEP_WINTER` instead of the Field Defense command: neutral land within two
+tiles of each own city center is Snow, and Recover heals 6 in own territory
+([section 21.7](#217-deep-winter-and-brittle)). **Explosives**, displayed as
+**Brittle**, keeps Blast Mountain and the melee Field Defense demolition and
+adds `BRITTLE`: the player's Shatter threshold is 4 instead of 3
+([section 21.4](#214-shatter)). `TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7`
+holds `ICE_FOLK: { FORTIFICATION: "Deep Winter", EXPLOSIVES: "Brittle" }`,
+resolved by `technologyNameV7`. Engineering's Mountain entry matters only
+to the Sled, Snow Hunter, Mammoth, Ice Witch, and Sabretooth (the three
+Mountain-born roles need none), Raiding's Pillage reaches every Ice Folk
+land role but the Frost Giant, and every technology still has a live unlock
+for an Ice Folk seat. The Ice Folk unlocks that read differently from the
+Human table are:
+
+| Technology     | Ice Folk name | Ice Folk unlocks                                                                       |
+| -------------- | ------------- | -------------------------------------------------------------------------------------- |
+| Administration | same          | Ice Witch (Blizzard, Cold Snap); Market; Disband                                       |
+| Sawmilling     | same          | Sawmill; Boulder Yeti (ignores Walls and Field Defense)                                |
+| Marksmanship   | same          | Snow Hunter (Cold Blood)                                                               |
+| Fieldcraft     | same          | Replant Forest; Sled and Snow Hunter ignore Forest movement stops; Snow Hunter Sight 2 |
+| Scouting       | same          | Sled (Bolas); Sled Sight 2                                                             |
+| Raiding        | same          | Pillage; Sled Charge                                                                   |
+| Chivalry       | same          | Sabretooth (Prowl); Cultivate Forest                                                   |
+| Drill          | same          | reveal Ore; Mammoth (Sweep, Trample); first-hostile-capture Spoils (2 Coins)           |
+| Engineering    | same          | every unit enters Mountain; +1 Sight on Mountain; Mine; Workshop; Redevelop            |
+| Fortification  | Deep Winter   | Snow spreads two tiles from your city centers; Recover heals 6 in your territory       |
+| Explosives     | Brittle       | Blast Mountain; melee attacks destroy Field Defense; Shatter at 4 HP or less           |
+
 The other technologies read the same for every faction. The engine, query,
 and AI checks of land trade read the technology capability
 `landTradeIncomeCoins` (never a raw `COMMERCE` test), and Plunder is the
@@ -1124,7 +1221,8 @@ capability `plunderCoins`. Nesting and Wallbreaker are likewise read through
 the capabilities `eggHpBonus` (0 or 4), `eggHatchTurnReduction` (0 or 1),
 `nestingCityCapacityBonus` (0 or 1), and `ignoresCityWalls`, and Force
 Fields and the Disintegrator through `shieldsRechargeAtEndTurn` and
-`raysIgnoreFortification`, never through a raw `FORTIFICATION` or
+`raysIgnoreFortification`, and Deep Winter and Brittle through `deepWinter`
+and `shatterThreshold` (3 or 4), never through a raw `FORTIFICATION` or
 `EXPLOSIVES` test.
 
 ## 7. Resources and visibility
@@ -1177,7 +1275,9 @@ require Engineering. Roads always coexist. **No tile command targets a
 Rift**: buildings, Monuments, and Roads are rejected with `INVALID_TILE`
 (the Forest actions with `FOREST_ACTION_INVALID_TILE`), and the query
 offers none. A Rift may lie in territory (a Land Grant claims it) and adds
-nothing to its city.
+nothing to its city. Snow ([section 21.5](#215-snow)) lies on Roads,
+improvements, resources, Field Defense, and centers alike and changes no
+tile command.
 
 ### 8.2 Resource and basic actions
 
@@ -1262,6 +1362,11 @@ nothing to its city.
 - The half cost applies to every land-form unit, Martian walkers and flyers
   included; the Road-edge exemption is moot for them, since terrain never
   stops them ([section 20.6](#206-movement-stride-flying-and-crossing-water)).
+- **Glide** ([section 21.5](#215-snow)): for a land-form Ice Folk unit
+  other than the Sabretooth, a step also costs half when the tile being
+  left is Snow; Snow and a Road do not add up, so a Road on Snow gains it
+  nothing except the Road-edge waiver of a Forest or Mountain stop. For
+  another faction's ground unit a Road edge also waives the deep-snow stop.
 - The engine's Road-movement capability field is named
   `connectedOrthogonalStepCost2` for historical reasons; the half cost applies
   to orthogonal and diagonal steps and needs no capital connection, as stated
@@ -1313,16 +1418,16 @@ market income = min(3, 1 + distinct adjacent families)
 
 ## 10. Recovery and support
 
-| Healing source                  | Amount                                                                 | When                                                                         |
-| ------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Recover or idle recovery, land  | 4 in own territory; 2 elsewhere (Undead: Restless, see below)          | explicit terminal `RECOVER`, or End Turn for a unit that did not move or act |
-| Recover or idle recovery, naval | 4 on or adjacent to an own active Port/Shipyard; otherwise illegal / 0 | same                                                                         |
-| Embarked unit                   | none                                                                   | —                                                                            |
-| Windmill (Milling)              | up to 6                                                                | Start Turn, once per unit                                                    |
-| Troll regeneration (Goblin)     | up to 4, any tile and form; cures nothing                              | Start Turn, after Windmill healing                                           |
-| Tend Wounded (Captain, Shaman)  | up to 2, and cures Plague and Bitten                                   | Captain or Shaman action, once per unit per owner turn                       |
-| Promotion, growth stage         | full heal to the new maximum HP; cures nothing                         | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs)  |
-| Egg                             | none: no healing source ever heals an Egg                              | —                                                                            |
+| Healing source                  | Amount                                                                                                  | When                                                                         |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Recover or idle recovery, land  | 4 in own territory (6 for an Ice Folk unit with Deep Winter); 2 elsewhere (Undead: Restless, see below) | explicit terminal `RECOVER`, or End Turn for a unit that did not move or act |
+| Recover or idle recovery, naval | 4 on or adjacent to an own active Port/Shipyard; otherwise illegal / 0                                  | same                                                                         |
+| Embarked unit                   | none                                                                                                    | —                                                                            |
+| Windmill (Milling)              | up to 6                                                                                                 | Start Turn, once per unit                                                    |
+| Troll regeneration (Goblin)     | up to 4, any tile and form; cures nothing                                                               | Start Turn, after Windmill healing                                           |
+| Tend Wounded (Captain, Shaman)  | up to 2, and cures Plague, Bitten, and Chill                                                            | Captain or Shaman action, once per unit per owner turn                       |
+| Promotion, growth stage         | full heal to the new maximum HP; cures nothing                                                          | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs)  |
+| Egg                             | none: no healing source ever heals an Egg                                                               | —                                                                            |
 
 - **Windmill healing:** at the owner's Start Turn, each Windmill in the
   owner's territory heals damaged own units (any form) on its eight
@@ -1349,6 +1454,11 @@ market income = min(3, 1 + distinct adjacent families)
   no Tend Wounded). Every healing source changes HP only; a Shield is never
   healed, it recharges ([section 20.2](#202-shields)), and the recharge is
   not healing.
+- **Ice Folk recovery** is the Human rule (the Ice Folk are not Restless),
+  except that with Deep Winter Recover and idle recovery heal a land-form
+  Ice Folk unit 6 in its owner's territory (`DEEP_WINTER_RECOVER_V7`);
+  elsewhere 2, Snow or not. An Ice Folk seat has no healer and no cure for
+  Plague, Bitten, or Chill (the Ice Witch has no Tend Wounded).
 - **Captain** (Human `CAPTAIN`): may Move, then use one primary action:
   Attack, Rally, or Tend Wounded. The Dinosaur Shaman has the same three
   (Rally labelled **War Drums**) plus Hatch
@@ -1357,7 +1467,9 @@ market income = min(3, 1 + distinct adjacent families)
   the Goblin Orc Warboss has Attack and WAAAGH!
   ([section 18.10](#1810-waaagh-ram-and-troll-regeneration)), and the
   Martian Brain has Attack, Psychic Command, and Mind Control
-  ([section 20.8](#208-mind-control)); none of them has
+  ([section 20.8](#208-mind-control)), and the Ice Folk Ice Witch has
+  Attack and Cold Snap and no Rally
+  ([section 21.6](#216-the-blizzard-and-cold-snap)); none of them has
   Tend Wounded (`TEND_WOUNDED` is never offered and is rejected with
   `UNIT_ROLE_INVALID`).
 - **Rally** (Undead: **Frenzy**, labelled "Frenzied"; Goblin: **WAAAGH!**;
@@ -1376,15 +1488,20 @@ market income = min(3, 1 + distinct adjacent families)
   target the command rejects with `HEAL_TARGET_NOT_FOUND`.
 - **Tend Wounded** (Human Captain, Dinosaur Shaman): targets every adjacent
   own land-form unit (other than the tender, not yet tended this turn) that
-  is damaged, plagued, or bitten; a plagued or bitten unit is a target even
-  at full HP. Each target heals `min(2, maxHp - hp)` (possibly 0) and loses
-  both Plague and Bitten (`WOUNDED_TENDED` results carry `curedPlague` and
-  `curedBitten`). It does not use the target's action. The tender cannot
+  is damaged, plagued, bitten, or Chilled; such a unit is a target even at
+  full HP. Each target heals `min(2, maxHp - hp)` (possibly 0), loses both
+  Plague and Bitten, and a Chilled target's entry becomes thawing
+  (`{ sluggish: false, turnsLeft: 0 }`, [section 21.2](#212-chill)): it is
+  no longer Chilled, may move and act this turn, and a Chill applied before
+  its owner's next End Turn does not slow it (`WOUNDED_TENDED` results carry
+  `curedPlague`, `curedBitten`, and `curedChill`). It does not use the
+  target's action. The tender cannot
   tend itself, and an Egg is never a target.
 - **Disband** (Administration): an own land-form trainable unit that has not
   used a primary action (it may have moved) removes itself for
   `floor(printed cost / 2)` Coins (a Goblin refunds 0 and is still offered
-  Disband). Juggernaut, Abomination, Troll, Brontosaurus, Colossus, naval,
+  Disband; a Chilled unit may Disband). Juggernaut, Abomination, Troll,
+  Brontosaurus, Colossus, Frost Giant, naval,
   and embarked units cannot Disband, nor can a Thrall
   (`DISBAND_NOT_LEGAL` reason `THRALL`, never offered). Disband never
   explodes, and disbanding a Brain collapses its Thralls. A plagued or bitten unit
@@ -1393,8 +1510,8 @@ market income = min(3, 1 + distinct adjacent families)
   disbanded ("Abandon Egg", [section 19.7](#197-egg-destruction-capture-and-abandon-egg)).
 - **Promotion:** a unit with at least 3 kills may Promote once for free:
   +5 maximum HP and a **full heal** (its HP becomes the new maximum;
-  revision 20). Plague and Bitten stay, and a Martian unit's Shield is
-  neither raised nor recharged. It is an explicit command,
+  revision 20). Plague, Bitten, and Chill stay, and a Martian unit's Shield
+  is neither raised nor recharged. It is an explicit command,
   independent of the activation; embarked units cannot Promote, and neither
   a growing unit (a dinosaur), which grows instead
   ([section 19.8](#198-grow)), nor a Thrall ever can: `PROMOTE` for them is
@@ -1680,15 +1797,99 @@ value 3).
   the public unit stats
   ([section 20.12](#2012-commands-events-errors-and-queries)).
 
+The Ice Folk (`ICE_FOLK`) roster, by mechanical role, with the
+`pulp-wars-poc-7r27` values (`ICE_FOLK_ROLE_RULES_V7` and
+`ICE_FOLK_ROLE_MECHANICS_V7`). Every role uses one slot; "Mountain-born"
+units cross Mountains without Engineering and without stopping
+([section 21.8](#218-mountain-born-and-rockfall)):
+
+| Unit         | Role          | Tech              | Cost |  HP |               Attack |  Defense | Move | Range | Sight | Attack after Move | Capture | Abilities                                                               |
+| ------------ | ------------- | ----------------- | ---: | --: | -------------------: | -------: | ---: | ----: | ----: | ----------------- | ------- | ----------------------------------------------------------------------- |
+| Yeti         | `FIGHTER`     | start             |    2 |  9⁸ |                2 (4) | 1.5 (3)⁸ |    1 |    1⁹ |     1 | yes               | yes     | Mountain-born; Rockfall; no Field Defense                               |
+| Sled         | `RAIDER`      | Scouting          |    3 |  10 |                2 (4) |    1 (2) |    2 |     1 |     2 | yes               | yes     | Bolas; Charge (Raiding); no Escape                                      |
+| Snow Hunter  | `MARKSMAN`    | Marksmanship      |    3 |   8 |                2 (4) |    1 (2) |    1 |   1–2 |    1⁷ | yes               | yes     | Cold Blood                                                              |
+| Mammoth      | `GUARD`       | Drill             |    6 |  20 |              2.5 (5) |    2 (4) |    1 |     1 |     1 | yes               | yes     | Sweep; Trample; no Field Defense                                        |
+| Ice Witch    | `CAPTAIN`     | Administration    |    5 |  12 |                1 (2) |    1 (2) |    1 |     1 |     1 | yes               | no      | Blizzard; Cold Snap; no Rally; no Tend Wounded                          |
+| Boulder Yeti | `CATAPULT`    | Sawmilling        |    8 |  12 | 2 (4); 3 (6) planted |  1.5 (3) |    2 |   1–2 |     1 | yes               | no      | Boulders (ignore fortification); Planted; Mountain-born; never advances |
+| Sabretooth   | `KNIGHT`      | Chivalry          |    9 |  14 |                3 (6) |    1 (2) |    3 |     1 |     1 | yes               | no      | Prowl; no Glide; never on a foreign center; no Overrun                  |
+| Frost Giant  | `JUGGERNAUT`  | reward only       |    — |  40 |                4 (8) |    4 (8) |    1 |     1 |     1 | yes               | yes     | Push; Cold Aura; Mountain-born                                          |
+| Patrol Boat  | `PATROL_BOAT` | Shorecraft        |    5 |  10 |                2 (4) |    2 (4) |    2 |     1 |     2 | yes               | no      | naval                                                                   |
+| Battleship   | `BATTLESHIP`  | Naval Engineering |   16 |  25 |               6 (12) |    4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                                           |
+
+⁷ Snow Hunter Sight becomes 2 with Fieldcraft.
+⁸ [Ice Folk tuning record](RULESET_7_ICE_FOLK.md#165-tuning-record)
+(`pulp_wars-7g3.7`, `pulp-wars-poc-7r27`): Yeti 9 HP and Defense 1.5
+(contract values 10 and 2); promoted 14.
+⁹ A Yeti standing on a Mountain may also attack at distance 2, at Attack
+1.5 (`attack2` 3): Rockfall
+([section 21.8](#218-mountain-born-and-rockfall)).
+
+- **Yeti** has Fighter parity (capture, Pillage with Raiding, Disband,
+  ordinary Promotion, the advance after a melee kill) and the Fighter's
+  cost, Attack, and Move, with 9 HP and Defense 1.5. It cannot build Field
+  Defense. It is Mountain-born and has Rockfall.
+- **Sled** (a dog sled and its driver) has Raider parity for Sight 2,
+  capture, Pillage, the advance, Fieldcraft Forest freedom, and Charge with
+  Raiding; it has no Escape. Its primary actions are Attack and Bolas
+  ([section 21.9](#219-bolas-and-cold-blood)).
+- **Snow Hunter** has Marksman parity (range 1–2, minimum range 1, capture,
+  Pillage, Disband, Fieldcraft Forest freedom and Sight, the advance after
+  an adjacent kill) and Cold Blood
+  ([section 21.9](#219-bolas-and-cold-blood)).
+- **Mammoth** has Guard parity for capture only: unlike the Guard it may
+  attack after moving, and it cannot build Field Defense. Every attack it
+  makes is a Sweep and a Trample ([section 21.10](#2110-sweep-and-trample)).
+- **Ice Witch** has Captain parity for no capture and nothing else: no
+  Rally and no Tend Wounded (`RALLY` and `TEND_WOUNDED` are never offered
+  and are rejected with `UNIT_ROLE_INVALID`). She carries the Blizzard; her
+  primary actions are Attack and Cold Snap
+  ([section 21.6](#216-the-blizzard-and-cold-snap)).
+- **Boulder Yeti** has range 1–2 with minimum range 1 and may attack after
+  moving, unlike the Catapult; like it, it cannot capture, never advances,
+  keeps the `SIEGE` label, and every attack it makes destroys Field Defense
+  on the target's tile (reason `CATAPULT`). Its attacks ignore fortification,
+  and it has +1 Attack on a turn in which it has not moved
+  ([section 21.11](#2111-boulders-and-planted)). It is Mountain-born.
+- **Sabretooth** has Knight parity for no capture and for the advance after
+  a melee kill. It has no Overrun and no Charge; it Prowls, never Glides,
+  and never ends on a settlement center it does not own
+  ([section 21.12](#2112-prowl-and-the-cold-aura)).
+- **Frost Giant** has Juggernaut parity (reward only, capture, Push on an
+  adjacent surviving target, the advance, no Pillage, no Disband) and the
+  Juggernaut's numbers, plus the Cold Aura
+  ([section 21.12](#2112-prowl-and-the-cold-aura)). It is Mountain-born.
+- **Patrol Boat and Battleship** are the Human units. Ice Folk faction rules
+  do not apply to them: no Snow cover, no Glide, no Blizzard protection, no
+  Shatter, one slot, the ordinary Promotion.
+- Ice Folk Disband refunds: Yeti, Sled, and Snow Hunter 1; Ice Witch 2;
+  Mammoth 3; Boulder Yeti and Sabretooth 4. The Frost Giant cannot Disband.
+- **Public abilities** (the role rule's `abilities`): Yeti `ATTACK`,
+  `CAPTURE`, `MOUNTAIN_BORN`, `ROCKFALL`; Sled `ATTACK`, `CAPTURE`, `CHARGE`,
+  `BOLAS`; Snow Hunter `ATTACK`, `CAPTURE`, `COLD_BLOOD`; Mammoth `ATTACK`,
+  `CAPTURE`, `SWEEP`, `TRAMPLE`; Ice Witch `ATTACK`, `BLIZZARD`,
+  `COLD_SNAP`; Boulder Yeti `ATTACK`, `BOULDERS`, `MOUNTAIN_BORN`;
+  Sabretooth `ATTACK`, `PROWL`; Frost Giant `ATTACK`, `CAPTURE`, `PUSH`,
+  `COLD_AURA`, `MOUNTAIN_BORN`; boats `ATTACK`. Mountain-born, Glide, Prowl,
+  the Sweep damage, Trample, ignoring fortification, the Planted bonus, the
+  Rockfall Attack, Cold Blood, and the advance are role mechanics
+  (`mountainBorn`, `glides`, `ignoresZocStops`, `sweepDamage`,
+  `tramplesFieldDefense`, `ignoresFortification`, `plantedBonus2`,
+  `rockfallAttack2`, `coldBloodBonus2`, `advancesAfterKill`), exposed
+  through the `iceFolk` block of the public unit stats
+  ([section 21.15](#2115-commands-events-errors-and-queries)).
+
 General roster rules:
 
 - An **embarked** land unit of any faction has Move 2 on water (landing
   uses one point, [section 14](#14-naval-rules)), Defense 1, Sight 1, no
-  Attack, no retaliation, no ZOC, no Kaboom, no Charge!, and no Martian
+  Attack, no retaliation, no ZOC, no Kaboom, no Charge!, no Martian
   ability (no Beam Down, Mind Control, Tractor Beam, Psychic Command, or
-  Force Field); an embarked dinosaur keeps its slots and growth, and an
-  embarked Martian unit keeps its slots, its Cooling, and its Shield, which
-  still absorbs damage and recharges.
+  Force Field), and no Ice Folk ability (no Bolas, Cold Snap, Blizzard,
+  Cold Aura, Snow cover, or Glide); an embarked dinosaur keeps its slots and
+  growth, an embarked Martian unit keeps its slots, its Cooling, and its
+  Shield, which still absorbs damage and recharges, and an embarked unit
+  cannot be Chilled, while a Chilled unit that embarks keeps a dormant
+  entry that still counts down ([section 21.2](#212-chill)).
 - Base Sight gains +1 while standing on a Mountain with Engineering.
 - Minimum range limits only the chosen target: a Catapult, Lich, Rocket Cart,
   or Bomb Chucker cannot target an adjacent unit but may still fire at
@@ -1698,7 +1899,8 @@ General roster rules:
   Command) skips the `SUPPORT` and `SIEGE` labels
   ([section 10](#10-recovery-and-support)). The registry requires every
   faction's role to carry the Human label of the same mechanical role, so
-  the Triceratops and the Tripod are `SIEGE` and the Brain is `SUPPORT`.
+  the Triceratops, the Tripod, and the Boulder Yeti are `SIEGE`, the Brain
+  and the Ice Witch `SUPPORT`, and the Mammoth `DEFENDER`.
 
 ## 12. Movement and unit actions
 
@@ -1707,30 +1909,38 @@ General roster rules:
 - Movement is eight-way; Chebyshev distance defines adjacency, range, sight,
   and ZOC. A Move has `2 * Move` half-points; a step costs 1 when the tile
   being left is a usable Road node and 2 otherwise
-  ([section 9.2](#92-road-movement)).
+  ([section 9.2](#92-road-movement)), or, for a land-form Ice Folk unit
+  other than the Sabretooth, Snow (Glide, [section 21.5](#215-snow)).
 - A Move ends on entering an unexplored cell, a Forest (unless a Road edge or
   Fieldcraft freedom for the `RAIDER` and `MARKSMAN` roles: Raider and
   Marksman, Ghoul and Banshee, Wolf Rider and Bomb Chucker, Raptor and
-  Spitter, Saucer and Ray Gunner), a Mountain (unless a Road edge),
-  or a cell in hostile ZOC. A path that continues past such a stop is illegal.
-  A Martian walker or flyer is never stopped by terrain, and a flyer not by
-  ZOC ([section 20.6](#206-movement-stride-flying-and-crossing-water)).
+  Spitter, Saucer and Ray Gunner, Sled and Snow Hunter), a Mountain (unless
+  a Road edge or a Mountain-born unit), a Snow tile for a land-form ground
+  unit of any faction but the Ice Folk (**deep snow**, unless a Road edge or
+  the same Fieldcraft freedom; `SNOW_STOPS_MOVE`), or a cell in hostile ZOC
+  (never for a Sabretooth, which Prowls). A path that continues past such a
+  stop is illegal. A Martian walker or flyer is never stopped by terrain,
+  Snow included, and a flyer not by ZOC
+  ([section 20.6](#206-movement-stride-flying-and-crossing-water)). Snow is
+  read once per `MOVE`, from the state before the command.
 - Land units need Engineering to enter Mountain (Martian walkers and flyers
-  do not) and cannot enter water except by embarking (Martian machines also
+  and Ice Folk Mountain-born units do not) and cannot enter water except by
+  embarking (Martian machines also
   cross water inside a Move and self-launch). Every "can this unit stand on
   this tile" test (`MOVE`, `DISEMBARK`, the advance, Push and the Charge!
   push, the Tractor Beam, Beam Down, treasure-unit placement, reward
   displacement, and their public twins) goes through the one shared terrain
   rule `canEnterTerrainV7` (terrain, movement mode, afloat, Engineering,
-  Navigation, and Mountain-born, an input of the Ice Folk overlay that is
-  false for every role of the five factions), and "does entering this tile
-  end the Move" through `terrainStopsMoveV7`.
+  Navigation, and Mountain-born, true only for a land-form Yeti, Boulder
+  Yeti, or Frost Giant), and "does entering this tile end the Move" through
+  `terrainStopsMoveV7`.
 - **Rift.** `canEnterTerrainV7` admits a Rift for a land-form flyer only:
   a flyer enters, crosses, and ends a Move on it at the ordinary cost
   (never stopped, never a Road node); every other unit (foot units,
   walkers, afloat units, Eggs) neither enters nor paths through it, the
   rejection and interruption reason being the impassable-terrain reason
-  `ENGINEERING_REQUIRED`. A Rift exerts no ZOC and blocks no sight or
+  `ENGINEERING_REQUIRED`; Mountain-born does not cover a Rift, and a Rift
+  is never Snow. A Rift exerts no ZOC and blocks no sight or
   range. Push, the Charge! push, the Tractor Beam, and treasure or reward
   placement put only a flyer on it; Beam Down never targets it.
 - **Occupancy and friendly pass-through** (revision 18). A unit never ends a
@@ -1757,11 +1967,15 @@ General roster rules:
   its owner always sees, can be passed. The one exception is a Martian
   flyer, which passes over a unit of any owner and still never ends on one
   ([section 20.6](#206-movement-stride-flying-and-crossing-water)); no other
-  player's unit passes a Martian unit.
+  player's unit passes a Martian unit. An own unit standing on a Snow tile
+  where a non-Ice-Folk mover would have to stop cannot be passed either.
 - **Interrupted Moves.** A hidden occupant on the next step (`OCCUPIED`),
   impassable terrain that was unexplored before the command
-  (`ENGINEERING_REQUIRED`), or hostile ZOC first seen during the Move (`ZOC`)
-  interrupts the Move, which is still accepted. The mover stands on the last
+  (`ENGINEERING_REQUIRED`), hostile ZOC first seen during the Move (`ZOC`),
+  or, for a mover that deep snow stops, a Snow tile it could not know about
+  (the Blizzard of an Ice Witch hidden before the command: `SNOW`, reported
+  also when the step is a ZOC stop too) interrupts the Move, which is still
+  accepted. The mover stands on the last
   tile it entered; if that tile holds an own unit, it ends on the last tile
   of the entered path that holds no unit, or on its starting tile if there
   is none. `UNIT_MOVED.path` is the entered path cut to that tile (omitted
@@ -1776,12 +1990,15 @@ General roster rules:
   tile, keeps the cheapest path to each destination, and every offered `MOVE`
   is accepted. When a viewer estimates the reach of a visible unit of another
   seat, that unit passes through the visible units of its own owner only (a
-  flyer through every visible unit).
+  flyer through every visible unit). It reads Snow from the view's public
+  `snow` flags: for an Ice Folk mover hidden Snow can only make a step
+  cheaper, so every offered `MOVE` is still accepted.
 - **ZOC:** a hostile land unit projects ZOC onto adjacent land cells. A naval
   unit projects it onto adjacent water it could enter. A land unit projects
   onto adjacent water only against an afloat unit it could attack at range 1.
   Embarked units, Eggs, and Martian flyers project none, and a flyer ignores
-  hostile ZOC. Leaving ZOC is free.
+  hostile ZOC; a Sabretooth projects it but is never stopped by it, and a
+  Chilled unit projects it as usual. Leaving ZOC is free.
 
 ### 12.2 Activation
 
@@ -1789,20 +2006,27 @@ General roster rules:
 - Primary actions are Attack, Recover, Capture, and specials
   (Rally/Frenzy/WAAAGH!/War Drums/Psychic Command, Tend, Field Defense,
   Pillage, Raise Dead, Devour, Wail, Kaboom, Hatch, Beam Down, Mind Control,
-  Tractor Beam). Guard, Zombie, Orc Brute, Ankylosaurus, Shield Projector,
-  Catapult, Lich, Rocket Cart, and Battleship cannot attack after moving;
-  the Triceratops (revision 20) and the Tripod can. Every read of this role
-  flag for a unit goes through the single rule `unitMayActAfterMoveV7` (the
-  role's `mayUsePrimaryActionAfterMove`; the Ice Folk overlay's sluggish
-  Chill also clears it, which never happens without an Ice Folk seat).
+  Tractor Beam, Bolas, Cold Snap). Guard, Zombie, Orc Brute, Ankylosaurus,
+  Shield Projector, Catapult, Lich, Rocket Cart, and Battleship cannot
+  attack after moving; the Triceratops (revision 20), the Tripod, the
+  Mammoth, and the Boulder Yeti can. Every read of this role flag for a unit
+  goes through the single rule `unitMayActAfterMoveV7`: the role's
+  `mayUsePrimaryActionAfterMove`, and not sluggish.
+- **Sluggish** ([section 21.3](#213-sluggish-move-or-act-not-both)): a
+  sluggish unit of any faction that has moved this turn (an interrupted
+  Move counts) cannot use a primary action (`UNIT_ALREADY_ACTED`), Kaboom
+  and Pillage included, and a sluggish unit is never granted Escape. So on
+  its sluggish turn it either moves or acts. Landing, Promote, Disband, and
+  Wait are unaffected, and the advance, an Overrun continuation, a Push, and
+  a Charge! follow are not Moves.
 - **Eggs** have no activation of their own: an Egg carries an exhausted
   activation at all times and never needs handling. Every unit command
   naming an own Egg as `unitId` is rejected with `UNIT_IS_EGG { unitId }`
   and never offered, except `DISBAND` (Abandon Egg,
   [section 19.7](#197-egg-destruction-capture-and-abandon-egg)).
 - `WAIT` only marks the unit handled (it also declines an available Escape).
-- **Escape** (Human Raider, innate; the Ghoul, Wolf Rider, Raptor, and
-  Saucer have none):
+- **Escape** (Human Raider, innate; the Ghoul, Wolf Rider, Raptor, Saucer,
+  and Sled have none; never granted to a sluggish Raider):
   after an accepted
   Attack that the Raider survives, including after a melee kill with its
   ordinary advance, the Raider may make exactly one more ordinary `MOVE` this
@@ -1819,7 +2043,8 @@ General roster rules:
   status reads "Escape: may move again", and the public command query offers the
   escape Moves.
 - **Pillage** (Raiding): an own land-form unit other than a Juggernaut,
-  Abomination, Troll, Brontosaurus, or Colossus, or a Martian flyer (rejected
+  Abomination, Troll, Brontosaurus, Colossus, or Frost Giant, or a Martian
+  flyer (rejected
   with `PILLAGE_INVALID_TARGET` and never offered), standing on an
   improvement in hostile territory
   destroys it for +1
@@ -1831,22 +2056,27 @@ General roster rules:
 
 - `BUILD_FIELD_DEFENSE` (Fortification, 3 Coins) needs a unit whose role
   mechanics allow it (`buildsFieldDefense`: Fighter, Guard, Skeleton, Zombie,
-  or Orc Brute; never the Goblin, and no Dinosaur or Martian unit) in land
+  or Orc Brute; never the Goblin, and no Dinosaur, Martian, or Ice Folk
+  unit) in land
   form that has neither moved nor acted this turn, standing on an explored
   land tile of its owner's territory without Field Defense. It uses the
-  unit's whole turn. A Goblin, a Caveman, an Ankylosaurus, a Grunt, or a
-  Shield Projector is never offered it and is
+  unit's whole turn. A Goblin, a Caveman, an Ankylosaurus, a Grunt, a
+  Shield Projector, a Yeti, or a Mammoth is never offered it and is
   rejected like any other role that cannot build it (`INVALID_TILE` with
-  `action: "BUILD_FIELD_DEFENSE"`); the Dinosaur and Martian trees also have
-  no Field Defense unlock (their Fortification is Nesting and Force Fields).
-  Field Defense that already stands in territory a Dinosaur or Martian seat
-  captures fortifies its units as usual (never a Martian walker or flyer,
-  which is never fortified).
+  `action: "BUILD_FIELD_DEFENSE"`); the Dinosaur, Martian, and Ice Folk
+  trees also have no Field Defense unlock (their Fortification is Nesting,
+  Force Fields, and Deep Winter). Field Defense that already stands in
+  territory a Dinosaur, Martian, or Ice Folk seat captures fortifies its
+  units as usual (never a Martian walker or flyer, which is never
+  fortified; an Ice Folk unit fortified there has no Snow cover).
 - Every explosion destroys Field Defense on every tile of its blast area,
   whoever owns the tile (reason `EXPLOSION`,
-  [section 18.6](#186-blast-resolution)), and every Triceratops or Tripod
-  attack destroys it on the target tile (reason `CATAPULT`,
-  [sections 19.11](#1911-charge) and [20.5](#205-pierce-and-the-disintegrator)).
+  [section 18.6](#186-blast-resolution)), every Triceratops, Tripod, or
+  Boulder Yeti attack destroys it on the target tile (reason `CATAPULT`,
+  [sections 19.11](#1911-charge), [20.5](#205-pierce-and-the-disintegrator),
+  and [21.11](#2111-boulders-and-planted)), and every Mammoth attack
+  destroys it there too (reason `TRAMPLE`,
+  [section 21.10](#2110-sweep-and-trample)).
 - Field Defense is a tile layer, not an improvement: it coexists with Roads,
   resources, improvements, and cities, transfers with the tile, and cannot be
   stacked, pillaged, redeveloped, or removed voluntarily.
@@ -1858,19 +2088,24 @@ General roster rules:
 - The attacker needs the `ATTACK` ability (the Banshee has none). The target
   must be a visible, non-allied unit on the board within the attacker's
   minimum–maximum range. Embarked units and Eggs cannot attack. An Egg is a
-  legal target like any unit.
+  legal target like any unit. A land-form Yeti standing on a Mountain also
+  reaches distance 2 (Rockfall, [section 21.8](#218-mountain-born-and-rockfall));
+  its own retaliation range stays 1.
 - Land units may attack afloat units from shore and naval units may attack
   coastal land units.
 
 ### 13.2 Damage
 
 ```text
-attack  = base Attack (a half-power heat ray: half, rounded down)
+attack  = base Attack (a half-power heat ray: half, rounded down;
+                       a Rockfall: 1.5)
         + 1 (Charge/Pounce/Strafe) + 1 (Inspired/Frenzied/WAAAGH!/War Drums/Psychic Command)
         + Gang Up (0–2) + 1 (Alpha) + run-up (Charge!: 0–2)
+        + 1 (Planted) + 0.5 (Cold Blood)
 defense = base Defense + fortification level          (embarked or Egg: 1)
 cover   = 1.5 on Forest or Mountain for land-form ground defenders
-          (never a Martian walker or flyer), else 1
+          (never a Martian walker or flyer), or on Snow for an Ice Folk
+          defender with no fortification of its own, else 1
 
 attackForce  = attack  * attacker.hp / attacker.maxHp
 defenseForce = defense * defender.hp / defender.maxHp * cover
@@ -1881,7 +2116,13 @@ damageToAttacker = roundHalfUp(defenseForce / total * defense * 4.5)
 ```
 
 - Both results use pre-combat HP and are capped at current HP. A killed
-  defender does not retaliate. An Armoured unit (the Ankylosaurus) takes
+  defender does not retaliate. A hit from distance 2 or more on an Ice Folk
+  unit in a Blizzard of its own seat's Ice Witch is first halved, rounded up
+  ([section 21.6](#216-the-blizzard-and-cold-snap)). An Ice Folk attack from
+  distance 1 that leaves a Chilled non-`JUGGERNAUT` defender at 1 HP up to
+  its owner's Shatter threshold kills it instead (**Shatter**, no
+  retaliation, [section 21.4](#214-shatter)). An Armoured unit (the
+  Ankylosaurus) takes
   `d − 1` (minimum 1) of every hit `d` of 2 or more, before the cap
   ([section 19.9](#199-acid-and-armoured)). A Martian unit's Shield then
   absorbs the hit first, so its cap is Shield plus HP; `damageToDefender`
@@ -1918,6 +2159,15 @@ damageToAttacker = roundHalfUp(defenseForce / total * defense * 4.5)
   applies to retaliation. The combat preview and `COMBAT_RESOLVED` carry
   `gangUp` (0 for every non-Goblin, naval, or embarked attacker), and
   `attack2` includes it.
+- **Rockfall, Planted, Cold Blood** (Ice Folk,
+  [sections 21.8](#218-mountain-born-and-rockfall),
+  [21.11](#2111-boulders-and-planted), and
+  [21.9](#219-bolas-and-cold-blood)): a Yeti attacking from a Mountain at
+  distance 2 uses Attack 1.5; an unmoved Boulder Yeti has +1 Attack; a Snow
+  Hunter has +0.5 Attack against a Chilled defender, at any distance. The
+  preview carries `rockfallApplied`, `plantedApplied`, and
+  `coldBloodApplied`, and `attack2` includes them. None applies to
+  retaliation.
 - **Lifesteal** (Vampire): after the exchange, a surviving Vampire heals by
   the HP damage it dealt (as attacker or retaliating defender; never what a
   Shield absorbed), capped at its
@@ -1934,42 +2184,51 @@ fortification level = 2 (own city center with Walls) + 1 (tile has Field Defense
 
 Each level adds 1 flat Defense before cover. Naval, embarked, and foreign
 units, Eggs, and Martian walkers and flyers on the tile receive none. There
-is no other city-center defense bonus. Three Dinosaur attacks and a Martian
-heat ray fired with the Disintegrator remove levels for the whole exchange
-(the reduced Defense applies to the damage taken **and** to the
-retaliation), without destroying Walls
-([sections 19](#19-dinosaur-faction-rules) and
-[20.5](#205-pierce-and-the-disintegrator)):
+is no other city-center defense bonus. Three Dinosaur attacks, a Martian
+heat ray fired with the Disintegrator, and every Boulder Yeti attack remove
+levels for the whole exchange (the reduced Defense applies to the damage
+taken **and** to the retaliation), without destroying Walls
+([sections 19](#19-dinosaur-faction-rules),
+[20.5](#205-pierce-and-the-disintegrator), and
+[21.11](#2111-boulders-and-planted)):
 
 | Attack                                                    | Fortification applied           | Cover      | Preview fields                                   |
 | --------------------------------------------------------- | ------------------------------- | ---------- | ------------------------------------------------ |
 | Spitter (Acid)                                            | none                            | none (× 1) | `acid: true`, `fortificationIgnored: 0`          |
 | Triceratops (Charge!)                                     | none                            | kept       | `fortificationIgnored`: the levels removed (0–3) |
 | heat ray (full or half) whose owner has the Disintegrator | none                            | kept       | `fortificationIgnored`: the levels removed (0–3) |
+| Boulder Yeti (Boulders)                                   | none                            | kept       | `fortificationIgnored`: the levels removed (0–3) |
 | any other dinosaur whose owner has Wallbreaker            | Field Defense only (Walls gone) | kept       | `fortificationIgnored`: 2 on a Walled center     |
 | every other attack                                        | full                            | kept       | `acid: false`, `fortificationIgnored: 0`         |
 
 `fortificationLevel` in the combat preview is always the level actually
-applied.
+applied. An Ice Folk defender's Snow cover is read from its own
+fortification, not from what the attack ignores: on its Walled center it
+has no Snow cover even against a Boulder, a Charge!, Wallbreaker, or the
+Disintegrator ([section 21.5](#215-snow)).
 
 ### 13.4 After combat
 
 - **Advance:** a surviving adjacent land attacker (not a Catapult, Lich,
-  Rocket Cart, Zombie, Tripod, Saucer, or Mothership; the Triceratops, the
-  Ray Gunner, and the Colossus do advance; role mechanic
+  Rocket Cart, Zombie, Tripod, Saucer, Mothership, or Boulder Yeti; the
+  Triceratops, the Ray Gunner, and the Colossus do advance; role mechanic
   `advancesAfterKill`) that kills a land defender or an Egg moves into its
   cell if explored and enterable (Mountain needs Engineering unless the
-  attacker strides), then reveals sight. It does not advance when the
-  defender rises in place (an Infect or Bitten rising), and it stands on any
-  Grave the death left. Nothing advances onto a **Rift** (only a flyer
+  attacker strides or is Mountain-born), then reveals sight. It does not
+  advance when the defender rises in place (an Infect or Bitten rising, a
+  shattered Bitten unit too), a Sabretooth never advances onto a settlement
+  center its owner does not own, and the attacker stands on any Grave the
+  death left. Nothing advances onto a **Rift** (only a flyer
   stands there, and flyers never advance), so a kill there continues no
   Overrun and a Charge! does not follow a target pushed off a Rift.
-- **Push:** a Juggernaut, Abomination, Troll, Brontosaurus, or Colossus
-  pushes a surviving adjacent target one cell directly away (never at range 2) if the cell is on the
-  board, explored by the attacker, empty, not a settlement, the same
-  land/water kind as the target, enterable by the target's owner (a walker
-  or flyer needs no Engineering), and not in territory allied to the
-  target. It never pushes an Egg, and the pusher stays where it is.
+- **Push:** a Juggernaut, Abomination, Troll, Brontosaurus, Colossus, or
+  Frost Giant pushes a surviving adjacent target one cell directly away
+  (never at range 2) if the cell is on the board, explored by the attacker,
+  empty, not a settlement, the same land/water kind as the target,
+  enterable by the target's owner (a walker, flyer, or Mountain-born unit
+  needs no Engineering for a Mountain), and not in territory allied to the
+  target. It never pushes an Egg, and the pusher stays where it is. A pushed
+  unit keeps its Chill.
 - **Charge! Push and follow** (the Triceratops): a surviving target is
   pushed under the same conditions, and the Triceratops, if it survived,
   follows into the vacated tile under the advance conditions
@@ -1977,7 +2236,8 @@ applied.
 - **Escape:** a surviving Human Raider may make one more ordinary Move
   ([section 12.2](#122-activation)).
 - **Overrun** (Human Knight; **Ram** for the Goblin Scrap Buggy; **Rampage**
-  for the Dinosaur T-Rex; same rule and events): after the unit kills (an
+  for the Dinosaur T-Rex; same rule and events; the Ice Folk Sabretooth has
+  none): after the unit kills (an
   Egg counts) and advances, if a visible hostile unit is adjacent to its new
   cell it may Attack again, with no other action allowed. This repeats
   without a cap until a non-kill, death, or no target. The continuation is
@@ -1998,6 +2258,9 @@ applied.
 - **Pierce** (the Martian Tripod): its ray also hits the unit directly
   behind the target in one of the eight directions, own or not, with the
   splash rules ([section 20.5](#205-pierce-and-the-disintegrator)).
+- **Sweep** (the Ice Folk Mammoth): every hostile unit on the two flank
+  tiles of its target takes a fixed 2, under the splash rules for kills and
+  deaths but never a Shatter ([section 21.10](#2110-sweep-and-trample)).
 - **Plague** (Lich): when a Lich attacks and survives the exchange, the
   primary target and every surviving living splash target that lost HP to
   the attack become plagued (a hit a Martian Shield absorbs completely
@@ -2008,9 +2271,11 @@ applied.
   ([sections 17.6](#176-infect) and [17.7](#177-bitten)).
 - **Field Defense destruction:** after an attack against a unit on a Field
   Defense tile, it is destroyed for the first applicable reason: a unit of
-  the `CATAPULT` role (Catapult, Lich, Rocket Cart, Triceratops, or Tripod)
-  attacked
-  (reason `CATAPULT`, whether or not either unit survives); a surviving Inspired
+  the `CATAPULT` role (Catapult, Lich, Rocket Cart, Triceratops, Tripod, or
+  Boulder Yeti) attacked
+  (reason `CATAPULT`, whether or not either unit survives); a land-form
+  Mammoth attacked (reason `TRAMPLE`, whether or not either unit survives;
+  the Field Defense still counted for the exchange); a surviving Inspired
   (Frenzied, WAAAGH!) unit
   attacked at range 1; a surviving land attacker whose owner has Explosives
   attacked at range 1; or the attacker advanced into the cell. These attack reasons apply whoever owns the tile:
@@ -2021,8 +2286,9 @@ applied.
   only when the tile's territory belongs to a player hostile to the mover; a
   Martian flyer never does (it is not on the ground).
 - Kills are counted for promotion, growth, and Slayer, including retaliation
-  and hostile splash and Pierce kills, kills whose victim rises, and
-  destroyed Eggs (not friendly bomb-splash or Pierce kills, explosion kills,
+  and hostile splash, Pierce, and Sweep kills, Shatters, kills whose victim
+  rises, and destroyed Eggs (not friendly bomb-splash or Pierce kills,
+  explosion kills,
   or the removals of Mind Control and a Thrall collapse). A dinosaur that reaches
   Big or Alpha grows at once, after the exchange's damage, Lifesteal, and
   kill credit and before the advance, Push, follow, and any chain
@@ -2030,7 +2296,9 @@ applied.
 - **Deaths.** A combat death leaves a Grave, an Infect rising, or a Bitten
   rising as [section 17](#17-undead-faction-rules) describes; a destroyed Egg
   leaves none of them, and neither does a death on a **Rift** (any cause:
-  no Grave, no Infect or Bitten rising). A unit on a Rift is also immune to
+  no Grave, no Infect or Bitten rising). A shattered unit (`UNIT_DIED`
+  cause `SHATTER`) leaves no Grave and has no death blast; a shattered
+  Bitten unit still rises. A unit on a Rift is also immune to
   Mind Control. A Brain's death collapses its Thralls (`UNIT_DIED`
   cause `BRAIN_LOST`) right after the death events and before the advance,
   Push, and any chain ([section 20.9](#209-thralls)). An exploding
@@ -2044,7 +2312,8 @@ applied.
   [revision 17 §6.7](RULESET_7_REVISION_17_GOBLINS.md#67-where-chains-run-and-event-order),
   and [section 19.11](#1911-charge) here (growth, Push, and follow); a
   Martian attack then spends the Shields the exchange absorbed and records
-  the Cooling of a full-power ray.
+  the Cooling of a full-power ray; the Ice Folk steps are in
+  [section 21.13](#2113-attack-resolution-order).
 
 ## 14. Naval rules
 
@@ -2067,10 +2336,11 @@ applied.
   turn.
 - **Disembarking:** on a later turn an embarked unit may move through water,
   then `DISEMBARK` onto an adjacent (Chebyshev 1) empty land cell it can enter
-  (Mountain needs Engineering unless the unit strides or flies; no allied
-  territory; a Martian flyer never lands on a neutral village center or a
-  center it does not own: `MOVEMENT_ILLEGAL` with reason
-  `SETTLEMENT_FORBIDDEN`, never offered). Landing costs one of the
+  (Mountain needs Engineering unless the unit strides, flies, or is
+  Mountain-born; no allied territory; a Martian flyer or an Ice Folk
+  Sabretooth never lands on a neutral village center or a center it does
+  not own: `MOVEMENT_ILLEGAL` with reason `SETTLEMENT_FORBIDDEN`, never
+  offered). Landing costs one of the
   unit's two movement points: `DISEMBARK` is legal only while
   `spent = moved ? movedPathLength : 0` is at most 1, and is otherwise rejected
   atomically with `MOVEMENT_ILLEGAL` and not offered. So from its start-of-turn
@@ -2123,6 +2393,17 @@ applied.
   Defense 1, Sight 1, no Attack, retaliation, ZOC, or ability) that keeps its
   Shield and Cooling; a walker afloat may enter Deep Water with Navigation.
   An embarked Martian unit on a hostile dock blockades it, a Thrall too.
+- **Ice Folk boats** are the Human Patrol Boat and Battleship too: no Snow
+  cover, Glide, Blizzard protection, or Shatter, one slot, ordinary
+  Promotion. Ice Folk land units embark at an own active, empty Port or
+  Shipyard with Shorecraft like Human units; afloat they have no Ice Folk
+  rule (an embarked Ice Witch has no Blizzard or Cold Snap, an embarked
+  Frost Giant no Cold Aura). No embarked or naval unit of any faction can be
+  Chilled or shattered; a Chilled unit that embarks keeps a dormant entry
+  that still counts down. Nothing freezes water: the overlay's floe is
+  deferred ([Ice Folk overlay section 17.3](RULESET_7_ICE_FOLK.md#173-deferred-the-floe)).
+  `THROW_BOLAS` and `COLD_SNAP` move no unit, so they are not on the
+  blockade-event list below.
 - **Blockade events.** `PORT_BLOCKADE_CHANGED` and `SEA_NETWORK_CHANGED` are
   recomputed after `ATTACK`, `BUILD_PORT`, `BUILD_ROAD`, `CAPTURE`,
   `DISEMBARK`, `MOVE`, `REDEVELOP`, `WAIL`, `KABOOM`, `MIND_CONTROL`,
@@ -2185,6 +2466,27 @@ applied.
   rule (hidden units are hit, previews list visible ones). A Martian flyer
   meets a hidden unit only on the last tile of its Move, which is then
   interrupted like any Move.
+- **Ice Folk statuses and Snow.** A visible unit's Chill entry
+  (`PlayerViewV7.chilled`, both fields) is public, like Plague and Bitten,
+  and so is a visible Ice Folk unit's Shatter threshold (3 or 4, in its
+  unit stats, which tells an opponent whether the seat has Brittle).
+  Territory and Deep Winter Snow are public on every explored tile (Deep
+  Winter Snow tells that the seat has researched it); a Blizzard is known
+  exactly when the viewer can see its Ice Witch (her tile is explored, or
+  she is the viewer's own). Each explored tile of the view carries `snow`
+  (territory or Deep Winter Snow, or the Snow of a Blizzard the viewer
+  knows of) and `blizzard` (within 1 of such a Witch, water tiles included,
+  for drawing); unexplored tiles carry neither. `UNITS_CHILLED` is projected
+  with the results of units the viewer owns or can see before or after the
+  command, and with `sourceUnitId` null when the viewer cannot see the
+  source and is not its owner; with no result left it is dropped. A
+  shattered unit's death is projected like any `UNIT_DIED`. Bolas, Cold
+  Snap, and Sweep previews are exact; a combat preview whose defender is a
+  land-form Ice Folk unit with an unexplored tile within 1 sets
+  `hiddenBlizzardPossible`, because a hidden Witch could change its cover
+  and halve a ranged hit. No event reveals a hidden Witch; a Move that
+  meets her Blizzard is interrupted (`SNOW`) and reveals her only through
+  the mover's own sight.
 - Exact projection rules are in
   [baseline §9](RULESET_7.md#9-observation-safe-views-events-queries-and-artifacts)
   and the relevant overlay sections.
@@ -2344,6 +2646,37 @@ applied.
   Mothership's reach, and (Goblin seats) values the Shield a Kaboom strips.
   Details and measurements:
   [Normal AI Martian play](../architecture/NORMAL_AI.md#martian-play-pulp_wars-t6s3).
+- **Ice Folk play** (`pulp_wars-7g3.4`). Every Ice Folk heuristic is gated
+  on a match with an Ice Folk seat or on a fact only such a match has (a
+  Chill entry, a Snow or Blizzard tile flag, an Ice Folk ability;
+  `src/ai/v7-ice-folk.ts`), so matches without one are byte-identical.
+  Shared estimates give a visible Ice Folk unit Glide on known Snow (never
+  the Sabretooth), Mountain paths, and Prowl, stop another faction's ground
+  unit on known Snow, give a Yeti on a Mountain its published range 2, read
+  Snow cover and the Blizzard's halving from the public flags, count Shatter
+  in every lethal-reach estimate (a unit left at a visible Ice Folk melee
+  unit's public threshold is in lethal reach when it is, or can be,
+  Chilled by then), and judge the Mammoth and the Boulder Yeti as line units
+  and the Witch as no healer. As the Ice Folk, Normal trains a first unit of
+  each role and bodies first in a threatened city, researches Drill and
+  Scouting, then (with two cities) Administration and Marksmanship, Deep
+  Winter and Brittle, then Sawmilling and Chivalry (the free opener keeps
+  the ordinary scorer); moves the Ice Witch first to the densest own group
+  out of melee and casts Cold Snap whenever it is offered; throws the Bolas
+  at the unit an offered attack would then shatter (else at the most
+  dangerous unchilled unit, never at one already Chilled or under a Cold
+  Snap); orders its attacks so that a hit that leaves a Chilled unit in the
+  Shatter window comes before the finishing blow; values Sweep flanks and
+  Trample, the planted throw, and the Sabretooth's backline kills; and
+  prefers to end Moves next to its Witch, then on Snow. Against the Ice
+  Folk, Normal kills a Witch first (combining hits that reach her HP), holds
+  a sluggish unit that has a target and keeps it out of Ice Folk melee
+  reach otherwise, steps a unit out of a Shatter-only lethal reach, avoids
+  attacks whose retaliation leaves the attacker in the window, keeps
+  fragile units off hostile Snow, and stays out of four tiles of a visible
+  Witch without route progress. The overlay's Goblin Kaboom rule is not
+  implemented. Details and measurements:
+  [Normal AI Ice Folk play](../architecture/NORMAL_AI.md#ice-folk-play-pulp_wars-7g34).
 - **Promotion** (revision 20, every faction and match): a wounded unit that
   can be promoted is promoted before any attack, capture, or End Turn, so the
   full heal is not wasted; the policy never holds a Promotion back. This is
@@ -2407,7 +2740,12 @@ the Shield absorbing every hit except Plague damage: a Zombie bites and a
 Lich plagues only a unit that lost HP, a Vampire heals only by HP damage,
 Martians have no cure for Plague or Bitten, and a mind-controlled Lich has
 left the board, so its Plagues are cleared
-([section 20.11](#2011-interactions-with-other-rules)).
+([section 20.11](#2011-interactions-with-other-rules)). Ice Folk units keep
+every Ice Folk rule against Undead opponents and are living: they leave
+Graves, are plagued, bitten, infected, and wailed, and have no cure; Undead
+units are Chilled and shattered like any unit, and a shattered unit leaves
+no Grave (a shattered Bitten unit still rises)
+([section 21.14](#2114-interactions-with-other-rules)).
 Specifications and exact event shapes:
 [revision 13](RULESET_7_REVISION_13_UNDEAD.md),
 [revision 14](RULESET_7_REVISION_14_BALANCE.md), and
@@ -2428,7 +2766,7 @@ one `UNDEAD` seat) and stays enabled after the Undead seats are eliminated.
 - **No Grave** comes from a water, embarked, or naval death, an Egg's death
   (form `EGG`), Disband, reward displacement removal, elimination removal,
   the destruction of Eggs with a captured city, a Mind Control, a Thrall
-  collapse (`BRAIN_LOST`), or a death that rises. A
+  collapse (`BRAIN_LOST`), a Shatter (`SHATTER`), or a death that rises. A
   chest
   is consumed by the unit that enters its tile, so no Grave shares a tile
   with a chest.
@@ -2516,7 +2854,8 @@ infect. Event
   Embarked and naval units are never bitten; splash, Wail, and explosions are
   not Zombie damage.
 - **Rising.** When a Bitten unit dies in land form from `ATTACK`,
-  `RETALIATION`, `SPLASH`, `WAIL`, `PLAGUE`, `KABOOM`, or `EXPLOSION`,
+  `RETALIATION`, `SPLASH`, `WAIL`, `PLAGUE`, `KABOOM`, `EXPLOSION`, or
+  `SHATTER`,
   whoever killed it, it rises
   on its tile as a Zombie owned by the biter player at 10 of 18 HP
   ([section 17.3](#173-risings)), with no Grave; the killer keeps the kill.
@@ -2604,7 +2943,10 @@ infect. Event
   kills takes its Thralls with it; the Banshee
   is handled. Event `WAIL_RESOLVED` (then
   `UNIT_DIED` with cause `WAIL` per death); the preview `previewWailV7`
-  equals the result because only visible units are targets.
+  equals the result because only visible units are targets, except that it
+  reads an Ice Folk target's Snow cover from the viewer's `snow` flags, so a
+  hidden Ice Witch's Blizzard can make it inexact, with no flag
+  ([section 23](#23-known-discrepancies)).
 
 ### 17.10 Commands, events, and queries
 
@@ -2634,11 +2976,13 @@ without one no Kaboom is offered, no explosion occurs, no Plunder is
 awarded, no Troll exists, Warrens never apply, and every combat preview's
 `gangUp` is 0. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, `GOBLIN_ROLE_RULES_V7`, `GOBLIN_ROLE_MECHANICS_V7`).
-Human, Undead, Dinosaur, and Martian units keep every ability against
-Goblins, and blasts hit them like any unit (Eggs included; an Ankylosaurus
-takes 1 less, [section 19.12](#1912-interactions-with-other-rules); a
-Martian Shield absorbs first,
-[section 20.11](#2011-interactions-with-other-rules)). Specification,
+Human, Undead, Dinosaur, Martian, and Ice Folk units keep every ability
+against Goblins, and blasts hit them like any unit (Eggs included; an
+Ankylosaurus takes 1 less, [section 19.12](#1912-interactions-with-other-rules);
+a Martian Shield absorbs first,
+[section 20.11](#2011-interactions-with-other-rules); a blast ignores Snow
+cover and the Blizzard,
+[section 21.14](#2114-interactions-with-other-rules)). Specification,
 decisions, and the tuning record:
 [revision 17](RULESET_7_REVISION_17_GOBLINS.md) and the
 [Goblin balance report](../validation/RULESET_7_GOBLIN_BALANCE.md).
@@ -2718,7 +3062,9 @@ embarked on water), with its death-blast damage (Bomb Chucker 2, Rocket Cart
 at its owner's Start Turn), or by another blast (`EXPLOSION`). A unit
 explodes at most once: a Kaboom is that unit's explosion. Disband, reward
 displacement removal, and elimination removal are removals, not deaths, and
-never explode. Goblins and Wolf Riders never explode on death.
+never explode. Goblins and Wolf Riders never explode on death, and neither
+does a shattered exploding unit (`SHATTER`,
+[section 21.4](#214-shatter)).
 
 ### 18.6 Blast resolution
 
@@ -2811,6 +3157,7 @@ Every death is credited to at most one player:
 | Death cause                    | Credited player                  | Unit kill credit (promotion)       |
 | ------------------------------ | -------------------------------- | ---------------------------------- |
 | `ATTACK`                       | the attacker's owner             | the attacker                       |
+| `SHATTER`                      | the attacker's owner             | the attacker                       |
 | `RETALIATION`                  | the retaliating defender's owner | the defender                       |
 | `SPLASH`                       | the attacker's owner             | the attacker, hostile victims only |
 | `WAIL`                         | the Banshee's owner              | the Banshee                        |
@@ -2862,18 +3209,19 @@ Every death is credited to at most one player:
 
 ### 18.11 Interactions with other rules
 
-| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Graves                  | `KABOOM` and `EXPLOSION` deaths are qualifying combat deaths (land form, land tile, not a settlement site, no rising, no Grave yet); Graves exist only in matches with an Undead seat.                                                                                                                                                                                                                                           |
-| Infect, Bitten          | Explosions are not Zombie damage: they never infect or bite. A Bitten land-form unit that dies from `KABOOM` or `EXPLOSION` rises as its biter's Zombie. A Zombie that kills a Bomb Chucker infects it, and the Chucker's death blast then hits the Zombie and the rising.                                                                                                                                                       |
-| Plague, Wail            | Plague and Wail kills of exploding units set off death blasts. A blast that kills a Lich ends every Plague it caused (`PLAGUE_CLEARED`). Goblin units are living: Wail, Plague, and bites affect them.                                                                                                                                                                                                                           |
-| Lifesteal, Unanswered   | Blasts are not combat exchanges: no Lifesteal heal. A Vampire's attack draws no retaliation, but a Bomb Chucker it kills still explodes and hits it.                                                                                                                                                                                                                                                                             |
-| Push, Charge, Escape    | Push resolves before the chain. A Raider that survives the attack and the chain keeps its Escape Move.                                                                                                                                                                                                                                                                                                                           |
-| Cities, villages        | Blasts hit units on centers (Walls and fortification give no protection), never capture, move, or advance a unit, and never change a city, territory, level, Walls, improvement, Road, resource, or Monument. Surviving victims keep their capture eligibility.                                                                                                                                                                  |
-| Capacity                | A Kaboom or blast death frees its home city's slot at once; the city trains again only with its city action still available.                                                                                                                                                                                                                                                                                                     |
-| Achievements, Promotion | Explosions credit no unit kill ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)), so they never advance Promotion, growth, or Slayer; Plunder counts them.                                                                                                                                                                                                                                                            |
-| Dinosaurs               | Blasts hit Dinosaur units and Eggs with fixed damage (an Ankylosaurus takes 1 less; an Egg killed by a blast dies with cause `EXPLOSION`); a destroyed Egg is a credited hostile kill for Plunder. Eggs never help Gang Up. No Dinosaur attack has Gang Up.                                                                                                                                                                      |
-| Martians                | A Martian Shield absorbs blast and bomb-splash damage first (a Kaboom of 5 costs a Grunt 3 HP and a Grunt in a Force Field or a Mothership 1; a death blast of 2 costs a unit with a full Shield nothing). A Brain killed by a blast takes its Thralls with it, which earns no Plunder. A mind-controlled Bomb Chucker, Rocket Cart, or Scrap Buggy is removed, not killed, and does not explode. No Martian attack has Gang Up. |
+| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Graves                  | `KABOOM` and `EXPLOSION` deaths are qualifying combat deaths (land form, land tile, not a settlement site, no rising, no Grave yet); Graves exist only in matches with an Undead seat.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Infect, Bitten          | Explosions are not Zombie damage: they never infect or bite. A Bitten land-form unit that dies from `KABOOM` or `EXPLOSION` rises as its biter's Zombie. A Zombie that kills a Bomb Chucker infects it, and the Chucker's death blast then hits the Zombie and the rising.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Plague, Wail            | Plague and Wail kills of exploding units set off death blasts. A blast that kills a Lich ends every Plague it caused (`PLAGUE_CLEARED`). Goblin units are living: Wail, Plague, and bites affect them.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Lifesteal, Unanswered   | Blasts are not combat exchanges: no Lifesteal heal. A Vampire's attack draws no retaliation, but a Bomb Chucker it kills still explodes and hits it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Push, Charge, Escape    | Push resolves before the chain. A Raider that survives the attack and the chain keeps its Escape Move.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Cities, villages        | Blasts hit units on centers (Walls and fortification give no protection), never capture, move, or advance a unit, and never change a city, territory, level, Walls, improvement, Road, resource, or Monument. Surviving victims keep their capture eligibility.                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Capacity                | A Kaboom or blast death frees its home city's slot at once; the city trains again only with its city action still available.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Achievements, Promotion | Explosions credit no unit kill ([section 18.9](#189-kill-credit-plunder-and-friendly-fire)), so they never advance Promotion, growth, or Slayer; Plunder counts them.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Dinosaurs               | Blasts hit Dinosaur units and Eggs with fixed damage (an Ankylosaurus takes 1 less; an Egg killed by a blast dies with cause `EXPLOSION`); a destroyed Egg is a credited hostile kill for Plunder. Eggs never help Gang Up. No Dinosaur attack has Gang Up.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Martians                | A Martian Shield absorbs blast and bomb-splash damage first (a Kaboom of 5 costs a Grunt 3 HP and a Grunt in a Force Field or a Mothership 1; a death blast of 2 costs a unit with a full Shield nothing). A Brain killed by a blast takes its Thralls with it, which earns no Plunder. A mind-controlled Bomb Chucker, Rocket Cart, or Scrap Buggy is removed, not killed, and does not explode. No Martian attack has Gang Up.                                                                                                                                                                                                                                                                                               |
+| Ice Folk                | Blasts and bomb splash ignore Snow cover and the Blizzard (fixed damage); a Bomb Chucker or Rocket Cart shot from distance 2 on an Ice Folk unit in its own Witch's Blizzard is halved, and the bomb splash derives from the halved hit. A shattered exploding unit does not explode (one Yeti hit shatters a Chilled full-HP Bomb Chucker or Rocket Cart); killed any other way it explodes as usual. A sluggish goblin-crewed unit that moved cannot Kaboom. Wolf Riders and Scrap Buggies end a Move on entering Snow (Fieldcraft waives it for the Wolf Rider and the Bomb Chucker). A Troll is Chilled but never shattered. Plunder counts Ice Folk kills; a Shatter is an Ice Folk kill. No Ice Folk attack has Gang Up. |
 
 ### 18.12 Commands, events, errors, and queries
 
@@ -2949,8 +3297,9 @@ role, no Nesting slot or Wallbreaker applies, and every combat preview has
 `runUp: 0`, `fortificationIgnored: 0`, `acid: false`, and both Armoured
 flags false. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, `DINOSAUR_ROLE_RULES_V7`, `DINOSAUR_ROLE_MECHANICS_V7`).
-Human, Undead, Goblin, and Martian units keep every ability against
-Dinosaurs, and Eggs are targets like any unit. Specification, decisions, and tuning
+Human, Undead, Goblin, Martian, and Ice Folk units keep every ability
+against Dinosaurs, and Eggs are targets like any unit (never Chilled or
+shattered). Specification, decisions, and tuning
 records: [revision 19](RULESET_7_REVISION_19_DINOSAURS.md),
 [revision 20](RULESET_7_REVISION_20.md), the
 [Dinosaur balance report](../validation/RULESET_7_DINOSAUR_BALANCE.md) (the
@@ -2960,16 +3309,16 @@ records: [revision 19](RULESET_7_REVISION_19_DINOSAURS.md),
 
 ### 19.1 Roles, Wild, and labels
 
-| Mechanical role | Human      | Undead      | Goblin       | Dinosaur     | Martian            |
-| --------------- | ---------- | ----------- | ------------ | ------------ | ------------------ |
-| `FIGHTER`       | Fighter    | Skeleton    | Goblin       | Caveman      | Grunt (and Thrall) |
-| `RAIDER`        | Raider     | Ghoul       | Wolf Rider   | Raptor       | Saucer             |
-| `MARKSMAN`      | Marksman   | Banshee     | Bomb Chucker | Spitter      | Ray Gunner         |
-| `GUARD`         | Guard      | Zombie      | Orc Brute    | Ankylosaurus | Shield Projector   |
-| `CAPTAIN`       | Captain    | Necromancer | Orc Warboss  | Shaman       | Brain              |
-| `CATAPULT`      | Catapult   | Lich        | Rocket Cart  | Triceratops  | Tripod             |
-| `KNIGHT`        | Knight     | Vampire     | Scrap Buggy  | T-Rex        | Mothership         |
-| `JUGGERNAUT`    | Juggernaut | Abomination | Troll        | Brontosaurus | Colossus           |
+| Mechanical role | Human      | Undead      | Goblin       | Dinosaur     | Martian            | Ice Folk     |
+| --------------- | ---------- | ----------- | ------------ | ------------ | ------------------ | ------------ |
+| `FIGHTER`       | Fighter    | Skeleton    | Goblin       | Caveman      | Grunt (and Thrall) | Yeti         |
+| `RAIDER`        | Raider     | Ghoul       | Wolf Rider   | Raptor       | Saucer             | Sled         |
+| `MARKSMAN`      | Marksman   | Banshee     | Bomb Chucker | Spitter      | Ray Gunner         | Snow Hunter  |
+| `GUARD`         | Guard      | Zombie      | Orc Brute    | Ankylosaurus | Shield Projector   | Mammoth      |
+| `CAPTAIN`       | Captain    | Necromancer | Orc Warboss  | Shaman       | Brain              | Ice Witch    |
+| `CATAPULT`      | Catapult   | Lich        | Rocket Cart  | Triceratops  | Tripod             | Boulder Yeti |
+| `KNIGHT`        | Knight     | Vampire     | Scrap Buggy  | T-Rex        | Mothership         | Sabretooth   |
+| `JUGGERNAUT`    | Juggernaut | Abomination | Troll        | Brontosaurus | Colossus           | Frost Giant  |
 
 - **Cavemen** (Caveman and Shaman) are trained on the city center with
   `TRAIN` and keep the ordinary Promotion. **Dinosaurs** (the six growing
@@ -3311,7 +3660,8 @@ activation.
   the target as resolution does, so `WILL_PUSH` and `BLOCKED` are exact;
   only a Mountain or Deep Water behind another player's unit stays
   `UNKNOWN_BEHIND_FOG`, because that owner's Engineering or Navigation is
-  private, and the attack may then push and follow. An unexplored tile
+  private (a Mountain behind a walker, flyer, or Mountain-born unit is
+  exact: it needs no Engineering), and the attack may then push and follow. An unexplored tile
   behind never pushes.
 
 Worked examples (engine formula, full HP, Grass, stage-0 Triceratops: 20 HP,
@@ -3330,20 +3680,21 @@ Attack 3, Defense 2):
 
 ### 19.12 Interactions with other rules
 
-| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Graves, Raise Dead      | Dinosaur-faction land units leave Graves like any unit (in matches with an Undead seat); Eggs never do. A Grave may lie under an Egg, but Raise Dead needs a Grave with no unit on it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Infect, Bitten          | A Dinosaur-faction land unit killed by a Zombie rises as an ordinary Zombie (10 of 18 HP, 1 slot, no growth, may exceed capacity); dinosaurs are bitten and rise like Human units, and the Shaman cures them. An Egg is never bitten and, killed by a Zombie, is destroyed without rising.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Plague                  | Dinosaur-faction units are plagued, take 2 per Start Turn (an Ankylosaurus 1), spread it, and are cured by Tend Wounded. Eggs are never plagued, never receive or pass a spread, and a hatched unit starts unplagued. A Lich attack on an Egg damages it and plagues nothing there.                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Wail, Lich splash       | Wail hits dinosaurs and Eggs (a living faction) within its radius; an Egg defends with 1. Lich and Battleship splash hit hostile Eggs like any hostile unit, and the kills count.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Lifesteal, Unanswered   | A Vampire heals by the damage it deals to a dinosaur or an Egg (after Armoured). A Vampire's attack draws no retaliation from a dinosaur. A Vampire attacked by a Triceratops retaliates, heals, and is then pushed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| Goblin rules            | Gang Up counts the Goblin attacker's own helpers around a dinosaur or an Egg as usual; no Dinosaur attack has Gang Up. Blasts and bomb splash hit dinosaurs and Eggs with their fixed or splash damage (an Ankylosaurus takes 1 less). A Triceratops that kills an exploding unit advances and is then hit by its blast; a pushed survivor is pushed before the chain. An Egg destroyed by a Goblin attack, splash, or blast earns Plunder; Eggs lost with a city do not.                                                                                                                                                                                                                                                         |
-| Push, Overrun, Charge   | No Push (Juggernaut role or Charge!) ever moves an Egg or ends on an Egg's tile. A Knight, Scrap Buggy, or T-Rex that destroys an Egg advances and may attack again. Only Charge! follows a pushed target.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Field Defense, Walls    | They give Human, Undead, and Goblin defenders their ordinary bonus against every Dinosaur attack except the Spitter's (none), the Triceratops's (none), and, with Wallbreaker, the Walls levels against any dinosaur. A Catapult may target an Egg at range 2–3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| Cities, siege           | A besieged Dinosaur city cannot lay or train; its Eggs stay, count down, and hatch. An enemy that wants the city may ignore its Eggs: capture destroys them all. A Triceratops on a hostile center besieges it and never captures.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| Boats, water            | Eggs never embark or stand on water or a dock; a two-slot unit embarks like any other. Dinosaur boats are the Human boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Achievements, Promotion | Muster counts hatched Dinosaur roles, never an Egg; Slayer counts a dinosaur's kills (growth does not reset them); a destroyed Egg is a kill for its killer. Promotion stays for the Caveman, the Shaman, and the boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| Martians                | Martian attacks, rays, and Pierce hit an Egg like any unit (Defense 1, no retaliation); an Egg is never a Mind Control or Tractor Beam target, and its tile never a Beam Down or pull destination. A Charge! on a Martian unit is absorbed by the Shield first and pushes and follows whatever it absorbed; Acid and Wallbreaker reach only a Martian foot unit's cover and Walls (machines have neither). An Ankylosaurus takes 1 less from every Martian hit. The two-slot Triceratops, T-Rex, and Brontosaurus are immune to Mind Control and the Tractor Beam; a Raptor, Spitter, or Ankylosaurus at 6 HP or less is not, and its Thrall has no growth. A collapsed Thrall and a mind-controlled unit are no kill for growth. |
+| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Graves, Raise Dead      | Dinosaur-faction land units leave Graves like any unit (in matches with an Undead seat); Eggs never do. A Grave may lie under an Egg, but Raise Dead needs a Grave with no unit on it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Infect, Bitten          | A Dinosaur-faction land unit killed by a Zombie rises as an ordinary Zombie (10 of 18 HP, 1 slot, no growth, may exceed capacity); dinosaurs are bitten and rise like Human units, and the Shaman cures them. An Egg is never bitten and, killed by a Zombie, is destroyed without rising.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Plague                  | Dinosaur-faction units are plagued, take 2 per Start Turn (an Ankylosaurus 1), spread it, and are cured by Tend Wounded. Eggs are never plagued, never receive or pass a spread, and a hatched unit starts unplagued. A Lich attack on an Egg damages it and plagues nothing there.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Wail, Lich splash       | Wail hits dinosaurs and Eggs (a living faction) within its radius; an Egg defends with 1. Lich and Battleship splash hit hostile Eggs like any hostile unit, and the kills count.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Lifesteal, Unanswered   | A Vampire heals by the damage it deals to a dinosaur or an Egg (after Armoured). A Vampire's attack draws no retaliation from a dinosaur. A Vampire attacked by a Triceratops retaliates, heals, and is then pushed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Goblin rules            | Gang Up counts the Goblin attacker's own helpers around a dinosaur or an Egg as usual; no Dinosaur attack has Gang Up. Blasts and bomb splash hit dinosaurs and Eggs with their fixed or splash damage (an Ankylosaurus takes 1 less). A Triceratops that kills an exploding unit advances and is then hit by its blast; a pushed survivor is pushed before the chain. An Egg destroyed by a Goblin attack, splash, or blast earns Plunder; Eggs lost with a city do not.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Push, Overrun, Charge   | No Push (Juggernaut role or Charge!) ever moves an Egg or ends on an Egg's tile. A Knight, Scrap Buggy, or T-Rex that destroys an Egg advances and may attack again. Only Charge! follows a pushed target.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Field Defense, Walls    | They give Human, Undead, and Goblin defenders their ordinary bonus against every Dinosaur attack except the Spitter's (none), the Triceratops's (none), and, with Wallbreaker, the Walls levels against any dinosaur. A Catapult may target an Egg at range 2–3.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Cities, siege           | A besieged Dinosaur city cannot lay or train; its Eggs stay, count down, and hatch. An enemy that wants the city may ignore its Eggs: capture destroys them all. A Triceratops on a hostile center besieges it and never captures.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Boats, water            | Eggs never embark or stand on water or a dock; a two-slot unit embarks like any other. Dinosaur boats are the Human boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Achievements, Promotion | Muster counts hatched Dinosaur roles, never an Egg; Slayer counts a dinosaur's kills (growth does not reset them); a destroyed Egg is a kill for its killer. Promotion stays for the Caveman, the Shaman, and the boats.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Martians                | Martian attacks, rays, and Pierce hit an Egg like any unit (Defense 1, no retaliation); an Egg is never a Mind Control or Tractor Beam target, and its tile never a Beam Down or pull destination. A Charge! on a Martian unit is absorbed by the Shield first and pushes and follows whatever it absorbed; Acid and Wallbreaker reach only a Martian foot unit's cover and Walls (machines have neither). An Ankylosaurus takes 1 less from every Martian hit. The two-slot Triceratops, T-Rex, and Brontosaurus are immune to Mind Control and the Tractor Beam; a Raptor, Spitter, or Ankylosaurus at 6 HP or less is not, and its Thrall has no growth. A collapsed Thrall and a mind-controlled unit are no kill for growth.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Ice Folk                | An Egg cannot be Chilled (a Bolas on it is `TARGET_IMMUNE`; Cold Snap and the Cold Aura skip it) and is never shattered; it is an ordinary target of Ice Folk attacks (Defense 1, no retaliation), and a Sweep flank hit deals it 2. Dinosaurs are Chilled and shattered like any unit, the two-slot ones included (a Chilled T-Rex only by the hit that leaves it at 1 to 3 of its HP); a Brontosaurus (`JUGGERNAUT`) never. Growth from killing Ice Folk units is ordinary; its full heal takes a unit out of the Shatter window but removes no Chill. A Triceratops's Move ends on its first Snow tile, so its run-up inside Snow is at most the tiles up to that one; its Charge! ignores an Ice Folk defender's fortification, not its Snow cover, and a pushed unit keeps its Chill (a Mountain-born one may be pushed onto a Mountain). A Raptor's Pounce needs its first tile off Snow (Fieldcraft waives deep snow); a sluggish Raptor cannot Pounce, and a sluggish T-Rex that attacks without moving still Rampages. Acid ignores Snow cover; a Spitter's shot from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved. An Ankylosaurus takes 1 from a Sweep flank hit, Armoured applying before the Shatter test. Wallbreaker removes Walls levels, and the Ice Folk defender on that center still has no Snow cover. The Shaman's Tend Wounded cures Chill; War Drums and Hatch are primary actions a sluggish Shaman that moved cannot use. |
 
 ### 19.13 Commands, events, errors, and queries
 
@@ -3428,9 +3779,11 @@ accepted, every role has movement mode `GROUND`, and every combat preview
 has `rayPower: "NONE"`, `coolingApplied: false`, and both Shield damages 0.
 Each rule resolves through the owner's registration (`FACTION_RULES_V7`,
 `MARTIAN_ROLE_RULES_V7`, `MARTIAN_ROLE_MECHANICS_V7`) and the helpers of
-`src/engine/v7/martian.ts`. Human, Undead, Goblin, and Dinosaur units keep
-every ability against Martians, with the Shield rules of
-[section 20.2](#202-shields) applied to the damage they deal.
+`src/engine/v7/martian.ts`. Human, Undead, Goblin, Dinosaur, and Ice Folk
+units keep every ability against Martians, with the Shield rules of
+[section 20.2](#202-shields) applied to the damage they deal (Chill is not
+damage and ignores Shields,
+[section 21.14](#2114-interactions-with-other-rules)).
 Specification, per-unit battle analysis, decisions, and the tuning record:
 the [Martian overlay](RULESET_7_MARTIANS.md) and the
 [Martian balance report](../validation/RULESET_7_MARTIAN_BALANCE.md) (the
@@ -3519,7 +3872,9 @@ the [Martian overlay](RULESET_7_MARTIANS.md) and the
   Kill credit, growth, Plunder, Graves, and death blasts follow deaths as
   usual.
 - **Not damage, so never absorbed:** Push, the Charge! push and follow, the
-  Tractor Beam, Mind Control, Field Defense destruction, and removals.
+  Tractor Beam, Mind Control, Chill (a Bolas, a Cold Snap, or a Cold Aura),
+  Field Defense destruction, and removals. A Shield absorbs a Sweep flank
+  hit like any damage, and Shatter reads the HP left after the Shield.
   Recovery, Windmill healing, Tend Wounded, Troll regeneration, Promotion,
   and growth change HP only.
 
@@ -3886,10 +4241,11 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
   same land or water kind as the target's tile, enterable by the target, not
   in territory allied to the target) and holds no treasure chest. For an own
   target, Mountain and Deep Water entry use the actor's Engineering and
-  Navigation (a walker or flyer needs no Engineering); for another player's
-  unit, whose technologies the actor cannot see, the rule reads the board:
-  it is pulled onto a Mountain only if it strides, flies, or stands on a
-  Mountain, and onto Deep Water only if it stands on Deep Water.
+  Navigation (a walker, flyer, or Mountain-born unit needs no Engineering);
+  for another player's unit, whose technologies the actor cannot see, the
+  rule reads the board: it is pulled onto a Mountain only if it strides,
+  flies, is Mountain-born, or stands on a Mountain, and onto Deep Water only
+  if it stands on Deep Water.
 - **Result.** The target stands on the destination and keeps its HP,
   Shield, statuses, and activation (an own unit that has not acted may still
   act, and an own ray unit that has not moved still fires at full power);
@@ -3916,26 +4272,27 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
 
 ### 20.11 Interactions with other rules
 
-| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                         |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Graves, Raise Dead      | Martian land-form units, flyers and Thralls included, leave Graves like any unit (in matches with an Undead seat). A mind-controlled victim and a collapsed Thrall leave none; neither does an embarked machine.                                                                                                                                                                    |
-| Infect, Bitten          | A Martian unit killed by a Zombie rises as an ordinary Zombie (10 of 18 HP, no Shield, one slot); a Brain that rises has left the board, so its Thralls collapse. A Zombie bites a Martian unit only when its hit cost HP. A collapsed Bitten Thrall does not rise. No Martian unit cures a bite.                                                                                   |
-| Plague                  | A Lich plagues only the targets that lost HP; Plague damage bypasses the Shield and spread ignores Shields. A mind-controlled Lich has left the board: its Plagues are cleared. No Martian unit cures Plague.                                                                                                                                                                       |
-| Wail, Lifesteal         | Wail hits Martian units with the ordinary formula, the Shield absorbing first. A Vampire heals by the HP damage it dealt, not what a Shield absorbed; a Martian unit never retaliates against it. A Zombie, Ghoul, or Skeleton that becomes a Thrall loses every Undead ability.                                                                                                    |
-| Goblin rules            | Gang Up counts the Goblin attacker's helpers around a Martian target; no Martian attack has Gang Up. Blasts and bomb splash are absorbed by the Shield first. A mind-controlled exploding unit is removed and does not explode; a pulled one keeps everything. Plunder counts Martian kills, never a collapse or a Mind Control.                                                    |
-| Dinosaur rules          | Martian attacks, rays, and Pierce hit Eggs; Eggs are never Mind Control or Tractor Beam targets. A Charge! is absorbed by the Shield first and pushes and follows whatever it absorbed. Acid and Wallbreaker matter only for a Martian foot unit. An Ankylosaurus takes 1 less from every Martian hit. The two-slot dinosaurs are immune to Mind Control and the Tractor Beam.      |
-| Human abilities         | Field Defense and Walls give a non-Martian defender their bonus against every Martian attack except a ray fired with the Disintegrator; a Tripod attack destroys Field Defense on the target tile. A Knight that kills a Martian unit advances and may attack again. A Juggernaut-role unit pushes a Martian unit under the ordinary conditions. The Catapult out-ranges every ray. |
-| Cities, siege, capacity | Capture-capable: Grunt, Ray Gunner, Shield Projector, Colossus, Thrall. A foot unit or walker on a hostile center besieges it; a flyer is never there. Machines are never fortified. Slots: Mothership and Colossus 2, Thralls none; Martian cities have no capacity bonus. Beam Down, Mind Control, and the Tractor Beam spend no city action.                                     |
-| Boats, water            | Martian boats are the Human boats. Foot units embark at Ports; machines self-launch on any water they may enter. An embarked Martian unit keeps its Shield, cannot attack, retaliate, or use an ability, and can be pulled from water to water.                                                                                                                                     |
-| Achievements, Promotion | Muster counts a Thrall as the `FIGHTER` role and excludes the Colossus; Sea Dog never counts an afloat machine. Promotion (3 kills, +5 maximum HP, full heal of HP, Shield unchanged) applies to every Martian unit except the Thrall; ray, hostile Pierce, and retaliation kills count; Mind Control is not a kill.                                                                |
+| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Graves, Raise Dead      | Martian land-form units, flyers and Thralls included, leave Graves like any unit (in matches with an Undead seat). A mind-controlled victim and a collapsed Thrall leave none; neither does an embarked machine.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Infect, Bitten          | A Martian unit killed by a Zombie rises as an ordinary Zombie (10 of 18 HP, no Shield, one slot); a Brain that rises has left the board, so its Thralls collapse. A Zombie bites a Martian unit only when its hit cost HP. A collapsed Bitten Thrall does not rise. No Martian unit cures a bite.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Plague                  | A Lich plagues only the targets that lost HP; Plague damage bypasses the Shield and spread ignores Shields. A mind-controlled Lich has left the board: its Plagues are cleared. No Martian unit cures Plague.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Wail, Lifesteal         | Wail hits Martian units with the ordinary formula, the Shield absorbing first. A Vampire heals by the HP damage it dealt, not what a Shield absorbed; a Martian unit never retaliates against it. A Zombie, Ghoul, or Skeleton that becomes a Thrall loses every Undead ability.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Goblin rules            | Gang Up counts the Goblin attacker's helpers around a Martian target; no Martian attack has Gang Up. Blasts and bomb splash are absorbed by the Shield first. A mind-controlled exploding unit is removed and does not explode; a pulled one keeps everything. Plunder counts Martian kills, never a collapse or a Mind Control.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Dinosaur rules          | Martian attacks, rays, and Pierce hit Eggs; Eggs are never Mind Control or Tractor Beam targets. A Charge! is absorbed by the Shield first and pushes and follows whatever it absorbed. Acid and Wallbreaker matter only for a Martian foot unit. An Ankylosaurus takes 1 less from every Martian hit. The two-slot dinosaurs are immune to Mind Control and the Tractor Beam.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Human abilities         | Field Defense and Walls give a non-Martian defender their bonus against every Martian attack except a ray fired with the Disintegrator; a Tripod attack destroys Field Defense on the target tile. A Knight that kills a Martian unit advances and may attack again. A Juggernaut-role unit pushes a Martian unit under the ordinary conditions. The Catapult out-ranges every ray.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Cities, siege, capacity | Capture-capable: Grunt, Ray Gunner, Shield Projector, Colossus, Thrall. A foot unit or walker on a hostile center besieges it; a flyer is never there. Machines are never fortified. Slots: Mothership and Colossus 2, Thralls none; Martian cities have no capacity bonus. Beam Down, Mind Control, and the Tractor Beam spend no city action.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Boats, water            | Martian boats are the Human boats. Foot units embark at Ports; machines self-launch on any water they may enter. An embarked Martian unit keeps its Shield, cannot attack, retaliate, or use an ability, and can be pulled from water to water.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Achievements, Promotion | Muster counts a Thrall as the `FIGHTER` role and excludes the Colossus; Sea Dog never counts an afloat machine. Promotion (3 kills, +5 maximum HP, full heal of HP, Shield unchanged) applies to every Martian unit except the Thrall; ray, hostile Pierce, and retaliation kills count; Mind Control is not a kill.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Ice Folk                | Chill is not damage and ignores Shields: a shielded unit is Chilled whatever its Shield. Shatter reads the HP after the Shield, so a Chilled unit at 1 to 3 HP is shattered by a hit its full Shield absorbs entirely; a Shield absorbs a Sweep flank hit, a Rockfall, and a Boulder like any damage (in a Force Field a Chilled Grunt takes three Yeti hits, not two). A ray fired from distance 2 at an Ice Folk unit in its own Witch's Blizzard is halved after its full or half power, and a Pierce hit derives from the halved hit; the Disintegrator leaves an Ice Folk unit on its Walled center with neither fortification nor Snow cover. Martian walkers and flyers ignore deep snow, and flyers ZOC; they are Chilled and shattered like any unit (the Mothership too), never the Colossus. A ray unit that stands still loses nothing to frost; a sluggish Saucer cannot Strafe, and a sluggish Brain or Mothership that moved cannot use Mind Control, Psychic Command, or the Tractor Beam. A Chilled unit may be mind-controlled (its entry ends; the Thrall is a new, unchilled Martian unit), a mind-controlled or shattered Witch takes her Blizzard with her, a shattered Brain's Thralls collapse, and the Frost Giant is immune to Mind Control and the Tractor Beam (`JUGGERNAUT`). The Tractor Beam pulls an Ice Folk unit off Snow, out of a Blizzard, or off Walls, and a Mountain-born unit onto a Mountain; a pulled or beamed unit keeps its Chill. A self-launched machine cannot be Chilled or shattered while afloat. |
 
 ### 20.12 Commands, events, errors, and queries
 
 - **Commands:** `BEAM_DOWN { kind, unitId, passengerUnitId, to }`,
   `MIND_CONTROL { kind, unitId, targetUnitId }`, and
   `TRACTOR_BEAM { kind, unitId, targetUnitId }`, in that order right after
-  `HATCH` in `COMMAND_KIND_ORDER_V7` (the Ice Folk overlay's `THROW_BOLAS`
-  and `COLD_SNAP` follow them). `MOVE` accepts a machine's path over and onto
+  `HATCH` in `COMMAND_KIND_ORDER_V7` (the Ice Folk `THROW_BOLAS` and
+  `COLD_SNAP` follow them). `MOVE` accepts a machine's path over and onto
   water and a flyer's path over units, with an unchanged shape. A pending
   city reward blocks the three commands like every command.
 - **Events** (`DOMAIN_EVENT_KIND_ORDER_V7`): `SHIELDS_RECHARGED` right after
@@ -4012,44 +4369,665 @@ mirror of Push. It deals no damage, is not an Attack, and costs no Coins.
   leaderboard carry `MARTIAN` and `MARTIAN_BASELINE_V1`; the leaderboard unit
   count includes Thralls.
 
-## 21. Revision history
+## 21. Ice Folk faction rules
 
-| Revision | Ruleset ID           | Main changes                                                                                                                                                                                        | Source                                                          |
-| -------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 3        | `pulp-wars-poc-7r3`  | Original-faction baseline: four land branches, growth rewards, achievements, combat kernel                                                                                                          | [RULESET_7.md](RULESET_7.md)                                    |
-| 4        | `pulp-wars-poc-7r4`  | Regional biomes; Ore returns; Mine 5/+2; Forge +1 per Mine                                                                                                                                          | [revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)             |
-| 5        | `pulp-wars-poc-7r5`  | Explorer achievement; Monument placement flow                                                                                                                                                       | [revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md)              |
-| 6        | `pulp-wars-poc-7r6`  | Map types, water, Fish, Pearls, Ports, Naval branch, transport, Patrol Boat, Battleship                                                                                                             | [revision 6](RULESET_7_REVISION_6_WATER_NAVAL.md)               |
-| 7        | `pulp-wars-poc-7r7`  | Neutral Roads, automatic embark, Battleship splash, flat fortification levels, Field Defense; removed Saboteur                                                                                      | [revision 7](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md)   |
-| 8        | `pulp-wars-poc-7r8`  | Adjacent shared processor contributors                                                                                                                                                              | [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)        |
-| 9        | `pulp-wars-poc-7r9`  | 23-node Human tree, Captain, Knight, Overrun, Land Grant, Shipyard, Market move, separate land/sea trade                                                                                            | [revision 9](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)          |
-| 10       | `pulp-wars-poc-7r10` | Road movement without capital connection; city-center spawning; full-turn Fortify                                                                                                                   | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
-| 10 (fix) | `pulp-wars-poc-7r11` | An occupied center blocks land training; displacement applies only to reward units                                                                                                                  | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
-| 11       | `pulp-wars-poc-7r11` | One city action per turn; Windmill healing; Road population; Commerce ×2 Market; Ore on Drill; Pillage on Raiding; tactical AI                                                                      | [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)       |
-| 12       | `pulp-wars-poc-7r12` | No starting technology; free first tier-1 research; Fruit always visible, Fertile Ground on Gathering; resources kept under improvements; AI opener; Raider Escape                                  | this document                                                   |
-| 13       | `pulp-wars-poc-7r13` | Undead faction (per-seat factions, roster, Graves, Restless, Frenzy, Raise Dead, Devour, Infect, Lifesteal, Wail, Lich splash)                                                                      | [revision 13](RULESET_7_REVISION_13_UNDEAD.md)                  |
-| 14       | `pulp-wars-poc-7r14` | Plague (Lich) and Bitten (Zombie); Tend cures; unanswered Vampire; Lich Attack 3; +1 village; level income cap 5; Commerce no longer doubles Markets                                                | [revision 14](RULESET_7_REVISION_14_BALANCE.md)                 |
-| 15       | `pulp-wars-poc-7r15` | Plague lasts three owner turns and spreads only on the first; Zombie 18 HP                                                                                                                          | [revision 15](RULESET_7_REVISION_15_BALANCE.md)                 |
-| 16a      | `pulp-wars-poc-7r16` | Orthogonal Shallow Water (25% minimum); capital growth guarantee and `CAPITAL_GROWTH`; Normal AI growth-first opening                                                                               | [revision 16](RULESET_7_REVISION_16.md)                         |
-| 16b      | `pulp-wars-poc-7r16` | Patrol Boat and embarked Move 2; landing costs one movement point; landing preview                                                                                                                  | [revision 16](RULESET_7_REVISION_16.md)                         |
-| 16c      | `pulp-wars-poc-7r16` | Research tiers 5+1/7+3/12+5 per extra city; level income cap 4; Market cap 3                                                                                                                        | [revision 16](RULESET_7_REVISION_16.md)                         |
-| 17       | `pulp-wars-poc-7r17` | Goblin faction: roster, Warrens, Gang Up, Kaboom, death blasts and chains, friendly-fire bombs, Plunder, WAAAGH!, Troll regeneration; `END_TURN` blockade events                                    | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
-| 17       | `pulp-wars-poc-7r17` | `pulp_wars-0ao.7` tuning: one starting Goblin; Goblin Attack 1.5, Defense 0.5, Kaboom 5; death blasts 2/4/4; Goblin-only Normal AI changes                                                          | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
-| 17 (fix) | `pulp-wars-poc-7r17` | `pulp_wars-0ao.15`: landing ends the activation for every faction (no Attack, Kaboom, Move, or Disband after landing)                                                                               | [revision 16](RULESET_7_REVISION_16.md)                         |
-| 18       | `pulp-wars-poc-7r18` | Movement (`pulp_wars-6gd.2`): a Move passes through the mover's own units and never ends on one; the Road half cost depends only on the tile being left                                             | [revision 18](RULESET_7_REVISION_18.md)                         |
-| 18       | `pulp-wars-poc-7r18` | Showcase (`pulp_wars-6gd.3`): the fixed 16 x 16 `SHOWCASE` map type with three developed cities, every technology, and one unit of every role per seat                                              | [revision 18](RULESET_7_REVISION_18.md)                         |
-| 19       | `pulp-wars-poc-7r19` | Dinosaur faction (`pulp_wars-c87.2`–`c87.7`): roster, slots, Eggs, Shaman Hatch, Nesting, Grow, Wild, Acid, Armoured, Stampede, treasure Raptor                                                     | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
-| 19       | `pulp-wars-poc-7r19` | `pulp_wars-c87.8` interim tuning: Caveman 12 HP; one-slot Triceratops hatching in one turn; Forest Stampede lanes; Dinosaur-only AI changes                                                         | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
-| 20       | `pulp-wars-poc-7r20` | `pulp_wars-0hi.2`: Charge! replaces Stampede (Triceratops Move 2, 20 HP, 2 slots, hatch 2); T-Rex 14, hatch 4; Nesting slot; Wallbreaker; full heal                                                 | [revision 20](RULESET_7_REVISION_20.md)                         |
-| 21       | `pulp-wars-poc-7r21` | `pulp_wars-9s0.4`: Conqueror, Land Baron, Sea Dog, and Slayer achievements (seven entitlements per seat)                                                                                            | [revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md)            |
-| Martian  | `pulp-wars-poc-7r22` | Martian faction (`pulp_wars-t6s.2` engine): roster, Shields, Force Field(s), heat rays, Cooling, Pierce, Disintegrator, Stride, Flying, self-launch, Beam Down, Mind Control, Thralls, Tractor Beam | [Martian overlay](RULESET_7_MARTIANS.md)                        |
-| 20 (bal) | `pulp-wars-poc-7r23` | `pulp_wars-0hi.3` coarse Dry Land balance: Human Fighter, Raider, and Marksman 12 HP, Guard 17; Caveman 10                                                                                          | [revision 20](RULESET_7_REVISION_20.md#63-tuning-record)        |
-| Martian  | `pulp-wars-poc-7r23` | `pulp_wars-t6s.4` Martian UI (setup offers Martians; `t6s.6` production art) and `t6s.3` Martian Normal AI, no identity change                                                                      | [Martian overlay](RULESET_7_MARTIANS.md)                        |
-| —        | `pulp-wars-poc-7r24` | `pulp_wars-7g3.3`: Ice Folk faction engine, not offered in setup (AI and UI pending); **not folded** into this document                                                                             | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                       |
-| Martian  | `pulp-wars-poc-7r25` | `pulp_wars-t6s.5` coarse Dry Land Martian balance: Colossus Defense 2.5                                                                                                                             | [Martian balance](../validation/RULESET_7_MARTIAN_BALANCE.md)   |
-| —        | `pulp-wars-poc-7r26` | `pulp_wars-9s0.2`: the Pangea coast ring (no land on the edge ring; Shallow circumnavigation; 59.5–72% land); other map types unchanged                                                             | [section 2.3](#23-map-types)                                    |
-| —        | `pulp-wars-poc-7r27` | `pulp_wars-7g3.7` coarse Dry Land Ice Folk balance: Yeti 9 HP, Defense 1.5; **not folded** into this document                                                                                       | [Ice Folk balance](../validation/RULESET_7_ICE_FOLK_BALANCE.md) |
-| —        | `pulp-wars-poc-7r28` | `pulp_wars-9s0.5`: the Rift (a 1 x 3 crack only flyers stand on; nothing built on it; 0-2 per generated board by width); other rules unchanged                                                      | [Rift overlay](RULESET_7_RIFT.md)                               |
+Humans are sustain, Undead are attrition, Goblins are a reckless horde,
+Dinosaurs are few, big, and growing, Martians are a small high-tech
+invasion force, and the Ice Folk are **the things from the peaks**: Yetis
+that walk over Mountains nobody else can cross, hunters who wrap an enemy in
+frost so that the next blow breaks it into pieces, an Ice Witch under whom
+the ground is winter, and a mammoth that swings at three units at once. They
+are strong on their own Snow and around the Witch, they usually strike
+first, and they finish frozen units without a blow in return; they are weak
+against cheap packs, against fresh bodies that are never left wounded in
+reach, and wherever the Witch is not. Every rule in this section applies
+only to units of an `ICE_FOLK` seat, except where a rule names its target
+(Chill and Shatter act on other players' units, and deep snow stops them);
+in a match without one the list `chilled` is empty, no tile is Snow or
+Blizzard (the view flags are false), no `THROW_BOLAS` or `COLD_SNAP` is
+offered or accepted, every role has `mountainBorn` false, the shared rules
+`unitMayActAfterMoveV7` and `canEnterTerrainV7` return what the role flag
+and Engineering returned before, every `curedChill` is false, every unit's
+`chill` stat is null, and the eight Ice Folk combat-preview fields are
+false. Each rule resolves through the owner's registration
+(`FACTION_RULES_V7`, whose `snow` rule is true only for the Ice Folk,
+`ICE_FOLK_ROLE_RULES_V7`, `ICE_FOLK_ROLE_MECHANICS_V7`) and the helpers of
+`src/engine/v7/ice-folk.ts`. Human, Undead, Goblin, Dinosaur, and Martian
+units keep every ability against the Ice Folk, with the rulings of
+[section 21.14](#2114-interactions-with-other-rules). Specification,
+per-unit battle analysis, decisions, root rulings, and the tuning record:
+the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
+[Ice Folk balance report](../validation/RULESET_7_ICE_FOLK_BALANCE.md) (the
+`7r27` coarse pass on Dry Land).
+
+### 21.1 Roles, Mountain-born, and labels
+
+| Mechanical role | Ice Folk unit | Kind                                    |
+| --------------- | ------------- | --------------------------------------- |
+| `FIGHTER`       | Yeti          | Mountain-born; Rockfall                 |
+| `RAIDER`        | Sled          | Chill source (Bolas); Charge            |
+| `MARKSMAN`      | Snow Hunter   | Cold Blood                              |
+| `GUARD`         | Mammoth       | Sweep and Trample                       |
+| `CAPTAIN`       | Ice Witch     | Blizzard; Chill source (Cold Snap)      |
+| `CATAPULT`      | Boulder Yeti  | Boulders; Planted; Mountain-born        |
+| `KNIGHT`        | Sabretooth    | Prowl; no Glide                         |
+| `JUGGERNAUT`    | Frost Giant   | Chill source (Cold Aura); Mountain-born |
+
+- **Ice Folk units** are the eight land roles in land form. The Snow rules,
+  Shatter, and the Blizzard's protection never apply to an Ice Folk boat (the
+  Human boats) or to an embarked unit. Snow works **per faction** and the
+  Blizzard's protection **per seat** ([section 21.6](#216-the-blizzard-and-cold-snap)).
+- **Chill sources** are the Sled (Bolas), the Ice Witch (Cold Snap), and the
+  Frost Giant (Cold Aura). No attack applies Chill.
+- **Tactical labels** are the Human ones of the same mechanical role: the
+  Mammoth is `DEFENDER`, the Ice Witch `SUPPORT`, and the Boulder Yeti
+  `SIEGE`. They have no rule effect for the Ice Folk (the faction has no
+  Rally).
+- **No Field Defense, no healer:** no Ice Folk unit builds Field Defense,
+  and the Witch has no Tend Wounded, so an Ice Folk seat cures neither
+  Plague, Bitten, nor Chill; it heals by Recover, Windmills, and Promotion
+  only. City Walls are unchanged: an Ice Folk city may choose the Walls
+  reward, and Walls fortify an Ice Folk unit on its own center, which then
+  has no Snow cover.
+- **Treasure unit:** a Sled (`treasureUnitRole` `RAIDER`). **Starting
+  unit:** one Yeti. **Militia:** one Yeti. **Level-5+ reward:** a Frost
+  Giant. Capture-capable: Yeti, Sled, Snow Hunter, Mammoth, Frost Giant.
+  Every Ice Folk land unit except the Frost Giant is trained on the city
+  center with `TRAIN`.
+
+### 21.2 Chill
+
+**State.** `GameStateV7.chilled: { unitId, sluggish, turnsLeft }[]`, sorted
+by unit ID, is the only stored Ice Folk state (hashed, saved, and replayed
+like `plagued` and `bitten`). The legal entries are
+`{ sluggish: true, turnsLeft: 2 }`, `{ false, 2 }`, `{ false, 1 }`, and
+`{ false, 0 }`. A unit is **Chilled** exactly while its entry has
+`turnsLeft` of at least 1; an entry with `turnsLeft` 0 is **thawing**: the
+unit is not Chilled and nothing applies to it, except that a Chill applied
+now is not a new freeze. State parsing rejects an entry without a unit on
+the board, a duplicate or unsorted entry, a `turnsLeft` other than 0, 1, or
+2, `sluggish: true` with a `turnsLeft` other than 2, an entry for a unit
+whose form is `NAVAL` or `EGG`, and any entry in a match without an Ice
+Folk seat. `PlayerViewV7.chilled` lists the entries of every visible unit,
+with both fields: Chill is public, like Plague and Bitten.
+
+**Applying Chill** to a unit (`CHILL_TURNS_V7` 2):
+
+```text
+no entry                       → add { sluggish: true, turnsLeft: 2 }   (a new freeze)
+has an entry (thawing or not)  → set turnsLeft to 2; sluggish is not changed
+```
+
+- **Who can be Chilled:** a unit on the board in **land form** that is
+  hostile to the source's owner, of any role and faction (`JUGGERNAUT`
+  roles, two-slot units, flyers, walkers, Thralls, and another Ice Folk
+  seat's units included). Never an embarked unit, a naval unit, an Egg, or
+  an own or allied unit.
+- Chill is **not damage**: a Martian Shield does not absorb or block it, and
+  cover, fortification, Armoured, and Walls do not matter. No source deals
+  damage, draws retaliation, or is an attack; each emits one
+  `UNITS_CHILLED { playerId, sourceUnitId, source, results }` (`source`
+  `BOLAS`, `COLD_SNAP`, or `COLD_AURA`; `results` the targets' entries after
+  the application, in unit-ID order).
+
+**Duration.** At the end of a player's turn, after idle recovery, the
+expiry of Inspired and Overrun, the Cooling step, and the Force Fields
+recharge, and before the income preview, every entry of that player's units
+is updated, with no event (the view list is the source):
+
+```text
+sluggish := false
+turnsLeft 0  → the entry is removed
+otherwise    → turnsLeft := turnsLeft − 1
+```
+
+So one application gives **two Ice Folk turns of Shatter eligibility and
+one sluggish turn**:
+
+| When                                | Chilled once on Ice Folk turn `N`                         | Chilled again on every Ice Folk turn         |
+| ----------------------------------- | --------------------------------------------------------- | -------------------------------------------- |
+| Ice Folk turn `N` (after the Chill) | Chilled: Shatter-eligible                                 | Chilled                                      |
+| The unit's owner's next turn        | **sluggish**                                              | **sluggish**                                 |
+| Ice Folk turn `N + 1`               | still Chilled                                             | Chilled (`turnsLeft` back to 2)              |
+| The owner's following turn          | not sluggish; the Chill ends at its end                   | not sluggish                                 |
+| Ice Folk turn `N + 2`               | thawing: not Chilled, and a Chill now is not a new freeze | Chilled, and so on: **never sluggish again** |
+| The owner's turn after that         | the entry is removed at its end                           | not sluggish                                 |
+| Ice Folk turn `N + 3`               | no entry: a Chill is a new freeze                         | Chilled                                      |
+
+- A unit Chilled again while Chilled stays Shatter-eligible and is not made
+  sluggish again (no kite lock). Frost that lapses resets: a unit can be
+  made sluggish at most on every third turn of its owner, and only after a
+  whole Ice Folk turn without Shatter eligibility.
+- **Removal.** The entry is removed when the unit leaves the board for any
+  reason (death, rising, Disband, Mind Control, displacement, elimination).
+  Tend Wounded sets it to thawing ([section 10](#10-recovery-and-support)).
+  Embarking, landing, Promotion, growth, a Push, a Tractor Beam pull, Beam
+  Down, and a change of home do not remove it; while the unit is embarked
+  the entry has no effect and still counts down.
+
+### 21.3 Sluggish: move or act, not both
+
+A unit whose entry has `sluggish: true` is **sluggish** (Frozen). **A
+sluggish unit that has moved this turn cannot use a primary action, and a
+sluggish unit is never granted Escape.** Since no unit moves after a primary
+action, on its sluggish turn a unit either makes its Move and nothing else,
+or stays where it is and acts.
+
+| Action                                                                                                                                                      | Sluggish, not moved | Sluggish, moved                         |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | --------------------------------------- |
+| `MOVE` (a Move that embarks or self-launches included)                                                                                                      | legal, once         | already used                            |
+| `ATTACK`, `RALLY`, `TEND_WOUNDED`, `HATCH`, `RAISE_DEAD`, `DEVOUR`, `WAIL`, `KABOOM`, `PILLAGE`, `MIND_CONTROL`, `TRACTOR_BEAM`, `THROW_BOLAS`, `COLD_SNAP` | legal               | `UNIT_ALREADY_ACTED`                    |
+| `BEAM_DOWN`, `RECOVER`, `CAPTURE`, `BUILD_FIELD_DEFENSE` (each needs an unmoved unit anyway)                                                                | legal               | rejected as for any moved unit          |
+| `DISEMBARK` (landing ends the activation anyway)                                                                                                            | legal               | legal under the ordinary landing budget |
+| `PROMOTE`, `DISBAND`, `WAIT` (not primary actions)                                                                                                          | legal               | legal                                   |
+| Escape after an Attack                                                                                                                                      | not granted         | —                                       |
+
+- "Has moved" is the activation flag `moved`, as the Guard rule reads it:
+  an interrupted Move counts, even one that left the unit where it was.
+- The advance after a kill, an Overrun, Ram, or Rampage continuation, a
+  Push, and a Charge! follow are not Moves: a sluggish Knight, Scrap Buggy,
+  or T-Rex that attacks without moving and kills still advances and may
+  continue. A sluggish Triceratops attacks with no run-up, or moves; a
+  sluggish Raider, Ghoul, Wolf Rider, Raptor, Saucer, or Sled cannot Charge
+  (Pounce, Strafe). A unit that already cannot act after moving loses only
+  Kaboom and Pillage after a Move. A ray unit that stands still fires at
+  full power as usual. Retaliation, zones of control, capture eligibility,
+  and idle recovery are unchanged.
+- Every read of `mayUsePrimaryActionAfterMove` for a concrete unit goes
+  through `unitMayActAfterMoveV7` (the role flag and not sluggish), with
+  `primaryActionBlockedAfterMoveV7` for the reducer gates; `KABOOM`,
+  `PILLAGE`, and the grant of Escape add the plain sluggish test
+  (`sluggishUnitMovedV7`, `unitIsSluggishV7`).
+
+### 21.4 Shatter
+
+When **a land-form Ice Folk unit attacks at distance 1** and all of these
+hold, the defender **shatters**:
+
+1. the defender is Chilled and in land form;
+2. its role is not `JUGGERNAUT`;
+3. after the hit (the ordinary damage after the Blizzard, Armoured, and a
+   Martian Shield) its HP would be at least 1 and at most the attacker's
+   owner's **Shatter threshold**: `SHATTER_HP_V7` 3, or
+   `BRITTLE_SHATTER_HP_V7` 4 with Brittle.
+
+A shattered defender **dies in that exchange** (`UNIT_DIED` cause
+`SHATTER`): it does not retaliate, the attacker is credited with the kill
+(Promotion, Slayer, Plunder rules as for any kill), and the attacker
+advances as after any kill. It **leaves no Grave** and has **no death
+blast** (a shattered Bomb Chucker, Rocket Cart, or Scrap Buggy does not
+explode). A shattered **Bitten** unit still rises as its biter's Zombie
+(`BITTEN_UNIT_RISEN` follows the `SHATTER` death), and the attacker then
+does not advance.
+
+- **Distance 1 only**, whatever the role: a Snow Hunter or a Boulder Yeti
+  shatters an adjacent unit; a Rockfall, a shot, or a throw at distance 2
+  never does. A retaliation and a Sweep flank hit never shatter.
+- **Only the HP after the hit matters:** a hit that deals no HP damage (a
+  weak hit, or one a Shield absorbs entirely) still shatters a Chilled unit
+  at 1 to 3 HP. A hit that kills by itself is an ordinary kill, with its
+  ordinary Grave and death blast.
+- **Never shattered:** Eggs (never Chilled), embarked and naval units, and
+  the `JUGGERNAUT`-role units (Juggernaut, Abomination, Troll, Brontosaurus,
+  Colossus, Frost Giant). Two-slot units are not exempt.
+- **The preview is exact:** on a Shatter `shatters` is true,
+  `damageToDefender` is the defender's whole remaining HP, `defenderDies` is
+  true, and `noRetaliationReason` is `DEFENDER_DIED`, so every reader of
+  kills and HP stays correct. `previewAttackExplosionsV7` leaves out the
+  blast of a shattered defender.
+
+Worked examples (engine formula, open Grass, threshold 3, the target
+Chilled and at full HP unless stated; a Yeti has 9 HP, Attack 2, and
+Defense 1.5):
+
+| Target                           | Hits, in order                          | Result                                                                 |
+| -------------------------------- | --------------------------------------- | ---------------------------------------------------------------------- |
+| Fighter (12 HP)                  | Yeti 5 (takes 5); Yeti                  | the second hit, 6, would leave 1: **shatters**                         |
+| Fighter on Field Defense         | Yeti 4 (takes 8); Yeti                  | the second hit, 5, would leave 3: **shatters**                         |
+| Caveman or Skeleton (10 HP)      | Sled with Charge, or Sabretooth         | 8 would leave 2: **shatters** at full HP, no retaliation               |
+| Fighter (12 HP)                  | Sled with Charge, or Sabretooth         | 8 would leave 4: shatters only with Brittle                            |
+| Grunt (10 HP, Shield 2)          | Yeti 5 (Shield 2, HP 3; takes 3); Yeti  | the second hit, 6, would leave 1: **shatters**                         |
+| Zombie (18 HP)                   | Yeti 5; Yeti 5; Yeti                    | the third hit, 6, would leave 2: **shatters**, no Grave                |
+| Triceratops (20 HP)              | Mammoth 6; Yeti 5; Yeti                 | the third hit, 6, would leave 3: **shatters**                          |
+| T-Rex (28 HP)                    | Mammoth 6; Yeti 5; Yeti 6; Yeti 6; Yeti | dead on the fifth hit (8) by plain damage; no hit landed in the window |
+| Knight or Spitter (10 HP)        | Mammoth                                 | 8 would leave 2: **shatters** at full HP                               |
+| Bomb Chucker (8 HP)              | Yeti                                    | 6 would leave 2: **shatters**, and no bomb goes off                    |
+| Rocket Cart (8 HP)               | Yeti                                    | 7 would leave 1: **shatters**; the Yeti advances and takes no blast    |
+| Guard at 3 HP on a Walled center | Ice Witch                               | 2 would leave 1: **shatters** (unchilled, the Witch takes 11)          |
+| Goblin (6 HP)                    | any Ice Folk hit                        | dead by plain damage; Shatter never happens against Goblins at full HP |
+| a `JUGGERNAUT`-role unit at 3 HP | Yeti                                    | never shatters; the hit and the retaliation are ordinary               |
+
+### 21.5 Snow
+
+**Which tiles are Snow.** Snow is a derived property of a land tile, the
+same for every viewer and seat, never stored, and computed from the current
+state at every read (`winterV7`, memoised per immutable state only):
+
+```text
+snow(tile) =
+     tile is land and not a Rift, and
+     (  tile's territory belongs to a city owned by an ICE_FOLK seat        (territory)
+     or tile is within Chebyshev 1 of a land-form Ice Witch                 (Blizzard)
+     or tile has no territory and is within Chebyshev 2 (DEEP_WINTER_RADIUS_V7)
+        of the center of a city whose Ice Folk owner has Deep Winter )      (Deep Winter)
+```
+
+- Within one `MOVE` it is read once, from the state before the command, for
+  every step (this matters only for a Witch's own Move).
+- A captured Ice Folk city stops being Snow in the capture command, a city
+  an Ice Folk seat captures becomes Snow in it, and a besieged Ice Folk city
+  is still Snow (the besieger gets nothing from it). A Land Grant widens the
+  Snow with the territory, and every Ice Folk capital's territory is Snow
+  from the first turn.
+- Snow lies on Grass, Forest, and Mountain alike, on Roads, improvements,
+  resources, Field Defense, centers, Graves, and chests, and changes none of
+  them. Water and Rift tiles are never Snow. Several sources do not add up.
+
+**What Snow does.** For a land-form Ice Folk unit:
+
+1. **Glide.** A step that **leaves** a Snow tile costs one half-point
+   instead of two (the cost-by-origin rule of Roads); Snow and a Road node do
+   not add up. So a Move-1 unit that starts on Snow moves two tiles if the
+   first tile it enters is also Snow, and a Sled up to four. The
+   **Sabretooth never Glides** (role mechanic `glides`). Every other Move
+   rule is unchanged: Forest and unexplored cells still end an Ice Folk
+   unit's Move, zones of control too, and a Mountain stops the units that
+   are not Mountain-born.
+2. **Snow cover.** A defender on Snow whose **own fortification level is 0**
+   has cover × 1.5: the Forest and Mountain cover, not added to it (a snowy
+   Forest or Mountain still gives × 1.5). A unit with any fortification of
+   its own (its owner's Walled center, or Field Defense in its owner's
+   territory) has no Snow cover, whatever the attack ignores; on a Forest or
+   Mountain it keeps the terrain cover. Acid ignores Snow cover like any
+   cover. Wail uses it (the target's cover).
+
+For a land-form ground unit of any other faction (movement mode `GROUND`):
+
+3. **Deep snow.** A Move **ends on entering a Snow tile**, as on entering a
+   Forest: a path that continues past it is illegal (`SNOW_STOPS_MOVE`); a
+   step along a **Road edge** (both ends usable Road nodes for the mover) is
+   exempt, and **Fieldcraft waives it** for the `RAIDER` and `MARKSMAN`
+   roles. A Move-1 unit off a Road is not affected. Martian walkers and
+   flyers are never stopped by terrain and ignore it. Roads inside Ice Folk
+   territory are not usable by other players, so the Road-edge waiver
+   applies on the mover's own or neutral Roads.
+
+Snow does nothing else: no damage, healing, or sight change, and no effect
+on attacks (beyond cover), on the advance, a Push, a Charge! follow, an
+Overrun continuation, or a Tractor Beam, which are not Moves.
+
+Examples (engine formula, full HP; a Yeti has 9 HP and Defense 1.5):
+
+| Attack on a Yeti                                    | In the open | On Snow | On Snow in its Witch's Blizzard |
+| --------------------------------------------------- | ----------: | ------: | ------------------------------: |
+| Fighter (melee; the Yeti retaliates 3, on Snow 4)   |           5 |       4 |                               4 |
+| Marksman from distance 2                            |           5 |       4 |                               2 |
+| Catapult                                            |          11 |      10 |                               5 |
+| Lich (splash on the Yeti's neighbours from the hit) |           9 |       8 |                               4 |
+| Spitter from distance 2 (Acid: no cover)            |           5 |       5 |                               3 |
+| full-power Ray Gunner from distance 2               |           9 |       8 |                               4 |
+
+### 21.6 The Blizzard and Cold Snap
+
+**The Blizzard** of an Ice Witch in land form is her tile and the eight
+tiles around it (`BLIZZARD_RADIUS_V7` 1), clipped to the board. It moves
+with her and ends when she dies, embarks, or otherwise leaves the board.
+
+- Its land tiles are Snow ([section 21.5](#215-snow)).
+- **Half ranged damage.** When a unit attacks **from distance 2 or more** a
+  land-form Ice Folk unit that stands in the Blizzard of an Ice Witch of
+  **its own seat**, the hit is `ceil(damage / 2)` (`blizzardHalved`),
+  applied to the formula's damage before Armoured, a Shield, and the cap.
+  Nothing becomes illegal. It applies to the primary hit of an `ATTACK`
+  only: never to an attack from distance 1, a retaliation, a splash, bomb,
+  Pierce, or Sweep hit on another unit (computed from the halved primary
+  hit when the primary target was in the Blizzard), Wail, Kaboom, death
+  blasts, or Plague. Blizzards do not stack, and the Witch is in her own.
+- **Per faction and per seat** (root ruling 4). Snow and its effects are
+  per faction: every land-form Ice Folk unit, of any seat, gets Glide and
+  Snow cover on every Snow tile, whichever seat's territory, Deep Winter, or
+  Witch made it, and every other faction's ground unit is stopped by every
+  Snow tile. The halving is per seat: it protects only the land-form units
+  owned by the same seat as the Witch, never a unit of another seat (an
+  enemy Ice Folk unit included), an embarked unit, or a boat.
+
+`COLD_SNAP { kind, unitId }` is a primary action of the Ice Witch (it needs
+Administration, which unlocks her as `WITCH_SUPPORT`). It is not an Attack
+and costs no Coins.
+
+- **Legality.** An own land-form Witch that has not used a primary action
+  and has not landed this turn (she may have moved), with at least one
+  target. Rejections, atomic, in this order: the ordinary unit errors; a
+  role without `COLD_SNAP` → `UNIT_ROLE_INVALID { role }`; a primary action
+  used, a pending continuation, or a sluggish Witch that moved →
+  `UNIT_ALREADY_ACTED`; embarked → `COLD_SNAP_NOT_LEGAL { reason: "EMBARKED" }`;
+  no target → `COLD_SNAP_NOT_LEGAL { reason: "NO_TARGET" }`.
+- **Targets.** Every unit that can be Chilled, is visible to the Witch's
+  owner, and stands within Chebyshev `COLD_SNAP_RANGE_V7` (2) of her,
+  already Chilled units included.
+- **Result.** Chill is applied to every target at once; the Witch has used
+  her primary action and is handled. No damage, retaliation, Field Defense
+  destruction, or reveal. Event `UNITS_CHILLED` (source `COLD_SNAP`). Only
+  visible units are targets, so the preview equals the result. Cast every
+  turn, it keeps every enemy near her Shatter-eligible and slows each once.
+
+### 21.7 Deep Winter and Brittle
+
+- **Deep Winter** (the Ice Folk `FORTIFICATION`, Industry tier 2, requires
+  Drill, ordinary tier-2 cost; capability `deepWinter`). While its owner has
+  it, every land tile **without territory** within Chebyshev 2 of the center
+  of one of its cities is Snow (another player's territory never is), and
+  Recover and idle recovery heal a land-form Ice Folk unit **6** in its
+  owner's territory (`DEEP_WINTER_RECOVER_V7`) instead of 4; elsewhere 2, as
+  for everyone, Snow or not. It stores nothing: the ring follows the cities
+  the seat owns.
+- **Brittle** (the Ice Folk `EXPLOSIVES`, Industry tier 3, requires
+  Fortification, ordinary tier-3 cost; capability `shatterThreshold`). It
+  keeps Blast Mountain and the melee Field Defense demolition and raises
+  the player's Shatter threshold from 3 to 4
+  ([section 21.4](#214-shatter)). A Rockfall is not a melee attack, so its
+  demolition does not apply to it.
+
+### 21.8 Mountain-born and Rockfall
+
+A **Mountain-born** unit (Yeti, Boulder Yeti, Frost Giant; role mechanic
+`mountainBorn`) in land form enters a Mountain without Engineering in every
+rule that asks whether it may stand on a tile (`canEnterTerrainV7`: `MOVE`,
+`DISEMBARK`, the advance, a Push, Charge! push, or Tractor Beam pull of the
+unit, reward displacement, and their public twins), and is not stopped by a
+Mountain (`terrainStopsMoveV7`); Forest, unexplored cells, and hostile ZOC
+still end its Move. It keeps the ordinary Mountain cover, gets the +1 Sight
+on a Mountain only with Engineering, and never enters a Rift. A unit that
+does not go through `canEnterTerrainV7` uses `unitMayEnterMountainV7`.
+
+**Rockfall** (the Yeti). A land-form Yeti **standing on a Mountain** may
+attack a visible hostile unit at Chebyshev distance 2 as well as 1. An
+attack at distance 2 uses `ROCKFALL_ATTACK2_V7` 3 (Attack 1.5) instead of
+its Attack 2 (`rockfallApplied`); one at distance 1 is ordinary. A defender
+that cannot reach distance 2 does not retaliate; a ranged one does. The
+Yeti's own retaliation range stays 1, so a Yeti on a Mountain shot from
+distance 2 does not throw back. A Rockfall never shatters and never
+advances. The public command query and `queryThreatenedTilesV7` include the
+distance-2 tiles of a Yeti on a Mountain and from every Mountain it can
+reach. Example: a Rockfall deals a full-HP Fighter 3 and a Marksman 4.
+
+### 21.9 Bolas and Cold Blood
+
+`THROW_BOLAS { kind, unitId, targetUnitId }` is a primary action of the
+Sled (it needs no technology beyond Scouting, which unlocks the Sled). It is
+not an Attack and costs no Coins. Legality, in this order (all rejections
+atomic):
+
+| #   | Requirement                                                                                   | Rejection                                     |
+| --- | --------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                | the ordinary unit errors                      |
+| 2   | Its role has `BOLAS`.                                                                         | `UNIT_ROLE_INVALID { role }`                  |
+| 3   | It has not used a primary action and has not landed this turn; a sluggish Sled has not moved. | `UNIT_ALREADY_ACTED`                          |
+| 4   | It is in land form.                                                                           | `BOLAS_NOT_LEGAL { reason: "EMBARKED" }`      |
+| 5   | `targetUnitId` is a unit on the board the actor can see.                                      | `TARGET_NOT_FOUND`                            |
+| 6   | It is hostile to the actor.                                                                   | `TARGET_ALLIED`                               |
+| 7   | It can be Chilled: land form (not embarked, naval, or an Egg).                                | `BOLAS_NOT_LEGAL { reason: "TARGET_IMMUNE" }` |
+| 8   | It is within Chebyshev distance `BOLAS_RANGE_V7` (2) of the Sled; distance 1 is legal.        | `BOLAS_NOT_LEGAL { reason: "OUT_OF_RANGE" }`  |
+
+- **Result.** Chill is applied to the target (an already Chilled target is
+  legal: `turnsLeft` goes back to 2). The Sled has used its primary action
+  and is handled. No damage, retaliation, Field Defense destruction, or
+  advance; event `UNITS_CHILLED` (source `BOLAS`). It may follow a Move;
+  there is no line of sight and no cover against it.
+
+**Cold Blood** (the Snow Hunter): its attack on a **Chilled** defender has
++0.5 Attack (`COLD_BLOOD_BONUS2_V7` 1), at any distance
+(`coldBloodApplied`); never on retaliation. Example: 6 instead of 5 on a
+full-HP Fighter.
+
+### 21.10 Sweep and Trample
+
+Every `ATTACK` a land-form Mammoth makes:
+
+- **Sweep.** The **flank tiles** are the two tiles next to the target's
+  tile on the ring of eight around the Mammoth (one step clockwise and one
+  counter-clockwise): beside a target straight ahead, and between a
+  diagonal target and the Mammoth's row and column. Every **hostile** unit
+  on a flank tile, in any form (an Egg too), takes `SWEEP_DAMAGE_V7` **2**,
+  with no retaliation or modifiers; Armoured reduces it to 1, a Shield
+  absorbs it first, and it is capped at the victim's HP. Flank hits resolve
+  with the exchange, from the pre-attack state, whether or not the Mammoth
+  survives. A flank victim that dies is credited to the Mammoth like a
+  hostile splash kill (cause `SPLASH`), leaves an ordinary Grave or rising,
+  and explodes if it is an exploding unit (the Mammoth is then in its
+  blast). A flank hit never shatters. Own and allied units are never hit.
+  The victims are the preview's `splash` entries (with `shieldDamage`), the
+  preview has `sweep: true`, and it is exact (the Mammoth's neighbours are
+  explored by its owner).
+- **Trample.** Field Defense on the **target's** tile is destroyed, whoever
+  owns the tile and whether or not either unit survives (reason
+  `TRAMPLE`); it still counts for that exchange. Flank tiles keep theirs.
+
+### 21.11 Boulders and Planted
+
+Every `ATTACK` a land-form Boulder Yeti makes, at distance 1 or 2:
+
+- **ignores fortification** (role mechanic `ignoresFortification`): the
+  defender's fortification level is 0 for the whole exchange, for the damage
+  and the retaliation (the Charge! convention); cover stays and Walls are
+  not destroyed. The preview reports `fortificationLevel: 0` and the
+  removed levels in `fortificationIgnored`;
+- **destroys Field Defense** on the target's tile (reason `CATAPULT`, as for
+  every `CATAPULT`-role attack);
+- is **Planted** when the unit has not moved this turn: +1 Attack
+  (`PLANTED_BONUS2_V7` 2), so Attack 3 planted and 2 after a Move
+  (`plantedApplied`; an estimate for an attack after a planned Move uses
+  Attack 2).
+
+It retaliates at distance 1 and 2 with its ordinary Defense, never advances
+after a kill (`advancesAfterKill` false), and cannot capture; at distance 1
+it can shatter. Examples (full HP): planted, it deals a Guard on a Walled
+center with Field Defense 7 (a Yeti deals that Guard 2 and dies to its
+retaliation), and a Fighter 8; after a Move, a Guard 4.
+
+### 21.12 Prowl and the Cold Aura
+
+**Prowl** (the Sabretooth, role mechanic `ignoresZocStops`). Entering a
+cell in hostile ZOC does not end its Move; it exerts ZOC like any land unit.
+Forest, Mountain (which it needs Engineering to enter), unexplored cells,
+and occupied tiles are ordinary: it does not pass other players' units. It
+never Glides, deep snow does not apply to it (it is an Ice Folk unit), and
+it has Snow cover like the others. It **never ends a Move, lands, advances
+after a kill, or is displaced onto a neutral village center or the center
+of a city its owner does not own** (`MOVEMENT_ILLEGAL` with reason
+`SETTLEMENT_FORBIDDEN`, never offered; the kill is ordinary and the
+Sabretooth stays), so it never besieges, never blocks a capture, and never
+takes a village; it may stand on its owner's centers. It has no Overrun, no
+capture, and no Charge.
+
+**Cold Aura** (the Frost Giant). At its owner's Start Turn, after the
+Shield recharge and before Plague ([section 3](#3-players-turns-and-victory)),
+each land-form Frost Giant, in unit-ID order, applies Chill to every unit
+that can be Chilled on the eight tiles around it, with one `UNITS_CHILLED`
+(source `COLD_AURA`) per Giant that has at least one target. A unit that
+stays next to a Giant is sluggish once and Shatter-eligible on every Ice
+Folk turn after that. The Giant never shatters a `JUGGERNAUT`-role unit and
+cannot itself be shattered.
+
+### 21.13 Attack resolution order
+
+An Ice Folk attack is an ordinary `ATTACK` resolved by the ordinary attack
+resolution, with these steps (new ones in bold):
+
+1. Attack: base Attack, Charge, Alpha, run-up, Gang Up, Inspired,
+   **Rockfall**, **Planted**, **Cold Blood**. Defense: fortification (0 for
+   Acid, Charge!, a Disintegrator ray, **Boulders**), cover (**Snow cover**
+   for an unfortified Ice Folk defender on Snow).
+2. Damage both ways from pre-combat HP; the **Blizzard** halves a hit from
+   distance 2 or more on a protected Ice Folk defender; Armoured; Martian
+   Shields absorb.
+3. **Shatter test** on the primary defender: a shattered defender dies and
+   does not retaliate.
+4. Lifesteal; **Sweep** flank hits (Armoured and Shields apply to each).
+5. Kill credit (the defender, hostile flank and splash kills), then growth.
+6. Field Defense on the target tile destroyed (`CATAPULT` for a Boulder
+   Yeti, **`TRAMPLE`** for a Mammoth, otherwise the ordinary reasons).
+7. Deaths in order: the defender, flank and splash victims in `(y, x, id)`
+   order, the attacker, each an Infect rising, a Bitten rising, or an
+   ordinary death with its Grave; **a shattered defender has cause
+   `SHATTER` and leaves no Grave** (a Bitten one still rises). Thralls of a
+   dead Brain collapse; bites and Plague land on the survivors.
+8. Push of a surviving target (Frost Giant), then the advance (never for a
+   Boulder Yeti, never onto a foreign center for a Sabretooth).
+9. The death-blast chain of the exploding units among the dead, **except a
+   shattered defender**; Plunder; reveals; the economy, reward, and
+   achievement tail.
+
+Events: `COMBAT_RESOLVED`; `FIELD_DEFENSE_DESTROYED`; `UNIT_DIED` (cause
+`SHATTER`, `ATTACK`, `SPLASH`, or `RETALIATION`), each followed by
+`GRAVE_CREATED` or a rising where one applies; `UNIT_GREW`; `UNIT_PUSHED`;
+`UNIT_MOVED`; the chain events; `PLUNDER_AWARDED`; `TILES_REVEALED`; the
+tail.
+
+### 21.14 Interactions with other rules
+
+| Rule                    | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Graves, Raise Dead      | Ice Folk land-form units leave Graves like any unit; a shattered unit of any faction leaves none; a unit killed by plain damage, a Sweep flank hit, a Rockfall, a shot, or a throw leaves an ordinary Grave. Raise Dead is unchanged on Snow; a risen Skeleton is not Chilled.                                                                                                                                                                                                                                |
+| Infect, Bitten          | An Ice Folk unit killed by a Zombie rises as an ordinary Zombie; a Witch that rises has left the board, so her Blizzard ends. A Zombie's kill is never a Shatter. A Bitten unit that is shattered still rises as its biter's Zombie in place (no Chill entry), and the attacker does not advance. No Ice Folk unit cures a bite.                                                                                                                                                                              |
+| Plague, Wail            | Plague applies to Ice Folk units; its damage and spread are not attacks, so the Blizzard does not halve them. Wail is not an attack (never halved) and uses the target's cover, so Snow cover counts: 2 on a Yeti in the open, 1 on Snow. A Lich's hit on an Ice Folk unit in its Witch's Blizzard is halved (8 on a Yeti on Snow becomes 4) and its splash derives from the halved hit.                                                                                                                      |
+| Lifesteal, Unanswered   | A Vampire is a melee attacker, never halved; an Ice Folk unit never retaliates against it.                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Undead actions          | Frenzy, Raise Dead, Devour, and Wail are primary actions a sluggish Necromancer, Ghoul, or Banshee that moved cannot use. Undead units are Chilled like anyone; a Chilled Zombie or Lich, which already cannot act after moving, only becomes Shatter-eligible. Restless is not an Ice Folk rule.                                                                                                                                                                                                             |
+| Goblin rules            | [Section 18.11](#1811-interactions-with-other-rules): blasts ignore Snow cover and the Blizzard, a shattered exploding unit does not explode, a sluggish goblin-crewed unit that moved cannot Kaboom, and Gang Up beats cover (a Goblin with two helpers deals a Yeti 11 in the open and 10 on Snow, either way more than its 9 HP).                                                                                                                                                                          |
+| Dinosaur rules          | [Section 19.12](#1912-interactions-with-other-rules): Eggs are never Chilled or shattered; deep snow cuts a run-up and a Pounce short; Charge! and Wallbreaker ignore fortification but not Snow cover, which is read from the defender's own fortification.                                                                                                                                                                                                                                                  |
+| Martian rules           | [Section 20.11](#2011-interactions-with-other-rules): Chill ignores Shields; Shatter reads the HP after the Shield; walkers and flyers ignore deep snow; the Frost Giant is immune to Mind Control and the Tractor Beam.                                                                                                                                                                                                                                                                                      |
+| Human abilities         | Field Defense and Walls give a defender their bonus against every Ice Folk attack except a Boulder Yeti's; a Mammoth's attack tramples the Field Defense on the target tile after the exchange; with Brittle, Ice Folk melee attackers demolish Field Defense like any owner of Explosives. A sluggish Captain that moved cannot Rally; a sluggish Knight that attacks without moving still Overruns. A Catapult always shoots from distance 2 or 3 and a Marksman from 2 is halved against a protected unit. |
+| Cities, siege, capacity | An Ice Folk unit on a hostile center besieges it (never a Sabretooth). Capture needs no Move, so a sluggish unit that began its turn on a center captures as usual. Every Ice Folk role uses one slot; a reward Frost Giant may exceed capacity. Land Grant, Spoils, rewards, and the city action are unchanged; Bolas and Cold Snap spend no city action.                                                                                                                                                    |
+| Boats, water            | Ice Folk boats are the Human boats. Land units embark at Ports with Shorecraft. No embarked or naval unit is Chilled or shattered; an attack from the shore on an embarked unit never shatters it, and a naval attack from distance 2 or more on a protected unit is halved (a Battleship's splash from the halved hit). The `blizzard` flag covers water tiles for drawing only.                                                                                                                             |
+| Rift                    | A Rift is never Snow and Mountain-born does not cover it, so no Ice Folk unit enters one. A flyer on a Rift is in land form: it can be Chilled, attacked from an adjacent tile, and shattered; the attacker does not advance.                                                                                                                                                                                                                                                                                 |
+| Achievements, Promotion | Promotion is the ordinary rule for every Ice Folk unit (3 kills, +5 maximum HP, a full heal that takes a unit out of the Shatter window but removes no Chill). Shatter, hostile Sweep, Rockfall, Boulder, and retaliation kills are credited; a Bolas and a Cold Snap are not kills. Muster counts the Ice Folk trainable roles and excludes the Frost Giant; Slayer counts Shatter and Sweep kills.                                                                                                          |
+
+### 21.15 Commands, events, errors, and queries
+
+- **Commands:** `THROW_BOLAS { kind, unitId, targetUnitId }` and
+  `COLD_SNAP { kind, unitId }`, in that order right after `TRACTOR_BEAM` in
+  `COMMAND_KIND_ORDER_V7`. `MOVE` accepts the Glide costs, the Mountain-born
+  paths, and the Sabretooth's paths through ZOC, and applies deep snow;
+  `ATTACK` accepts a Yeti's distance-2 target from a Mountain. A pending city
+  reward blocks the two commands like every command.
+- **Events** (`DOMAIN_EVENT_KIND_ORDER_V7`): `UNITS_CHILLED` right after
+  `UNITS_RALLIED`, with `results: [{ unitId, sluggish, turnsLeft }]`.
+  `UNIT_DIED.cause` gains `SHATTER` (never followed by `GRAVE_CREATED`; it
+  may be followed by `BITTEN_UNIT_RISEN`); `FIELD_DEFENSE_DESTROYED.reason`
+  gains `TRAMPLE`; `UNIT_MOVE_INTERRUPTED.reason` gains `SNOW`;
+  `WOUNDED_TENDED` results gain `curedChill`. There is no event for the
+  countdown or the end of a Chill, or for Snow appearing or disappearing.
+- **Combat preview** (`CombatPreviewV7`, so also `COMBAT_RESOLVED`), eight
+  fields, all false for an attack that involves no Ice Folk unit:
+  `shatters`, `coldBloodApplied`, `rockfallApplied`, `plantedApplied`,
+  `blizzardHalved` (`damageToDefender` is the halved value), `snowCover`
+  (the defender's × 1.5 comes from Snow), `sweep` (the flank victims are the
+  `splash` entries), and `hiddenBlizzardPossible` (public previews only).
+  Boulders report `fortificationLevel: 0` and `fortificationIgnored`; a
+  Trample is read from `sweep` and the target tile's Field Defense.
+- **Errors:** `BOLAS_NOT_LEGAL` (reasons `EMBARKED`, `TARGET_IMMUNE`,
+  `OUT_OF_RANGE`) and `COLD_SNAP_NOT_LEGAL` (`EMBARKED`, `NO_TARGET`); the
+  movement failure reasons gain `SNOW_STOPS_MOVE`, and
+  `SETTLEMENT_FORBIDDEN` also covers the Sabretooth. A sluggish unit's
+  refused action is `UNIT_ALREADY_ACTED`.
+- **Registration:** faction `ICE_FOLK`, tree `ICE_FOLK_BASELINE_V1`,
+  display name "Ice Folk"; unlock kinds `WITCH_SUPPORT`, `DEEP_WINTER`, and
+  `BRITTLE`; capabilities `deepWinter` and `shatterThreshold`; abilities
+  `MOUNTAIN_BORN`, `ROCKFALL`, `BOLAS`, `COLD_BLOOD`, `SWEEP`, `TRAMPLE`,
+  `BLIZZARD`, `COLD_SNAP`, `BOULDERS`, `PROWL`, and `COLD_AURA`; role
+  mechanics `mountainBorn`, `glides`, `ignoresZocStops`, `sweepDamage`,
+  `tramplesFieldDefense`, `ignoresFortification`, `plantedBonus2`,
+  `rockfallAttack2`, and `coldBloodBonus2`, with `buildsFieldDefense` false
+  for the Yeti and the Mammoth and `advancesAfterKill` false for the Boulder
+  Yeti; faction rules `snow` true and `treasureUnitRole` `RAIDER`; constants
+  `SHATTER_HP_V7` 3, `BRITTLE_SHATTER_HP_V7` 4, `CHILL_TURNS_V7` 2,
+  `BOLAS_RANGE_V7` 2, `COLD_SNAP_RANGE_V7` 2, `BLIZZARD_RADIUS_V7` 1,
+  `DEEP_WINTER_RADIUS_V7` 2, `DEEP_WINTER_RECOVER_V7` 6, `SWEEP_DAMAGE_V7`
+  2, `ROCKFALL_ATTACK2_V7` 3, `PLANTED_BONUS2_V7` 2, and
+  `COLD_BLOOD_BONUS2_V7` 1.
+- **Derived queries** for a state and a view: `isSnowV7` and `isBlizzardV7`
+  (on a view, the public `snow` and `blizzard` tile flags, which the UI
+  draws from and never recomputes), `unitIsSluggishV7`,
+  `unitMayActAfterMoveV7`, and `unitMayEnterMountainV7`.
+- **`queryPlayerCommandsV7`** offers, for an Ice Folk seat, `MOVE` commands
+  that follow Glide, Mountain-born, and Prowl; `ATTACK` at distance 2 for a
+  Yeti on a Mountain; `THROW_BOLAS` for every legal `(Sled, target)` in
+  unit-ID then target-ID order; and `COLD_SNAP` for every Witch with a
+  target. For every seat it withholds the actions a sluggish unit cannot
+  take and offers no `MOVE` through a known Snow stop. It never offers an
+  Ice Folk seat Field Defense, Rally, or Tend Wounded, or a Sabretooth a
+  foreign center. Every offered command is accepted.
+- **`previewBolasV7(view, unitId, targetUnitId)`** returns null unless that
+  command is offered, otherwise
+  `{ unitId, targetUnitId, becomesSluggish, turnsLeft, shatterSetups }`,
+  where `shatterSetups` lists the viewer's own units whose offered attack on
+  the target would shatter it once it is Chilled.
+  **`previewColdSnapV7(view, unitId)`** returns null unless the command is
+  offered, otherwise `{ unitId, targets: [{ unitId, becomesSluggish }] }` in
+  unit-ID order.
+- `queryCombatPreviewV7` and `estimateCombatV7` include Snow cover, the
+  Blizzard of visible Witches, Rockfall, Planted (from the unit's `moved`
+  flag; Attack 2 for an attack after a planned Move), Cold Blood, Sweep, and
+  Shatter, and accept the option `assumeTargetChilled`. Every preview
+  equals the resolution, except one flagged `hiddenBlizzardPossible` or
+  `touchesUnexplored`. `queryThreatenedTilesV7` gives a visible Ice Folk
+  unit its Glide reach on known Snow, a Mountain-born unit its Mountain
+  paths, a Sabretooth its reach through ZOC, a Yeti the distance-2 tiles
+  from every Mountain origin, and a Boulder Yeti range 2 from every tile it
+  can reach; it adds nothing for a Bolas or a Cold Snap, and a sluggish unit
+  of any seat threatens only from where it stands.
+- **Public unit stats** carry, for every unit, `chill` (null, or
+  `{ sluggish, turnsLeft }`), and for units of an Ice Folk seat the
+  `iceFolk` block: `onSnow`, `inBlizzard`, `snowCover`, `glides`,
+  `mountainBorn`, `shatterThreshold`, `rockfall` (true while it stands on a
+  Mountain), `planted` (what an attack made now would be, or null),
+  `sweepDamage`, and `blizzard` (true for a land-form Witch). The position
+  facts are the Snow and Blizzard the reader knows of. The Attack row lists
+  the source `PLANTED`; a snowy cover row reads `SNOW`.
+- `PublicPlayerV7` and the leaderboard carry `ICE_FOLK` and
+  `ICE_FOLK_BASELINE_V1`.
+
+## 22. Revision history
+
+| Revision | Ruleset ID           | Main changes                                                                                                                                                                                                               | Source                                                          |
+| -------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 3        | `pulp-wars-poc-7r3`  | Original-faction baseline: four land branches, growth rewards, achievements, combat kernel                                                                                                                                 | [RULESET_7.md](RULESET_7.md)                                    |
+| 4        | `pulp-wars-poc-7r4`  | Regional biomes; Ore returns; Mine 5/+2; Forge +1 per Mine                                                                                                                                                                 | [revision 4](RULESET_7_REVISION_4_BIOME_ECONOMY.md)             |
+| 5        | `pulp-wars-poc-7r5`  | Explorer achievement; Monument placement flow                                                                                                                                                                              | [revision 5](RULESET_7_REVISION_5_ACHIEVEMENTS.md)              |
+| 6        | `pulp-wars-poc-7r6`  | Map types, water, Fish, Pearls, Ports, Naval branch, transport, Patrol Boat, Battleship                                                                                                                                    | [revision 6](RULESET_7_REVISION_6_WATER_NAVAL.md)               |
+| 7        | `pulp-wars-poc-7r7`  | Neutral Roads, automatic embark, Battleship splash, flat fortification levels, Field Defense; removed Saboteur                                                                                                             | [revision 7](RULESET_7_REVISION_7_NETWORKS_FORTIFICATIONS.md)   |
+| 8        | `pulp-wars-poc-7r8`  | Adjacent shared processor contributors                                                                                                                                                                                     | [revision 8](RULESET_7_REVISION_8_INDUSTRY_ADJACENCY.md)        |
+| 9        | `pulp-wars-poc-7r9`  | 23-node Human tree, Captain, Knight, Overrun, Land Grant, Shipyard, Market move, separate land/sea trade                                                                                                                   | [revision 9](RULESET_7_REVISION_9_HUMAN_TECHNOLOGY.md)          |
+| 10       | `pulp-wars-poc-7r10` | Road movement without capital connection; city-center spawning; full-turn Fortify                                                                                                                                          | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
+| 10 (fix) | `pulp-wars-poc-7r11` | An occupied center blocks land training; displacement applies only to reward units                                                                                                                                         | [revision 10](RULESET_7_REVISION_10_PLAYTEST_CORRECTIONS.md)    |
+| 11       | `pulp-wars-poc-7r11` | One city action per turn; Windmill healing; Road population; Commerce ×2 Market; Ore on Drill; Pillage on Raiding; tactical AI                                                                                             | [revision 11](RULESET_7_REVISION_11_CITY_LOGISTICS_AI.md)       |
+| 12       | `pulp-wars-poc-7r12` | No starting technology; free first tier-1 research; Fruit always visible, Fertile Ground on Gathering; resources kept under improvements; AI opener; Raider Escape                                                         | this document                                                   |
+| 13       | `pulp-wars-poc-7r13` | Undead faction (per-seat factions, roster, Graves, Restless, Frenzy, Raise Dead, Devour, Infect, Lifesteal, Wail, Lich splash)                                                                                             | [revision 13](RULESET_7_REVISION_13_UNDEAD.md)                  |
+| 14       | `pulp-wars-poc-7r14` | Plague (Lich) and Bitten (Zombie); Tend cures; unanswered Vampire; Lich Attack 3; +1 village; level income cap 5; Commerce no longer doubles Markets                                                                       | [revision 14](RULESET_7_REVISION_14_BALANCE.md)                 |
+| 15       | `pulp-wars-poc-7r15` | Plague lasts three owner turns and spreads only on the first; Zombie 18 HP                                                                                                                                                 | [revision 15](RULESET_7_REVISION_15_BALANCE.md)                 |
+| 16a      | `pulp-wars-poc-7r16` | Orthogonal Shallow Water (25% minimum); capital growth guarantee and `CAPITAL_GROWTH`; Normal AI growth-first opening                                                                                                      | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 16b      | `pulp-wars-poc-7r16` | Patrol Boat and embarked Move 2; landing costs one movement point; landing preview                                                                                                                                         | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 16c      | `pulp-wars-poc-7r16` | Research tiers 5+1/7+3/12+5 per extra city; level income cap 4; Market cap 3                                                                                                                                               | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 17       | `pulp-wars-poc-7r17` | Goblin faction: roster, Warrens, Gang Up, Kaboom, death blasts and chains, friendly-fire bombs, Plunder, WAAAGH!, Troll regeneration; `END_TURN` blockade events                                                           | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
+| 17       | `pulp-wars-poc-7r17` | `pulp_wars-0ao.7` tuning: one starting Goblin; Goblin Attack 1.5, Defense 0.5, Kaboom 5; death blasts 2/4/4; Goblin-only Normal AI changes                                                                                 | [revision 17](RULESET_7_REVISION_17_GOBLINS.md)                 |
+| 17 (fix) | `pulp-wars-poc-7r17` | `pulp_wars-0ao.15`: landing ends the activation for every faction (no Attack, Kaboom, Move, or Disband after landing)                                                                                                      | [revision 16](RULESET_7_REVISION_16.md)                         |
+| 18       | `pulp-wars-poc-7r18` | Movement (`pulp_wars-6gd.2`): a Move passes through the mover's own units and never ends on one; the Road half cost depends only on the tile being left                                                                    | [revision 18](RULESET_7_REVISION_18.md)                         |
+| 18       | `pulp-wars-poc-7r18` | Showcase (`pulp_wars-6gd.3`): the fixed 16 x 16 `SHOWCASE` map type with three developed cities, every technology, and one unit of every role per seat                                                                     | [revision 18](RULESET_7_REVISION_18.md)                         |
+| 19       | `pulp-wars-poc-7r19` | Dinosaur faction (`pulp_wars-c87.2`–`c87.7`): roster, slots, Eggs, Shaman Hatch, Nesting, Grow, Wild, Acid, Armoured, Stampede, treasure Raptor                                                                            | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
+| 19       | `pulp-wars-poc-7r19` | `pulp_wars-c87.8` interim tuning: Caveman 12 HP; one-slot Triceratops hatching in one turn; Forest Stampede lanes; Dinosaur-only AI changes                                                                                | [revision 19](RULESET_7_REVISION_19_DINOSAURS.md)               |
+| 20       | `pulp-wars-poc-7r20` | `pulp_wars-0hi.2`: Charge! replaces Stampede (Triceratops Move 2, 20 HP, 2 slots, hatch 2); T-Rex 14, hatch 4; Nesting slot; Wallbreaker; full heal                                                                        | [revision 20](RULESET_7_REVISION_20.md)                         |
+| 21       | `pulp-wars-poc-7r21` | `pulp_wars-9s0.4`: Conqueror, Land Baron, Sea Dog, and Slayer achievements (seven entitlements per seat)                                                                                                                   | [revision 21](RULESET_7_REVISION_21_ACHIEVEMENTS.md)            |
+| Martian  | `pulp-wars-poc-7r22` | Martian faction (`pulp_wars-t6s.2` engine): roster, Shields, Force Field(s), heat rays, Cooling, Pierce, Disintegrator, Stride, Flying, self-launch, Beam Down, Mind Control, Thralls, Tractor Beam                        | [Martian overlay](RULESET_7_MARTIANS.md)                        |
+| 20 (bal) | `pulp-wars-poc-7r23` | `pulp_wars-0hi.3` coarse Dry Land balance: Human Fighter, Raider, and Marksman 12 HP, Guard 17; Caveman 10                                                                                                                 | [revision 20](RULESET_7_REVISION_20.md#63-tuning-record)        |
+| Martian  | `pulp-wars-poc-7r23` | `pulp_wars-t6s.4` Martian UI (setup offers Martians; `t6s.6` production art) and `t6s.3` Martian Normal AI, no identity change                                                                                             | [Martian overlay](RULESET_7_MARTIANS.md)                        |
+| Ice Folk | `pulp-wars-poc-7r24` | Ice Folk faction (`pulp_wars-7g3.3` engine): roster, Chill and Shatter, Snow, Glide, the Blizzard, Cold Snap, Bolas, Mountain-born, Rockfall, Cold Blood, Sweep, Trample, Boulders, Prowl, Cold Aura, Deep Winter, Brittle | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                       |
+| Martian  | `pulp-wars-poc-7r25` | `pulp_wars-t6s.5` coarse Dry Land Martian balance: Colossus Defense 2.5                                                                                                                                                    | [Martian balance](../validation/RULESET_7_MARTIAN_BALANCE.md)   |
+| Ice Folk | `pulp-wars-poc-7r25` | `pulp_wars-7g3.6` Ice Folk UI (setup offers the Ice Folk; `7g3.5` production art) and `7g3.4` Ice Folk Normal AI, no identity change                                                                                       | [Ice Folk overlay](RULESET_7_ICE_FOLK.md)                       |
+| —        | `pulp-wars-poc-7r26` | `pulp_wars-9s0.2`: the Pangea coast ring (no land on the edge ring; Shallow circumnavigation; 59.5–72% land); other map types unchanged                                                                                    | [section 2.3](#23-map-types)                                    |
+| Ice Folk | `pulp-wars-poc-7r27` | `pulp_wars-7g3.7` coarse Dry Land Ice Folk balance: Yeti 9 HP, Defense 1.5                                                                                                                                                 | [Ice Folk balance](../validation/RULESET_7_ICE_FOLK_BALANCE.md) |
+| —        | `pulp-wars-poc-7r28` | `pulp_wars-9s0.5`: the Rift (a 1 x 3 crack only flyers stand on; nothing built on it; 0-2 per generated board by width); other rules unchanged                                                                             | [Rift overlay](RULESET_7_RIFT.md)                               |
+| —        | `pulp-wars-poc-7r29` | `pulp_wars-w5j.1`: every player plays a different faction (`DUPLICATE_FACTION`; the headless and test only `allowDuplicateFactions`)                                                                                       | [unique factions](RULESET_7_UNIQUE_FACTIONS.md)                 |
+| —        | `pulp-wars-poc-7r30` | `pulp_wars-78i.3`: Dwarf faction engine, then its Normal AI (`78i.4`) and UI (`78i.6`, `78i.5` art) under the same identity; **not folded** into this document                                                             | [Dwarf overlay](RULESET_7_DWARVES.md)                           |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -4233,38 +5211,134 @@ the code's behavior is stated:
   Tend Wounded cure of Plague and Bitten names the Dinosaur Shaman beside the
   Human Captain.
 
-## 22. Known discrepancies
+**Ice Folk release fold (2026-10-03, `pulp_wars-7g3.8`, no ruleset or
+identity change):** the [Ice Folk overlay](RULESET_7_ICE_FOLK.md)
+(`pulp-wars-poc-7r24`, implemented by `pulp_wars-7g3.3`, with the Normal AI
+of `pulp_wars-7g3.4`, the UI of `pulp_wars-7g3.6`, and the production art
+of `pulp_wars-7g3.5`), including its root rulings (section 17.5), its
+engine notes (section 19), its UI notes (section 20), and the
+`pulp_wars-7g3.7` tuning record (`pulp-wars-poc-7r27`: Yeti 9 HP and
+Defense 1.5), was folded into this document for six factions, with an Ice
+Folk roster table, the Ice Folk technology differences,
+[section 21](#21-ice-folk-faction-rules), the Cold Aura step of Start
+Turn, the Chill countdown of End Turn, the sluggish rule of
+[section 12.2](#122-activation), Glide, deep snow, Mountain-born, and Prowl
+in [section 12.1](#121-movement), and the Ice Folk interactions in the
+shared sections; the former sections 21 (revision history) and 22 (known
+discrepancies) became 22 and 23. The Ice Folk values were checked at
+`pulp-wars-poc-7r30` against `ICE_FOLK_ROLE_RULES_V7`,
+`ICE_FOLK_ROLE_MECHANICS_V7`, the Ice Folk tree and
+`technologyCapabilitiesV7`, `FACTION_RULES_V7`, the Ice Folk constants of
+`ruleset-v7.ts`, the shared rules `unitMayActAfterMoveV7`,
+`primaryActionBlockedAfterMoveV7`, `canEnterTerrainV7`, and
+`terrainStopsMoveV7`, `ice-folk.ts`, `combat.ts`, `movement.ts`, the
+reducer, the state schema, event projection, unit stats, and the public
+queries; the worked examples were recomputed with the engine formula at the
+current HP. Where the overlay and the code differ, the code's behavior is
+stated here, and each difference is listed in
+[section 23](#23-known-discrepancies). The fold also corrected this
+document's own stale values: the prior-identity list runs through `7r29`
+(not `7r25`), the obsolete autosave keys through `v7r29` (not `v7r28`), the
+revision history gains its missing `7r29` and `7r30` rows, the browser
+setup offers seven factions (the Ice Folk since `pulp_wars-7g3.6` and the
+Dwarves since `pulp_wars-78i.6`), and the Dwarf overlay's Normal AI and UI
+are live, not pending.
 
-No rule discrepancy is open: as of `pulp-wars-poc-7r29` the rules in this
-document match the code for the five playable factions, including the
-Dinosaur faction of revisions 19 and 20, the achievements of revision 21,
-and the Martian faction of the Martian overlay.
+## 23. Known discrepancies
 
-**Pending overlay in the code.** The engine at `pulp-wars-poc-7r29` also
-contains the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) (`pulp_wars-7g3.3`,
-`7r24`), which this document does not describe: the `ICE_FOLK`
-faction and `ICE_FOLK_BASELINE_V1` tree, the commands `THROW_BOLAS` and
-`COLD_SNAP` (after `TRACTOR_BEAM`), the event `UNITS_CHILLED` (after
-`UNITS_RALLIED`), the `UNIT_DIED` cause `SHATTER`, the
-`FIELD_DEFENSE_DESTROYED` reason `TRAMPLE`, the `UNIT_MOVE_INTERRUPTED`
-reason `SNOW`, `curedChill` in Tend results, the state and view list
-`chilled`, the view tile flags `snow` and `blizzard`, eight combat-preview
-fields, the `chill` unit stat and `iceFolk` block, and the Witch support,
-Deep Winter, and Brittle unlocks. In a match without an Ice Folk seat every
-one of them is empty, false, or never offered, and the overlay's parity
-requirement is that such a match is identical to the previous identity apart
-from identity and those neutral fields. Its shared helpers
-(`unitMayActAfterMoveV7`, the Mountain-born input of `canEnterTerrainV7`,
-and the Sabretooth's use of the flyer's settlement rule) change nothing for
-the five factions. The browser setup does not offer the faction, and its
-Normal AI and UI are in progress. It is not folded.
+As of `pulp-wars-poc-7r30` the rules in this document match the code for
+the six factions it describes, including the Dinosaur faction of revisions
+19 and 20, the achievements of revision 21, the Martian faction of the
+Martian overlay, and the Ice Folk faction of the Ice Folk overlay, with one
+open item: the public Wail preview below.
 
-The revision 13–21 overlays and the Martian overlay keep superseded values
-(for example the Lich's Attack 2.5 and 20-HP Zombie in revision 13,
-unlimited Plague in revision 14, "Move 3" for embarked units in revision 13,
-the pre-tuning Goblin contract values in the revision-17 bounds and
-decisions, the Stampede and the interim Dinosaur numbers in revision 19,
-the pre-`0hi.3` Human HP in revision 20's bounds, and the contract's
+**Open.**
+
+- **An inexact Wail preview without a flag.** The overlay's section 11 says
+  every preview equals its resolution except one flagged
+  `hiddenBlizzardPossible` or `touchesUnexplored`. `previewWailV7` reads an
+  Ice Folk target's Snow cover from the viewer's `snow` flags, so a hidden
+  Ice Witch's Blizzard next to the target can make the canonical Wail deal
+  less than the preview, and the preview carries no flag (overlay section
+  19.3 note 6, recorded by the engine bead and not resolved;
+  [section 17.9](#179-wail) states the code's behavior).
+
+**Ice Folk overlay against the code** (`pulp_wars-7g3.8`; resolved by
+stating the code's behavior):
+
+- **Numbers.** The `7r27` Yeti (9 HP, Defense 1.5) replaces the contract's
+  10 and 2, which the overlay keeps in its tuning bounds. The overlay's
+  worked examples (section 5.6), per-unit analysis (section 9), and
+  interaction examples (section 10) were computed with that Yeti and with
+  10-HP Human Fighters, Raiders, and Marksmen, 15-HP Guards, and a 12-HP
+  Caveman; the examples here are recomputed at current HP. The overlay's
+  values that change are: a Caveman (10 HP) is no longer shattered by a
+  second Yeti hit (it dies by plain damage), a charging Sled or a
+  Sabretooth no longer shatters a full-HP Fighter (12 HP) without Brittle,
+  the overlay's Walled-Guard example ends without a Shatter (two Mammoth
+  hits leave the 17-HP Guard at 9, a Yeti's 4 leaves it at 5, and its
+  retaliation of 13 kills the Yeti), a
+  Lich on a Yeti on Snow deals 8 (halved 4; the overlay has 7), a Goblin
+  with two helpers deals a Yeti 11 in the open and 10 on Snow (the overlay
+  has 10 and 8), a Vampire deals a Yeti on Snow 8 (the overlay has 7), and
+  a full-power Tripod deals a Yeti in its Witch's Blizzard 6 (the overlay
+  has 5). Overlay section 19.1 and its tests (19.3 note 10) already record
+  the HP substitution.
+- **The Ice Witch always has Snow cover** unless she is fortified: her own
+  tile is in her Blizzard, so it is Snow. The overlay's section 10.1 example
+  "a Vampire deals a Witch 10" is the open-ground value; she takes 9.
+- **Setup.** The overlay's section 2.2 ("every combination is legal") and
+  section 13.1 ("default all Human") are superseded by the one faction per
+  seat rule of `7r29` (`DUPLICATE_FACTION`, distinct defaults Human, Undead,
+  Goblin, Dinosaur; [section 2.1](#21-match-setup)); a mirror match, such as
+  the overlay's `II` balance pairing, is legal only in headless and test
+  setups with `allowDuplicateFactions`. The setup offers seven factions,
+  the Dwarves included.
+- **Normal AI.** The overlay's section 12 asks for Scouting as the free
+  opening technology (Drill with a hostile unit in sight); the policy keeps
+  the ordinary opener scorer, as the same section's last paragraph allows,
+  and puts Drill and Scouting first in its research plan. Its Goblin Kaboom rule is not
+  implemented, and Glide in the city-threat test and Rockfall from a
+  Mountain a Yeti could walk to are left out of the AI's estimates
+  (overlay section 12.1), while the public `queryThreatenedTilesV7` keeps
+  both.
+- **Projection.** `UNITS_CHILLED` gives `sourceUnitId` null to every viewer
+  that cannot see the source and does not own it, not only to a viewer that
+  owns a target (overlay section 6.5); its results are the units the viewer
+  owns or can see before or after the command.
+- **Readings of the engine bead** (overlay section 19.3), stated in this
+  document: the `snow` and `blizzard` tile flags are optional in the
+  `PlayerTileViewV7` type and always set on an explored tile; a Move that
+  meets a hidden Blizzard on a tile that is also a ZOC stop reports `SNOW`;
+  `iceFolk.inBlizzard` is the Blizzard the reader knows of; only `PLANTED`
+  is an emitted Attack modifier source (`ROCKFALL` and `COLD_BLOOD` are
+  declared but never emitted; the preview flags carry them), and a snowy
+  cover row reads `SNOW`; a sluggish Goblin or Raider that moved cannot
+  Kaboom or Pillage; the Sabretooth's foreign centers are also refused for
+  reward displacement (which, with settlements at least 3 apart, never
+  reaches one).
+- **Superseded overlay text:** its status line and section 15 ("no bead of
+  the Ice Folk epic folds this overlay", "no UI offers the faction until
+  `pulp_wars-7g3.6`"), the placeholder-art plan of section 13.4 (the
+  production art of `pulp_wars-7g3.5` is wired in), the `7rNN` identity
+  (`7r24`), and the Rift notes written before the terrain existed (sections
+  10.9 and 19.3 note 11, implemented by `pulp_wars-9s0.5`).
+
+**Pending overlay in the code.** The engine at `pulp-wars-poc-7r30` also
+contains the [Dwarf overlay](RULESET_7_DWARVES.md) (`pulp_wars-78i.3`, with
+the Normal AI of `78i.4` and the UI of `78i.6`), which this document does
+not describe: the `DWARF` faction and `DWARF_BASELINE_V1` tree, its
+commands, events, state and view lists, per-unit flags, `dwarf` stats
+block, and combat-preview fields. In a match without a Dwarf seat every one
+of them is empty, false, absent, or never offered. The browser setup offers
+the faction; its coarse balance and its fold are in progress.
+
+The revision 13–21 overlays and the Martian and Ice Folk overlays keep
+superseded values (for example the Lich's Attack 2.5 and 20-HP Zombie in
+revision 13, unlimited Plague in revision 14, "Move 3" for embarked units in
+revision 13, the pre-tuning Goblin contract values in the revision-17 bounds
+and decisions, the Stampede and the interim Dinosaur numbers in revision
+19, the pre-`0hi.3` Human HP in revision 20's bounds, the contract's
 Colossus Defense 3, the Rift rules, and the placeholder-art plan in the
-Martian overlay) as design history; this document states the current
-values.
+Martian overlay, and the contract's Yeti and the examples above in the Ice
+Folk overlay) as design history; this document states the current values.

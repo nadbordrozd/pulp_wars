@@ -4,11 +4,14 @@
 
 The current client runs `pulp-wars-poc-7r30` (autosave
 `pulpWars.save.v7r30.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r29.current`), whose rules for the five factions
-the setup screen offers, Human, Undead, Goblin, Dinosaur, and Martian, are
-described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
-(`pulp_wars-c87.9` folded revisions 19–21 into it, and `pulp_wars-t6s.7` the
-[Martian overlay](../product/RULESET_7_MARTIANS.md)). The Dinosaur faction of
+through `pulpWars.save.v7r29.current`), whose rules for six of the seven
+factions the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian,
+and Ice Folk, are described by
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
+(`pulp_wars-c87.9` folded revisions 19–21 into it, `pulp_wars-t6s.7` the
+[Martian overlay](../product/RULESET_7_MARTIANS.md), and `pulp_wars-7g3.8`
+the [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md); the Dwarves follow
+the pending [Dwarf overlay](../product/RULESET_7_DWARVES.md)). The Dinosaur faction of
 the [revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
 (`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured;
 `pulp_wars-c87.3`: Eggs, Shaman Hatch, and Nesting, with their public
@@ -48,13 +51,14 @@ Bitten UI surfaces are described in the
 [Screen Flow revision-14 overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-revision-14-plague-and-bitten-overlay)
 and read only the public `plagued` and `bitten` view lists, previews, and
 projected events. The engine registers the faction per seat, and the setup UI
-always offers a Human/Undead/Goblin/Dinosaur/Martian choice for the human
-and each AI seat (all Human by default; see the
+always offers a Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf choice
+for the human and each AI seat (one faction per player, distinct by
+default; see the
 [Martian engine boundary](#martian-engine-boundary-pulp_wars-t6s2));
 there is no URL flag for it (`pulp_wars-vkq.16` removed the
 former `?undead=1` development flag and `src/app/undead-flag-v7.ts`). Saves
-with Undead, Goblin, Dinosaur, or Martian seats load and resume like any
-other. Goblin
+with Undead, Goblin, Dinosaur, Martian, Ice Folk, or Dwarf seats load and
+resume like any other. Goblin
 presentation (`pulp_wars-0ao.5`, `0ao.12`) likewise reads only public views,
 the public Kaboom, attack-explosion, and combat previews, the public unit
 stats' `goblin` block, and projected events
@@ -195,8 +199,10 @@ both.
 ## Ice Folk engine boundary (`pulp_wars-7g3.3`)
 
 The engine registers a sixth faction, `ICE_FOLK`
-([Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md)), with every rule of
-that document. Since the Ice Folk UI bead (`pulp_wars-7g3.6`) the setup
+([Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), folded by
+`pulp_wars-7g3.8` into
+[current rules section 21](../product/RULESET_7_CURRENT.md#21-ice-folk-faction-rules)),
+with every rule of that document. Since the Ice Folk UI bead (`pulp_wars-7g3.6`) the setup
 screen offers it for every seat (`FACTIONS` in
 `src/render/dom/app-view-v7.ts`), and the client draws and plays it as the
 [Screen Flow Ice Folk overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-ice-folk-overlay)

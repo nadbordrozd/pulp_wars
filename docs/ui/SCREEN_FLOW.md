@@ -689,7 +689,9 @@ This overlay implements
 [Ice Folk spec section 13](../product/RULESET_7_ICE_FOLK.md#13-ui-requirements)
 (`pulp_wars-7g3.6`) with the production art of the
 [Ice Folk art fragment](../art/factions/ICE_FOLK.md) (bead `pulp_wars-7g3.5`)
-and its code-drawn pieces. Every cue reads only public views (the tile
+and its code-drawn pieces. The Ice Folk rules are part of
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md#21-ice-folk-faction-rules).
+Every cue reads only public views (the tile
 flags `snow` and `blizzard`, `view.chilled`), the public unit stats' `chill`
 and `iceFolk` blocks, the public previews (`previewBolasV7`,
 `previewColdSnapV7`, `queryCombatPreviewV7`) and projected events; nothing

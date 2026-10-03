@@ -4,10 +4,13 @@ The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) for the five
-playable factions (Human, Undead, Goblin, Dinosaur, and Martian;
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) for six
+factions (Human, Undead, Goblin, Dinosaur, Martian, and Ice Folk;
 `pulp_wars-t6s.7` folded the
-[Martian overlay](../product/RULESET_7_MARTIANS.md) into it). The headless CLI
+[Martian overlay](../product/RULESET_7_MARTIANS.md) and `pulp_wars-7g3.8`
+the [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md) into it); the Dwarf
+seats below follow the pending
+[Dwarf overlay](../product/RULESET_7_DWARVES.md). The headless CLI
 accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r30`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
 [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md) the
@@ -200,7 +203,8 @@ has had its Martian pairings and summary since the balance bead
 ## Ice Folk seats (`pulp_wars-7g3.3`)
 
 `--factions` also accepts `ice` (or `ice_folk`)
-([Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md)), on every map type
+([current rules section 21](../product/RULESET_7_CURRENT.md#21-ice-folk-faction-rules);
+[Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md)), on every map type
 including `showcase`:
 
 ```bash
