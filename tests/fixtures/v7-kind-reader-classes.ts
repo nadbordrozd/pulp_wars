@@ -184,6 +184,12 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dwarfActionButtons":
     "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#viewerFaction": "SEAT",
+  // The campaign screens (pulp_wars-68k.5) read the factions of a mission's
+  // seats and of the unlock table; no unit is involved.
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#campaignList": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#briefing": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#factionEmblem": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#missionResults": "SEAT",
   "src/render/dom/app-view-v7.ts::identity": "SEAT",
   "src/render/dom/app-view-v7.ts::trainingCostForViewV7": "SEAT",
   "src/render/dom/app-view-v7.ts::incomeDescription": "SEAT",

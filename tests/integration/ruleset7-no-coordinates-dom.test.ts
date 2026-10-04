@@ -3,17 +3,26 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   applyCommandV7,
+  createPlayableGameV7,
+  missionByIdV7,
+  missionMatchSetupV7,
   projectEventsV7,
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
+  type FactionIdV7,
   type GameStateV7,
+  type PlayerViewV7,
 } from "../../src/engine/index";
-import type {
-  Ruleset7AcceptedBoundary,
-  Ruleset7BrowserSnapshot,
-  Ruleset7DispatchResult,
+import {
+  bootstrapRuleset7App,
+  type Ruleset7AcceptedBoundary,
+  type Ruleset7BrowserSnapshot,
+  type Ruleset7CampaignProgressV7,
+  type Ruleset7DispatchResult,
 } from "../../src/app/index";
+import { CHAPTER_ONE_V7 } from "../../src/campaign/chapter-1";
+import { CAMPAIGN_PROGRESS_STORAGE_KEY_V7 } from "../../src/persistence/index";
 import type {
   BoardHostCallbacksV7,
   BoardHostModelV7,
@@ -141,6 +150,143 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
       "Controls 1 / 1",
     ])
       expect(COORDINATE.test(text)).toBe(false);
+  });
+
+  // The campaign screens (pulp_wars-68k.5): the list in every progress
+  // state, every briefing, Settings and the resume label of a mission, and
+  // the mission Victory (with every unlock) and Defeat dialogs.
+  it("Campaign: list, briefings, mission Settings, resume label and dialogs", async () => {
+    const offences = new Set<string>();
+    const check = (step: string): void => {
+      for (const text of pageTexts())
+        if (COORDINATE.test(text)) offences.add(`${step}: ${text}`);
+    };
+    const progressStates: Record<string, unknown>[] = [
+      {},
+      {
+        FRONTIER_1: { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 12 },
+      },
+      Object.fromEntries(
+        CHAPTER_ONE_V7.missions.map((entry) => [
+          entry.missionId,
+          { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 21 },
+        ]),
+      ),
+    ];
+    let steps = 0;
+    for (const completed of progressStates) {
+      document.body.innerHTML = '<div id="app"></div>';
+      window.localStorage.clear();
+      window.localStorage.setItem(
+        CAMPAIGN_PROGRESS_STORAGE_KEY_V7,
+        JSON.stringify({
+          format: "pulp-wars-campaign-progress",
+          version: 1,
+          completed,
+        }),
+      );
+      const app = bootstrapRuleset7App(document);
+      document
+        .querySelector<HTMLButtonElement>('[data-action="mode-campaign"]')
+        ?.click();
+      await settle();
+      check("campaign list");
+      document
+        .querySelector<HTMLButtonElement>('[data-action="campaign-reset"]')
+        ?.click();
+      await settle();
+      check("campaign reset");
+      for (const entry of CHAPTER_ONE_V7.missions) {
+        const card = document.querySelector<HTMLButtonElement>(
+          `[data-action="mission-${entry.missionId.toLowerCase()}"]`,
+        );
+        if (card === null || card.dataset.status === "locked") continue;
+        card.click();
+        await settle();
+        check(`briefing ${entry.missionId}`);
+        steps += 1;
+        document
+          .querySelector<HTMLButtonElement>('[data-action="campaign-back"]')
+          ?.click();
+        await settle();
+      }
+      app.destroy();
+    }
+    // Every briefing was reached with full progress.
+    expect(steps).toBe(1 + 2 + CHAPTER_ONE_V7.missions.length);
+    // A mission in play: Settings, then the resume screen.
+    document.body.innerHTML = '<div id="app"></div>';
+    window.localStorage.clear();
+    const app = bootstrapRuleset7App(document);
+    document
+      .querySelector<HTMLButtonElement>('[data-action="mode-campaign"]')
+      ?.click();
+    await settle();
+    document
+      .querySelector<HTMLButtonElement>('[data-action="mission-frontier_1"]')
+      ?.click();
+    await settle();
+    document
+      .querySelector<HTMLButtonElement>('[data-action="campaign-start"]')
+      ?.click();
+    for (let wait = 0; wait < 200; wait += 1) {
+      if (app.controller.snapshot().phase === "ACTIVE") break;
+      await settle();
+    }
+    document
+      .querySelector<HTMLButtonElement>('[data-action="compact-menu"]')
+      ?.click();
+    document
+      .querySelector<HTMLButtonElement>('[data-action="settings"]')
+      ?.click();
+    expect(document.querySelector(".v7-mission-label")).not.toBeNull();
+    check("mission settings");
+    document
+      .querySelector<HTMLButtonElement>('[data-action="close-overlay"]')
+      ?.click();
+    document
+      .querySelector<HTMLButtonElement>('[data-action="compact-menu"]')
+      ?.click();
+    document
+      .querySelector<HTMLButtonElement>('[data-action="main-menu"]')
+      ?.click();
+    for (let wait = 0; wait < 200; wait += 1) {
+      if (app.controller.snapshot().phase === "RESUMABLE") break;
+      await settle();
+    }
+    expect(document.querySelector(".v7-resume-summary")?.textContent).toMatch(
+      /^Mission 1/,
+    );
+    check("mission resume");
+    app.destroy();
+    // The mission dialogs, each with its unlocks announced.
+    for (const entry of CHAPTER_ONE_V7.missions)
+      for (const victory of [true, false]) {
+        document.body.innerHTML = '<div id="app"></div>';
+        const state = missionStateV7(entry.missionId);
+        const view = viewForV7(state, state.humanPlayerId);
+        const ended: GameStateV7["outcome"] = victory
+          ? { kind: "VICTORY", winnerId: view.humanPlayerId }
+          : {
+              kind: "DEFEAT",
+              humanId: view.humanPlayerId,
+              defeatedByPlayerId: required(
+                view.turnOrder.find((id) => id !== view.humanPlayerId),
+              ),
+            };
+        const controller = new FixtureController(state);
+        controller.complete({ ...view, outcome: ended }, entry.missionId, [
+          ...entry.unlocks,
+        ]);
+        const host = new RecordingBoardHost();
+        const mounted = mount(controller, host);
+        expect(
+          document.querySelector("[data-v7-region='results']"),
+        ).not.toBeNull();
+        check(`${entry.missionId} ${victory ? "victory" : "defeat"}`);
+        mounted.destroy();
+      }
+    expect([...offences]).toEqual([]);
   });
 
   for (const [name, fixture, steps] of FIXTURES)
@@ -323,6 +469,37 @@ function collect(host: RecordingBoardHost): string[] {
   return texts;
 }
 
+/** Every text node, accessible name and tooltip of the page. */
+function pageTexts(): string[] {
+  const texts: string[] = [];
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
+    const text = node.textContent?.trim() ?? "";
+    if (text !== "") texts.push(text);
+  }
+  for (const element of document.querySelectorAll(
+    "[aria-label], [title], [aria-description], [placeholder]",
+  ))
+    for (const attribute of [
+      "aria-label",
+      "title",
+      "aria-description",
+      "placeholder",
+    ]) {
+      const value = element.getAttribute(attribute);
+      if (value !== null && value !== "") texts.push(value);
+    }
+  return texts;
+}
+
+/** A chapter mission's initial state (seat 0's first choice). */
+function missionStateV7(missionId: string): GameStateV7 {
+  const setup = missionMatchSetupV7(required(missionByIdV7(missionId)));
+  const created = createPlayableGameV7(required(setup));
+  if (!created.ok) throw new Error(created.error.code);
+  return created.state;
+}
+
 async function settle(): Promise<void> {
   for (let index = 0; index < 5; index += 1)
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -338,10 +515,33 @@ class FixtureController implements Ruleset7ControllerPortV7 {
   >();
   #state: GameStateV7;
   #snapshot: Ruleset7BrowserSnapshot;
+  #lastWin: Ruleset7CampaignProgressV7["lastWin"] = null;
 
   constructor(state: GameStateV7) {
     this.#state = state;
     this.#snapshot = activeSnapshot(state);
+  }
+  /** Shows a finished mission and the unlocks its win announced. */
+  complete(
+    view: PlayerViewV7,
+    missionId: string,
+    unlocked: readonly FactionIdV7[],
+  ): void {
+    this.#snapshot = {
+      ...activeSnapshot(this.#state),
+      phase: "COMPLETE",
+      view,
+      offeredCommands: [],
+    };
+    this.#lastWin = { missionId, firstWin: true, unlocked };
+  }
+  campaignProgress(): Ruleset7CampaignProgressV7 {
+    return {
+      status: "OK",
+      completed: {},
+      lastWin: this.#lastWin,
+      diagnostic: null,
+    };
   }
   snapshot(): Ruleset7BrowserSnapshot {
     return this.#snapshot;

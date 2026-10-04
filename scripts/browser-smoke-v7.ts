@@ -85,6 +85,19 @@ const FACTION_OPTIONS_V7 = [
   "Ice Folk",
   "Dwarf",
 ] as const;
+/**
+ * Campaign progress (pulp_wars-68k.5, docs/product/CAMPAIGN.md section 4.1):
+ * its own key, which the storage-isolation check seeds and expects to
+ * survive the obsolete-save cleanup and Delete save.
+ */
+const CAMPAIGN_KEY_V7 = "pulpWars.campaign.v1";
+const SEEDED_CAMPAIGN_PROGRESS_V7 = JSON.stringify({
+  format: "pulp-wars-campaign-progress",
+  version: 1,
+  completed: {
+    FRONTIER_1: { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 12 },
+  },
+});
 const timingMode = browserTimingModeV7(process.argv);
 const deployed = process.argv.includes("--deployed");
 const baseUrl = smokeUrl(
@@ -192,6 +205,7 @@ try {
       localStorage.setItem('pulpWars.save.current', 'v6-bytes');
       localStorage.setItem('pulpWars.settings.v1', JSON.stringify({ format: 'pulp-wars-settings', version: 1, settings: { uiScale: 1, motion: 'REDUCED', animationSpeed: 'NORMAL', highContrast: false } }));
       localStorage.setItem('pulpWars.unrelated', 'unrelated-bytes');
+      localStorage.setItem(${JSON.stringify(CAMPAIGN_KEY_V7)}, ${JSON.stringify(SEEDED_CAMPAIGN_PROGRESS_V7)});
     })()`,
   );
   await reloadAndWaitForFreshDocument(
@@ -226,6 +240,10 @@ try {
       });
     })()`,
   );
+  // The Skirmish / Campaign switch (pulp_wars-68k.5) comes first in the
+  // reading order: Skirmish, Campaign, then Opponents.
+  await pressKey(connection, "Tab", "Tab");
+  await pressKey(connection, "Tab", "Tab");
   await pressKey(connection, "Tab", "Tab");
   await typeSelectValue(connection, "#v7-ai-count", "2");
   await pressKey(connection, "Tab", "Tab");
@@ -534,9 +552,10 @@ try {
     readonly v6: string | null;
     readonly settings: string | null;
     readonly unrelated: string | null;
+    readonly campaign: string | null;
   }>(
     connection,
-    `({ current: localStorage.getItem('pulpWars.save.v7r37.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), oldV7r15: localStorage.getItem('pulpWars.save.v7r15.current'), oldV7r16: localStorage.getItem('pulpWars.save.v7r16.current'), oldV7r17: localStorage.getItem('pulpWars.save.v7r17.current'), oldV7r18: localStorage.getItem('pulpWars.save.v7r18.current'), oldV7r19: localStorage.getItem('pulpWars.save.v7r19.current'), oldV7r20: localStorage.getItem('pulpWars.save.v7r20.current'), oldV7r21: localStorage.getItem('pulpWars.save.v7r21.current'), oldV7r22: localStorage.getItem('pulpWars.save.v7r22.current'), oldV7r23: localStorage.getItem('pulpWars.save.v7r23.current'), oldV7r24: localStorage.getItem('pulpWars.save.v7r24.current'), oldV7r25: localStorage.getItem('pulpWars.save.v7r25.current'), oldV7r26: localStorage.getItem('pulpWars.save.v7r26.current'), oldV7r27: localStorage.getItem('pulpWars.save.v7r27.current'), oldV7r28: localStorage.getItem('pulpWars.save.v7r28.current'), oldV7r29: localStorage.getItem('pulpWars.save.v7r29.current'), oldV7r30: localStorage.getItem('pulpWars.save.v7r30.current'), oldV7r31: localStorage.getItem('pulpWars.save.v7r31.current'), oldV7r32: localStorage.getItem('pulpWars.save.v7r32.current'), oldV7r33: localStorage.getItem('pulpWars.save.v7r33.current'), oldV7r34: localStorage.getItem('pulpWars.save.v7r34.current'), oldV7r35: localStorage.getItem('pulpWars.save.v7r35.current'), oldV7r36: localStorage.getItem('pulpWars.save.v7r36.current'), v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
+    `({ campaign: localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}), current: localStorage.getItem('pulpWars.save.v7r37.current'), oldV7: localStorage.getItem('pulpWars.save.v7.current'), oldV7r2: localStorage.getItem('pulpWars.save.v7r2.current'), oldV7r3: localStorage.getItem('pulpWars.save.v7r3.current'), oldV7r4: localStorage.getItem('pulpWars.save.v7r4.current'), oldV7r5: localStorage.getItem('pulpWars.save.v7r5.current'), oldV7r6: localStorage.getItem('pulpWars.save.v7r6.current'), oldV7r7: localStorage.getItem('pulpWars.save.v7r7.current'), oldV7r8: localStorage.getItem('pulpWars.save.v7r8.current'), oldV7r9: localStorage.getItem('pulpWars.save.v7r9.current'), oldV7r10: localStorage.getItem('pulpWars.save.v7r10.current'), oldV7r11: localStorage.getItem('pulpWars.save.v7r11.current'), oldV7r12: localStorage.getItem('pulpWars.save.v7r12.current'), oldV7r13: localStorage.getItem('pulpWars.save.v7r13.current'), oldV7r14: localStorage.getItem('pulpWars.save.v7r14.current'), oldV7r15: localStorage.getItem('pulpWars.save.v7r15.current'), oldV7r16: localStorage.getItem('pulpWars.save.v7r16.current'), oldV7r17: localStorage.getItem('pulpWars.save.v7r17.current'), oldV7r18: localStorage.getItem('pulpWars.save.v7r18.current'), oldV7r19: localStorage.getItem('pulpWars.save.v7r19.current'), oldV7r20: localStorage.getItem('pulpWars.save.v7r20.current'), oldV7r21: localStorage.getItem('pulpWars.save.v7r21.current'), oldV7r22: localStorage.getItem('pulpWars.save.v7r22.current'), oldV7r23: localStorage.getItem('pulpWars.save.v7r23.current'), oldV7r24: localStorage.getItem('pulpWars.save.v7r24.current'), oldV7r25: localStorage.getItem('pulpWars.save.v7r25.current'), oldV7r26: localStorage.getItem('pulpWars.save.v7r26.current'), oldV7r27: localStorage.getItem('pulpWars.save.v7r27.current'), oldV7r28: localStorage.getItem('pulpWars.save.v7r28.current'), oldV7r29: localStorage.getItem('pulpWars.save.v7r29.current'), oldV7r30: localStorage.getItem('pulpWars.save.v7r30.current'), oldV7r31: localStorage.getItem('pulpWars.save.v7r31.current'), oldV7r32: localStorage.getItem('pulpWars.save.v7r32.current'), oldV7r33: localStorage.getItem('pulpWars.save.v7r33.current'), oldV7r34: localStorage.getItem('pulpWars.save.v7r34.current'), oldV7r35: localStorage.getItem('pulpWars.save.v7r35.current'), oldV7r36: localStorage.getItem('pulpWars.save.v7r36.current'), v6: localStorage.getItem('pulpWars.save.current'), settings: localStorage.getItem('pulpWars.settings.v1'), unrelated: localStorage.getItem('pulpWars.unrelated') })`,
   );
   if (
     keys.current !== null ||
@@ -578,7 +597,10 @@ try {
     keys.oldV7r36 !== null ||
     keys.v6 !== "v6-bytes" ||
     JSON.parse(keys.settings ?? "null")?.settings?.motion !== "REDUCED" ||
-    keys.unrelated !== "unrelated-bytes"
+    keys.unrelated !== "unrelated-bytes" ||
+    // Campaign progress (pulp_wars-68k.5) is not a save: it survives the
+    // obsolete-key cleanup and Delete save.
+    keys.campaign !== SEEDED_CAMPAIGN_PROGRESS_V7
   )
     throw new Error(`route-owned delete failed: ${JSON.stringify(keys)}`);
 
@@ -630,6 +652,7 @@ try {
           obsoleteV7KeysRemoved: true,
           v6KeyPreserved: true,
           settingsAndUnrelatedKeysPreserved: true,
+          campaignProgressKeyPreserved: true,
         },
         compatibility: {
           explicitRuleset6OriginalAndCandy: true,
@@ -659,6 +682,7 @@ try {
     pressEscape: () => pressKey(connection, "Escape", "Escape"),
     capture: (name) => capture(connection, name),
   });
+  const campaign = await probeCampaign(connection);
   await evaluate(
     connection,
     `localStorage.removeItem('pulpWars.save.current')`,
@@ -741,7 +765,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and three-key isolation passed; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -2616,6 +2640,193 @@ async function probeShowcaseMatch(connection: Connection): Promise<string> {
   );
   await navigateFresh(freshSetup);
   return `launch with ${started.units} own units/${started.cities} cities/${started.technologies} technologies, End Turn to round ${returned.round} (${returned.commandIndex} commands) and resume`;
+}
+
+/**
+ * The campaign (pulp_wars-68k.5, docs/product/CAMPAIGN.md section 7.3): the
+ * front-screen switch opens the campaign with mission 1 open and mission 2
+ * locked; mission 1's briefing; Start puts the board on the human's turn;
+ * Settings names the mission and a Naval node is unavailable in this
+ * mission; the resume screen carries the mission label. On the development
+ * server a replay-valid fixture save one command from victory (from
+ * `tests/fixtures`) is resumed and won, which records progress and shows
+ * the mission Victory dialog, whose Next mission opens mission 2's
+ * briefing. Finally, with seeded progress, mission 4's briefing offers
+ * exactly the unlocked factions.
+ */
+async function probeCampaign(connection: Connection): Promise<string> {
+  const defaultUrl = (): string => {
+    const url = new URL(baseUrl);
+    url.searchParams.delete("art");
+    return url.href;
+  };
+  const navigateFresh = async (readiness: string): Promise<void> => {
+    await evaluate(
+      connection,
+      `globalThis.__V7_CAMPAIGN_PRIOR_DOCUMENT__ = true`,
+    );
+    await connection.send("Page.navigate", { url: defaultUrl() });
+    await waitForExpression(
+      connection,
+      `globalThis.__V7_CAMPAIGN_PRIOR_DOCUMENT__ !== true && document.readyState === 'complete' && Boolean(${readiness})`,
+    );
+  };
+  const saveKey = "pulpWars.save.v7r37.current";
+  const freshSetup = `document.querySelector('[data-v7-setup]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`;
+  const humanTurn = `(() => { const s = globalThis.__PULP_WARS_APP__?.controller.snapshot(); const v = s?.view; return s?.phase === 'ACTIVE' && !s.transitioning && !s.ai.active && v?.turnOrder[v.activeSeatIndex] === v.humanPlayerId; })()`;
+  const openCampaign = async (): Promise<void> => {
+    await pointerClick(connection, '[data-action="mode-campaign"]');
+    await waitForExpression(
+      connection,
+      `document.querySelector('[data-v7-campaign]') !== null && document.querySelector('[data-action="mode-campaign"]')?.getAttribute('aria-pressed') === 'true'`,
+    );
+  };
+  await evaluate(
+    connection,
+    `(() => { localStorage.removeItem(${JSON.stringify(saveKey)}); localStorage.removeItem(${JSON.stringify(CAMPAIGN_KEY_V7)}); })()`,
+  );
+  await navigateFresh(freshSetup);
+  await openCampaign();
+  const list = await evaluate<readonly string[]>(
+    connection,
+    `Array.from(document.querySelectorAll('.v7-mission-card')).map((card) => card.getAttribute('aria-label'))`,
+  );
+  if (
+    JSON.stringify(list) !==
+    JSON.stringify([
+      "Mission 1, Goblins at the Gate, open",
+      "Mission 2, The Warrens, locked",
+      "Mission 3, Green Tide, locked",
+      "Mission 4, Bone Neck, locked",
+    ])
+  )
+    throw new Error(`Campaign list failed: ${JSON.stringify(list)}`);
+  await capture(connection, "campaign-list-desktop.png");
+  await pointerClick(connection, '[data-action="mission-frontier_1"]');
+  await waitForExpression(
+    connection,
+    `(() => { const briefing = document.querySelector('[data-v7-region="briefing"]'); return briefing?.dataset.missionId === 'FRONTIER_1' && document.activeElement?.id === 'v7-briefing-title' && briefing.querySelector('h2')?.textContent === 'Goblins at the Gate' && briefing.querySelector('.v7-briefing-objective')?.textContent === 'ObjectiveCapture every enemy city.' && briefing.querySelectorAll('.v7-briefing-hints li').length === 3; })()`,
+  );
+  await pointerClick(connection, '[data-action="campaign-start"]');
+  await waitForExpression(
+    connection,
+    `${humanTurn} && (() => { const setup = globalThis.__PULP_WARS_APP__.controller.snapshot().view.setup; return setup.mapType === 'MISSION' && setup.mission?.id === 'FRONTIER_1' && document.querySelector('canvas.board-canvas-v7') !== null; })()`,
+    900,
+  );
+  await openCompactSettings(connection);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-mission-label')?.textContent === 'Mission: Goblins at the Gate' && document.querySelector('.v7-mission-objective')?.textContent === 'Objective: Capture every enemy city.' && document.querySelector('.v7-map-seed') === null`,
+  );
+  await pressKey(connection, "Escape", "Escape");
+  await waitForExpression(
+    connection,
+    `document.querySelector('#v7-motion') === null`,
+  );
+  await touchClick(connection, '[data-action="tech"]');
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="tech-shorecraft"]')?.getAttribute('aria-label') === 'Shorecraft, unavailable in this mission'`,
+  );
+  await pressKey(connection, "Escape", "Escape");
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="tech-shorecraft"]') === null`,
+  );
+  await openCompactMenuItem(connection, "main-menu");
+  await waitForExpression(
+    connection,
+    `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE' && /^Mission 1 · Goblins at the Gate · Turn \\d+$/.test(document.querySelector('.v7-resume-summary')?.textContent ?? '')`,
+  );
+  let won = "win skipped on the deployed bundle";
+  if (!deployed) {
+    // A real, replay-valid FRONTIER_1 save one human command from victory.
+    await evaluate(
+      connection,
+      `(async () => {
+        const fixtures = await import('/tests/fixtures/v7-campaign-ui.ts');
+        const save = fixtures.missionNearWinSaveV7(new Date().toISOString());
+        localStorage.setItem(${JSON.stringify(saveKey)}, save.source);
+      })()`,
+      true,
+    );
+    await navigateFresh(
+      `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'RESUMABLE' && (document.querySelector('.v7-resume-summary')?.textContent ?? '').startsWith('Mission 1 · Goblins at the Gate')`,
+    );
+    await touchClick(connection, '[data-action="resume"]');
+    await waitForExpression(connection, humanTurn, 900);
+    // The test hook: dispatch the offered winning command.
+    const dispatched = await evaluate<boolean>(
+      connection,
+      `(async () => {
+        const fixtures = await import('/tests/fixtures/v7-campaign-ui.ts');
+        const command = fixtures.missionWinFixtureV7('FRONTIER_1').winningCommand;
+        const result = await globalThis.__PULP_WARS_APP__.controller.dispatch(command);
+        return result.accepted;
+      })()`,
+      true,
+    );
+    if (!dispatched) throw new Error("Campaign winning command was refused");
+    // Achievement notices of the final capture come first.
+    for (let attempt = 0; attempt < 100; attempt += 1) {
+      const shown = await evaluate<string>(
+        connection,
+        `document.querySelector('[data-v7-region="results"]') !== null ? 'results' : document.querySelector('[data-v7-region="achievement-notice"] button') !== null ? 'notice' : 'wait'`,
+      );
+      if (shown === "results") break;
+      if (shown === "notice")
+        await pointerClick(
+          connection,
+          '[data-v7-region="achievement-notice"] button',
+        );
+      await delay(150);
+    }
+    await waitForExpression(
+      connection,
+      `(() => { const dialog = document.querySelector('[data-v7-region="results"]'); return dialog?.dataset.outcome === 'victory' && dialog.dataset.missionId === 'FRONTIER_1' && dialog.querySelector('h2')?.textContent === 'Mission complete' && dialog.querySelector('[data-action="campaign-next"]') !== null; })()`,
+    );
+    const recorded = await evaluate<number | null>(
+      connection,
+      `JSON.parse(localStorage.getItem(${JSON.stringify(CAMPAIGN_KEY_V7)}) ?? 'null')?.completed?.FRONTIER_1?.bestRounds ?? null`,
+    );
+    if (recorded === null) throw new Error("Campaign win was not recorded");
+    await capture(connection, "campaign-victory-desktop.png");
+    await pointerClick(connection, '[data-action="campaign-next"]');
+    await waitForExpression(
+      connection,
+      `globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY' && localStorage.getItem(${JSON.stringify(saveKey)}) === null && document.querySelector('[data-v7-region="briefing"]')?.dataset.missionId === 'FRONTIER_2'`,
+    );
+    won = `mission 1 won in ${recorded} turns, Next mission to the mission 2 briefing`;
+  }
+  // Seeded progress: mission 4 offers exactly the unlocked factions.
+  await evaluate(
+    connection,
+    `localStorage.setItem(${JSON.stringify(CAMPAIGN_KEY_V7)}, ${JSON.stringify(
+      JSON.stringify({
+        format: "pulp-wars-campaign-progress",
+        version: 1,
+        completed: Object.fromEntries(
+          ["FRONTIER_1", "FRONTIER_2", "FRONTIER_3"].map((id) => [
+            id,
+            { firstWonAt: "2026-10-03T12:00:00.000Z", bestRounds: 20 },
+          ]),
+        ),
+      }),
+    )})`,
+  );
+  await navigateFresh(freshSetup);
+  await openCampaign();
+  await pointerClick(connection, '[data-action="mission-frontier_4"]');
+  await waitForExpression(
+    connection,
+    `JSON.stringify(Array.from(document.querySelectorAll('#v7-campaign-faction option')).map((option) => option.value)) === '["ORIGINAL","GOBLIN"]'`,
+  );
+  await evaluate(
+    connection,
+    `(() => { localStorage.removeItem(${JSON.stringify(saveKey)}); localStorage.removeItem(${JSON.stringify(CAMPAIGN_KEY_V7)}); })()`,
+  );
+  await navigateFresh(freshSetup);
+  return `list, briefing, mission 1 start with mission Settings, unavailable Naval tree and resume label; ${won}; mission 4 offers Human and Goblin`;
 }
 
 async function fileSha256(filename: string): Promise<string> {

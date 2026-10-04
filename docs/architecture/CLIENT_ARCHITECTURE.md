@@ -469,8 +469,10 @@ faction choice). `missions/build.ts` is the pure, PRNG-free builder that
 dispatches the Showcase; the result is an ordinary `GameStateV7` (no new
 state field). The only hidden mission registered so far is the engine
 fixture `TEST_GROUNDS`; the chapter, story, and campaign screens are
-`pulp_wars-68k.4` and `68k.5`, so the setup screen does not offer `MISSION`
-yet and the browser builds no mission setup.
+`pulp_wars-68k.4` and `68k.5`. The skirmish setup never offers `MISSION`:
+the browser builds a mission setup only from the campaign briefing
+([below](#campaign-progress-and-screens-pulp_wars-68k5)), through
+`missionMatchSetupV7`.
 
 - **Setup.** A `MISSION` setup carries `mission: { id, revision }`, which the
   autosave and replays store; any other mismatch with the definition is
@@ -489,6 +491,50 @@ yet and the browser builds no mission setup.
   such a setup is `INCOMPATIBLE_REPLAY`. Adding a mission or bumping a
   mission's revision never changes the ruleset identity or the autosave key.
   A mission setup always carries `curiosities: false`.
+
+### Campaign progress and screens (`pulp_wars-68k.5`)
+
+The campaign UI ([design](../product/CAMPAIGN.md) sections 4 and 5; screens
+in the [screen flow overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-campaign-overlay))
+adds one browser key and no ruleset change.
+
+- **Storage.** `pulpWars.campaign.v1` (`CAMPAIGN_PROGRESS_STORAGE_KEY_V7`),
+  owned by `CampaignProgressStoreV7` (`src/persistence/campaign-v7.ts`),
+  holds the format tag `pulp-wars-campaign-progress`, version 1, and
+  `completed`, a record from mission ID to `{ firstWonAt, bestRounds }`. It
+  is strictly parsed: anything else is unreadable, and an unreadable record
+  is never overwritten until reset.
+  It is not a save key: it is not in `OBSOLETE_SAVE_STORAGE_KEYS_V7`, so a
+  ruleset identity change leaves it alone, and Delete save never touches it.
+  Every storage access is guarded; a failing or missing storage reports an
+  error (or keeps no progress) and never breaks the match. Unknown mission
+  IDs are kept.
+- **Derived state.** Only completions are stored. `src/campaign/progress-v7.ts`
+  derives, from them and the chapter table (`CHAPTER_ONE_V7`), each
+  mission's state (missions open in order), the unlocked factions, the
+  filtered faction choice of a mission, and the next mission.
+- **Recording.** `Ruleset7BrowserController` records the human's `VICTORY`
+  of a chapter mission (`setup.mission` in a chapter; hidden fixtures and
+  skirmishes record nothing) inside the accepted boundary, before any
+  subscriber or the Victory dialog sees it, and again when a completed
+  mission save loads (idempotent: the first date is kept and `bestRounds`
+  only falls). `campaignProgress()` returns the completions, a status
+  (`OK` or `UNREADABLE`), and the last recorded win with the factions it
+  newly unlocked; `resetCampaignProgress()` erases the key. Both are
+  optional members of `Ruleset7ControllerPortV7`; a port without them
+  shows the campaign with no progress.
+- **One autosave slot.** A mission is an ordinary match in the existing
+  autosave. Leaving a finished mission through Next mission or Campaign
+  deletes that finished save (its win is recorded) and returns to the
+  campaign screen.
+- **Tests and smoke.** `tests/unit/campaign-progress-v7.test.ts`,
+  `tests/integration/ruleset7-campaign-dom.test.ts`, the campaign cases of
+  `ruleset7-browser-controller.test.ts` and of the no-coordinates sweep use
+  `tests/fixtures/v7-campaign-ui.ts`, real replay-valid mission matches
+  played to a win or a loss. The browser smoke's campaign probe wins
+  mission 1 from that fixture on the development server, and its
+  storage-isolation check seeds the campaign key and expects it to survive
+  the obsolete-key cleanup and Delete save.
 
 ## Map curiosities (`pulp_wars-737.2`)
 

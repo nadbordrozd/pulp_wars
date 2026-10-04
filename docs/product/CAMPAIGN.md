@@ -8,8 +8,10 @@ and the AI bead `68k.3` (directives and proxy variation; its notes are in
 [section 8.2](#82-68k3-ai-mission-directives-and-proxy-variation)), and the
 content bead `68k.4` (the four Chapter One missions, `src/campaign/chapter-1.ts`,
 and `npm run playtest:campaign`; its final numbers and tuning record are in
-[section 8.3](#83-68k4-content-the-four-teaser-missions-and-their-playtest));
-the campaign UI (`68k.5`) is not implemented yet. The implementation beads in
+[section 8.3](#83-68k4-content-the-four-teaser-missions-and-their-playtest)),
+and the campaign UI and progress bead `68k.5` (its notes are in
+[section 8.4](#84-68k5-campaign-ui-and-progress)) are implemented. The
+implementation beads in
 [section 8](#8-implementation-beads) follow this document; where an
 implementation bead finds that this design and the code disagree, it stops
 and surfaces the conflict.
@@ -1029,6 +1031,32 @@ Validation profile: ai/map/persistence + ui/presentation
 Worker focused checks: npx vitest run tests/unit/campaign-progress-v7.test.ts tests/integration/ruleset7-campaign-dom.test.ts tests/integration/ruleset7-browser-controller.test.ts ; npm run typecheck ; npm run lint
 Conditional final gates: npm run check ; npm run validate:ruleset6-release ; npm run smoke:browser (new user-visible flow) ; because it closes the epic (final integration), the root runs the cross-cutting/release set of CLAUDE.md once at close
 ```
+
+**Implementation notes (`68k.5`, no identity change).** The screens are
+described in the
+[screen flow overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-campaign-overlay)
+and the storage and controller in
+[client architecture](../architecture/CLIENT_ARCHITECTURE.md#campaign-progress-and-screens-pulp_wars-68k5).
+Where sections 4 and 5 left a detail open, the UI decided:
+
+- **Leaving a finished mission** (Next mission, Campaign) deletes the
+  finished match from the one autosave slot; its win is already recorded.
+  A finished skirmish keeps its old behaviour (the dialog stays until Play
+  again or Delete).
+- **The unlock notice** shows the factions the recorded win newly unlocked,
+  so it appears for the win that first unlocked them and not for a replayed
+  win or a reloaded dialog.
+- **Reset progress** sits in a "Settings" disclosure at the foot of the
+  campaign list and asks "Erase all campaign progress?" first. Progress the
+  store cannot read is never overwritten by a later win until it is reset.
+- **Briefing facts** are the map size chip ("11 × 11"), "vs" with the
+  opponent's emblem and name, and "You lead" (a select only when the
+  filtered choice has more than one faction).
+- **Fixtures.** `tests/fixtures/v7-campaign-ui.ts` plays a chapter mission
+  to its end with the Normal AI on one side and a side that only ends its
+  turns on the other (mission 1 is won in 15 rounds, mission 2 in 15, and
+  mission 1 is lost in 5). Mission 4 is not won this way even against an
+  AI that only ends its turns, which agrees with the tuning record above.
 
 ## Appendix A: critique of the first draft
 

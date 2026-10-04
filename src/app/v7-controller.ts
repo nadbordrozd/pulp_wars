@@ -17,6 +17,7 @@ import {
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
+  type FactionIdV7,
   type GameStateV7,
   type MatchSetupV7,
   type PlayerId,
@@ -26,7 +27,14 @@ import {
   type RuleErrorV7,
 } from "../engine/index";
 import {
+  campaignMissionV7,
+  campaignNewlyUnlockedV7,
+  type CampaignCompletedV7,
+} from "../campaign/progress-v7";
+import {
   BrowserPersistenceV7,
+  CampaignProgressStoreV7,
+  emptyCampaignProgressV7,
   type BrowserSaveLoadResultV7,
   type PersistenceScheduler,
   type SaveEnvelopeV7,
@@ -68,6 +76,24 @@ export interface Ruleset7BrowserSnapshot {
   readonly diagnostic: string | null;
   readonly transitioning: boolean;
   readonly ai: Ruleset7AiPresentationState;
+}
+
+/**
+ * Campaign progress as the campaign screens read it (`pulp_wars-68k.5`,
+ * docs/product/CAMPAIGN.md section 4). `completed` is the stored
+ * completions; open missions and unlocked factions are derived from it.
+ */
+export interface Ruleset7CampaignProgressV7 {
+  readonly status: "OK" | "UNREADABLE";
+  readonly completed: CampaignCompletedV7;
+  /** The last mission win this controller recorded, with its unlocks. */
+  readonly lastWin: {
+    readonly missionId: string;
+    readonly firstWin: boolean;
+    readonly unlocked: readonly FactionIdV7[];
+  } | null;
+  /** Why progress could not be read or written, for the details view. */
+  readonly diagnostic: string | null;
 }
 
 export interface Ruleset7AcceptedBoundary {
@@ -213,6 +239,9 @@ export class Ruleset7BrowserController {
   readonly #policySliceMilliseconds: number;
   readonly #readClock: () => number;
   readonly #diagnosticNow: () => string;
+  readonly #campaign: CampaignProgressStoreV7;
+  #campaignLastWin: Ruleset7CampaignProgressV7["lastWin"] = null;
+  #campaignDiagnostic: string | null = null;
   #match: GameStateV7 | null = null;
   #replay: ReplayFileV7 | null = null;
   #humanViewCache: PlayerViewV7 | null = null;
@@ -266,8 +295,42 @@ export class Ruleset7BrowserController {
               this.#emit();
             },
           });
+    this.#campaign = new CampaignProgressStoreV7(options.storage ?? null, {
+      ...(options.persistenceNow === undefined
+        ? {}
+        : { now: options.persistenceNow }),
+    });
     const loaded = this.#persistence?.loadSave();
     if (loaded !== undefined) this.#loadInitialSave(loaded);
+  }
+
+  /** Campaign progress for the campaign screens; never throws. */
+  campaignProgress(): Ruleset7CampaignProgressV7 {
+    const loaded = this.#campaign.load();
+    return freezeBrowserValueV7({
+      status:
+        loaded.kind === "VALID" ? ("OK" as const) : ("UNREADABLE" as const),
+      completed:
+        loaded.kind === "VALID"
+          ? loaded.progress.completed
+          : emptyCampaignProgressV7().completed,
+      lastWin: this.#campaignLastWin,
+      diagnostic:
+        loaded.kind === "VALID" ? this.#campaignDiagnostic : loaded.diagnostic,
+    });
+  }
+
+  /** Erases campaign progress (Reset, and the unreadable recovery). */
+  resetCampaignProgress(): boolean {
+    if (this.#destroyed) return false;
+    const result = this.#campaign.reset();
+    if (!result.ok) {
+      this.#campaignDiagnostic = result.diagnostic;
+      return false;
+    }
+    this.#campaignLastWin = null;
+    this.#campaignDiagnostic = null;
+    return true;
   }
 
   subscribe(subscriber: SnapshotSubscriberV7): () => void {
@@ -634,6 +697,9 @@ export class Ruleset7BrowserController {
       this.#savedAt = loaded.save.savedAt;
       this.#phase =
         loaded.save.state.outcome === null ? "RESUMABLE" : "COMPLETE";
+      // A completed mission save records its win again (idempotent), so a
+      // tab closed during the Victory dialog loses nothing.
+      this.#recordCampaignOutcome(loaded.save.state);
     } catch (error) {
       this.#phase = "RECOVERY";
       this.#recovery = {
@@ -696,7 +762,11 @@ export class Ruleset7BrowserController {
     this.#replay = nextReplay;
     this.#humanViewCache = afterView;
     this.#safeEventBatches = [...this.#safeEventBatches, playerEvents];
-    if (applied.state.outcome !== null) this.#phase = "COMPLETE";
+    if (applied.state.outcome !== null) {
+      this.#phase = "COMPLETE";
+      // Recorded before any subscriber or the Victory dialog sees it.
+      this.#recordCampaignOutcome(applied.state);
+    }
     this.#persistCurrent(
       command.kind === "END_TURN" || applied.state.outcome !== null,
     );
@@ -882,6 +952,37 @@ export class Ruleset7BrowserController {
       diagnostic:
         "Ruleset 7 AI progression was cancelled by match lifecycle replacement.",
     });
+  }
+
+  /**
+   * Records the human's win of a chapter mission (CAMPAIGN.md section 4.1).
+   * Skirmishes, hidden fixture missions, and defeats record nothing.
+   */
+  #recordCampaignOutcome(state: GameStateV7): void {
+    const outcome = state.outcome;
+    const missionId = state.setup.mission?.id;
+    if (
+      outcome?.kind !== "VICTORY" ||
+      outcome.winnerId !== state.humanPlayerId ||
+      state.setup.mapType !== "MISSION" ||
+      missionId === undefined ||
+      campaignMissionV7(missionId) === null
+    )
+      return;
+    const recorded = this.#campaign.recordWin(missionId, state.round);
+    if (!recorded.ok) {
+      this.#campaignDiagnostic = recorded.diagnostic;
+      return;
+    }
+    this.#campaignDiagnostic = null;
+    this.#campaignLastWin = {
+      missionId,
+      firstWin: recorded.firstWin,
+      unlocked: campaignNewlyUnlockedV7(
+        recorded.before.completed,
+        recorded.progress.completed,
+      ),
+    };
   }
 
   #persistCurrent(immediate: boolean): boolean {

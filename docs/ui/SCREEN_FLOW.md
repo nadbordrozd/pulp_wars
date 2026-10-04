@@ -1343,6 +1343,62 @@ both art sets. Where an older section below disagrees, this overlay wins.
   between Shallow and Deep Water. The terrain art alone tells them apart.
   Territory borders and landing markers are unchanged.
 
+## Current Ruleset 7 Campaign overlay
+
+This overlay (`pulp_wars-68k.5`) applies to the front screens, Settings, and
+the end dialogs of the current Ruleset 7 route in both art sets; the design
+is [Campaign mode](../product/CAMPAIGN.md) sections 4 and 5. Every screen
+reuses the front-screen frame, buttons, and type; the faction emblems are the
+faction's Fighter portrait (no new art). Text follows the no-coordinates,
+minimal-text rule above: the pulp flavour is confined to the story blurbs.
+
+- **Skirmish / Campaign.** Under the brand, a two-state control in a group
+  labelled "Game mode", styled like New map / Use seed: **Skirmish**
+  (default; the setup form below it is unchanged) and **Campaign**. The
+  choice lasts for the page session and is not saved. On the resume
+  screen's **New game** the form shows the same switch.
+- **Campaign screen** (in place of the setup form): the chapter title
+  ("Chapter One: The Hollow Frontier"), the chapter's story, then one card
+  per mission in order: its number, name, the emblem(s) of the faction you
+  lead, "vs", the opponent's emblem, and a state line: **Open**, **Win the
+  previous mission** (locked: dimmed, `aria-disabled`, still focusable,
+  opens nothing), or a trophy with **Best: N turns** (done; it stays
+  playable). The card's accessible name carries the state ("Mission 2, The
+  Warrens, locked"; "…, done, best 14 turns"). Below the list,
+  **Factions**: every faction emblem, dimmed until unlocked ("Goblin,
+  locked"). A **Settings** disclosure holds **Reset progress**, which asks
+  "Erase all campaign progress?" with **Reset** and **Cancel** first.
+- **Unreadable progress.** The campaign screen says "Campaign progress can't
+  be read." with the diagnostic under **Details** and a **Reset** button (the
+  save-recovery pattern). Skirmish is unaffected.
+- **Briefing** (an open or done card): "Mission N", the mission name, its
+  story, an **Objective** line ("Capture every enemy city."), up to three
+  hints, the map size chip ("11 × 11") and "vs" with the opponent's emblem
+  and name, and **You lead**: the faction's emblem and name, or, for a
+  mission that offers a choice, a "You lead" select listing only unlocked
+  factions (mission 4: Human, and Goblin once mission 2 is won). Buttons
+  **Start mission** and **Back**. Focus moves to the mission name on open
+  and back to the card on Back. Start mission from the resume screen's
+  **New game** replaces the saved game (the existing replace flow).
+- **In a mission.** The match screen is unchanged. Settings shows
+  "Mission: Goblins at the Gate" and "Objective: Capture every enemy city."
+  in place of "Map seed"; forbidden technologies read "Unavailable in this
+  mission" in the tree. The resume screen reads "Mission 1 · Goblins at the
+  Gate · Turn 7".
+- **Victory** (a chapter mission): "Mission N" and **Mission complete**, the
+  story's closing line, a gold notice per faction the win unlocked ("New
+  faction: Goblin", with its emblem; shown only for the win that first
+  unlocked it), then **Next mission** (opens its briefing) and **Campaign**.
+  After the last mission the chapter's "To be continued…" replaces Next
+  mission. Achievement notices of the final turn still come first.
+- **Defeat** (a chapter mission): "Mission N" and **Mission failed**, then
+  **Retry** (the existing restart of the same setup) and **Campaign**.
+- **Leaving a finished mission.** Next mission and Campaign clear the
+  finished match from the autosave slot (its win is already recorded; a
+  mission is started again from the campaign) and open the campaign screen.
+- A hidden fixture mission (in no chapter) and every skirmish keep the
+  ordinary Victory and Defeat dialog.
+
 ## 0. Ruleset-6 replacement contract
 
 The responsive navigation, fixed Canvas host, map-first selection, non-modal

@@ -213,6 +213,333 @@
   overflow-wrap: anywhere;
 }
 
+/* ---------- Campaign (pulp_wars-68k.5) ---------- */
+
+/* "Skirmish" / "Campaign": the seed control's look, under the brand. */
+.v7-mode-choice {
+  display: flex;
+  margin-top: -0.5rem;
+}
+
+.v7-campaign-chapter,
+.v7-briefing,
+.v7-campaign-recovery {
+  display: grid;
+  gap: 1rem;
+}
+
+.v7-campaign-title,
+.v7-briefing-title {
+  font-size: 1.6rem;
+}
+
+.v7-briefing-title:focus {
+  outline: none;
+}
+
+.v7-briefing-title:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+/* The pulp flavour lives in the story blurbs only. */
+.v7-campaign-story {
+  padding-left: 0.8rem;
+  border-left: 3px solid var(--accent);
+  color: var(--paper);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.v7-results.v7-mission-results .v7-campaign-story {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.v7-mission-list,
+.v7-campaign-factions,
+.v7-briefing-hints {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.v7-mission-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.v7-mission-card {
+  display: grid;
+  grid-template-areas:
+    "number name sides"
+    "number state sides";
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  gap: 0.15rem 0.75rem;
+  align-items: center;
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: var(--v7-radius);
+  background: var(--panel);
+  text-align: left;
+}
+
+.v7-mission-card[data-status="done"] {
+  border-color: rgb(240 185 63 / 55%);
+}
+
+.v7-mission-card[data-status="locked"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.v7-mission-card[data-status="locked"]:hover {
+  border-color: var(--v7-edge-strong);
+  translate: none;
+}
+
+.v7-mission-number {
+  display: grid;
+  grid-area: number;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 1.1rem;
+}
+
+.v7-mission-card[data-status="done"] .v7-mission-number {
+  background: var(--gold);
+}
+
+.v7-mission-name {
+  grid-area: name;
+  font-size: 1.1rem;
+}
+
+.v7-mission-state {
+  display: flex;
+  grid-area: state;
+  gap: 0.35rem;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.v7-mission-card[data-status="done"] .v7-mission-state {
+  color: var(--gold);
+}
+
+.v7-mission-sides,
+.v7-briefing-opponent {
+  display: flex;
+  grid-area: sides;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.v7-mission-versus {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+/* A faction emblem: the faction's Fighter portrait on a small disc. */
+.v7-faction-emblem {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 7%);
+}
+
+.v7-faction-emblem > .v7-art-frame,
+.v7-faction-emblem > .v7-undead-art {
+  width: 100%;
+  height: 100%;
+}
+
+.v7-campaign-roster {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.v7-campaign-roster h3 {
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-campaign-factions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.v7-campaign-faction[data-unlocked="false"] {
+  filter: grayscale(1);
+  opacity: 0.35;
+}
+
+.v7-campaign-settings summary {
+  min-height: 44px;
+  align-content: center;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.v7-campaign-reset-confirm {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.v7-briefing-kicker {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.v7-briefing .v7-briefing-kicker {
+  margin-bottom: -0.6rem;
+}
+
+.v7-briefing-objective {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-weight: 800;
+}
+
+.v7-briefing-objective strong {
+  color: var(--gold);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-briefing-hints {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+}
+
+.v7-briefing-hints li::before {
+  margin-right: 0.45rem;
+  color: var(--gold);
+  content: "▸";
+}
+
+.v7-briefing-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+
+.v7-briefing-size {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.v7-briefing-opponent {
+  gap: 0.5rem;
+}
+
+.v7-briefing-opponent span:last-child {
+  font-weight: 800;
+}
+
+.v7-briefing-lead {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.v7-briefing-lead-emblem .v7-faction-emblem {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.v7-briefing-lead-text {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.v7-briefing-lead-label,
+.v7-briefing-choice {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.v7-briefing-lead-text strong {
+  font-size: 1.1rem;
+}
+
+.v7-briefing-choice {
+  display: grid;
+  flex: 1;
+  gap: 0.35rem;
+}
+
+.v7-briefing-choice select {
+  color: var(--paper);
+  font-size: 1rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.v7-briefing-actions .primary-action {
+  min-height: 3.4rem;
+  font-size: 1.2rem;
+}
+
+.v7-unlock-notice {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 1rem 0.5rem 0.5rem;
+  border: 2px solid var(--gold);
+  border-radius: 999px;
+  color: var(--gold);
+  font-weight: 800;
+}
+
+.v7-results.v7-mission-results h2 {
+  margin-top: -0.6rem;
+  font-size: 2.3rem;
+}
+
+.v7-campaign-outro {
+  color: var(--muted);
+  font-style: italic;
+}
+
+@media (width < 30rem) {
+  .v7-mission-card {
+    grid-template-areas:
+      "number name"
+      "number state"
+      "number sides";
+    grid-template-columns: 2.2rem minmax(0, 1fr);
+  }
+}
+
 /* ---------- Match layout ---------- */
 
 .v7-match-root {

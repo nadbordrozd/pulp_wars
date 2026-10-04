@@ -466,7 +466,7 @@ describe("Ruleset 7 browser smoke script", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(
       source.indexOf("async function probeShowcaseMatch("),
-      source.indexOf("async function fileSha256("),
+      source.indexOf("async function probeCampaign("),
     );
 
     expect(source).toContain("await probeShowcaseMatch(connection)");
@@ -533,6 +533,46 @@ describe("Ruleset 7 browser smoke script", () => {
       expect(probe).toContain(`await driver.capture("${name}")`);
     expect(probe).not.toContain("/tests/fixtures/");
   });
+  it("probes the campaign: switch, list, briefing, mission start, a fixture win and the filtered choice", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = source.slice(
+      source.indexOf("async function probeCampaign("),
+      source.indexOf("async function fileSha256("),
+    );
+    expect(source).toContain("await probeCampaign(connection)");
+    expect(source).toContain("; Campaign ${campaign}; art sets");
+    // The switch is first in the setup's reading order.
+    expect(source).toContain(
+      "The Skirmish / Campaign switch (pulp_wars-68k.5) comes first",
+    );
+    // The campaign key survives the obsolete-key cleanup and Delete save.
+    expect(source).toContain("keys.campaign !== SEEDED_CAMPAIGN_PROGRESS_V7");
+    expect(probe).toContain(
+      `await pointerClick(connection, '[data-action="mode-campaign"]')`,
+    );
+    expect(probe).toContain('"Mission 1, Goblins at the Gate, open"');
+    expect(probe).toContain('"Mission 2, The Warrens, locked"');
+    expect(probe).toContain(
+      "document.activeElement?.id === 'v7-briefing-title'",
+    );
+    expect(probe).toContain(
+      `await pointerClick(connection, '[data-action="campaign-start"]')`,
+    );
+    expect(probe).toContain("'Mission: Goblins at the Gate'");
+    expect(probe).toContain("'Shorecraft, unavailable in this mission'");
+    expect(probe).toContain("^Mission 1 · Goblins at the Gate · Turn");
+    // The win uses the fixture only on the development server.
+    const fixture = probe.indexOf("/tests/fixtures/v7-campaign-ui.ts");
+    expect(fixture).toBeGreaterThan(probe.indexOf("if (!deployed)"));
+    expect(probe).toContain(
+      "dialog.querySelector('h2')?.textContent === 'Mission complete'",
+    );
+    expect(probe).toContain(
+      `await pointerClick(connection, '[data-action="campaign-next"]')`,
+    );
+    expect(probe).toContain("dataset.missionId === 'FRONTIER_2'");
+    expect(probe).toContain(`'["ORIGINAL","GOBLIN"]'`);
+  });
   it("waits for a fresh complete document and installed controller after reload", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
 
@@ -590,8 +630,9 @@ describe("Ruleset 7 browser smoke script", () => {
     // captures (pulp_wars-t6s.4) and the Mind Control fixture capture
     // (pulp_wars-b5f.3, dev server only), two Ice Folk probe captures
     // (pulp_wars-7g3.6), two Dwarf probe captures (pulp_wars-78i.6), and
-    // one revision-18 Showcase capture.
-    expect(source.match(/await capture\(/g)).toHaveLength(22);
+    // one revision-18 Showcase capture, and two campaign captures
+    // (pulp_wars-68k.5: the list, and the fixture win's Victory dialog).
+    expect(source.match(/await capture\(/g)).toHaveLength(24);
     expect(source).toContain("async function probeAfflictionFixture(");
     expect(source).not.toContain("Emulation.setDeviceMetricsOverride");
     expect(source).not.toContain("mobile-ai-return-390-dpr2.png");

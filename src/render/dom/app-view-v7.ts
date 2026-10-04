@@ -13,8 +13,21 @@ import type {
   Ruleset7AcceptedBoundary,
   Ruleset7BrowserController,
   Ruleset7BrowserSnapshot,
+  Ruleset7CampaignProgressV7,
 } from "../../app/v7-controller";
+import { CHAPTER_ONE_V7 } from "../../campaign/chapter-1";
 import {
+  campaignFactionChoicesV7,
+  campaignMissionCardsV7,
+  campaignMissionStatusV7,
+  campaignMissionV7,
+  campaignNextMissionV7,
+  campaignUnlockedFactionsV7,
+  type CampaignMissionCardV7,
+} from "../../campaign/progress-v7";
+import {
+  missionByIdV7,
+  missionMatchSetupV7,
   cityUnitCapacityForV7,
   distinctFactionsV7,
   effectiveRoleRuleV7,
@@ -559,7 +572,26 @@ export type Ruleset7ControllerPortV7 = Pick<
   | "setFastForward"
   | "exportSafeLog"
   | "exportDebugBundle"
->;
+> &
+  // Campaign progress (pulp_wars-68k.5); a port without it shows the
+  // campaign with no progress and records nothing.
+  Partial<
+    Pick<
+      Ruleset7BrowserController,
+      "campaignProgress" | "resetCampaignProgress"
+    >
+  >;
+
+/** Progress shown when the controller keeps none (tests, fixtures). */
+const NO_CAMPAIGN_PROGRESS_V7: Ruleset7CampaignProgressV7 = Object.freeze({
+  status: "OK",
+  completed: Object.freeze({}),
+  lastWin: null,
+  diagnostic: null,
+});
+
+/** The front screen's two modes (CAMPAIGN.md section 5, item 1). */
+type FrontModeV7 = "SKIRMISH" | "CAMPAIGN";
 
 interface DraftV7 {
   readonly aiCount: 1 | 2 | 3;
@@ -693,6 +725,17 @@ export class Ruleset7DomAppView {
   #classicChibiDom: ChibiDomArtV7 | null = null;
   readonly #chibiDomEnvironment: ChibiDomEnvironmentV7 | null;
   #developerToolsOpen = false;
+  /**
+   * Campaign screens (pulp_wars-68k.5): the front screen's mode for the
+   * page session, the mission whose briefing is open (null: the list), the
+   * faction chosen in it, and whether Reset progress awaits confirmation.
+   */
+  #frontMode: FrontModeV7 = "SKIRMISH";
+  #briefingMissionId: string | null = null;
+  #briefingFaction: FactionIdV7 | null = null;
+  #confirmCampaignReset = false;
+  /** A front-screen control to focus after the next front render. */
+  #frontFocus: string | null = null;
   #pendingFocusAction: string | null = null;
   #matchShell: HTMLElement | null = null;
   #matchRoot: HTMLElement | null = null;
@@ -1031,13 +1074,455 @@ export class Ruleset7DomAppView {
           "v7-warning",
         ),
       );
-    if (this.#snapshot.phase === "EMPTY") shell.append(this.#setup(false));
+    if (this.#snapshot.phase === "EMPTY") shell.append(this.#front(false));
     else if (this.#snapshot.phase === "RESUMABLE")
-      shell.append(this.#replacing ? this.#setup(true) : this.#resume());
+      shell.append(this.#replacing ? this.#front(true) : this.#resume());
     else if (this.#snapshot.phase === "RECOVERY")
       shell.append(this.#recovery());
-    else shell.append(this.#setup(false));
+    else shell.append(this.#front(false));
+    // A front screen is rebuilt whole (a settled portrait re-renders it
+    // too): keep keyboard focus on the same control.
+    const active = this.#document.activeElement;
+    const kept =
+      active instanceof HTMLElement && this.#root.contains(active)
+        ? active.id !== ""
+          ? `#${active.id}`
+          : active.dataset.action === undefined
+            ? null
+            : `[data-action="${active.dataset.action}"]`
+        : null;
     this.#root.replaceChildren(shell);
+    const focus = this.#frontFocus ?? kept;
+    this.#frontFocus = null;
+    if (focus !== null)
+      queueMicrotask(() => {
+        if (this.#destroyed) return;
+        this.#root.querySelector<HTMLElement>(focus)?.focus();
+      });
+  }
+
+  /** The setup form or, in Campaign mode, the campaign screen. */
+  #front(replace: boolean): HTMLElement {
+    return this.#frontMode === "CAMPAIGN"
+      ? this.#campaignScreen(replace)
+      : this.#setup(replace);
+  }
+
+  /**
+   * The Skirmish / Campaign switch under the brand (CAMPAIGN.md section 5,
+   * item 1), styled like "New map / Use seed". It lasts for the page
+   * session.
+   */
+  #modeSwitch(): HTMLElement {
+    const group = el(this.#document, "div", "v7-mode-choice");
+    group.setAttribute("role", "group");
+    group.setAttribute("aria-label", "Game mode");
+    group.dataset.mode = this.#frontMode.toLowerCase();
+    const toggle = el(this.#document, "div", "v7-seed-toggle v7-mode-toggle");
+    for (const mode of ["SKIRMISH", "CAMPAIGN"] as const) {
+      const action = `mode-${mode.toLowerCase()}`;
+      const option = button(
+        this.#document,
+        mode === "SKIRMISH" ? "Skirmish" : "Campaign",
+        action,
+        "v7-seed-option",
+      );
+      option.setAttribute("aria-pressed", String(mode === this.#frontMode));
+      option.onclick = () => {
+        if (this.#frontMode === mode) return;
+        this.#frontFocus = `[data-action="${action}"]`;
+        this.#frontMode = mode;
+        this.#briefingMissionId = null;
+        this.#confirmCampaignReset = false;
+        this.#error = "";
+        this.#render();
+      };
+      toggle.append(option);
+    }
+    group.append(toggle);
+    return group;
+  }
+
+  #campaignProgress(): Ruleset7CampaignProgressV7 {
+    return this.#controller.campaignProgress?.() ?? NO_CAMPAIGN_PROGRESS_V7;
+  }
+
+  /**
+   * The campaign screen (CAMPAIGN.md section 5, items 2 and 3): the
+   * chapter and its mission cards, or the open mission's briefing.
+   */
+  #campaignScreen(replace: boolean): HTMLElement {
+    const main = el(this.#document, "main", "v7-front-screen v7-campaign");
+    main.dataset.v7Campaign = "true";
+    main.append(this.#brand(), this.#modeSwitch());
+    const progress = this.#campaignProgress();
+    if (progress.status === "UNREADABLE")
+      main.append(this.#campaignUnreadable(progress));
+    else if (this.#briefingMissionId !== null)
+      main.append(this.#briefing(this.#briefingMissionId, progress, replace));
+    else main.append(this.#campaignList(progress));
+    main.append(this.#galleryEntry(), this.#ruleset6Link());
+    return main;
+  }
+
+  /** Unreadable progress: the save-recovery pattern with a Reset button. */
+  #campaignUnreadable(progress: Ruleset7CampaignProgressV7): HTMLElement {
+    const section = el(this.#document, "section", "v7-campaign-recovery");
+    section.dataset.v7Region = "campaign-unreadable";
+    section.append(
+      text(
+        this.#document,
+        "p",
+        "Campaign progress can't be read.",
+        "v7-recovery-summary",
+      ),
+    );
+    if (progress.diagnostic !== null) {
+      const details = this.#document.createElement("details");
+      details.className = "v7-recovery-details";
+      details.append(
+        text(this.#document, "summary", "Details"),
+        text(this.#document, "p", progress.diagnostic),
+      );
+      section.append(details);
+    }
+    const reset = button(
+      this.#document,
+      "Reset",
+      "campaign-reset-unreadable",
+      "destructive",
+    );
+    reset.onclick = () => this.#resetCampaign();
+    section.append(reset);
+    return section;
+  }
+
+  #campaignList(progress: Ruleset7CampaignProgressV7): HTMLElement {
+    const chapter = CHAPTER_ONE_V7;
+    const section = el(this.#document, "section", "v7-campaign-chapter");
+    section.dataset.v7Chapter = chapter.id;
+    section.append(
+      text(this.#document, "h2", chapter.title, "v7-campaign-title"),
+      text(this.#document, "p", chapter.intro, "v7-campaign-story"),
+    );
+    const list = el(this.#document, "ol", "v7-mission-list");
+    list.setAttribute("aria-label", "Missions");
+    for (const card of campaignMissionCardsV7(chapter, progress.completed)) {
+      const item = el(this.#document, "li", "v7-mission-item");
+      item.append(this.#missionCard(card));
+      list.append(item);
+    }
+    section.append(list);
+    // Every faction, dimmed until the campaign unlocks it.
+    const unlocked = campaignUnlockedFactionsV7(progress.completed);
+    const roster = el(this.#document, "div", "v7-campaign-roster");
+    const rosterTitle = text(this.#document, "h3", "Factions");
+    rosterTitle.id = "v7-campaign-roster-title";
+    const factions = el(this.#document, "ul", "v7-campaign-factions");
+    factions.setAttribute("aria-labelledby", rosterTitle.id);
+    for (const faction of FACTIONS) {
+      const open = unlocked.includes(faction);
+      const label = FACTION_LABELS[faction] ?? title(faction);
+      const entry = el(this.#document, "li", "v7-campaign-faction");
+      entry.dataset.faction = faction;
+      entry.dataset.unlocked = String(open);
+      entry.setAttribute("aria-label", open ? label : `${label}, locked`);
+      entry.title = open ? label : `${label} (locked)`;
+      entry.append(this.#factionEmblem(faction));
+      factions.append(entry);
+    }
+    roster.append(rosterTitle, factions);
+    section.append(roster, this.#campaignSettings());
+    return section;
+  }
+
+  /** One mission card: number, name, emblems, and its state. */
+  #missionCard(card: CampaignMissionCardV7): HTMLButtonElement {
+    const { entry, status } = card;
+    const action = `mission-${entry.missionId.toLowerCase()}`;
+    const node = this.#document.createElement("button");
+    node.type = "button";
+    node.className = "v7-mission-card";
+    node.dataset.action = action;
+    node.dataset.missionId = entry.missionId;
+    node.dataset.status = status.toLowerCase();
+    const best =
+      status === "DONE" && card.bestRounds !== null
+        ? `Best: ${card.bestRounds} turns`
+        : null;
+    const stateText =
+      status === "LOCKED"
+        ? "Win the previous mission"
+        : status === "OPEN"
+          ? "Open"
+          : (best ?? "Done");
+    node.setAttribute(
+      "aria-label",
+      `Mission ${entry.number}, ${entry.name}, ${
+        status === "LOCKED"
+          ? "locked"
+          : status === "OPEN"
+            ? "open"
+            : best === null
+              ? "done"
+              : `done, best ${card.bestRounds} turns`
+      }`,
+    );
+    if (status === "LOCKED") node.setAttribute("aria-disabled", "true");
+    const sides = el(this.#document, "span", "v7-mission-sides");
+    sides.setAttribute("aria-hidden", "true");
+    for (const faction of card.leads)
+      sides.append(this.#factionEmblem(faction));
+    sides.append(text(this.#document, "span", "vs", "v7-mission-versus"));
+    for (const faction of card.opponents)
+      sides.append(this.#factionEmblem(faction));
+    const state = el(this.#document, "span", "v7-mission-state");
+    state.setAttribute("aria-hidden", "true");
+    if (status === "DONE") state.append(uiIconV7(this.#document, "trophy"));
+    state.append(text(this.#document, "span", stateText));
+    node.append(
+      text(this.#document, "span", String(entry.number), "v7-mission-number"),
+      text(this.#document, "span", entry.name, "v7-mission-name"),
+      sides,
+      state,
+    );
+    node.onclick = () => {
+      if (status === "LOCKED") return;
+      this.#openBriefing(entry.missionId);
+    };
+    return node;
+  }
+
+  /** "Settings" on the campaign screen: Reset progress, confirmed. */
+  #campaignSettings(): HTMLElement {
+    const details = this.#document.createElement("details");
+    details.className = "v7-campaign-settings";
+    details.open = this.#confirmCampaignReset;
+    details.append(text(this.#document, "summary", "Settings"));
+    if (!this.#confirmCampaignReset) {
+      const reset = button(
+        this.#document,
+        "Reset progress",
+        "campaign-reset",
+        "destructive",
+      );
+      reset.onclick = () => {
+        this.#confirmCampaignReset = true;
+        this.#frontFocus = '[data-action="campaign-reset-cancel"]';
+        this.#render();
+      };
+      details.append(reset);
+      return details;
+    }
+    const confirm = el(this.#document, "div", "v7-campaign-reset-confirm");
+    confirm.setAttribute("role", "group");
+    confirm.setAttribute("aria-label", "Reset progress");
+    const question = text(
+      this.#document,
+      "p",
+      "Erase all campaign progress?",
+      "v7-campaign-reset-question",
+    );
+    const actions = el(this.#document, "div", "button-row");
+    const yes = button(
+      this.#document,
+      "Reset",
+      "campaign-reset-confirm",
+      "destructive",
+    );
+    yes.onclick = () => this.#resetCampaign();
+    const no = button(this.#document, "Cancel", "campaign-reset-cancel");
+    no.onclick = () => {
+      this.#confirmCampaignReset = false;
+      this.#frontFocus = '[data-action="campaign-reset"]';
+      this.#render();
+    };
+    actions.append(yes, no);
+    confirm.append(question, actions);
+    details.append(confirm);
+    return details;
+  }
+
+  #resetCampaign(): void {
+    const reset = this.#controller.resetCampaignProgress?.() ?? true;
+    this.#confirmCampaignReset = false;
+    if (reset) {
+      this.#briefingMissionId = null;
+      this.#notice = "Campaign progress reset.";
+      this.#error = "";
+      this.#frontFocus = '[data-action="mode-campaign"]';
+    } else this.#error = "Campaign progress couldn't be reset.";
+    this.#render();
+  }
+
+  #openBriefing(missionId: string): void {
+    this.#briefingMissionId = missionId;
+    this.#confirmCampaignReset = false;
+    this.#error = "";
+    this.#frontFocus = "#v7-briefing-title";
+    this.#render();
+  }
+
+  /**
+   * The briefing (CAMPAIGN.md section 5, item 3): the story, the
+   * Objective line, up to three hints, the map size and opponent, and the
+   * faction you lead, a choice filtered to unlocked factions where the
+   * mission offers one.
+   */
+  #briefing(
+    missionId: string,
+    progress: Ruleset7CampaignProgressV7,
+    replace: boolean,
+  ): HTMLElement {
+    const found = campaignMissionV7(missionId);
+    const mission = missionByIdV7(missionId);
+    const section = el(this.#document, "section", "v7-briefing");
+    section.dataset.v7Region = "briefing";
+    section.dataset.missionId = missionId;
+    if (found === null || mission === null) return section;
+    const { chapter, entry } = found;
+    const heading = text(this.#document, "h2", entry.name, "v7-briefing-title");
+    heading.id = "v7-briefing-title";
+    heading.tabIndex = -1;
+    section.setAttribute("aria-labelledby", heading.id);
+    section.append(
+      text(
+        this.#document,
+        "p",
+        `Mission ${entry.number}`,
+        "v7-briefing-kicker",
+      ),
+      heading,
+      text(this.#document, "p", entry.briefing, "v7-campaign-story"),
+    );
+    const objective = el(this.#document, "p", "v7-briefing-objective");
+    objective.append(
+      text(this.#document, "strong", "Objective"),
+      text(this.#document, "span", entry.objective),
+    );
+    section.append(objective);
+    if (entry.hints.length > 0) {
+      const hints = el(this.#document, "ul", "v7-briefing-hints");
+      hints.setAttribute("aria-label", "Hints");
+      for (const hint of entry.hints.slice(0, 3))
+        hints.append(text(this.#document, "li", hint));
+      section.append(hints);
+    }
+    const facts = el(this.#document, "div", "v7-briefing-facts");
+    const opponents = mission.seats
+      .slice(1)
+      .map((seat) => (typeof seat.faction === "string" ? seat.faction : null))
+      .filter((faction): faction is FactionIdV7 => faction !== null);
+    const map = text(
+      this.#document,
+      "span",
+      `${mission.size} × ${mission.size}`,
+      "v7-briefing-size",
+    );
+    map.setAttribute("aria-label", `Map ${mission.size} by ${mission.size}`);
+    const enemy = el(this.#document, "span", "v7-briefing-opponent");
+    enemy.append(text(this.#document, "span", "vs", "v7-mission-versus"));
+    for (const faction of opponents)
+      enemy.append(
+        this.#factionEmblem(faction),
+        text(this.#document, "span", FACTION_LABELS[faction] ?? title(faction)),
+      );
+    facts.append(map, enemy);
+    section.append(facts);
+    const choices = campaignFactionChoicesV7(missionId, progress.completed);
+    const chosen =
+      this.#briefingFaction !== null && choices.includes(this.#briefingFaction)
+        ? this.#briefingFaction
+        : (choices[0] ?? null);
+    this.#briefingFaction = chosen;
+    const lead = el(this.#document, "div", "v7-briefing-lead");
+    const leadEmblem = el(this.#document, "span", "v7-briefing-lead-emblem");
+    if (chosen !== null) leadEmblem.append(this.#factionEmblem(chosen));
+    if (choices.length > 1) {
+      const field = select(
+        this.#document,
+        "You lead",
+        "v7-campaign-faction",
+        choices,
+        chosen ?? "",
+        FACTION_LABELS,
+      );
+      field.classList.add("v7-briefing-choice");
+      field.querySelector("select")?.addEventListener("change", (event) => {
+        const value = (event.currentTarget as HTMLSelectElement).value;
+        const next = choices.find((faction) => faction === value);
+        if (next === undefined) return;
+        this.#briefingFaction = next;
+        leadEmblem.replaceChildren(this.#factionEmblem(next));
+      });
+      lead.append(leadEmblem, field);
+    } else {
+      const label = el(this.#document, "p", "v7-briefing-lead-text");
+      label.append(
+        text(this.#document, "span", "You lead", "v7-briefing-lead-label"),
+        text(
+          this.#document,
+          "strong",
+          chosen === null ? "–" : (FACTION_LABELS[chosen] ?? title(chosen)),
+        ),
+      );
+      lead.append(leadEmblem, label);
+    }
+    section.append(lead);
+    const actions = el(this.#document, "div", "button-row v7-briefing-actions");
+    const start = button(
+      this.#document,
+      "Start mission",
+      "campaign-start",
+      "primary-action",
+    );
+    const status = campaignMissionStatusV7(chapter, entry, progress.completed);
+    start.disabled = chosen === null || status === "LOCKED";
+    start.onclick = () => {
+      const faction = this.#briefingFaction;
+      if (faction === null) return;
+      const setup = missionMatchSetupV7(mission, faction);
+      if (setup === null) {
+        this.#error = "This mission can't be started.";
+        this.#render();
+        return;
+      }
+      void this.#launch(setup, replace);
+    };
+    const back = button(this.#document, "Back", "campaign-back");
+    back.onclick = () => {
+      this.#briefingMissionId = null;
+      this.#frontFocus = `[data-action="mission-${missionId.toLowerCase()}"]`;
+      this.#render();
+    };
+    actions.append(start, back);
+    section.append(actions);
+    return section;
+  }
+
+  /**
+   * A faction emblem: its Fighter portrait (no new art, CAMPAIGN.md
+   * section 1), in the faction's colour, with the placeholder badge where
+   * the art is Human art.
+   */
+  #factionEmblem(faction: FactionIdV7): HTMLElement {
+    const frame = el(this.#document, "span", "v7-faction-emblem");
+    frame.dataset.faction = faction;
+    frame.setAttribute("aria-hidden", "true");
+    const chibi = this.#chibiArt(
+      portraitSubjectV7("FIGHTER", faction),
+      CHIBI_DOM_BOXES_V7.action,
+      factionColourV7(faction),
+    );
+    frame.append(
+      factionBadgeArt(
+        this.#document,
+        chibi?.element ??
+          art(this.#document, RULESET7_UNIT_ART_IDS.FIGHTER, ""),
+        chibi?.factionArt === true ? null : factionBadgeV7(faction),
+      ),
+    );
+    return frame;
   }
 
   #brand(): HTMLElement {
@@ -1049,7 +1534,7 @@ export class Ruleset7DomAppView {
   #setup(replace: boolean): HTMLElement {
     const main = el(this.#document, "main", "v7-front-screen");
     main.dataset.v7Setup = "true";
-    main.append(this.#brand());
+    main.append(this.#brand(), this.#modeSwitch());
     const form = el(this.#document, "form", "v7-setup-form");
     form.append(
       select(
@@ -1268,18 +1753,24 @@ export class Ruleset7DomAppView {
   #resume(): HTMLElement {
     const main = el(this.#document, "main", "v7-front-screen");
     const view = this.#snapshot.view;
-    main.append(
-      this.#brand(),
-      text(this.#document, "h2", "Continue"),
-      text(
-        this.#document,
-        "p",
-        view === null
-          ? "A saved game is waiting."
+    // A campaign mission is labelled by its number and name (CAMPAIGN.md
+    // section 4.2): "Mission 2 · The Warrens · Turn 7".
+    const mission =
+      view?.setup.mission === undefined
+        ? null
+        : campaignMissionV7(view.setup.mission.id);
+    const summary = text(
+      this.#document,
+      "p",
+      view === null
+        ? "A saved game is waiting."
+        : mission !== null
+          ? `Mission ${mission.entry.number} · ${mission.entry.name} · Turn ${view.round}`
           : `Turn ${view.round} · ${view.viewer.coins} coins · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)}`,
-        "v7-resume-summary",
-      ),
+      "v7-resume-summary",
     );
+    if (mission !== null) summary.dataset.missionId = mission.entry.missionId;
+    main.append(this.#brand(), text(this.#document, "h2", "Continue"), summary);
     const actions = el(this.#document, "div", "button-row");
     const resume = button(this.#document, "Resume", "resume", "primary-action");
     resume.onclick = () => void this.#resumeMatch();
@@ -4503,6 +4994,25 @@ export class Ruleset7DomAppView {
       ),
     );
     seed.title = "Choose “Use seed” in a new game to replay this map.";
+    // A campaign mission shows its name and objective in place of the
+    // seed (CAMPAIGN.md section 5, item 4).
+    const mission =
+      setup?.mission === undefined ? null : campaignMissionV7(setup.mission.id);
+    const matchInfo: HTMLElement[] = [seed];
+    if (mission !== null) {
+      const label = el(this.#document, "p", "v7-mission-label");
+      label.dataset.v7Mission = mission.entry.missionId;
+      label.append(
+        "Mission: ",
+        text(this.#document, "strong", mission.entry.name),
+      );
+      const objective = el(this.#document, "p", "v7-mission-objective");
+      objective.append(
+        "Objective: ",
+        text(this.#document, "span", mission.entry.objective),
+      );
+      matchInfo.splice(0, 1, label, objective);
+    }
     const developer = this.#document.createElement("details");
     developer.className = "v7-developer-tools";
     // Stays open across the re-render another setting triggers.
@@ -4531,7 +5041,7 @@ export class Ruleset7DomAppView {
       this.#classicLookControl(),
       developerActions,
     );
-    section.append(display, game, seed, developer);
+    section.append(display, game, ...matchInfo, developer);
     return section;
   }
 
@@ -4773,6 +5283,11 @@ export class Ruleset7DomAppView {
   }
 
   #results(view: PlayerViewV7): HTMLElement {
+    const mission =
+      view.setup.mission === undefined
+        ? null
+        : campaignMissionV7(view.setup.mission.id);
+    if (mission !== null) return this.#missionResults(view, mission.entry);
     const result = el(this.#document, "section", "v7-results");
     result.dataset.v7Region = "results";
     result.dataset.outcome =
@@ -4803,6 +5318,130 @@ export class Ruleset7DomAppView {
     actions.append(restart);
     result.append(actions, this.#ruleset6Link());
     return result;
+  }
+
+  /**
+   * The mission Victory and Defeat dialogs (CAMPAIGN.md section 5, items 5
+   * and 6). The win was recorded by the controller before this renders.
+   */
+  #missionResults(
+    view: PlayerViewV7,
+    entry: NonNullable<ReturnType<typeof campaignMissionV7>>["entry"],
+  ): HTMLElement {
+    const victory = view.outcome?.kind === "VICTORY";
+    const result = el(
+      this.#document,
+      "section",
+      "v7-results v7-mission-results",
+    );
+    result.dataset.v7Region = "results";
+    result.dataset.outcome = victory ? "victory" : "defeat";
+    result.dataset.missionId = entry.missionId;
+    result.setAttribute("role", "dialog");
+    result.setAttribute("aria-modal", "true");
+    const heading = text(
+      this.#document,
+      "h2",
+      victory ? "Mission complete" : "Mission failed",
+    );
+    heading.id = "v7-mission-result-title";
+    result.setAttribute("aria-labelledby", heading.id);
+    result.append(
+      text(
+        this.#document,
+        "p",
+        `Mission ${entry.number}`,
+        "v7-briefing-kicker",
+      ),
+      heading,
+    );
+    const actions = el(this.#document, "div", "button-row");
+    if (victory) {
+      result.append(
+        text(this.#document, "p", entry.closing, "v7-campaign-story"),
+      );
+      const lastWin = this.#campaignProgress().lastWin;
+      if (lastWin?.missionId === entry.missionId)
+        for (const faction of lastWin.unlocked) {
+          const notice = el(this.#document, "div", "v7-unlock-notice");
+          notice.dataset.v7Region = "unlock-notice";
+          notice.dataset.faction = faction;
+          notice.setAttribute("role", "status");
+          notice.append(
+            this.#factionEmblem(faction),
+            text(
+              this.#document,
+              "p",
+              `New faction: ${FACTION_LABELS[faction] ?? title(faction)}`,
+            ),
+          );
+          result.append(notice);
+        }
+      const next = campaignNextMissionV7(entry.missionId);
+      if (next === null) {
+        const found = campaignMissionV7(entry.missionId);
+        if (found !== null)
+          result.append(
+            text(this.#document, "p", found.chapter.outro, "v7-campaign-outro"),
+          );
+      } else {
+        const proceed = button(
+          this.#document,
+          "Next mission",
+          "campaign-next",
+          "primary-action",
+        );
+        proceed.onclick = () => void this.#leaveFinishedMission(next.missionId);
+        actions.append(proceed);
+      }
+    } else {
+      const retry = button(
+        this.#document,
+        "Retry",
+        "mission-retry",
+        "primary-action",
+      );
+      retry.onclick = () => void this.#restart();
+      actions.append(retry);
+    }
+    const campaign = button(this.#document, "Campaign", "campaign-menu");
+    campaign.onclick = () => void this.#leaveFinishedMission(null);
+    actions.append(campaign);
+    result.append(actions);
+    return result;
+  }
+
+  /**
+   * Leaves a finished mission for the campaign screen, on the next
+   * mission's briefing or the list. The finished match is cleared from the
+   * autosave slot: its win is already recorded, and a mission is always
+   * started again from the campaign.
+   */
+  async #leaveFinishedMission(nextMissionId: string | null): Promise<void> {
+    this.#cancelPresentations();
+    // Set before the controller empties the slot, so its snapshot already
+    // renders the campaign screen.
+    this.#frontMode = "CAMPAIGN";
+    this.#replacing = false;
+    this.#confirmCampaignReset = false;
+    this.#briefingMissionId = nextMissionId;
+    this.#briefingFaction = null;
+    this.#selection = null;
+    this.#screen = "MATCH";
+    this.#achievementNotices = [];
+    this.#notice = "";
+    const deleted = await this.#controller.deleteStoredSave();
+    if (this.#destroyed) return;
+    if (!deleted) {
+      this.#error = "The finished mission couldn't be closed.";
+      this.#render();
+      return;
+    }
+    this.#frontFocus =
+      nextMissionId === null
+        ? '[data-action="mode-campaign"]'
+        : "#v7-briefing-title";
+    this.#render();
   }
 
   #errorPanel(): HTMLElement {
@@ -4902,6 +5541,7 @@ export class Ruleset7DomAppView {
     }
     this.#matchInstance += 1;
     this.#replacing = false;
+    this.#briefingMissionId = null;
     this.#selection = null;
     this.#notice = "Game started.";
     this.#render();
