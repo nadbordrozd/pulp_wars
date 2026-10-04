@@ -670,7 +670,13 @@ without a Martian seat looks as before apart from the extra faction option.
   4 (Force Field)" when raised), the ray's power ("Full power" or "Half
   power: moved"), "Cooling" (with the Cooling tooltip), a Brain's
   "Controls 1 / 1" (with the small portrait of the unit it controls) and
-  "Recovering: 2 turns", and "2 slots". A controlled unit of any kind
+  "Recovering: 2 turns", and "2 slots". Two per-turn chips come from the
+  public lists `beamedThisTurn` and `tractorUsedThisTurn`
+  (`pulp_wars-1wy.5`): **"Beamed"** on a unit of any kind that a carrier
+  set down this turn ("Beamed this turn: it can attack but not move, and
+  cannot be beamed again"), and a grey **"Beam used"** on a Mothership
+  whose free pull is spent ("Tractor Beam used this turn"). A controlled
+  unit of any kind
   shows a **brain badge** instead of an owner line: the brain glyph,
   "Controlled", then the controller's and (after a return arrow) the
   original owner's names, "You" or "Player N", each on a swatch of its
@@ -690,13 +696,22 @@ without a Martian seat looks as before apart from the extra faction option.
   names why: "No unit in one of your cities or within 2 tiles can be
   beamed", "No free tile next to this unit";
   "Recovering: N turns", "Controls a unit already", "No wounded enemy in
-  reach"; "No unit in reach can be pulled". (`pulp_wars-1wy.3`, `7r37`:
-  the Saucer and the Mothership both show Beam Down and Tractor Beam; a
-  carrier that moved still beams, so "A Saucer that moved this turn cannot
-  Beam Down" is gone; the Mothership's Tractor Beam button stays after its
-  Move or attack until it is used. The texts quote the new rules; the rest
-  of the balance round's UI, the two-tile path in the aiming panel and a
-  per-unit tooltip, is `pulp_wars-1wy.5`.) A
+  reach"; "No unit in reach can be pulled". The balance round (`7r37`:
+  `pulp_wars-1wy.3` and its UI, `pulp_wars-1wy.5`): the Saucer and the
+  Mothership both show Beam Down and Tractor Beam, and a carrier that
+  moved still beams. The **Tractor Beam button is the unit's own**: a
+  Saucer's tooltip is "Pull a unit 2 tiles away one tile closer. Uses this
+  unit's action."; a Mothership's is "Pull a unit 2 or 3 tiles away up to
+  2 tiles closer. Free once a turn: it can still move and act.", its
+  button wears a small **"Free"** tag, and it stays after its Move or
+  attack until it is used. Unit info and the Gallery describe the same
+  unit's beam. A carrier or puller that cannot use the ability any more
+  keeps the button, disabled, with the reason: **"Already acted this
+  turn"** (a Saucer that attacked, beamed, or pulled: both buttons),
+  **"Tractor Beam used this turn"** (a Mothership's spent pull), and
+  **"Frozen: it moved"** (a Frozen carrier that moved; it gets no second
+  "Act" button). A unit that arrived this turn (landed, trained) shows
+  neither button, as before. A
   press aims the ability: the dock replaces the actions with the aiming
   panel of the [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8)
   (the ability's icon and name with its `?`, unit choices as chips, each
@@ -705,12 +720,25 @@ without a Martian seat looks as before apart from the extra faction option.
   ability's (magenta dashed outlines) and the camera frames them above the
   dock. Escape steps back (a Beam Down tile to its passenger) and then
   leaves.
-  - **Beam Down**: first the passengers (on or next to own city centers,
-    or within two tiles of the carrier; chips "Beam Grunt", accessible name
-    adding "8 of 8 HP"), then the legal tiles around the carrier on the
-    board only ("Beam here", "destroys Field Defense"; named "Beam the
-    Grunt here"); the tooltip says "It can still attack but not move"; a
-    tile performs it.
+  - **Beam Down** (passenger first, like the Dwarf Tunnel;
+    `pulp_wars-1wy.5`): every unit the carrier may beam (on or next to own
+    city centers, or within two tiles of the carrier) wears a **"Beam"
+    badge** on the board, with no tile outline, and the carrier's
+    **pick-up range** (the tiles within two of it) is tinted pale magenta
+    with a dashed outer edge, so a badged unit inside it is a pick-up and
+    one outside it stands at a city. The dock mirrors the badges with one
+    **portrait button** per passenger (its portrait and "9/9"; the
+    accessible name "Beam Grunt, 9 of 9 HP, picked up nearby" or "…, from
+    your city"). Under them the caveat is **two icon chips**, not a
+    sentence: the attack icon with "Can attack" and the move icon struck
+    through with "No move" (together one image named "After landing it can
+    attack but not move"; the `?` says it too). Tapping a badge or a
+    portrait moves on to the legal tiles around the carrier, on the board
+    only: plain dashed outlines with no label, "Destroys Field Defense"
+    only on a tile where the landing would (named "Beam the Grunt here.
+    After landing it can attack but not move"); the chosen passenger is
+    marked "Beaming"; a tile performs it. The beamed unit then shows the
+    "Beamed" chip, its attack targets, and no Move.
   - **Mind Control**: the legal targets, wounded hostile units ("Take · 5
     HP", with "Mind Control recovers for 2 turns · Returns if this Brain is
     lost"; named "Take the Marksman, 5 of 12 HP" with no tile); the dock's
@@ -720,10 +748,13 @@ without a Martian seat looks as before apart from the extra faction option.
     "Unhurt", "Immune", "Already controlled", "Protected on a city or
     village center". A target performs it, like an attack.
   - **Tractor Beam**: the targets two tiles away (a Mothership's: two or
-    three); the focused one shows its destination (magenta tile and an
-    arrow) and "Pulled out of Walls", "Pulled off Field Defense", "Empties
-    Player 2's City", "Lifts the siege of your City" (named "Pull the
-    Fighter one tile closer", or "two tiles closer" for a Mothership's
+    three); the focused one shows its **path** (`pulp_wars-1wy.5`, from
+    the preview's `path`): the tile it ends on is the magenta dashed tile,
+    a tile it only crosses on a Mothership's two-tile pull is a lighter
+    dotted tile with a dot, and one arrow runs from the target through
+    them. It also shows "Pulled out of Walls", "Pulled off Field Defense",
+    "Empties Player 2's City", "Lifts the siege of your City" (named "Pull
+    the Fighter one tile closer", or "two tiles closer" for a Mothership's
     longer pull; no text names the tile it lands on).
 - **Moves.** A machine's Move onto water is a dotted pale-blue "Launch"
   outline (no label box); the dock's legend reads "Launch: crosses water as
@@ -742,7 +773,9 @@ without a Martian seat looks as before apart from the extra faction option.
   (wider at full power), with the heat-ray flash, and a thinner beam on to
   the Pierce victim; a Shield that absorbs flares as a crescent turned to
   the blow; Beam Down is a column of light coming down on the arrival tile;
-  the Tractor Beam is a cone with hoops, then the target slides one tile;
+  the Tractor Beam is a cone with hoops, then the target slides one tile,
+  or through both tiles of a Mothership's two-tile pull, one after the
+  other (a longer cone first; never straight to the last tile);
   Mind Control spins the spiral over the victim and rings the Brain, and
   the unit stays, under its halo; when a Brain is lost its controlled
   unit's halo shatters (a white flash, six arcs flying apart and fading)
@@ -805,7 +838,8 @@ from the extra faction option.
   its top edges. It follows the flag: captures, Land Grants, Deep Winter and
   a Witch's steps change it at once. The cursor description and a tile's
   dock name what Snow does for the viewer: "Snow: your units move at half
-  cost and have cover here unless fortified" for an Ice Folk viewer, "Snow:
+  cost from Snow to Snow and have light cover here unless fortified" for
+  an Ice Folk viewer, "Snow:
   your units stop on entering, as in a Forest. Ice Folk units have cover"
   for the others.
 - **Blizzard** (`ICE_FOLK_BLIZZARD_V7`): every explored tile whose flag
@@ -839,7 +873,21 @@ from the extra faction option.
   Rockfall, Bolas, Cold Blood, Sweep, Trample, Blizzard, Cold Snap,
   Boulders, Prowl and Cold Aura. A Yeti or Mammoth where a Fighter or Guard
   would fortify shows a disabled Fortify: "Ice Folk cannot build Field
-  Defense". A Frozen own unit that moved shows a disabled "Act" ("Frozen: it
+  Defense". The balance round (`pulp_wars-1wy.5`, `7r37`): **Snow cover**
+  multiplies Defense (× 1.25), so its term in the Defense row reads
+  **"+25%"** (a Yeti's "1.5 +25%"), never the product's fraction ("+0.375",
+  1.875); its accessible name is "Snow cover: Snow cover multiplies an
+  unfortified Ice Folk unit's Defense by 1.25." The "Snow" chip's tooltip
+  is "On Snow: light cover here, and its steps from Snow to Snow cost
+  half" (without the second half for the Sabretooth). **Glide in the
+  movement range:** the range is the engine's offered Moves, so a step off
+  the Snow is a full step; the tiles a unit reaches beyond its Move by
+  half-cost steps from Snow onto Snow are outlined in **pale ice** instead
+  of the Move teal (whole outlines, also where they touch a plain Move
+  tile), the dock shows the legend "Glide: Snow to Snow at half cost"
+  while there is one, and the cursor description says the same. A unit on
+  open ground, or on the Snow's edge looking out, has none. A Frozen own
+  unit that moved shows a disabled "Act" ("Frozen: it
   moved, so it cannot act this turn"); the engine offers it nothing else.
 - **Abilities.** Bolas (Sled) and Cold Snap (Witch) are one button each (the
   offered commands are never buttons). Without a legal choice the button is
@@ -1208,7 +1256,13 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   Cold Snap, Tunnel, Bomb Run, Assemble) and Replay. Full motion shows the
   ready unit for a moment and plays the first cue; reduced motion shows
   the ready unit, waits for a cue and plays its held frames. The board
-  takes no pointer or focus and has no cursor.
+  takes no pointer or focus and has no cursor. A cue may play more than
+  one command in a row (`pulp_wars-1wy.5`): **Beam Down** is "beam down
+  and shoot" (the carrier sets a Grunt that could not reach the target
+  down beside itself, then the Grunt shoots), and a **Mothership's Tractor
+  Beam** pulls its target from three tiles away through two tiles (a
+  Saucer's pulls one). The detail describes each puller's own Tractor
+  Beam ("Free once a turn" for the Mothership).
 - **Minimal text.** No coordinates anywhere; labels are names, icons and
   numbers.
 

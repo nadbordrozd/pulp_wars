@@ -530,6 +530,20 @@ export function iceFolkRecruitNotesV7(
   ];
 }
 
+/**
+ * `pulp_wars-1wy.5`: what Snow does for an Ice Folk unit standing on it with
+ * Snow cover: light cover (x 1.25) and, for a role that glides, the half
+ * cost of a step from Snow onto Snow (never of a step off the Snow).
+ */
+export function snowChipTooltipV7(glides: boolean): string {
+  return glides
+    ? "On Snow: light cover here, and its steps from Snow to Snow cost half"
+    : "On Snow: light cover here";
+}
+
+/** `pulp_wars-1wy.5`: the cursor description of a Move that glides. */
+export const GLIDE_MOVE_LABEL_V7 = "Glide: Snow to Snow at half cost";
+
 /** One line of Ice Folk unit information. */
 export interface IceFolkUnitInfoLineV7 {
   readonly id:
@@ -578,7 +592,7 @@ export function iceFolkUnitInfoLinesV7(
       id: "snow",
       name: SNOW_LABEL_V7,
       description: mechanics.snowCover
-        ? "On Snow: light cover here, and it moves at half cost onto Snow."
+        ? `${snowChipTooltipV7(mechanics.glides)}.`
         : "On Snow, but no Snow cover here.",
     });
   if (mechanics.rockfall)

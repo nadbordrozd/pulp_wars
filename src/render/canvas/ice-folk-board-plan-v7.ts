@@ -2,6 +2,7 @@ import {
   COLD_SNAP_RANGE_V7,
   previewBolasV7,
   previewColdSnapV7,
+  unitGlidesV7,
   unitRoleRuleV7,
   type CombatPreviewV7,
   type CommandV7,
@@ -235,6 +236,56 @@ export interface IceFolkAttackTargetExtrasV7 {
   readonly sweep: MapCommandTargetV7["sweep"];
   /** The sentence the cursor description adds. */
   readonly semantic: string | null;
+}
+
+/**
+ * `pulp_wars-1wy.5` (Glide from Snow onto Snow, `7r37`): the number of
+ * half-cost steps of an offered Move of a gliding Ice Folk unit: the steps
+ * from a Snow tile onto a Snow tile, read from the view's Snow flags along
+ * the command's own path (the path the engine offers and will walk). A step
+ * off the Snow, or onto it from open ground, is a full step and is not
+ * counted. Zero for every other unit and in a match without an Ice Folk
+ * seat.
+ */
+export function glideStepsV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): number {
+  const unit = view.units.find((candidate) => candidate.id === command.unitId);
+  if (unit === undefined || !unitGlidesV7(view, unit)) return 0;
+  const snowAt = (at: CoordV7): boolean => {
+    const tile = view.board.tiles.find(
+      (candidate) => candidate.at.x === at.x && candidate.at.y === at.y,
+    );
+    return tile?.explored === true && tile.snow === true;
+  };
+  let steps = 0;
+  let from = unit.at;
+  for (const to of command.path) {
+    if (snowAt(from) && snowAt(to)) steps += 1;
+    from = to;
+  }
+  return steps;
+}
+
+/**
+ * `pulp_wars-1wy.5`: whether an offered Move is a Glide the range overlay
+ * marks: it ends farther than the unit's Move away, which only its
+ * Snow-to-Snow half-cost steps allow (a Yeti's second tile inside its
+ * Snow, never the tile just off it). Such a tile is outlined in pale ice.
+ */
+export function moveIsGlideV7(
+  view: PlayerViewV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  const unit = view.units.find((candidate) => candidate.id === command.unitId);
+  const to = command.path.at(-1);
+  if (unit === undefined || to === undefined) return false;
+  return (
+    glideStepsV7(view, command) > 0 &&
+    Math.max(Math.abs(to.x - unit.at.x), Math.abs(to.y - unit.at.y)) >
+      unitRoleRuleV7(view, unit).move
+  );
 }
 
 /**

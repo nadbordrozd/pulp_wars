@@ -348,6 +348,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/canvas/ice-folk-board-plan-v7.ts::iceFolkPickTargetsV7":
       "BOARD",
     "src/render/canvas/ice-folk-board-plan-v7.ts::selectedWitchV7": "BOARD",
+    // `pulp_wars-1wy.5`: the Glide tiles of an offered Move (the mover is
+    // on the board; a burrowed unit is offered no Move).
+    "src/render/canvas/ice-folk-board-plan-v7.ts::glideStepsV7": "BOARD",
+    "src/render/canvas/ice-folk-board-plan-v7.ts::moveIsGlideV7": "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::addMartianPickEntriesV7":
       "BOARD",
     "src/render/canvas/martian-board-plan-v7.ts::addMartianSelectionEntriesV7":
@@ -391,6 +395,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/martian-presentation-v7.ts::martianBoundaryNoticeV7": "BOARD",
     "src/render/martian-presentation-v7.ts::martianCombatLinesV7": "BOARD",
     "src/render/martian-presentation-v7.ts::martianFieldDefenseBlockedV7":
+      "BOARD",
+    // `pulp_wars-1wy.5`: why a puller on the board has no Tractor Beam.
+    "src/render/martian-presentation-v7.ts::tractorBeamUnavailableTextV7":
       "BOARD",
     "src/render/tactical-presentation-v7.ts::tacticalAttachmentsV7": "BOARD",
     "src/render/undead-presentation-v7.ts::combatPreviewSemanticNoteV7":

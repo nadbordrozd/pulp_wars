@@ -33,24 +33,41 @@ import {
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import {
+  BEAMED_CAN_ATTACK_V7,
+  BEAMED_CHIP_V7,
+  BEAMED_HINT_V7,
+  BEAMED_NO_MOVE_V7,
+  BEAM_BADGE_V7,
   BEAM_DOWN_LABEL_V7,
   BEAM_DOWN_TOOLTIP_V7,
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
+  MARTIAN_ACTED_V7,
+  MARTIAN_FROZEN_MOVED_V7,
   MARTIAN_HELP_RULES_V7,
   MIND_CONTROLLED_LABEL_V7,
+  TRACTOR_FREE_TAG_V7,
+  TRACTOR_USED_CHIP_V7,
+  TRACTOR_USED_V7,
   brainControlTextV7,
   martianRoleUnlockTextV7,
   mindControlPreviewLinesV7,
   mindControlReadyInV7,
   mindControlledInfoV7,
   shieldTextV7,
+  tractorBeamTooltipV7,
 } from "../../src/render/martian-presentation-v7";
 import {
+  MARTIAN_MOBILITY_V7,
   MARTIAN_UI_V7,
+  martianMobilityFixtureV7,
   martianUiFieldV7,
   martianUiFixtureV7,
 } from "../fixtures/v7-martian-ui";
+import {
+  MARTIAN_FROZEN_V7,
+  martianFrozenFixtureV7,
+} from "../fixtures/v7-ice-folk-ui";
 import { goblinShowcaseFixtureV7 } from "../fixtures/v7-goblin-ui";
 
 // Every Martian number expected below is read from the registry or from a
@@ -467,6 +484,192 @@ describe("Martian abilities", () => {
     expect(beam.getAttribute("aria-label")).toBe(
       `${BEAM_DOWN_LABEL_V7}. ${BEAM_DOWN_TOOLTIP_V7}`,
     );
+    app.destroy();
+  });
+});
+
+// The balance round's UI (bead `pulp_wars-1wy.5`, ruleset `7r37`).
+describe("Martian mobility UI", () => {
+  const MOB = MARTIAN_MOBILITY_V7;
+  /** No player-facing text places anything by "x, y". */
+  const COORDINATE = /\(?\b\d{1,2}\s*,\s*\d{1,2}\b\)?/;
+
+  it("gives each puller its own Tractor Beam button: the Saucer's, and the Mothership's free one", () => {
+    const controller = new FixtureController(martianMobilityFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    selectUnitAt(controller, host, MOB.carrier);
+    const light = requiredButton("martian-tractor-beam");
+    expect(light.title).toBe(tractorBeamTooltipV7(false));
+    expect(light.dataset.free).toBeUndefined();
+    expect(light.querySelector(".v7-action-tag")).toBeNull();
+    selectUnitAt(controller, host, MOB.mothership);
+    const heavy = requiredButton("martian-tractor-beam");
+    expect(heavy.title).toBe(tractorBeamTooltipV7(true));
+    expect(heavy.getAttribute("aria-label")).toContain("Free once a turn");
+    expect(heavy.dataset.free).toBe("true");
+    expect(heavy.querySelector(".v7-action-tag")?.textContent).toBe(
+      TRACTOR_FREE_TAG_V7,
+    );
+    // Unit information describes the unit's own beam.
+    requiredButton("unit-help").click();
+    expect(
+      [...document.querySelectorAll(".v7-unit-ability")].some(
+        (entry) =>
+          entry.querySelector("span")?.textContent ===
+          tractorBeamTooltipV7(true),
+      ),
+    ).toBe(true);
+    app.destroy();
+  });
+
+  it("picks the Beam Down passenger first, by portrait, with the caveat as two chips", async () => {
+    const controller = new FixtureController(martianMobilityFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const carrier = selectUnitAt(controller, host, MOB.carrier);
+    const pickUp = unitAt(controller, MOB.pickUp);
+    const cityGrunt = unitAt(controller, MOB.cityGrunt);
+    requiredButton("martian-beam-down").click();
+    const panel = requiredElement<HTMLElement>("[data-v7-martian-pick]");
+    // One portrait button per passenger: HP as text, the rest in its name.
+    const near = requiredButton(`beam-passenger-${pickUp.id}`);
+    const far = requiredButton(`beam-passenger-${cityGrunt.id}`);
+    expect(near.classList.contains("v7-beam-passenger")).toBe(true);
+    expect(near.dataset.beamSource).toBe("pick-up");
+    expect(far.dataset.beamSource).toBe("city");
+    expect(near.textContent).toBe(`${pickUp.hp}/${pickUp.maxHp}`);
+    expect(near.getAttribute("aria-label")).toBe(
+      `Beam ${label("FIGHTER")}, ${pickUp.hp} of ${pickUp.maxHp} HP, picked up nearby`,
+    );
+    expect(far.getAttribute("aria-label")).toContain("from your city");
+    // The caveat is two icon chips, not a sentence.
+    const hint = requiredElement<HTMLElement>(".v7-beam-hint");
+    expect(hint.getAttribute("aria-label")).toBe(BEAMED_HINT_V7);
+    expect(
+      [...hint.querySelectorAll<HTMLElement>(".v7-beam-hint-chip")].map(
+        (chip) => [chip.dataset.beamHint, chip.textContent],
+      ),
+    ).toEqual([
+      ["attack", BEAMED_CAN_ATTACK_V7],
+      ["no-move", BEAMED_NO_MOVE_V7],
+    ]);
+    expect(panel.querySelector("p.v7-martian-detail")).toBeNull();
+    // The board badges the same units and tints the pick-up range.
+    const stageOne = boardPlan(host);
+    expect(stageOne.targets.map((target) => target.previewLabel)).toEqual(
+      stageOne.targets.map(() => BEAM_BADGE_V7),
+    );
+    expect(
+      stageOne.entries.some((entry) => entry.abilityStyle === "BEAM_RANGE"),
+    ).toBe(true);
+    // Nothing in the panel or on the board names a tile.
+    const said = [
+      panel.textContent,
+      ...[...panel.querySelectorAll("[aria-label], [title]")].flatMap(
+        (node) => [
+          node.getAttribute("aria-label") ?? "",
+          node.getAttribute("title") ?? "",
+        ],
+      ),
+      ...stageOne.targets.map((target) => target.semanticLabel ?? ""),
+    ];
+    for (const text of said) expect(text).not.toMatch(COORDINATE);
+    // Tap the passenger on the board, then a tile.
+    host.callbacks?.onCommand(
+      required(
+        stageOne.targets.find(
+          (target) =>
+            target.at.x === MOB.cityGrunt.x && target.at.y === MOB.cityGrunt.y,
+        ),
+      ),
+    );
+    await waitUntil(
+      () =>
+        host.lastModel?.interaction.martianPick?.kind === "BEAM_DOWN" &&
+        host.lastModel.interaction.martianPick.passengerUnitId === cityGrunt.id,
+    );
+    expect(requiredElement(".v7-beam-hint").getAttribute("aria-label")).toBe(
+      BEAMED_HINT_V7,
+    );
+    host.callbacks?.onCommand(
+      required(
+        boardPlan(host).targets.find(
+          (target) =>
+            target.at.x === MOB.lightPullTo.x &&
+            target.at.y === MOB.lightPullTo.y,
+        ),
+      ),
+    );
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "BEAM_DOWN",
+      unitId: carrier.id,
+      passengerUnitId: cityGrunt.id,
+      to: MOB.lightPullTo,
+    });
+    // The beamed Grunt: a "Beamed" chip, an attack on the Fighter beside
+    // it, and no Move.
+    selectUnitAt(controller, host, MOB.lightPullTo);
+    expect(chipText("beamed")).toBe(BEAMED_CHIP_V7);
+    const families = boardPlan(host).targets.map((target) => target.family);
+    expect(families).toContain("ATTACK");
+    expect(families).not.toContain("MOVE");
+    // The carrier used its action: both buttons say so.
+    selectUnitAt(controller, host, MOB.carrier);
+    for (const action of ["martian-beam-down", "martian-tractor-beam"]) {
+      const used = requiredButton(action);
+      expect(used.getAttribute("aria-disabled")).toBe("true");
+      expect(used.dataset.disabledReason).toBe(MARTIAN_ACTED_V7);
+    }
+    app.destroy();
+  });
+
+  it("keeps a Mothership's free pull apart from its action, and marks it spent", async () => {
+    const controller = new FixtureController(martianMobilityFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const mothership = selectUnitAt(controller, host, MOB.mothership);
+    const raider = unitAt(controller, MOB.heavyTarget);
+    requiredButton("martian-tractor-beam").click();
+    const target = required(
+      boardPlan(host).targets.find(
+        (candidate) =>
+          candidate.at.x === MOB.heavyTarget.x &&
+          candidate.at.y === MOB.heavyTarget.y,
+      ),
+    );
+    expect(target.pullPath).toEqual(MOB.heavyPath);
+    host.callbacks?.onCommand(target);
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(unitAt(controller, MOB.heavyPath[1]).id).toBe(raider.id);
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: mothership.id });
+    expect(chipText("tractor-used")).toBe(TRACTOR_USED_CHIP_V7);
+    const spent = requiredButton("martian-tractor-beam");
+    expect(spent.getAttribute("aria-disabled")).toBe("true");
+    expect(spent.dataset.disabledReason).toBe(TRACTOR_USED_V7);
+    // Its action is still its own: the Raider beside it can be attacked.
+    expect(boardPlan(host).targets.map((item) => item.family)).toContain(
+      "ATTACK",
+    );
+    app.destroy();
+  });
+
+  it("names a Frozen carrier that moved on its own buttons, without a second Act button", () => {
+    const controller = new FixtureController(martianFrozenFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    for (const at of [MARTIAN_FROZEN_V7.saucer, MARTIAN_FROZEN_V7.mothership]) {
+      selectUnitAt(controller, host, at);
+      for (const action of ["martian-beam-down", "martian-tractor-beam"]) {
+        const frozen = requiredButton(action);
+        expect(frozen.getAttribute("aria-disabled")).toBe("true");
+        expect(frozen.dataset.disabledReason).toBe(MARTIAN_FROZEN_MOVED_V7);
+      }
+      expect(document.querySelector('[data-action="ice-folk-frozen"]')).toBe(
+        null,
+      );
+    }
     app.destroy();
   });
 });

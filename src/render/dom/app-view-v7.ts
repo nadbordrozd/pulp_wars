@@ -37,6 +37,8 @@ import {
   previewKaboomV7,
   unitRoleRuleV7,
   unitRoleMechanicsV7,
+  BEAM_DOWN_PICKUP_RANGE_V7,
+  tractorBeamRuleV7,
   previewDevourV7,
   previewRaiseDeadV7,
   previewTendWoundedV7,
@@ -233,6 +235,9 @@ import {
   turnsTextV7,
 } from "../dinosaur-presentation-v7";
 import {
+  BEAMED_CAN_ATTACK_V7,
+  BEAMED_HINT_V7,
+  BEAMED_NO_MOVE_V7,
   BEAM_DOWN_LABEL_V7,
   BEAM_DOWN_PICK_PASSENGER_V7,
   BEAM_DOWN_PICK_TILE_V7,
@@ -243,6 +248,7 @@ import {
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
   MARTIAN_FIELD_DEFENSE_EXPLANATION_V7,
+  MARTIAN_FROZEN_MOVED_V7,
   MARTIAN_HELP_RULES_V7,
   MIND_CONTROL_LABEL_V7,
   MIND_CONTROL_PICK_V7,
@@ -252,9 +258,8 @@ import {
   MIND_CONTROLLED_NO_SLOT_V7,
   MIND_CONTROL_NO_TARGET_V7,
   TRACTOR_BEAM_LABEL_V7,
-  TRACTOR_BEAM_NO_TARGET_V7,
   TRACTOR_BEAM_PICK_V7,
-  TRACTOR_BEAM_TOOLTIP_V7,
+  TRACTOR_FREE_TAG_V7,
   beamDownUnavailableTextV7,
   brainControlTextV7,
   martianBoundaryNoticeV7,
@@ -264,6 +269,7 @@ import {
   martianRoleUnlockTextV7,
   martianSlotCapacityTooltipV7,
   martianStatsV7,
+  martianTurnChipsV7,
   martianUnitInfoLinesV7,
   martianUnitNameV7,
   matchHasMartianV7,
@@ -274,6 +280,8 @@ import {
   type MindControlledInfoV7,
   shieldTextV7,
   tractorBeamPreviewLinesV7,
+  tractorBeamTooltipV7,
+  tractorBeamUnavailableTextV7,
 } from "../martian-presentation-v7";
 import {
   martianMachineV7,
@@ -292,6 +300,7 @@ import {
   COLD_SNAP_TOOLTIP_V7,
   DEEP_WINTER_UNLOCK_TEXT_V7,
   FROZEN_MOVED_V7,
+  GLIDE_MOVE_LABEL_V7,
   ICE_FOLK_FIELD_DEFENSE_EXPLANATION_V7,
   ICE_FOLK_HELP_RULES_V7,
   SNOW_LABEL_V7,
@@ -308,10 +317,14 @@ import {
   iceFolkRoleUnlockTextV7,
   iceFolkUnitInfoLinesV7,
   boulderThrowTextV7,
+  snowChipTooltipV7,
   matchHasIceFolkSeatV7,
   snowTooltipV7,
 } from "../ice-folk-presentation-v7";
-import type { IceFolkPickV7 } from "../canvas/ice-folk-board-plan-v7";
+import {
+  moveIsGlideV7,
+  type IceFolkPickV7,
+} from "../canvas/ice-folk-board-plan-v7";
 import {
   ASSEMBLE_LABEL_V7,
   ASSEMBLE_PICK_V7,
@@ -2630,6 +2643,21 @@ export class Ruleset7DomAppView {
             `Takes ${slotsTextV7(martian.capacitySlots)} in its city`,
           );
       }
+      // `pulp_wars-1wy.5`: the per-turn mobility chips, from the public
+      // lists: "Beamed" on a unit a carrier set down this turn (of any
+      // kind) and "Beam used" on a Mothership whose free pull is spent.
+      for (const turnChip of martianTurnChipsV7(view, unit.id)) {
+        const cue = text(
+          this.#document,
+          "span",
+          turnChip.label,
+          "v7-chip v7-martian-chip",
+        );
+        cue.dataset.unitStatus = turnChip.id;
+        cue.title = turnChip.tooltip;
+        cue.setAttribute("aria-label", turnChip.tooltip);
+        identityColumn?.append(cue);
+      }
       // The Mind Control revision (section 9): a controlled unit of any kind
       // shows the brain badge "Controlled" and, as names in their faction
       // colours, its controller and (after a return arrow) its original
@@ -2671,7 +2699,7 @@ export class Ruleset7DomAppView {
               SNOW_LABEL_V7,
               "snow",
               mechanics.snowCover
-                ? "On Snow: it moves at half cost onto Snow and has light cover"
+                ? snowChipTooltipV7(mechanics.glides)
                 : "On Snow, but no Snow cover here",
             );
           if (mechanics.rockfall)
@@ -2822,10 +2850,11 @@ export class Ruleset7DomAppView {
             const modifierId = `${unit.id}-${stat.id}-${index}`;
             const term = button(
               this.#document,
-              `+${formatValue(modifier.value)}`,
+              statModifierTextV7(stat.base.value, modifier),
               `stat-${stat.id.toLowerCase()}-${index}`,
               "v7-stat-modifier",
             );
+            term.dataset.modifierSource = modifier.source.toLowerCase();
             term.setAttribute(
               "aria-label",
               `${modifier.sourceLabel}: ${modifier.description}`,
@@ -2869,6 +2898,7 @@ export class Ruleset7DomAppView {
                   stats.maximumRange,
                   unitFaction,
                   cureCaptainPhraseV7(view),
+                  unit.role,
                 );
           if (description === null) continue;
           const entry = el(this.#document, "p", "v7-unit-ability");
@@ -3005,6 +3035,8 @@ export class Ruleset7DomAppView {
       if (legend !== null) dock.append(legend);
       const launchLegend = this.#launchLegend(view, unit.id);
       if (launchLegend !== null) dock.append(launchLegend);
+      const glideLegend = this.#glideLegend(view, unit.id);
+      if (glideLegend !== null) dock.append(glideLegend);
       // Revision 19: what an Egg is, in one sentence, right in its dock.
       if (egg && eggTurns !== null) {
         const info = text(
@@ -4264,6 +4296,33 @@ export class Ruleset7DomAppView {
     const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
     swatch.setAttribute("aria-hidden", "true");
     item.append(swatch, text(this.#document, "span", launch));
+    legend.append(item);
+    return legend;
+  }
+
+  /**
+   * `pulp_wars-1wy.5`: the legend of an Ice Folk unit's Glide tiles (the
+   * tiles its half-cost steps from Snow onto Snow reach beyond its Move),
+   * shown while it has any.
+   */
+  #glideLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    if (
+      !matchHasIceFolkSeatV7(view) ||
+      !this.#snapshot.offeredCommands.some(
+        (command) =>
+          command.kind === "MOVE" &&
+          command.unitId === unitId &&
+          moveIsGlideV7(view, command),
+      )
+    )
+      return null;
+    const legend = el(this.#document, "ul", "v7-landing-legend");
+    legend.setAttribute("aria-label", "Glide markers");
+    const item = el(this.#document, "li", "v7-landing-legend-item");
+    item.dataset.landingMarker = "glide";
+    const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
+    swatch.setAttribute("aria-hidden", "true");
+    item.append(swatch, text(this.#document, "span", GLIDE_MOVE_LABEL_V7));
     legend.append(item);
     return legend;
   }
@@ -6432,6 +6491,9 @@ export class Ruleset7DomAppView {
       unit.activation.captured ||
       unit.activation.handled;
     const buttons: HTMLButtonElement[] = [];
+    // `pulp_wars-1wy.5`: the unit's own Tractor Beam: the Saucer's pull, or
+    // the Mothership's heavy one, free once a turn.
+    const heavy = tractorBeamRuleV7(view, unit)?.free === true;
     const entries: readonly {
       readonly kind: "BEAM_DOWN" | "MIND_CONTROL" | "TRACTOR_BEAM";
       readonly label: string;
@@ -6461,9 +6523,10 @@ export class Ruleset7DomAppView {
       {
         kind: "TRACTOR_BEAM",
         label: TRACTOR_BEAM_LABEL_V7,
-        tooltip: TRACTOR_BEAM_TOOLTIP_V7,
+        tooltip: tractorBeamTooltipV7(heavy),
         icon: "tractor-beam",
-        blocked: () => (acted ? null : TRACTOR_BEAM_NO_TARGET_V7),
+        // `pulp_wars-1wy.5`: a used or Frozen puller names its reason.
+        blocked: () => tractorBeamUnavailableTextV7(view, unit.id, false),
       },
     ];
     for (const entry of entries) {
@@ -6486,6 +6549,13 @@ export class Ruleset7DomAppView {
         text(this.#document, "span", entry.label, "v7-action-label"),
       );
       action.dataset.martianAbility = entry.kind.toLowerCase();
+      if (entry.kind === "TRACTOR_BEAM" && heavy) {
+        // The Mothership's pull costs no action: a small "Free" tag.
+        action.dataset.free = "true";
+        action.append(
+          text(this.#document, "span", TRACTOR_FREE_TAG_V7, "v7-action-tag"),
+        );
+      }
       if (reason === null) {
         const aiming = this.#martianPick?.kind === entry.kind;
         action.title = entry.tooltip;
@@ -6630,29 +6700,70 @@ export class Ruleset7DomAppView {
       );
       if (pick.passengerUnitId === null) {
         prompt = BEAM_DOWN_PICK_PASSENGER_V7;
+        // `pulp_wars-1wy.5`: passenger first, like a Tunnel's rider: one
+        // portrait button per unit the carrier may beam (its portrait and
+        // HP), mirroring the board's "Beam" badges; the name, the HP and
+        // where it stands are its accessible name.
+        lines.className = "v7-dwarf-passengers v7-beam-passengers";
+        lines.setAttribute("role", "group");
+        lines.setAttribute("aria-label", BEAM_DOWN_PICK_PASSENGER_V7);
+        const carrier = unitById(unitId);
         const seen = new Set<number>();
         for (const command of beams) {
           if (seen.has(command.passengerUnitId)) continue;
           seen.add(command.passengerUnitId);
           const passenger = unitById(command.passengerUnitId);
-          choice(
+          if (passenger === undefined) continue;
+          const control = button(
+            this.#document,
+            "",
             `beam-passenger-${command.passengerUnitId}`,
-            `Beam ${nameOf(command.passengerUnitId)}`,
-            passenger === undefined
-              ? []
-              : [`${passenger.hp} of ${passenger.maxHp} HP`],
-            () => {
-              this.#martianPick = {
-                kind: "BEAM_DOWN",
-                unitId,
-                passengerUnitId: command.passengerUnitId,
-              };
-              this.#notice = `${BEAM_DOWN_PICK_TILE_V7}.`;
-              this.#pendingFocusAction = null;
-              this.#render();
-              this.#queueBoardFocus();
-            },
+            "v7-dwarf-passenger v7-beam-passenger",
           );
+          control.append(
+            this.#chibiArt(
+              portraitSubjectV7(
+                passenger.role,
+                presentedUnitFactionV7(view, passenger),
+              ),
+              CHIBI_DOM_BOXES_V7.passenger,
+              this.#viewerColour(),
+            )?.element ??
+              uiIconV7(
+                this.#document,
+                "beam-down",
+                "v7-ui-icon v7-command-icon",
+              ),
+            text(
+              this.#document,
+              "span",
+              `${passenger.hp}/${passenger.maxHp}`,
+              "v7-dwarf-passenger-hp",
+            ),
+          );
+          const pickUp =
+            carrier !== undefined &&
+            Math.max(
+              Math.abs(carrier.at.x - passenger.at.x),
+              Math.abs(carrier.at.y - passenger.at.y),
+            ) <= BEAM_DOWN_PICKUP_RANGE_V7;
+          control.dataset.beamSource = pickUp ? "pick-up" : "city";
+          const name = `Beam ${nameOf(passenger.id)}, ${passenger.hp} of ${passenger.maxHp} HP, ${pickUp ? "picked up nearby" : "from your city"}`;
+          control.setAttribute("aria-label", name);
+          control.title = name;
+          control.disabled = this.#localBusy();
+          control.onclick = () => {
+            this.#martianPick = {
+              kind: "BEAM_DOWN",
+              unitId,
+              passengerUnitId: command.passengerUnitId,
+            };
+            this.#notice = `${BEAM_DOWN_PICK_TILE_V7}.`;
+            this.#pendingFocusAction = null;
+            this.#render();
+            this.#queueBoardFocus();
+          };
+          lines.append(control);
         }
       } else {
         // The tiles are chosen on the board only (bead pulp_wars-b5f.8: no
@@ -6702,10 +6813,10 @@ export class Ruleset7DomAppView {
     }
     // Bead pulp_wars-b5f.8: the ability's icon and name; the instruction
     // and caveat are in the "?" and the panel's accessible name.
+    // `pulp_wars-1wy.5`: a beamed unit counts as moved: it can still
+    // attack, but not move.
     const info =
-      pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null
-        ? `${prompt}. The unit cannot act this turn`
-        : prompt;
+      pick.kind === "BEAM_DOWN" ? `${prompt}. ${BEAMED_HINT_V7}` : prompt;
     panel.setAttribute("aria-label", prompt);
     panel.append(
       this.#pickHead(
@@ -6724,6 +6835,29 @@ export class Ruleset7DomAppView {
       ),
     );
     if (lines.childElementCount > 0) panel.append(lines);
+    if (pick.kind === "BEAM_DOWN") {
+      // `pulp_wars-1wy.5`: the caveat as two icon chips, not a sentence:
+      // the attack icon ("Can attack") and the move icon struck through
+      // ("No move"); together they are one image named by the sentence.
+      const hint = el(this.#document, "div", "v7-beam-hint");
+      hint.setAttribute("role", "img");
+      hint.setAttribute("aria-label", BEAMED_HINT_V7);
+      hint.title = BEAMED_HINT_V7;
+      for (const [icon, label, allowed] of [
+        ["attack", BEAMED_CAN_ATTACK_V7, true],
+        ["move", BEAMED_NO_MOVE_V7, false],
+      ] as const) {
+        const chip = el(this.#document, "span", "v7-chip v7-beam-hint-chip");
+        chip.dataset.beamHint = allowed ? "attack" : "no-move";
+        chip.setAttribute("aria-hidden", "true");
+        chip.append(
+          uiIconV7(this.#document, icon, "v7-ui-icon"),
+          text(this.#document, "span", label),
+        );
+        hint.append(chip);
+      }
+      panel.append(hint);
+    }
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
     if (pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null) {
       const back = button(
@@ -6846,8 +6980,17 @@ export class Ruleset7DomAppView {
       buttons.push(action);
     }
     // Section 13.1 "sluggish actions": a Frozen unit that moved cannot act.
+    // `pulp_wars-1wy.5`: a Frozen Martian carrier or puller that moved
+    // names "Frozen: it moved" on its own Beam Down and Tractor Beam
+    // buttons, so it gets no second "Act" button.
+    const martianNamesIt =
+      beamDownUnavailableTextV7(view, unit.id, false) ===
+        MARTIAN_FROZEN_MOVED_V7 ||
+      tractorBeamUnavailableTextV7(view, unit.id, false) ===
+        MARTIAN_FROZEN_MOVED_V7;
     if (
       buttons.length === 0 &&
+      !martianNamesIt &&
       frozenAfterMoveV7(view, unit) &&
       !unit.activation.handled
     ) {
@@ -8519,6 +8662,27 @@ function formatValue(value: {
   return value.denominator === 1
     ? String(value.numerator)
     : String(value.numerator / value.denominator);
+}
+/**
+ * The text of one stat modifier in the dock. `pulp_wars-1wy.5`: Snow cover
+ * multiplies Defense (x 1.25), so its term is the share it adds, "+25%",
+ * never the product's fraction (a Yeti's "+0.375"); every other term is its
+ * value, at most two decimals.
+ */
+export function statModifierTextV7(
+  base: { readonly numerator: number; readonly denominator: number },
+  modifier: {
+    readonly source: string;
+    readonly value: {
+      readonly numerator: number;
+      readonly denominator: number;
+    };
+  },
+): string {
+  const value = modifier.value.numerator / modifier.value.denominator;
+  if (modifier.source === "SNOW" && base.numerator > 0)
+    return `+${Math.round((value * 100 * base.denominator) / base.numerator)}%`;
+  return `+${String(Math.round(value * 100) / 100)}`;
 }
 function same(a: CoordV7, b: CoordV7): boolean {
   return a.x === b.x && a.y === b.y;

@@ -222,3 +222,67 @@ export function iceFolkVictimFixtureV7(): GameStateV7 {
     { factions: ["ORIGINAL", "ICE_FOLK"] },
   );
 }
+
+/**
+ * The Glide fixture of the balance round's UI (bead `pulp_wars-1wy.5`,
+ * ruleset `7r37`): an Ice Folk seat with every technology, so Deep Winter
+ * makes the tiles within two of its capital (8, 8) Snow (x 6-10, y 6-10).
+ * `inside` is a Yeti well inside the Snow (two Snow-to-Snow steps reach two
+ * tiles); `edge` is a Yeti on the Snow's western edge (a step off the Snow
+ * is a full step: one tile); `outside` is a Yeti on open ground.
+ */
+export const ICE_FOLK_GLIDE_V7 = {
+  inside: { x: 8, y: 7 },
+  edge: { x: 6, y: 9 },
+  outside: { x: 3, y: 3 },
+} as const;
+
+export function iceFolkGlideFixtureV7(): GameStateV7 {
+  const at = ICE_FOLK_GLIDE_V7;
+  return iceFolkUiFieldV7(
+    [
+      { seat: 0, role: "FIGHTER", at: at.inside },
+      { seat: 0, role: "FIGHTER", at: at.edge },
+      { seat: 0, role: "FIGHTER", at: at.outside },
+      { seat: 1, role: "FIGHTER", at: { x: 1, y: 5 } },
+    ],
+    { factions: ["ICE_FOLK", "ORIGINAL"] },
+  );
+}
+
+/**
+ * A Martian seat against an Ice Folk seat: a Frozen Saucer and a Frozen
+ * Mothership that moved (sluggish: neither may Beam Down or pull), each
+ * with a passenger and a target in reach (bead `pulp_wars-1wy.5`).
+ */
+export const MARTIAN_FROZEN_V7 = {
+  saucer: { x: 3, y: 2 },
+  mothership: { x: 7, y: 2 },
+  grunt: { x: 5, y: 2 },
+  target: { x: 5, y: 4 },
+} as const;
+
+export function martianFrozenFixtureV7(): GameStateV7 {
+  const at = MARTIAN_FROZEN_V7;
+  return iceFolkUiFieldV7(
+    [
+      {
+        seat: 0,
+        role: "RAIDER",
+        at: at.saucer,
+        chill: "FROZEN",
+        activation: { moved: true },
+      },
+      {
+        seat: 0,
+        role: "KNIGHT",
+        at: at.mothership,
+        chill: "FROZEN",
+        activation: { moved: true },
+      },
+      { seat: 0, role: "FIGHTER", at: at.grunt },
+      { seat: 1, role: "FIGHTER", at: at.target },
+    ],
+    { factions: ["MARTIAN", "ICE_FOLK"] },
+  );
+}

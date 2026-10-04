@@ -239,6 +239,14 @@ export type SupportEffectV7 =
  * when its Brain is lost (`CONTROL_RELEASE`).
  */
 export const CONTROL_RELEASE_DURATION_MS_V7 = 420;
+/**
+ * `pulp_wars-1wy.5`: a Tractor Beam's cone (longer by the extra for each
+ * further tile of a Heavy Tractor Beam's pull) and the pulled unit's slide,
+ * per tile it crosses.
+ */
+export const TRACTOR_BEAM_DURATION_MS_V7 = 380;
+export const TRACTOR_BEAM_EXTRA_STEP_MS_V7 = 120;
+export const TRACTOR_PULL_STEP_MS_V7 = 200;
 
 /** Builds animation instructions exclusively from captured public views/events. */
 export function corePresentationPlanV7(
@@ -524,24 +532,32 @@ export function corePresentationPlanV7(
         });
       origins.set(event.passengerUnitId, event.to);
     } else if (event.kind === "UNIT_PULLED") {
-      // The Martian revision: the beam reaches the target, which slides one
-      // tile toward the Mothership.
+      // The Martian revision: the beam reaches the target, which slides
+      // toward the puller. `pulp_wars-1wy.5`: a Heavy Tractor Beam's pull
+      // slides through both tiles of `path`, one after the other (a longer
+      // beam first), never straight to the last one.
       const source =
         before.units.find((unit) => unit.id === event.sourceUnitId) ??
         after.units.find((unit) => unit.id === event.sourceUnitId);
+      const crossed =
+        event.path.length > 0 && event.path.every(isExplored)
+          ? event.path
+          : [event.to];
       if (source !== undefined && isExplored(event.from))
         pushMartian({
           effect: "TRACTOR_BEAM",
           cells: [event.from],
           from: source.at,
-          durationMs: 380,
+          durationMs:
+            TRACTOR_BEAM_DURATION_MS_V7 +
+            (crossed.length - 1) * TRACTOR_BEAM_EXTRA_STEP_MS_V7,
         });
       if (isExplored(event.from) && isExplored(event.to))
         steps.push({
           kind: "MOVE",
           unitId: event.targetUnitId,
-          path: [event.from, event.to],
-          durationMs: 200,
+          path: [event.from, ...crossed],
+          durationMs: crossed.length * TRACTOR_PULL_STEP_MS_V7,
           ...(enemyTurn ? { followCamera: true as const } : {}),
         });
       origins.set(event.targetUnitId, event.to);

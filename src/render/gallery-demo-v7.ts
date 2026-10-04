@@ -1,11 +1,14 @@
 import {
+  HEAVY_TRACTOR_RANGE_V7,
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
+  TRACTOR_BEAM_RANGE_V7,
   applyCommandV7,
   buildMissionStateV7,
   effectiveRoleRuleV7,
   projectEventsV7,
   queryPlayerCommandsV7,
+  roleMechanicsV7,
   viewForV7,
   type CommandV7,
   type CoordV7,
@@ -41,6 +44,13 @@ import {
  *    5   ...UT......     U: the unit; T: the target, 1-3 tiles east
  *    6   ~~~~~~~~~~~
  * ```
+ *
+ * Bead pulp_wars-1wy.5: a Mothership's Tractor Beam target stands three
+ * tiles east, so its heavy pull slides the target two tiles. For a Beam
+ * Down the friendly Fighter (a Grunt) stands at (3, 3), next to the capital
+ * and three tiles from the target at (6, 5), which it cannot reach; the
+ * carrier sets it down at (4, 5) and it shoots on arrival (the scene's
+ * second step).
  *
  * A ship's scene moves the capital to (2, 5), on the coast; the ship
  * stands at (3, 6) and its target at (4, 5).
@@ -104,21 +114,37 @@ export const GALLERY_DEMO_CUE_ABILITIES_V7: Readonly<
   ASSEMBLE: "ASSEMBLE",
 };
 
+/** One command of a scene and the boundary the board host plays for it. */
+export interface GalleryDemoStepV7 {
+  readonly before: PlayerViewV7;
+  readonly after: PlayerViewV7;
+  /** The viewer's events of the command, for the board presentation. */
+  readonly events: PlayerEventEnvelopeV7;
+  readonly command: CommandV7;
+}
+
 export interface GalleryDemoSceneV7 {
   readonly faction: FactionIdV7;
   readonly role: UnitRoleIdV7;
   readonly cue: GalleryDemoCueV7;
   /** The board before the cue: the unit ready, the target in reach. */
   readonly before: PlayerViewV7;
-  /** The board after the engine applied the cue's command. */
+  /** The board after the engine applied every command of the scene. */
   readonly after: PlayerViewV7;
-  /** The viewer's events of that command, for the board presentation. */
+  /** The viewer's events of the cue's own command (the first step). */
   readonly events: PlayerEventEnvelopeV7;
   /** The commands offered before the cue (they draw the ready ring). */
   readonly offeredCommands: readonly CommandV7[];
   /** The commands offered after it (the unit that acted loses its ring). */
   readonly afterCommands: readonly CommandV7[];
+  /** The cue's own command (the first step). */
   readonly command: CommandV7;
+  /**
+   * The commands the scene plays, in order (bead pulp_wars-1wy.5): the
+   * cue's own, and for a Beam Down the beamed unit's attack on arrival
+   * ("beam down and shoot"). Every other cue is one step.
+   */
+  readonly steps: readonly GalleryDemoStepV7[];
 }
 
 const SIZE = 11;
@@ -126,6 +152,8 @@ const CAPITAL: CoordV7 = { x: 4, y: 4 };
 /** A ship's scene sits one row lower, on the coast, so the ship shows whole. */
 const NAVAL_CAPITAL: CoordV7 = { x: 2, y: 5 };
 const UNIT: CoordV7 = { x: 3, y: 5 };
+/** The friendly Fighter of a Beam Down scene: next to the capital. */
+const BEAM_PASSENGER: CoordV7 = { x: 3, y: 3 };
 const SHIP: CoordV7 = { x: 3, y: 6 };
 const ENEMY_CAPITAL: CoordV7 = { x: 9, y: 1 };
 const TERRAIN: readonly string[] = [
@@ -179,7 +207,21 @@ function targetAt(
   cue: GalleryDemoCueV7,
 ): CoordV7 {
   if (naval(role)) return { x: SHIP.x + 1, y: SHIP.y - 1 };
-  if (cue === "TRACTOR_BEAM") return { x: UNIT.x + 2, y: UNIT.y };
+  // Bead pulp_wars-1wy.5: a Mothership's Heavy Tractor Beam pulls from its
+  // full reach, so the target slides two tiles; a Saucer's pulls one.
+  if (cue === "TRACTOR_BEAM")
+    return {
+      x:
+        UNIT.x +
+        (roleMechanicsV7(role, faction).heavyTractorBeam
+          ? HEAVY_TRACTOR_RANGE_V7
+          : TRACTOR_BEAM_RANGE_V7),
+      y: UNIT.y,
+    };
+  // A Beam Down's target stands three tiles east, out of the reach of the
+  // Grunt beside the capital (`BEAM_PASSENGER`): the carrier sets the Grunt
+  // down between itself and the target, and the Grunt shoots on arrival.
+  if (cue === "BEAM_DOWN") return { x: UNIT.x + 3, y: UNIT.y };
   if (cue === "TUNNEL") return { x: UNIT.x + 3, y: UNIT.y };
   if (cue !== "ATTACK") return { x: UNIT.x + 1, y: UNIT.y };
   const rule = effectiveRoleRuleV7(role, faction);
@@ -221,7 +263,14 @@ function missionFor(
         ],
         units: [
           { role, at },
-          { role: "FIGHTER", at: naval(role) ? NAVAL_CAPITAL : CAPITAL },
+          {
+            role: "FIGHTER",
+            at: naval(role)
+              ? NAVAL_CAPITAL
+              : cue === "BEAM_DOWN"
+                ? BEAM_PASSENGER
+                : CAPITAL,
+          },
         ],
         reveal: { radius: 0, rects: [{ x0: 0, y0: 0, x1: 10, y1: 10 }] },
       },
@@ -304,6 +353,15 @@ function cueCommand(
           chebyshev(command.to, target) === 1,
       ) ?? own.find((command) => command.kind === "TUNNEL")
     );
+  if (cue === "BEAM_DOWN")
+    // Set the passenger down beside the target, in the target's row.
+    return [...own]
+      .filter((command) => command.kind === "BEAM_DOWN")
+      .sort(
+        (left, right) =>
+          chebyshev(left.to, target) - chebyshev(right.to, target) ||
+          Math.abs(left.to.y - target.y) - Math.abs(right.to.y - target.y),
+      )[0];
   return (
     own.find(
       (command) =>
@@ -359,16 +417,52 @@ export function buildGalleryDemoSceneV7(
   if (command === undefined) return null;
   const applied = applyCommandV7(state, viewerId, command);
   if (!applied.accepted) return null;
-  const after = viewForV7(applied.state, viewerId);
+  const first: GalleryDemoStepV7 = {
+    before,
+    after: viewForV7(applied.state, viewerId),
+    events: projectEventsV7(state, applied.state, viewerId, applied.events),
+    command,
+  };
+  const steps: GalleryDemoStepV7[] = [first];
+  let after = first.after;
+  // Bead pulp_wars-1wy.5: "beam down and shoot": the beamed unit counts as
+  // moved but may still attack, so the scene plays its attack on arrival
+  // when the engine offers one on the demo target.
+  if (command.kind === "BEAM_DOWN") {
+    const arrived = first.after;
+    const shot = queryPlayerCommandsV7(arrived).find(
+      (candidate) =>
+        candidate.kind === "ATTACK" &&
+        candidate.unitId === command.passengerUnitId &&
+        candidate.targetUnitId === targetUnit?.id,
+    );
+    const fired =
+      shot === undefined ? null : applyCommandV7(applied.state, viewerId, shot);
+    if (shot !== undefined && fired?.accepted === true) {
+      after = viewForV7(fired.state, viewerId);
+      steps.push({
+        before: arrived,
+        after,
+        events: projectEventsV7(
+          applied.state,
+          fired.state,
+          viewerId,
+          fired.events,
+        ),
+        command: shot,
+      });
+    }
+  }
   return {
     faction,
     role,
     cue,
     before,
     after,
-    events: projectEventsV7(state, applied.state, viewerId, applied.events),
+    events: first.events,
     offeredCommands,
     afterCommands: queryPlayerCommandsV7(after),
     command,
+    steps,
   };
 }

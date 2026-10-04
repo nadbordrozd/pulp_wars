@@ -115,6 +115,7 @@ export function recruitmentRolePresentationV7(
         role.range,
         faction,
         cureCaptain,
+        roleId,
       );
       return description === null
         ? []
@@ -135,6 +136,11 @@ export function roleAbilityDescriptionV7(
   maximum: number,
   faction: FactionIdV7,
   cureCaptain: string | null,
+  /**
+   * `pulp_wars-1wy.5`: the role, where the text differs by unit (a Saucer's
+   * Tractor Beam and a Mothership's free heavy one).
+   */
+  role?: UnitRoleIdV7,
 ): string | null {
   const undead = undeadAbilityDescriptionV7(ability, faction, cureCaptain);
   if (undead !== null) return undead;
@@ -142,7 +148,7 @@ export function roleAbilityDescriptionV7(
   if (goblin !== null) return goblin;
   const dinosaur = dinosaurAbilityDescriptionV7(ability, faction);
   if (dinosaur !== null) return dinosaur;
-  const martian = martianAbilityDescriptionV7(ability, faction);
+  const martian = martianAbilityDescriptionV7(ability, faction, role);
   if (martian !== null) return martian;
   const iceFolk = iceFolkAbilityDescriptionV7(ability, faction);
   if (iceFolk !== null) return iceFolk;

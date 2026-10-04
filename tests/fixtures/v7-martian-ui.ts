@@ -306,3 +306,43 @@ export function martianDuelFixtureV7(): GameStateV7 {
     { factions: ["MARTIAN", "MARTIAN"] },
   );
 }
+
+/**
+ * The mobility fixture of the balance round's UI (bead `pulp_wars-1wy.5`,
+ * ruleset `7r37`): a Saucer with a pick-up passenger two tiles away and a
+ * city passenger far off, an enemy Fighter two tiles from it (the Saucer's
+ * one-tile pull), and a Mothership three tiles from an enemy Raider (the
+ * Heavy Tractor Beam's two-tile pull through `heavyPath`).
+ */
+export const MARTIAN_MOBILITY_V7 = {
+  carrier: { x: 3, y: 2 },
+  /** An own Grunt two tiles from the carrier: a pick-up. */
+  pickUp: { x: 5, y: 2 },
+  /** An own Grunt on the capital center, far from the carrier. */
+  cityGrunt: { x: 8, y: 8 },
+  /** An enemy Fighter two tiles west of the carrier, pulled one tile. */
+  lightTarget: { x: 1, y: 2 },
+  lightPullTo: { x: 2, y: 2 },
+  mothership: { x: 9, y: 2 },
+  /** An enemy Raider three tiles south of the Mothership. */
+  heavyTarget: { x: 9, y: 5 },
+  heavyPath: [
+    { x: 9, y: 4 },
+    { x: 9, y: 3 },
+  ],
+} as const;
+
+export function martianMobilityFixtureV7(): GameStateV7 {
+  const at = MARTIAN_MOBILITY_V7;
+  return martianUiFieldV7(
+    [
+      { seat: 0, role: "RAIDER", at: at.carrier },
+      { seat: 0, role: "FIGHTER", at: at.pickUp },
+      { seat: 0, role: "FIGHTER", at: at.cityGrunt },
+      { seat: 0, role: "KNIGHT", at: at.mothership },
+      { seat: 1, role: "FIGHTER", at: at.lightTarget },
+      { seat: 1, role: "RAIDER", at: at.heavyTarget },
+    ],
+    { factions: ["MARTIAN", "ORIGINAL"] },
+  );
+}

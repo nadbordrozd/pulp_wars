@@ -10,10 +10,14 @@ import {
   MIND_CONTROL_LIMIT_V7,
   TRACTOR_BEAM_RANGE_V7,
   UNIT_ROLE_IDS_V7,
+  activationIsExhaustedV7,
   effectiveRoleRuleV7,
   isMindControlledV7,
+  primaryActionUsedV7,
   roleMechanicsV7,
   seatRoleRuleV7,
+  sluggishUnitMovedV7,
+  tractorBeamRuleV7,
   unitFactionV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
@@ -114,12 +118,39 @@ function capitalized(text: string): string {
 export const BEAM_DOWN_LABEL_V7 = "Beam Down";
 // `pulp_wars-1wy.3`: Beam Down after a Move, with a pick-up within
 // `BEAM_DOWN_PICKUP_RANGE_V7`, by the Saucer and the Mothership; the unit
-// counts as moved. The full dock and picker flow is `pulp_wars-1wy.5`.
+// counts as moved.
 export const BEAM_DOWN_TOOLTIP_V7 = `Bring one of your units from a city, or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to this unit. It can still attack but not move.`;
 export const BEAM_DOWN_NO_PASSENGER_V7 = `No unit in one of your cities or within ${BEAM_DOWN_PICKUP_RANGE_V7} tiles can be beamed`;
 export const BEAM_DOWN_NO_TILE_V7 = "No free tile next to this unit";
 export const BEAM_DOWN_PICK_PASSENGER_V7 = "Choose the unit to beam down";
 export const BEAM_DOWN_PICK_TILE_V7 = "Choose a tile next to the carrier";
+/**
+ * `pulp_wars-1wy.5`: the board badge of a unit a carrier may beam (the
+ * passenger is chosen first, like a Tunnel's rider), and of the chosen one.
+ */
+export const BEAM_BADGE_V7 = "Beam";
+export const BEAMING_BADGE_V7 = "Beaming";
+/**
+ * `pulp_wars-1wy.5`: what a beamed unit may still do, as the two hint chips
+ * of the aiming panel (an attack icon, and a move icon struck through) and
+ * as the sentence of their accessible name.
+ */
+export const BEAMED_CAN_ATTACK_V7 = "Can attack";
+export const BEAMED_NO_MOVE_V7 = "No move";
+export const BEAMED_HINT_V7 = "After landing it can attack but not move";
+/** `pulp_wars-1wy.5`: the dock chip of a unit beamed this turn. */
+export const BEAMED_CHIP_V7 = "Beamed";
+export const BEAMED_CHIP_TOOLTIP_V7 =
+  "Beamed this turn: it can attack but not move, and cannot be beamed again";
+/** `pulp_wars-1wy.5`: the dock chip of a puller whose free pull is spent. */
+export const TRACTOR_USED_CHIP_V7 = "Beam used";
+export const TRACTOR_USED_V7 = "Tractor Beam used this turn";
+/** `pulp_wars-1wy.5`: a carrier or puller that used its action this turn. */
+export const MARTIAN_ACTED_V7 = "Already acted this turn";
+/** `pulp_wars-1wy.5`: a Frozen carrier or puller that moved (sluggish). */
+export const MARTIAN_FROZEN_MOVED_V7 = "Frozen: it moved";
+/** `pulp_wars-1wy.5`: the tag on a Mothership's Tractor Beam button. */
+export const TRACTOR_FREE_TAG_V7 = "Free";
 export const MIND_CONTROL_LABEL_V7 = "Mind Control";
 export const MIND_CONTROL_TOOLTIP_V7 = `Take a wounded hostile unit with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles. It fights for you as itself until this Brain is lost.`;
 export const MIND_CONTROL_PICK_V7 = "Choose a weakened enemy to take";
@@ -128,9 +159,33 @@ export const MIND_CONTROL_PROTECTED_V7 =
   "Protected on a city or village center";
 export const TRACTOR_BEAM_LABEL_V7 = "Tractor Beam";
 // `pulp_wars-1wy.3`: the Saucer's pull and the Mothership's Heavy Tractor
-// Beam, in one text (a per-unit tooltip is `pulp_wars-1wy.5`).
+// Beam, in one text, for a reader without a unit (the per-unit texts are
+// `tractorBeamTooltipV7`).
 export const TRACTOR_BEAM_TOOLTIP_V7 = `A Saucer pulls a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer. A Mothership pulls a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer, once a turn, and can still act.`;
 export const TRACTOR_BEAM_NO_TARGET_V7 = "No unit in reach can be pulled";
+
+/**
+ * `pulp_wars-1wy.5`: the Tractor Beam of one unit: the Saucer's pull, or
+ * the Mothership's Heavy Tractor Beam, "free once a turn".
+ */
+export function tractorBeamTooltipV7(heavy: boolean): string {
+  return heavy
+    ? `Pull a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer. Free once a turn: it can still move and act.`
+    : `Pull a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer. Uses this unit's action.`;
+}
+
+/** Whether a role's Tractor Beam is the heavy, free one (the Mothership's). */
+export function roleHasHeavyTractorBeamV7(
+  role: UnitRoleIdV7,
+  faction: FactionIdV7,
+): boolean {
+  return (
+    (
+      effectiveRoleRuleV7(role, faction).abilities as readonly string[]
+    ).includes("TRACTOR_BEAM") &&
+    roleMechanicsV7(role, faction).heavyTractorBeam
+  );
+}
 export const TRACTOR_BEAM_PICK_V7 = "Choose a unit to pull";
 export const PSYCHIC_COMMAND_LABEL_V7 = "Psychic Command";
 export const PSYCHIC_COMMAND_STATUS_V7 =
@@ -431,6 +486,8 @@ export function martianAbilityNameV7(
 export function martianAbilityDescriptionV7(
   ability: string,
   faction: FactionIdV7,
+  /** `pulp_wars-1wy.5`: the role, for its own Tractor Beam's text. */
+  role?: UnitRoleIdV7,
 ): string | null {
   if (faction !== "MARTIAN") return null;
   switch (ability) {
@@ -449,7 +506,9 @@ export function martianAbilityDescriptionV7(
     case "MIND_CONTROL":
       return MIND_CONTROL_TOOLTIP_V7;
     case "TRACTOR_BEAM":
-      return TRACTOR_BEAM_TOOLTIP_V7;
+      return role === undefined
+        ? TRACTOR_BEAM_TOOLTIP_V7
+        : tractorBeamTooltipV7(roleHasHeavyTractorBeamV7(role, faction));
     case "FLY":
       return "Flies over any terrain and any unit and ignores zones of control; never captures or stands on a foreign city.";
     case "STRIDE":
@@ -801,22 +860,42 @@ export function tractorBeamTargetLabelV7(
   return first === undefined ? "Pull" : `Pull · ${first}`;
 }
 
-/** The Beam Down destination label. */
+/** The warning on a Beam Down tile whose Field Defense the landing ends. */
+export const BEAM_DESTROYS_FIELD_DEFENSE_V7 = "Destroys Field Defense";
+
+/**
+ * The Beam Down destination label. `pulp_wars-1wy.5` (minimal text): a
+ * plain tile is its dashed outline alone, with no "Beam here" box on each
+ * of the eight tiles; only a tile whose Field Defense the landing destroys
+ * carries a label. Null for a plain tile.
+ */
 export function beamDownTileLabelV7(
   preview: BeamDownPreviewV7,
   at: { readonly x: number; readonly y: number },
-): string {
+): string | null {
   return preview.fieldDefenseDestroyed.some(
     (tile) => tile.x === at.x && tile.y === at.y,
   )
-    ? "Beam here · destroys Field Defense"
-    : "Beam here";
+    ? BEAM_DESTROYS_FIELD_DEFENSE_V7
+    : null;
+}
+
+/** Whether `unit` is an own land-form unit on the viewer's turn. */
+function ownActorNow(view: PlayerViewV7, unit: PublicUnitV7): boolean {
+  return (
+    unit.ownerId === view.viewer.id &&
+    unit.form === "LAND" &&
+    view.turnOrder[view.activeSeatIndex] === view.viewer.id
+  );
 }
 
 /**
- * Why an own Saucer that could still act has no Beam Down (section 13.1:
- * moved, no passenger, no free tile), or null when it has one or cannot
- * act at all. `offered` is whether any `BEAM_DOWN` of the Saucer is offered.
+ * Why an own carrier has no Beam Down (section 13.1; `pulp_wars-1wy.5`): a
+ * Frozen carrier that moved, a carrier that used its action, no passenger,
+ * or no free tile; null when it has one, when it is not the viewer's to
+ * command now, or when it arrived this turn (landed or trained: nothing is
+ * offered to it at all). `offered` is whether any `BEAM_DOWN` of the
+ * carrier is offered.
  */
 export function beamDownUnavailableTextV7(
   view: PlayerViewV7,
@@ -827,18 +906,15 @@ export function beamDownUnavailableTextV7(
   const saucer = view.units.find((unit) => unit.id === unitId);
   if (
     saucer === undefined ||
-    saucer.ownerId !== view.viewer.id ||
-    saucer.form !== "LAND" ||
-    view.turnOrder[view.activeSeatIndex] !== view.viewer.id ||
+    !ownActorNow(view, saucer) ||
     !(unitRoleRuleV7(view, saucer).abilities as readonly string[]).includes(
       "BEAM_DOWN",
     ) ||
-    saucer.activation.attacked ||
-    saucer.activation.specialActed ||
-    saucer.activation.recovered ||
-    saucer.activation.captured
+    activationIsExhaustedV7(saucer.activation)
   )
     return null;
+  if (sluggishUnitMovedV7(view, saucer)) return MARTIAN_FROZEN_MOVED_V7;
+  if (primaryActionUsedV7(saucer.activation)) return MARTIAN_ACTED_V7;
   // `pulp_wars-1wy.3`: a carrier that moved may still Beam Down (a moved
   // carrier is handled, so `handled` no longer hides the reason); the
   // passengers are the engine's own test.
@@ -851,6 +927,91 @@ export function beamDownUnavailableTextV7(
   return passengers.length === 0
     ? BEAM_DOWN_NO_PASSENGER_V7
     : BEAM_DOWN_NO_TILE_V7;
+}
+
+/**
+ * `pulp_wars-1wy.5`: why an own puller has no Tractor Beam: a Frozen puller
+ * that moved, a Mothership whose free pull is spent ("Tractor Beam used
+ * this turn"), a Saucer that used its action, or nothing in reach; null
+ * when it has one, is not the viewer's to command now, or arrived this
+ * turn. `offered` is whether any `TRACTOR_BEAM` of the unit is offered.
+ */
+export function tractorBeamUnavailableTextV7(
+  view: PlayerViewV7,
+  unitId: number,
+  offered: boolean,
+): string | null {
+  if (offered) return null;
+  const puller = view.units.find((unit) => unit.id === unitId);
+  if (puller === undefined || !ownActorNow(view, puller)) return null;
+  const rule = tractorBeamRuleV7(view, puller);
+  if (rule === null || activationIsExhaustedV7(puller.activation)) return null;
+  if (sluggishUnitMovedV7(view, puller)) return MARTIAN_FROZEN_MOVED_V7;
+  if (rule.free) {
+    if (view.tractorUsedThisTurn.includes(puller.id)) return TRACTOR_USED_V7;
+  } else if (primaryActionUsedV7(puller.activation)) return MARTIAN_ACTED_V7;
+  return TRACTOR_BEAM_NO_TARGET_V7;
+}
+
+/** One dock chip of the per-turn Martian mobility facts. */
+export interface MartianTurnChipV7 {
+  readonly id: "beamed" | "tractor-used";
+  readonly label: string;
+  readonly tooltip: string;
+}
+
+/**
+ * `pulp_wars-1wy.5`: the per-turn chips of a visible unit, from the public
+ * `beamedThisTurn` and `tractorUsedThisTurn` lists: "Beamed" on a unit a
+ * carrier set down this turn (of any kind: a controlled Knight too) and
+ * "Beam used" on a Mothership whose free pull is spent.
+ */
+export function martianTurnChipsV7(
+  view: Pick<PlayerViewV7, "beamedThisTurn" | "tractorUsedThisTurn">,
+  unitId: number,
+): readonly MartianTurnChipV7[] {
+  return [
+    ...(view.beamedThisTurn.some((id) => id === unitId)
+      ? [
+          {
+            id: "beamed" as const,
+            label: BEAMED_CHIP_V7,
+            tooltip: BEAMED_CHIP_TOOLTIP_V7,
+          },
+        ]
+      : []),
+    ...(view.tractorUsedThisTurn.some((id) => id === unitId)
+      ? [
+          {
+            id: "tractor-used" as const,
+            label: TRACTOR_USED_CHIP_V7,
+            tooltip: TRACTOR_USED_V7,
+          },
+        ]
+      : []),
+  ];
+}
+
+/**
+ * `pulp_wars-1wy.5`: the explored tiles within the pick-up range of a
+ * carrier (the square of `BEAM_DOWN_PICKUP_RANGE_V7` round it, its own tile
+ * excluded), for the aiming tint.
+ */
+export function beamDownPickupTilesV7(
+  view: Pick<PlayerViewV7, "board">,
+  carrier: { readonly x: number; readonly y: number },
+): readonly { readonly x: number; readonly y: number }[] {
+  return view.board.tiles
+    .filter(
+      (tile) =>
+        tile.explored &&
+        !(tile.at.x === carrier.x && tile.at.y === carrier.y) &&
+        Math.max(
+          Math.abs(tile.at.x - carrier.x),
+          Math.abs(tile.at.y - carrier.y),
+        ) <= BEAM_DOWN_PICKUP_RANGE_V7,
+    )
+    .map((tile) => tile.at);
 }
 
 // ------------------------------------------------------------- log lines

@@ -7263,7 +7263,7 @@ map-curiosity steps and the pending balance steps below.
 
 **Open.**
 
-- **Martian and Ice Folk balance: the AI, the UI, and the measurement
+- **Martian and Ice Folk balance: the AI and the measurement
   pending.** The engine step of the
   [balance design](RULESET_7_BALANCE_MARTIAN_ICE.md) (`pulp_wars-1wy.3`,
   `7r37`) implements its rules M1 to M4 and I1 and I2
@@ -7274,17 +7274,18 @@ map-curiosity steps and the pending balance steps below.
   pull and a Mothership's Beam Down with its existing rules, but it does
   not yet beam a unit in order to attack on arrival, extract a unit that
   fired, pull before the Mothership's attack on purpose, buy more Saucers,
-  or defend against a Saucer's pull; the **UI** step (`pulp_wars-1wy.5`):
-  the dock and Help texts quote the new rules and numbers, and every new
-  command is reachable through the existing buttons and pickers (they are
-  driven by the offered commands), but the Tractor Beam tooltip is one
-  text for both pullers, the aiming panel does not draw the two-tile path
-  (the pulled unit slides straight to its final tile), the Beam Down
-  picker does not tell a city passenger from a pick-up, and a Defense with
-  Snow cover reads as its exact value (a Yeti's 1.875); and the
+  or defend against a Saucer's pull; and the
   **measurement** (`pulp_wars-1wy.6`): the coarse Dry Land matrix and the
   human-style probe of the design's section 8, with its tuning bounds. The
-  numbers of `7r37` are the design's proposed ones, not yet measured.
+  numbers of `7r37` are the design's proposed ones, not yet measured. The
+  **UI** step (`pulp_wars-1wy.5`) is done and changes no rule: each
+  puller's own Tractor Beam text (the Mothership's "Free once a turn"),
+  the pull's path of one or two tiles in the aiming preview and in the
+  slide, Beam Down with the passenger first (badges, the pick-up range, a
+  city passenger told from a pick-up), the "Beamed" and "Beam used" chips,
+  a used or Frozen carrier's reason, Snow cover as "+25%" in the Defense
+  row, and the Glide tiles in the movement range
+  ([screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay)).
 
 - **Map curiosities: the AI and the board pending.** Engine steps I and II
   of the [map curiosities spec](RULESET_7_MAP_CURIOSITIES.md)

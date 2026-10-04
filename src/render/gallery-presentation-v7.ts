@@ -252,6 +252,7 @@ export function galleryUnitDetailsV7(
         rule.range,
         cell.faction,
         "a Captain",
+        role,
       );
       return description === null
         ? []

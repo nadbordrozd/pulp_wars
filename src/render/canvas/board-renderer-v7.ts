@@ -109,6 +109,7 @@ import {
 } from "./ice-folk-canvas-v7";
 import {
   addIceFolkPickEntriesV7,
+  moveIsGlideV7,
   iceFolkAttackTargetExtrasV7,
   iceFolkPickTargetsV7,
   iceFolkTerrainCellsV7,
@@ -143,6 +144,7 @@ import {
 } from "./dwarf-canvas-v7";
 import { STAYS_BEHIND_V7, matchHasDwarfSeatV7 } from "../dwarf-presentation-v7";
 import {
+  GLIDE_MOVE_LABEL_V7,
   SHATTERS_PREVIEW_V7,
   matchHasIceFolkSeatV7,
 } from "../ice-folk-presentation-v7";
@@ -357,6 +359,12 @@ export interface MapCommandTargetV7 {
    */
   readonly launch?: true;
   /**
+   * `pulp_wars-1wy.5`: an Ice Folk unit's Move that ends farther than its
+   * Move away, by half-cost steps from Snow onto Snow (Glide). Outlined in
+   * the faction's pale ice, named by the dock's legend.
+   */
+  readonly glide?: true;
+  /**
    * Revision 17 (Goblin matches only): death-blast, chain, bomb-splash and
    * friendly-fire warnings, one warning box each under the target.
    */
@@ -377,6 +385,12 @@ export interface MapCommandTargetV7 {
    * while the target is focused.
    */
   readonly pullTo?: CoordV7;
+  /**
+   * `pulp_wars-1wy.5`: the tiles that pull crosses, in order (one, or two
+   * for a Mothership's Heavy Tractor Beam; the last is `pullTo`). The
+   * focused target shows each tile and an arrow through them.
+   */
+  readonly pullPath?: readonly CoordV7[];
   /**
    * The Martian revision: the unit a Tripod's ray pierces, shown while the
    * target is focused (friendly fire is marked).
@@ -3272,10 +3286,11 @@ function mapTargetEdges(
     for (const edge of TILE_EDGES) {
       const key = edgeKey(target.at, edge);
       const winner = winners.get(key);
-      if (
-        winner === undefined ||
-        targetPriority(target.family) > targetPriority(winner.target.family)
-      )
+      // `pulp_wars-1wy.5`: a Glide tile keeps its whole pale-ice outline
+      // where it touches a plain Move tile.
+      const priority = (candidate: MapCommandTargetV7): number =>
+        targetPriority(candidate.family) + (candidate.glide === true ? 0.5 : 0);
+      if (winner === undefined || priority(target) > priority(winner.target))
         winners.set(key, { target, edge });
     }
   const result = new Map<string, TileEdge[]>();
@@ -3312,6 +3327,12 @@ export const TUNNEL_GHOST_ALPHA_V7 = 0.62;
 
 /** The Martian revision: the outline of a machine's Launch tile. */
 export const LAUNCH_TARGET_STROKE_V7 = "#c7e7f5";
+
+/**
+ * `pulp_wars-1wy.5`: the outline of a tile an Ice Folk unit reaches by
+ * Glide (the pale ice of ICE_FOLK_PALETTE_V7).
+ */
+export const GLIDE_TARGET_STROKE_V7 = "#d6f0ff";
 
 function targetStroke(
   family: MapCommandTargetV7["family"] | undefined,
@@ -3397,7 +3418,9 @@ function drawMapTarget(
   const launch = entry.target?.launch === true;
   context.strokeStyle = launch
     ? LAUNCH_TARGET_STROKE_V7
-    : targetStroke(entry.target?.family);
+    : entry.target?.glide === true
+      ? GLIDE_TARGET_STROKE_V7
+      : targetStroke(entry.target?.family);
   const [dash, gap] = launch ? [3, 5] : targetDash(entry.target?.family);
   context.setLineDash([dash * camera.zoom, gap * camera.zoom]);
   if (family === "TUNNEL_RIDER") {
@@ -3411,9 +3434,13 @@ function drawMapTarget(
     context.arc(x, y + 6 * camera.zoom, 9 * camera.zoom, 0, Math.PI * 2);
     context.fill();
     context.stroke();
-  } else if (family === "TUNNEL_PASSENGER") {
+  } else if (
+    family === "TUNNEL_PASSENGER" ||
+    family === "BEAM_DOWN_PASSENGER"
+  ) {
     // A Hammerer that can ride wears its "Ride" badge alone (below); its
-    // own tile keeps the unit in view.
+    // own tile keeps the unit in view. `pulp_wars-1wy.5`: a unit a carrier
+    // may beam wears its "Beam" badge the same way.
   } else {
     // A chosen Tunnel destination is a whole solid tile.
     const chosen = entry.target?.tunnel?.chosen === true;
@@ -3580,8 +3607,23 @@ function drawSplashPreviewV7(
 }
 
 /**
+ * `pulp_wars-1wy.5`: the tiles a Tractor Beam target is drawn crossing, in
+ * order: its `pullPath` (one tile, or two for a Heavy Tractor Beam), or its
+ * `pullTo` alone; empty for a target that is not pulled.
+ */
+export function pullPathCellsV7(
+  target: Pick<MapCommandTargetV7, "pullTo" | "pullPath">,
+): readonly CoordV7[] {
+  if (target.pullTo === undefined) return [];
+  return target.pullPath !== undefined && target.pullPath.length > 0
+    ? target.pullPath
+    : [target.pullTo];
+}
+
+/**
  * The Martian revision: the focused (or only) Tractor Beam target's pull
- * destination, and the focused (or only) attack target's Pierce victim.
+ * path and destination, and the focused (or only) attack target's Pierce
+ * victim.
  */
 function drawMartianFocusPreviewV7(
   context: CanvasRenderingContext2D,
@@ -3607,18 +3649,39 @@ function drawMartianFocusPreviewV7(
   );
   if (pull?.pullTo !== undefined) {
     const to = pull.pullTo;
+    // `pulp_wars-1wy.5`: every tile the pull crosses. A tile it only
+    // crosses (the first of a Heavy Tractor Beam's two) is tinted lighter
+    // with a dotted edge; the last is the solid dashed destination.
+    const path = pullPathCellsV7(pull);
     context.save();
-    drawAbilityAreaCellV7(context, x(to), y(to), camera.zoom, "PULL");
-    context.strokeStyle = abilityAreaStrokeV7("PULL");
-    context.lineWidth = 3 * camera.zoom;
-    context.setLineDash([6 * camera.zoom, 4 * camera.zoom]);
-    for (const edge of TILE_EDGES) strokeTileEdge(context, camera, to, edge);
-    // An arrow from the target toward its destination.
+    for (const [index, cell] of path.entries()) {
+      const last = index === path.length - 1;
+      drawAbilityAreaCellV7(
+        context,
+        x(cell),
+        y(cell),
+        camera.zoom,
+        last ? "PULL" : "PULL_STEP",
+      );
+      context.strokeStyle = abilityAreaStrokeV7("PULL");
+      context.lineWidth = (last ? 3 : 2) * camera.zoom;
+      context.setLineDash(
+        last
+          ? [6 * camera.zoom, 4 * camera.zoom]
+          : [2 * camera.zoom, 5 * camera.zoom],
+      );
+      for (const edge of TILE_EDGES)
+        strokeTileEdge(context, camera, cell, edge);
+    }
+    // An arrow from the target through each tile to its destination, with
+    // a dot on a tile it only crosses.
     context.setLineDash([]);
     context.lineWidth = 4 * camera.zoom;
     context.lineCap = "round";
-    const fromX = x(pull.at);
-    const fromY = y(pull.at);
+    context.lineJoin = "round";
+    const before = path.at(-2) ?? pull.at;
+    const fromX = x(before);
+    const fromY = y(before);
     const toX = x(to);
     const toY = y(to);
     const length = Math.hypot(toX - fromX, toY - fromY) || 1;
@@ -3626,12 +3689,24 @@ function drawMartianFocusPreviewV7(
     const uy = (toY - fromY) / length;
     const tipX = toX - ux * 24 * camera.zoom;
     const tipY = toY - uy * 24 * camera.zoom;
+    const first = path[0] ?? to;
+    const startLength =
+      Math.hypot(x(first) - x(pull.at), y(first) - y(pull.at)) || 1;
     context.beginPath();
     context.moveTo(
-      fromX + ux * 30 * camera.zoom,
-      fromY + uy * 30 * camera.zoom,
+      x(pull.at) + ((x(first) - x(pull.at)) / startLength) * 30 * camera.zoom,
+      y(pull.at) + ((y(first) - y(pull.at)) / startLength) * 30 * camera.zoom,
     );
+    for (const cell of path.slice(0, -1)) context.lineTo(x(cell), y(cell));
     context.lineTo(tipX, tipY);
+    context.stroke();
+    context.fillStyle = abilityAreaStrokeV7("PULL");
+    for (const cell of path.slice(0, -1)) {
+      context.beginPath();
+      context.arc(x(cell), y(cell), 7 * camera.zoom, 0, Math.PI * 2);
+      context.fill();
+    }
+    context.beginPath();
     context.moveTo(tipX, tipY);
     context.lineTo(
       tipX - ux * 14 * camera.zoom - uy * 10 * camera.zoom,
@@ -4447,6 +4522,10 @@ function commandMapTargets(
       const at = command.path.at(-1);
       // The Martian revision: a machine's Move onto water self-launches.
       const launch = martianMatch ? martianMoveLabelV7(view, command) : null;
+      // `pulp_wars-1wy.5`: a tile an Ice Folk unit reaches only by its
+      // half-cost steps from Snow onto Snow is outlined in pale ice.
+      const glide =
+        launch === null && iceFolkMatch && moveIsGlideV7(view, command);
       return at === undefined
         ? []
         : [
@@ -4462,6 +4541,9 @@ function commandMapTargets(
                     launch: true as const,
                     semanticLabel: `${launch}. Ends this unit's turn afloat.`,
                   }),
+              ...(glide
+                ? { glide: true as const, semanticLabel: GLIDE_MOVE_LABEL_V7 }
+                : {}),
             },
           ];
     }

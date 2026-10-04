@@ -35,17 +35,21 @@ import {
   COLD_SNAP_NO_TARGET_V7,
   DEEP_WINTER_UNLOCK_TEXT_V7,
   FROZEN_MOVED_V7,
+  GLIDE_MOVE_LABEL_V7,
   ICE_FOLK_HELP_RULES_V7,
   SHATTERS_PREVIEW_V7,
   bolasPreviewLinesV7,
   chillChipV7,
   coldSnapSummaryV7,
   iceFolkRoleUnlockTextV7,
+  snowChipTooltipV7,
   snowTooltipV7,
 } from "../../src/render/ice-folk-presentation-v7";
 import {
+  ICE_FOLK_GLIDE_V7,
   ICE_FOLK_UI_V7,
   ICE_FOLK_VICTIM_V7,
+  iceFolkGlideFixtureV7,
   iceFolkUiFieldV7,
   iceFolkUiFixtureV7,
   iceFolkVictimFixtureV7,
@@ -219,6 +223,43 @@ describe("Ice Folk unit dock", () => {
         (node) => node.textContent === "1 slot",
       ),
     ).toBe(true);
+    app.destroy();
+  });
+
+  // The balance round's UI (bead `pulp_wars-1wy.5`, ruleset `7r37`).
+  it('reads Snow cover as "+25%" and names the Glide tiles of a unit inside the Snow', () => {
+    const controller = new FixtureController(iceFolkGlideFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    selectUnitAt(controller, host, ICE_FOLK_GLIDE_V7.inside);
+    const dock = requiredElement<HTMLElement>(".v7-selection-dock");
+    const snow = requiredElement<HTMLButtonElement>(
+      '.v7-stat[data-stat="defense"] [data-modifier-source="snow"]',
+    );
+    expect(snow.textContent).toBe("+25%");
+    expect(snow.getAttribute("aria-label")).toContain("Snow cover");
+    // The product's fraction (a Yeti's 1.5 x 1.25 = 1.875) is never shown.
+    expect(dock.textContent).not.toMatch(/1\.875|0\.375/);
+    expect(
+      requiredElement<HTMLElement>(
+        '.v7-selection-dock [data-unit-status="snow"]',
+      ).title,
+    ).toBe(snowChipTooltipV7(true));
+    // Its range reaches two tiles inside the Snow: the legend names the
+    // pale-ice outlines, and the board marks them.
+    expect(requiredElement('[data-landing-marker="glide"]').textContent).toBe(
+      GLIDE_MOVE_LABEL_V7,
+    );
+    expect(
+      boardPlan(host).targets.some((target) => target.glide === true),
+    ).toBe(true);
+    // A unit on open ground has neither.
+    selectUnitAt(controller, host, ICE_FOLK_GLIDE_V7.outside);
+    expect(document.querySelector('[data-landing-marker="glide"]')).toBeNull();
+    expect(document.querySelector('[data-modifier-source="snow"]')).toBeNull();
+    expect(
+      boardPlan(host).targets.some((target) => target.glide === true),
+    ).toBe(false);
     app.destroy();
   });
 });

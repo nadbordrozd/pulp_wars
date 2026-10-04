@@ -1,4 +1,5 @@
 import {
+  BEAM_DOWN_PICKUP_RANGE_V7,
   isMindControlledV7,
   previewBeamDownV7,
   previewMindControlV7,
@@ -13,7 +14,11 @@ import {
   type UnitId,
 } from "../../engine/index";
 import {
+  BEAMED_HINT_V7,
+  BEAMING_BADGE_V7,
+  BEAM_BADGE_V7,
   LAUNCH_LABEL_V7,
+  beamDownPickupTilesV7,
   beamDownTileLabelV7,
   martianCombatLinesV7,
   martianStatsV7,
@@ -125,13 +130,23 @@ export function martianPickTargetsV7(
         const passenger = unitAt(command.passengerUnitId);
         if (passenger === undefined) return [];
         const name = martianUnitNameV7(view, passenger);
+        // `pulp_wars-1wy.5`: every unit the carrier may beam wears the
+        // "Beam" badge (the passenger is chosen first, like a Tunnel's
+        // rider); its description tells a pick-up from a city passenger.
+        const carrier = unitAt(pick.unitId);
+        const pickUp =
+          carrier !== undefined &&
+          Math.max(
+            Math.abs(carrier.at.x - passenger.at.x),
+            Math.abs(carrier.at.y - passenger.at.y),
+          ) <= BEAM_DOWN_PICKUP_RANGE_V7;
         return [
           {
             at: passenger.at,
             command,
             family: "BEAM_DOWN_PASSENGER",
-            previewLabel: `Beam ${name}`,
-            semanticLabel: `Beam the ${name} down`,
+            previewLabel: BEAM_BADGE_V7,
+            semanticLabel: `Beam the ${name} down, ${passenger.hp} of ${passenger.maxHp} HP, ${pickUp ? "picked up nearby" : "from your city"}. ${BEAMED_HINT_V7}`,
           },
         ];
       });
@@ -141,19 +156,21 @@ export function martianPickTargetsV7(
     const passenger = unitAt(pick.passengerUnitId);
     const name =
       passenger === undefined ? "unit" : martianUnitNameV7(view, passenger);
-    return beams.flatMap((command): MapCommandTargetV7[] =>
-      command.passengerUnitId === pick.passengerUnitId
-        ? [
-            {
-              at: command.to,
-              command,
-              family: "BEAM_DOWN",
-              previewLabel: beamDownTileLabelV7(preview, command.to),
-              semanticLabel: `Beam the ${name} here${beamDownTileLabelV7(preview, command.to).includes("Field Defense") ? ", destroys Field Defense" : ""}`,
-            },
-          ]
-        : [],
-    );
+    return beams.flatMap((command): MapCommandTargetV7[] => {
+      if (command.passengerUnitId !== pick.passengerUnitId) return [];
+      // `pulp_wars-1wy.5`: a plain tile is its outline alone; the cursor
+      // description still names every tile's outcome.
+      const warning = beamDownTileLabelV7(preview, command.to);
+      return [
+        {
+          at: command.to,
+          command,
+          family: "BEAM_DOWN",
+          ...(warning === null ? {} : { previewLabel: warning }),
+          semanticLabel: `Beam the ${name} here${warning === null ? "" : ", destroys Field Defense"}. ${BEAMED_HINT_V7}`,
+        },
+      ];
+    });
   }
   if (pick.kind === "MIND_CONTROL")
     return commands.flatMap((command): MapCommandTargetV7[] => {
@@ -204,6 +221,9 @@ export function martianPickTargetsV7(
           ? { previewNote: lines.slice(1).join(" · ") }
           : {}),
         pullTo: preview.to,
+        // `pulp_wars-1wy.5`: the tiles the target crosses (one, or two for
+        // a Heavy Tractor Beam), drawn while the target is focused.
+        pullPath: preview.path,
         // `pulp_wars-1wy.3`: a Heavy Tractor Beam pulls up to two tiles.
         semanticLabel: `Pull the ${name} ${preview.path.length === 1 ? "one tile" : "two tiles"} closer${lines.length === 0 ? "" : `. ${lines.join(". ")}`}`,
       },
@@ -253,6 +273,29 @@ export function addMartianPickEntriesV7(
       });
     }
   }
+  if (pick.kind === "BEAM_DOWN" && pick.passengerUnitId === null) {
+    // `pulp_wars-1wy.5`: the carrier's pick-up range, tinted with a dashed
+    // outer edge: a badged unit inside it is a pick-up, one outside it
+    // stands at an own city.
+    const range = beamDownPickupTilesV7(view, actor.at);
+    const inRange = (at: CoordV7): boolean =>
+      same(at, actor.at) || range.some((cell) => same(cell, at));
+    for (const at of range)
+      entries.push({
+        key: `ability-area:BEAM_RANGE:${at.x},${at.y}`,
+        kind: "ABILITY_AREA",
+        layer: 7,
+        at,
+        abilityStyle: "BEAM_RANGE",
+        targetEdges: (["NORTH", "EAST", "SOUTH", "WEST"] as const).filter(
+          (edge) =>
+            !inRange({
+              x: at.x + (edge === "EAST" ? 1 : edge === "WEST" ? -1 : 0),
+              y: at.y + (edge === "SOUTH" ? 1 : edge === "NORTH" ? -1 : 0),
+            }),
+        ),
+      });
+  }
   if (pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null) {
     const passenger = view.units.find(
       (unit) => unit.id === pick.passengerUnitId,
@@ -264,7 +307,7 @@ export function addMartianPickEntriesV7(
         layer: 7.5,
         at: passenger.at,
         abilityStyle: "PULL",
-        label: "Beaming",
+        label: BEAMING_BADGE_V7,
       });
   }
 }

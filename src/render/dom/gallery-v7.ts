@@ -1603,8 +1603,14 @@ class GalleryDemoV7 {
       });
       if (token !== this.#token) return;
     }
-    await host.presentBoundary?.(scene.before, scene.after, scene.events);
-    if (token !== this.#token) return;
+    // Bead pulp_wars-1wy.5: a scene may play several commands in a row (a
+    // Beam Down, then the beamed unit's shot); each is its own boundary on
+    // the board its predecessor left.
+    for (const [index, step] of scene.steps.entries()) {
+      if (index > 0) this.#host.update(this.#model(step.before, []));
+      await host.presentBoundary?.(step.before, step.after, step.events);
+      if (token !== this.#token) return;
+    }
     this.#show(cue, "after");
     this.#sync("done");
   }

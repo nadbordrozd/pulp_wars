@@ -255,6 +255,11 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/martian-presentation-v7.ts::martianRecruitNotesV7": "SEAT",
   "src/render/martian-presentation-v7.ts::mindControlPreviewLinesV7":
     "KIND_RESOLVED",
+  // `pulp_wars-1wy.5`: the Tractor Beam text of a role under the faction
+  // its caller resolved (the dock passes the unit's kind, the Gallery and
+  // the recruit card their own column's faction).
+  "src/render/martian-presentation-v7.ts::roleHasHeavyTractorBeamV7":
+    "KIND_RESOLVED",
   "src/render/martian-presentation-v7.ts::martianFieldDefenseBlockedV7": "SEAT",
   "src/render/martian-presentation-v7.ts::martianSlotCapacityTooltipV7": "SEAT",
   "src/render/undead-presentation-v7.ts::cureCaptainPhraseV7": "SEAT",

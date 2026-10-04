@@ -8,11 +8,11 @@ Saucer's Tractor Beam at Scouting, the glass-cannon Grunt, Snow cover
 × 1.25), and folded into
 [RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) (its sections 11, 20.7, 20.10,
 and 21.5), which is authoritative; what the implementation made precise is
-in [section 15](#15-implementation-notes-pulp_wars-1wy3). The Normal AI
-(`pulp_wars-1wy.4`), the UI (`pulp_wars-1wy.5`), and the measurement
-(`pulp_wars-1wy.6`) of [section 12](#12-bead-breakdown) are pending, so the
-numbers are not yet measured. Sections 3 and 4 describe the rules before
-the change.
+in [section 15](#15-implementation-notes-pulp_wars-1wy3). The UI step
+(`pulp_wars-1wy.5`) is implemented too ([section 11](#11-ui-and-help-text)).
+The Normal AI (`pulp_wars-1wy.4`) and the measurement (`pulp_wars-1wy.6`)
+of [section 12](#12-bead-breakdown) are pending, so the numbers are not yet
+measured. Sections 3 and 4 describe the rules before the change.
 
 The document diagnoses both factions with numbers from the engine's own
 combat formula, proposes four Martian changes and two Ice Folk changes with
@@ -922,6 +922,31 @@ Help text (one sentence each, replacing the current lines):
 - **Snow:** Ice Folk units move at half cost from Snow to Snow and have
   light cover on it unless fortified; other units stop on entering it.
 
+**As built (`pulp_wars-1wy.5`).** The list above is implemented, with what
+play needed on top of it; the
+[screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay) has
+the detail. No rule, number, or identity changes.
+
+- **Tractor Beam:** each puller's button and unit info carry its own text
+  (the Mothership's "Free once a turn" and a "Free" tag); the aiming
+  preview draws the pull's path (one tile, or a crossed tile and the
+  landing tile) and the pulled unit slides through both tiles.
+- **Beam Down, passenger first** (like the Dwarf Tunnel): every unit the
+  carrier may beam wears a "Beam" badge, the pick-up range is tinted, the
+  dock has one portrait button per passenger, and the caveat is two icon
+  chips ("Can attack", "No move"). A beamed unit is not shown as an
+  ordinary moved unit only: it also has a "Beamed" chip, because it cannot
+  be beamed again this turn.
+- **Reasons and chips:** a carrier or puller that acted, a Mothership whose
+  pull is spent ("Beam used"), and a Frozen carrier that moved keep their
+  buttons, disabled, with the reason.
+- **Ice Folk:** Snow cover reads "+25%" in the Defense row (not the
+  product's fraction); the tiles a unit reaches beyond its Move by
+  Snow-to-Snow steps are outlined in pale ice, with a one-line legend.
+- **Gallery:** the Mothership's cue is a two-tile heavy pull; Beam Down is
+  "beam down and shoot".
+- **Help:** the three sentences above, unchanged.
+
 ## 12. Bead breakdown
 
 | Bead    | Scope                                                                                                                                               | Depends on                                        | Validation profile                                                                                                                                                                                                                                                                                                                                             |
@@ -1086,4 +1111,5 @@ precise rule, the engine does this (the current rules state each one):
    (both units now carry both abilities), reads a pull's final tile from
    the public query, and reads Glide and Snow cover from the new rules in
    its estimates. The dock, picker, and Help texts quote the new rules
-   (section 11's sentences); the rest of section 11 is `pulp_wars-1wy.5`.
+   (section 11's sentences); the rest of section 11 is `pulp_wars-1wy.5`
+   (implemented since; see section 11, "As built").

@@ -37,6 +37,12 @@ export type AbilityPreviewStyleV7 =
   | "PIERCE"
   | "MARTIAN_BLOCKED"
   /**
+   * `pulp_wars-1wy.5`: the pick-up range of a Beam Down carrier, and a tile
+   * a Tractor Beam's target only crosses on a two-tile pull.
+   */
+  | "BEAM_RANGE"
+  | "PULL_STEP"
+  /**
    * The Ice Folk revision (bead pulp_wars-7g3.6): a Sweep flank victim, a
    * Bolas or Cold Snap target, and the reach of a Cold Snap (the faction's
    * ice glow, ICE_FOLK_PALETTE_V7).
@@ -485,6 +491,8 @@ const STYLE_COLORS: Readonly<
   PULL: { fill: "rgba(255, 143, 214, 0.26)", stroke: "#ff8fd6" },
   PIERCE: { fill: "rgba(255, 47, 176, 0.18)", stroke: "#ff8fd6" },
   MARTIAN_BLOCKED: { fill: "rgba(170, 179, 192, 0.16)", stroke: "#aab3c0" },
+  BEAM_RANGE: { fill: "rgba(255, 143, 214, 0.1)", stroke: "#ff8fd6" },
+  PULL_STEP: { fill: "rgba(255, 143, 214, 0.14)", stroke: "#ff8fd6" },
   // The Ice Folk revision: ICE_FOLK_PALETTE_V7's ice glow and pale ice.
   SWEEP: { fill: "rgba(127, 203, 255, 0.2)", stroke: "#7fcbff" },
   CHILL: { fill: "rgba(127, 203, 255, 0.24)", stroke: "#d6f0ff" },

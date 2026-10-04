@@ -40,8 +40,10 @@ the current rules' sections
 [11](RULESET_7_CURRENT.md#11-unit-roster),
 [20.7](RULESET_7_CURRENT.md#207-beam-down), and
 [20.10](RULESET_7_CURRENT.md#2010-tractor-beam) win, and the
-[tuning record](#165-tuning-record) lists the changes. Its Normal AI
-(`pulp_wars-1wy.4`) and UI (`pulp_wars-1wy.5`) steps are pending.
+[tuning record](#165-tuning-record) lists the changes. Its UI step
+(`pulp_wars-1wy.5`) is implemented
+([screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay));
+its Normal AI step (`pulp_wars-1wy.4`) is pending.
 What the implementation changed or made precise is in
 [section 19](#19-implementation-notes-pulp_wars-t6s2). It is an
 overlay over the rules in force when `pulp_wars-t6s.2` starts: today that is

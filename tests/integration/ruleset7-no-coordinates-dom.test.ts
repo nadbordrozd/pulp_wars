@@ -47,11 +47,14 @@ import {
 } from "../fixtures/v7-dwarf-ui";
 import { goblinShowcaseFixtureV7 } from "../fixtures/v7-goblin-ui";
 import {
+  iceFolkGlideFixtureV7,
   iceFolkUiFixtureV7,
   iceFolkVictimFixtureV7,
+  martianFrozenFixtureV7,
 } from "../fixtures/v7-ice-folk-ui";
 import {
   martianDuelFixtureV7,
+  martianMobilityFixtureV7,
   martianUiFixtureV7,
 } from "../fixtures/v7-martian-ui";
 import { riftUiFixtureV7 } from "../fixtures/v7-rift-ui";
@@ -115,6 +118,26 @@ const FIXTURES: readonly (readonly [
     ],
   ],
   ["Martian duel", martianDuelFixtureV7, []],
+  // Bead pulp_wars-1wy.5: the balance round's mobility UI (the passenger
+  // badges and pick-up range, both pulls with their paths, the "Beamed"
+  // and "Beam used" chips, the used and Frozen carriers' reasons) and the
+  // Ice Folk Glide tiles and Snow cover.
+  [
+    "Martian mobility",
+    martianMobilityFixtureV7,
+    [
+      "martian-beam-down stage 1",
+      "martian-beam-down performed",
+      "martian-beam-down chip beamed",
+      "martian-beam-down disabled Already acted this turn",
+      "martian-tractor-beam aimed",
+      "martian-tractor-beam performed",
+      "martian-tractor-beam chip tractor-used",
+      "martian-tractor-beam disabled Tractor Beam used this turn",
+    ],
+  ],
+  ["Martian Frozen carriers", martianFrozenFixtureV7, []],
+  ["Ice Folk Glide", iceFolkGlideFixtureV7, []],
   [
     "Ice Folk abilities",
     () => iceFolkUiFixtureV7(),
@@ -430,6 +453,28 @@ async function sweep(fixture: () => GameStateV7): Promise<{
         ? `${action} performed`
         : `${action} not performed`,
     );
+    // Bead pulp_wars-1wy.5: the docks after the ability, with the unit
+    // that acted (its used or disabled buttons and "Beam used") and every
+    // unit beamed this turn ("Beamed").
+    const afterView = required(controller.snapshot().view);
+    for (const id of new Set<number>([unitId, ...afterView.beamedThisTurn])) {
+      if (!afterView.units.some((unit) => unit.id === id)) continue;
+      host.callbacks?.onSelection({ kind: "UNIT", unitId: id });
+      check(`${action} after, unit ${id}`);
+      for (const status of ["beamed", "tractor-used"])
+        if (
+          document.querySelector(
+            `.v7-selection-dock [data-unit-status="${status}"]`,
+          ) !== null
+        )
+          visited.add(`${action} chip ${status}`);
+      for (const disabled of document.querySelectorAll<HTMLElement>(
+        ".v7-selection-dock [data-martian-ability][aria-disabled='true']",
+      ))
+        visited.add(
+          `${action} disabled ${required(disabled.dataset.disabledReason)}`,
+        );
+    }
     app.destroy();
   }
   return { offences: [...offences], visited };
