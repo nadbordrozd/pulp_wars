@@ -6,9 +6,10 @@ requires, then filled in with what the batch made. It specializes the
 [chibi direction](../CHIBI_ART_DIRECTION.md) for the rare neutral features of
 the map: the roaming Giant Spider, its lair web, the Fountain of Youth, the
 Shrine and the Sunken Wreck, and their small interface and effect pieces.
-The art is registered but **not drawn yet**: the UI bead (`pulp_wars-737.6`)
-wires it in. Until then the board draws the Spider with the stand-in art of
-[`neutral-presentation-v7.ts`](../../../src/render/neutral-presentation-v7.ts).
+The UI bead (`pulp_wars-737.6`) wired it into the live look: the board, the
+dock, Help and the Gallery draw it
+([section 7](#7-how-the-game-draws-it-pulp_wars-7376)). LEGACY and the
+Classic look draw code markers instead.
 
 ## 1. What a curiosity must look like
 
@@ -119,7 +120,8 @@ PixelLab and was retried under a new id). 15 assets accepted:
 
 The registry lines are in
 [`chibi-curiosities-art-manifest.ts`](../../../src/assets/chibi-curiosities-art-manifest.ts),
-which no game module imports yet. Every rejected recipe keeps its reason in
+registered in the live direction registry since the UI bead
+(`pulp_wars-737.6`). Every rejected recipe keeps its reason in
 [`records/batch-curiosities.json`](../../../scripts/art/chibi/records/batch-curiosities.json).
 
 What worked, added to the prompt notes of
@@ -160,7 +162,8 @@ Fighter and the seven Juggernaut-class giants), `interface-{x4,1x}.png`
 page, the effects over a Fighter, the marker at 16 px over the Spider),
 `scene-{x2,1x}.png` and `scene-zoom-0.75.png` (a 7 x 5 board mock),
 `readability.json` and `index.json`. The sheets are composed from the
-masters; the art is not on the board yet, so there is no browser capture.
+masters. The board captures are those of
+`npm run review:ruleset7-curiosities-ui` (section 7).
 `--preview recipe[:candidate],… --out DIR` lays raw candidates out the same
 way before acceptance, and `--copy-to DIR` copies the evidence.
 
@@ -177,10 +180,10 @@ Measured on the masters (`readability.json`; a test pins them):
 - **Ground contact** (`scripts/art/unit-shadows/measure.ts`, the live
   units' measurement): contact line 67 of 72, foot band 18 to 25 (one leg
   tip), base band 6 to 81. The numbers are
-  `GIANT_SPIDER_SHADOW_MEASUREMENT_V7` in the manifest module; the live
-  table (`unit-shadow-measurements-v7.generated.ts`) lists only registered
-  subjects and gains the Spider when the UI bead registers it. The shadow
-  should take its width from the base band.
+  `GIANT_SPIDER_SHADOW_MEASUREMENT_V7` in the manifest module and, since
+  the UI bead registered the Spider, its entry in the live table
+  (`unit-shadow-measurements-v7.generated.ts`). The shadow takes its width
+  from the base band.
 - **Under a unit.** 35% of the Fountain shows beside a Fighter (its rim on
   both sides) and 20% beside a Juggernaut; 40% of the web shows beside a
   Fighter and 32% beside the Spider.
@@ -205,3 +208,30 @@ Measured on the masters (`readability.json`; a test pins them):
 - **Effects are kept as generated** (`as-is`), not palette-mapped like the
   Undead, Martian, Ice Folk and Dwarf effects: they need gold and white,
   which those classes' texts exclude.
+
+## 7. How the game draws it (`pulp_wars-737.6`)
+
+- **Live look only.** The fifteen assets are in the live direction
+  registry (`chibiDirectionArtRegistryV7`). The Classic look and the LEGACY
+  art set have no curiosity raster and draw code markers
+  ([`curiosity-canvas-v7.ts`](../../../src/render/canvas/curiosity-canvas-v7.ts),
+  [`curiosity-dom-v7.ts`](../../../src/render/dom/curiosity-dom-v7.ts)).
+- **As authored.** The overlays, the marker and the effects take no owner
+  colour and no tone of the visual direction.
+- **Draw order.** The web under everything on its cell; the Fountain, the
+  Shrine and the Wreck over the Forest body of their own cell and under
+  the unit on the tile (the Shrine on Forest reads over the trees).
+- **The Wreck is cut at a waterline:** only master rows 0 to 57 are drawn
+  and two pale ripple marks cover the cut, so the hull sits in the water
+  (the weak spot of section 6). The Gallery shows the whole master.
+- **The Spider's shadow** is the giant shadow under its spread legs (33 px
+  half-width at master scale, from the base band).
+- **The provoked marker** is drawn at 16 master px in the top-right corner
+  of the Spider's cell, and of every Move target that ends next to it.
+- **The effects** are drawn at 1:1 over the unit, with a code-drawn ring
+  and a rising number; the blessing star keeps its pale pool of light.
+- **The portrait** is the Spider's dock and dialog figure; the five icons
+  are the Help and tile-dock legend.
+- **Captures.** `npm run review:ruleset7-curiosities-ui -- <dev server URL>`
+  (the curiosities UI fixture; desktop and phone; the live look, the
+  Classic look and LEGACY; zoom 1 and 0.75).

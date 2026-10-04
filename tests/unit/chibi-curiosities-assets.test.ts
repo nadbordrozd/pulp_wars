@@ -11,6 +11,7 @@ import {
   GIANT_SPIDER_SHADOW_MEASUREMENT_V7,
 } from "../../src/assets/chibi-curiosities-art-manifest";
 import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
+import { UNIT_SHADOW_MEASUREMENTS_V7 } from "../../src/render/canvas/unit-shadow-measurements-v7.generated";
 import {
   batchManifestProblems,
   CHIBI_CLASS_RECIPES,
@@ -84,13 +85,20 @@ describe("map curiosity art (pulp_wars-737.5)", () => {
     expect(problems).toEqual([]);
   });
 
-  it("is not wired into the game yet", () => {
+  it("is registered in the live look only (pulp_wars-737.6); the classic look draws code markers", () => {
     const live = chibiDirectionArtRegistryV7();
     const classic = new Set(CHIBI_ART_ASSETS_V7.map((asset) => asset.id));
     for (const asset of CHIBI_CURIOSITIES_ART_ASSETS_V7) {
-      expect(live.variants(asset.subject), asset.id).toEqual([]);
+      expect(
+        live.variants(asset.subject).map((variant) => variant.id),
+        asset.id,
+      ).toEqual([asset.id]);
       expect(classic.has(asset.id), asset.id).toBe(false);
     }
+    // The board's shadow is anchored from the Spider's own measurement.
+    expect(UNIT_SHADOW_MEASUREMENTS_V7["UNIT:MONSTER_GIANT_SPIDER"]).toEqual(
+      GIANT_SPIDER_SHADOW_MEASUREMENT_V7,
+    );
   });
 
   it("has a valid batch whose classes send no faction and no owner layer", async () => {

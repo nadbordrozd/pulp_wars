@@ -36,6 +36,7 @@ import {
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 import {
   GALLERY_BUILDING_ROWS_V7,
+  GALLERY_CURIOSITY_ROWS_V7,
   GALLERY_FACTIONS_V7,
   GALLERY_FILTERS_STORAGE_KEY_V7,
   GALLERY_UNIT_ROWS_V7,
@@ -44,6 +45,8 @@ import {
   galleryBuildingNameV7,
   galleryBuildingPerFactionV7,
   galleryBuildingSubjectV7,
+  galleryCuriosityCellV7,
+  galleryCuriosityDetailsV7,
   galleryNavalRowV7,
   galleryRowLabelV7,
   galleryUnitCellV7,
@@ -52,6 +55,7 @@ import {
   serializeGalleryFiltersV7,
   toggleGalleryFilterV7,
   type GalleryBuildingRowIdV7,
+  type GalleryCuriosityRowIdV7,
   type GalleryFiltersV7,
   type GalleryTabV7,
   type GalleryUnitCellV7,
@@ -101,7 +105,20 @@ type GalleryDetailV7 =
       readonly row: GalleryBuildingRowIdV7;
       /** Null for a building every faction shares. */
       readonly faction: FactionIdV7 | null;
+    }
+  | {
+      /** Map curiosities (bead pulp_wars-737.6): they belong to nobody. */
+      readonly tab: "CURIOSITIES";
+      readonly row: GalleryCuriosityRowIdV7;
+      readonly faction: null;
     };
+
+const TAB_LABELS: Readonly<Record<GalleryTabV7, string>> = {
+  UNITS: "Units",
+  BUILDINGS: "Buildings",
+  CURIOSITIES: "Curiosities",
+};
+const TABS: readonly GalleryTabV7[] = ["UNITS", "BUILDINGS", "CURIOSITIES"];
 
 type DemoStateV7 = "idle" | "playing" | "done";
 
@@ -315,7 +332,9 @@ export class GalleryViewV7 {
   #visibleRows(): readonly string[] {
     return this.#filters.tab === "UNITS"
       ? this.#filters.unitRows
-      : this.#filters.buildingRows;
+      : this.#filters.tab === "BUILDINGS"
+        ? this.#filters.buildingRows
+        : GALLERY_CURIOSITY_ROWS_V7;
   }
 
   // ---------------------------------------------------------------- render
@@ -368,10 +387,8 @@ export class GalleryViewV7 {
     const list = el(this.#document, "div", "v7-gallery-tabs");
     list.setAttribute("role", "tablist");
     list.setAttribute("aria-label", "Gallery");
-    for (const [tab, label] of [
-      ["UNITS", "Units"],
-      ["BUILDINGS", "Buildings"],
-    ] as const) {
+    for (const tab of TABS) {
+      const label = TAB_LABELS[tab];
       const selected = this.#filters.tab === tab;
       const node = button(
         this.#document,
@@ -392,7 +409,10 @@ export class GalleryViewV7 {
     list.addEventListener("keydown", (event) => {
       if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
       event.preventDefault();
-      this.#selectTab(this.#filters.tab === "UNITS" ? "BUILDINGS" : "UNITS");
+      const step = event.key === "ArrowRight" ? 1 : TABS.length - 1;
+      this.#selectTab(
+        TABS[(TABS.indexOf(this.#filters.tab) + step) % TABS.length] ?? "UNITS",
+      );
       this.#content
         ?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')
         ?.focus();
@@ -414,8 +434,75 @@ export class GalleryViewV7 {
       `v7-gallery-tab-${this.#filters.tab.toLowerCase()}`,
     );
     panel.dataset.tab = this.#filters.tab.toLowerCase();
-    panel.append(this.#filterControls(), this.#table());
+    // Curiosities belong to no faction: five cells and no filters.
+    if (this.#filters.tab === "CURIOSITIES")
+      panel.append(this.#curiosityTable());
+    else panel.append(this.#filterControls(), this.#table());
     return panel;
+  }
+
+  /** The Curiosities tab: one row, the Spider and the four tile overlays. */
+  #curiosityTable(): HTMLElement {
+    const scroll = el(this.#document, "div", "v7-gallery-scroll");
+    const table = el(
+      this.#document,
+      "table",
+      "v7-gallery-table v7-gallery-curiosities",
+    );
+    table.setAttribute("role", "grid");
+    table.setAttribute("aria-label", TAB_LABELS.CURIOSITIES);
+    table.setAttribute("aria-rowcount", "1");
+    table.setAttribute(
+      "aria-colcount",
+      String(GALLERY_CURIOSITY_ROWS_V7.length),
+    );
+    const body = this.#document.createElement("tbody");
+    const tr = this.#document.createElement("tr");
+    const keys: string[] = [];
+    GALLERY_CURIOSITY_ROWS_V7.forEach((row, column) => {
+      const cell = galleryCuriosityCellV7(row);
+      const td = el(this.#document, "td", "v7-gallery-cell-wrap");
+      td.setAttribute("role", "gridcell");
+      const key = cellKey(row, null);
+      keys.push(key);
+      const node = button(
+        this.#document,
+        "",
+        "gallery-open-curiosity",
+        "v7-gallery-cell",
+      );
+      node.dataset.focusKey = key;
+      node.dataset.row = row;
+      node.dataset.owner = "neutral";
+      node.dataset.gridRow = "0";
+      node.dataset.gridColumn = String(column);
+      node.setAttribute("aria-label", `${cell.name}, neutral`);
+      node.append(
+        this.#tile(
+          { subject: cell.subject, ground: cell.ground, scale: TABLE_SCALE },
+          node,
+        ),
+        text(this.#document, "span", cell.name, "v7-gallery-cell-name"),
+      );
+      node.onclick = () =>
+        this.#openDetail({ tab: "CURIOSITIES", row, faction: null });
+      td.append(node);
+      tr.append(td);
+    });
+    body.append(tr);
+    if (this.#gridFocusKey === null || !keys.includes(this.#gridFocusKey))
+      this.#gridFocusKey = keys[0] ?? null;
+    for (const node of body.querySelectorAll<HTMLElement>("[data-grid-row]"))
+      node.tabIndex = node.dataset.focusKey === this.#gridFocusKey ? 0 : -1;
+    table.append(body);
+    table.addEventListener("keydown", this.#onGridKeyDown);
+    table.addEventListener("focusin", (event) => {
+      const target = event.target;
+      if (target instanceof HTMLElement && target.dataset.gridRow !== undefined)
+        this.#moveGridStop(target);
+    });
+    scroll.append(table);
+    return scroll;
   }
 
   #filterControls(): HTMLElement {
@@ -872,7 +959,10 @@ export class GalleryViewV7 {
     const move = moves[event.key];
     if (move !== undefined) {
       const rows = Math.max(...cells.map((node) => at(node).row)) + 1;
-      const columns = this.#filters.factions.length;
+      const columns =
+        this.#filters.tab === "CURIOSITIES"
+          ? GALLERY_CURIOSITY_ROWS_V7.length
+          : this.#filters.factions.length;
       let row = here.row;
       let column = move[1] < 0 ? here.column : here.column + here.span - 1;
       if (move[0] !== 0) column = here.column;
@@ -959,6 +1049,15 @@ export class GalleryViewV7 {
       return null;
     };
     const down = (step: -1 | 1): GalleryDetailV7 | null => {
+      if (detail.tab === "CURIOSITIES") {
+        const row =
+          GALLERY_CURIOSITY_ROWS_V7[
+            GALLERY_CURIOSITY_ROWS_V7.indexOf(detail.row) + step
+          ];
+        return row === undefined
+          ? null
+          : { tab: "CURIOSITIES", row, faction: null };
+      }
       const visible = this.#visibleRows();
       const rows =
         visible.length > 0
@@ -1030,7 +1129,8 @@ export class GalleryViewV7 {
     close.onclick = () => this.#closeDetail(true);
     dialog.append(close);
     if (detail.tab === "UNITS") this.#unitDetail(dialog, detail);
-    else this.#buildingDetail(dialog, detail);
+    else if (detail.tab === "BUILDINGS") this.#buildingDetail(dialog, detail);
+    else this.#curiosityDetail(dialog, detail);
     const scrim = el(this.#document, "div", "v7-scrim v7-gallery-scrim");
     scrim.dataset.dismissable = "true";
     scrim.setAttribute("aria-hidden", "true");
@@ -1128,14 +1228,22 @@ export class GalleryViewV7 {
       ],
       [
         "gallery-previous-row",
-        detail.tab === "UNITS" ? "Previous unit" : "Previous building",
+        detail.tab === "UNITS"
+          ? "Previous unit"
+          : detail.tab === "BUILDINGS"
+            ? "Previous building"
+            : "Previous curiosity",
         neighbours.previousRow,
         "UP",
         "ROW",
       ],
       [
         "gallery-next-row",
-        detail.tab === "UNITS" ? "Next unit" : "Next building",
+        detail.tab === "UNITS"
+          ? "Next unit"
+          : detail.tab === "BUILDINGS"
+            ? "Next building"
+            : "Next curiosity",
         neighbours.nextRow,
         "DOWN",
         "ROW",
@@ -1284,6 +1392,55 @@ export class GalleryViewV7 {
         ),
       );
     body.append(facts);
+    dialog.append(body);
+  }
+
+  /** A curiosity: its one sentence, and the Spider's stats and bounty. */
+  #curiosityDetail(
+    dialog: HTMLElement,
+    detail: Extract<GalleryDetailV7, { readonly tab: "CURIOSITIES" }>,
+  ): void {
+    const cell = galleryCuriosityCellV7(detail.row);
+    const details = galleryCuriosityDetailsV7(detail.row);
+    this.#detailHeader(dialog, {
+      name: details.name,
+      factionName: null,
+      kicker: details.kicker,
+      tile: { subject: cell.subject, ground: cell.ground, scale: DETAIL_SCALE },
+      portrait: cell.portrait,
+    });
+    const body = el(this.#document, "div", "v7-gallery-detail-body");
+    const facts = el(this.#document, "div", "v7-gallery-facts");
+    if (details.stats.length > 0) {
+      const stats = el(this.#document, "dl", "v7-unit-stats v7-gallery-stats");
+      for (const stat of details.stats) {
+        const row = el(this.#document, "div", "v7-stat");
+        row.dataset.stat = stat.label.toLowerCase();
+        row.title = stat.label;
+        const term = el(this.#document, "dt", "v7-stat-term");
+        term.append(
+          uiIconV7(
+            this.#document,
+            STAT_ICONS[stat.label.toUpperCase()] ?? "info",
+          ),
+          text(this.#document, "span", stat.label, "v7-sr-only"),
+        );
+        row.append(term, text(this.#document, "dd", stat.value));
+        stats.append(row);
+      }
+      facts.append(stats);
+    }
+    facts.append(
+      text(this.#document, "p", details.description, "v7-gallery-description"),
+    );
+    if (details.notes.length > 0) {
+      const notes = el(this.#document, "ul", "v7-gallery-notes");
+      for (const note of details.notes)
+        notes.append(text(this.#document, "li", note));
+      facts.append(notes);
+    }
+    body.append(facts);
+    dialog.dataset.preview = "false";
     dialog.append(body);
   }
 

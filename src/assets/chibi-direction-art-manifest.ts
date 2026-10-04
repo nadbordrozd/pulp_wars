@@ -5,6 +5,7 @@ import {
 } from "./chibi-art-v7";
 import { chibiArtUrl } from "./chibi-art-manifest";
 import { CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7 } from "./chibi-direction-dinosaur-art-manifest";
+import { CHIBI_CURIOSITIES_ART_ASSETS_V7 } from "./chibi-curiosities-art-manifest";
 import { CHIBI_DIRECTION_DWARF_ART_ASSETS_V7 } from "./chibi-direction-dwarf-art-manifest";
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "./chibi-direction-ice-folk-art-manifest";
 import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "./chibi-direction-martian-art-manifest";
@@ -564,6 +565,9 @@ export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
     // (pulp_wars-xdh.2) ---
     ...CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
     ...CHIBI_UNDEAD_GROUND_ART_ASSETS_V7,
+    // --- Map curiosities (pulp_wars-737.5 art, wired in by pulp_wars-737.6):
+    // the neutral Giant Spider, the tile overlays, icons, effects, marker.
+    ...CHIBI_CURIOSITIES_ART_ASSETS_V7,
   ]);
   if (built.problems.length > 0) throw new Error(built.problems.join("; "));
   return built.registry;

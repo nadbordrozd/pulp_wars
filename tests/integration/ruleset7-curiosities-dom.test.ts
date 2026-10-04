@@ -16,8 +16,8 @@ import {
  * docs/product/RULESET_7_MAP_CURIOSITIES.md section 3): the setup screen's
  * "Curiosities" checkbox. It is checked by default, hidden while the
  * Showcase is the map (which launches with `curiosities: false`), and its
- * value is the launched setup's `curiosities`. The board does not draw the
- * curiosities yet (`pulp_wars-737.6`). The Giant Spider (`pulp_wars-737.3`):
+ * value is the launched setup's `curiosities` (the board, the dock and Help:
+ * ruleset7-curiosities-ui-dom.test.ts). The Giant Spider (`pulp_wars-737.3`):
  * the browser controller plays Normal rounds with its neutral turns.
  */
 
@@ -78,7 +78,7 @@ describe("Ruleset 7 Curiosities setup option", () => {
 describe("Ruleset 7 Giant Spider in the browser controller (pulp_wars-737.3)", () => {
   it("plays Normal rounds of a match with a Spider, its neutral turns included", async () => {
     // 16 x 16 Dry Land seed 7 with two opponents draws a Giant Spider; the
-    // board does not draw it as a curiosity yet (pulp_wars-737.6).
+    // board draws it since pulp_wars-737.6.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
       seed: 7,

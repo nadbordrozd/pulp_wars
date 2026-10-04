@@ -49,7 +49,7 @@ export type UnitShadowMotionV7 =
 /**
  * Shadow size class: SMALL is a short canvas (the Egg, the Dwarf mounds),
  * NORMAL the 56 x 80 standard unit, BIG the 72 x 88 large unit, GIANT the
- * 88 x 104 Juggernaut-role giant.
+ * 88 x 104 Juggernaut-role giant and the 88 x 72 Giant Spider.
  */
 export type UnitShadowSizeV7 = "SMALL" | "NORMAL" | "BIG" | "GIANT";
 
@@ -139,8 +139,10 @@ const FOOT_CENTRE_MIN_WIDTH = 12;
 export function unitShadowSizeV7(
   measurement: UnitShadowMeasurementV7,
 ): UnitShadowSizeV7 {
-  if (measurement.height < 80) return "SMALL";
+  // A giant is a giant whatever its height: the Giant Spider's canvas is
+  // 88 x 72 (wide and flat), and its shadow follows its spread legs.
   if (measurement.assetClass === "GIANT_UNIT") return "GIANT";
+  if (measurement.height < 80) return "SMALL";
   if (measurement.assetClass === "LARGE_UNIT") return "BIG";
   return "NORMAL";
 }

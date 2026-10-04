@@ -4,6 +4,7 @@ import {
   factionRulesV7,
   factionTreeV7,
   gravesEnabledV7,
+  isNeutralOwnerV7,
   playerFactionV7,
   unitFactionV7,
   queryPlayerCommandsV7,
@@ -288,8 +289,11 @@ export function unitAfflictionsV7(
   // pulp_wars-0ao.16: name the Captain's cure only when the afflicted unit's
   // owner has one; Goblin units (no Tend Wounded) cannot be cured.
   const owner = view.units.find((unit) => unit.id === unitId)?.ownerId;
+  // The neutral Giant Spider has no owner faction (and is never afflicted).
   const ownerFaction =
-    owner === undefined ? undefined : playerFactionV7(view, owner);
+    owner === undefined || isNeutralOwnerV7(owner)
+      ? undefined
+      : playerFactionV7(view, owner);
   const uncurable =
     ownerFaction !== undefined && !factionCanCureAfflictionsV7(ownerFaction)
       ? `${factionNameV7(ownerFaction)}s`

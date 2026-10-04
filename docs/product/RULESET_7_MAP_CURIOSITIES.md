@@ -8,8 +8,11 @@ owner, and the owner-reader audit) at `pulp-wars-poc-7r36`
 (`pulp_wars-737.3`); both are folded into
 [current rules section 2.7](RULESET_7_CURRENT.md#27-map-curiosities), with
 the notes of [section 17](#17-implementation-notes-pulp_wars-7372) and
-[section 18](#18-implementation-notes-pulp_wars-7373); the AI, the art,
-and the UI are pending. It is an overlay over
+[section 18](#18-implementation-notes-pulp_wars-7373). The art
+(`pulp_wars-737.5`, [class document](../art/classes/curiosities.md)) and
+the UI (`pulp_wars-737.6`, bead 6, with the notes of
+[section 19](#19-implementation-notes-pulp_wars-7376)) are implemented; the
+AI is pending. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r31`,
 with the pending [Dwarf overlay](RULESET_7_DWARVES.md) and the pending
 [Mind Control overlay](RULESET_7_MIND_CONTROL.md). Every rule this document
@@ -872,6 +875,46 @@ the implementation rules as follows:
   attacks, 97 kills by it, and 10 Spiders slain (100 bounty Coins).
   The Normal AI ignores curiosities (bead 4), so its units often walk next
   to the Spider and are attacked.
+
+## 19. Implementation notes (`pulp_wars-737.6`)
+
+The UI of section 12.1 is live; the screen-level description is the
+[map curiosities overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-map-curiosities-overlay)
+of the screen flow. Where this spec was silent, or the user's standing rule
+"no coordinates, minimal text" (`pulp_wars-b5f.8`) shortened it, the
+implementation rules as follows:
+
+- **"Neutral", not "Owned by nobody".** The Spider's dock carries the chip
+  "Neutral" (and "Provoked" while a visible unit provokes it); its
+  regeneration, bounty and target are lines of its "?" dialog. It shows no
+  Sight, no owner, no faction badge and no command.
+- **The provoke warning is a marker.** A Move target next to a visible
+  Spider carries the provoked marker; the sentence of section 12.1 is the
+  tile's cursor description, not a label box on every tile.
+- **The banner.** "The wilds stir" is the log line of a neutral turn in
+  which the viewer saw the Spider move or attack; it is a toast only when
+  the Spider attacked the viewer's unit. A wander the viewer cannot see
+  says nothing.
+- **Draw order.** The web is under everything on its cell. The Fountain,
+  the Shrine and the Wreck are drawn like a Treasure chest: over the Forest
+  body of their own cell, under the unit on it. The Wreck is cut at a
+  waterline (master row 58) with two ripple marks.
+- **Art in the live look only.** The rasters are registered in the live
+  direction registry. LEGACY and the Classic look draw the code markers of
+  section 12.2 (also in the dock and as legend glyphs).
+- **Shadow.** The Spider's 88 x 72 canvas is a giant's: its shadow takes
+  the giant bounds from its measured base band
+  (`unit-shadow-measurements-v7.generated.ts`).
+- **Gallery.** A third tab, "Curiosities", with the Spider and the four
+  tile overlays (no faction column: they belong to nobody).
+- **Neutral when absent.** The board plan of a view without a curiosity or
+  a Monster is exactly the plan before this bead (a test compares them),
+  and the option on a board that drew none plans the same entries as the
+  option off. Help shows its Curiosities section whenever the option is on.
+- **Presentation readers.** The presentation layer is outside the
+  owner-reader audit of section 10.5; a DOM test selects the Spider,
+  previews an attack on it and plans its neutral turn in matches of all
+  seven factions.
 
 ## Appendix A. Draft, critique, and changes
 

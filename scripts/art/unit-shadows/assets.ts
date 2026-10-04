@@ -39,6 +39,10 @@ const MODULES = [
     "/src/assets/chibi-direction-dwarf-art-manifest.ts",
     ["CHIBI_DIRECTION_DWARF_ART_ASSETS_V7"],
   ],
+  [
+    "/src/assets/chibi-curiosities-art-manifest.ts",
+    ["CHIBI_CURIOSITIES_ART_ASSETS_V7"],
+  ],
 ] as const;
 
 /**

@@ -573,6 +573,43 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain("dataset.missionId === 'FRONTIER_2'");
     expect(probe).toContain(`'["ORIGINAL","GOBLIN"]'`);
   });
+  it("probes the map curiosities on their fixture: a Shrine claim, a neutral turn and a Fountain heal", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = readFileSync(
+      "scripts/browser-smoke-v7-curiosities.ts",
+      "utf8",
+    );
+
+    // Dev server only (the fixture is a test fixture), between the Dwarf
+    // probe and the Showcase probe, which loads a fresh front screen.
+    const call = source.indexOf("await probeCuriositiesV7({");
+    expect(call).toBeGreaterThan(
+      source.indexOf("await probeDwarfMatch(connection)"),
+    );
+    expect(call).toBeLessThan(
+      source.indexOf("await probeShowcaseMatch(connection)"),
+    );
+    expect(source).toContain('? "fixture skipped on the deployed bundle"');
+    expect(source).toContain("Curiosities ${curiosities}. Evidence:");
+    expect(probe).toContain('module: "/tests/fixtures/v7-curiosities-ui.ts"');
+    expect(probe).toContain('fixture: "curiositiesWoundedSpiderFixtureV7"');
+    expect(probe).toContain("UNIT:MONSTER_GIANT_SPIDER:provoked");
+    expect(probe).toContain(`[data-unit-status="neutral"]`);
+    expect(probe).toContain("trace.eventKinds.includes('SHRINE_CLAIMED')");
+    expect(probe).toContain(`pointerClick('[data-action="end-turn"]')`);
+    for (const kind of [
+      "NEUTRAL_TURN_STARTED",
+      "COMBAT_RESOLVED",
+      "FOUNTAIN_HEALED",
+    ])
+      expect(probe).toContain(`'${kind}'`);
+    expect(probe).toContain("The wilds stir");
+    for (const name of [
+      "curiosities-spider-dock.png",
+      "curiosities-neutral-turn.png",
+    ])
+      expect(probe).toContain(`await driver.capture("${name}")`);
+  });
   it("waits for a fresh complete document and installed controller after reload", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
 

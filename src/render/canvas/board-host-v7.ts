@@ -124,6 +124,7 @@ import {
   type ChibiZoomStepV7,
 } from "./chibi-geometry-v7";
 import {
+  CURIOSITY_EFFECT_SUBJECTS_V7,
   SUPPORT_EFFECT_SUBJECTS_V7,
   drawSupportFeedbackV7,
   UNDEAD_VIOLET_GLOW_V7,
@@ -143,6 +144,11 @@ import {
   type BoardVisualDirectionV7,
 } from "./visual-direction-v7";
 import type { ChibiArtRegistryV7 } from "../../assets/chibi-art-v7";
+import {
+  CURIOSITY_LABELS_V7,
+  CURIOSITY_RULES_V7,
+  curiosityOverlayOnTileV7,
+} from "../curiosity-presentation-v7";
 
 export interface BoardHostModelV7 {
   readonly matchInstanceId: string | number;
@@ -828,8 +834,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         for (const step of supportSteps) {
           // Revision 17: the still "+N" of Troll regeneration holds long
           // enough to read; a Recover's "+N" a little less.
+          if (step.followCamera === true) this.#followCamera(step.actor.at);
           const hold =
-            step.effect === "REGENERATE"
+            step.effect === "REGENERATE" ||
+            // Map curiosities: the still "+N" of a Fountain, a Wreck or a
+            // bounty, and the blessing's star, hold as long.
+            step.effect === "FOUNTAIN" ||
+            step.effect === "BLESSING" ||
+            step.effect === "SALVAGE" ||
+            step.effect === "BOUNTY"
               ? 480
               : step.effect === "RECOVER"
                 ? 320
@@ -1107,6 +1120,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#statusPulse = null;
       } else if (step.kind === "SUPPORT") {
         this.#presentedView = after;
+        if (step.followCamera === true) this.#followCamera(step.actor.at);
         this.#draw();
         await this.#animate(step.durationMs * durationScale, (progress) => {
           this.#supportFeedback = {
@@ -1534,6 +1548,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#effectArtRequested = true;
     const art = this.#supportEffectArt();
     for (const subject of SUPPORT_EFFECT_SUBJECTS_V7) art?.image(subject);
+    // Map curiosities: only a match that may have them loads their cues.
+    if (this.#model?.view.setup.curiosities === true)
+      for (const subject of CURIOSITY_EFFECT_SUBJECTS_V7) art?.image(subject);
     for (const subject of MARTIAN_EFFECT_SUBJECTS_V7) art?.image(subject);
     for (const subject of ICE_FOLK_EFFECT_SUBJECTS_V7) art?.image(subject);
     for (const subject of DWARF_EFFECT_SUBJECTS_V7) art?.image(subject);
@@ -1904,6 +1921,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         : "",
       tile.improvement === null ? "" : title(tile.improvement),
       model.view.graves.some((grave) => same(grave, at)) ? "Grave" : "",
+      // Map curiosities: the tile's curiosity and its one sentence.
+      ...(() => {
+        const curiosity = curiosityOverlayOnTileV7(model.view, at);
+        return curiosity === null
+          ? []
+          : [
+              `${CURIOSITY_LABELS_V7[curiosity]}: ${CURIOSITY_RULES_V7[curiosity].replace(/\.$/, "")}`,
+            ];
+      })(),
       // The Dwarf revision: a mound, its unit and its eruption.
       ...(() => {
         const mound = moundAtV7(model.view, at);

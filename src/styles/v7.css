@@ -144,6 +144,73 @@
   color: var(--muted);
 }
 
+/* The Curiosities checkbox: a small box beside its label, on one row. */
+.v7-setup-form label.v7-curiosities-choice {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: 0.6rem;
+  align-items: center;
+  justify-self: start;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.v7-setup-form label.v7-curiosities-choice[hidden] {
+  display: none;
+}
+
+.v7-setup-form .v7-curiosities-choice input {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--gold);
+}
+
+/* Map curiosities: the Spider's dock, a curiosity tile and Help. */
+.v7-neutral-chip {
+  border-color: #b9a58a;
+  color: #efe6d0;
+}
+
+.v7-curiosity-info {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.15rem 0.6rem;
+  align-items: center;
+}
+
+.v7-curiosity-info > :first-child {
+  grid-row: 1 / span 2;
+}
+
+.v7-curiosity-info strong,
+.v7-curiosity-info p {
+  margin: 0;
+}
+
+.v7-curiosity-icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.v7-help-curiosities .v7-help-rule {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.v7-spider-figure {
+  width: 100%;
+  height: 100%;
+}
+
 /* "New map" / "Use seed": a two-state segmented control above the seed. */
 .v7-seed-choice {
   display: grid;
@@ -3671,6 +3738,11 @@
 .v7-gallery-table th,
 .v7-gallery-table td {
   padding: 0;
+}
+
+/* The Curiosities tab: five cells side by side, not stretched. */
+.v7-gallery-table.v7-gallery-curiosities {
+  min-width: 0;
 }
 
 .v7-gallery-table thead th {

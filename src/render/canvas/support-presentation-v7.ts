@@ -1,5 +1,6 @@
 import type {
   ChibiEffectIdV7,
+  CuriosityEffectIdV7,
   DwarfEffectIdV7,
   IceFolkEffectIdV7,
   MartianEffectIdV7,
@@ -44,7 +45,16 @@ export type SupportEffectSubjectV7 =
   /** The Ice Folk effect sprites (bead pulp_wars-7g3.6, ice-folk-effects-v7). */
   | `EFFECT:${IceFolkEffectIdV7}`
   /** The Dwarf effect sprites (bead pulp_wars-78i.6, dwarf-effects-v7). */
-  | `EFFECT:${DwarfEffectIdV7}`;
+  | `EFFECT:${DwarfEffectIdV7}`
+  /** The map curiosity effect sprites (bead pulp_wars-737.6). */
+  | `EFFECT:${CuriosityEffectIdV7}`;
+
+/** The curiosity cues' sprites, loaded only in a match with the option on. */
+export const CURIOSITY_EFFECT_SUBJECTS_V7: readonly SupportEffectSubjectV7[] = [
+  "EFFECT:FOUNTAIN_HEAL",
+  "EFFECT:SHRINE_BLESSING",
+  "EFFECT:SALVAGE_COINS",
+];
 
 export const SUPPORT_EFFECT_SUBJECTS_V7: readonly SupportEffectSubjectV7[] = [
   "EFFECT:WAIL",
@@ -136,6 +146,26 @@ export function drawSupportFeedbackV7(
         fade,
         unit.amount,
       );
+    return;
+  }
+  // Map curiosities: the Fountain's droplets, the Shrine's star and the
+  // coins of a Wreck or a bounty, each with its ring and rising "+N".
+  if (
+    feedback.effect === "FOUNTAIN" ||
+    feedback.effect === "BLESSING" ||
+    feedback.effect === "SALVAGE" ||
+    feedback.effect === "BOUNTY"
+  ) {
+    drawCuriosityCue(
+      context,
+      worldToScreen(projectGrid(feedback.actor.at), camera),
+      camera.zoom,
+      feedback.effect,
+      progress,
+      fade,
+      feedback.actor.amount,
+      sprites,
+    );
     return;
   }
   for (const at of [feedback.actor.at, ...recipients]) {
@@ -339,7 +369,17 @@ function drawLifesteal(
 
 const UNDEAD_PULSE_COLORS: Readonly<
   Record<
-    Exclude<SupportEffectV7, "RALLY" | "TEND" | "REGENERATE" | "RECOVER">,
+    Exclude<
+      SupportEffectV7,
+      | "RALLY"
+      | "TEND"
+      | "REGENERATE"
+      | "RECOVER"
+      | "FOUNTAIN"
+      | "BLESSING"
+      | "SALVAGE"
+      | "BOUNTY"
+    >,
     string
   >
 > = {
@@ -556,6 +596,143 @@ function drawRegeneration(
   context.strokeText(`+${amount}`, center.x, y);
   context.fillStyle = REGENERATION_TEXT_COLOR_V7;
   context.fillText(`+${amount}`, center.x, y);
+  context.restore();
+}
+
+/** Coin gold of the salvage and bounty floats (the HUD coin's colour). */
+export const CURIOSITY_COIN_TEXT_COLOR_V7 = "#ffd75a";
+
+/**
+ * Map curiosities (bead pulp_wars-737.6). FOUNTAIN: the heal ring, three
+ * white droplets rising over the unit, and a green "+N". BLESSING: a pale
+ * ring and the white star falling onto the unit it Promotes. SALVAGE and
+ * BOUNTY: gold coins rising with a gold "+N". Without the sprite (LEGACY,
+ * the classic look, still loading) the ring and the float are the cue; the
+ * blessing draws a code star.
+ */
+function drawCuriosityCue(
+  context: CanvasRenderingContext2D,
+  center: { readonly x: number; readonly y: number },
+  zoom: number,
+  effect: "FOUNTAIN" | "BLESSING" | "SALVAGE" | "BOUNTY",
+  progress: number,
+  fade: number,
+  amount: number | undefined,
+  sprites: SpriteDrawer | null,
+): void {
+  const unit = sprites?.step ?? zoom * 1.6;
+  if (effect === "FOUNTAIN") {
+    drawRegeneration(context, center, zoom, progress, fade, amount);
+    sprites?.draw(
+      "EFFECT:FOUNTAIN_HEAL",
+      { x: center.x, y: center.y - (8 + 14 * progress) * unit },
+      1,
+      fade,
+    );
+    return;
+  }
+  if (effect === "BLESSING") {
+    const radius = (36 - 10 * progress) * zoom;
+    context.save();
+    context.globalAlpha = fade;
+    context.strokeStyle = "#fff6dc";
+    context.lineWidth = Math.max(2, 3 * zoom);
+    context.beginPath();
+    context.arc(center.x, center.y - 5 * zoom, radius, 0, Math.PI * 2);
+    context.stroke();
+    context.restore();
+    const at = {
+      x: center.x,
+      y: center.y - (30 - 16 * easeOut(progress)) * unit,
+    };
+    if (
+      sprites?.draw(
+        "EFFECT:SHRINE_BLESSING",
+        at,
+        1,
+        Math.min(1, fade * 1.3),
+      ) !== true
+    )
+      drawCodeStar(context, at, 13 * unit, fade);
+    return;
+  }
+  const at = { x: center.x, y: center.y - (10 + 18 * progress) * unit };
+  if (sprites?.draw("EFFECT:SALVAGE_COINS", at, 1, fade) !== true) {
+    context.save();
+    context.globalAlpha = fade;
+    context.fillStyle = CURIOSITY_COIN_TEXT_COLOR_V7;
+    context.strokeStyle = "#3a2a08";
+    context.lineWidth = Math.max(1, 2 * zoom);
+    context.beginPath();
+    context.arc(at.x, at.y, 8 * unit, 0, Math.PI * 2);
+    context.fill();
+    context.stroke();
+    context.restore();
+  }
+  if (amount !== undefined && amount > 0)
+    drawFloat(
+      context,
+      center,
+      zoom,
+      progress,
+      fade,
+      `+${amount}`,
+      CURIOSITY_COIN_TEXT_COLOR_V7,
+      "#3a2a08",
+    );
+}
+
+function drawCodeStar(
+  context: CanvasRenderingContext2D,
+  at: { readonly x: number; readonly y: number },
+  radius: number,
+  alpha: number,
+): void {
+  context.save();
+  context.globalAlpha = Math.max(0, Math.min(1, alpha));
+  context.fillStyle = "#fff6dc";
+  context.strokeStyle = "#3a3431";
+  context.lineWidth = Math.max(1, radius * 0.14);
+  context.lineJoin = "round";
+  context.beginPath();
+  for (let point = 0; point < 10; point += 1) {
+    const angle = -Math.PI / 2 + (point * Math.PI) / 5;
+    const reach = point % 2 === 0 ? radius : radius * 0.45;
+    const x = at.x + Math.cos(angle) * reach;
+    const y = at.y + Math.sin(angle) * reach;
+    if (point === 0) context.moveTo(x, y);
+    else context.lineTo(x, y);
+  }
+  context.closePath();
+  context.fill();
+  context.stroke();
+  context.restore();
+}
+
+/** A bold rising "+N" over a unit's head, in the style of drawRegeneration. */
+function drawFloat(
+  context: CanvasRenderingContext2D,
+  center: { readonly x: number; readonly y: number },
+  zoom: number,
+  progress: number,
+  fade: number,
+  label: string,
+  colour: string,
+  outline: string,
+): void {
+  const font = Math.max(15, 24 * zoom);
+  const y = center.y - (50 + 20 * progress) * zoom;
+  context.save();
+  context.globalAlpha = progress <= 0.5 ? 1 : Math.max(0, fade * 1.15);
+  context.font = `900 ${font}px system-ui`;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.lineJoin = "round";
+  context.lineWidth = Math.max(3, font * 0.22);
+  context.strokeStyle = outline;
+  context.strokeText(label, center.x, y);
+  context.fillStyle = colour;
+  context.fillText(label, center.x, y);
   context.restore();
 }
 

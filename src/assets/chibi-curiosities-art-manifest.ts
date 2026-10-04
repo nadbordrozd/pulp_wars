@@ -9,10 +9,10 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * icon, three effect sprites and the provoked marker. Faction-less: no
  * owner area and no mask; the Spider and its portrait are `fixedColours`.
  *
- * **Not registered yet.** No game module imports this list until the
- * curiosities UI bead (pulp_wars-737.6) wires it into the board; until then
- * the Spider is drawn with the stand-in art of
- * src/render/neutral-presentation-v7.ts.
+ * Registered in the live direction registry by the curiosities UI bead
+ * (pulp_wars-737.6, chibiDirectionArtRegistryV7). The classic look and the
+ * LEGACY art set have no curiosity rasters and draw the code markers of
+ * src/render/canvas/curiosity-canvas-v7.ts.
  */
 export const CHIBI_CURIOSITIES_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   {
@@ -149,9 +149,9 @@ export const CHIBI_CURIOSITIES_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
 
 /**
  * Where the Giant Spider touches the ground, measured on its master by
- * scripts/art/unit-shadows/measure.ts: the same measurement as
- * unit-shadow-measurements-v7.generated.ts, which lists only the live
- * registry (a test checks these numbers against the master). The lowest
+ * scripts/art/unit-shadows/measure.ts: the same numbers as its entry in
+ * unit-shadow-measurements-v7.generated.ts, which the board's shadow is
+ * anchored from (a test checks both against the master). The lowest
  * rows hold a single leg tip, so a ground shadow should take its width from
  * the base band (the spread legs), not from the foot band.
  */

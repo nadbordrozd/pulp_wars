@@ -563,3 +563,76 @@ describe("Ruleset 7 Gallery", () => {
     ).toBe("BUILDINGS");
   });
 });
+
+describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
+  it("lists the Giant Spider and the four curiosities on their own tab, without filters", () => {
+    mount();
+    openGallery();
+    const tabs = [...document.querySelectorAll<HTMLElement>('[role="tab"]')];
+    expect(tabs.map((tab) => tab.textContent)).toEqual([
+      "Units",
+      "Buildings",
+      "Curiosities",
+    ]);
+    required<HTMLButtonElement>(
+      '[data-action="gallery-tab-curiosities"]',
+    ).click();
+    expect(document.querySelector(".v7-gallery-filters")).toBeNull();
+    const cells = (): HTMLElement[] => [
+      ...document.querySelectorAll<HTMLElement>(
+        ".v7-gallery-curiosities .v7-gallery-cell",
+      ),
+    ];
+    expect(
+      cells().map((node) => [
+        node.dataset.row,
+        node.querySelector("canvas")?.dataset.subject,
+        node.getAttribute("aria-label"),
+      ]),
+    ).toEqual([
+      ["SPIDER", "UNIT:MONSTER_GIANT_SPIDER", "Giant Spider, neutral"],
+      ["WEB", "CURIOSITY:WEB", "Spider's lair, neutral"],
+      ["FOUNTAIN", "CURIOSITY:FOUNTAIN", "Fountain of Youth, neutral"],
+      ["SHRINE", "CURIOSITY:SHRINE", "Shrine, neutral"],
+      ["WRECK", "CURIOSITY:WRECK", "Sunken Wreck, neutral"],
+    ]);
+    // The keyboard grid: Right and End walk the row.
+    cells()[0]?.focus();
+    key(required('.v7-gallery-cell[data-row="SPIDER"]'), "ArrowRight");
+    expect(document.activeElement).toBe(cells()[1]);
+    key(required('.v7-gallery-cell[data-row="WEB"]'), "End");
+    expect(document.activeElement).toBe(cells()[4]);
+    // The Spider's detail: Neutral, its stats, its sentence and its bounty.
+    cells()[0]?.click();
+    const detail = required(".v7-gallery-detail");
+    expect(required("#v7-gallery-detail-title").textContent).toBe(
+      "Giant Spider",
+    );
+    expect(required(".v7-gallery-detail-kicker").textContent).toBe("Neutral");
+    expect(detail.querySelector(".v7-gallery-detail-faction")).toBeNull();
+    expect(detail.querySelector('[data-stat="hp"]')?.textContent).toContain(
+      "24",
+    );
+    expect(detail.textContent).toContain("pays 10 Coins");
+    expect(detail.dataset.preview).toBe("false");
+    expect(hosts).toHaveLength(0);
+    // Down steps to the lair, then the Fountain; no faction steps.
+    expect(
+      required<HTMLButtonElement>('[data-action="gallery-next-faction"]')
+        .disabled,
+    ).toBe(true);
+    required<HTMLButtonElement>('[data-action="gallery-next-row"]').click();
+    required<HTMLButtonElement>('[data-action="gallery-next-row"]').click();
+    expect(required("#v7-gallery-detail-title").textContent).toBe(
+      "Fountain of Youth",
+    );
+    expect(required(".v7-gallery-description").textContent).toContain(
+      "heals 12 HP",
+    );
+    expect(
+      JSON.parse(
+        window.localStorage.getItem(GALLERY_FILTERS_STORAGE_KEY_V7) ?? "{}",
+      ).tab,
+    ).toBe("CURIOSITIES");
+  });
+});

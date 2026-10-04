@@ -79,8 +79,9 @@ export type ArtSubjectV7 =
  * portrait, the four 80 x 80 tile overlays (the lair web under the Monster's
  * home, the Fountain of Youth, the Shrine and the Sunken Wreck), their
  * legend icons with the bounty icon, the effect sprites and the provoked
- * marker. The assets are in chibi-curiosities-art-manifest.ts, which no
- * game module imports until the curiosities UI bead (pulp_wars-737.6).
+ * marker. The assets are in chibi-curiosities-art-manifest.ts, registered
+ * in the live direction registry by the curiosities UI bead
+ * (pulp_wars-737.6).
  */
 export type CuriosityArtSubjectV7 =
   | "UNIT:MONSTER_GIANT_SPIDER"

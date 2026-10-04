@@ -59,7 +59,14 @@ export type AbilityPreviewStyleV7 =
   | "TUNNEL"
   | "ERUPTION"
   | "BOMB"
-  | "BOMBED";
+  | "BOMBED"
+  /**
+   * Map curiosities (bead pulp_wars-737.6): a selected Giant Spider's area
+   * (outlined only) and the tiles it could attack after one step (shaded),
+   * in the neutral bone white and umber of its art.
+   */
+  | "MONSTER_AREA"
+  | "MONSTER_REACH";
 
 /** Legacy and CHIBI Undead badge frames, relative to the cell centre. */
 export const UNDEAD_BADGE_FRAME_V7 = {
@@ -502,6 +509,9 @@ const STYLE_COLORS: Readonly<
   ERUPTION: { fill: "rgba(160, 122, 82, 0.16)", stroke: "#c99a66" },
   BOMB: { fill: "rgba(222, 111, 42, 0.22)", stroke: "#f2a46a" },
   BOMBED: { fill: "rgba(170, 179, 192, 0.16)", stroke: "#aab3c0" },
+  // Map curiosities: the Spider's bone white (area) and umber (reach).
+  MONSTER_AREA: { fill: "rgba(239, 230, 208, 0)", stroke: "#efe6d0" },
+  MONSTER_REACH: { fill: "rgba(138, 90, 51, 0.3)", stroke: "#efe6d0" },
 };
 
 /** Dark stripes that turn the friendly-fire outline into a hazard band. */

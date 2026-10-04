@@ -1265,6 +1265,86 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   Beam ("Free once a turn" for the Mothership).
 - **Minimal text.** No coordinates anywhere; labels are names, icons and
   numbers.
+- **Curiosities tab** (`pulp_wars-737.6`). A third tab, with no filters and
+  no faction columns (a curiosity belongs to nobody): one row of five
+  cells, the **Giant Spider** on Grass, its **lair**, the **Fountain of
+  Youth**, the **Shrine**, and the **Sunken Wreck** on Shallow Water. A
+  detail shows "Neutral", the curiosity's one sentence, and for the Spider
+  its portrait, its stats (HP, Attack, Defense, Move, Range), its
+  regeneration and its bounty; the down and up arrows step through the
+  five, and there is no animation preview.
+
+## Current Ruleset 7 map curiosities overlay
+
+This overlay (`pulp_wars-737.6`,
+[map curiosities section 12.1](../product/RULESET_7_MAP_CURIOSITIES.md#121-ui))
+applies to the current Ruleset 7 route in both art sets. A match without a
+curiosity or a Giant Spider is presented exactly as before: the board plan,
+the dock, the notices and the effects are untouched (Help gains its
+Curiosities section whenever the match was launched with the option on).
+
+- **Setup.** The **Curiosities** checkbox is a small box beside its label
+  on one row under the Map description (it used to render as a full-width
+  input above the label), with the hint "Rare sights on the map: a
+  wandering monster, a Fountain of Youth, a Shrine, a Wreck." as its
+  tooltip and accessible description.
+- **Tile overlays.** The lair web, the Fountain, the Shrine and the Wreck
+  are 80 px overlays of their cell (plan entries of kind `CURIOSITY`). The
+  web lies on the ground under everything that stands there; the
+  Fountain, the Shrine and the Wreck are drawn like a Treasure chest: over
+  the Forest body of their own cell and under the unit on the tile (the
+  Fountain's rim shows on both sides of a standard unit). The Wreck's
+  lowest hull rows are cut at a waterline and two pale ripple marks are
+  drawn over the cut, so it sits in the water. A web goes with its Spider.
+- **The Giant Spider.** Its own sprite on its measured ground shadow, with
+  no owner colour, flag, seat badge or faction badge; an HP bar when
+  damaged. While a visible unit stands next to it or hurt it, the
+  **provoked marker** (an angry spider face, 16 px) sits in the cell's
+  top-right corner.
+- **Selecting the Spider** (or its tile, or its lair) outlines its area in
+  bone white and shades the tiles it could attack after one step. Its dock
+  shows its portrait, "Giant Spider", the chips **Neutral** and, when
+  provoked, **Provoked**, and its stats (no Sight, no owner line, no
+  commands). Its "?" dialog adds four lines: Neutral (its one sentence),
+  Regenerates, Bounty, and Provoked ("Will attack your Fighter after this
+  round.") or Calm.
+- **Provoke warning.** With an own unit selected, every Move target next
+  to a visible Spider carries the provoked marker in its top-right corner;
+  the cursor description of that tile reads "Ends next to the Giant
+  Spider: it will attack after this round."
+- **Attack preview.** An attack on the Spider adds "The spider will strike
+  back next round" (or "Out of the spider's reach") to the preview label.
+- **Curiosity tiles.** A selected tile with a curiosity shows its legend
+  icon, its name and its one sentence in the tile dock, and the cursor
+  description names it.
+- **Effects** (the effects canvas; reduced motion holds each at its
+  midpoint): the Fountain's white droplets, the heal ring and a green "+N"
+  on the healed unit; the Shrine's white star falling onto the unit it
+  Promotes; gold coins and a gold "+N" for a salvaged Wreck and for the
+  Spider's bounty; the heal ring and "+N" when the Spider regenerates.
+- **Neutral turn.** Played back like an enemy turn inside the End Turn
+  that wraps the round: the camera frames the Spider, it steps and lunges,
+  the hit lands, it regenerates. The usual skip (any input, Fast) and the
+  reduced-motion crossfade apply. The log line is "The wilds stir" plus
+  "Giant Spider attacked your Fighter" (a toast when it hits the viewer's
+  unit); a neutral turn in which the viewer saw nothing says nothing.
+- **Log lines.** "Fountain of Youth: your Fighter +7 HP" (the viewer's own
+  heals only; another player's shows on the board), "Shrine: your
+  Fighter was Promoted", "Wreck salvaged: +8 Coins" (or "Wreck salvaged by
+  Player 2"), "Giant Spider slain: +10 Coins bounty".
+- **Help.** A "Curiosities" section: the four sentences, the bounty and
+  the setup option, each with its legend icon.
+- **LEGACY and the Classic look** have no curiosity rasters: the board
+  draws code markers (a web, a basin with a plume, a stone arch with an
+  idol, a leaning mast over a hull, and for the Spider a neutral disc with
+  a spider), the provoked marker is a dark disc with "!", the dock shows a
+  code-drawn spider, and the legend icons are small code glyphs.
+- **No coordinates.** No text of this overlay names a tile; the provoke
+  warning and the Spider's target name units and curiosities only.
+- **Smoke.** The browser smoke mounts the curiosities fixture on the dev
+  server: every curiosity and the provoked Spider are planned, the dock
+  says "Neutral", a Fighter claims the Shrine, and End Turn plays the
+  neutral turn and the Fountain's heal.
 
 ## Current Ruleset 7 faction buildings overlay
 
@@ -1351,12 +1431,10 @@ both art sets. Where an older section below disagrees, this overlay wins.
   checked by default; its value is the launched setup's `curiosities`. It
   is hidden while Showcase is selected (a Showcase always launches with
   curiosities off) and comes back with its earlier state. Like the seed
-  choice it lasts for the page session. Until the UI step
-  (`pulp_wars-737.6`) adds the board markers, the hint text, and Help, the
-  curiosities of a match are not drawn; the Giant Spider
-  (`pulp_wars-737.3`) appears as an ordinary unit with the base Juggernaut
-  art and no owner colour (its unit panel names it the Giant Spider), and
-  its neutral turn plays with no banner.
+  choice it lasts for the page session. The board, the dock, Help and the
+  neutral turn are in the
+  [map curiosities overlay](#current-ruleset-7-map-curiosities-overlay)
+  (`pulp_wars-737.6`).
 - **Map seed.** Settings shows `Map seed: N` for the current match (selectable
   text), so a map can be replayed by choosing Use seed in a new game. Restart
   and Play again keep the current match's seed; a new game from the resume

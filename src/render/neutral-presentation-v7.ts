@@ -8,11 +8,14 @@ import type { FactionIdV7 } from "../engine/v7/types";
 
 /**
  * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 12.1,
- * `pulp_wars-737.3`): the faction whose art, portrait, and labels a unit is
- * presented with. A seat's unit is presented by its kind (`unitFactionV7`).
- * The neutral Giant Spider has no faction; until the curiosities UI bead
- * draws it, the presentation falls back to the base (Human) art of its
- * mechanical role, with no owner colour (its owner is no player).
+ * `pulp_wars-737.3`): the faction whose faction-keyed labels and cues a unit
+ * is presented with. A seat's unit is presented by its kind
+ * (`unitFactionV7`). The neutral Giant Spider has no faction: it resolves
+ * to the base (Human) registration here, which has no badge, no faction
+ * chip and no faction cue. Its own sprite, portrait, name and dock are
+ * presented by the curiosities UI (`pulp_wars-737.6`,
+ * curiosity-presentation-v7.ts), which every reader checks first
+ * (`isMonsterUnitV7`).
  */
 export function presentedUnitFactionV7(
   roster: FactionRosterV7,

@@ -20,6 +20,7 @@ import {
   armFastForwardExpression,
   stableControlPointExpression,
 } from "./browser-smoke-v7-controls";
+import { probeCuriositiesV7 } from "./browser-smoke-v7-curiosities";
 import { probeGalleryV7 } from "./browser-smoke-v7-gallery";
 import {
   browserTimingModeV7,
@@ -672,6 +673,18 @@ try {
   const martian = await probeMartianMatch(connection);
   const iceFolk = await probeIceFolkMatch(connection);
   const dwarf = await probeDwarfMatch(connection);
+  // Bead pulp_wars-737.6: the map curiosities on their UI fixture (dev
+  // server only; the Showcase probe then loads a fresh front screen).
+  const curiosities = deployed
+    ? "fixture skipped on the deployed bundle"
+    : await probeCuriositiesV7({
+        evaluate: (expression, awaitPromise) =>
+          evaluate(connection, expression, awaitPromise),
+        waitForExpression: (expression, attempts) =>
+          waitForExpression(connection, expression, attempts),
+        pointerClick: (selector) => pointerClick(connection, selector),
+        capture: (name) => capture(connection, name),
+      });
   const showcase = await probeShowcaseMatch(connection);
   // Bead pulp_wars-ic8: the Gallery from the fresh front screen.
   const gallery = await probeGalleryV7({
@@ -765,7 +778,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Curiosities ${curiosities}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {

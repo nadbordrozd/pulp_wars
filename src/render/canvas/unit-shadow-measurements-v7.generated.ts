@@ -675,6 +675,17 @@ export const UNIT_SHADOW_MEASUREMENTS_V7: Readonly<
     baseLeft: 6,
     baseRight: 40,
   },
+  "UNIT:MONSTER_GIANT_SPIDER": {
+    assetId: "chibi-curiosity-giant-spider",
+    assetClass: "GIANT_UNIT",
+    width: 88,
+    height: 72,
+    contactY: 67,
+    footLeft: 18,
+    footRight: 25,
+    baseLeft: 6,
+    baseRight: 81,
+  },
   "UNIT:PATROL_BOAT": {
     assetId: "chibi-naval-human-patrol-boat",
     assetClass: "LARGE_UNIT",

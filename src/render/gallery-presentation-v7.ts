@@ -4,6 +4,8 @@ import {
   EGG_HP_V7,
   FACTION_IDS_V7,
   IMPROVEMENT_IDS_V7,
+  MONSTER_REGENERATION_V7,
+  NEUTRAL_MONSTER_ROLE_RULE_V7,
   ORIGINAL_BASELINE_V5_NODES,
   SPATIAL_ECONOMIC_ACTIONS_V7,
   UNIT_ROLE_IDS_V7,
@@ -22,6 +24,7 @@ import {
   territoryTerrainSubjectV7,
   unitArtSubjectV7,
   type ArtSubjectV7,
+  type CuriosityOverlayIdV7,
 } from "../assets/chibi-art-v7";
 import { factionBuildingV7 } from "./faction-buildings-v7";
 import {
@@ -38,6 +41,13 @@ import { economicFormulaV7 } from "./economy-presentation-v7";
 import { factionNameV7 } from "./undead-presentation-v7";
 import { technologyNameV7 } from "./goblin-presentation-v7";
 import { slotsTextV7 } from "./dinosaur-presentation-v7";
+import {
+  CURIOSITY_LABELS_V7,
+  CURIOSITY_RULES_V7,
+  NEUTRAL_LABEL_V7,
+  SPIDER_BOUNTY_RULE_V7,
+  SPIDER_LABEL_V7,
+} from "./curiosity-presentation-v7";
 
 /**
  * The Gallery (bead pulp_wars-ic8, docs/ui/SCREEN_FLOW.md "Gallery"): every
@@ -50,7 +60,93 @@ import { slotsTextV7 } from "./dinosaur-presentation-v7";
 /** Every registered faction, in the frozen order. */
 export const GALLERY_FACTIONS_V7: readonly FactionIdV7[] = FACTION_IDS_V7;
 
-export type GalleryTabV7 = "UNITS" | "BUILDINGS";
+/**
+ * CURIOSITIES (bead pulp_wars-737.6): a small third tab for what belongs to
+ * no faction: the Giant Spider, its lair, the Fountain of Youth, the Shrine
+ * and the Sunken Wreck.
+ */
+export type GalleryTabV7 = "UNITS" | "BUILDINGS" | "CURIOSITIES";
+
+/** A Curiosities cell: the neutral Giant Spider or a tile overlay. */
+export type GalleryCuriosityRowIdV7 = "SPIDER" | CuriosityOverlayIdV7;
+
+export const GALLERY_CURIOSITY_ROWS_V7: readonly GalleryCuriosityRowIdV7[] = [
+  "SPIDER",
+  "WEB",
+  "FOUNTAIN",
+  "SHRINE",
+  "WRECK",
+];
+
+export interface GalleryCuriosityCellV7 {
+  readonly row: GalleryCuriosityRowIdV7;
+  readonly name: string;
+  readonly subject: ArtSubjectV7;
+  readonly ground: ArtSubjectV7;
+  readonly portrait: ArtSubjectV7 | null;
+}
+
+export function galleryCuriosityCellV7(
+  row: GalleryCuriosityRowIdV7,
+): GalleryCuriosityCellV7 {
+  if (row === "SPIDER")
+    return {
+      row,
+      name: SPIDER_LABEL_V7,
+      subject: "UNIT:MONSTER_GIANT_SPIDER",
+      ground: "TERRAIN:GRASS",
+      portrait: "PORTRAIT:MONSTER_GIANT_SPIDER",
+    };
+  return {
+    row,
+    name: CURIOSITY_LABELS_V7[row],
+    subject: `CURIOSITY:${row}`,
+    ground: row === "WRECK" ? "TERRAIN:SHALLOW_WATER" : "TERRAIN:GRASS",
+    portrait: null,
+  };
+}
+
+export interface GalleryCuriosityDetailsV7 {
+  readonly name: string;
+  /** "Neutral": a curiosity belongs to nobody. */
+  readonly kicker: string;
+  /** The curiosity's one sentence. */
+  readonly description: string;
+  readonly stats: readonly { readonly label: string; readonly value: string }[];
+  readonly notes: readonly string[];
+}
+
+/** The detail texts of a curiosity (the Help sentences reused). */
+export function galleryCuriosityDetailsV7(
+  row: GalleryCuriosityRowIdV7,
+): GalleryCuriosityDetailsV7 {
+  const cell = galleryCuriosityCellV7(row);
+  if (row !== "SPIDER")
+    return {
+      name: cell.name,
+      kicker: NEUTRAL_LABEL_V7,
+      description: CURIOSITY_RULES_V7[row],
+      stats: [],
+      notes: [],
+    };
+  const rule = NEUTRAL_MONSTER_ROLE_RULE_V7;
+  return {
+    name: cell.name,
+    kicker: NEUTRAL_LABEL_V7,
+    description: CURIOSITY_RULES_V7.WEB,
+    stats: [
+      { label: "HP", value: String(rule.maxHp) },
+      { label: "Attack", value: String(rule.attack2 / 2) },
+      { label: "Defense", value: String(rule.defense2 / 2) },
+      { label: "Move", value: String(rule.move) },
+      { label: "Range", value: String(rule.range) },
+    ],
+    notes: [
+      `Regenerates ${MONSTER_REGENERATION_V7} HP after every round.`,
+      SPIDER_BOUNTY_RULE_V7,
+    ],
+  };
+}
 
 /**
  * A Units row: a mechanical role of every faction, the embarked transport
@@ -90,11 +186,16 @@ const ROW_LABELS: Readonly<Record<string, string>> = {
   CITY_2: "City 2",
   CITY_3: "City 3",
   LUMBER_CAMP: "Lumber Camp",
+  SPIDER: SPIDER_LABEL_V7,
+  WEB: CURIOSITY_LABELS_V7.WEB,
+  FOUNTAIN: CURIOSITY_LABELS_V7.FOUNTAIN,
+  SHRINE: CURIOSITY_LABELS_V7.SHRINE,
+  WRECK: CURIOSITY_LABELS_V7.WRECK,
 };
 
-/** The row's name: the mechanical role, building or form. */
+/** The row's name: the mechanical role, building, form or curiosity. */
 export function galleryRowLabelV7(
-  row: GalleryUnitRowIdV7 | GalleryBuildingRowIdV7,
+  row: GalleryUnitRowIdV7 | GalleryBuildingRowIdV7 | GalleryCuriosityRowIdV7,
 ): string {
   return ROW_LABELS[row] ?? title(row);
 }
@@ -525,7 +626,10 @@ export function parseGalleryFiltersV7(
     return DEFAULT_GALLERY_FILTERS_V7;
   const record = parsed as Record<string, unknown>;
   return {
-    tab: record.tab === "BUILDINGS" ? "BUILDINGS" : "UNITS",
+    tab:
+      record.tab === "BUILDINGS" || record.tab === "CURIOSITIES"
+        ? record.tab
+        : "UNITS",
     factions:
       knownList(record.factions, GALLERY_FACTIONS_V7) ??
       DEFAULT_GALLERY_FILTERS_V7.factions,

@@ -57,6 +57,7 @@ import {
   martianMobilityFixtureV7,
   martianUiFixtureV7,
 } from "../fixtures/v7-martian-ui";
+import { curiositiesUiFixtureV7 } from "../fixtures/v7-curiosities-ui";
 import { riftUiFixtureV7 } from "../fixtures/v7-rift-ui";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
 
@@ -153,6 +154,9 @@ const FIXTURES: readonly (readonly [
   ["Undead showcase", undeadShowcaseFixtureV7, []],
   ["Goblin showcase", goblinShowcaseFixtureV7, ["kaboom"]],
   ["Rift", riftUiFixtureV7, []],
+  // Map curiosities (bead pulp_wars-737.6): the Spider, its lair, the
+  // Fountain, the Shrine and the Wreck; the provoke warning on Moves.
+  ["Curiosities", () => curiositiesUiFixtureV7(), []],
 ];
 
 beforeEach(() => {

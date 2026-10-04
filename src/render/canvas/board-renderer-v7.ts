@@ -30,6 +30,26 @@ import {
 } from "../../engine/index";
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import {
+  MONSTER_OUT_OF_REACH_V7,
+  MONSTER_RETALIATES_V7,
+  PROVOKE_MOVE_WARNING_V7,
+  SPIDER_LABEL_V7,
+  isMonsterUnitV7,
+  monsterProvokedV7,
+  moveProvokesMonsterV7,
+} from "../curiosity-presentation-v7";
+import {
+  SPIDER_CODE_ART_ID_V7,
+  WRECK_WATERLINE_ROW_V7,
+  addCuriosityEntriesV7,
+  drawCodeSpiderV7,
+  drawCuriosityMarkerV7,
+  drawProvokedMarkerV7,
+  drawWreckRipplesV7,
+  type MonsterUnitMarkerV7,
+} from "./curiosity-canvas-v7";
+import type { CuriosityOverlayIdV7 } from "../../assets/chibi-art-v7";
+import {
   dinosaurCombatNoteV7,
   dinosaurCombatSemanticNoteV7,
   hatchBlockedEggsV7,
@@ -343,6 +363,12 @@ export interface MapCommandTargetV7 {
   readonly previewLabel?: string;
   readonly semanticLabel?: string;
   /**
+   * Map curiosities (bead pulp_wars-737.6): this Move ends next to a
+   * visible Giant Spider, which will attack the unit after this round. The
+   * tile carries the provoked marker; `semanticLabel` says the sentence.
+   */
+  readonly provokes?: true;
+  /**
    * Revision 13: Lifesteal and Infect outcome line (Undead matches only);
    * revision 17 adds "Gang Up +N" (Goblin matches only).
    */
@@ -470,6 +496,8 @@ export interface BoardRenderPlanEntryV7 {
     | "FIELD_DEFENSE"
     | "SITE"
     | "TREASURE"
+    /** Map curiosities: the lair web, the Fountain, the Shrine, the Wreck. */
+    | "CURIOSITY"
     | "CITY"
     | "UNIT"
     | "VALUE"
@@ -590,6 +618,10 @@ export interface BoardRenderPlanEntryV7 {
    * burrowed Mole or its rider, drawn where the unit would stand.
    */
   readonly dwarfMound?: DwarfMoundMarkerV7;
+  /** CURIOSITY only (bead pulp_wars-737.6): which tile overlay this is. */
+  readonly curiosity?: CuriosityOverlayIdV7;
+  /** UNIT only: the neutral Giant Spider and its provoked marker. */
+  readonly monster?: MonsterUnitMarkerV7;
 }
 
 export interface BoardRenderPlanV7 {
@@ -837,6 +869,10 @@ export function buildBoardRenderPlanV7(
       artSubject: "TREASURE",
       label: "Treasure",
     });
+  // Map curiosities (bead pulp_wars-737.6): the lair web, the Fountain, the
+  // Shrine and the Wreck, and a selected Spider's area and reach. A view
+  // without a curiosity or a Monster adds nothing.
+  addCuriosityEntriesV7(entries, view, interaction.selection);
   // Revision 13 Graves are a small corner marker (playtest round 3,
   // pulp_wars-6gd.4) drawn above every piece, so a unit standing on the
   // Grave never hides it. On a city tile the marker moves clear of the
@@ -889,6 +925,9 @@ export function buildBoardRenderPlanV7(
     if (bittenIds.has(unit.id)) afflictions.push("BITTEN");
     const egg = unit.form === "EGG";
     const growthStage = unitGrowthStageV7(view, unit);
+    // Map curiosities: the neutral Giant Spider has its own sprite (a
+    // code-drawn disc in LEGACY), its own name and no owner colour.
+    const monster = isMonsterUnitV7(unit);
     entries.push({
       key: `unit:${unit.id}`,
       kind: "UNIT",
@@ -899,17 +938,22 @@ export function buildBoardRenderPlanV7(
       hp: unit.hp,
       maxHp: unit.maxHp,
       // The Egg has no legacy raster: LEGACY draws it in code.
-      assetId: egg
-        ? EGG_CODE_ART_ID_V7
-        : unit.form === "EMBARKED" && !machine
-          ? "unit-shared-embarked-transport"
-          : RULESET7_UNIT_ART_IDS[unit.role],
+      assetId: monster
+        ? SPIDER_CODE_ART_ID_V7
+        : egg
+          ? EGG_CODE_ART_ID_V7
+          : unit.form === "EMBARKED" && !machine
+            ? "unit-shared-embarked-transport"
+            : RULESET7_UNIT_ART_IDS[unit.role],
       // Undead and Goblin land units ask for their own art first
       // (UNIT:<FACTION>:<ROLE>); without it the renderer falls back to the
       // Human sprite plus the faction badge.
-      artSubject: unitArtSubjectV7({ ...unit, faction, machine }),
-      label:
-        unit.form === "EMBARKED" && machine
+      artSubject: monster
+        ? "UNIT:MONSTER_GIANT_SPIDER"
+        : unitArtSubjectV7({ ...unit, faction, machine }),
+      label: monster
+        ? SPIDER_LABEL_V7
+        : unit.form === "EMBARKED" && machine
           ? `${factionLabel ?? title(unit.role)} afloat`
           : unit.form === "EMBARKED"
             ? `Embarked Transport · ${factionLabel ?? title(unit.role)} passenger`
@@ -928,6 +972,9 @@ export function buildBoardRenderPlanV7(
       ...(iceFolk === undefined ? {} : { iceFolk }),
       ...(ringWitch?.id === unit.id ? { blizzardRing: true as const } : {}),
       ...(dwarf === undefined ? {} : { dwarf }),
+      ...(monster
+        ? { monster: { provoked: monsterProvokedV7(view, unit.id) } }
+        : {}),
     });
   }
   // The Dwarf revision (section 5.3): every visible mound, where its unit
@@ -2008,6 +2055,66 @@ export function drawBoardV7(input: {
         );
         continue;
       }
+      if (entry.kind === "CURIOSITY") {
+        // Map curiosities: the registered overlay on its cell (the live
+        // look), or the code-drawn marker (LEGACY, the classic look, a
+        // raster that failed).
+        const chibi = resolveChibi(entry);
+        if (chibi !== null && chibi.kind === "READY") {
+          const rect = chibiDestinationRect(
+            { x, y },
+            camera,
+            chibi.asset,
+            devicePixelRatio,
+          );
+          const wreck = entry.curiosity === "WRECK";
+          const waterline =
+            rect.y +
+            (rect.height * WRECK_WATERLINE_ROW_V7) / chibi.asset.height;
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          context.imageSmoothingEnabled = chibi.smoothing;
+          if (wreck) {
+            // The hull's lowest rows are cut at a waterline.
+            context.beginPath();
+            context.rect(rect.x, rect.y, rect.width, waterline - rect.y);
+            context.clip();
+          }
+          context.drawImage(
+            chibi.image,
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height,
+          );
+          context.restore();
+          if (wreck) {
+            context.save();
+            context.globalAlpha = sceneAlpha;
+            drawWreckRipplesV7(
+              context,
+              rect.x + rect.width / 2,
+              waterline,
+              rect.width * 0.36,
+              chibiMasterScale(camera),
+            );
+            context.restore();
+          }
+        } else if (chibi === null || chibi.kind === "MISSING") {
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawCuriosityMarkerV7(
+            context,
+            x,
+            y,
+            camera.zoom,
+            entry.curiosity ?? "WEB",
+            input.highContrast ?? false,
+          );
+          context.restore();
+        }
+        continue;
+      }
       if (entry.kind === "GRAVE") {
         const chibi = chibiArt !== undefined;
         const slot = entry.attachmentSlot ?? 0;
@@ -2433,7 +2540,28 @@ export function drawBoardV7(input: {
           rider: entry.dwarfMound.rider,
           highContrast: input.highContrast ?? false,
         });
+      // Map curiosities: LEGACY and the classic look have no Spider raster,
+      // so the Spider is a neutral disc with a spider, drawn in code.
+      if (entry.kind === "UNIT" && entry.monster !== undefined && !chibiPiece)
+        drawCodeSpiderV7(context, x, y, camera.zoom, input.highContrast);
       const drawPieceOverlays = (): void => {
+        // Map curiosities: the provoked marker in the cell's top-right
+        // corner (16 master px), over the Spider.
+        if (entry.kind === "UNIT" && entry.monster?.provoked === true) {
+          const marker = chibiArt?.resolve({
+            subject: "STATUS:PROVOKED",
+            at: entry.at,
+            deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+          });
+          drawProvokedMarkerV7(
+            context,
+            x + 46 * camera.zoom,
+            y - 46 * camera.zoom,
+            25.6 * camera.zoom,
+            marker?.kind === "READY" ? marker.image : null,
+            devicePixelRatio,
+          );
+        }
         const directed =
           direction === undefined || !chibiPiece
             ? null
@@ -3140,6 +3268,23 @@ export function drawBoardV7(input: {
       defer,
       focusNoteAt !== undefined && same(focusNoteAt, target.at),
     );
+    // Map curiosities: a Move that ends next to the Spider carries the
+    // provoked marker in the tile's top-right corner.
+    if (target.target?.provokes === true) {
+      const marker = chibiArt?.resolve({
+        subject: "STATUS:PROVOKED",
+        at: target.at,
+        deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+      });
+      drawProvokedMarkerV7(
+        context,
+        camera.offsetX + (target.at.x * TILE_WIDTH + 44) * camera.zoom,
+        camera.offsetY + (target.at.y * TILE_HEIGHT - 44) * camera.zoom,
+        25.6 * camera.zoom,
+        marker?.kind === "READY" ? marker.image : null,
+        devicePixelRatio,
+      );
+    }
   }
   if (!goblinAreaFirst) drawAreaPreviews();
   for (const entry of input.plan.entries) {
@@ -4500,6 +4645,7 @@ function commandMapTargets(
   const martianMatch = matchHasMartianV7(view);
   const iceFolkMatch = matchHasIceFolkSeatV7(view);
   const dwarfMatch = matchHasDwarfSeatV7(view);
+  const monsterMatch = view.monsters.length > 0;
   return commands.flatMap((command): readonly MapCommandTargetV7[] => {
     if (selectedUnitId === null) return [];
     // Revision 19: an adjacent own Egg the selected Shaman may hatch.
@@ -4526,6 +4672,8 @@ function commandMapTargets(
       // half-cost steps from Snow onto Snow is outlined in pale ice.
       const glide =
         launch === null && iceFolkMatch && moveIsGlideV7(view, command);
+      // Map curiosities: a Move that ends on a Spider's provoke tiles.
+      const provokes = monsterMatch && moveProvokesMonsterV7(view, command);
       return at === undefined
         ? []
         : [
@@ -4543,6 +4691,17 @@ function commandMapTargets(
                   }),
               ...(glide
                 ? { glide: true as const, semanticLabel: GLIDE_MOVE_LABEL_V7 }
+                : {}),
+              ...(provokes
+                ? {
+                    provokes: true as const,
+                    semanticLabel:
+                      launch !== null
+                        ? `${launch}. Ends this unit's turn afloat. ${PROVOKE_MOVE_WARNING_V7}`
+                        : glide
+                          ? `${GLIDE_MOVE_LABEL_V7}. ${PROVOKE_MOVE_WARNING_V7}`
+                          : PROVOKE_MOVE_WARNING_V7,
+                  }
                 : {}),
             },
           ];
@@ -4610,7 +4769,17 @@ function commandMapTargets(
       const dwarf = dwarfMatch
         ? dwarfAttackTargetExtrasV7(view, preview)
         : null;
+      // Map curiosities (section 10.4): whether the Spider strikes back.
+      const monsterNote =
+        preview?.monsterRetaliates === undefined
+          ? null
+          : preview.monsterRetaliates
+            ? MONSTER_RETALIATES_V7
+            : preview.defenderDies || preview.attackerDies
+              ? null
+              : MONSTER_OUT_OF_REACH_V7;
       const noteParts = [
+        monsterNote,
         undeadNote,
         goblin?.gangUp ?? null,
         dinosaurNote,
@@ -4620,6 +4789,7 @@ function commandMapTargets(
       ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [
+        monsterNote === null ? null : `${monsterNote}.`,
         undeadSemanticNote,
         goblin?.semantic ?? null,
         dinosaurMatch && preview !== null

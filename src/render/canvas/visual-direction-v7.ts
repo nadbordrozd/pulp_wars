@@ -894,10 +894,15 @@ export function createDirectedChibiArtV7(input: {
         // Undead (bead pulp_wars-3tq.12): the direction's own effect sprites
         // (the violet Wail, splash, Raise Dead hands and spirit wisp) are
         // drawn where it registers one; every other subject is unchanged.
+        // Map curiosities (bead pulp_wars-737.6): the tile overlays and the
+        // provoked marker are registered only in the direction's registry
+        // and drawn as authored (faction-less, no owner colour, no tone).
         if (
           input.samples !== undefined &&
           direction.unit.samples &&
-          request.subject.startsWith("EFFECT:")
+          (request.subject.startsWith("EFFECT:") ||
+            request.subject.startsWith("CURIOSITY:") ||
+            request.subject === "STATUS:PROVOKED")
         ) {
           const sample = input.samples.resolve(request);
           if (sample.kind !== "MISSING") return sample;

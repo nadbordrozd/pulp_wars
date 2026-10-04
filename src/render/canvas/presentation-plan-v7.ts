@@ -166,6 +166,8 @@ export type CorePresentationStepV7 =
        * Recover (one step for every unit that recovers) sits between.
        */
       readonly durationMs: 320 | 480 | 640;
+      /** A cue of the neutral turn: the camera frames it, like enemy moves. */
+      readonly followCamera?: true;
     }
   | {
       readonly kind: "WINDMILL_HEALING";
@@ -232,7 +234,17 @@ export type SupportEffectV7 =
    * its owner's End Turn. Consecutive recoveries share one step, so an End
    * Turn plays every idle recovery at once.
    */
-  | "RECOVER";
+  | "RECOVER"
+  /**
+   * Map curiosities (bead pulp_wars-737.6): the Fountain of Youth's heal
+   * (white droplets and a rising "+N"), a Shrine's blessing on the unit it
+   * Promotes (a white star), a salvaged Wreck's coins and the Giant
+   * Spider's bounty (gold coins and a rising "+N").
+   */
+  | "FOUNTAIN"
+  | "BLESSING"
+  | "SALVAGE"
+  | "BOUNTY";
 
 /**
  * The Mind Control revision: how long the control halo takes to shatter
@@ -255,8 +267,15 @@ export function corePresentationPlanV7(
   after: PlayerViewV7 = before,
 ): readonly CorePresentationStepV7[] {
   const steps: CorePresentationStepV7[] = [];
-  const enemyTurn =
+  const seatTurn =
     before.turnOrder[before.activeSeatIndex] !== before.viewer.id;
+  // Map curiosities (section 8.5): the neutral turn inside the END_TURN
+  // that wraps a round (the viewer's own, when the viewer is last) is
+  // played back like an enemy's turn: the camera follows the Spider.
+  let enemyTurn = seatTurn;
+  let neutralTurn = false;
+  /** Monsters the camera already framed in this neutral turn. */
+  const framedMonsters = new Set<number>();
   const explored = new Set(
     [...before.board.tiles, ...after.board.tiles]
       .filter((tile) => tile.explored)
@@ -402,7 +421,70 @@ export function corePresentationPlanV7(
       : [],
   );
   for (const event of envelope.events) {
-    if (event.kind === "WINDMILL_HEALING_RESOLVED") {
+    if (event.kind === "NEUTRAL_TURN_STARTED") {
+      enemyTurn = true;
+      neutralTurn = true;
+    } else if (event.kind === "NEUTRAL_TURN_ENDED") {
+      enemyTurn = seatTurn;
+      neutralTurn = false;
+    } else if (event.kind === "FOUNTAIN_HEALED") {
+      // Map curiosities: white droplets and "+N" on the healed unit.
+      if (isExplored(event.at))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "FOUNTAIN",
+          actor: { unitId: event.unitId, at: event.at, amount: event.amount },
+          recipients: [],
+          durationMs: 640,
+        });
+    } else if (event.kind === "SHRINE_CLAIMED") {
+      // The blessing falls on the unit the Shrine Promotes.
+      if (isExplored(event.at))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "BLESSING",
+          actor: { unitId: event.unitId, at: event.at },
+          recipients: [],
+          durationMs: 640,
+        });
+    } else if (event.kind === "WRECK_SALVAGED") {
+      if (isExplored(event.at))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "SALVAGE",
+          actor: { unitId: event.unitId, at: event.at, amount: event.coins },
+          recipients: [],
+          durationMs: 640,
+        });
+    } else if (event.kind === "MONSTER_BOUNTY_AWARDED") {
+      // Owner only: the coins rise where the Spider fell.
+      const spider = before.units.find((unit) => unit.id === event.unitId);
+      if (spider !== undefined && isExplored(spider.at))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "BOUNTY",
+          actor: { unitId: null, at: spider.at, amount: event.coins },
+          recipients: [],
+          durationMs: 640,
+        });
+    } else if (event.kind === "MONSTER_REGENERATED") {
+      // The Spider regenerates at the end of the neutral turn: the heal
+      // ring and its "+N", like a Troll's.
+      const spider =
+        after.units.find((unit) => unit.id === event.unitId) ??
+        before.units.find((unit) => unit.id === event.unitId);
+      if (spider !== undefined && isExplored(spider.at))
+        steps.push({
+          kind: "SUPPORT",
+          effect: "REGENERATE",
+          actor: { unitId: spider.id, at: spider.at, amount: event.amount },
+          recipients: [],
+          durationMs: 480,
+          ...(framedMonsters.has(spider.id)
+            ? {}
+            : { followCamera: true as const }),
+        });
+    } else if (event.kind === "WINDMILL_HEALING_RESOLVED") {
       if (
         !healingAdded &&
         healingSources.length > 0 &&
@@ -454,6 +536,7 @@ export function corePresentationPlanV7(
         });
       const destination = event.path.at(-1);
       if (destination !== undefined) origins.set(event.unitId, destination);
+      if (neutralTurn) framedMonsters.add(event.unitId);
     } else if (
       event.kind === "UNIT_PUSHED" &&
       knockbackSources.has(event.sourceUnitId)
@@ -714,6 +797,22 @@ export function corePresentationPlanV7(
         (unit) => unit.id === event.preview.targetUnitId,
       );
       if (attacker === undefined || defender === undefined) continue;
+      // Map curiosities: a Spider that attacks without a step is framed
+      // first, so its attack is seen.
+      if (
+        neutralTurn &&
+        !framedMonsters.has(attacker.id) &&
+        isExplored(attacker.at)
+      ) {
+        framedMonsters.add(attacker.id);
+        steps.push({
+          kind: "MOVE",
+          unitId: attacker.id,
+          path: [origins.get(attacker.id) ?? attacker.at],
+          durationMs: 1,
+          followCamera: true,
+        });
+      }
       // The Mind Control revision: an attack looks like its kind's.
       const attackerFaction = kindOf(before, attacker);
       // Revision 19: the Triceratops (a Dinosaur CATAPULT role) is a melee
@@ -776,7 +875,11 @@ export function corePresentationPlanV7(
                 ? "RANGED"
                 : "MELEE",
           unitId: attacker.id,
-          from: attacker.at,
+          // The Spider steps and attacks in one boundary: it lunges from
+          // the tile it stepped to.
+          from: neutralTurn
+            ? (origins.get(attacker.id) ?? attacker.at)
+            : attacker.at,
           to: defender.at,
           durationMs: ranged || rockfall ? 280 : 230,
           ...(bomb

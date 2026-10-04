@@ -79,6 +79,20 @@ import {
   type FactionIdV7,
 } from "../../engine/index";
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
+import { curiosityGlyphV7, spiderFigureV7 } from "./curiosity-dom-v7";
+import {
+  CURIOSITIES_SETUP_HINT_V7,
+  CURIOSITY_LABELS_V7,
+  CURIOSITY_RULES_V7,
+  NEUTRAL_LABEL_V7,
+  curiosityBoundaryNoticeV7,
+  curiosityHelpRulesV7,
+  curiosityIconSubjectV7,
+  curiosityOverlayOnTileV7,
+  isMonsterUnitV7,
+  matchOffersCuriositiesV7,
+  monsterInfoLinesV7,
+} from "../curiosity-presentation-v7";
 import {
   endTurnRecoveryLabelV7,
   idleRecoveryChipV7,
@@ -1007,6 +1021,22 @@ export class Ruleset7DomAppView {
     };
   }
 
+  /**
+   * Map curiosities: a legend icon (the live look's raster, or the
+   * code-drawn glyph in LEGACY and the classic look).
+   */
+  #curiosityIcon(
+    id: Parameters<typeof curiosityIconSubjectV7>[0],
+  ): HTMLElement | SVGElement {
+    const image = this.#chibiArt(
+      curiosityIconSubjectV7(id),
+      CHIBI_DOM_BOXES_V7.passenger,
+    )?.element;
+    if (image === undefined) return curiosityGlyphV7(this.#document, id);
+    image.classList.add("v7-curiosity-icon");
+    return image;
+  }
+
   /** The interface art of the current look; only called for the CHIBI set. */
   #interfaceArt(): ChibiDomArtV7 {
     const directed = this.#chibiDom;
@@ -1670,16 +1700,18 @@ export class Ruleset7DomAppView {
 
   /**
    * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 3):
-   * one checkbox, "Curiosities", checked by default. Until the board draws
-   * them (`pulp_wars-737.6`) the curiosities are not shown on the board.
+   * one checkbox, "Curiosities", checked by default, beside its label on
+   * one row, with the hint as its tooltip and accessible description.
    */
   #curiositiesChoice(): HTMLElement {
     const label = this.#document.createElement("label");
     label.className = "v7-curiosities-choice";
+    label.title = CURIOSITIES_SETUP_HINT_V7;
     const input = this.#document.createElement("input");
     input.type = "checkbox";
     input.id = "v7-curiosities";
     input.checked = this.#draft.curiosities;
+    input.setAttribute("aria-description", CURIOSITIES_SETUP_HINT_V7);
     label.append(input, this.#document.createTextNode(" Curiosities"));
     return label;
   }
@@ -2330,11 +2362,16 @@ export class Ruleset7DomAppView {
       // Mind Control revision: through its kind (`unitFactionV7`).
       const unitFaction = presentedUnitFactionV7(view, unit);
       const unitBadge: FactionBadgeV7 = factionBadgeV7(unitFaction);
-      const unitSubject = unitArtSubjectV7({
-        ...unit,
-        faction: unitFaction,
-        machine,
-      });
+      // Map curiosities: the neutral Giant Spider shows its portrait (a
+      // code-drawn spider in LEGACY and the classic look) and no badge.
+      const monster = isMonsterUnitV7(unit);
+      const unitSubject: ArtSubjectV7 = monster
+        ? "PORTRAIT:MONSTER_GIANT_SPIDER"
+        : unitArtSubjectV7({
+            ...unit,
+            faction: unitFaction,
+            machine,
+          });
       const transportArt = unit.form === "EMBARKED" && !machine;
       const unitColour = this.#playerColour(view, unit.ownerId);
       const dockArt = this.#chibiArt(
@@ -2347,7 +2384,9 @@ export class Ruleset7DomAppView {
       const eggFigure =
         egg && dockArt === null
           ? eggFigureV7(this.#document, unitColour)
-          : undefined;
+          : monster && dockArt === null
+            ? spiderFigureV7(this.#document)
+            : undefined;
       dock.append(
         identity(
           this.#document,
@@ -2381,6 +2420,34 @@ export class Ruleset7DomAppView {
             );
       }
       const identityColumn = dock.querySelector<HTMLElement>(".v7-identity");
+      // Map curiosities (section 12.1): the Spider belongs to nobody.
+      const monsterLines = monster ? monsterInfoLinesV7(view, unit.id) : [];
+      if (monster) {
+        const neutral = text(
+          this.#document,
+          "span",
+          NEUTRAL_LABEL_V7,
+          "v7-chip v7-neutral-chip",
+        );
+        neutral.dataset.unitStatus = "neutral";
+        identityColumn?.append(neutral);
+        const provoked = monsterLines.find((line) => line.id === "provoked");
+        if (provoked !== undefined) {
+          const cue = text(
+            this.#document,
+            "span",
+            provoked.name,
+            "v7-chip v7-neutral-chip",
+          );
+          cue.dataset.unitStatus = "provoked";
+          cue.title = provoked.description;
+          cue.setAttribute(
+            "aria-label",
+            `${provoked.name}. ${provoked.description}`,
+          );
+          identityColumn?.append(cue);
+        }
+      }
       if (unitBadge !== null) {
         const faction = text(
           this.#document,
@@ -2820,6 +2887,8 @@ export class Ruleset7DomAppView {
         for (const stat of stats.stats) {
           // An Egg cannot move or fight: only its HP and Defense matter.
           if (egg && stat.id !== "HP" && stat.id !== "DEFENSE") continue;
+          // The Giant Spider explores nothing: it has no Sight.
+          if (monster && stat.id === "SIGHT") continue;
           const exact = stat.visibility !== "BASE_ONLY";
           const value = el(this.#document, "dd", "v7-stat-value");
           value.append(
@@ -3023,6 +3092,17 @@ export class Ruleset7DomAppView {
               "span",
               "Shots also hit enemies next to the target for half damage.",
             ),
+          );
+          abilities.append(entry);
+        }
+        // Map curiosities: the Spider's one sentence, its regeneration, its
+        // bounty and whom it will attack.
+        for (const line of monsterLines) {
+          const entry = el(this.#document, "p", "v7-unit-ability");
+          entry.dataset.curiosityInfo = line.id;
+          entry.append(
+            text(this.#document, "strong", line.name),
+            text(this.#document, "span", line.description),
           );
           abilities.append(entry);
         }
@@ -3300,13 +3380,15 @@ export class Ruleset7DomAppView {
             helpArt?.element ??
               (egg
                 ? eggFigureV7(this.#document, unitColour)
-                : art(
-                    this.#document,
-                    transportArt
-                      ? "unit-shared-embarked-transport"
-                      : RULESET7_UNIT_ART_IDS[unit.role],
-                    "",
-                  )),
+                : monster
+                  ? spiderFigureV7(this.#document)
+                  : art(
+                      this.#document,
+                      transportArt
+                        ? "unit-shared-embarked-transport"
+                        : RULESET7_UNIT_ART_IDS[unit.role],
+                      "",
+                    )),
             helpArt?.factionArt === true || egg ? null : unitBadge,
           ),
           text(this.#document, "h2", roleLabel),
@@ -3675,6 +3757,19 @@ export class Ruleset7DomAppView {
           chip.title = tooltip;
           chip.setAttribute("aria-label", tooltip);
           details.append(chip);
+        }
+        // Map curiosities (section 12.1): the tile's curiosity, named, with
+        // its one sentence and its legend icon.
+        const curiosity = curiosityOverlayOnTileV7(view, tile.at);
+        if (curiosity !== null) {
+          const info = el(this.#document, "section", "v7-curiosity-info");
+          info.dataset.curiosity = curiosity.toLowerCase();
+          info.append(
+            this.#curiosityIcon(curiosity),
+            text(this.#document, "strong", CURIOSITY_LABELS_V7[curiosity]),
+            text(this.#document, "p", CURIOSITY_RULES_V7[curiosity]),
+          );
+          details.append(info);
         }
         if (view.graves.some((grave) => same(grave, tile.at))) {
           const grave = text(this.#document, "p", "Grave", "v7-chip");
@@ -4530,6 +4625,29 @@ export class Ruleset7DomAppView {
         rules.append(item);
       }
       section.append(text(this.#document, "h3", "Dwarves"), rules);
+    }
+    // Map curiosities (section 12.1): the four sentences, the bounty and
+    // the setup option, each with its legend icon, in a match that was
+    // launched with the option on.
+    if (view !== null && matchOffersCuriositiesV7(view)) {
+      const rules = this.#document.createElement("ul");
+      rules.className = "v7-help-tips v7-help-goblin v7-help-curiosities";
+      for (const rule of curiosityHelpRulesV7()) {
+        const item = el(this.#document, "li", "v7-help-rule");
+        const body = el(this.#document, "span", "v7-help-rule-text");
+        body.append(
+          text(this.#document, "strong", `${rule.name}:`),
+          ` ${rule.rule}`,
+        );
+        item.append(
+          rule.icon === null
+            ? el(this.#document, "span", "v7-curiosity-icon")
+            : this.#curiosityIcon(rule.icon),
+          body,
+        );
+        rules.append(item);
+      }
+      section.append(text(this.#document, "h3", "Curiosities"), rules);
     }
     section.append(text(this.#document, "h3", "Keyboard"), keys);
     return section;
@@ -8508,7 +8626,11 @@ function boundaryNoticeV7(
   // The Dwarf revision: a tunnel, an eruption, a bomb, an Assemble, a
   // Repair, a Knockback, Undermined Field Defense.
   const dwarf = dwarfBoundaryNoticeV7(events, before, after);
+  // Map curiosities: a Fountain heal, a Shrine claim, a salvaged Wreck, the
+  // Spider's death and bounty, and the neutral turn.
+  const curiosity = curiosityBoundaryNoticeV7(events, before, after);
   const parts = [
+    curiosity?.text ?? null,
     undead?.text ?? null,
     goblin?.text ?? null,
     dinosaur?.text ?? null,
@@ -8523,7 +8645,8 @@ function boundaryNoticeV7(
     dinosaur === null &&
     martian === null &&
     iceFolk === null &&
-    dwarf === null
+    dwarf === null &&
+    curiosity === null
   )
     return { text: special, toast: special !== null };
   return {
@@ -8535,7 +8658,8 @@ function boundaryNoticeV7(
       dinosaur?.toast === true ||
       martian?.toast === true ||
       iceFolk?.toast === true ||
-      dwarf?.toast === true,
+      dwarf?.toast === true ||
+      curiosity?.toast === true,
   };
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {

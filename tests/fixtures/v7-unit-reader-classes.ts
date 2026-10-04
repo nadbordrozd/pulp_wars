@@ -325,6 +325,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/headless/v7.ts::recordEventsV7": "ALL",
     "src/headless/v7.ts::recordMartianV7": "BOARD",
     "src/headless/v7.ts::recordSnapshotV7": "BOARD",
+    // Map curiosities UI (`pulp_wars-737.6`): the Spider's area and reach,
+    // its dock lines and the log lines read what stands on the board (the
+    // view's `units`; a burrowed unit is never a visible provoker).
+    "src/render/canvas/curiosity-canvas-v7.ts::addCuriosityEntriesV7": "BOARD",
+    "src/render/curiosity-presentation-v7.ts::curiosityBoundaryNoticeV7":
+      "BOARD",
+    "src/render/curiosity-presentation-v7.ts::monsterInfoLinesV7": "BOARD",
     "src/render/canvas/board-host-v7.ts::<module>": "BOARD",
     "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.pinIceFolkFeedback":
       "BOARD",
