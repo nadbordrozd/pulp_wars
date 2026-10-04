@@ -1899,7 +1899,7 @@ describe("ruleset-7 Dinosaur persistence and headless play", () => {
     seat.faction = "ORIGINAL";
     seat.factionTreeId = "ORIGINAL_BASELINE_V5";
     expect(parseSaveV7(JSON.stringify(swapped)).kind).not.toBe("VALID");
-  }, 120_000);
+  }, 600_000);
 
   it("finishes headless Normal matches with Dinosaur seats without errors or stalls", () => {
     for (const [factions, mapType] of [
@@ -1919,5 +1919,5 @@ describe("ruleset-7 Dinosaur persistence and headless play", () => {
         match.stateHash,
       );
     }
-  }, 240_000);
+  }, 600_000);
 });

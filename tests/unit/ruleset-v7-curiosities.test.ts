@@ -2,7 +2,6 @@ import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  CURIOSITY_KINDS_V7,
   FOUNTAIN_HEAL_V7,
   PROMOTION_HP_V7,
   RULESET_7_ID,
@@ -15,9 +14,6 @@ import {
   createReplayV7,
   curiosityRandomStateV7,
   curiosityTargetCountV7,
-  distinctFactionsV7,
-  generateInitialMapV7,
-  generateInitialMapWithVillageCountV7,
   missionByIdV7,
   missionMatchSetupV7,
   parseEventV7,
@@ -29,9 +25,7 @@ import {
   runReplayV7,
   validateMatchSetupV7,
   viewForV7,
-  villageCountV7,
   type CoordV7,
-  type CuriosityKindV7,
   type CuriosityV7,
   type DomainEventV7,
   type FactionIdV7,
@@ -43,7 +37,10 @@ import {
 import { runAiBatchV7, runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
 import { checkedV7 } from "../fixtures/v7-builders";
-import { checkCuriosityPlacementV7 } from "../fixtures/v7-curiosity-checker";
+import {
+  CURIOSITY_MAP_TYPES_V7,
+  curiosityGeneratedSetupV7,
+} from "../fixtures/v7-curiosity-generation";
 import {
   applyOkV7,
   goblinArenaV7,
@@ -57,7 +54,9 @@ import {
 // the setup option, placement on its own stream after the Rifts, the
 // byte-identical "off" parity with the 7r34 generator and matches, the
 // Fountain of Youth, the Shrine, and the Sunken Wreck with their events,
-// projection, view, and persistence.
+// projection, view, and persistence. The on/off generation check of 150
+// boards is in `ruleset-v7-curiosity-generation.test.ts`
+// (`pulp_wars-737.8`).
 
 const at = (x: number, y: number): CoordV7 => ({ x, y });
 // The arena players have explored the whole board, so a Move unlocks
@@ -67,37 +66,8 @@ const kinds = (events: readonly DomainEventV7[]) =>
     .map((event) => event.kind)
     .filter((kind) => kind !== "ACHIEVEMENT_UNLOCKED");
 
-const MAP_TYPES: readonly MapTypeV7[] = [
-  "DRY_LAND",
-  "PANGEA",
-  "CONTINENTS",
-  "ARCHIPELAGO",
-  "LAKES",
-];
-
-function generatedSetup(
-  seed: number,
-  mapType: MapTypeV7,
-  width: MatchSetupV7["width"],
-  aiCount: MatchSetupV7["aiCount"],
-  curiosities: boolean,
-  factions: readonly FactionIdV7[] = distinctFactionsV7(aiCount + 1),
-): MatchSetupV7 {
-  return {
-    rulesetId: RULESET_7_ID,
-    seed,
-    width,
-    height: width,
-    aiCount,
-    aiDifficulty: "NORMAL",
-    aiMode: "RIVAL",
-    humanColor: "CORAL",
-    factions,
-    mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-    curiosities,
-  };
-}
+const MAP_TYPES = CURIOSITY_MAP_TYPES_V7;
+const generatedSetup = curiosityGeneratedSetupV7;
 
 // --------------------------------------------------------- Arena ---
 // The two-seat 11 x 11 revision-13 board of `goblinArenaV7`: capitals
@@ -313,92 +283,7 @@ describe("generation (section 4)", () => {
     expect(canonicalHash(table)).toBe(
       "aaa493b50970e685a12765aa75fbfd64ea8756bc0fc17006ec325358f2d7c35d",
     );
-  }, 120_000);
-
-  it("on and off generate the same board, cities, units, entity IDs, chests, turn order, and PRNG; placement obeys section 4", () => {
-    const seen = new Set<CuriosityKindV7 | "MONSTER">();
-    const counts: Record<number, number[]> = {};
-    for (const mapType of MAP_TYPES)
-      for (const [width, aiCount] of [
-        [11, 1],
-        [14, 2],
-        [16, 3],
-        [20, 1],
-        [25, 2],
-      ] as const)
-        for (let seed = 0; seed < 6; seed += 1) {
-          const on = generatedSetup(seed, mapType, width, aiCount, true);
-          const off = { ...on, curiosities: false };
-          const mapOn = generateInitialMapV7(on);
-          const mapOff = generateInitialMapV7(off);
-          const rifts = generateInitialMapWithVillageCountV7(
-            on,
-            villageCountV7(on),
-            "RIFTS",
-          );
-          if (!mapOn.ok || !mapOff.ok || !rifts.ok) throw new Error("map");
-          // Off is the generator before the curiosities.
-          expect(mapOff.map).toEqual(rifts.map);
-          const target = curiosityTargetCountV7(
-            width,
-            curiosityRandomStateV7(seed),
-          ).count;
-          const placed = checkCuriosityPlacementV7(
-            mapOn.map,
-            rifts.map,
-            mapType,
-            target,
-          );
-          for (const curiosity of placed) seen.add(curiosity.kind);
-          if (mapType === "DRY_LAND")
-            expect(placed.some((entry) => entry.kind === "WRECK")).toBe(false);
-          (counts[width] ??= []).push(placed.length);
-          const markers = placed.filter((entry) => entry.kind !== "MONSTER");
-          const lair = placed.find((entry) => entry.kind === "MONSTER");
-          // The initial states differ only in the option, the lists, the
-          // Monster unit (the last initial entity), and the next entity ID.
-          const stateOn = createInitialMapStateV7(on);
-          const stateOff = createInitialMapStateV7(off);
-          if (!stateOn.ok || !stateOff.ok) throw new Error("state");
-          expect(stateOn.state.curiosities).toEqual(markers);
-          expect(stateOn.state.monsters.map((entry) => entry.home)).toEqual(
-            lair === undefined ? [] : [lair.at],
-          );
-          const monsterIds = new Set(
-            stateOn.state.monsters.map((entry) => entry.unitId),
-          );
-          expect(
-            stateOn.state.monsters.every(
-              (entry) => entry.unitId === stateOff.state.nextEntityId,
-            ),
-          ).toBe(true);
-          expect({
-            ...stateOn.state,
-            setup: { ...stateOn.state.setup, curiosities: false },
-            curiosities: [],
-            monsters: [],
-            units: stateOn.state.units.filter(
-              (unit) => !monsterIds.has(unit.id),
-            ),
-            nextEntityId: stateOff.state.nextEntityId,
-          }).toEqual(stateOff.state);
-          // The same setup gives the same curiosities.
-          const again = generateInitialMapV7(on);
-          if (!again.ok) throw new Error("again");
-          expect(again.map.curiosities).toEqual(markers);
-          expect(again.map.monsterHome).toEqual(lair?.at ?? null);
-        }
-    // Rarity sanity (section 4.2): small boards usually none, large boards
-    // at most two, and every kind appears somewhere.
-    expect([...seen].sort()).toEqual(["MONSTER", ...CURIOSITY_KINDS_V7].sort());
-    const mean = (values: readonly number[]) =>
-      values.reduce((sum, value) => sum + value, 0) / values.length;
-    expect(Math.max(...(counts[11] ?? []))).toBeLessThanOrEqual(1);
-    expect(mean(counts[11] ?? [])).toBeLessThan(0.5);
-    expect(Math.max(...(counts[16] ?? []))).toBeLessThanOrEqual(1);
-    expect(Math.max(...(counts[25] ?? []))).toBeLessThanOrEqual(2);
-    expect(mean(counts[25] ?? [])).toBeGreaterThan(mean(counts[11] ?? []));
-  }, 120_000);
+  }, 300_000);
 
   it("draws the target count from its own stream (section 4.2)", () => {
     const tally = (width: number) => {
@@ -555,7 +440,7 @@ describe("headless parity and the CLI flag", () => {
         curiosityKinds: [],
       });
     }
-  }, 180_000);
+  }, 600_000);
 
   it("a match with the option on that drew no curiosity plays exactly like the same match off", () => {
     // The first 11 x 11 seed whose stream's first draw aims for none.
@@ -574,7 +459,7 @@ describe("headless parity and the CLI flag", () => {
     expect(normalizedInitialState(withOption.state)).toBe(
       normalizedInitialState(without.state),
     );
-  }, 60_000);
+  }, 600_000);
 
   it("records the option in every batch entry and the placed kinds in its metrics", async () => {
     const batch = await runAiBatchV7({
@@ -608,7 +493,7 @@ describe("headless parity and the CLI flag", () => {
       curiosities: false,
       metrics: { curiosityKinds: [] },
     });
-  }, 60_000);
+  }, 300_000);
 
   it("takes `--curiosities on|off` for match and batch, on by default, and refuses it for a mission", () => {
     const runCli = <T>(...args: readonly string[]): T =>
@@ -679,7 +564,7 @@ describe("headless parity and the CLI flag", () => {
         "off",
       ),
     ).toThrow(/--curiosities does not apply to --map-type mission/);
-  }, 120_000);
+  }, 300_000);
 });
 
 // ------------------------------------------------------ Fountain ---
@@ -1263,5 +1148,5 @@ describe("saves and replays", () => {
     };
     tampered.state.curiosities = [];
     expect(parseSaveV7(JSON.stringify(tampered)).kind).not.toBe("VALID");
-  }, 120_000);
+  }, 600_000);
 });

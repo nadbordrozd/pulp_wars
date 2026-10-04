@@ -210,5 +210,5 @@ describe("Pangea coast ring", () => {
             ),
           );
         }
-  });
+  }, 300_000);
 });

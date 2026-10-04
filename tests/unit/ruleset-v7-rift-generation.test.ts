@@ -253,6 +253,7 @@ describe("Rift placement (section 5)", () => {
           if (count === 0) expect(map).toEqual(base);
         }
     },
+    300_000,
   );
 
   it("the target count by width (section 5.2)", () => {

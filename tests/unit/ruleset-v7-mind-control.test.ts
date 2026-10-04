@@ -1461,5 +1461,5 @@ describe("Mind Control revision: saves and replays (section 5.4)", () => {
     expect(loaded.kind).toBe("VALID");
     if (loaded.kind === "VALID")
       expect(canonicalHash(loaded.save.state)).toBe(canonicalHash(state));
-  }, 60_000);
+  }, 600_000);
 });

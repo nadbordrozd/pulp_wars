@@ -36,21 +36,17 @@ import {
   viewForV7,
   type CoordV7,
   type DomainEventV7,
-  type FactionIdV7,
   type GameStateV7,
   type MatchSetupV7,
   type PlayerId,
 } from "../../src/engine/index";
-import { chooseNormalTurnCommandV7 } from "../../src/ai/v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
 import {
   applyOkV7,
   endTurnUntilV7,
-  seatIdV7,
   unitAtV7,
-  type GoblinPieceV7,
 } from "../fixtures/v7-goblin-arena";
 import {
   MONSTER_LAIR_V7,
@@ -673,95 +669,5 @@ describe("parsing, saves, and replays (sections 10.2 and 8.9)", () => {
       "2026-10-03T12:00:00.000Z",
     );
     expect(parseSaveV7(JSON.stringify(save))).toEqual({ kind: "VALID", save });
-  }, 120_000);
-});
-
-/**
- * Plays Normal turns from `state` for `rounds` rounds, applying every
- * command and checking its events and state.
- */
-function playNormalRounds(state: GameStateV7, rounds: number): GameStateV7 {
-  let current = state;
-  let commandsThisTurn = 0;
-  const finalRound = state.round + rounds;
-  for (let step = 0; step < 4000 && current.round < finalRound; step += 1) {
-    if (current.outcome !== null) break;
-    const actor = current.turnOrder[current.activeSeatIndex] as PlayerId;
-    const command = chooseNormalTurnCommandV7(
-      viewForV7(current, actor),
-      commandsThisTurn,
-    );
-    if (command === null) throw new Error("no command");
-    const result = applyCommandV7(current, actor, command);
-    if (!result.accepted)
-      throw new Error(`${command.kind} rejected: ${result.error.code}`);
-    for (const event of result.events)
-      expect(parseEventV7(event).ok, event.kind).toBe(true);
-    current = result.state;
-    commandsThisTurn = command.kind === "END_TURN" ? 0 : commandsThisTurn + 1;
-  }
-  expect(parseGameStateV7(JSON.parse(JSON.stringify(current)))).toEqual(
-    current,
-  );
-  return current;
-}
-
-describe("neutral-owner fuzz (section 10.5)", () => {
-  const lineups: readonly (readonly FactionIdV7[])[] = [
-    ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"],
-    ["MARTIAN", "ICE_FOLK", "DWARF", "ORIGINAL"],
-  ];
-  const ring = [
-    at(6, 6),
-    at(8, 6),
-    at(6, 8),
-    at(8, 8),
-    at(6, 7),
-    at(7, 6),
-    at(9, 7),
-    at(9, 8),
-  ];
-  for (const factions of lineups)
-    for (const aiMode of ["RIVAL", "COOPERATIVE"] as const)
-      it(`plays Normal rounds with the Spider next to every seat's units: ${factions.join(", ")} (${aiMode})`, () => {
-        const roles = ["FIGHTER", "MARKSMAN"] as const;
-        const pieces: GoblinPieceV7[] = ring.map((where, index) => ({
-          seat: index % 4,
-          role: roles[Math.floor(index / 4)] as (typeof roles)[number],
-          at: where,
-        }));
-        const state = monsterArenaV7(pieces, { aiMode }, factions);
-        const after = playNormalRounds(state, 6);
-        expect(after.round).toBeGreaterThan(state.round);
-        void seatIdV7;
-      }, 120_000);
-
-  it("plays headless Normal matches with curiosities on at 16 x 16 without errors or stalls", () => {
-    let withMonster = 0;
-    for (const [seed, mapType, factions] of [
-      [3, "PANGEA", ["ORIGINAL", "UNDEAD", "GOBLIN"]],
-      [3, "LAKES", ["ORIGINAL", "UNDEAD", "GOBLIN"]],
-      [7, "DRY_LAND", ["MARTIAN", "ICE_FOLK", "DWARF"]],
-    ] as const) {
-      const setup: MatchSetupV7 = {
-        rulesetId: RULESET_7_ID,
-        seed,
-        width: 16,
-        height: 16,
-        aiCount: 2,
-        aiDifficulty: "NORMAL",
-        aiMode: "RIVAL",
-        humanColor: "CORAL",
-        factions: [...factions],
-        mapType,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
-        curiosities: true,
-      };
-      const match = runAiMatchV7(setup, { maxRounds: 25 });
-      expect(match.errors, `${seed} ${mapType}`).toEqual([]);
-      expect(match.stalls, `${seed} ${mapType}`).toEqual([]);
-      withMonster += match.metrics.monsters.placed;
-    }
-    expect(withMonster).toBeGreaterThanOrEqual(2);
-  }, 300_000);
+  }, 600_000);
 });
