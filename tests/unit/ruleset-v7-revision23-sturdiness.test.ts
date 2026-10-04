@@ -215,7 +215,10 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
     // The Dwarf revision (`pulp_wars-78i.3`) adds a seventh faction
     // (docs/product/RULESET_7_DWARVES.md section 3).
     expect(hp("DWARF")).toEqual([12, 8, 10, 16, 10, 10, 16, 36]);
-    expect(FACTION_IDS_V7).toHaveLength(7);
+    // The Candy revision (`pulp_wars-jdb.3`) adds an eighth faction
+    // (docs/product/RULESET_7_CANDY.md section 3).
+    expect(hp("CANDY")).toEqual([10, 10, 8, 18, 10, 10, 14, 40]);
+    expect(FACTION_IDS_V7).toHaveLength(8);
   });
 
   it("changes only maximum HP: the Human core roles keep every other value", () => {

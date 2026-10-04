@@ -40,10 +40,12 @@ export interface CombatPreviewV7 {
   readonly retaliation: boolean;
   /**
    * Revision 14: `UNANSWERED` when the attacker's attacks receive no
-   * retaliation (the Vampire) and the defender survives.
+   * retaliation (the Vampire) and the defender survives. The Candy revision
+   * (section 7): `SPLATTED` when the defender would have retaliated under
+   * the ordinary rules but was Splatted this turn.
    */
   readonly noRetaliationReason:
-    "DEFENDER_DIED" | "OUT_OF_RANGE" | "UNANSWERED" | null;
+    "DEFENDER_DIED" | "OUT_OF_RANGE" | "UNANSWERED" | "SPLATTED" | null;
   readonly advances: boolean;
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
   readonly attacksUsed: number;
@@ -159,6 +161,21 @@ export interface CombatPreviewV7 {
    * `damageToAttacker` are the capped values.
    */
   readonly platedApplied: boolean;
+  /**
+   * The Candy revision (docs/product/RULESET_7_CANDY.md section 13): the
+   * attacker's Sugar Rush bonus (2 half-units) is in `attack2`.
+   */
+  readonly sugarRushApplied: boolean;
+  /** The attack Splats its surviving target (a Pie Launcher's, section 7). */
+  readonly splatApplied: boolean;
+  /**
+   * Section 8: the Bounce of the attacker off a Marshmallow or a Golem.
+   * `UNKNOWN_BEHIND_FOG` only in an estimate by a viewer who has not
+   * explored the tile.
+   */
+  readonly bounce: "NONE" | "WILL_BOUNCE" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
+  /** The attacker's tile after the Bounce for `WILL_BOUNCE`, else null. */
+  readonly bounceTo: CoordV7 | null;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -274,6 +291,96 @@ export type DomainEventV7 =
       readonly cities: readonly CityIncomeEntryV7[];
     }
   | { readonly kind: "TURN_ENDED"; readonly playerId: PlayerId }
+  | {
+      /**
+       * The Candy revision (section 5.3): the Crash step of `playerId`'s End
+       * Turn: the Rushed units that became Crashed and those Home Sweet Home
+       * spared, each sorted by unit ID (at least one in all). A projection
+       * keeps the units the viewer can see.
+       */
+      readonly kind: "UNITS_CRASHED";
+      readonly playerId: PlayerId;
+      readonly crashedUnitIds: readonly UnitId[];
+      readonly sparedUnitIds: readonly UnitId[];
+    }
+  | {
+      /**
+       * The Candy revision (section 6.2): at `playerId`'s End Turn its
+       * Crumbs on `tiles` (sorted by (y, x), at least one) went stale. A
+       * projection keeps the tiles the viewer has explored.
+       */
+      readonly kind: "CRUMBS_STALE";
+      readonly playerId: PlayerId;
+      readonly tiles: readonly CoordV7[];
+    }
+  | {
+      /**
+       * The Candy revision (section 5.1): `unitId` of `playerId` went on a
+       * Sugar Rush; `move` is its Rushed Move (its role's Move plus 1).
+       */
+      readonly kind: "UNIT_SUGAR_RUSHED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly move: number;
+    }
+  | {
+      /**
+       * The Candy revision (section 6.4): the Confectioner `unitId` of
+       * `playerId` re-baked the Crumbs on `at` into `rebakedUnitId` of
+       * `role`, homed to `cityId`, for `cost` Coins at `hp` HP.
+       */
+      readonly kind: "UNIT_REBAKED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly rebakedUnitId: UnitId;
+      readonly role: UnitRoleIdV7;
+      readonly at: CoordV7;
+      readonly cityId: CityId;
+      readonly cost: number;
+      readonly hp: number;
+    }
+  | {
+      /**
+       * The Candy revision (section 9): the Gumball Gunner `unitId` of
+       * `playerId` healed its own `targetUnitId` by `amount` to `hpAfter`.
+       */
+      readonly kind: "SUGAR_TOSSED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly amount: number;
+      readonly hpAfter: number;
+    }
+  | {
+      /**
+       * The Candy revision (section 6.3): `unitId` ended a Move or a landing
+       * on the Crumbs of `role` that `playerId` (their owner) had on `at`
+       * and ate them. With Peppermint Surprise it took `damage` HP and
+       * `shieldDamage` on its Shield and `dies` says whether it died (0, 0,
+       * and false without). In a projection to the Crumbs' owner that cannot
+       * see the eater, `unitId`, `damage`, `shieldDamage`, and `dies` are
+       * null.
+       */
+      readonly kind: "CRUMBS_EATEN";
+      readonly playerId: PlayerId;
+      readonly at: CoordV7;
+      readonly role: UnitRoleIdV7;
+      readonly unitId: UnitId;
+      readonly damage: number;
+      readonly shieldDamage: number;
+      readonly dies: boolean;
+    }
+  | {
+      /**
+       * The Candy revision (section 6.1): a fallen unit of `role` left
+       * Crumbs on `at` for its owner `playerId`, right after its `UNIT_DIED`
+       * (and its `GRAVE_CREATED`). Any Crumbs on the tile are replaced.
+       */
+      readonly kind: "CRUMBS_LEFT";
+      readonly playerId: PlayerId;
+      readonly at: CoordV7;
+      readonly role: UnitRoleIdV7;
+    }
   | {
       readonly kind: "TECH_RESEARCHED";
       readonly playerId: PlayerId;
@@ -909,7 +1016,12 @@ export type DomainEventV7 =
         /** The Dwarf revision: a Gyrocopter's bomb (section 6.3). */
         | "BOMB"
         /** The Dwarf revision: a surfacing Mole's eruption (section 5.4). */
-        | "ERUPTION";
+        | "ERUPTION"
+        /**
+         * The Candy revision (section 6.3): an eater killed by the
+         * Peppermint Surprise of the Crumbs it ate.
+         */
+        | "PEPPERMINT";
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */
@@ -1098,6 +1210,20 @@ export type ProjectedUnitSurfacedV7 = Omit<
   readonly at: CoordV7 | null;
 };
 
+/**
+ * The Candy revision (section 12.14): `CRUMBS_EATEN` as seen by the Crumbs'
+ * owner when it cannot see the eater: the eater and the bite are hidden.
+ */
+export type ProjectedCrumbsEatenV7 = Omit<
+  Extract<DomainEventV7, { kind: "CRUMBS_EATEN" }>,
+  "unitId" | "damage" | "shieldDamage" | "dies"
+> & {
+  readonly unitId: null;
+  readonly damage: null;
+  readonly shieldDamage: null;
+  readonly dies: null;
+};
+
 export type PlayerEventV7 =
   | Exclude<
       DomainEventV7,
@@ -1108,6 +1234,7 @@ export type PlayerEventV7 =
           | "MONUMENT_BUILT";
       }
     >
+  | ProjectedCrumbsEatenV7
   | ProjectedUnitTunnelledV7
   | ProjectedUnitSurfacedV7
   | ProjectedResourceRestorationEventV7

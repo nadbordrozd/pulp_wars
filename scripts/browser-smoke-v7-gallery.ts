@@ -39,11 +39,13 @@ export async function probeGalleryV7(
   }>(
     `({ factions: [...document.querySelectorAll('.v7-gallery-faction')].map((th) => th.dataset.faction), cells: document.querySelectorAll('.v7-gallery-cell').length, empty: document.querySelectorAll('.v7-gallery-cell-wrap.is-empty').length, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`,
   );
+  // Eight factions (the Candy since pulp_wars-jdb.3): eleven rows of eight
+  // units and the one Egg, whose row is empty for the seven other factions.
   if (
     table.factions.join() !==
-      "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF" ||
-    table.cells !== 78 ||
-    table.empty !== 6 ||
+      "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY" ||
+    table.cells !== 89 ||
+    table.empty !== 7 ||
     table.overflow > 0
   )
     throw new Error(`Gallery table is incomplete: ${JSON.stringify(table)}`);
@@ -69,8 +71,9 @@ export async function probeGalleryV7(
     readonly factions?: readonly string[];
     readonly unitRows?: readonly string[];
   };
+  // The Catapult row of the seven factions left after hiding the Goblins.
   if (
-    filtered.cells.length !== 6 ||
+    filtered.cells.length !== 7 ||
     filtered.cells.some(
       (cell) => !cell.startsWith("CATAPULT:") || cell.endsWith(":GOBLIN"),
     ) ||

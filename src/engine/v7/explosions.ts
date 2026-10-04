@@ -342,7 +342,8 @@ export interface StateChainResultV7 extends StateChainWorkV7 {
  * reads the work's `mindControlled` list.
  */
 export function resolveStateExplosionChainV7(
-  lookup: Pick<GameStateV7, "players" | "setup" | "treasureChests">,
+  lookup: Pick<GameStateV7, "players" | "setup" | "treasureChests"> &
+    Partial<Pick<GameStateV7, "curiosities">>,
   work: StateChainWorkV7,
   initial: readonly {
     readonly unit: UnitStateV7;
@@ -458,6 +459,8 @@ export function resolveStateExplosionChainV7(
             treasureChests: lookup.treasureChests,
             players: lookup.players,
             mindControlled,
+            // The Candy revision: Crumbs never lie on a curiosity tile.
+            curiosities: lookup.curiosities ?? [],
           },
           graves,
           victim,

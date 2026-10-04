@@ -86,6 +86,7 @@ describe("Ice Folk setup", () => {
         "Martian",
         "Ice Folk",
         "Dwarf",
+        "Candy",
       ]);
       // pulp_wars-w5j.1: distinct defaults (Human, Undead, Goblin, Dinosaur).
       expect(field.value).toBe(

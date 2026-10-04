@@ -164,6 +164,32 @@ export type CommandV7 =
       readonly to: CoordV7;
     }
   | {
+      /**
+       * The Candy revision (docs/product/RULESET_7_CANDY.md section 5.1): a
+       * Candy land unit that has not moved or acted goes on a Sugar Rush.
+       */
+      readonly kind: "SUGAR_RUSH";
+      readonly unitId: UnitId;
+    }
+  | {
+      /**
+       * The Candy revision (section 6.4): a Confectioner bakes the unit in
+       * the own Crumbs on the adjacent tile `at` back.
+       */
+      readonly kind: "REBAKE";
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
+       * The Candy revision (section 9): a Gumball Gunner heals an own unit
+       * within 2 tiles.
+       */
+      readonly kind: "SUGAR_TOSS";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
       /** Revision 19: a Dinosaur city lays an Egg of `role` on `at`. */
       readonly kind: "LAY_EGG";
       readonly cityId: CityId;
@@ -330,7 +356,8 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     kind === "ATTACK" ||
     kind === "MIND_CONTROL" ||
     kind === "TRACTOR_BEAM" ||
-    kind === "THROW_BOLAS"
+    kind === "THROW_BOLAS" ||
+    kind === "SUGAR_TOSS"
   ) {
     if (!hasExactKeysV7(input, ["kind", "unitId", "targetUnitId"]))
       return invalid(kind);
@@ -423,7 +450,12 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
           },
         };
   }
-  if (kind === "RALLY" || kind === "TEND_WOUNDED" || kind === "COLD_SNAP") {
+  if (
+    kind === "RALLY" ||
+    kind === "TEND_WOUNDED" ||
+    kind === "COLD_SNAP" ||
+    kind === "SUGAR_RUSH"
+  ) {
     const unit = hasExactKeysV7(input, ["kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
       : null;
@@ -476,7 +508,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? invalid(kind)
       : { ok: true, value: { kind, cityId: city, at, role: candidate.role } };
   }
-  if (kind === "DISEMBARK") {
+  if (kind === "DISEMBARK" || kind === "REBAKE") {
     const unit = hasExactKeysV7(input, ["at", "kind", "unitId"])
       ? parseUnitIdV7(candidate.unitId)
       : null;
@@ -612,7 +644,8 @@ function referencedOrdinal(command: CommandV7): number {
     command.kind === "ATTACK" ||
     command.kind === "MIND_CONTROL" ||
     command.kind === "TRACTOR_BEAM" ||
-    command.kind === "THROW_BOLAS"
+    command.kind === "THROW_BOLAS" ||
+    command.kind === "SUGAR_TOSS"
   )
     return command.targetUnitId;
   if (command.kind === "HATCH") return command.eggUnitId;

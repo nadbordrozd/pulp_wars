@@ -128,6 +128,7 @@ describe("Gallery presentation", () => {
       "IMPROVEMENT:MARTIAN:FARM",
       "IMPROVEMENT:ICE_FOLK:FARM",
       "IMPROVEMENT:DWARF:FARM",
+      "IMPROVEMENT:FARM",
     ]);
     expect(
       GALLERY_FACTIONS_V7.map((faction) =>
@@ -141,6 +142,7 @@ describe("Gallery presentation", () => {
       "Solar Array",
       "Windmill",
       "Steam Pump",
+      "Windmill",
     ]);
     expect(galleryBuildingNameV7("SAWMILL", "DINOSAUR")).toBe("Chopping Block");
     expect(galleryBuildingNameV7("FORGE", null)).toBe("Forge");

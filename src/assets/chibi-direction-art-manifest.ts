@@ -6,6 +6,7 @@ import {
 import { chibiArtUrl } from "./chibi-art-manifest";
 import { CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7 } from "./chibi-direction-dinosaur-art-manifest";
 import { CHIBI_CURIOSITIES_ART_ASSETS_V7 } from "./chibi-curiosities-art-manifest";
+import { CHIBI_DIRECTION_CANDY_ART_ASSETS_V7 } from "./chibi-direction-candy-art-manifest";
 import { CHIBI_DIRECTION_DWARF_ART_ASSETS_V7 } from "./chibi-direction-dwarf-art-manifest";
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "./chibi-direction-ice-folk-art-manifest";
 import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "./chibi-direction-martian-art-manifest";
@@ -558,6 +559,9 @@ export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
     ...CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7,
     // --- Dwarf (pulp_wars-78i.5 art, wired in by pulp_wars-78i.6) ---
     ...CHIBI_DIRECTION_DWARF_ART_ASSETS_V7,
+    // --- Candy (pulp_wars-jdb.5 art; units, portraits and cities wired in
+    // by pulp_wars-jdb.3, the rest drawn from pulp_wars-jdb.6) ---
+    ...CHIBI_DIRECTION_CANDY_ART_ASSETS_V7,
     // --- Naval, every faction (pulp_wars-w5j.2 art, wired in by
     // pulp_wars-w5j.3): the Human entries take the shared ship subjects.
     ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),

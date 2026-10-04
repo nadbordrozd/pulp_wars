@@ -103,6 +103,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "ICE_FOLK",
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
+      "CANDY",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -112,6 +113,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
       "MARTIAN_BASELINE_V1",
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
+      "CANDY_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("ICE_FOLK")).toBe("ICE_FOLK_BASELINE_V1");
     expect(FACTION_TREES_V7.ICE_FOLK).toMatchObject({
@@ -159,7 +161,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
   // The Dwarf revision (`pulp_wars-78i.3`) adds three command kinds after
   // COLD_SNAP and four event kinds (ruleset-v7-dwarf-faction.test.ts).
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(53);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(56);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
@@ -171,14 +173,15 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
-    // MONSTER_BOUNTY_AWARDED (89).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(89);
+    // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(96);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
       "UNITS_CHILLED",
     );
-    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_CHILLED")).toBe(
+    // The Candy revision inserts UNIT_SUGAR_RUSHED after UNITS_CHILLED.
+    expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNIT_SUGAR_RUSHED")).toBe(
       "WOUNDED_TENDED",
     );
     expect(after(PLAYER_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
@@ -902,6 +905,7 @@ describe("Ice Folk technology (section 4)", () => {
       ["MARTIAN", false, 3],
       ["ICE_FOLK", true, 4],
       ["DWARF", false, 3],
+      ["CANDY", false, 3],
     ]);
     const some = (...techs: (typeof TECHNOLOGY_IDS_V7)[number][]) =>
       technologyCapabilitiesV7(techs, "ICE_FOLK");

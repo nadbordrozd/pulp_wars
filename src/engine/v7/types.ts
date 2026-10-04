@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r37" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r38" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -48,8 +48,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r34",
   "pulp-wars-poc-7r35",
   "pulp-wars-poc-7r36",
+  "pulp-wars-poc-7r37",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r37.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r38.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
@@ -61,6 +62,8 @@ export const FACTION_IDS_V7 = Object.freeze([
   "ICE_FOLK",
   // The Dwarf revision (docs/product/RULESET_7_DWARVES.md).
   "DWARF",
+  // The Candy revision (docs/product/RULESET_7_CANDY.md).
+  "CANDY",
 ] as const);
 export const FACTION_TREE_IDS_V7 = Object.freeze([
   "ORIGINAL_BASELINE_V5",
@@ -70,6 +73,7 @@ export const FACTION_TREE_IDS_V7 = Object.freeze([
   "MARTIAN_BASELINE_V1",
   "ICE_FOLK_BASELINE_V1",
   "DWARF_BASELINE_V1",
+  "CANDY_BASELINE_V1",
 ] as const);
 export const TERRAIN_IDS_V7 = Object.freeze([
   "GRASS",
@@ -175,6 +179,11 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "TUNNEL",
   "BOMB_RUN",
   "ASSEMBLE",
+  // The Candy revision: Sugar Rush, the Confectioner's Re-bake, and the
+  // Gumball Gunner's Sugar Toss.
+  "SUGAR_RUSH",
+  "REBAKE",
+  "SUGAR_TOSS",
   "RECOVER",
   "CAPTURE",
   "PROMOTE",
@@ -243,6 +252,10 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "MONSTER_REGENERATED",
   "SHIELDS_RECHARGED",
   "INCOME_AWARDED",
+  // The Candy revision: the Crash step and the Crumbs countdown of an End
+  // Turn.
+  "UNITS_CRASHED",
+  "CRUMBS_STALE",
   "INCOME_PREVIEWED",
   "TURN_ENDED",
   // Map curiosities (section 8.5): the neutral turn after the last seat's
@@ -279,6 +292,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_TRAINED",
   // The Dwarf revision: an Engineer assembled a Clockwork Gunner.
   "UNIT_ASSEMBLED",
+  // The Candy revision: a Confectioner re-baked a unit from its Crumbs.
+  "UNIT_REBAKED",
   "NAVAL_UNIT_TRAINED",
   "EGG_LAID",
   "EGG_HATCHED",
@@ -290,7 +305,11 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNITS_RALLIED",
   // The Ice Folk revision: a Bolas, a Cold Snap, or a Cold Aura chilled units.
   "UNITS_CHILLED",
+  // The Candy revision: a unit went on a Sugar Rush.
+  "UNIT_SUGAR_RUSHED",
   "WOUNDED_TENDED",
+  // The Candy revision: a Gumball Gunner's Sugar Toss.
+  "SUGAR_TOSSED",
   "DEAD_RAISED",
   "GRAVE_DEVOURED",
   "UNIT_PUSHED",
@@ -300,6 +319,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_SURFACED",
   "UNIT_MOVED",
   "UNIT_MOVE_INTERRUPTED",
+  // The Candy revision: a hostile unit ended its Move on Crumbs.
+  "CRUMBS_EATEN",
   "TILES_REVEALED",
   "COMBAT_RESOLVED",
   // The Dwarf revision: a Gyrocopter's bombing run.
@@ -324,6 +345,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   // The Mind Control revision (section 6).
   "UNIT_RELEASED",
   "GRAVE_CREATED",
+  // The Candy revision: a fallen Candy unit left Crumbs.
+  "CRUMBS_LEFT",
   "BITTEN_UNIT_RISEN",
   "PLAGUE_CLEARED",
   "CITY_CAPTURED",
@@ -744,8 +767,53 @@ export interface GameStateV7 {
    * setup has no MARTIAN seat.
    */
   readonly tractorUsedThisTurn: readonly UnitId[];
+  /**
+   * The Candy revision (docs/product/RULESET_7_CANDY.md section 5.3): the
+   * Rushed and Crashed units, sorted by `unitId`, at most one entry per
+   * unit. Always empty in a match whose setup has no CANDY seat.
+   */
+  readonly sugarRush: readonly SugarRushStatusV7[];
+  /**
+   * The Candy revision (section 6.1): the Crumbs on the board, sorted by
+   * (y, x), at most one entry per tile. Always empty in a match whose setup
+   * has no CANDY seat.
+   */
+  readonly crumbs: readonly CrumbsV7[];
+  /**
+   * The Candy revision (section 7): the units Splatted during the active
+   * seat's turn, sorted. Emptied at its End Turn. Always empty in a match
+   * whose setup has no CANDY seat.
+   */
+  readonly splattedThisTurn: readonly UnitId[];
+  /**
+   * The Candy revision (section 9): the units healed by a Sugar Toss during
+   * the active seat's turn, sorted. Emptied at its End Turn. Always empty in
+   * a match whose setup has no CANDY seat.
+   */
+  readonly tossedThisTurn: readonly UnitId[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/**
+ * The Candy revision (section 5.3): the unit `unitId` is Rushed (for the
+ * rest of its owner's turn) or Crashed (it cannot use a primary action).
+ */
+export interface SugarRushStatusV7 {
+  readonly unitId: UnitId;
+  readonly phase: "RUSHED" | "CRASHED";
+}
+
+/**
+ * The Candy revision (section 6.1): the Crumbs a fallen Candy unit of
+ * `role` left on `at` for the Candy seat `ownerId`; they go stale when
+ * `turnsLeft` (1 to 3) reaches 0.
+ */
+export interface CrumbsV7 {
+  readonly at: CoordV7;
+  readonly role: UnitRoleIdV7;
+  readonly ownerId: PlayerId;
+  readonly turnsLeft: 1 | 2 | 3;
 }
 
 /**

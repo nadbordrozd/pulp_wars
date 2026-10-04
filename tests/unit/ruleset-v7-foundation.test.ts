@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r37");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r38");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -49,6 +49,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "ICE_FOLK",
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
+      "CANDY",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -58,6 +59,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "MARTIAN_BASELINE_V1",
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
+      "CANDY_BASELINE_V1",
     ]);
     expect(RESOURCE_IDS_V7).toEqual([
       "FRUIT",
@@ -108,14 +110,14 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // event kinds (72 -> 76); the Ice Folk revision THROW_BOLAS and
     // COLD_SNAP (50) and UNITS_CHILLED (77); the Dwarf revision TUNNEL,
     // BOMB_RUN, and ASSEMBLE (53) and four event kinds (81).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(53);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(56);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
-    // MONSTER_BOUNTY_AWARDED (89).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(89);
+    // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(96);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after
@@ -215,7 +217,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("accepts only exact dense setups with registered factions", () => {
     expect(parseMatchSetupV7(setup)).toEqual(setup);
     expect(
-      parseMatchSetupV7({ ...setup, factions: ["ORIGINAL", "CANDY"] }),
+      parseMatchSetupV7({ ...setup, factions: ["ORIGINAL", "NOT_A_FACTION"] }),
     ).toBeNull();
     // pulp_wars-w5j.1: a repeated faction is refused (DUPLICATE_FACTION).
     expect(

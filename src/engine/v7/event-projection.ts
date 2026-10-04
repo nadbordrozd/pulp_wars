@@ -51,6 +51,12 @@ export function projectEventsV7(
     )
       visiblyCreatedUnitIds.add(event.assembledUnitId);
     else if (
+      // The Candy revision: the unit of a projected Re-bake.
+      event.kind === "UNIT_REBAKED" &&
+      event.playerId === viewerId
+    )
+      visiblyCreatedUnitIds.add(event.rebakedUnitId);
+    else if (
       // The Dwarf revision: the Mole and rider of a projected surfacing
       // (section 13.11) return to the board in plain sight of its viewers.
       event.kind === "UNIT_SURFACED" &&
@@ -254,6 +260,56 @@ export function projectEventsV7(
               shieldDamage: event.shieldDamage,
             },
           ],
+        });
+      continue;
+    }
+    // The Candy revision (docs/product/RULESET_7_CANDY.md section 12.14):
+    // the Crash keeps the units the viewer owns or can see; stale Crumbs the
+    // tiles it has explored; eaten Crumbs go to their owner always and to
+    // every viewer that sees the eater or has explored the tile, with the
+    // eater and its bite hidden from a viewer that cannot see it.
+    if (event.kind === "UNITS_CRASHED") {
+      const kept = (unitId: UnitId): boolean =>
+        ownedBeforeOrAfter(unitId) ||
+        beforeVisible.has(unitId) ||
+        afterVisible.has(unitId);
+      const crashedUnitIds = event.crashedUnitIds.filter(kept);
+      const sparedUnitIds = event.sparedUnitIds.filter(kept);
+      if (crashedUnitIds.length + sparedUnitIds.length > 0)
+        projected.push({ ...event, crashedUnitIds, sparedUnitIds });
+      continue;
+    }
+    if (event.kind === "CRUMBS_STALE") {
+      const tiles = event.tiles.filter((at) =>
+        coordVisible(beforeState, afterState, viewerId, at),
+      );
+      if (tiles.length > 0) projected.push({ ...event, tiles });
+      continue;
+    }
+    if (event.kind === "CRUMBS_EATEN") {
+      const eaterSeen =
+        ownedBeforeOrAfter(event.unitId) ||
+        beforeVisible.has(event.unitId) ||
+        afterVisible.has(event.unitId);
+      if (eaterSeen) {
+        if (needsReveal(event.unitId)) {
+          const unit = afterState.units.find(
+            (candidate) => candidate.id === event.unitId,
+          );
+          if (unit !== undefined)
+            reveal(projected, revealed, unit, revealReason());
+        }
+        projected.push(event);
+      } else if (
+        event.playerId === viewerId ||
+        coordVisible(beforeState, afterState, viewerId, event.at)
+      )
+        projected.push({
+          ...event,
+          unitId: null,
+          damage: null,
+          shieldDamage: null,
+          dies: null,
         });
       continue;
     }
@@ -462,9 +518,13 @@ function eventVisible(
       return event.playerId === viewerId;
     // The Dwarf revision: an Assemble is owner-private like training (its
     // Gunner is revealed to other viewers as an ordinary unit).
+    // The Candy revision (section 12.14): a Re-bake like an Assemble, and a
+    // Sugar Toss like Tend Wounded (its owner only).
     case "UNIT_TRAINED":
     case "UNIT_REWARD_GRANTED":
     case "UNIT_ASSEMBLED":
+    case "UNIT_REBAKED":
+    case "SUGAR_TOSSED":
       return event.playerId === viewerId;
     // Revision 19 section 9.6: the owner and every viewer that explored the
     // Egg's tile.
@@ -513,9 +573,11 @@ function eventVisible(
       return event.playerId === viewerId;
     case "FIELD_DEFENSE_DESTROYED":
       return coordVisible(before, after, viewerId, event.at);
+    // Revision 13: a Grave is projected exactly to viewers who explored its
+    // tile before or after the command, so a hidden kill reveals nothing.
+    // The Candy revision (section 12.14): Crumbs are projected like a Grave.
     case "GRAVE_CREATED":
-      // Revision 13: a Grave is projected exactly to viewers who explored its
-      // tile before or after the command, so a hidden kill reveals nothing.
+    case "CRUMBS_LEFT":
       return coordVisible(before, after, viewerId, event.at);
     case "PLAYER_ELIMINATED":
     case "MATCH_ENDED":

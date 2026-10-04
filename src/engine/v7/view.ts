@@ -19,6 +19,7 @@ import { isResourceRevealedV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { knownWinterV7 } from "./ice-folk";
+import { crumbsBiteV7 } from "./candy";
 import type {
   BoardSizeV7,
   BiomeIdV7,
@@ -26,7 +27,9 @@ import type {
   ChillStatusV7,
   CoolingStatusV7,
   CoordV7,
+  CrumbsV7,
   CuriosityV7,
+  SugarRushStatusV7,
   MonsterStateV7,
   EggStatusV7,
   FactionIdV7,
@@ -310,8 +313,32 @@ export interface PlayerViewV7 {
    */
   readonly beamedThisTurn: readonly UnitId[];
   readonly tractorUsedThisTurn: readonly UnitId[];
+  /**
+   * The Candy revision (docs/product/RULESET_7_CANDY.md section 12.14): the
+   * `sugarRush` entries of visible units, sorted by unit ID.
+   */
+  readonly sugarRush: readonly SugarRushStatusV7[];
+  /**
+   * The Candy revision (section 12.14): the Crumbs on tiles the viewer has
+   * explored (public like Graves), sorted by (y, x), each with its owner's
+   * public Peppermint Surprise damage (`bite`).
+   */
+  readonly crumbs: readonly PublicCrumbsV7[];
+  /** The Candy revision: `splattedThisTurn` of visible units. */
+  readonly splattedThisTurn: readonly UnitId[];
+  /** The Candy revision: `tossedThisTurn` of visible units. */
+  readonly tossedThisTurn: readonly UnitId[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/**
+ * The Candy revision (section 12.14): Crumbs in a player's view. `bite` is
+ * the damage an eater takes (the owner's `crumbsBite`: 0 without Peppermint
+ * Surprise).
+ */
+export interface PublicCrumbsV7 extends CrumbsV7 {
+  readonly bite: number;
 }
 
 /** The Dwarf revision (section 5.2): a mound in a player's view. */
@@ -844,6 +871,26 @@ export function viewForV7(
       visibleUnitIds.has(unitId),
     ),
     tractorUsedThisTurn: state.tractorUsedThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
+    // The Candy revision (section 12.14): Rush, Splat, and Toss are public
+    // on visible units; Crumbs are public on explored tiles, with the bite.
+    sugarRush: state.sugarRush
+      .filter((entry) => visibleUnitIds.has(entry.unitId))
+      .map((entry) => ({ unitId: entry.unitId, phase: entry.phase })),
+    crumbs: state.crumbs
+      .filter((entry) => explored.has(key(entry.at)))
+      .map((entry) => ({
+        at: entry.at,
+        role: entry.role,
+        ownerId: entry.ownerId,
+        turnsLeft: entry.turnsLeft,
+        bite: crumbsBiteV7(state, entry.ownerId),
+      })),
+    splattedThisTurn: state.splattedThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
+    tossedThisTurn: state.tossedThisTurn.filter((unitId) =>
       visibleUnitIds.has(unitId),
     ),
     pendingChoices: state.pendingChoices.filter((choice) =>

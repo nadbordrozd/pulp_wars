@@ -1,6 +1,7 @@
 import type { UnitId } from "../model/ids";
 import { gravesEnabledV7 } from "../rules/ruleset-v7";
 import { unitIsConstructV7 } from "./afflictions";
+import { deathLeavesCrumbsV7 } from "./candy";
 import type { DomainEventV7 } from "./events";
 import { compareCoordsV7, sameCoordV7 } from "./schema";
 import { tileAtV7 } from "./spatial-economy";
@@ -21,17 +22,21 @@ export type GraveDeathCauseV7 =
   | "EXPLOSION"
   // The Dwarf revision: a bomb and an eruption (section 5.4, 6.3).
   | "BOMB"
-  | "ERUPTION";
+  | "ERUPTION"
+  // The Candy revision: an eater killed by Peppermint Surprise (section 6.3).
+  | "PEPPERMINT";
 
 /**
  * The canonical state a Grave decision reads. The Dwarf revision: with the
- * players, a construct's death leaves no Grave (section 7.2).
+ * players, a construct's death leaves no Grave (section 7.2). The Candy
+ * revision: with the players (and the curiosities), a Candy seat's unit
+ * leaves Crumbs (docs/product/RULESET_7_CANDY.md section 6.1).
  */
 export type GraveContextV7 = Pick<
   GameStateV7,
   "setup" | "board" | "treasureChests"
 > &
-  Partial<Pick<GameStateV7, "players" | "mindControlled">>;
+  Partial<Pick<GameStateV7, "players" | "mindControlled" | "curiosities">>;
 
 /**
  * The facts of a dead unit a Grave decision reads (the Mind Control
@@ -132,7 +137,38 @@ export function recordCombatDeathV7(
   events: DomainEventV7[],
 ): readonly CoordV7[] {
   events.push({ kind: "UNIT_DIED", unitId: unit.id, cause });
-  if (!deathCreatesGraveV7(context, graves, unit)) return graves;
-  events.push({ kind: "GRAVE_CREATED", at: { x: unit.at.x, y: unit.at.y } });
-  return withGraveV7(graves, unit.at);
+  const grave = deathCreatesGraveV7(context, graves, unit);
+  if (grave)
+    events.push({ kind: "GRAVE_CREATED", at: { x: unit.at.x, y: unit.at.y } });
+  recordCrumbsV7(context, unit, cause, events);
+  return grave ? withGraveV7(graves, unit.at) : graves;
+}
+
+/**
+ * The Candy revision (docs/product/RULESET_7_CANDY.md section 6.1): appends
+ * the `CRUMBS_LEFT` of a death that did not rise, right after its
+ * `UNIT_DIED` and `GRAVE_CREATED`, when it leaves Crumbs. The reducer folds
+ * the `CRUMBS_LEFT` events of an accepted command into `crumbs` in their
+ * order (`withCrumbsLeftV7`), so several deaths leave their Crumbs in the
+ * order of their deaths. `recordCombatDeathV7` calls it; a Shatter death,
+ * which records no Grave, calls it directly.
+ */
+export function recordCrumbsV7(
+  context: GraveContextV7,
+  unit: GraveUnitV7,
+  cause: GraveDeathCauseV7 | "SHATTER",
+  events: DomainEventV7[],
+): void {
+  if (
+    unit.ownerId === undefined ||
+    unit.role === undefined ||
+    !deathLeavesCrumbsV7(context, unit, cause)
+  )
+    return;
+  events.push({
+    kind: "CRUMBS_LEFT",
+    playerId: unit.ownerId,
+    at: { x: unit.at.x, y: unit.at.y },
+    role: unit.role,
+  });
 }

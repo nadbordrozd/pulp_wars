@@ -6,6 +6,7 @@ import {
   type NavalArtRoleV7,
 } from "./chibi-art-v7";
 import { chibiArtUrl } from "./chibi-art-manifest";
+import { CHIBI_DIRECTION_CANDY_NAVAL_ART_ASSETS_V7 } from "./chibi-direction-candy-art-manifest";
 import { CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7 } from "./chibi-direction-dwarf-art-manifest";
 
 export type {
@@ -538,4 +539,6 @@ export const CHIBI_NAVAL_FACTION_ART_ASSETS_V7: readonly ChibiNavalFactionArtV7[
     },
     // --- Dwarf (pulp_wars-78i.5 art, wired in by pulp_wars-78i.6) ---
     ...CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7,
+    // --- Candy (pulp_wars-jdb.5 art, wired in by pulp_wars-jdb.3) ---
+    ...CHIBI_DIRECTION_CANDY_NAVAL_ART_ASSETS_V7,
   ];

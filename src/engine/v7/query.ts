@@ -16,6 +16,9 @@ import {
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_KILLS_V7,
+  SUGAR_RUSH_MOVE_BONUS_V7,
+  rebakeHpV7,
+  rebakePriceV7,
   armouredDamageV7,
   coverBonusV7,
   terrainGivesCoverV7,
@@ -57,6 +60,27 @@ import {
   type TechnologyCapabilitiesV7,
   type TechnologyUnlockV7,
 } from "../rules/ruleset-v7";
+import {
+  attackGrantsEscapeV7,
+  attackIsBouncedV7,
+  bounceDestinationV7,
+  candyActionRejectionV7,
+  crumbsAtV7,
+  overrunKindV7,
+  overrunMayContinueV7,
+  peppermintHitV7,
+  rebakeCrumbsV7,
+  standsByOwnCenterV7,
+  sugarRushAttack2V7,
+  sugarRushPhaseV7,
+  sugarRushRejectionV7,
+  sugarTossAmountV7,
+  sugarTossTargetRejectionV7,
+  unitEatsCrumbsV7,
+  unitIsCrashedV7,
+  unitIsSplattedV7,
+  withSugarRushV7,
+} from "./candy";
 import { compareCommandsV7, type CommandV7 } from "./commands";
 import {
   arePlayersAlliedV7,
@@ -101,6 +125,8 @@ import {
   attackFortificationV7,
   attackHasAcidV7,
   attackHasPierceV7,
+  attackSplatAppliesV7,
+  noRetaliationReasonV7,
   calculateCombatPreviewV7,
   collateralEntryV7,
   gangUpBonusV7,
@@ -758,15 +784,35 @@ function appendPublicUnitCommandsV7(
     for (const reachable of reachablePlayerMovementPathsV7(view, unit))
       candidates.push({ kind: "MOVE", unitId: unit.id, path: reachable.path });
   const rule = unitRoleRuleV7(view, unit);
+  // The Candy revision section 5.3: a Crashed unit has no primary action
+  // (it may still Move, Wait, Promote, Disband, embark, and land).
+  const crashed = unitIsCrashedV7(view, unit.id);
   const primaryReady =
-    !primaryUsedForQuery(unit) && !primaryActionBlockedAfterMoveV7(view, unit);
+    !crashed &&
+    !primaryUsedForQuery(unit) &&
+    !primaryActionBlockedAfterMoveV7(view, unit);
   // The Dwarf revision section 7.3: an unmoved Clockwork Gunner's second
   // shot.
   const attackReady =
     unit.form !== "EMBARKED" &&
+    !crashed &&
     (primaryReady ||
       unit.activation.overrunActive ||
       twinShotReadyV7(view, unit));
+  // The Candy revision: Sugar Rush, Re-bake, and Sugar Toss, each offered
+  // exactly when the reducer accepts it (the shared legality predicates).
+  if (sugarRushRejectionV7(view, unit) === null)
+    candidates.push({ kind: "SUGAR_RUSH", unitId: unit.id });
+  if (candyActionRejectionV7(view, unit, "REBAKE") === null)
+    for (const option of publicRebakeFactsV7(view, unit)?.options ?? [])
+      candidates.push({ kind: "REBAKE", unitId: unit.id, at: option.at });
+  if (candyActionRejectionV7(view, unit, "SUGAR_TOSS") === null)
+    for (const target of publicSugarTossTargetsV7(view, unit))
+      candidates.push({
+        kind: "SUGAR_TOSS",
+        unitId: unit.id,
+        targetUnitId: target.id,
+      });
   // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2.
   const attackRange = publicAttackMaximumRangeV7(view, unit);
   for (const target of view.units) {
@@ -933,10 +979,12 @@ function appendPublicUnitCommandsV7(
   )
     candidates.push({ kind: "DEVOUR", unitId: unit.id });
   if (overrun) return;
-  // Section 10: the predicate End Turn idle recovery uses.
-  if (recoverEligibleV7(publicRecoveryFactsV7(view, unit)))
+  // Section 10: the predicate End Turn idle recovery uses. The Candy
+  // revision: a Crashed unit recovers idle at End Turn but cannot `RECOVER`.
+  if (!crashed && recoverEligibleV7(publicRecoveryFactsV7(view, unit)))
     candidates.push({ kind: "RECOVER", unitId: unit.id });
   if (
+    !crashed &&
     !unit.activation.moved &&
     !primaryUsedForQuery(unit) &&
     unit.captureEligible &&
@@ -960,6 +1008,7 @@ function appendPublicUnitCommandsV7(
     unit.form === "LAND" &&
     unit.role !== "JUGGERNAUT" &&
     !unitFliesV7(view, unit) &&
+    !crashed &&
     !primaryUsedForQuery(unit) &&
     !sluggishUnitMovedV7(view, unit) &&
     tile?.explored === true &&
@@ -1507,6 +1556,308 @@ export function queryAssembleUnavailableReasonV7(
   )
     return null;
   return publicAssembleFactsV7(view, engineer)?.unavailableReason ?? null;
+}
+
+// ------------------------------------------------- The Candy revision ---
+
+/** One Re-bake a Confectioner may make now (section 6.4). */
+export interface RebakeOptionV7 {
+  readonly at: CoordV7;
+  readonly role: UnitRoleIdV7;
+  readonly cost: number;
+  readonly hp: number;
+}
+
+/**
+ * The Candy revision (docs/product/RULESET_7_CANDY.md section 6.4, rows 6 to
+ * 10): the public facts of a Re-bake by the viewer's ready Confectioner: its
+ * home city with its slots, and every legal Crumbs tile in (y, x) order. Null
+ * without a home city the viewer owns. Every tile around an own unit is
+ * explored, and own Crumbs, units, and mounds on explored tiles are in the
+ * view, so the facts equal the reducer's.
+ */
+function publicRebakeFactsV7(
+  view: PlayerViewV7,
+  confectioner: PublicUnitV7,
+): {
+  readonly cityId: CityId;
+  readonly usedSlots: number;
+  readonly capacity: number;
+  readonly options: readonly RebakeOptionV7[];
+} | null {
+  const player = view.viewer;
+  if (confectioner.ownerId !== player.id) return null;
+  const home = view.cities.find(
+    (city) => city.id === confectioner.homeCityId && city.ownerId === player.id,
+  );
+  if (home === undefined) return null;
+  const capacity = cityUnitCapacityForV7(
+    home.level,
+    player.researchedTechs,
+    player.faction,
+  );
+  const usedSlots = allOwnedUnitsV7(view, player.id)
+    .filter((unit) => unit.homeCityId === home.id)
+    .reduce((sum, unit) => sum + unitCapacitySlotsV7(view, unit), 0);
+  const options: RebakeOptionV7[] = [];
+  for (const crumbs of rebakeCrumbsV7(
+    view.crumbs,
+    player.id,
+    confectioner.at,
+  )) {
+    const tile = tileAtView(view, crumbs.at);
+    const cost = rebakePriceV7(crumbs.role);
+    // The unit is not built yet: a role-level read of the viewer's seat.
+    const mechanics = seatRoleMechanicsV7(view, player.id, crumbs.role);
+    if (
+      tile?.explored !== true ||
+      cost === null ||
+      tileOccupiedV7(view, crumbs.at) ||
+      !canEnterTerrainV7({
+        terrain: tile.terrain,
+        movementMode: mechanics.movementMode,
+        afloat: false,
+        engineering: player.researchedTechs.includes("ENGINEERING"),
+        navigation: player.researchedTechs.includes("NAVIGATION"),
+        mountainBorn: mechanics.mountainBorn,
+      }) ||
+      (tile.territoryOwnerId !== null &&
+        tile.territoryOwnerId !== player.id &&
+        publicAllied(view, player.id, tile.territoryOwnerId)) ||
+      usedSlots + mechanics.capacitySlots > capacity ||
+      player.coins < cost
+    )
+      continue;
+    options.push({
+      at: crumbs.at,
+      role: crumbs.role,
+      cost,
+      hp: rebakeHpV7(crumbs.role),
+    });
+  }
+  return { cityId: home.id, usedSlots, capacity, options };
+}
+
+/** The Candy revision (section 13): the preview of a Confectioner's Re-bake. */
+export interface RebakePreviewV7 {
+  readonly unitId: UnitId;
+  readonly cityId: CityId;
+  readonly usedSlots: number;
+  readonly capacity: number;
+  /** The offered Crumbs in (y, x) order, each with its price and HP. */
+  readonly options: readonly RebakeOptionV7[];
+}
+
+/** The Candy revision (section 13): null unless a `REBAKE` is offered. */
+export function previewRebakeV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): RebakePreviewV7 | null {
+  const offered = queryPlayerCommandsV7(view).flatMap((command) =>
+    command.kind === "REBAKE" && command.unitId === unitId ? [command.at] : [],
+  );
+  const confectioner = view.units.find((unit) => unit.id === unitId);
+  if (offered.length === 0 || confectioner === undefined) return null;
+  const facts = publicRebakeFactsV7(view, confectioner);
+  if (facts === null) return null;
+  return {
+    unitId,
+    cityId: facts.cityId,
+    usedSlots: facts.usedSlots,
+    capacity: facts.capacity,
+    options: facts.options.filter((option) =>
+      offered.some((at) => same(at, option.at)),
+    ),
+  };
+}
+
+/**
+ * The Candy revision (section 9, rows 6 to 10): the legal Sugar Toss targets
+ * of the viewer's ready Gunner, in unit-ID order (own units are always
+ * visible, so the list equals the reducer's).
+ */
+function publicSugarTossTargetsV7(
+  view: PlayerViewV7,
+  gunner: PublicUnitV7,
+): readonly PublicUnitV7[] {
+  return view.units
+    .filter(
+      (target) =>
+        sugarTossTargetRejectionV7(gunner, target, view.tossedThisTurn) ===
+        null,
+    )
+    .sort((left, right) => left.id - right.id);
+}
+
+/** The Candy revision (section 13): the preview of a Gunner's Sugar Toss. */
+export interface SugarTossPreviewV7 {
+  readonly unitId: UnitId;
+  /** The offered targets in unit-ID order, each with its heal. */
+  readonly targets: readonly {
+    readonly unitId: UnitId;
+    readonly amount: number;
+    readonly hpAfter: number;
+  }[];
+}
+
+/** The Candy revision (section 13): null unless a `SUGAR_TOSS` is offered. */
+export function previewSugarTossV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): SugarTossPreviewV7 | null {
+  const offered = queryPlayerCommandsV7(view).flatMap((command) =>
+    command.kind === "SUGAR_TOSS" && command.unitId === unitId
+      ? [command.targetUnitId]
+      : [],
+  );
+  if (offered.length === 0) return null;
+  return {
+    unitId,
+    targets: offered.flatMap((targetUnitId) => {
+      const target = view.units.find((unit) => unit.id === targetUnitId);
+      if (target === undefined) return [];
+      const amount = sugarTossAmountV7(target);
+      return [{ unitId: target.id, amount, hpAfter: target.hp + amount }];
+    }),
+  };
+}
+
+/** The Candy revision (section 13): the preview of a Sugar Rush. */
+export interface SugarRushPreviewV7 {
+  readonly unitId: UnitId;
+  /** The Rushed Move (the role's Move plus 1). */
+  readonly move: number;
+  /** The destinations of the unit's Move if it Rushes, in (y, x) order. */
+  readonly destinations: readonly CoordV7[];
+  /** Those it cannot reach without the Rush. */
+  readonly newDestinations: readonly CoordV7[];
+  /**
+   * Home Sweet Home would spare the unit where it stands now (the viewer
+   * has the capability and the unit is on or next to an own city center).
+   */
+  readonly homeSweetHome: boolean;
+}
+
+/**
+ * The Candy revision (section 13): null unless `SUGAR_RUSH` is offered for
+ * the unit; the movement query with the Rushed budget.
+ */
+export function previewSugarRushV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+): SugarRushPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "SUGAR_RUSH" && command.unitId === unitId,
+    )
+  )
+    return null;
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined) return null;
+  const plain = reachablePlayerMovementPathsV7(view, unit).map(
+    (path) => path.destination,
+  );
+  const destinations = reachablePlayerMovementPathsV7(
+    viewWithRushV7(view, unitId),
+    unit,
+  ).map((path) => path.destination);
+  return {
+    unitId,
+    move: unitRoleRuleV7(view, unit).move + SUGAR_RUSH_MOVE_BONUS_V7,
+    destinations,
+    newDestinations: destinations.filter(
+      (at) => !plain.some((known) => same(known, at)),
+    ),
+    homeSweetHome: publicHomeSweetHomeSparesV7(view, unit),
+  };
+}
+
+/** `view` with `unitId` Rushed (for the Rushed movement query). */
+function viewWithRushV7(view: PlayerViewV7, unitId: UnitId): PlayerViewV7 {
+  return sugarRushPhaseV7(view, unitId) === "RUSHED"
+    ? view
+    : { ...view, sugarRush: withSugarRushV7(view.sugarRush, unitId, "RUSHED") };
+}
+
+/**
+ * The Candy revision (section 5.3) from a public view: whether Home Sweet
+ * Home would spare the visible unit where it stands: its owner's capability
+ * is public in its `candy` stats block, and so are the city centers the
+ * viewer has explored.
+ */
+function publicHomeSweetHomeSparesV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return (
+    view.unitStats.find((stats) => stats.unitId === unit.id)?.candy
+      ?.homeSweetHome === true && standsByOwnCenterV7(view.cities, unit)
+  );
+}
+
+/** The Candy revision (section 13): the preview of eating Crumbs. */
+export interface CrumbsEatPreviewV7 {
+  readonly at: CoordV7;
+  readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  /** HP the Peppermint Surprise takes (0 without it). */
+  readonly damage: number;
+  readonly shieldDamage: number;
+  readonly dies: boolean;
+}
+
+/**
+ * The Candy revision (section 13): null unless a `MOVE` or a `DISEMBARK` of
+ * the viewer's unit to `to` is offered and would eat Crumbs there; else the
+ * exact Peppermint Surprise (the Crumbs' public `bite`).
+ */
+export function previewCrumbsEatV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  to: CoordV7,
+): CrumbsEatPreviewV7 | null {
+  const crumbs = crumbsAtV7(view, to);
+  const unit = view.units.find(
+    (candidate) =>
+      candidate.id === unitId && candidate.ownerId === view.viewer.id,
+  );
+  if (crumbs === undefined || unit === undefined) return null;
+  const tile = tileAtView(view, to);
+  // A Move that ends by embarking leaves the unit afloat; Crumbs lie on
+  // land, so the unit is in land form after an offered Move or landing.
+  if (tile?.explored !== true || tile.biome === null) return null;
+  if (
+    !unitEatsCrumbsV7(
+      view,
+      { ...unit, form: "LAND" },
+      crumbs.ownerId,
+      (left, right) => publicHostile(view, left, right),
+    ) ||
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        (command.kind === "MOVE" &&
+          command.unitId === unitId &&
+          same(command.path.at(-1) ?? { x: -1, y: -1 }, to)) ||
+        (command.kind === "DISEMBARK" &&
+          command.unitId === unitId &&
+          same(command.at, to)),
+    )
+  )
+    return null;
+  const hit = peppermintHitV7(
+    view,
+    { ...unit, form: "LAND" },
+    shieldOfV7(view.shields, unit.id),
+    crumbs.bite,
+  );
+  return {
+    at: crumbs.at,
+    ownerId: crumbs.ownerId,
+    role: crumbs.role,
+    damage: hit.damage,
+    shieldDamage: hit.shieldDamage,
+    dies: hit.dies,
+  };
 }
 
 /**
@@ -3065,6 +3416,20 @@ export function queryThreatenedTilesV7(
   if (isNeutralOwnerV7(unit.ownerId))
     return previewMonsterV7(view, unit.id)?.provokeTiles ?? [];
   const rule = unitRoleRuleV7(view, unit);
+  // The Candy revision section 13: a Crashed unit has no attack reach, nor
+  // has a Rushed one (it will be Crashed on its next turn) unless Home Sweet
+  // Home spares it where it stands; every other Candy unit that could Rush
+  // threatens its Rushed reach (Move + 1).
+  const rushPhase = sugarRushPhaseV7(view, unit.id);
+  if (
+    rushPhase === "CRASHED" ||
+    (rushPhase === "RUSHED" && !publicHomeSweetHomeSparesV7(view, unit))
+  )
+    return [];
+  const reachView =
+    unit.form === "LAND" && rule.abilities.includes("SUGAR_RUSH")
+      ? viewWithRushV7(view, unit.id)
+      : view;
   // The Dwarf revision section 14: a Gyrocopter's bombing reach (no
   // ordinary attack): every tile within 2 of its tile, unless it is
   // sluggish (it cannot bomb on its next turn).
@@ -3099,7 +3464,7 @@ export function queryThreatenedTilesV7(
     unit.at,
     ...(unitIsSluggishV7(view, unit)
       ? []
-      : reachablePlayerMovementPathsV7(view, unit)
+      : reachablePlayerMovementPathsV7(reachView, unit)
           .map((path) => path.destination)
           .filter((at) => {
             if (!machine) return true;
@@ -6427,6 +6792,8 @@ function publicCombatPreviewCore(
     attacker.form === "EMBARKED" ||
     attacker.form === "EGG" ||
     !attackerRule.abilities.includes("ATTACK") ||
+    // The Candy revision section 5.3: a Crashed unit cannot attack.
+    unitIsCrashedV7(view, attacker.id) ||
     !attackReady ||
     (!attacker.activation.overrunActive &&
       !twinShot &&
@@ -6469,8 +6836,31 @@ function publicCombatPreviewCore(
   const plantedApplied = attack.modifiers.some(
     (modifier) => modifier.source === "PLANTED",
   );
+  const chargeApplied =
+    attackerRule.abilities.includes("CHARGE") &&
+    view.viewer.researchedTechs.includes("RAIDING") &&
+    attacker.activation.moved &&
+    attacker.activation.movedPathLength >= 2 &&
+    attacker.activation.attacksUsed === 0;
+  const inspiredApplied =
+    attacker.activation.inspired && attacker.activation.attacksUsed === 0;
+  // The Candy revision section 5.2: the Rush bonus of a Rushed attacker is
+  // already in the public Attack total (the `SUGAR_RUSH` modifier); the
+  // estimate option `assumeSugarRush` adds it for a unit that could Rush.
+  const assumeRushed = options.assumeSugarRush === true;
+  const rushInStats = attack.modifiers.some(
+    (modifier) => modifier.source === "SUGAR_RUSH",
+  );
+  const assumedRush2 = rushInStats
+    ? 0
+    : sugarRushAttack2V7(view, attacker, {
+        chargeApplied,
+        inspiredApplied,
+        assumeRushed,
+      });
   const attack2 =
     rationalToHalfUnits(attack.total) +
+    assumedRush2 +
     gangUp * 2 +
     (rockfallApplied
       ? attackerMechanics0.rockfallAttack2 - attackerRule.attack2
@@ -6609,7 +6999,7 @@ function publicCombatPreviewCore(
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
   // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
   // a Gyrocopter retaliates too.
-  const retaliation =
+  const wouldRetaliate =
     !defenderDies &&
     !unanswered &&
     target.form !== "EMBARKED" &&
@@ -6618,6 +7008,10 @@ function publicCombatPreviewCore(
     defenderRule.attack2 > 0 &&
     distance >= defenderRule.minimumRange &&
     distance <= defenderRule.range;
+  // The Candy revision section 7: a Splatted unit does not strike back (the
+  // public `splattedThisTurn` of a visible unit).
+  const splatted = unitIsSplattedV7(view, target.id);
+  const retaliation = wouldRetaliate && !splatted;
   // Section 13.2: retaliation uses the same fortified Defense as the
   // defender's force, exactly as canonical resolution does.
   const rawAttackerDamage = retaliation
@@ -6754,8 +7148,19 @@ function publicCombatPreviewCore(
       view.cities.find((city) => same(city.at, target.at))?.ownerId ?? null,
     );
   const nextAttacks = attacker.activation.attacksUsed + 1;
+  // The Candy revision section 5.4: a Rushed Gummy Bear's Sugar Frenzy is an
+  // Overrun capped at two continuations (the shared predicates).
+  const overrunKind = overrunKindV7(view, attacker, attackerRule, assumeRushed);
+  // The Candy revision section 8: the Bounce, after the Push and the follow.
+  const bounced = publicBounceStateV7(view, attacker, target, {
+    distance,
+    attackerDies,
+    defenderDies,
+    advances,
+    push,
+  });
   const overrunContinues =
-    attackerRule.abilities.includes("OVERRUN") &&
+    overrunMayContinueV7(overrunKind, nextAttacks) &&
     advances &&
     view.units.some(
       (unit) =>
@@ -6772,14 +7177,8 @@ function publicCombatPreviewCore(
     defense2,
     minimumRange: attackerRule.minimumRange,
     maximumRange: publicAttackMaximumRangeV7(view, attacker),
-    chargeApplied:
-      attackerRule.abilities.includes("CHARGE") &&
-      view.viewer.researchedTechs.includes("RAIDING") &&
-      attacker.activation.moved &&
-      attacker.activation.movedPathLength >= 2 &&
-      attacker.activation.attacksUsed === 0,
-    inspiredApplied:
-      attacker.activation.inspired && attacker.activation.attacksUsed === 0,
+    chargeApplied,
+    inspiredApplied,
     inspiredConsumed: attacker.activation.inspired,
     gangUp,
     breachApplied,
@@ -6791,13 +7190,12 @@ function publicCombatPreviewCore(
     defenderDies,
     attackerDies,
     retaliation,
-    noRetaliationReason: defenderDies
-      ? "DEFENDER_DIED"
-      : retaliation
-        ? null
-        : unanswered
-          ? "UNANSWERED"
-          : "OUT_OF_RANGE",
+    noRetaliationReason: noRetaliationReasonV7({
+      defenderDies,
+      retaliates: retaliation,
+      unanswered,
+      splatted: wouldRetaliate && splatted,
+    }),
     advances,
     push,
     attacksUsed: nextAttacks,
@@ -6807,11 +7205,11 @@ function publicCombatPreviewCore(
       (!attackerDies && attackAllowanceV7(view, attacker) > nextAttacks)
         ? 1
         : 0,
-    overrunAdvance: attackerRule.abilities.includes("OVERRUN") && advances,
+    overrunAdvance: overrunKind !== null && advances,
     overrunContinues,
+    // The Candy revision section 5.4: a Rushed Donut Racer has Escape.
     escapeAvailable:
-      attacker.form === "LAND" &&
-      attackerRule.abilities.includes("ESCAPE") &&
+      attackGrantsEscapeV7(view, attacker, attackerRule, assumeRushed) &&
       !attackerDies &&
       !unitIsSluggishV7(view, attacker),
     splash,
@@ -6866,7 +7264,74 @@ function publicCombatPreviewCore(
             total * 4n,
           ),
         )),
+    sugarRushApplied: rushInStats || assumedRush2 > 0,
+    splatApplied: attackSplatAppliesV7(view, attacker, target, defenderDies),
+    ...bounced,
   };
+}
+
+/**
+ * The Candy revision (section 8): the public Bounce of an own attacker,
+ * mirroring `bounceStateV7`: the destination is next to the attacker, which
+ * is the viewer's own unit, so the tile is explored, every unit, mound, and
+ * chest on it is visible, and the technologies are the viewer's; the result
+ * is exact. `UNKNOWN_BEHIND_FOG` only when the tile is not explored (an
+ * estimate from a tile the unit does not stand on) or when the Charge! push
+ * that decides the attacker's position is itself unknown.
+ */
+function publicBounceStateV7(
+  view: PlayerViewV7,
+  attacker: PlayerViewV7["units"][number],
+  defender: PlayerViewV7["units"][number],
+  facts: {
+    readonly distance: number;
+    readonly attackerDies: boolean;
+    readonly defenderDies: boolean;
+    readonly advances: boolean;
+    readonly push: CombatPreviewV7["push"];
+  },
+): Pick<CombatPreviewV7, "bounce" | "bounceTo"> {
+  const none = { bounce: "NONE", bounceTo: null } as const;
+  if (!attackIsBouncedV7(view, attacker, defender, facts)) return none;
+  const behind = {
+    x: defender.at.x * 2 - attacker.at.x,
+    y: defender.at.y * 2 - attacker.at.y,
+  };
+  // An unknown Charge! push leaves the attacker's position unknown, unless
+  // the tile behind the defender is unexplored: the resolution then never
+  // pushes (the Push needs the attacker's owner to have explored it).
+  if (
+    facts.push === "UNKNOWN_BEHIND_FOG" &&
+    attackIsChargeV7(view, attacker) &&
+    tileAtView(view, behind)?.explored === true
+  )
+    return { bounce: "UNKNOWN_BEHIND_FOG", bounceTo: null };
+  const defenderAt = facts.push === "WILL_PUSH" ? behind : defender.at;
+  const attackerAt = facts.advances ? defender.at : attacker.at;
+  if (chebyshev(attackerAt, defenderAt) !== 1) return none;
+  const destination = bounceDestinationV7(attackerAt, defenderAt);
+  const tile = tileAtView(view, destination);
+  if (tile === undefined) return { bounce: "BLOCKED", bounceTo: null };
+  if (!tile.explored) return { bounce: "UNKNOWN_BEHIND_FOG", bounceTo: null };
+  const legal =
+    tile.site === null &&
+    canEnterTerrainV7({
+      terrain: tile.terrain,
+      movementMode: unitMovementModeV7(view, attacker),
+      afloat: isAfloatFormV7(attacker.form),
+      engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
+      navigation: view.viewer.researchedTechs.includes("NAVIGATION"),
+      mountainBorn: unitIsMountainBornV7(view, attacker),
+    }) &&
+    !tileOccupiedV7(view, destination, attacker.id) &&
+    !(
+      tile.territoryOwnerId !== null &&
+      publicAllied(view, attacker.ownerId, tile.territoryOwnerId)
+    ) &&
+    !view.treasureChests.some((chest) => same(chest, destination));
+  return legal
+    ? { bounce: "WILL_BOUNCE", bounceTo: destination }
+    : { bounce: "BLOCKED", bounceTo: null };
 }
 
 /** The land-form Ice Witches a view can see (section 6.5). */
@@ -6919,7 +7384,22 @@ function publicCombatPreview(
   if (chain.preview.explosions.length === 0) return preview;
   const target = view.units.find((unit) => unit.id === targetUnitId);
   if (target === undefined) return preview;
+  // The Candy revision section 5.4: the Sugar Frenzy cap holds after a
+  // chain too.
+  const attackerUnit = view.units.find((unit) => unit.id === attackerId);
+  const mayContinue =
+    attackerUnit !== undefined &&
+    overrunMayContinueV7(
+      overrunKindV7(
+        view,
+        attackerUnit,
+        unitRoleRuleV7(view, attackerUnit),
+        options.assumeSugarRush === true,
+      ),
+      preview.attacksUsed,
+    );
   const overrunContinues =
+    mayContinue &&
     chain.units.some((unit) => unit.id === attackerId) &&
     chain.units.some(
       (unit) =>
@@ -7233,7 +7713,14 @@ function publicAttackChainV7(
     // (`advances`).
     units.push({
       ...attacker,
-      at: preview.advances ? target.at : attacker.at,
+      // The Candy revision section 8: a bounced attacker stands one tile
+      // back when the chain resolves.
+      at:
+        preview.bounce === "WILL_BOUNCE" && preview.bounceTo !== null
+          ? preview.bounceTo
+          : preview.advances
+            ? target.at
+            : attacker.at,
       hp: grownHpV7(
         view,
         attackerUnit,

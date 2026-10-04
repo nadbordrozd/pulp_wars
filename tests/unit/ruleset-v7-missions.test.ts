@@ -102,8 +102,25 @@ function missionStateHash(state: GameStateV7): string {
   // `beamedThisTurn` and `tractorUsedThisTurn`, empty in every initial
   // state, so the pins leave them out too: no mission has a Martian or Ice
   // Folk unit, so no mission revision changed.
-  const { monsters, beamedThisTurn, tractorUsedThisTurn, ...rest } = state;
+  // The Candy revision (`pulp_wars-jdb.3`) added four lists, empty in every
+  // initial state and left out too: no mission has a Candy unit.
+  const {
+    monsters,
+    beamedThisTurn,
+    tractorUsedThisTurn,
+    sugarRush,
+    crumbs,
+    splattedThisTurn,
+    tossedThisTurn,
+    ...rest
+  } = state;
   expect([monsters, beamedThisTurn, tractorUsedThisTurn]).toEqual([[], [], []]);
+  expect([sugarRush, crumbs, splattedThisTurn, tossedThisTurn]).toEqual([
+    [],
+    [],
+    [],
+    [],
+  ]);
   return canonicalHash({
     ...rest,
     rulesetId: "*",
@@ -149,11 +166,21 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     monsters,
     beamedThisTurn,
     tractorUsedThisTurn,
+    sugarRush,
+    crumbs,
+    splattedThisTurn,
+    tossedThisTurn,
     ...rest
   } = state;
   const { curiosities: option, ...setup } = state.setup;
   expect([curiosities, monsters, option]).toEqual([[], [], false]);
   expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);
+  expect([sugarRush, crumbs, splattedThisTurn, tossedThisTurn]).toEqual([
+    [],
+    [],
+    [],
+    [],
+  ]);
   return canonicalHash({
     ...rest,
     rulesetId: "*",

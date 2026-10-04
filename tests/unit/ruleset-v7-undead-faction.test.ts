@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r37");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r37.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r38");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r38.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -97,6 +97,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       "ICE_FOLK",
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
+      "CANDY",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -106,6 +107,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       "MARTIAN_BASELINE_V1",
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
+      "CANDY_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("ORIGINAL")).toBe("ORIGINAL_BASELINE_V5");
     expect(factionTreeIdV7("UNDEAD")).toBe("UNDEAD_BASELINE_V1");
@@ -117,6 +119,7 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       MARTIAN: "Martian",
       ICE_FOLK: "Ice Folk",
       DWARF: "Dwarf",
+      CANDY: "Candy",
     });
     expect(Object.keys(RULESET_7.factionTrees)).toEqual([
       "ORIGINAL",
@@ -127,20 +130,23 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       "ICE_FOLK",
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
+      "CANDY",
     ]);
     expect(FACTION_TREES_V7.UNDEAD.faction).toBe("UNDEAD");
     expect(() => assertRuleset7Registry()).not.toThrow();
-    expect(() => factionTreeV7("CANDY" as FactionIdV7)).toThrow(RangeError);
+    expect(() => factionTreeV7("NOT_A_FACTION" as FactionIdV7)).toThrow(
+      RangeError,
+    );
     expect(() =>
-      effectiveRoleRuleV7("FIGHTER", "CANDY" as FactionIdV7),
+      effectiveRoleRuleV7("FIGHTER", "NOT_A_FACTION" as FactionIdV7),
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r36 and preserves the r37 save", () => {
+  it("cleans obsolete keys through v7r37 and preserves the r38 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r36.current",
+      "pulpWars.save.v7r37.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(36);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(37);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -168,7 +174,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r34.current", "r34"],
       ["pulpWars.save.v7r35.current", "r35"],
       ["pulpWars.save.v7r36.current", "r36"],
-      [SAVE_STORAGE_KEY_V7, "r37"],
+      ["pulpWars.save.v7r37.current", "r37"],
+      [SAVE_STORAGE_KEY_V7, "r38"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -199,8 +206,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r34.current",
         "pulpWars.save.v7r35.current",
         "pulpWars.save.v7r36.current",
+        "pulpWars.save.v7r37.current",
       ],
-      removedCount: 25,
+      removedCount: 26,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -269,7 +277,7 @@ describe("ruleset-7 per-seat factions", () => {
       )?.factions,
     ).toEqual(["UNDEAD", "ORIGINAL", "UNDEAD", "UNDEAD"]);
     for (const factions of [
-      ["ORIGINAL", "CANDY"],
+      ["ORIGINAL", "NOT_A_FACTION"],
       ["undead", "ORIGINAL"],
       ["UNDEAD"],
       ["UNDEAD", "UNDEAD", "UNDEAD"],
@@ -352,7 +360,10 @@ describe("ruleset-7 per-seat factions", () => {
     ).toBeNull();
     expect(
       parseGameStateV7(
-        withPlayer({ faction: "CANDY", factionTreeId: "UNDEAD_BASELINE_V1" }),
+        withPlayer({
+          faction: "NOT_A_FACTION",
+          factionTreeId: "UNDEAD_BASELINE_V1",
+        }),
       ),
     ).toBeNull();
     expect(
@@ -1749,8 +1760,19 @@ describe("ruleset-7 all-Human parity digests", () => {
           dugIn,
           unflinchingApplied,
           platedApplied,
+          sugarRushApplied,
+          splatApplied,
+          bounce,
+          bounceTo,
           ...previewWithoutSplash
         } = event.preview;
+        // The Candy revision (pulp_wars-jdb.3): four neutral fields.
+        expect([sugarRushApplied, splatApplied, bounce, bounceTo]).toEqual([
+          false,
+          false,
+          "NONE",
+          null,
+        ]);
         // The Dwarf revision (pulp_wars-78i.3): three neutral fields.
         expect([dugIn, unflinchingApplied, platedApplied]).toEqual([
           false,
@@ -1909,6 +1931,17 @@ describe("ruleset-7 all-Human parity digests", () => {
             // and view (an all-Human match never fills them).
             if (
               (key === "beamedThisTurn" || key === "tractorUsedThisTurn") &&
+              Array.isArray(item) &&
+              item.length === 0
+            )
+              return undefined;
+            // pulp_wars-jdb.3: the four empty Candy lists of state and view
+            // (an all-Human match never fills them).
+            if (
+              (key === "sugarRush" ||
+                key === "crumbs" ||
+                key === "splattedThisTurn" ||
+                key === "tossedThisTurn") &&
               Array.isArray(item) &&
               item.length === 0
             )

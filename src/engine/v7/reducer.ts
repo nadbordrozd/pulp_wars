@@ -103,6 +103,7 @@ import {
 } from "./economy";
 import type { DomainEventV7 } from "./events";
 import {
+  bounceStateV7,
   calculateCombatPreviewV7,
   pushedDestinationV7,
   tractorBeamTargetTechnologyV7,
@@ -121,6 +122,7 @@ import {
   RAISE_DEAD_SKELETON_HP_V7,
   raiseDeadGravesV7,
   recordCombatDeathV7,
+  recordCrumbsV7,
   withoutGravesV7,
 } from "./graves";
 import { grownUnitV7 } from "./growth";
@@ -182,6 +184,21 @@ import {
   type DwarfReducerKitV7,
 } from "./dwarf-reducer";
 import { twinShotReadyV7, unitIsMachineV7 } from "./dwarf";
+import {
+  applyRebakeV7,
+  applySugarRushV7,
+  applySugarTossV7,
+  prunedCandyV7,
+  resolveCandyEndTurnV7,
+  resolveCrumbsEatingV7,
+  withCrumbsLeftV7,
+} from "./candy-reducer";
+import {
+  overrunKindV7,
+  overrunMayContinueV7,
+  unitIsCrashedV7,
+  withUnitIdV7,
+} from "./candy";
 import { unitIsConstructV7 } from "./afflictions";
 import {
   recoverEligibleV7,
@@ -285,7 +302,15 @@ export type RuleErrorCodeV7 =
   // (`EMBARKED`, `NO_HOME`).
   | "TUNNEL_NOT_LEGAL"
   | "BOMB_RUN_NOT_LEGAL"
-  | "ASSEMBLE_NOT_LEGAL";
+  | "ASSEMBLE_NOT_LEGAL"
+  // The Candy revision: a primary action or a Sugar Rush of a Crashed unit
+  // (`UNIT_CRASHED { unitId }`), an illegal Sugar Rush (`EMBARKED`,
+  // `RUSHED`), Re-bake (`EMBARKED`, `NO_HOME`, `NO_CRUMBS`, `TILE`), or
+  // Sugar Toss (`EMBARKED`, `OUT_OF_RANGE`, `ALREADY_TOSSED`).
+  | "UNIT_CRASHED"
+  | "SUGAR_RUSH_NOT_LEGAL"
+  | "REBAKE_NOT_LEGAL"
+  | "SUGAR_TOSS_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -392,13 +417,17 @@ export function applyCommandV7(
   actor: PlayerId,
   input: CommandV7,
 ): ApplyCommandResultV7 {
-  const core = applyCommandCoreV7(stateInput, actor, input);
-  if (!core.accepted) return core;
+  const applied = applyCommandCoreV7(stateInput, actor, input);
+  if (!applied.accepted) return applied;
+  // The Candy revision section 6.1: the Crumbs the command's deaths left.
+  const core = withCrumbsLeftResultV7(applied);
   const result = revealReleasedUnitsV7(core);
   // The Mind Control revision section 5.4: every command that releases a
   // unit joins the blockade and sea-network recompute list.
   const navalMayChange =
     navalFactsMayChangeV7(stateInput, input) || result !== core;
+  // (`result !== core` only when a unit was released; the Crumbs fold above
+  // changes no unit, city, or tile.)
   const naval = navalMayChange
     ? navalTransitionEventsV7(stateInput, result.state)
     : [];
@@ -433,6 +462,26 @@ function withMonsterProvocationsResultV7(
     result.events.slice(start),
   );
   if (state === result.state) return result;
+  const next = accepted(checked(state), result.events);
+  if (!next.accepted) throw new RangeError("INVALID_STATE");
+  return next;
+}
+
+/**
+ * The Candy revision (docs/product/RULESET_7_CANDY.md section 6.1): folds
+ * the `CRUMBS_LEFT` events of an accepted command into `crumbs`, in the
+ * order of their deaths (later Crumbs replace earlier ones on a tile). The
+ * death sites only record the event (`recordCrumbsV7`); nothing reads
+ * Crumbs left earlier in the same command, because eating, Re-bake, and the
+ * End Turn countdown all come before any death of their command. Returns
+ * `result` itself when the command left no Crumbs.
+ */
+function withCrumbsLeftResultV7(
+  result: Extract<ApplyCommandResultV7, { readonly accepted: true }>,
+): Extract<ApplyCommandResultV7, { readonly accepted: true }> {
+  if (!result.events.some((event) => event.kind === "CRUMBS_LEFT"))
+    return result;
+  const state = withCrumbsLeftV7(result.state, result.events);
   const next = accepted(checked(state), result.events);
   if (!next.accepted) throw new RangeError("INVALID_STATE");
   return next;
@@ -673,6 +722,12 @@ function applyCommandCoreV7(
     return applyBombRunV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "ASSEMBLE")
     return applyAssembleV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "SUGAR_RUSH")
+    return applySugarRushV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "REBAKE")
+    return applyRebakeV7(DWARF_KIT_V7, stateInput, state, actor, command);
+  if (command.kind === "SUGAR_TOSS")
+    return applySugarTossV7(DWARF_KIT_V7, stateInput, state, actor, command);
   return rejected(stateInput, "INVALID_COMMAND");
 }
 
@@ -1831,27 +1886,43 @@ function applyDisembark(
     const board = occupiesHostileDefense
       ? replaceTile(state, command.at, { ...tile, fieldDefense: false })
       : state.board;
+    // The Candy revision section 6.3: a hostile ground unit that lands on
+    // Crumbs eats them, after the landing's own events and before the
+    // economy tail.
+    const eatingEvents: DomainEventV7[] = [];
+    const landedState = resolveCrumbsEatingV7(
+      DWARF_KIT_V7,
+      {
+        ...state,
+        board,
+        commandIndex: nextSafe(state.commandIndex),
+        players,
+        units: movedUnits,
+        shields: withFullShieldsV7(
+          state,
+          state.shields,
+          treasure?.spawnedUnit == null ? [] : [treasure.spawnedUnit],
+        ),
+        random: treasure?.random ?? state.random,
+        nextEntityId: treasure?.nextEntityId ?? state.nextEntityId,
+        treasureChests: treasure?.treasureChests ?? state.treasureChests,
+      },
+      unit.id,
+      eatingEvents,
+    );
     const economy = recomputeLiveEconomyV7(
       state,
-      { board, cities: state.cities, units: movedUnits },
-      state.populationContributions,
+      {
+        board: landedState.board,
+        cities: landedState.cities,
+        units: landedState.units,
+      },
+      landedState.populationContributions,
     );
     const staged: GameStateV7 = {
-      ...state,
-      board,
-      commandIndex: nextSafe(state.commandIndex),
-      players,
-      units: movedUnits,
-      shields: withFullShieldsV7(
-        state,
-        state.shields,
-        treasure?.spawnedUnit == null ? [] : [treasure.spawnedUnit],
-      ),
+      ...landedState,
       cities: economy.cities,
       populationContributions: economy.populationContributions,
-      random: treasure?.random ?? state.random,
-      nextEntityId: treasure?.nextEntityId ?? state.nextEntityId,
-      treasureChests: treasure?.treasureChests ?? state.treasureChests,
     };
     const settlement = settleCityRewardsV7(staged, actor);
     const achievements = evaluateAchievementsV7(settlement.state, actor);
@@ -1878,6 +1949,7 @@ function applyDisembark(
           ] as const)
         : []),
       ...(treasure === null ? [] : [treasure.event]),
+      ...eatingEvents,
       ...economyAndGrowth(economy.changes),
       ...settlement.events,
       ...achievements.events,
@@ -3317,6 +3389,11 @@ function applyMove(
       treasureChests: treasure?.treasureChests ?? state.treasureChests,
       curiosities: claim?.state.curiosities ?? state.curiosities,
     };
+    // The Candy revision section 6.3: a hostile ground unit that ended its
+    // Move (an interrupted or an Escape Move included) on Crumbs eats them,
+    // right after the Move's own events and before the economy tail.
+    if (validation.traversedPath.length > 0)
+      staged = resolveCrumbsEatingV7(DWARF_KIT_V7, staged, unit.id, events);
     const economy = recomputeLiveEconomyV7(
       state,
       { board: staged.board, cities: staged.cities, units: staged.units },
@@ -3515,6 +3592,9 @@ function applyAttack(
   // The Dwarf revision section 6.1: a Gyrocopter has no ordinary attack.
   if (rule.abilities.includes("BOMB_RUN") && !rule.abilities.includes("ATTACK"))
     return rejected(original, "UNIT_ROLE_INVALID", { role: attacker.role });
+  // The Candy revision section 5.3: a Crashed unit has no primary action.
+  if (unitIsCrashedV7(state, attacker.id))
+    return rejected(original, "UNIT_CRASHED", { unitId: attacker.id });
   // The Dwarf revision section 7.3: an unmoved Clockwork Gunner's second
   // shot.
   const twinShot = twinShotReadyV7(state, attacker);
@@ -3624,10 +3704,22 @@ function resolveAttackExchangeV7(
         navigation: false,
         mountainBorn: unitIsMountainBornV7(state, attacker),
       }));
+  // The Candy revision section 8: the Bounce is read after the advance, so
+  // an advance the resolution refuses is refused for the Bounce too.
   const preview =
     canAdvance === calculated.advances
       ? calculated
-      : { ...calculated, advances: canAdvance };
+      : {
+          ...calculated,
+          advances: canAdvance,
+          ...bounceStateV7(state, attacker, defender, {
+            distance,
+            attackerDies: calculated.attackerDies,
+            defenderDies: calculated.defenderDies,
+            advances: canAdvance,
+            pushed: calculated.push === "WILL_PUSH",
+          }),
+        };
   const attacksUsed = attacker.activation.attacksUsed + 1;
   // Revision 17 section 6.8: splash kills of own or allied units (the
   // Bomb Chucker's friendly fire) earn no promotion credit.
@@ -3814,10 +3906,11 @@ function resolveAttackExchangeV7(
       riftAtV7(state.board, victim.at)
     ) {
       // The Ice Folk revision section 5.5: a shattered unit leaves no
-      // Grave.
-      if (cause === "SHATTER")
+      // Grave (the Candy revision section 12.6: it leaves its Crumbs).
+      if (cause === "SHATTER") {
         events.push({ kind: "UNIT_DIED", unitId: victim.id, cause });
-      else graves = recordCombatDeathV7(state, graves, victim, cause, events);
+        recordCrumbsV7(state, victim, cause, events);
+      } else graves = recordCombatDeathV7(state, graves, victim, cause, events);
       return;
     }
     const allocation = allocateUnitId(nextEntityId);
@@ -3907,6 +4000,49 @@ function resolveAttackExchangeV7(
       unitId: attacker.id,
       path: [defender.at],
     });
+  // The Candy revision section 7: a Pie Launcher's surviving target is
+  // Splatted for the rest of the active seat's turn.
+  const splattedThisTurn = preview.splatApplied
+    ? withUnitIdV7(state.splattedThisTurn, defender.id)
+    : state.splattedThisTurn;
+  // The Candy revision section 8: the Bounce, after the Push, the advance,
+  // and the Charge! follow and before any death-blast chain. It is not a
+  // Move: the attacker keeps its activation and reveals its sight.
+  let bouncePlayers = visiblePlayers;
+  if (preview.bounce === "WILL_BOUNCE" && preview.bounceTo !== null) {
+    const bounceTo = preview.bounceTo;
+    const bounced = requireValue(units.find((unit) => unit.id === attacker.id));
+    events.push({
+      kind: "UNIT_PUSHED",
+      sourceUnitId: defender.id,
+      targetUnitId: attacker.id,
+      from: bounced.at,
+      to: bounceTo,
+    });
+    attackerAfter = { ...bounced, at: bounceTo };
+    units = units.map((unit) =>
+      unit.id === attacker.id ? attackerAfter : unit,
+    );
+    const bounceState = {
+      ...state,
+      board,
+      players: visiblePlayers,
+      units,
+    } as GameStateV7;
+    const reveal = revealRadius(
+      bounceState,
+      actor,
+      bounceTo,
+      unitSightRadiusAtV7(bounceState, attackerAfter),
+    );
+    bouncePlayers = setExplored(visiblePlayers, actor, reveal.explored);
+    if (reveal.revealed.length)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: reveal.revealed,
+      });
+  }
   // Revision 17 section 6.7: the exploding units among the defender, the
   // splash victims, and the attacker explode after the attack's deaths,
   // risings, advance, and Push; Overrun (Ram) is evaluated afterwards.
@@ -3956,8 +4092,11 @@ function resolveAttackExchangeV7(
     board,
     units,
   } as GameStateV7;
+  // The Candy revision section 5.4: a Rushed Gummy Bear's Sugar Frenzy is
+  // an Overrun capped at `SUGAR_FRENZY_MAX_CONTINUATIONS_V7` continuations.
+  const overrunKind = overrunKindV7(state, attacker, rule);
   const overrunContinues =
-    rule.abilities.includes("OVERRUN") &&
+    overrunMayContinueV7(overrunKind, attacksUsed) &&
     preview.advances &&
     !preview.attackerDies &&
     survivor !== undefined &&
@@ -3989,7 +4128,7 @@ function resolveAttackExchangeV7(
     ...preview,
     attacksRemaining:
       overrunContinues || preview.attacksRemaining === 1 ? 1 : 0,
-    overrunAdvance: rule.abilities.includes("OVERRUN") && preview.advances,
+    overrunAdvance: overrunKind !== null && preview.advances,
     overrunContinues,
   };
   events.unshift({ kind: "COMBAT_RESOLVED", preview: finalPreview });
@@ -3997,7 +4136,7 @@ function resolveAttackExchangeV7(
   // credited with the defender and splash deaths, the defender's owner with
   // a retaliation death, and each exploding unit's owner with its blast's
   // deaths; a victim that rises still counts as killed.
-  const plunder = plunderAwardsV7(state, visiblePlayers, [
+  const plunder = plunderAwardsV7(state, bouncePlayers, [
     ...(preview.defenderDies
       ? [
           {
@@ -4097,6 +4236,7 @@ function resolveAttackExchangeV7(
       bitten,
       shields: chain.shields,
       cooling,
+      splattedThisTurn,
       populationContributions: economy.populationContributions,
     },
     events,
@@ -4117,6 +4257,9 @@ function supportCaptain(
   const rule = unitRoleRuleV7(state, captain);
   if (captain.form !== "LAND" || !rule.abilities.includes(ability))
     return rejected(original, "UNIT_ROLE_INVALID", { role: captain.role });
+  // The Candy revision section 5.3: a Crashed Confectioner cannot Frost.
+  if (unitIsCrashedV7(state, captain.id))
+    return rejected(original, "UNIT_CRASHED", { unitId });
   if (primaryUsed(captain) || primaryActionBlockedAfterMoveV7(state, captain))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   return { captain };
@@ -4495,6 +4638,10 @@ function applyRecover(
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
   const unit = actorCheck.unit;
+  // The Candy revision section 5.3: a Crashed unit has no primary action
+  // (it still recovers idle at End Turn).
+  if (unitIsCrashedV7(state, unit.id))
+    return rejected(original, "UNIT_CRASHED", { unitId });
   if (primaryUsed(unit) || unit.activation.moved)
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   // The Dwarf revision section 7.2: clockwork never mends itself.
@@ -4635,6 +4782,9 @@ function applyPillage(
     unitFliesV7(state, unit)
   )
     return rejected(original, "PILLAGE_INVALID_TARGET");
+  // The Candy revision section 5.3: a Crashed unit has no primary action.
+  if (unitIsCrashedV7(state, unit.id))
+    return rejected(original, "UNIT_CRASHED", { unitId });
   if (primaryUsed(unit) || sluggishUnitMovedV7(state, unit))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId });
   const player = requirePlayer(state, actor);
@@ -4879,6 +5029,9 @@ function applyCapture(
     return rejected(original, "UNIT_NOT_FOUND", { unitId });
   if (unit.ownerId !== actor)
     return rejected(original, "UNIT_NOT_OWNED", { unitId });
+  // The Candy revision section 5.3: a Crashed unit cannot capture.
+  if (unitIsCrashedV7(state, unit.id))
+    return rejected(original, "UNIT_CRASHED", { unitId });
   const occupied = state.cities.find((city) => same(city.at, unit.at));
   if (
     occupied !== undefined &&
@@ -5216,7 +5369,7 @@ function applyEndTurn(
     const counted = chillCountdownV7(fields.state, actor);
     // The Martian balance revision (`pulp_wars-1wy.3`): so are the beamed
     // passengers and the used free Tractor Beams.
-    const expired =
+    const emptied =
       counted.surfacedThisTurn.length === 0 &&
       counted.bombedThisTurn.length === 0 &&
       counted.beamedThisTurn.length === 0 &&
@@ -5229,6 +5382,11 @@ function applyEndTurn(
             beamedThisTurn: [],
             tractorUsedThisTurn: [],
           };
+    // The Candy revision section 10: the Crash, the Crumbs countdown, and
+    // the emptied Splat and Toss lists, after the Dwarf per-turn lists and
+    // before the income preview (and any neutral turn).
+    const candy = resolveCandyEndTurnV7(emptied, actor);
+    const expired = candy.state;
     const preview = playerIncomeV7(expired, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");
@@ -5302,6 +5460,7 @@ function applyEndTurn(
       [
         ...recovery.events,
         ...fields.events,
+        ...candy.events,
         {
           kind: "INCOME_PREVIEWED",
           playerId: actor,
@@ -6603,11 +6762,15 @@ function checked(state: GameStateV7): GameStateV7 {
   // board.
   // Map curiosities: drop the entries of Monsters that left the board and
   // the provokers no longer on it.
+  // The Candy revision: drop the Rush, Splat, and Toss entries of units that
+  // left the board and the Crumbs of a seat that left the game.
   const result = parseGameStateV7(
-    prunedMonstersV7(
-      prunedDwarfV7(
-        prunedIceFolkV7(
-          prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+    prunedCandyV7(
+      prunedMonstersV7(
+        prunedDwarfV7(
+          prunedIceFolkV7(
+            prunedMartianV7(prunedEggsV7(prunedAfflictionsV7(state))),
+          ),
         ),
       ),
     ),

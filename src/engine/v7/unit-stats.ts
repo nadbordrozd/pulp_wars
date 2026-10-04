@@ -13,6 +13,8 @@ import {
   halfPowerAttack2V7,
   isMindControlledV7,
   ownerResearchedTechsV7,
+  rebakeHpV7,
+  rebakePriceV7,
   unitCapabilitiesV7,
   unitFactionV7,
   unitAlphaAttack2V7,
@@ -25,6 +27,16 @@ import {
   fortificationPartsForUnitV7,
   snowCoverAppliesV7,
 } from "./combat";
+import {
+  attackSplatsV7,
+  crumbsBiteV7,
+  matchHasCandyV7,
+  sugarRushAttack2V7,
+  unitBouncesV7,
+  unitIsCrashedV7,
+  unitIsRushedV7,
+  unitIsSplattedV7,
+} from "./candy";
 import { attackAllowanceV7, matchHasDwarvesV7, unitIsDugInV7 } from "./dwarf";
 import {
   chillOfV7,
@@ -82,7 +94,10 @@ export type UnitStatModifierSourceV7 =
   | "COLD_BLOOD"
   // The Dwarf revision: Dig In, one fortification level in the Field Defense
   // part (shown when the tile's Field Defense does not already count).
-  | "DIG_IN";
+  | "DIG_IN"
+  // The Candy revision: the Sugar Rush bonus on a Rushed unit's first attack
+  // (never together with Charge or Inspired).
+  | "SUGAR_RUSH";
 export interface PublicUnitStatValueV7 {
   readonly numerator: number;
   readonly denominator: number;
@@ -219,6 +234,24 @@ export interface PublicDwarfMechanicsV7 {
   readonly bombDamage: number;
   readonly burrowed: boolean;
 }
+/**
+ * The Candy revision (docs/product/RULESET_7_CANDY.md section 13): the Candy
+ * mechanics of a unit of the Candy kind. `sugarRush` is whether the unit's
+ * role may Rush (every land role, in land form); `rebake` is the price and
+ * HP of a Re-bake of its role (null for a role that leaves no Crumbs);
+ * `homeSweetHome` is the owner's unit-level capability and `crumbsBite` the
+ * owner's Peppermint Surprise damage (both public: they make every Candy
+ * preview exact).
+ */
+export interface PublicCandyMechanicsV7 {
+  readonly sugarRush: boolean;
+  readonly rushPerk: "ESCAPE" | "SUGAR_FRENZY" | null;
+  readonly bounces: boolean;
+  readonly splats: boolean;
+  readonly rebake: { readonly cost: number; readonly hp: number } | null;
+  readonly homeSweetHome: boolean;
+  readonly crumbsBite: number;
+}
 export interface PublicUnitStatsV7 {
   readonly unitId: UnitStateV7["id"];
   readonly minimumRange: number;
@@ -258,6 +291,17 @@ export interface PublicUnitStatsV7 {
   readonly surfacedThisTurn?: boolean;
   /** The Dwarf revision: present exactly for units of the Dwarf kind. */
   readonly dwarf?: PublicDwarfMechanicsV7;
+  /**
+   * The Candy revision: present for every unit exactly when the match has a
+   * Candy seat: the unit is Rushed, Crashed, Splatted this turn, or was
+   * healed by a Sugar Toss this turn.
+   */
+  readonly rushed?: boolean;
+  readonly crashed?: boolean;
+  readonly splatted?: boolean;
+  readonly tossedThisTurn?: boolean;
+  /** The Candy revision: present exactly for units of the Candy kind. */
+  readonly candy?: PublicCandyMechanicsV7;
 }
 
 /** The Snow and Blizzard a stats reader may know of (section 6.5). */
@@ -343,6 +387,13 @@ export function publicUnitStatsV7(
     !embarked && unit.activation.inspired && unit.activation.attacksUsed === 0
       ? 2
       : 0;
+  // The Candy revision section 5.2: the Rush bonus of a Rushed unit's first
+  // attack; it never adds to Charge or Inspired.
+  const sugarRush2 = sugarRushAttack2V7(state, unit, {
+    chargeApplied: charge > 0,
+    inspiredApplied: inspired > 0,
+  });
+  const candy = kind === "CANDY";
   // Revision 20 Charge!: +1 Attack per tile moved this turn, up to 2, while
   // the unit can still attack (activations reset at the owner's Start Turn,
   // so a run-up left over from the owner's last turn is never shown).
@@ -539,6 +590,17 @@ export function publicUnitStatsV7(
                 ),
               ]
             : []),
+          ...(sugarRush2 > 0
+            ? [
+                modifier(
+                  sugarRush2,
+                  "SUGAR_RUSH",
+                  "Sugar Rush",
+                  "Sugar Rush adds 1 Attack to the first attack this turn.",
+                  2,
+                ),
+              ]
+            : []),
         ],
       ),
       stat(
@@ -619,7 +681,9 @@ export function publicUnitStatsV7(
               ? "Ram: attack again"
               : dinosaur
                 ? "Rampage: attack again"
-                : "Overrun: attack again",
+                : candy
+                  ? "Sugar Frenzy: attack again"
+                  : "Overrun: attack again",
           ]
         : []),
       ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
@@ -731,6 +795,23 @@ export function publicUnitStatsV7(
           },
         }
       : {}),
+    // The Candy revision (section 13): the public per-unit flags of a match
+    // with a Candy seat, and the Candy block of a Candy unit.
+    ...candyFlagsV7(state, unit),
+    ...(candy
+      ? {
+          candy: {
+            sugarRush:
+              unit.form === "LAND" && role.abilities.includes("SUGAR_RUSH"),
+            rushPerk: mechanics.rushPerk,
+            bounces: unitBouncesV7(state, unit),
+            splats: attackSplatsV7(state, unit),
+            rebake: candyRebakeV7(unit.role),
+            homeSweetHome: capabilities.homeSweetHome,
+            crumbsBite: crumbsBiteV7(state, unit.ownerId),
+          },
+        }
+      : {}),
     ...(iceFolk
       ? {
           iceFolk: {
@@ -797,6 +878,8 @@ function eggStats(
           surfacedThisTurn: false,
         }
       : {}),
+    // The Candy revision: an Egg may be Splatted (the public per-turn list).
+    ...candyFlagsV7(state, unit),
     dinosaur: {
       capacitySlots: mechanics.capacitySlots,
       growthStage: null,
@@ -808,6 +891,34 @@ function eggStats(
       egg: eggStatus(state, unit),
     },
   };
+}
+
+/**
+ * The Candy revision (section 13): the per-unit flags every unit has exactly
+ * when the match has a Candy seat.
+ */
+function candyFlagsV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+): Pick<
+  PublicUnitStatsV7,
+  "rushed" | "crashed" | "splatted" | "tossedThisTurn"
+> {
+  if (!matchHasCandyV7(state)) return {};
+  return {
+    rushed: unitIsRushedV7(state, unit.id),
+    crashed: unitIsCrashedV7(state, unit.id),
+    splatted: unitIsSplattedV7(state, unit.id),
+    tossedThisTurn: state.tossedThisTurn.includes(unit.id),
+  };
+}
+
+/** The Candy revision: the Re-bake price and HP of `role`, or null. */
+function candyRebakeV7(
+  role: UnitStateV7["role"],
+): PublicCandyMechanicsV7["rebake"] {
+  const cost = rebakePriceV7(role);
+  return cost === null ? null : { cost, hp: rebakeHpV7(role) };
 }
 
 /** Revision 19: the public countdown of an Egg, or null for any other unit. */

@@ -15,7 +15,7 @@ import { mirrorOptionV7 } from "../fixtures/v7-builders";
  * Revision 18 section 5 (`pulp_wars-6gd.3`): the fixed `SHOWCASE` setup is
  * accepted for 1–3 AI seats and every faction mix. Split out of
  * `ruleset-v7-revision18-showcase.test.ts` (`pulp_wars-9s0.13`) so the
- * exhaustive 49 + 343 + 2401 mixes run beside that file's AI matches, in
+ * exhaustive 64 + 512 + 4096 mixes run beside that file's AI matches, in
  * partitions that stay far from their timeouts on a busy machine.
  */
 
@@ -70,14 +70,15 @@ function acceptAll(mixes: readonly (readonly FactionIdV7[])[]): number {
 
 describe("ruleset-7 revision-18 Showcase setup: every faction mix", () => {
   // The Ice Folk revision: six factions (36, 216, and 1296 mixes); the
-  // Dwarf revision: seven (49, 343, and 2401 mixes).
-  it("has seven factions", () => {
-    expect(FACTION_IDS_V7).toHaveLength(7);
+  // Dwarf revision: seven (49, 343, and 2401 mixes); the Candy revision:
+  // eight (64, 512, and 4096 mixes).
+  it("has eight factions", () => {
+    expect(FACTION_IDS_V7).toHaveLength(8);
   });
 
   it.each([
-    [2, 49],
-    [3, 343],
+    [2, 64],
+    [3, 512],
   ] as const)(
     "accepts SHOWCASE at 16 for every %i-seat faction mix (%i mixes)",
     { timeout: 120_000 },
@@ -86,12 +87,12 @@ describe("ruleset-7 revision-18 Showcase setup: every faction mix", () => {
     },
   );
 
-  // The 2401 four-seat mixes, one partition of 343 per Human-seat faction.
+  // The 4096 four-seat mixes, one partition of 512 per Human-seat faction.
   it.each(FACTION_IDS_V7)(
     "accepts SHOWCASE at 16 for every 4-seat faction mix with %s in the first seat",
     { timeout: 120_000 },
     (faction) => {
-      expect(acceptAll(factionMixes(4, [faction]))).toBe(343);
+      expect(acceptAll(factionMixes(4, [faction]))).toBe(512);
     },
   );
 

@@ -4,13 +4,15 @@ The headless entry point runs replay verification and complete equal-rules
 Normal-policy matches without DOM or Canvas imports.
 
 Current Ruleset 7 rules, including map generation, are described by
-[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) for all seven
-factions (Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf;
-`pulp_wars-t6s.7` folded the
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md) for all eight
+factions (Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and
+Candy; `pulp_wars-t6s.7` folded the
 [Martian overlay](../product/RULESET_7_MARTIANS.md), `pulp_wars-7g3.8` the
-[Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), and `pulp_wars-78i.8`
-the [Dwarf overlay](../product/RULESET_7_DWARVES.md) into it). The headless CLI
-accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r37`
+[Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), `pulp_wars-78i.8`
+the [Dwarf overlay](../product/RULESET_7_DWARVES.md), and `pulp_wars-jdb.3`
+the engine step of the [Candy overlay](../product/RULESET_7_CANDY.md) into
+it). The headless CLI
+accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r38`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
 [revision 21](../product/RULESET_7_REVISION_21_ACHIEVEMENTS.md) the
 `achievements` metrics carry all seven achievements: `progressMaximum` and
@@ -76,14 +78,14 @@ affect map generation), and `benchmark-ruleset-v7-command-processing`
 launches the browser controller, so it uses distinct factions too.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --factions undead,undead --allow-duplicate-factions --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --factions undead,undead --allow-duplicate-factions --seed 3 --max-rounds 150
 ```
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
-npm run headless -- batch --ruleset pulp-wars-poc-7r37 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type pangea --factions original,undead --seed 3 --max-rounds 200
+npm run headless -- batch --ruleset pulp-wars-poc-7r38 --ai-counts 1 --factions undead,original --seeds 0,1,2 --map-types dry-land,lakes --max-rounds 200
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type pangea --factions goblin,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type pangea --factions dinosaur,original --seed 3 --max-rounds 150
 ```
 
 A Dinosaur seat
@@ -164,8 +166,8 @@ credited to no role or faction. Faction-keyed fields (`factionRoles`,
 including `showcase`:
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type pangea --factions martian,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type showcase --ai-count 3 --factions martian,human,undead,goblin --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type pangea --factions martian,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type showcase --ai-count 3 --factions martian,human,undead,goblin --max-rounds 50
 ```
 
 The engine bead added no Martian policy: a Martian seat played with the
@@ -207,8 +209,8 @@ has had its Martian pairings and summary since the balance bead
 including `showcase`:
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type dry-land --factions ice,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type showcase --ai-count 3 --factions ice,human,undead,goblin --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type dry-land --factions ice,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type showcase --ai-count 3 --factions ice,human,undead,goblin --max-rounds 50
 ```
 
 The engine bead adds no Ice Folk policy. An Ice Folk seat plays with the
@@ -267,8 +269,8 @@ map type including `showcase`; the browser setup offers the faction since
 its UI bead (`pulp_wars-78i.6`):
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type dry-land --factions dwarf,original --seed 3 --max-rounds 150
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type showcase --ai-count 3 --factions dwarf,human,undead,goblin --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type dry-land --factions dwarf,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type showcase --ai-count 3 --factions dwarf,human,undead,goblin --max-rounds 50
 ```
 
 The engine bead adds no Dwarf policy. A Dwarf seat plays with the generic
@@ -327,8 +329,8 @@ plays the current revision of a registered mission with
 `--map-type mission --mission <ID>`:
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type mission --mission TEST_GROUNDS --max-rounds 30
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type mission --mission TEST_GROUNDS --factions goblin,undead --max-rounds 30
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type mission --mission TEST_GROUNDS --max-rounds 30
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type mission --mission TEST_GROUNDS --factions goblin,undead --max-rounds 30
 ```
 
 The mission fixes the board size, the seats, the seed, and the AI mode, so
@@ -355,7 +357,7 @@ browser controller need no switch. The hidden fixtures `TEST_RUSH`,
 `TEST_HOLD`, and `TEST_GUARD` are runnable like `TEST_GROUNDS`:
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type mission --mission TEST_HOLD --max-rounds 20
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type mission --mission TEST_HOLD --max-rounds 20
 ```
 
 A mission played Normal against Normal is always one game. **Proxy
@@ -398,8 +400,8 @@ metrics carry `curiosityKinds`, the kinds the board started with in
 `(y, x)` order (the new events count in `eventsByKind`):
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type dry-land --size 16 --seed 4 --max-rounds 30
-npm run headless -- batch --ruleset pulp-wars-poc-7r37 --ai-counts 1 --seeds 0,1,2 --curiosities off --max-rounds 200
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type dry-land --size 16 --seed 4 --max-rounds 30
+npm run headless -- batch --ruleset pulp-wars-poc-7r38 --ai-counts 1 --seeds 0,1,2 --curiosities off --max-rounds 200
 ```
 
 Every existing parity, balance, and validation tool passes
@@ -433,7 +435,7 @@ and its events count in `eventsByKind`. Seed 7 of a 16 x 16 Dry Land match
 with two opponents draws one:
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type dry-land --size 16 --ai-count 2 --seed 7 --max-rounds 40
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type dry-land --size 16 --ai-count 2 --seed 7 --max-rounds 40
 ```
 
 The contract tests (`tests/unit/ruleset-v7-monster.test.ts`) play Normal
@@ -462,6 +464,61 @@ since `pulp_wars-1wy.4` (a policy change on `7r37`: it moved the pinned
 Pangea match with a Martian seat, and no match without one), and the
 human-style probe and the coarse matrix of the balance design are
 `pulp_wars-1wy.2` and `pulp_wars-1wy.6`.
+
+## Candy seats (`pulp_wars-jdb.3`)
+
+`--factions` also accepts `candy`
+([current rules section 23](../product/RULESET_7_CURRENT.md#23-candy-faction-rules);
+[Candy overlay](../product/RULESET_7_CANDY.md), section 19.1), on every map
+type including `showcase`:
+
+```bash
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type dry-land --factions candy,original --seed 3 --max-rounds 150
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type showcase --ai-count 3 --factions candy,human,undead,goblin --max-rounds 50
+```
+
+The engine bead adds no Candy policy. A Candy seat plays with the ordinary
+Normal policy on the Candy registration: it trains, moves, attacks,
+captures, researches, and builds like a Human seat, and its Confectioners
+Frost (their Tend Wounded). It never issues `SUGAR_RUSH`, `REBAKE`, or
+`SUGAR_TOSS` (`isPolicyCandidate` in `src/ai/v7.ts` leaves the three kinds
+out), so no unit Rushes or Crashes and no Crumbs are re-baked in a
+Normal-policy match; the passive rules happen anyway: Candy deaths leave
+Crumbs that go stale or are eaten when an enemy ends a Move on them,
+Marshmallows and Golems bounce their attackers, and Pie Launchers Splat.
+The other factions' policies attack Candy units with their ordinary
+previews, which include Splat and Bounce. The Candy policy is
+`pulp_wars-jdb.4`.
+
+Every v7 result carries a `candy` block (all zero without a Candy seat;
+`src/headless/candy-telemetry-v7.ts`), computed from the events of the
+accepted commands and the states around them: Rushes (and by role), Rushed
+attacks and their kills, units Crashed and spared by Home Sweet Home, Candy
+units killed while Crashed, Crumbs left, eaten, gone stale, and re-baked
+(by role, with the Coins), the Peppermint Surprise's damage and kills,
+Splats and the strike-backs they prevented, Bounces and blocked Bounces,
+Sugar Tosses and Frostings with their HP, Sugar Frenzy continuations and
+the longest chain, and Rushed Donut Racer attacks that granted Escape.
+`commandsByKind` and `eventsByKind` count the three new commands and the
+seven new events like any other kind.
+
+The balance matrix (`npm run balance:ruleset7-undead`) accepts the pairing
+letter `C` (`CH`, `HC`, `CU`, `UC`, `CG`, `GC`, `CD`, `DC`, `CM`, `MC`,
+`CI`, `IC`, `CW`, `WC`, and the four-seat `CHUG`; there is no `CC`); its
+Candy summary and the measurement belong to `pulp_wars-jdb.7`.
+
+A match without a Candy seat plays command for command as at `7r37`: the
+all-Human parity digests and the five pinned `7r34` curiosity matches
+(Human against Undead on Dry Land; Goblin, Dinosaur, and Martian on Pangea;
+Ice Folk against Dwarf on Continents; Martian, Human, and Goblin on
+Archipelago; Dwarf, Undead, Ice Folk, and Dinosaur on Lakes) keep their
+pinned command hashes, rounds, maps, and PRNG ends, and their event hashes
+once the four neutral Candy combat-preview fields are removed
+(`tests/unit/ruleset-v7-curiosities.test.ts`,
+`tests/unit/ruleset-v7-undead-faction.test.ts`). The contract tests
+(`tests/unit/ruleset-v7-candy-headless.test.ts`) play Normal matches with a
+Candy seat against every faction in both seat orders, a four-seat mix, and
+a Showcase without errors or stalls.
 
 ## Normal AI pressure telemetry (`pulp_wars-9s0.1`)
 
@@ -560,7 +617,7 @@ change the board): its size defaults to 16 for every seat count, any other
 types at 16. No validation or balance matrix includes it by default.
 
 ```bash
-npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type showcase --ai-count 3 --factions human,undead,goblin,dinosaur --max-rounds 50
+npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type showcase --ai-count 3 --factions human,undead,goblin,dinosaur --max-rounds 50
 ```
 
 The naval

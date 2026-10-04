@@ -506,7 +506,20 @@ describe("ruleset-7 revision-19 form audit: source", () => {
   // of a Bitten eruption or bomb victim (an Egg is never Bitten); Dig In
   // (dwarf.ts); Plated (ruleset-v7.ts: the Tank's cap, land form only); and
   // the state schema's burrowed entry (a mound is a land-form record).
+  //
+  // The Candy revision (`pulp_wars-jdb.3`) adds land-form gates that an
+  // Egg, an embarked unit, and a boat must fail (candy.ts): the unit of a
+  // Sugar Rush, the Rush bonus and the Escape perk of an attacker (an Egg
+  // never attacks), the death that leaves Crumbs (an Egg is never a Candy
+  // seat's unit), the Confectioner of a Re-bake and the Gunner of a Sugar
+  // Toss, and a Toss target ("never an Egg"); the eater of Crumbs
+  // (candy-reducer.ts: an Egg never moves, and an embarked unit that ends a
+  // Move afloat is not on Crumbs); and the state schema's `sugarRush` entry
+  // (land or embarked, never an Egg or a boat) and `tossedThisTurn` entry
+  // (land form).
   const AUDITED: Readonly<Record<string, number>> = {
+    "src/engine/v7/candy.ts": 6,
+    "src/engine/v7/candy-reducer.ts": 1,
     "src/engine/v7/combat.ts": 1,
     "src/engine/v7/explosions.ts": 1,
     "src/engine/v7/graves.ts": 1,
@@ -527,7 +540,7 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // an embarked unit, and a boat must fail the state check).
     // `pulp_wars-737.3`: a Giant Spider is a land-form unit (an Egg, an
     // embarked unit, and a boat must fail its state check).
-    "src/engine/v7/state-schema.ts": 6,
+    "src/engine/v7/state-schema.ts": 8,
     "src/engine/v7/dwarf-reducer.ts": 5,
     "src/engine/v7/dwarf.ts": 1,
     "src/engine/v7/wail.ts": 1,

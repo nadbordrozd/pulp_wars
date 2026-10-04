@@ -277,6 +277,19 @@ export const KIND_READER_CLASSES_V7: Readonly<
     "SEAT",
   "src/headless/martian-mobility-probe-v7.ts::probeProductionV7": "SEAT",
   "src/headless/v7.ts::ownerFaction": "SEAT",
+  // The Candy revision (`pulp_wars-jdb.3`). Crumbs are a Candy SEAT's
+  // resource: a death leaves them only for a unit owned by a Candy seat (a
+  // mind-controlled Candy unit, owned by its controller, leaves none), and
+  // their bite is their owner's research. A Re-bake builds a unit of the
+  // acting seat's registration (the unit does not exist yet), and its
+  // button names that role under the Candy registration.
+  "src/engine/v7/candy.ts::crumbsBiteV7": "SEAT",
+  "src/engine/v7/candy.ts::deathLeavesCrumbsV7": "SEAT",
+  "src/engine/v7/query.ts::publicRebakeFactsV7": "SEAT",
+  "src/render/dom/app-view-v7.ts::candyCommandLabelV7": "SEAT",
+  // A `sugarRush` entry and a Rush perk follow the unit's kind (`kindOf`);
+  // a Crumbs owner is a Candy seat.
+  "src/engine/v7/state-schema.ts::candyListsValid": "KIND",
 };
 
 /**

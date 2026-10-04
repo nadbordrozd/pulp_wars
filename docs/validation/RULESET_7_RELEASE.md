@@ -16,12 +16,12 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r37`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
+## Current release contract (`pulp-wars-poc-7r38`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
 
-The current runtime is `pulp-wars-poc-7r37` (autosave
-`pulpWars.save.v7r37.current`; saves and replays of `pulp-wars-poc-7r36`
-and earlier are refused, and startup removes their autosave keys). Its seven
-factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf, are
+The current runtime is `pulp-wars-poc-7r38` (autosave
+`pulpWars.save.v7r38.current`; saves and replays of `pulp-wars-poc-7r37`
+and earlier are refused, and startup removes their autosave keys). Its eight
+factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
 into which `pulp_wars-78i.8` folded the
 [Dwarf overlay](../product/RULESET_7_DWARVES.md) (engine `pulp_wars-78i.3`
@@ -124,9 +124,26 @@ pinned Pangea match with a Martian seat of
 `tests/unit/ruleset-v7-curiosities.test.ts`), and the UI step
 (`pulp_wars-1wy.5`) and the coarse matrix with the human-style probe
 (`pulp_wars-1wy.6`) are still to come.
-The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, and the
-Dwarves are part of the default route: match setup always offers a
-Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf choice for the human and
+`pulp_wars-jdb.3` (`7r38`) is the engine step of the
+[Candy overlay](../product/RULESET_7_CANDY.md): the eighth faction, with
+Sugar Rush and the Crash, Crumbs and Re-bake, Splat, Bounce, Frosting, and
+Sugar Toss
+([current rules section 23](../product/RULESET_7_CURRENT.md#23-candy-faction-rules)).
+A match without a Candy seat is the `7r37` match apart from the four empty
+Candy lists and the four neutral combat-preview fields (the all-Human
+parity digests, the mission pins, and all five `7r34` curiosity pins still
+hold with them removed; no pinned match was recomputed). Its contract tests
+are `tests/unit/ruleset-v7-candy-identity.test.ts`, `-numbers`, `-faction`,
+`-rush`, `-crumbs`, `-combat`, `-interactions`, `-persistence`, and
+`-headless`. The setup offers the Candy with its unit, portrait, city, and
+ship art (`pulp_wars-jdb.5`) and
+plain command buttons; its Normal AI (`pulp_wars-jdb.4`), its
+full UI with a browser smoke probe (`pulp_wars-jdb.6`), and its coarse
+balance (`pulp_wars-jdb.7`) are still to come.
+The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
+Dwarves, and the Candy are part of the default route: match setup always
+offers a
+Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf/Candy choice for the human and
 each AI seat (distinct by default: Human, Undead, Goblin, Dinosaur), and
 there is no development flag (`pulp_wars-vkq.16` removed `?undead=1`; the
 later factions never had one). Balance evidence is the
@@ -140,9 +157,9 @@ rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r37` identity (ruleset ID, autosave key, the
-  seven-entry
-  `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`
+  contract. It checks the `7r38` identity (ruleset ID, autosave key, the
+  eight-entry
+  `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`/`CANDY`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
   that the archived corpus below still carries the revision-2 identity, and
   runs the revision contract tests: the Undead faction, revisions 14–16 and
@@ -152,7 +169,9 @@ rerun their matrices.
   achievement suite, the `7r23` sturdiness suite, the Martian engine suites,
   the Ice Folk engine suites, the Dwarf engine suites (the unit-reader
   classification, identity, faction, Tunnel, bomb, units, interactions,
-  persistence, and headless suites), persistence, and the DOM shell and
+  persistence, and headless suites), the Candy engine suites (identity,
+  numbers, faction, Rush, Crumbs, combat, interactions, persistence, and
+  headless), persistence, and the DOM shell and
   landing tests (the Goblin explosion, the other AI, and the
   presentation suites run in `npm run check`). It
   keeps no checked corpus or fingerprint of its own and has no `:refresh`

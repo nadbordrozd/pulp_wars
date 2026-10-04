@@ -77,6 +77,7 @@ describe("ruleset-7 revision-20 Nesting city slot", () => {
       ["MARTIAN", 0],
       ["ICE_FOLK", 0],
       ["DWARF", 0],
+      ["CANDY", 0],
     ]);
     expect(
       technologyCapabilitiesV7(["DRILL"], "DINOSAUR").nestingCityCapacityBonus,
@@ -321,6 +322,7 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       ["MARTIAN", false, true],
       ["ICE_FOLK", false, true],
       ["DWARF", false, true],
+      ["CANDY", false, true],
     ]);
     expect(
       technologyCapabilitiesV7([...WITHOUT_WALLBREAKER], "DINOSAUR")
@@ -339,6 +341,7 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       "Disintegrator",
       "Brittle",
       "Blasting Charges",
+      "Peppermint Surprise",
     ]);
     const state = goblinArenaV7(
       ["DINOSAUR", "ORIGINAL"],

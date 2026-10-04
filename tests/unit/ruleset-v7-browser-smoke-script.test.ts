@@ -349,8 +349,8 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(source).toContain(
       "; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}.",
     );
-    // The setup's seven faction options, Ice Folk sixth (pulp_wars-7g3.6)
-    // and Dwarf last (pulp_wars-78i.6).
+    // The setup's eight faction options, Ice Folk sixth (pulp_wars-7g3.6),
+    // Dwarf seventh (pulp_wars-78i.6), and Candy last (pulp_wars-jdb.3).
     const options = source.slice(
       source.indexOf("const FACTION_OPTIONS_V7 = ["),
       source.indexOf("] as const;", source.indexOf("FACTION_OPTIONS_V7")),
@@ -365,6 +365,7 @@ describe("Ruleset 7 browser smoke script", () => {
       "Martian",
       "Ice Folk",
       "Dwarf",
+      "Candy",
     ]);
     // Setup: Ice Folk is offered, and chosen with three opponents on the
     // Showcase.
@@ -520,7 +521,14 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(source).toContain("; Gallery ${gallery}.");
     expect(probe).toContain(`pointerClick('[data-action="gallery"]')`);
-    expect(probe).toContain("table.cells !== 78");
+    // Eight factions since the Candy (pulp_wars-jdb.3): 11 x 8 units and the
+    // Egg; the Egg row is empty for the seven factions that lay none.
+    expect(probe).toContain(
+      "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY",
+    );
+    expect(probe).toContain("table.cells !== 89");
+    expect(probe).toContain("table.empty !== 7");
+    expect(probe).toContain("filtered.cells.length !== 7");
     expect(probe).toContain(`.v7-gallery-chip[data-value="GOBLIN"]`);
     expect(probe).toContain('storedFilters.unitRows?.join() !== "CATAPULT"');
     expect(probe).toContain(
@@ -722,7 +730,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r37", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r38", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

@@ -92,10 +92,13 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
   // The Dwarf UI bead (pulp_wars-78i.6) appended the seventh faction's set
   // (batch `naval-dwarf` of bead pulp_wars-78i.5, checked by the Dwarf art
   // test), so the list has 35 rasters.
-  it("lists every naval sprite and portrait of the seven factions, once", () => {
+  it("lists every naval sprite and portrait of the eight factions, once", () => {
     const expected = [
       ...FACTIONS.map(([faction, slug]) => [faction, slug] as const),
       ["DWARF", "dwarf"] as const,
+      // The Candy engine bead (pulp_wars-jdb.3) appended the eighth set
+      // (batch `naval-candy` of bead pulp_wars-jdb.5): 40 rasters.
+      ["CANDY", "candy"] as const,
     ]
       .flatMap(([faction, slug]) =>
         SPRITES.map(
@@ -110,7 +113,7 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
           `${entry.faction} ${entry.kind} ${entry.role} ${entry.asset.id} ${entry.asset.subject}`,
       ).sort(),
     ).toEqual(expected);
-    expect(expected).toHaveLength(35);
+    expect(expected).toHaveLength(40);
     // The Humans keep the shared subjects; the others get their own.
     expect(navalFactionArtSubjectV7("ORIGINAL", "UNIT", "PATROL_BOAT")).toBe(
       "UNIT:PATROL_BOAT",

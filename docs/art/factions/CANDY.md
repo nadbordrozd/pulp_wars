@@ -1,9 +1,11 @@
 # Faction fragment: CANDY
 
 **Status:** direction and production art made in bead `pulp_wars-jdb.5`
-(batches `direction-candy` and `naval-candy`). **Not wired in:** the Candy
-engine (`pulp_wars-jdb.3`) is not on `main`, so no game module imports the
-art; the Candy UI bead `pulp_wars-jdb.6` wires it in (see the
+(batches `direction-candy` and `naval-candy`). **Partly wired in:** the Candy
+engine bead (`pulp_wars-jdb.3`) registers both manifests in the live
+direction registry and draws the unit sprites, portraits, cities, and ships;
+the Candy UI bead `pulp_wars-jdb.6` draws the icons, the Crumbs marker,
+and the effects (see the
 [wiring list](#wiring-list-for-pulp_wars-jdb6)). The look follows
 [the Candy spec](../../product/RULESET_7_CANDY.md) (sections 2.1 and 15.4):
 the Kingdom of Sugarcrest, a kingdom of living sweets, in fixed colours with
@@ -386,7 +388,8 @@ imports. The subjects exist (`CandyArtSubjectV7` in
    code-drawn role icon and pips; the status icons at the sizes and places
    of `CANDY_MARKERS_V7`; the seven effect sprites on their cues.
 6. **Tests to update:** `tests/unit/chibi-candy-direction-assets.test.ts`
-   ("is not wired in") turns round, as the Dwarf test did.
+   ("is not wired in") turned round with the engine bead, as the Dwarf test
+   did.
 7. **Review.** `npm run art:chibi-candy-direction-review` keeps its
    stand-in scenes; the UI review captures real Candy seats.
 

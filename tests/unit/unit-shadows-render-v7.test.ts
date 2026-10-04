@@ -10,6 +10,7 @@ import { CHIBI_DIRECTION_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-
 import { CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-art-manifest";
 import { DWARF_FLYER_PRESENTATION_V7 } from "../../src/assets/chibi-direction-dwarf-presentation";
 import { CHIBI_DIRECTION_DINOSAUR_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-dinosaur-art-manifest";
+import { CHIBI_DIRECTION_CANDY_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-candy-art-manifest";
 import { CHIBI_DIRECTION_DWARF_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-dwarf-art-manifest";
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-ice-folk-art-manifest";
 import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-martian-art-manifest";
@@ -102,6 +103,7 @@ const LIVE_ASSETS: readonly ChibiArtAssetV7[] = [
   ...CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7,
   ...CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7,
   ...CHIBI_DIRECTION_DWARF_ART_ASSETS_V7,
+  ...CHIBI_DIRECTION_CANDY_ART_ASSETS_V7,
   ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
   // The neutral Giant Spider (bead pulp_wars-737.6).
   ...CHIBI_CURIOSITIES_ART_ASSETS_V7,
@@ -255,9 +257,10 @@ describe("unit shadow table (pulp_wars-jg1)", () => {
     const giants = radius("GIANT");
     const bigs = radius("BIG");
     const normals = radius("NORMAL");
-    // The seven Juggernaut-role giants and the neutral Giant Spider, whose
+    // The eight Juggernaut-role giants (the Rock Candy Golem since the Candy
+    // art was wired in, pulp_wars-jdb.3) and the neutral Giant Spider, whose
     // 88 x 72 canvas is a giant's (wide and flat), not a SMALL one.
-    expect(giants).toHaveLength(8);
+    expect(giants).toHaveLength(9);
     expect(UNIT_SHADOW_TABLE_V7["UNIT:MONSTER_GIANT_SPIDER"]).toMatchObject({
       size: "GIANT",
       motion: "GROUNDED",

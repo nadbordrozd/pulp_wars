@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r37`. Role facts resolve through the unit's
+previews under `pulp-wars-poc-7r38`. Role facts resolve through the unit's
 kind (`unitFactionV7`: its owner's faction registration, or its original
 owner's while it is mind-controlled,
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14
@@ -38,6 +38,18 @@ Engineer's Assemble and Repair, Dig In, the Steam Cannon's Knockback,
 production and research, and play against each of them; it is gated on a
 match with a Dwarf seat (and a switch for the head-to-head tests), and
 matches without one are byte-identical.
+The Candy (`pulp_wars-jdb.3`, the engine step) have no policy of their own
+yet: a Candy seat plays the ordinary policy on the Candy registration, and
+`isPolicyCandidate` (`src/ai/v7.ts`) leaves `SUGAR_RUSH`, `REBAKE`, and
+`SUGAR_TOSS` out of the candidates, so the policy never Rushes, Re-bakes,
+or Tosses (its Confectioners Frost through the ordinary Tend Wounded
+rule). The three commands are offered only in a match with a Candy seat,
+so matches without one decide as before; the three new command kinds move
+every later kind's ordinal by three, which changes only the `-ordinal`
+tie-break value of the pinned decisions (their revision-12-ordinal hashes
+are unchanged). The Candy policy, and the other factions' play against
+Rush, Crumbs, Splat, and Bounce, is `pulp_wars-jdb.4`
+([Candy overlay section 14](../product/RULESET_7_CANDY.md#14-normal-ai-requirements)).
 The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
 [summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
 every land unit has one job (a village, an invader, the frontier, or a known

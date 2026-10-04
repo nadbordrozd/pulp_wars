@@ -14,8 +14,10 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * status and technology icons, the faction emblem and seven effect
  * sprites; and, apart, the Candy naval set.
  *
- * **Not registered yet.** No game module imports this file; the Candy UI
- * bead (pulp_wars-jdb.6) wires it in (CANDY.md, "Wiring list").
+ * **Registered** in the live direction registry and the naval list by the
+ * Candy engine bead (pulp_wars-jdb.3), which draws the units, portraits,
+ * cities and ships; the Candy UI bead (pulp_wars-jdb.6) draws the rest
+ * (CANDY.md, "Wiring list").
  */
 export const CHIBI_DIRECTION_CANDY_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
   {
@@ -459,9 +461,9 @@ export interface ChibiCandyNavalArtV7 {
 /**
  * The Candy naval set (batch `naval-candy`): the entries of
  * CHIBI_NAVAL_FACTION_ART_ASSETS_V7's shape for the eighth faction, on the
- * shared ships' canvases, anchors and waterline (NAVAL_FACTIONS.md). Not
+ * engine bead (pulp_wars-jdb.3) appended these
  * registered yet: once `CANDY` is a FactionIdV7 the UI bead appends these
- * entries to CHIBI_NAVAL_FACTION_ART_ASSETS_V7, and the generic naval
+ * wiring draws them.
  * wiring draws them with no other change.
  */
 export const CHIBI_DIRECTION_CANDY_NAVAL_ART_ASSETS_V7: readonly ChibiCandyNavalArtV7[] =

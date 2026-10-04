@@ -119,16 +119,18 @@ const pairs = (): [FactionIdV7, FactionIdV7][] =>
   );
 
 describe("faction colours (pulp_wars-b5f.4)", () => {
-  it("gives each of the seven factions one distinct #rrggbb colour", () => {
+  it("gives each of the eight factions one distinct #rrggbb colour", () => {
     expect(Object.keys(FACTION_COLOURS_V7).sort()).toEqual(
       [...FACTION_IDS_V7].sort(),
     );
-    expect(FACTION_IDS_V7).toHaveLength(7);
+    expect(FACTION_IDS_V7).toHaveLength(8);
+    // The Candy revision (`pulp_wars-jdb.3`): cotton-candy pink.
+    expect(FACTION_COLOURS_V7.CANDY).toBe("#ffb8d8");
     for (const faction of FACTION_IDS_V7) {
       expect(factionColourV7(faction)).toBe(FACTION_COLOURS_V7[faction]);
       expect(factionColourV7(faction)).toMatch(/^#[0-9a-f]{6}$/);
     }
-    expect(new Set(Object.values(FACTION_COLOURS_V7)).size).toBe(7);
+    expect(new Set(Object.values(FACTION_COLOURS_V7)).size).toBe(8);
   });
 
   it("keeps every pair apart in CIE76, also under deuteranopia and protanopia", () => {

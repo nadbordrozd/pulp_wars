@@ -977,7 +977,11 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // three (was 618190…e242); the revision-12-ordinal value below is
         // unchanged.
         expect(canonicalHash(beforeDecision)).toBe(
-          "96afa0d51757e57da35cb9d3f2fd27a191f17a78af3898e8fbb340a2c0204064",
+          // The Candy revision (`pulp_wars-jdb.3`) inserts SUGAR_RUSH,
+          // REBAKE, and SUGAR_TOSS after ASSEMBLE, moving every later kind
+          // forward by three (was 96afa0…4064); the revision-12-ordinal
+          // value below is unchanged.
+          "b34c5ae7732b79f075de7f2e879eefe1ba5d83e54c2a8a50e1130074c6243ef8",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1049,7 +1053,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
         // COLD_SNAP, moving every later command-kind ordinal forward by
         // three (was 6f8cb1…6174).
         expect(canonicalHash(capturedDecision)).toBe(
-          "9651adfd72f861d43d5942e2178cea5a8920f63416c4ecba10f27dcc79a60520",
+          // The Candy revision (`pulp_wars-jdb.3`) inserts SUGAR_RUSH,
+          // REBAKE, and SUGAR_TOSS after ASSEMBLE, moving every later
+          // command-kind ordinal forward by three (was 9651ad…0520).
+          "02ba06f3db7d67f1317aae8c4b662b2bf23bc887d7f4b9c3765358d037e8c4a5",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).
