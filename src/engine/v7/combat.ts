@@ -41,6 +41,15 @@ import {
   roleRetaliatesV7,
   unitIsDugInV7,
 } from "./dwarf";
+import {
+  attackGrantsEscapeV7,
+  attackIsBouncedV7,
+  attackSplatsV7,
+  bounceDestinationV7,
+  overrunKindV7,
+  sugarRushAttack2V7,
+  unitIsSplattedV7,
+} from "./candy";
 import { arePlayersAlliedV7, arePlayersHostileV7 } from "./economy";
 import type { CombatPreviewV7, CombatSplashEntryV7 } from "./events";
 import {
@@ -295,6 +304,14 @@ export function calculateCombatPreviewV7(
     attacker.activation.inspired && attacker.activation.attacksUsed === 0;
   const inspiredConsumed = attacker.activation.inspired;
   const gangUp = gangUpBonusV7(state, state.units, attacker, defender);
+  // The Candy revision section 5.2: +1 Attack on a Rushed unit's first
+  // attack, unless Charge or Inspired applies.
+  const assumeRushed = options.assumeSugarRush === true;
+  const sugarRush2 = sugarRushAttack2V7(state, attacker, {
+    chargeApplied,
+    inspiredApplied,
+    assumeRushed,
+  });
   // Revision 20 Charge!: +1 Attack per tile moved this turn (up to 2).
   const charge = attackIsChargeV7(state, attacker);
   const runUpAttack2 = chargeRunUpAttack2V7(state, attacker, plannedPathLength);
@@ -321,6 +338,7 @@ export function calculateCombatPreviewV7(
       : baseAttack2 +
         (chargeApplied ? 2 : 0) +
         (inspiredApplied ? 2 : 0) +
+        sugarRush2 +
         gangUp * 2 +
         unitAlphaAttack2V7(state, attacker) +
         runUpAttack2 +
@@ -452,7 +470,7 @@ export function calculateCombatPreviewV7(
   const unanswered = attackerRule.abilities.includes("UNANSWERED");
   // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
   // a Gyrocopter (`BOMB_RUN`, no `ATTACK`) retaliates too.
-  const retaliates =
+  const wouldRetaliate =
     !defenderDies &&
     !unanswered &&
     defender.form !== "EMBARKED" &&
@@ -461,6 +479,9 @@ export function calculateCombatPreviewV7(
     defenderRule.attack2 > 0 &&
     distance >= defenderRule.minimumRange &&
     distance <= defenderRule.range;
+  // The Candy revision section 7: a Splatted unit does not strike back.
+  const splatted = unitIsSplattedV7(state, defender.id);
+  const retaliates = wouldRetaliate && !splatted;
   const attackerShield = shieldOfV7(state.shields, attacker.id);
   const attackerHit = retaliates
     ? absorbHitV7(
@@ -596,6 +617,15 @@ export function calculateCombatPreviewV7(
   // shot leaves a second one.
   const twinShotLeft =
     !attackerDies && attackAllowanceV7(state, attacker) > nextAttacks;
+  // The Candy revision section 8: the Bounce, read after the Push, the
+  // advance, and the Charge! follow.
+  const bounced = bounceStateV7(state, attacker, defender, {
+    distance,
+    attackerDies,
+    defenderDies,
+    advances,
+    pushed: push === "WILL_PUSH",
+  });
   const undead = undeadCombatEffectsV7({
     // Map curiosities (section 8.6): a neutral Monster never rises either.
     attacker: {
@@ -644,24 +674,26 @@ export function calculateCombatPreviewV7(
     defenderDies,
     attackerDies,
     retaliation: retaliates,
-    noRetaliationReason: defenderDies
-      ? "DEFENDER_DIED"
-      : retaliates
-        ? null
-        : unanswered
-          ? "UNANSWERED"
-          : "OUT_OF_RANGE",
+    noRetaliationReason: noRetaliationReasonV7({
+      defenderDies,
+      retaliates,
+      unanswered,
+      splatted: wouldRetaliate && splatted,
+    }),
     advances,
     push,
     attacksUsed: nextAttacks,
     attacksRemaining: twinShotLeft ? 1 : 0,
-    overrunAdvance: attackerRule.abilities.includes("OVERRUN") && advances,
+    // The Candy revision section 5.4: a Rushed Gummy Bear's Sugar Frenzy is
+    // an Overrun.
+    overrunAdvance:
+      overrunKindV7(state, attacker, attackerRule, assumeRushed) !== null &&
+      advances,
     overrunContinues: false,
     // The Ice Folk revision section 5.3: a sluggish unit is never granted
-    // Escape.
+    // Escape. The Candy revision section 5.4: a Rushed Donut Racer has it.
     escapeAvailable:
-      attacker.form === "LAND" &&
-      attackerRule.abilities.includes("ESCAPE") &&
+      attackGrantsEscapeV7(state, attacker, attackerRule, assumeRushed) &&
       !attackerDies &&
       !unitIsSluggishV7(state, attacker),
     splash,
@@ -689,7 +721,84 @@ export function calculateCombatPreviewV7(
     platedApplied:
       platedCapAppliesV7(state, defender, formulaDefenderDamage) ||
       (retaliates && platedCapAppliesV7(state, attacker, rawAttackerDamage)),
+    sugarRushApplied: sugarRush2 > 0,
+    splatApplied: attackSplatAppliesV7(state, attacker, defender, defenderDies),
+    ...bounced,
   };
+}
+
+/**
+ * The Candy revision (section 7): `noRetaliationReason` of an exchange.
+ * `splatted` is whether the defender would have retaliated under the
+ * ordinary rules but was Splatted; otherwise the ordinary reason applies.
+ */
+export function noRetaliationReasonV7(facts: {
+  readonly defenderDies: boolean;
+  readonly retaliates: boolean;
+  readonly unanswered: boolean;
+  readonly splatted: boolean;
+}): CombatPreviewV7["noRetaliationReason"] {
+  return facts.defenderDies
+    ? "DEFENDER_DIED"
+    : facts.retaliates
+      ? null
+      : facts.unanswered
+        ? "UNANSWERED"
+        : facts.splatted
+          ? "SPLATTED"
+          : "OUT_OF_RANGE";
+}
+
+/**
+ * The Candy revision (section 7): whether an `ATTACK` Splats its target: a
+ * land-form attacker whose role has `SPLAT`, a target that survives the
+ * attack, and never the neutral Monster (no status sticks to it).
+ */
+export function attackSplatAppliesV7(
+  roster: FactionRosterV7,
+  attacker: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form">,
+  defender: Pick<UnitStateV7, "ownerId">,
+  defenderDies: boolean,
+): boolean {
+  return (
+    !defenderDies &&
+    !isNeutralOwnerV7(defender.ownerId) &&
+    attackSplatsV7(roster, attacker)
+  );
+}
+
+/**
+ * The Candy revision (section 8): the Bounce of an exchange on canonical
+ * state. The attacker and the defender are read after the Push (`pushed`),
+ * the advance, and the Charge! follow (`advances`); the attacker is bounced
+ * one tile directly away from the defender when that tile passes the Push
+ * conditions for the attacker and holds no treasure chest.
+ */
+export function bounceStateV7(
+  state: GameStateV7,
+  attacker: UnitStateV7,
+  defender: UnitStateV7,
+  facts: {
+    readonly distance: number;
+    readonly attackerDies: boolean;
+    readonly defenderDies: boolean;
+    readonly advances: boolean;
+    readonly pushed: boolean;
+  },
+): Pick<CombatPreviewV7, "bounce" | "bounceTo"> {
+  if (!attackIsBouncedV7(state, attacker, defender, facts))
+    return { bounce: "NONE", bounceTo: null };
+  const defenderAt = facts.pushed
+    ? (pushedDestinationV7(state, attacker, defender) ?? defender.at)
+    : defender.at;
+  const attackerAt = facts.advances ? defender.at : attacker.at;
+  if (chebyshev(attackerAt, defenderAt) !== 1)
+    return { bounce: "NONE", bounceTo: null };
+  const destination = bounceDestinationV7(attackerAt, defenderAt);
+  return displacementDestinationLegalV7(state, attacker, destination) &&
+    !state.treasureChests.some((chest) => same(chest, destination))
+    ? { bounce: "WILL_BOUNCE", bounceTo: destination }
+    : { bounce: "BLOCKED", bounceTo: null };
 }
 
 /** Options of a combat preview or estimate (the Ice Folk revision). */
@@ -713,6 +822,13 @@ export interface CombatOptionsV7 {
    */
   readonly ignoreDigIn?: boolean;
   readonly ignorePlated?: boolean;
+  /**
+   * The Candy revision (docs/product/RULESET_7_CANDY.md section 13):
+   * estimates the attacker as Rushed (for the Normal AI and the Rush
+   * preview); the bonus and the Rush perk then apply under the ordinary
+   * first-attack conditions, for a unit that could Rush.
+   */
+  readonly assumeSugarRush?: boolean;
 }
 
 /**

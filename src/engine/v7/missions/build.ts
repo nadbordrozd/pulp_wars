@@ -523,6 +523,11 @@ export function buildMissionStateV7(
     bombedThisTurn: [],
     beamedThisTurn: [],
     tractorUsedThisTurn: [],
+    // The Candy revision (section 12.10): the four Candy lists start empty.
+    sugarRush: [],
+    crumbs: [],
+    splattedThisTurn: [],
+    tossedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });

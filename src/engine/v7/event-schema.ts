@@ -13,7 +13,11 @@ import {
   SHIELD_CAP_V7,
   SNOW_COVER_V7,
   MIND_CONTROL_HP_V7,
+  PEPPERMINT_DAMAGE_V7,
+  SUGAR_TOSS_HEAL_V7,
   effectiveRoleRuleV7,
+  rebakeHpV7,
+  rebakePriceV7,
 } from "../rules/ruleset-v7";
 import {
   ACHIEVEMENT_IDS_V7,
@@ -214,6 +218,39 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "cityId",
     "cost",
   ],
+  UNIT_REBAKED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "rebakedUnitId",
+    "role",
+    "at",
+    "cityId",
+    "cost",
+    "hp",
+  ],
+  UNITS_CRASHED: ["kind", "playerId", "crashedUnitIds", "sparedUnitIds"],
+  CRUMBS_STALE: ["kind", "playerId", "tiles"],
+  UNIT_SUGAR_RUSHED: ["kind", "playerId", "unitId", "move"],
+  SUGAR_TOSSED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "targetUnitId",
+    "amount",
+    "hpAfter",
+  ],
+  CRUMBS_EATEN: [
+    "kind",
+    "playerId",
+    "at",
+    "role",
+    "unitId",
+    "damage",
+    "shieldDamage",
+    "dies",
+  ],
+  CRUMBS_LEFT: ["kind", "playerId", "at", "role"],
   NAVAL_UNIT_TRAINED: [
     "kind",
     "playerId",
@@ -542,6 +579,13 @@ export function parsePlayerEventEnvelopeV7(
       events.push(projectedSurface);
       continue;
     }
+    // The Candy revision (section 12.14): a hidden eater, and a Crash whose
+    // units the viewer cannot all see.
+    const projectedCandy = parseProjectedCandyEvent(candidate);
+    if (projectedCandy !== null) {
+      events.push(projectedCandy);
+      continue;
+    }
     const presentation = parsePresentationEvent(candidate);
     if (presentation !== null) {
       events.push(presentation);
@@ -605,6 +649,25 @@ function parseProjectedRestorationEvent(input: unknown): PlayerEventV7 | null {
     ),
   });
   return canonical.ok ? (input as PlayerEventV7) : null;
+}
+
+/**
+ * The Candy revision (docs/product/RULESET_7_CANDY.md section 12.14):
+ * `CRUMBS_EATEN` projected to a viewer that cannot see the eater (the eater
+ * and its bite are null).
+ */
+function parseProjectedCandyEvent(input: unknown): PlayerEventV7 | null {
+  return hasExactKeysV7(input, FIELDS.CRUMBS_EATEN) &&
+    input.kind === "CRUMBS_EATEN" &&
+    id(input.playerId) &&
+    parseCoordV7(input.at) !== null &&
+    UNIT_ROLE_IDS_V7.includes(input.role as never) &&
+    input.unitId === null &&
+    input.damage === null &&
+    input.shieldDamage === null &&
+    input.dies === null
+    ? (input as unknown as PlayerEventV7)
+    : null;
 }
 
 /** Revision 19: a viewer other than the owner sees `EGG_LAID` without cost. */
@@ -961,6 +1024,81 @@ function validPayload(
         parseCoordV7(e.at) !== null &&
         (e.cost === ASSEMBLE_COST_V7 || e.cost === ASSEMBLE_COST_V7 - 1)
       );
+    // The Candy revision (docs/product/RULESET_7_CANDY.md section 13).
+    case "UNIT_REBAKED":
+      // Section 6.4: the price and the HP are the role's (no discount).
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.rebakedUnitId) &&
+        e.unitId !== e.rebakedUnitId &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        parseCoordV7(e.at) !== null &&
+        id(e.cityId) &&
+        rebakePriceV7(e.role as UnitRoleIdV7) !== null &&
+        e.cost === rebakePriceV7(e.role as UnitRoleIdV7) &&
+        e.hp === rebakeHpV7(e.role as UnitRoleIdV7)
+      );
+    case "UNITS_CRASHED":
+      // Section 5.3: at least one unit, and no unit in both lists.
+      return (
+        id(e.playerId) &&
+        ascendingIds(e.crashedUnitIds) &&
+        ascendingIds(e.sparedUnitIds) &&
+        (e.crashedUnitIds as readonly unknown[]).length +
+          (e.sparedUnitIds as readonly unknown[]).length >
+          0 &&
+        !(e.crashedUnitIds as readonly unknown[]).some((unitId) =>
+          (e.sparedUnitIds as readonly unknown[]).includes(unitId),
+        )
+      );
+    case "CRUMBS_STALE":
+      return (
+        id(e.playerId) &&
+        sortedCoords(e.tiles) &&
+        (e.tiles as readonly unknown[]).length > 0
+      );
+    case "UNIT_SUGAR_RUSHED":
+      // Section 5.1: the Rushed Move is the role's Move plus 1 (2 to 4).
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        (e.move === 2 || e.move === 3 || e.move === 4)
+      );
+    case "SUGAR_TOSSED":
+      // Section 9: a heal of 1 to `SUGAR_TOSS_HEAL_V7`.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        e.unitId !== e.targetUnitId &&
+        pos(e.amount) &&
+        Number(e.amount) <= SUGAR_TOSS_HEAL_V7 &&
+        pos(e.hpAfter) &&
+        Number(e.amount) < Number(e.hpAfter)
+      );
+    case "CRUMBS_EATEN":
+      // Section 6.3: the fixed Peppermint Surprise, split between HP and a
+      // Shield; a death needs HP damage.
+      return (
+        id(e.playerId) &&
+        parseCoordV7(e.at) !== null &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        id(e.unitId) &&
+        nn(e.damage) &&
+        nn(e.shieldDamage) &&
+        Number(e.shieldDamage) <= SHIELD_CAP_V7 &&
+        Number(e.damage) + Number(e.shieldDamage) <= PEPPERMINT_DAMAGE_V7 &&
+        typeof e.dies === "boolean" &&
+        (e.dies !== true || Number(e.damage) >= 1)
+      );
+    case "CRUMBS_LEFT":
+      return (
+        id(e.playerId) &&
+        parseCoordV7(e.at) !== null &&
+        UNIT_ROLE_IDS_V7.includes(e.role as never) &&
+        rebakePriceV7(e.role as UnitRoleIdV7) !== null
+      );
     case "NAVAL_UNIT_TRAINED":
       return (
         id(e.playerId) &&
@@ -1227,6 +1365,8 @@ function validPayload(
           // The Dwarf revision: a bomb and an eruption.
           "BOMB",
           "ERUPTION",
+          // The Candy revision: a Peppermint Surprise.
+          "PEPPERMINT",
         ].includes(e.cause as string)
       );
     case "UNIT_MIND_CONTROLLED":
@@ -1356,6 +1496,10 @@ function combat(input: unknown): boolean {
       "dugIn",
       "unflinchingApplied",
       "platedApplied",
+      "sugarRushApplied",
+      "splatApplied",
+      "bounce",
+      "bounceTo",
     ])
   )
     return false;
@@ -1488,9 +1632,30 @@ function combat(input: unknown): boolean {
       input.push as string,
     ) &&
     (input.noRetaliationReason === null ||
-      ["DEFENDER_DIED", "OUT_OF_RANGE", "UNANSWERED"].includes(
+      ["DEFENDER_DIED", "OUT_OF_RANGE", "UNANSWERED", "SPLATTED"].includes(
         input.noRetaliationReason as string,
-      ))
+      )) &&
+    // The Candy revision (section 13): a Splatted defender survives and
+    // does not retaliate; the Rush bonus is on a first attack and never
+    // with Charge or Inspired; a Splat needs a surviving target; a Bounce
+    // needs both units alive, and names its tile exactly when it happens.
+    (input.noRetaliationReason !== "SPLATTED" ||
+      (input.retaliation === false && input.defenderDies === false)) &&
+    typeof input.sugarRushApplied === "boolean" &&
+    typeof input.splatApplied === "boolean" &&
+    (input.sugarRushApplied !== true ||
+      (input.chargeApplied === false &&
+        input.inspiredApplied === false &&
+        input.attacksUsed === 1)) &&
+    (input.splatApplied !== true || input.defenderDies === false) &&
+    ["NONE", "WILL_BOUNCE", "BLOCKED", "UNKNOWN_BEHIND_FOG"].includes(
+      input.bounce as string,
+    ) &&
+    (input.bounce === "WILL_BOUNCE"
+      ? parseCoordV7(input.bounceTo) !== null
+      : input.bounceTo === null) &&
+    (input.bounce === "NONE" ||
+      (input.defenderDies === false && input.attackerDies === false))
   );
 }
 function splash(input: unknown): boolean {
@@ -1757,6 +1922,16 @@ function orderedIds(input: unknown): boolean {
   return input.every(
     (value, index) =>
       id(value) && (index === 0 || Number(input[index - 1]) < Number(value)),
+  );
+}
+/** Unit IDs in strictly ascending order; may be empty (the Candy revision). */
+function ascendingIds(input: unknown): boolean {
+  return (
+    isDenseArrayV7(input) &&
+    input.every(
+      (value, index) =>
+        id(value) && (index === 0 || Number(input[index - 1]) < Number(value)),
+    )
   );
 }
 /** The Ice Folk revision: the source of a `UNITS_CHILLED`. */

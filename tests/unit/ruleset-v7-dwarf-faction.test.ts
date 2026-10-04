@@ -102,6 +102,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       "MARTIAN",
       "ICE_FOLK",
       "DWARF",
+      "CANDY",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -111,6 +112,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       "MARTIAN_BASELINE_V1",
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
+      "CANDY_BASELINE_V1",
     ]);
     expect(factionTreeIdV7("DWARF")).toBe("DWARF_BASELINE_V1");
     expect(FACTION_TREES_V7.DWARF).toMatchObject({
@@ -149,7 +151,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
   });
 
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(53);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(56);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("COLD_SNAP");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 4)).toEqual([
       "COLD_SNAP",
@@ -161,8 +163,8 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
-    // MONSTER_BOUNTY_AWARDED (89).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(89);
+    // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(96);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [
@@ -409,7 +411,9 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
       source.indexOf("];", source.indexOf("const FACTIONS:")),
     );
     expect(factions).toContain('"ICE_FOLK"');
-    expect(factions.trim().endsWith('"DWARF",')).toBe(true);
+    // The Candy engine bead (pulp_wars-jdb.3) offers the Candy after them.
+    expect(factions).toContain('"DWARF"');
+    expect(factions.trim().endsWith('"CANDY",')).toBe(true);
   });
 });
 
@@ -485,7 +489,7 @@ describe("Dwarf seats under the unique-factions rule (section 13.14)", () => {
       "GOBLIN",
       "DINOSAUR",
     ]);
-    expect(distinctFactionsV7(7)).toEqual(FACTION_IDS_V7);
+    expect(distinctFactionsV7(7)).toEqual(FACTION_IDS_V7.slice(0, 7));
     expect(distinctFactionsV7(2, ["DWARF", "DWARF"])).toEqual([
       "DWARF",
       "ORIGINAL",
@@ -970,6 +974,7 @@ describe("Dwarf technology (section 4)", () => {
       ["MARTIAN", false, false, 5, 2, false],
       ["ICE_FOLK", false, false, 5, 2, false],
       ["DWARF", true, true, 6, 3, true],
+      ["CANDY", false, false, 5, 2, false],
     ]);
     const some = (...techs: (typeof TECHNOLOGY_IDS_V7)[number][]) =>
       technologyCapabilitiesV7(techs, "DWARF");

@@ -2,22 +2,24 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r37` (autosave
-`pulpWars.save.v7r37.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r36.current`;
+The current client runs `pulp-wars-poc-7r38` (autosave
+`pulpWars.save.v7r38.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r37.current`;
 [mission setups](#mission-setups-pulp_wars-68k2),
 [map curiosities](#map-curiosities-pulp_wars-7372),
-[the Giant Spider](#the-giant-spider-pulp_wars-7373), and
-[the Martian and Ice Folk balance round](#the-martian-and-ice-folk-balance-round-pulp_wars-1wy3)
+[the Giant Spider](#the-giant-spider-pulp_wars-7373),
+[the Martian and Ice Folk balance round](#the-martian-and-ice-folk-balance-round-pulp_wars-1wy3),
+and [the Candy engine boundary](#candy-engine-boundary-pulp_wars-jdb3)
 are described below),
-whose rules for all seven factions
+whose rules for all eight factions
 the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk,
-and Dwarf, are described by
+Dwarf, and Candy, are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md)
 (`pulp_wars-c87.9` folded revisions 19–21 into it, `pulp_wars-t6s.7` the
 [Martian overlay](../product/RULESET_7_MARTIANS.md), `pulp_wars-7g3.8` the
-[Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), and `pulp_wars-78i.8`
-the [Dwarf overlay](../product/RULESET_7_DWARVES.md)). The Dinosaur faction of
+[Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), `pulp_wars-78i.8`
+the [Dwarf overlay](../product/RULESET_7_DWARVES.md), and `pulp_wars-jdb.3`
+the engine step of the [Candy overlay](../product/RULESET_7_CANDY.md)). The Dinosaur faction of
 the [revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
 (`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured;
 `pulp_wars-c87.3`: Eggs, Shaman Hatch, and Nesting, with their public
@@ -648,6 +650,69 @@ the Monster, a unit whose `ownerId` is the reserved neutral owner
   two-tile path in the aiming panel, a per-unit Tractor Beam tooltip, and
   the rest of the design's section 11 belong to `pulp_wars-1wy.5`; the
   Normal AI's use of the new tools to `pulp_wars-1wy.4`.
+
+## Candy engine boundary (`pulp_wars-jdb.3`)
+
+`pulp-wars-poc-7r38` implements the engine step of the
+[Candy overlay](../product/RULESET_7_CANDY.md)
+([current rules section 23](../product/RULESET_7_CURRENT.md#23-candy-faction-rules)).
+
+- **Modules.** `src/engine/v7/candy.ts` holds the predicates and derived
+  facts, which take the roster (a state or a view) and plain unit facts:
+  `sugarRushRejectionV7`, `sugarRushMoveBonusV7`, `sugarRushAttack2V7`,
+  `overrunKindV7` and `overrunMayContinueV7` (the Sugar Frenzy cap),
+  `attackGrantsEscapeV7`, `attackSplatsV7`, `unitBouncesV7`,
+  `attackIsBouncedV7`, `bounceDestinationV7`, `deathLeavesCrumbsV7`,
+  `unitEatsCrumbsV7`, `peppermintHitV7`, `crumbsBiteV7`,
+  `homeSweetHomeSparesV7`, `candyActionRejectionV7`,
+  `sugarTossTargetRejectionV7`, and `rebakeCrumbsV7`.
+  `src/engine/v7/candy-reducer.ts` holds the three commands
+  (`applySugarRushV7`, `applyRebakeV7`, `applySugarTossV7`), the eating step
+  of a Move or a landing (`resolveCrumbsEatingV7`), the End Turn step
+  (`resolveCandyEndTurnV7`), and the list pruning (`prunedCandyV7`). The
+  reducer and the public command query call the same predicates and differ
+  only in how they read the tile (the canonical board, or the view's
+  explored tiles: the Re-bake tile and the Bounce destination), so an
+  offered command is an accepted one and a preview equals its resolution.
+- **Crumbs are folded from events.** A death site only emits `CRUMBS_LEFT`
+  (`recordCrumbsV7` in `graves.ts`, called wherever a death records its
+  Grave, and the Shatter path directly); `applyCommandV7` folds the
+  `CRUMBS_LEFT` events of an accepted command into `state.crumbs`
+  (`withCrumbsLeftV7`), the precedent of the Monster's provocation list. No
+  death site writes the list.
+- **State, view, events.** `GameStateV7.sugarRush`, `crumbs`,
+  `splattedThisTurn`, and `tossedThisTurn` and their view copies (visible
+  units, explored tiles; a view's Crumbs carry their owner's public
+  `bite`). Three commands, seven events, the `UNIT_DIED` cause
+  `PEPPERMINT`, four combat-preview fields, and the no-retaliation reason
+  `SPLATTED`; Bounce reuses `UNIT_PUSHED`.
+- **Registry.** The abilities `SUGAR_RUSH`, `BOUNCE`, `SPLAT`, `REBAKE`, and
+  `SUGAR_TOSS`, the role mechanics `rushPerk` and `leavesCrumbs`, the
+  capabilities `homeSweetHome` and `crumbsBite`, and `REBAKE` in
+  `MIND_CONTROLLED_LOST_ABILITIES_V7`.
+- **Queries.** `previewSugarRushV7`, `previewRebakeV7`,
+  `previewSugarTossV7`, and `previewCrumbsEatV7`; the public unit stats'
+  `rushed`, `crashed`, `splatted`, and `tossedThisTurn` flags (present only
+  in a match with a Candy seat) and `candy` block, and the `SUGAR_RUSH`
+  source of the Attack row.
+- **Presentation until the UI step.** `src/render/dom/app-view-v7.ts` offers
+  the Candy in the setup select (cotton-candy pink `#ffb8d8` in
+  `FACTION_COLOURS_V7`) and draws its units, portraits, cities, and ships
+  with the `pulp_wars-jdb.5` art (`unitArtSubjectV7`, `portraitSubjectV7`,
+  `cityArtSubjectV7`, and the generic naval wiring; both Candy manifests
+  are in the live direction registry, and a raster that fails falls back
+  to the Human art with no Candy badge yet).
+  The dock shows the three commands as plain buttons
+  labelled by `candyCommandLabelV7` ("Sugar Rush", "Re-bake …: n Coins,
+  n HP", "Toss to …: +n"), names the Confectioner's Tend Wounded
+  "Frosting", and gives the three Candy unlock kinds short tree text. The
+  Rush reach, the Rushed, Crashed, and Splatted markers, Crumbs on the
+  board, the Splat, Bounce, and eating lines of the previews, the event log
+  text, Help, the Candy icons, Crumbs marker, and effect sprites (registered,
+  not drawn), and the browser smoke
+  probe belong to `pulp_wars-jdb.6`; until then the new events play back
+  like any other accepted boundary. The Gallery shows the Candy column with
+  that art.
 
 ## 0. Ruleset-6 replacement boundary
 

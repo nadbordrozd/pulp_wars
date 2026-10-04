@@ -167,6 +167,23 @@ export type TechnologyUnlockV7 =
    * eruptions deal 3 and Steam Cannon shots ignore fortification.
    */
   | { readonly kind: "BLASTING_CHARGES" }
+  /**
+   * The Candy revision (docs/product/RULESET_7_CANDY.md section 4): the
+   * Confectioner's Frosting and Re-bake (the Candy `ADMINISTRATION`, no
+   * Rally).
+   */
+  | { readonly kind: "CONFECTIONER_SUPPORT" }
+  /**
+   * The Candy revision, Home Sweet Home (the Candy `FORTIFICATION`): a
+   * Rushed unit that ends its turn on or next to an own city center does not
+   * Crash.
+   */
+  | { readonly kind: "HOME_SWEET_HOME" }
+  /**
+   * The Candy revision, Peppermint Surprise (the Candy `EXPLOSIVES`): an
+   * enemy that eats the owner's Crumbs takes `PEPPERMINT_DAMAGE_V7`.
+   */
+  | { readonly kind: "PEPPERMINT_SURPRISE" }
   | { readonly kind: "OVERRUN" }
   | {
       readonly kind: "CHARGE_BONUS";
@@ -260,7 +277,16 @@ export type UnitRoleAbilityV7 =
   | "ERUPTION"
   | "ASSEMBLE"
   | "KNOCKBACK"
-  | "PLATED";
+  | "PLATED"
+  // The Candy revision (section 3): every Candy land role's Sugar Rush, the
+  // Marshmallow's and the Golem's Bounce, the Pie Launcher's Splat, the
+  // Confectioner's Re-bake, and the Gumball Gunner's Sugar Toss. Frosting
+  // keeps the `TEND_WOUNDED` literal.
+  | "SUGAR_RUSH"
+  | "BOUNCE"
+  | "SPLAT"
+  | "REBAKE"
+  | "SUGAR_TOSS";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -438,6 +464,17 @@ export interface RoleMechanicsV7 {
    * primary-action Tractor Beam).
    */
   readonly heavyTractorBeam: boolean;
+  /**
+   * The Candy revision (docs/product/RULESET_7_CANDY.md section 5.4): what
+   * the role gets while Rushed besides the Rush itself: the Donut Racer's
+   * Escape, the Gummy Bear's Sugar Frenzy, or nothing.
+   */
+  readonly rushPerk: "ESCAPE" | "SUGAR_FRENZY" | null;
+  /**
+   * The Candy revision (section 6.1): a death of the role leaves Crumbs (the
+   * seven trainable Candy land roles). False for every other faction.
+   */
+  readonly leavesCrumbs: boolean;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1085,6 +1122,8 @@ const mechanics = (
           knockback: false,
           plated: null,
           heavyTractorBeam: false,
+          rushPerk: null,
+          leavesCrumbs: false,
           ...overrides[roleId],
         },
       ]),
@@ -2344,6 +2383,241 @@ export const DWARF_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
   roleMechanics: DWARF_ROLE_MECHANICS_V7,
 });
 
+/**
+ * The Candy technology graph (docs/product/RULESET_7_CANDY.md section 4):
+ * identical to ORIGINAL_BASELINE_V5 except that Administration grants
+ * `CONFECTIONER_SUPPORT` (Frosting and Re-bake) instead of Captain support,
+ * Chivalry grants no Overrun, Fortification (displayed as Home Sweet Home)
+ * grants `HOME_SWEET_HOME` instead of `BUILD_FIELD_DEFENSE`, and Explosives
+ * (displayed as Peppermint Surprise) keeps both of its unlocks and adds
+ * `PEPPERMINT_SURPRISE`. Raiding keeps `CHARGE_BONUS`.
+ */
+export const CANDY_BASELINE_V1_NODES: readonly TechnologyNodeV7[] = deepFreeze(
+  ORIGINAL_BASELINE_V5_NODES.map((original) =>
+    node(original.id, original.branch, original.tier, original.prerequisites, [
+      ...original.unlocks.flatMap((unlock): TechnologyUnlockV7[] =>
+        unlock.kind === "CAPTAIN_SUPPORT"
+          ? [{ kind: "CONFECTIONER_SUPPORT" }]
+          : unlock.kind === "OVERRUN"
+            ? []
+            : unlock.kind === "COMMAND" &&
+                unlock.command === "BUILD_FIELD_DEFENSE"
+              ? [{ kind: "HOME_SWEET_HOME" }]
+              : [unlock],
+      ),
+      ...(original.id === "EXPLOSIVES"
+        ? [{ kind: "PEPPERMINT_SURPRISE" } as const]
+        : []),
+    ]),
+  ),
+);
+
+/** The Candy roster (docs/product/RULESET_7_CANDY.md section 3). */
+export const CANDY_ROLE_RULES_V7: Readonly<
+  Record<UnitRoleIdV7, EffectiveRoleRuleV7>
+> = deepFreeze({
+  FIGHTER: role({
+    role: "FIGHTER",
+    label: "Gumdrop",
+    tacticalRole: "LINE",
+    cost: 2,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 4,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH"],
+  }),
+  // The Donut Racer has Escape only while Rushed (its `rushPerk`).
+  RAIDER: role({
+    role: "RAIDER",
+    label: "Donut Racer",
+    tacticalRole: "SKIRMISHER",
+    cost: 3,
+    maxHp: 10,
+    attack2: 4,
+    defense2: 2,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SCOUTING",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "SUGAR_RUSH"],
+  }),
+  MARKSMAN: role({
+    role: "MARKSMAN",
+    label: "Gumball Gunner",
+    tacticalRole: "RANGED",
+    cost: 3,
+    maxHp: 8,
+    attack2: 4,
+    defense2: 2,
+    move: 1,
+    range: 2,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "MARKSMANSHIP",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "SUGAR_TOSS"],
+  }),
+  GUARD: role({
+    role: "GUARD",
+    label: "Marshmallow",
+    tacticalRole: "DEFENDER",
+    cost: 4,
+    maxHp: 18,
+    attack2: 3,
+    defense2: 5,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "DRILL",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "CAPTURE", "SUGAR_RUSH", "BOUNCE"],
+  }),
+  // The Confectioner has no Rally; Frosting keeps the `TEND_WOUNDED` literal.
+  CAPTAIN: role({
+    role: "CAPTAIN",
+    label: "Confectioner",
+    tacticalRole: "SUPPORT",
+    cost: 5,
+    maxHp: 10,
+    attack2: 2,
+    defense2: 2,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "ADMINISTRATION",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "TEND_WOUNDED", "REBAKE", "SUGAR_RUSH"],
+  }),
+  CATAPULT: role({
+    role: "CATAPULT",
+    label: "Pie Launcher",
+    tacticalRole: "SIEGE",
+    cost: 8,
+    maxHp: 10,
+    attack2: 6,
+    defense2: 1,
+    move: 1,
+    range: 3,
+    minimumRange: 2,
+    sightRadius: 1,
+    technology: "SAWMILLING",
+    mayUsePrimaryActionAfterMove: false,
+    abilities: ["ATTACK", "SUGAR_RUSH", "SPLAT"],
+  }),
+  // The Gummy Bear has Overrun (Sugar Frenzy) only while Rushed.
+  KNIGHT: role({
+    role: "KNIGHT",
+    label: "Gummy Bear",
+    tacticalRole: "BREAKTHROUGH",
+    cost: 9,
+    maxHp: 14,
+    attack2: 6,
+    defense2: 3,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: "CHIVALRY",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "SUGAR_RUSH"],
+  }),
+  JUGGERNAUT: role({
+    role: "JUGGERNAUT",
+    label: "Rock Candy Golem",
+    tacticalRole: "MYTHIC",
+    cost: null,
+    maxHp: 40,
+    attack2: 8,
+    defense2: 7,
+    move: 1,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 1,
+    technology: null,
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "CAPTURE", "PUSH", "SUGAR_RUSH", "BOUNCE"],
+  }),
+  PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
+  BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+});
+
+/** The Candy revision (section 5.2): a Rushed unit's extra Move. */
+export const SUGAR_RUSH_MOVE_BONUS_V7 = 1;
+/** The Candy revision (section 5.2): the Rush `attack2` of a first attack. */
+export const SUGAR_RUSH_ATTACK2_V7 = 2;
+/** The Candy revision (section 5.3): Home Sweet Home reach from a center. */
+export const HOME_SWEET_HOME_RADIUS_V7 = 1;
+/** The Candy revision (section 6.1): `turnsLeft` of fresh Crumbs. */
+export const CRUMBS_TURNS_V7 = 3;
+/** The Candy revision (section 6.3): the Peppermint Surprise damage. */
+export const PEPPERMINT_DAMAGE_V7 = 3;
+/** The Candy revision (section 9): what a Sugar Toss heals. */
+export const SUGAR_TOSS_HEAL_V7 = 2;
+/** The Candy revision (section 9): the Sugar Toss reach (Chebyshev). */
+export const SUGAR_TOSS_RANGE_V7 = 2;
+/**
+ * The Candy revision (section 5.4, root ruling 7): the most continuations a
+ * Sugar Frenzy grants, so a Rushed Gummy Bear attacks at most three times a
+ * turn. A rule, never raised by a balance pass.
+ */
+export const SUGAR_FRENZY_MAX_CONTINUATIONS_V7 = 2;
+
+/**
+ * The Candy engine mechanics (section 13): no role builds Field Defense;
+ * the Donut Racer and the Gummy Bear have a Rush perk; the seven trainable
+ * land roles leave Crumbs; the Pie Launcher never advances. Every role uses
+ * one slot. Boats are Human boats.
+ */
+export const CANDY_ROLE_MECHANICS_V7 = mechanics({
+  FIGHTER: { buildsFieldDefense: false, leavesCrumbs: true },
+  RAIDER: { rushPerk: "ESCAPE", leavesCrumbs: true },
+  MARKSMAN: { leavesCrumbs: true },
+  GUARD: { buildsFieldDefense: false, leavesCrumbs: true },
+  CAPTAIN: { leavesCrumbs: true },
+  CATAPULT: { advancesAfterKill: false, leavesCrumbs: true },
+  KNIGHT: { rushPerk: "SUGAR_FRENZY", leavesCrumbs: true },
+  BATTLESHIP: { splash: true },
+});
+
+export const CANDY_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
+  id: "CANDY_BASELINE_V1",
+  faction: "CANDY",
+  startingTechIds: [],
+  nodes: CANDY_BASELINE_V1_NODES,
+  roleRules: CANDY_ROLE_RULES_V7,
+  roleMechanics: CANDY_ROLE_MECHANICS_V7,
+});
+
+/**
+ * The Candy revision (section 6.4): the Coins a Re-bake of `role` costs:
+ * half the role's printed cost, rounded up (Arms Industry never applies).
+ * Null for a role that leaves no Crumbs.
+ */
+export function rebakePriceV7(role: UnitRoleIdV7): number | null {
+  const cost = CANDY_ROLE_RULES_V7[role].cost;
+  return cost === null || !CANDY_ROLE_MECHANICS_V7[role].leavesCrumbs
+    ? null
+    : Math.ceil(cost / 2);
+}
+
+/**
+ * The Candy revision (section 6.4): the HP of a re-baked `role`: half the
+ * role's maximum HP, rounded up.
+ */
+export function rebakeHpV7(role: UnitRoleIdV7): number {
+  return Math.ceil(CANDY_ROLE_RULES_V7[role].maxHp / 2);
+}
+
 /** Frozen faction registrations; there is no cross-faction fallback. */
 export const FACTION_TREES_V7: Readonly<
   Record<FactionIdV7, FactionTechnologyTreeV7>
@@ -2355,6 +2629,7 @@ export const FACTION_TREES_V7: Readonly<
   MARTIAN: MARTIAN_BASELINE_V1_TREE,
   ICE_FOLK: ICE_FOLK_BASELINE_V1_TREE,
   DWARF: DWARF_BASELINE_V1_TREE,
+  CANDY: CANDY_BASELINE_V1_TREE,
 });
 
 export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
@@ -2366,6 +2641,7 @@ export const FACTION_DISPLAY_NAMES_V7: Readonly<Record<FactionIdV7, string>> =
     MARTIAN: "Martian",
     ICE_FOLK: "Ice Folk",
     DWARF: "Dwarf",
+    CANDY: "Candy",
   });
 
 /**
@@ -2389,6 +2665,11 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   ICE_FOLK: { FORTIFICATION: "Deep Winter", EXPLOSIVES: "Brittle" },
   // The Dwarf revision: Fortification and Explosives are renamed.
   DWARF: { FORTIFICATION: "Dig In", EXPLOSIVES: "Blasting Charges" },
+  // The Candy revision: Fortification and Explosives are renamed.
+  CANDY: {
+    FORTIFICATION: "Home Sweet Home",
+    EXPLOSIVES: "Peppermint Surprise",
+  },
 });
 
 export function factionTreeV7(faction: FactionIdV7): FactionTechnologyTreeV7 {
@@ -2479,6 +2760,14 @@ export const FACTION_RULES_V7: Readonly<Record<FactionIdV7, FactionRulesV7>> =
     },
     // The Dwarf revision (section 13.13): the treasure unit is a Gyrocopter.
     DWARF: {
+      restless: false,
+      cityCapacityBonus: 0,
+      gangUpMaximum: 0,
+      treasureUnitRole: "RAIDER",
+      snow: false,
+    },
+    // The Candy revision (section 12.16): the treasure unit is a Donut Racer.
+    CANDY: {
       restless: false,
       cityCapacityBonus: 0,
       gangUpMaximum: 0,
@@ -2820,7 +3109,8 @@ export function ownerResearchedTechsV7(
  * The Mind Control revision (section 5.1 ruling 3): the abilities whose
  * result is a new unit (or a controlled unit), which a mind-controlled unit
  * never has: Raise Dead, Infect, Bite, Hatch, Assemble, Mind Control, and
- * tunnel riding. The Steam Mole's `TUNNEL` stays (it tunnels alone).
+ * tunnel riding. The Steam Mole's `TUNNEL` stays (it tunnels alone). The
+ * Candy revision (section 12.5): Re-bake.
  */
 export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
   deepFreeze([
@@ -2831,6 +3121,7 @@ export const MIND_CONTROLLED_LOST_ABILITIES_V7: readonly UnitRoleAbilityV7[] =
     "ASSEMBLE",
     "MIND_CONTROL",
     "RIDES_TUNNEL",
+    "REBAKE",
   ]);
 
 const CONTROLLED_ROLE_RULES_V7 = new WeakMap<
@@ -3691,6 +3982,17 @@ export interface TechnologyCapabilitiesV7 {
    * Cannon shots ignore the defender's fortification.
    */
   readonly cannonIgnoresFortification: boolean;
+  /**
+   * The Candy revision (section 5.3): Home Sweet Home, the player's Rushed
+   * units on or next to its city centers do not Crash.
+   */
+  readonly homeSweetHome: boolean;
+  /**
+   * The Candy revision (section 6.3): Peppermint Surprise, the damage an
+   * enemy takes for eating the player's Crumbs (0, or
+   * `PEPPERMINT_DAMAGE_V7`).
+   */
+  readonly crumbsBite: number;
 }
 
 export function technologyCapabilitiesV7(
@@ -3742,6 +4044,8 @@ export function technologyCapabilitiesV7(
   let bombDamage = BOMB_DAMAGE_V7;
   let eruptionDamage = ERUPTION_DAMAGE_V7;
   let cannonIgnoresFortification = false;
+  let homeSweetHome = false;
+  let crumbsBite = 0;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -3837,6 +4141,13 @@ export function technologyCapabilitiesV7(
         eruptionDamage = BLASTING_ERUPTION_DAMAGE_V7;
         cannonIgnoresFortification = true;
         break;
+      case "HOME_SWEET_HOME":
+        homeSweetHome = true;
+        break;
+      case "PEPPERMINT_SURPRISE":
+        crumbsBite = PEPPERMINT_DAMAGE_V7;
+        break;
+      case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
       case "WITCH_SUPPORT":
       case "BRAIN_SUPPORT":
@@ -3892,6 +4203,8 @@ export function technologyCapabilitiesV7(
     bombDamage,
     eruptionDamage,
     cannonIgnoresFortification,
+    homeSweetHome,
+    crumbsBite,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

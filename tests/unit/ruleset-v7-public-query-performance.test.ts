@@ -83,7 +83,10 @@ describe("ruleset-7 late public query performance", () => {
     // forward by three (was cf39a3…918b); the revision-12-ordinal value
     // below is unchanged.
     expect(canonicalHash(ready)).toBe(
-      "845cbd55910327d48866590941161c24c9dc0f7313c3d5e69d307fd14c50b1a9",
+      // The Candy revision (`pulp_wars-jdb.3`) inserts SUGAR_RUSH, REBAKE,
+      // and SUGAR_TOSS after ASSEMBLE, moving every later kind forward by
+      // three (was 845cbd…b1a9); the revision-12-ordinal value is unchanged.
+      "6f1e43a15a53e8a5b700861843e160e026280d536ed29ae371e4d0e8c3b6b43d",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

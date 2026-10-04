@@ -52,6 +52,8 @@ import {
   previewBolasV7,
   previewColdSnapV7,
   previewAssembleV7,
+  previewRebakeV7,
+  previewSugarTossV7,
   previewBombRunV7,
   previewTunnelV7,
   queryAssembleUnavailableReasonV7,
@@ -456,6 +458,10 @@ const BOARD_SIZE_LABELS: Readonly<Record<string, string>> = Object.fromEntries(
  * The factions the setup screen offers: every registered faction. The
  * Martians joined with their UI bead (`pulp_wars-t6s.4`), the Ice Folk with
  * theirs (`pulp_wars-7g3.6`), the Dwarves with theirs (`pulp_wars-78i.6`).
+ * The Candy joined with their engine bead (`pulp_wars-jdb.3`) so that the
+ * game runs with eight factions; their units, portraits, cities and ships use
+ * the Candy art, and their commands are plain buttons until their UI bead
+ * (`pulp_wars-jdb.6`).
  */
 const FACTIONS: readonly FactionIdV7[] = [
   "ORIGINAL",
@@ -465,6 +471,7 @@ const FACTIONS: readonly FactionIdV7[] = [
   "MARTIAN",
   "ICE_FOLK",
   "DWARF",
+  "CANDY",
 ];
 /** The setup's helper text under "Factions". */
 const FACTIONS_HINT_V7 =
@@ -499,6 +506,7 @@ const FACTION_LABELS: Readonly<Record<string, string>> = {
   MARTIAN: "Martian",
   ICE_FOLK: "Ice Folk",
   DWARF: "Dwarf",
+  CANDY: "Candy",
 };
 /** Non-Human factions drawn with a placeholder badge over Human art. */
 type FactionBadgeV7 =
@@ -3965,10 +3973,15 @@ export class Ruleset7DomAppView {
               (unit) => unit.id === command.unitId && unit.form === "EGG",
             )
           : undefined;
+      // The Candy revision (minimal UI of `pulp_wars-jdb.3`; the aiming
+      // panels are the UI bead's): one plain button per offered Re-bake and
+      // Sugar Toss, named by its unit, price, and heal.
+      const candyLabel = candyCommandLabelV7(this.#snapshot.view, command);
       const label =
-        abandonedEgg === undefined
+        candyLabel ??
+        (abandonedEgg === undefined
           ? commandLabel(command, this.#viewerFaction())
-          : ABANDON_EGG_LABEL_V7;
+          : ABANDON_EGG_LABEL_V7);
       const action = button(
         this.#document,
         "",
@@ -3977,7 +3990,15 @@ export class Ruleset7DomAppView {
           : // Revision 19: one button per hatchable Egg.
             command.kind === "HATCH"
             ? `command-hatch-${command.eggUnitId}`
-            : `command-${command.kind.toLowerCase()}`,
+            : command.kind === "SUGAR_TOSS"
+              ? `command-sugar_toss-${command.targetUnitId}`
+              : command.kind === "REBAKE"
+                ? `command-rebake-${
+                    this.#snapshot.view?.crumbs.findIndex((entry) =>
+                      same(entry.at, command.at),
+                    ) ?? 0
+                  }`
+                : `command-${command.kind.toLowerCase()}`,
         command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL"
           ? "v7-train-action"
           : "v7-context-action",
@@ -8199,7 +8220,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r37",
+    rulesetId: "pulp-wars-poc-7r38",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -8378,6 +8399,14 @@ function effectDescription(
       return DIG_IN_UNLOCK_TEXT_V7;
     case "BLASTING_CHARGES":
       return BLASTING_CHARGES_UNLOCK_TEXT_V7;
+    // The Candy revision (docs/product/RULESET_7_CANDY.md section 4); the
+    // full Candy tree text is the UI bead's (`pulp_wars-jdb.6`).
+    case "CONFECTIONER_SUPPORT":
+      return "Confectioners Frost nearby troops or Re-bake a fallen unit from its Crumbs";
+    case "HOME_SWEET_HOME":
+      return "Rushed units that end the turn on or next to your city centers don't Crash";
+    case "PEPPERMINT_SURPRISE":
+      return "Enemies that eat your Crumbs take 3";
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -8537,6 +8566,9 @@ function technologyEffectGroupIdV7(
     case "DIVE":
     case "DIG_IN":
     case "BLASTING_CHARGES":
+    case "CONFECTIONER_SUPPORT":
+    case "HOME_SWEET_HOME":
+    case "PEPPERMINT_SURPRISE":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":
@@ -8737,6 +8769,43 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
   LAND_GRANT: "Land grant",
   BUILD_FIELD_DEFENSE: "Fortify",
 };
+/**
+ * The Candy revision (docs/product/RULESET_7_CANDY.md section 15.2): the
+ * label of a Candy command button, or null for any other command: "Sugar
+ * Rush", "Re-bake {unit}: {n} Coins, {n} HP", "Toss to {unit}: +{n}", and
+ * the Confectioner's Tend Wounded as "Frosting". No text names a tile.
+ */
+function candyCommandLabelV7(
+  view: PlayerViewV7 | null,
+  command: CommandV7,
+): string | null {
+  if (command.kind === "SUGAR_RUSH") return "Sugar Rush";
+  if (view === null) return null;
+  if (command.kind === "REBAKE") {
+    const option = previewRebakeV7(view, command.unitId)?.options.find(
+      (entry) => same(entry.at, command.at),
+    );
+    return option === undefined
+      ? "Re-bake"
+      : `Re-bake ${effectiveRoleRuleV7(option.role, "CANDY").label}: ${option.cost} ${option.cost === 1 ? "Coin" : "Coins"}, ${option.hp} HP`;
+  }
+  if (command.kind === "SUGAR_TOSS") {
+    const target = view.units.find((unit) => unit.id === command.targetUnitId);
+    const heal = previewSugarTossV7(view, command.unitId)?.targets.find(
+      (entry) => entry.unitId === command.targetUnitId,
+    );
+    return target === undefined || heal === undefined
+      ? "Sugar Toss"
+      : `Toss to ${unitRoleRuleV7(view, target).label}: +${heal.amount}`;
+  }
+  if (command.kind === "TEND_WOUNDED") {
+    const unit = view.units.find((entry) => entry.id === command.unitId);
+    return unit !== undefined && unitFactionV7(view, unit) === "CANDY"
+      ? "Frosting"
+      : null;
+  }
+  return null;
+}
 function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
     return effectiveRoleRuleV7(command.role, faction).label;

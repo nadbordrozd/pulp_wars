@@ -6,7 +6,7 @@ current rules describe the running seven-faction game, with the Dwarves in
 their [section 22](RULESET_7_CURRENT.md#22-dwarf-faction-rules), and win
 wherever this document differs; the fold's corrections of this text are
 listed in their
-[known discrepancies](RULESET_7_CURRENT.md#24-known-discrepancies).
+[known discrepancies](RULESET_7_CURRENT.md#25-known-discrepancies).
 Contract (`pulp_wars-78i.2`); **the engine is implemented**
 (`pulp_wars-78i.3`, identity `pulp-wars-poc-7r30`: every rule, command, event,
 query, and state shape of this document) and **the UI is implemented**

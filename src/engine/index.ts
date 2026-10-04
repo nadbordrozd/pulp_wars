@@ -50,6 +50,7 @@ export * from "./v7/commands";
 export * from "./v7/achievements";
 export * from "./v7/afflictions";
 export * from "./v7/artifacts";
+export * from "./v7/candy";
 export * from "./v7/combat";
 export * from "./v7/dwarf";
 export * from "./v7/economy";

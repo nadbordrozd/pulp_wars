@@ -42,12 +42,20 @@
  * section 19.2 telemetry (`MatrixEntry.dwarf`, `summary.dwarf`). The other
  * summaries leave the Dwarf pairings out of their references.
  *
+ * The Candy engine (`pulp_wars-jdb.3`) adds the letter `C`, the Candy
+ * pairings `CH`, `HC`, `CU`, `UC`, `CG`, `GC`, `CD`, `DC`, `CM`, `MC`, `CI`,
+ * `IC`, `CW`, and `WC` (no `CC` mirror), and the four-seat smoke mix `CHUG`.
+ * The other summaries leave the Candy pairings out of their references; the
+ * Candy summary and its section 19.2 telemetry are the balance bead's
+ * (`pulp_wars-jdb.7`; the match totals are `metrics.candy`).
+ *
  * Usage:
  *   npm run balance:ruleset7-undead -- [--seeds 30] [--multi-seeds 4]
  *     [--sizes 11,14] [--maps dry-land,pangea,continents,archipelago,lakes]
  *     [--pairings HU,UH,UU,HH,GH,HG,GU,UG,GG,DH,HD,DU,UD,DG,GD,DD,
  *       MH,HM,MU,UM,MG,GM,MD,DM,MM,IH,HI,IU,UI,IG,GI,ID,DI,IM,MI,II,HUHU,UHUH,GHUG,HUGH,UGHU,HUGD,DHUG,GDHU,UGDH,
- *       MHUG,DMHU,GDMH,UGDM,WH,HW,WU,UW,WG,GW,WD,DW,WM,MW,WI,IW,WHUG,DMIW]
+ *       MHUG,DMHU,GDMH,UGDM,WH,HW,WU,UW,WG,GW,WD,DW,WM,MW,WI,IW,WHUG,DMIW,
+ *       CH,HC,CU,UC,CG,GC,CD,DC,CM,MC,CI,IC,CW,WC,CHUG]
  *     [--max-rounds 150]
  *     [--multi-max-rounds 120] [--jobs N] [--output file.json]
  *     [--detail-output file.json] [--markdown] [--strict]
@@ -178,6 +186,22 @@ const PAIRINGS = {
   MW: ["MARTIAN", "DWARF"],
   WI: ["DWARF", "ICE_FOLK"],
   IW: ["ICE_FOLK", "DWARF"],
+  // The Candy revision (docs/product/RULESET_7_CANDY.md section 19.2): `C`
+  // Candy; there is no `CC` mirror.
+  CH: ["CANDY", "ORIGINAL"],
+  HC: ["ORIGINAL", "CANDY"],
+  CU: ["CANDY", "UNDEAD"],
+  UC: ["UNDEAD", "CANDY"],
+  CG: ["CANDY", "GOBLIN"],
+  GC: ["GOBLIN", "CANDY"],
+  CD: ["CANDY", "DINOSAUR"],
+  DC: ["DINOSAUR", "CANDY"],
+  CM: ["CANDY", "MARTIAN"],
+  MC: ["MARTIAN", "CANDY"],
+  CI: ["CANDY", "ICE_FOLK"],
+  IC: ["ICE_FOLK", "CANDY"],
+  CW: ["CANDY", "DWARF"],
+  WC: ["DWARF", "CANDY"],
   HUHU: ["ORIGINAL", "UNDEAD", "ORIGINAL", "UNDEAD"],
   UHUH: ["UNDEAD", "ORIGINAL", "UNDEAD", "ORIGINAL"],
   GHUG: ["GOBLIN", "ORIGINAL", "UNDEAD", "GOBLIN"],
@@ -194,6 +218,8 @@ const PAIRINGS = {
   // The Dwarf balance (`pulp_wars-78i.7`): four-seat smoke mixes.
   WHUG: ["DWARF", "ORIGINAL", "UNDEAD", "GOBLIN"],
   DMIW: ["DINOSAUR", "MARTIAN", "ICE_FOLK", "DWARF"],
+  // The Candy engine (`pulp_wars-jdb.3`): a four-seat smoke mix.
+  CHUG: ["CANDY", "ORIGINAL", "UNDEAD", "GOBLIN"],
 } as const satisfies Record<string, readonly FactionIdV7[]>;
 type PairingId = keyof typeof PAIRINGS;
 const ONE_VS_ONE: readonly PairingId[] = [
@@ -245,6 +271,20 @@ const ONE_VS_ONE: readonly PairingId[] = [
   "MW",
   "WI",
   "IW",
+  "CH",
+  "HC",
+  "CU",
+  "UC",
+  "CG",
+  "GC",
+  "CD",
+  "DC",
+  "CM",
+  "MC",
+  "CI",
+  "IC",
+  "CW",
+  "WC",
 ];
 const MULTI: readonly PairingId[] = [
   "HUHU",
@@ -262,6 +302,7 @@ const MULTI: readonly PairingId[] = [
   "UGDM",
   "WHUG",
   "DMIW",
+  "CHUG",
 ];
 /** 1v1 pairings without a Goblin seat (the cap-rate reference). */
 const NON_GOBLIN_ONE_VS_ONE: readonly PairingId[] = ["HU", "UH", "UU", "HH"];
@@ -320,6 +361,23 @@ const DWARF_ONE_VS_ONE: readonly PairingId[] = [
   "MW",
   "WI",
   "IW",
+];
+/** The Candy 1v1 pairings (Candy section 19.2; no `CC` mirror). */
+const CANDY_ONE_VS_ONE: readonly PairingId[] = [
+  "CH",
+  "HC",
+  "CU",
+  "UC",
+  "CG",
+  "GC",
+  "CD",
+  "DC",
+  "CM",
+  "MC",
+  "CI",
+  "IC",
+  "CW",
+  "WC",
 ];
 
 export interface MatrixCell {
@@ -1576,6 +1634,8 @@ const FACTION_INITIAL: Partial<Record<FactionIdV7, string>> = {
   MARTIAN: "M",
   ICE_FOLK: "I",
   DWARF: "W",
+  // The Candy revision (section 2.3): the pairing letter `C`.
+  CANDY: "C",
 };
 
 /**
@@ -2970,7 +3030,7 @@ function buildCells(): MatrixCell[] {
 export function runCell(cell: MatrixCell): MatrixEntry {
   const factions = PAIRINGS[cell.pairing];
   const setup: MatchSetupV7 = {
-    rulesetId: "pulp-wars-poc-7r37",
+    rulesetId: "pulp-wars-poc-7r38",
     mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
     curiosities: false,
     seed: cell.seed,
@@ -3644,7 +3704,7 @@ async function runMain(): Promise<void> {
         JSON.stringify({
           format: "pulp-wars-ruleset7-undead-balance-matrix",
           version: 1,
-          rulesetId: "pulp-wars-poc-7r37",
+          rulesetId: "pulp-wars-poc-7r38",
           parameters,
           summary,
           games: ordered.map(compactEntry),
@@ -4828,7 +4888,8 @@ function dinosaurSummary(entries: readonly MatrixEntry[]) {
         !DINOSAUR_ONE_VS_ONE.includes(entry.pairing) &&
         !MARTIAN_ONE_VS_ONE.includes(entry.pairing) &&
         !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing) &&
-        !DWARF_ONE_VS_ONE.includes(entry.pairing),
+        !DWARF_ONE_VS_ONE.includes(entry.pairing) &&
+        !CANDY_ONE_VS_ONE.includes(entry.pairing),
     ),
   );
   const pairingCaps: Record<string, number | null> = Object.fromEntries(
@@ -5243,7 +5304,8 @@ function martianSummary(entries: readonly MatrixEntry[]) {
       (entry) =>
         !MARTIAN_ONE_VS_ONE.includes(entry.pairing) &&
         !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing) &&
-        !DWARF_ONE_VS_ONE.includes(entry.pairing),
+        !DWARF_ONE_VS_ONE.includes(entry.pairing) &&
+        !CANDY_ONE_VS_ONE.includes(entry.pairing),
     ),
   );
   const pairingCaps: Record<string, number | null> = Object.fromEntries(
@@ -5485,7 +5547,8 @@ function iceFolkSummary(entries: readonly MatrixEntry[]) {
     duel.filter(
       (entry) =>
         !ICE_FOLK_ONE_VS_ONE.includes(entry.pairing) &&
-        !DWARF_ONE_VS_ONE.includes(entry.pairing),
+        !DWARF_ONE_VS_ONE.includes(entry.pairing) &&
+        !CANDY_ONE_VS_ONE.includes(entry.pairing),
     ),
   );
   const mixed = iceDuel.filter((entry) => entry.pairing !== "II");
@@ -5725,7 +5788,11 @@ function dwarfSummary(entries: readonly MatrixEntry[]) {
     };
   };
   const reference = capRateOf(
-    duel.filter((entry) => !DWARF_ONE_VS_ONE.includes(entry.pairing)),
+    duel.filter(
+      (entry) =>
+        !DWARF_ONE_VS_ONE.includes(entry.pairing) &&
+        !CANDY_ONE_VS_ONE.includes(entry.pairing),
+    ),
   );
   return {
     versusHuman: against("ORIGINAL"),

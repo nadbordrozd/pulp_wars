@@ -98,6 +98,7 @@ describe("Dwarf setup", () => {
         "Martian",
         "Ice Folk",
         "Dwarf",
+        "Candy",
       ]);
     }
     // An opponent's Dwarf option is disabled while the human plays Dwarf.

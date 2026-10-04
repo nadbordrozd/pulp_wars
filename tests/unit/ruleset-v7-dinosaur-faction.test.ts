@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r37 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r37");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r37");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r37.current");
+  it("keeps r18 among the gap-free prior identities after the r38 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r38");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r38");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r38.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 35 },
+        { length: 36 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-19)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-20)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 35 },
+        { length: 36 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r37");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r38");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -226,6 +226,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       "ICE_FOLK",
       // The Dwarf revision (`pulp_wars-78i.3`).
       "DWARF",
+      "CANDY",
     ]);
     expect(FACTION_TREE_IDS_V7).toEqual([
       "ORIGINAL_BASELINE_V5",
@@ -235,6 +236,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       "MARTIAN_BASELINE_V1",
       "ICE_FOLK_BASELINE_V1",
       "DWARF_BASELINE_V1",
+      "CANDY_BASELINE_V1",
     ]);
     expect(FACTION_IDS_V7.map(factionTreeIdV7)).toEqual(FACTION_TREE_IDS_V7);
     expect(FACTION_TREES_V7.DINOSAUR.faction).toBe("DINOSAUR");
@@ -249,6 +251,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       MARTIAN: "Martian",
       ICE_FOLK: "Ice Folk",
       DWARF: "Dwarf",
+      CANDY: "Candy",
     });
     // The registry assertion accepts the fourth tree unchanged.
     expect(() => assertRuleset7Registry()).not.toThrow();
@@ -268,6 +271,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
       ["MARTIAN", "RAIDER", 0, 0, false],
       ["ICE_FOLK", "RAIDER", 0, 0, false],
       ["DWARF", "RAIDER", 0, 0, false],
+      ["CANDY", "RAIDER", 0, 0, false],
     ]);
     expect([
       EGG_HP_V7,
@@ -293,7 +297,7 @@ describe("ruleset-7 Dinosaur faction registration", () => {
     expect(
       parseMatchSetupV7({
         ...goblinSetupV7(["DINOSAUR", "ORIGINAL"]),
-        factions: ["DINOSAUR", "CANDY"],
+        factions: ["DINOSAUR", "NOT_A_FACTION"],
       }),
     ).toBeNull();
     const created = createPlayableGameV7(
@@ -880,6 +884,7 @@ describe("ruleset-7 Dinosaur technology", () => {
       ["ICE_FOLK", 0, 0, false],
       // The Dwarf Fortification is Dig In: no Field Defense.
       ["DWARF", 0, 0, false],
+      ["CANDY", 0, 0, false],
     ]);
     const drill = technologyCapabilitiesV7(["DRILL"], "DINOSAUR");
     expect([drill.eggHpBonus, drill.eggHatchTurnReduction]).toEqual([0, 0]);
@@ -911,6 +916,7 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Disintegrator",
       "Brittle",
       "Blasting Charges",
+      "Peppermint Surprise",
     ]);
     expect(
       FACTION_IDS_V7.map((faction) =>
@@ -924,6 +930,7 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Force Fields",
       "Deep Winter",
       "Dig In",
+      "Home Sweet Home",
     ]);
     for (const tech of TECHNOLOGY_IDS_V7)
       if (tech !== "FORTIFICATION" && tech !== "EXPLOSIVES")

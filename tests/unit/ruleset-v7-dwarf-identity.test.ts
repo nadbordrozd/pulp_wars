@@ -30,7 +30,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // (`pulp_wars-1wy.3`) 7r37.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 37;
+const REVISION = 38;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

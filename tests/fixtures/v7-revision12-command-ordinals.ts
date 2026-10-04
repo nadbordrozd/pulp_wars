@@ -20,7 +20,8 @@ import {
  * inserts BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM after HATCH (its section
  * 11), and the Ice Folk revision THROW_BOLAS and COLD_SNAP after
  * TRACTOR_BEAM (its section 11), and the Dwarf revision TUNNEL, BOMB_RUN,
- * and ASSEMBLE after COLD_SNAP (its section 14).
+ * and ASSEMBLE after COLD_SNAP (its section 14), and the Candy revision
+ * SUGAR_RUSH, REBAKE, and SUGAR_TOSS after ASSEMBLE (its section 13).
  */
 const LATER_COMMAND_KINDS: readonly string[] = [
   "RAISE_DEAD",
@@ -36,6 +37,9 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "TUNNEL",
   "BOMB_RUN",
   "ASSEMBLE",
+  "SUGAR_RUSH",
+  "REBAKE",
+  "SUGAR_TOSS",
   "LAY_EGG",
 ];
 const REVISION_12_COMMAND_KIND_ORDER = COMMAND_KIND_ORDER_V7.filter(

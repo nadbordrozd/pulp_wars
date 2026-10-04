@@ -1015,7 +1015,9 @@ describe("ruleset-7 revision-13 Grave actions: schema, Human parity, and persist
       "DEVOUR",
     ]);
     const tended = DOMAIN_EVENT_KIND_ORDER_V7.indexOf("WOUNDED_TENDED");
-    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(tended + 1, tended + 3)).toEqual([
+    // The Candy revision inserts SUGAR_TOSSED after WOUNDED_TENDED.
+    expect(DOMAIN_EVENT_KIND_ORDER_V7.slice(tended + 1, tended + 4)).toEqual([
+      "SUGAR_TOSSED",
       "DEAD_RAISED",
       "GRAVE_DEVOURED",
     ]);

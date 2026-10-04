@@ -259,28 +259,52 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
     }
   });
 
-  // The Candy UI bead (pulp_wars-jdb.6) wires this art in and turns this
-  // test round, as the Martian, Ice Folk and Dwarf UI beads did.
-  it("is not wired in: no game module imports it and no live registry holds it", async () => {
+  // Turned round by the Candy engine bead (pulp_wars-jdb.3), which registers
+  // the faction and wires its unit sprites, portraits, cities and ships in;
+  // the Candy UI bead (pulp_wars-jdb.6) draws the icons, the Crumbs marker
+  // and the effects, which the registry already holds.
+  it("is wired into the live direction registry, and only there", async () => {
     const ids = new Set(ALL_MASTERS.map((asset) => asset.id));
     for (const asset of [
       ...CHIBI_ART_ASSETS_V7,
       ...CHIBI_DIRECTION_ART_ASSETS_V7,
-      ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
     ]) {
       expect(ids.has(asset.id), asset.id).toBe(false);
       expect(asset.subject.includes("CANDY"), asset.id).toBe(false);
     }
     const live = chibiDirectionArtRegistryV7();
-    for (const asset of ALL_MASTERS)
-      expect(live.variants(asset.subject), asset.subject).toEqual([]);
+    for (const asset of CHIBI_DIRECTION_CANDY_ART_ASSETS_V7)
+      expect(
+        live.variants(asset.subject).map((entry) => entry.id),
+        asset.subject,
+      ).toEqual([asset.id]);
+    // The naval set is part of the generic naval list, on the subjects the
+    // live naval wiring asks for.
+    for (const entry of NAVAL_MASTERS) {
+      expect(
+        CHIBI_NAVAL_FACTION_ART_ASSETS_V7.some(
+          (naval) => naval.asset.id === entry.id,
+        ),
+        entry.id,
+      ).toBe(true);
+      expect(
+        live.variants(entry.subject).map((variant) => variant.id),
+        entry.subject,
+      ).toEqual([entry.id]);
+    }
+    // Only the two live registries import the manifest.
     const files = (await readdir(path.join(ROOT, "src"), { recursive: true }))
       .filter((file) => /\.tsx?$/.test(file))
       .filter((file) => !/chibi-direction-candy-/.test(file));
+    const importers: string[] = [];
     for (const file of files) {
       const text = await readFile(path.join(ROOT, "src", file), "utf8");
-      expect(/from "[^"]*chibi-direction-candy-/.test(text), file).toBe(false);
+      if (/from "[^"]*chibi-direction-candy-/.test(text)) importers.push(file);
     }
+    expect(importers.sort()).toEqual([
+      "assets/chibi-direction-art-manifest.ts",
+      "assets/chibi-naval-faction-art-manifest.ts",
+    ]);
     // It does not import the other factions' naval manifest either.
     const own = await readFile(
       path.join(ROOT, "src/assets/chibi-direction-candy-art-manifest.ts"),

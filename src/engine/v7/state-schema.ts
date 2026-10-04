@@ -44,8 +44,10 @@ import {
   type CityStateV7,
   type CoolingStatusV7,
   type CoordV7,
+  type CrumbsV7,
   type CuriosityKindV7,
   type CuriosityV7,
+  type SugarRushStatusV7,
   type EggStatusV7,
   type FactionIdV7,
   type GameStateV7,
@@ -108,6 +110,7 @@ const STATE_KEYS = [
   "cities",
   "commandIndex",
   "cooling",
+  "crumbs",
   "curiosities",
   "eggs",
   "graves",
@@ -126,8 +129,11 @@ const STATE_KEYS = [
   "schemaVersion",
   "setup",
   "shields",
+  "splattedThisTurn",
+  "sugarRush",
   "surfacedThisTurn",
   "mindControlled",
+  "tossedThisTurn",
   "tractorUsedThisTurn",
   "treasureChests",
   "turnOrder",
@@ -221,6 +227,12 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
   // beamed passengers and used free Tractor Beams.
   const beamedThisTurn = parseSortedUnitIds(input.beamedThisTurn);
   const tractorUsedThisTurn = parseSortedUnitIds(input.tractorUsedThisTurn);
+  // The Candy revision (docs/product/RULESET_7_CANDY.md section 13): the
+  // four Candy lists; the cross references are checked below.
+  const sugarRush = parseSugarRush(input.sugarRush);
+  const crumbs = parseCrumbs(input.crumbs);
+  const splattedThisTurn = parseSortedUnitIds(input.splattedThisTurn);
+  const tossedThisTurn = parseSortedUnitIds(input.tossedThisTurn);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -250,6 +262,10 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     bombedThisTurn === null ||
     beamedThisTurn === null ||
     tractorUsedThisTurn === null ||
+    sugarRush === null ||
+    crumbs === null ||
+    splattedThisTurn === null ||
+    tossedThisTurn === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -292,6 +308,11 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       bombedThisTurn,
       beamedThisTurn,
       tractorUsedThisTurn,
+      sugarRush,
+      crumbs,
+      splattedThisTurn,
+      tossedThisTurn,
+      curiosities,
       choices,
       outcome,
       humanPlayerId,
@@ -335,6 +356,10 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     bombedThisTurn,
     beamedThisTurn,
     tractorUsedThisTurn,
+    sugarRush,
+    crumbs,
+    splattedThisTurn,
+    tossedThisTurn,
     pendingChoices: choices,
     outcome,
   };
@@ -877,7 +902,12 @@ function parseUnit(
   const faction = players.find((player) => player.id === kindOwner)?.faction;
   if (faction === undefined) return null;
   const rule = effectiveRoleRuleV7(role, faction);
-  const overrun = rule.abilities.includes("OVERRUN");
+  // The Candy revision (section 5.4): the Gummy Bear's Sugar Frenzy is an
+  // Overrun and the Donut Racer's perk an Escape; that the unit is Rushed
+  // is checked with the cross references (`candyListsValid`).
+  const rushPerk = roleMechanicsV7(role, faction).rushPerk;
+  const overrun =
+    rule.abilities.includes("OVERRUN") || rushPerk === "SUGAR_FRENZY";
   // Revision 19 section 6.1: an Egg is an egg-laid role of a Dinosaur seat
   // with 6 or 10 maximum HP, no kills, no Promotion, no capture eligibility,
   // and the exhausted activation at all times. Its tile, home city, and
@@ -934,7 +964,7 @@ function parseUnit(
     (activation.overrunActive &&
       (!overrun || !activation.attacked || activation.handled)) ||
     (activation.escapeAvailable &&
-      (!rule.abilities.includes("ESCAPE") ||
+      ((!rule.abilities.includes("ESCAPE") && rushPerk !== "ESCAPE") ||
         input.form !== "LAND" ||
         !activation.attacked ||
         activation.handled)) ||
@@ -1417,6 +1447,62 @@ function parseBurrowed(
 }
 
 /** Strictly ascending unit IDs (the Dwarf revision's per-turn lists). */
+/**
+ * The Candy revision (section 5.3): the `sugarRush` entries, strictly
+ * ascending by `unitId` (so no unit has two).
+ */
+function parseSugarRush(input: unknown): readonly SugarRushStatusV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: SugarRushStatusV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["phase", "unitId"])) return null;
+    const unitId = parseUnitIdV7(candidate.unitId);
+    const phase = candidate.phase;
+    if (
+      unitId === null ||
+      (phase !== "RUSHED" && phase !== "CRASHED") ||
+      (values.length > 0 &&
+        (values.at(-1) as SugarRushStatusV7).unitId >= unitId)
+    )
+      return null;
+    values.push({ unitId, phase });
+  }
+  return values;
+}
+
+/**
+ * The Candy revision (section 6.1): the Crumbs, strictly ascending by
+ * (y, x) (so no tile holds two), each with a role, an owner, and 1 to 3
+ * turns left. The cross references are checked separately.
+ */
+function parseCrumbs(input: unknown): readonly CrumbsV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: CrumbsV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["at", "ownerId", "role", "turnsLeft"]))
+      return null;
+    const at = parseCoordV7(candidate.at);
+    const ownerId = parsePlayerIdV7(candidate.ownerId);
+    const turnsLeft = candidate.turnsLeft;
+    if (
+      at === null ||
+      ownerId === null ||
+      !UNIT_ROLE_IDS_V7.includes(candidate.role as UnitRoleIdV7) ||
+      (turnsLeft !== 1 && turnsLeft !== 2 && turnsLeft !== 3) ||
+      (values.length > 0 &&
+        compareCoordsV7((values.at(-1) as CrumbsV7).at, at) >= 0)
+    )
+      return null;
+    values.push({
+      at,
+      role: candidate.role as UnitRoleIdV7,
+      ownerId,
+      turnsLeft,
+    });
+  }
+  return values;
+}
+
 function parseSortedUnitIds(input: unknown): readonly UnitId[] | null {
   if (!isDenseArrayV7(input)) return null;
   const values: UnitId[] = [];
@@ -1538,6 +1624,11 @@ interface CrossInput {
   bombedThisTurn: readonly UnitId[];
   beamedThisTurn: readonly UnitId[];
   tractorUsedThisTurn: readonly UnitId[];
+  sugarRush: readonly SugarRushStatusV7[];
+  crumbs: readonly CrumbsV7[];
+  splattedThisTurn: readonly UnitId[];
+  tossedThisTurn: readonly UnitId[];
+  curiosities: readonly CuriosityV7[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
@@ -1823,7 +1914,8 @@ function validateCrossReferences(value: CrossInput): boolean {
       value.tractorUsedThisTurn,
       value.activePlayerId,
       value.setup,
-    )
+    ) ||
+    !candyListsValid(value, playerById, kindOf)
   )
     return false;
   // Revision 19: an Egg takes no status, so it is never plagued or bitten.
@@ -2191,6 +2283,90 @@ function martianTurnListsValid(
       );
     })
   );
+}
+
+/**
+ * The Candy revision (docs/product/RULESET_7_CANDY.md section 13): the four
+ * Candy lists are empty in a match without a Candy seat. A `sugarRush` entry
+ * names a unit on the board of kind `CANDY` in land or embarked form; a
+ * `splattedThisTurn` entry a unit on the board that is not a neutral
+ * Monster; a `tossedThisTurn` entry a unit on the board in land form; a
+ * `crumbs` entry lies on a land tile that is not a settlement site, a Rift,
+ * a chest tile, or a curiosity tile, is owned by an active Candy seat, and
+ * has a role that leaves Crumbs under the Candy registration.
+ */
+function candyListsValid(
+  value: CrossInput,
+  playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
+  kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
+): boolean {
+  const { sugarRush, crumbs, splattedThisTurn, tossedThisTurn } = value;
+  // Section 5.4: a Rush perk's flag (a Sugar Frenzy continuation, a Donut
+  // Racer's Escape) needs a Rushed unit in land form.
+  for (const unit of value.units) {
+    if (!unit.activation.overrunActive && !unit.activation.escapeAvailable)
+      continue;
+    const kind = kindOf(unit);
+    if (kind === undefined) continue;
+    const perk = roleMechanicsV7(unit.role, kind).rushPerk;
+    if (
+      perk !== null &&
+      !sugarRush.some(
+        (entry) => entry.unitId === unit.id && entry.phase === "RUSHED",
+      )
+    )
+      return false;
+  }
+  if (
+    sugarRush.length === 0 &&
+    crumbs.length === 0 &&
+    splattedThisTurn.length === 0 &&
+    tossedThisTurn.length === 0
+  )
+    return true;
+  if (!value.setup.factions.includes("CANDY")) return false;
+  const unitById = new Map(value.units.map((unit) => [unit.id, unit]));
+  for (const entry of sugarRush) {
+    const unit = unitById.get(entry.unitId);
+    if (
+      unit === undefined ||
+      unit.hp <= 0 ||
+      isNeutralOwnerV7(unit.ownerId) ||
+      kindOf(unit) !== "CANDY" ||
+      (unit.form !== "LAND" && unit.form !== "EMBARKED")
+    )
+      return false;
+  }
+  for (const unitId of splattedThisTurn) {
+    const unit = unitById.get(unitId);
+    if (unit === undefined || unit.hp <= 0 || isNeutralOwnerV7(unit.ownerId))
+      return false;
+  }
+  for (const unitId of tossedThisTurn) {
+    const unit = unitById.get(unitId);
+    if (unit === undefined || unit.hp <= 0 || unit.form !== "LAND")
+      return false;
+  }
+  for (const entry of crumbs) {
+    const tile = tileAt(value.board, entry.at);
+    const owner = playerById.get(entry.ownerId);
+    if (
+      tile === undefined ||
+      tile.biome === null ||
+      tile.terrain === "RIFT" ||
+      tile.site !== null ||
+      value.treasureChests.some((chest) => sameCoordV7(chest, entry.at)) ||
+      value.curiosities.some((curiosity) =>
+        sameCoordV7(curiosity.at, entry.at),
+      ) ||
+      owner === undefined ||
+      owner.status !== "ACTIVE" ||
+      owner.faction !== "CANDY" ||
+      !roleMechanicsV7(entry.role, "CANDY").leavesCrumbs
+    )
+      return false;
+  }
+  return true;
 }
 
 function populationLedgerValid(

@@ -6,7 +6,7 @@ described as current rules in
 [current rules section 2.7](RULESET_7_CURRENT.md#27-map-curiosities) and the
 sections it names; where this document and the code differ, the code's
 behavior is the rule and each difference is listed in
-[current rules section 24](RULESET_7_CURRENT.md#24-known-discrepancies).
+[current rules section 25](RULESET_7_CURRENT.md#25-known-discrepancies).
 This document stays as design history (its values, tuning bounds, and
 appendix are not maintained). The coarse check of bead 7 is the
 [curiosities check](../validation/RULESET_7_CURIOSITIES_CHECK.md); it
@@ -1005,8 +1005,8 @@ this stage), with no identity change and no tuning:
   only, a lone Wreck placed half the time (water maps always have a
   curiosity from 16 x 16 up, nearly always a Wreck) and a wider Wreck
   errand for the Normal AI.
-- **The fold:** current rules sections 2.7, 3, 11, 13.1, 15, 16, 23, and
-  24, and the gates of the
+- **The fold:** current rules sections 2.7, 3, 11, 13.1, 15, 16, 24, and
+  25 (as numbered since `7r38`), and the gates of the
   [release validation](../validation/RULESET_7_RELEASE.md).
 
 ## Appendix A. Draft, critique, and changes

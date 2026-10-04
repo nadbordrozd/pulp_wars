@@ -225,10 +225,18 @@ function normalizedInitialState(state: GameStateV7): string {
     monsters: _monsters,
     beamedThisTurn: _beamed,
     tractorUsedThisTurn: _tractor,
+    // The Candy revision (`pulp_wars-jdb.3`) adds four lists, empty in
+    // every initial state.
+    sugarRush: _rush,
+    crumbs: _crumbs,
+    splattedThisTurn: _splatted,
+    tossedThisTurn: _tossed,
     rulesetId: _rulesetId,
     setup,
     ...rest
   } = state;
+  if (_rush.length + _crumbs.length + _splatted.length + _tossed.length !== 0)
+    throw new Error("a Candy fact in an initial state");
   if (_monsters.length !== 0) throw new Error("a Monster with the option off");
   if (_beamed.length !== 0 || _tractor.length !== 0)
     throw new Error("a per-turn Martian fact in an initial state");
@@ -423,12 +431,29 @@ describe("headless parity and the CLI flag", () => {
         ),
         { maxCommands: 250, maxRounds: 40 },
       );
+      // The Candy revision (`pulp_wars-jdb.3`, 7r38) adds four combat
+      // preview fields, neutral in every match without a Candy seat; with
+      // them removed the events hash to the pins unchanged, so a match
+      // without a Candy seat plays and reads exactly as at 7r37.
+      expect(result.metrics.eventHash).toBe(canonicalHash(result.events));
+      const eventsBeforeCandy = result.events.map((event) => {
+        if (event.kind !== "COMBAT_RESOLVED") return event;
+        const { sugarRushApplied, splatApplied, bounce, bounceTo, ...preview } =
+          event.preview;
+        expect([sugarRushApplied, splatApplied, bounce, bounceTo]).toEqual([
+          false,
+          false,
+          "NONE",
+          null,
+        ]);
+        return { ...event, preview };
+      });
       expect(
         {
           acceptedCommands: result.acceptedCommands,
           rounds: result.rounds,
           commandHash: result.metrics.commandHash,
-          eventHash: result.metrics.eventHash,
+          eventHash: canonicalHash(eventsBeforeCandy),
           mapHash: result.metrics.mapHash,
           finalPrngHash: result.metrics.finalPrngHash,
           curiosityKinds: result.metrics.curiosityKinds,

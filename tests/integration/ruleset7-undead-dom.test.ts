@@ -101,6 +101,7 @@ describe("Revision 13 Undead DOM", () => {
         "Martian",
         "Ice Folk",
         "Dwarf",
+        "Candy",
       ]);
     }
     // Seat 0 picks Martian; seat 2 then picks Human, which seat 0 freed.

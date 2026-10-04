@@ -140,7 +140,9 @@ describe("Ruleset 7 campaign front screen", () => {
     const roster = [
       ...document.querySelectorAll<HTMLElement>(".v7-campaign-faction"),
     ];
-    expect(roster).toHaveLength(7);
+    // Eight since the Candy engine (pulp_wars-jdb.3); no mission unlocks the
+    // Candy yet, so its entry stays dimmed.
+    expect(roster).toHaveLength(8);
     expect(
       roster
         .filter((entry) => entry.dataset.unlocked === "true")

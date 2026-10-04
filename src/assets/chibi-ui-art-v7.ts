@@ -11,6 +11,7 @@ import {
   navalArtSubjectV7,
   type ArtSubjectV7,
   type DinosaurArtRoleV7,
+  type CandyArtRoleV7,
   type DwarfArtRoleV7,
   type GoblinArtRoleV7,
   type IceFolkArtRoleV7,
@@ -58,6 +59,7 @@ export function portraitSubjectV7(
   if (faction === "ICE_FOLK")
     return `PORTRAIT:ICE_FOLK:${role as IceFolkArtRoleV7}`;
   if (faction === "DWARF") return `PORTRAIT:DWARF:${role as DwarfArtRoleV7}`;
+  if (faction === "CANDY") return `PORTRAIT:CANDY:${role as CandyArtRoleV7}`;
   return `PORTRAIT:${role}`;
 }
 
@@ -167,6 +169,7 @@ export function technologySubjectV7(
     if (faction === "MARTIAN") return `UNIT:MARTIAN:${role}`;
     if (faction === "ICE_FOLK") return `UNIT:ICE_FOLK:${role}`;
     if (faction === "DWARF") return `UNIT:DWARF:${role}`;
+    if (faction === "CANDY") return `UNIT:CANDY:${role}`;
     return `UNIT:GOBLIN:${role}`;
   }
   // A technology that shows a building shows the faction's own look of it

@@ -3217,6 +3217,16 @@ function isPolicyCandidate(
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
+  // The Candy engine (`pulp_wars-jdb.3`, RULESET_7_CANDY.md section 14):
+  // the ordinary policy plays the Candy registration and never Rushes,
+  // Re-bakes, or Tosses; the Candy policy is `pulp_wars-jdb.4`. These
+  // commands are offered only in a match with a Candy seat.
+  if (
+    command.kind === "SUGAR_RUSH" ||
+    command.kind === "REBAKE" ||
+    command.kind === "SUGAR_TOSS"
+  )
+    return false;
   // The Dwarf revision (`pulp_wars-78i.4`): the large Tunnel, bombing-run,
   // and Assemble offer lists are pruned to the one command per unit the
   // Dwarf plans chose (without the Dwarf rules they score as no candidate).

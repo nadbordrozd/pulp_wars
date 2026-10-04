@@ -222,12 +222,12 @@ export type DwarfArtRoleV7 = UndeadArtRoleV7;
  * (`ICON:ACTION:CANDY:TEND_WOUNDED` is Frosting; `ICON:TECH:CANDY:*` are
  * Home Sweet Home and Peppermint Surprise, the Candy names of
  * Fortification and Explosives; `ICON:HUD:CANDY:EMBLEM` is the faction's
- * wrapped sweet) and the effect sprites. The art exists before the faction
- * is wired in: nothing resolves these subjects until the Candy UI bead
- * (pulp_wars-jdb.6) registers them. The Candy naval subjects need no type
+ * wrapped sweet) and the effect sprites. The units, portraits
+ * and cities are drawn since the engine bead (pulp_wars-jdb.3); the icons,
+ * the Crumbs marker and the effects wait for the Candy UI bead
+ * (pulp_wars-jdb.6). The Candy naval subjects need no type
  * here: they are NavalFactionArtSubjectV7 (`UNIT:CANDY:<ROLE>`,
- * `PORTRAIT:CANDY:<ROLE>`, what navalArtSubjectV7 returns) as soon as the
- * engine bead (pulp_wars-jdb.3) makes `CANDY` a FactionIdV7.
+ * `PORTRAIT:CANDY:<ROLE>`, what navalArtSubjectV7 returns).
  */
 export type CandyArtSubjectV7 =
   | `UNIT:CANDY:${CandyArtRoleV7}`
@@ -454,7 +454,7 @@ export function territoryTerrainSubjectV7(
 
 /** Factions with their own city art; every other faction uses `CITY:<level>`. */
 export type CityArtFactionV7 =
-  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF";
+  "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF" | "CANDY";
 
 /**
  * The art subject of a city on the map or in the interface: the owner
@@ -472,7 +472,8 @@ export function cityArtSubjectV7(city: {
     city.faction === "DINOSAUR" ||
     city.faction === "MARTIAN" ||
     city.faction === "ICE_FOLK" ||
-    city.faction === "DWARF"
+    city.faction === "DWARF" ||
+    city.faction === "CANDY"
   )
     return `CITY:${city.faction}:${city.artLevel}`;
   return `CITY:${city.artLevel}`;
@@ -533,6 +534,10 @@ export function unitArtSubjectV7(unit: {
   // The Dwarves (bead pulp_wars-78i.6): every land role has its own art.
   if (unit.faction === "DWARF")
     return `UNIT:DWARF:${unit.role as DwarfArtRoleV7}`;
+  // The Candy (art of pulp_wars-jdb.5, wired by pulp_wars-jdb.3): every
+  // land role has its own art.
+  if (unit.faction === "CANDY")
+    return `UNIT:CANDY:${unit.role as CandyArtRoleV7}`;
   return `UNIT:${unit.role}`;
 }
 
@@ -601,6 +606,7 @@ export function chibiFallbackSubjectV7(
     ":MARTIAN:",
     ":ICE_FOLK:",
     ":DWARF:",
+    ":CANDY:",
   ])
     if (subject.includes(faction))
       return subject.replace(faction, ":") as ArtSubjectV7;

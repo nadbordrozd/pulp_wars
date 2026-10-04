@@ -241,6 +241,8 @@ describe("Mind Control revision: legality (section 3)", () => {
       "ASSEMBLE",
       "MIND_CONTROL",
       "RIDES_TUNNEL",
+      // The Candy revision: no Re-bake under control.
+      "REBAKE",
     ]);
   });
 

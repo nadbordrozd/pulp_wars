@@ -28,6 +28,11 @@ export const FACTION_COLOURS_V7 = {
   ICE_FOLK: "#10b8ff",
   /** Signal green: the Dwarf gauge lamp, moved off the Grass toward jade. */
   DWARF: "#2db885",
+  /**
+   * Cotton-candy pink (root ruling, docs/product/RULESET_7_CANDY.md section
+   * 15.4): the Candy glaze and frosting.
+   */
+  CANDY: "#ffb8d8",
 } as const satisfies Readonly<Record<FactionIdV7, string>>;
 
 export function factionColourV7(faction: FactionIdV7): string {

@@ -92,6 +92,11 @@ import {
   type DwarfMetricsV7,
   type DwarfTelemetryStateV7,
 } from "./dwarf-telemetry-v7";
+import {
+  createCandyMetricsV7,
+  recordCandyV7,
+  type CandyMetricsV7,
+} from "./candy-telemetry-v7";
 
 export const V7_MATCH_MAX_COMMANDS_DEFAULT = 30_000;
 export const V7_MATCH_MAX_ROUNDS_DEFAULT = 750;
@@ -117,7 +122,7 @@ export interface AiCommandRecordV7 {
 }
 
 export interface HeadlessMetricsV7 {
-  readonly rulesetId: "pulp-wars-poc-7r37";
+  readonly rulesetId: "pulp-wars-poc-7r38";
   readonly setupHash: string;
   readonly mapHash: string;
   readonly postGenerationPrngHash: string;
@@ -224,6 +229,8 @@ export interface HeadlessMetricsV7 {
   readonly iceFolk: IceFolkMetricsV7;
   /** The Dwarf revision: Tunnel, eruption, bomb, and ability telemetry. */
   readonly dwarf: DwarfMetricsV7;
+  /** The Candy revision: Rush, Crumbs, Splat, Bounce, and Toss telemetry. */
+  readonly candy: CandyMetricsV7;
   readonly knightOverrun: {
     chainsStarted: number;
     attacks: number;
@@ -994,7 +1001,7 @@ export async function runAiBatchV7(
           const factions = options.factions ?? distinctFactionsV7(aiCount + 1);
           const result = runAiMatchInternalV7(
             {
-              rulesetId: "pulp-wars-poc-7r37",
+              rulesetId: "pulp-wars-poc-7r38",
               mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
               seed,
               width: size,
@@ -1109,7 +1116,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
   for (const tile of state.board.tiles)
     if (tile.resource !== null) generated[tile.resource] += 1;
   return {
-    rulesetId: "pulp-wars-poc-7r37",
+    rulesetId: "pulp-wars-poc-7r38",
     setupHash: canonicalHash(state.setup),
     mapHash: canonicalHash({
       board: state.board,
@@ -1304,6 +1311,7 @@ function createMetricsV7(state: GameStateV7): HeadlessMetricsV7 {
     },
     iceFolk: createIceFolkMetricsV7(),
     dwarf: createDwarfMetricsV7(),
+    candy: createCandyMetricsV7(),
     knightOverrun: {
       chainsStarted: 0,
       attacks: 0,
@@ -1420,6 +1428,7 @@ function recordCommandAndEventsV7(
     metrics.dwarf,
     telemetry.dwarf,
   );
+  recordCandyV7(before, after, actorId, command, events, metrics.candy);
   if (command.kind === "END_TURN") {
     for (const [unitId, chain] of telemetry.knightOverrunChains) {
       const unit = before.units.find((candidate) => candidate.id === unitId);

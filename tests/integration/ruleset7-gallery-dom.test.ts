@@ -149,6 +149,7 @@ describe("Ruleset 7 Gallery", () => {
       "Martian",
       "Ice Folk",
       "Dwarf",
+      "Candy",
     ]);
     const rows = [
       ...document.querySelectorAll<HTMLElement>(".v7-gallery-table tbody tr"),
@@ -167,11 +168,11 @@ describe("Ruleset 7 Gallery", () => {
       "TRANSPORT",
       "EGG",
     ]);
-    // 11 rows of seven units, and one Egg.
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(78);
+    // 11 rows of eight units, and one Egg.
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(89);
     expect(
       document.querySelectorAll(".v7-gallery-cell-wrap.is-empty"),
-    ).toHaveLength(6);
+    ).toHaveLength(7);
     expect(cell("FIGHTER", "UNDEAD").getAttribute("aria-label")).toBe(
       "Skeleton, Undead",
     );
@@ -209,12 +210,13 @@ describe("Ruleset 7 Gallery", () => {
       "MARTIAN",
       "ICE_FOLK",
       "DWARF",
+      "CANDY",
     ]);
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-gallery-cell")].map(
         (node) => node.dataset.row,
       ),
-    ).toEqual(Array(6).fill("KNIGHT"));
+    ).toEqual(Array(7).fill("KNIGHT"));
     expect(
       required(
         '[data-filter="factions"] .v7-gallery-chip[data-value="GOBLIN"]',
@@ -233,6 +235,7 @@ describe("Ruleset 7 Gallery", () => {
         "MARTIAN",
         "ICE_FOLK",
         "DWARF",
+        "CANDY",
       ],
       unitRows: ["KNIGHT"],
     });
@@ -241,7 +244,7 @@ describe("Ruleset 7 Gallery", () => {
     document.body.innerHTML = '<div id="app"></div>';
     mount();
     openGallery();
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(6);
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(7);
     // None of a kind leaves an empty table; All brings everything back.
     required<HTMLButtonElement>(
       '[data-action="gallery-factions-none"]',
@@ -251,7 +254,7 @@ describe("Ruleset 7 Gallery", () => {
     );
     required<HTMLButtonElement>('[data-action="gallery-factions-all"]').click();
     required<HTMLButtonElement>('[data-action="gallery-rows-all"]').click();
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(78);
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(89);
   });
 
   it("survives storage that throws", () => {
@@ -289,7 +292,7 @@ describe("Ruleset 7 Gallery", () => {
     expect(cell("RAIDER", "UNDEAD").tabIndex).toBe(0);
     expect(first.tabIndex).toBe(-1);
     key(document.activeElement as Element, "End");
-    expect(document.activeElement).toBe(cell("RAIDER", "DWARF"));
+    expect(document.activeElement).toBe(cell("RAIDER", "CANDY"));
     // Down from the Transport skips the empty Egg cells to the edge.
     cell("TRANSPORT", "DWARF").focus();
     key(document.activeElement as Element, "ArrowDown");
@@ -360,13 +363,13 @@ describe("Ruleset 7 Gallery", () => {
     );
     key(required(".v7-gallery-detail"), "ArrowLeft");
     expect(required("#v7-gallery-detail-title").textContent).toBe("Vampire");
-    // Dwarf Steam Mole: Tunnel and Eruption.
+    // Dwarf Steam Mole: Tunnel and Eruption (the Candy column follows it).
     required<HTMLButtonElement>('[data-action="gallery-detail-close"]').click();
     cell("GUARD", "DWARF").click();
     expect(required("#v7-gallery-detail-title").textContent).toBe("Steam Mole");
     expect(
       required('[data-action="gallery-next-faction"]').hasAttribute("disabled"),
-    ).toBe(true);
+    ).toBe(false);
     expect(
       [...document.querySelectorAll<HTMLElement>(".v7-gallery-ability")].map(
         (item) => item.dataset.ability,
@@ -491,7 +494,7 @@ describe("Ruleset 7 Gallery", () => {
       "PORT",
       "SHIPYARD",
     ]);
-    expect(rows[0]?.querySelectorAll(".v7-gallery-cell").length).toBe(7);
+    expect(rows[0]?.querySelectorAll(".v7-gallery-cell").length).toBe(8);
     expect(
       cell("CITY_2", "MARTIAN").querySelector("canvas")?.dataset.subject,
     ).toBe("CITY:MARTIAN:2");
@@ -499,7 +502,7 @@ describe("Ruleset 7 Gallery", () => {
     const forge = rows[9]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
     expect(forge).toHaveLength(1);
     expect(forge?.[0]?.getAttribute("aria-label")).toBe("Forge, every faction");
-    expect(forge?.[0]?.closest("td")?.getAttribute("colspan")).toBe("7");
+    expect(forge?.[0]?.closest("td")?.getAttribute("colspan")).toBe("8");
     // Faction building looks (bead pulp_wars-xdh.2): the Farm, Windmill and
     // Sawmill rows have one cell per faction, named as that faction has it.
     const cellNames = (row: number) =>
@@ -515,6 +518,7 @@ describe("Ruleset 7 Gallery", () => {
       "Hydroponic Farm",
       "Frost Garden",
       "Mushroom Farm",
+      "Farm",
     ]);
     expect(cellNames(7)).toEqual([
       "Windmill",
@@ -524,6 +528,7 @@ describe("Ruleset 7 Gallery", () => {
       "Solar Array",
       "Windmill",
       "Steam Pump",
+      "Windmill",
     ]);
     expect(cellNames(8)[3]).toBe("Chopping Block");
     for (const row of [5, 6, 9, 10, 11, 12, 13, 14])

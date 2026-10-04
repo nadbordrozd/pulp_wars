@@ -2201,6 +2201,11 @@ function initialMapStateFromV7(
     bombedThisTurn: [],
     beamedThisTurn: [],
     tractorUsedThisTurn: [],
+    // The Candy revision: the four Candy lists start empty.
+    sugarRush: [],
+    crumbs: [],
+    splattedThisTurn: [],
+    tossedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -2259,6 +2264,11 @@ function showcaseInitialStateV7(
     bombedThisTurn: [],
     beamedThisTurn: [],
     tractorUsedThisTurn: [],
+    // The Candy revision: the four Candy lists start empty.
+    sugarRush: [],
+    crumbs: [],
+    splattedThisTurn: [],
+    tossedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -2304,6 +2314,7 @@ export const STARTING_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
     MARTIAN: 1,
     ICE_FOLK: 1,
     DWARF: 1,
+    CANDY: 1,
   });
 
 /**
@@ -2319,6 +2330,7 @@ export const MILITIA_FIGHTERS_V7: Readonly<Record<FactionIdV7, 1 | 2>> =
     MARTIAN: 1,
     ICE_FOLK: 1,
     DWARF: 1,
+    CANDY: 1,
   });
 
 /**

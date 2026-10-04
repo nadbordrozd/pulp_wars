@@ -53,6 +53,12 @@ export const RULESET7_LATE_PUBLIC_VIEW_COMMAND_INDEX = 150;
  * `COLD_SNAP`, so the `-ordinal` tie-break of every candidate whose kind
  * follows `COLD_SNAP` moves by three. The command, the candidate count,
  * and the hash with revision-12 ordinals are unchanged.
+ *
+ * The Candy revision (`pulp_wars-jdb.3`): `policyDecisionHash` was
+ * 634f04…55da. `SUGAR_RUSH`, `REBAKE`, and `SUGAR_TOSS` are inserted after
+ * `ASSEMBLE`, so the `-ordinal` tie-break of every candidate whose kind
+ * follows `ASSEMBLE` moves by three. The command, the candidate count, and
+ * the hash with revision-12 ordinals are unchanged.
  */
 export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   /** `canonicalHash` of the retained fixture as read from disk. */
@@ -60,7 +66,7 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b",
   /** `canonicalHash` of the whole decision (command and candidates). */
   policyDecisionHash:
-    "634f0421361463d5dc47a30fb76d7d6f247e3cf9165039e5ed280a564de855da",
+    "7622b46fc2e5f02b146de9ea3ef978dd5185bb000743b0fe0047ccc49ec8e548",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -138,10 +144,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r37",
+    rulesetId: "pulp-wars-poc-7r38",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r37",
+      rulesetId: "pulp-wars-poc-7r38",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
       curiosities: false,
@@ -248,6 +254,11 @@ export function upgradeRetainedPublicViewV7(
     bombedThisTurn: [],
     beamedThisTurn: [],
     tractorUsedThisTurn: [],
+    // The Candy revision: nor any Rush, Crumbs, Splat, or Toss.
+    sugarRush: [],
+    crumbs: [],
+    splattedThisTurn: [],
+    tossedThisTurn: [],
   };
 }
 import {

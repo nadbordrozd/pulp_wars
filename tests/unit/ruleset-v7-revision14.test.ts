@@ -102,10 +102,10 @@ interface ArenaOptions {
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("keeps rejecting r13 after the r37 identity and cleans the r13 through r36 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r37");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r37.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-24)).toEqual([
+  it("keeps rejecting r13 after the r38 identity and cleans the r13 through r37 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r38");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r38.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-25)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -130,6 +130,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "pulpWars.save.v7r34.current",
       "pulpWars.save.v7r35.current",
       "pulpWars.save.v7r36.current",
+      "pulpWars.save.v7r37.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
@@ -186,8 +187,10 @@ describe("ruleset-7 revision-14 identity and roster", () => {
     // The Mind Control revision inserts UNIT_RELEASED after it.
     expect(at("UNIT_RELEASED")).toBe(at("UNIT_DIED") + 3);
     expect(at("GRAVE_CREATED")).toBe(at("UNIT_DIED") + 4);
-    expect(at("BITTEN_UNIT_RISEN")).toBe(at("GRAVE_CREATED") + 1);
-    expect(at("PLAGUE_CLEARED")).toBe(at("GRAVE_CREATED") + 2);
+    // The Candy revision inserts CRUMBS_LEFT after GRAVE_CREATED.
+    expect(at("CRUMBS_LEFT")).toBe(at("GRAVE_CREATED") + 1);
+    expect(at("BITTEN_UNIT_RISEN")).toBe(at("GRAVE_CREATED") + 2);
+    expect(at("PLAGUE_CLEARED")).toBe(at("GRAVE_CREATED") + 3);
   });
 });
 

@@ -243,15 +243,21 @@ describe("the shared terrain-entry rule", () => {
   //   and query.ts its Beam Down and Tractor Beam sites (5). Tested in
   //   ruleset-v7-martian-abilities.test.ts and
   //   ruleset-v7-balance-martian-ice.test.ts.
+  // - The Candy revision (`pulp_wars-jdb.3`): candy-reducer.ts (1),
+  //   `rebakeTileLegalV7`, the canonical tile of a Re-bake; query.ts (+2),
+  //   the public Re-bake tile and the public Bounce (the canonical Bounce
+  //   is the shared displacement rule in combat.ts). Tested in
+  //   ruleset-v7-candy-crumbs.test.ts and ruleset-v7-candy-combat.test.ts.
   it("is the only terrain-entry rule: the audited call sites of canEnterTerrainV7", () => {
     const AUDITED: Readonly<Record<string, number>> = {
       "src/engine/v7/combat.ts": 1,
       "src/engine/v7/eggs.ts": 2,
       "src/engine/v7/movement.ts": 3,
-      "src/engine/v7/query.ts": 5,
+      "src/engine/v7/query.ts": 7,
       "src/engine/v7/reducer.ts": 4,
       "src/engine/v7/dwarf-reducer.ts": 1,
       "src/engine/v7/martian.ts": 2,
+      "src/engine/v7/candy-reducer.ts": 1,
     };
     for (const [file, count] of Object.entries(AUDITED)) {
       const source = readFileSync(file, "utf8");

@@ -15,6 +15,7 @@ import {
   unitRoleRuleV7,
   type MovementModeV7,
 } from "../rules/ruleset-v7";
+import { sugarRushMoveBonusV7 } from "./candy";
 import {
   arePlayersAlliedV7,
   arePlayersHostileV7,
@@ -136,7 +137,12 @@ function validateMovementPathWithOptionsV7(
   // The Mind Control revision section 5.2: movement unlocks are unit-level
   // (the controller's research through the unit's kind's tree).
   const capabilities = unitCapabilitiesV7(state, unit, player.researchedTechs);
-  const budget2 = (unit.form === "EMBARKED" ? EMBARKED_MOVE_V7 : rule.move) * 2;
+  // The Candy revision section 5.2: a Rushed unit's ordinary Move has one
+  // more point (never its Escape Move, and never afloat).
+  const budget2 =
+    (unit.form === "EMBARKED"
+      ? EMBARKED_MOVE_V7
+      : rule.move + sugarRushMoveBonusV7(state, unit)) * 2;
   // An embarked machine is an ordinary embarked unit (section 7.3).
   const mode: MovementModeV7 =
     unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
@@ -694,7 +700,12 @@ function validatePlayerMovementPathWithContextV7(
   const capabilities = isMindControlledV7(view, unit.id)
     ? unitCapabilitiesV7(view, unit, view.viewer.researchedTechs)
     : context.capabilities;
-  const budget2 = (unit.form === "EMBARKED" ? EMBARKED_MOVE_V7 : role.move) * 2;
+  // The Candy revision section 5.2: the Rushed budget (the public
+  // `sugarRush` list; the same helper as the canonical validation).
+  const budget2 =
+    (unit.form === "EMBARKED"
+      ? EMBARKED_MOVE_V7
+      : role.move + sugarRushMoveBonusV7(view, unit)) * 2;
   // The Martian revision section 7: the unit's own movement mode. The
   // technologies are the viewer's (exact for the viewer's own units).
   const mode: MovementModeV7 =

@@ -122,7 +122,7 @@ describe("ruleset-7 unique factions: engine setup validation", () => {
     expect(
       validateMatchSetupV7({
         ...setupOf(["ORIGINAL", "ORIGINAL"]),
-        factions: ["ORIGINAL", "CANDY"],
+        factions: ["ORIGINAL", "NOT_A_FACTION"],
       }),
     ).toEqual({ ok: false, error: { code: "INVALID_SETUP", params: {} } });
     expect(

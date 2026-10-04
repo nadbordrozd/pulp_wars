@@ -566,7 +566,13 @@ export interface BoardRenderPlanEntryV7 {
    * raster.
    */
   readonly faction?:
-    "UNDEAD" | "GOBLIN" | "DINOSAUR" | "MARTIAN" | "ICE_FOLK" | "DWARF";
+    | "UNDEAD"
+    | "GOBLIN"
+    | "DINOSAUR"
+    | "MARTIAN"
+    | "ICE_FOLK"
+    | "DWARF"
+    | "CANDY";
   /**
    * UNIT only, revision 14: the public Plague and Bitten statuses, drawn as
    * small markers in the piece's overlay frame (absent when there are none).
@@ -908,7 +914,8 @@ export function buildBoardRenderPlanV7(
       faction === "DINOSAUR" ||
       faction === "MARTIAN" ||
       faction === "ICE_FOLK" ||
-      faction === "DWARF";
+      faction === "DWARF" ||
+      faction === "CANDY";
     // The Dwarf revision: Dig In, clockwork and the Gyrocopter's flight.
     const dwarf = dwarfMatch ? dwarfUnitMarkersV7(view, unit) : undefined;
     // The Ice Folk revision: Chill markers on units of any owner.

@@ -227,10 +227,21 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         monsters,
         beamedThisTurn,
         tractorUsedThisTurn,
+        sugarRush,
+        crumbs,
+        splattedThisTurn,
+        tossedThisTurn,
         ...withoutMonsters
       } = revision19State;
       expect(monsters).toEqual([]);
       expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);
+      // `pulp_wars-jdb.3`: and the four empty Candy lists.
+      expect([sugarRush, crumbs, splattedThisTurn, tossedThisTurn]).toEqual([
+        [],
+        [],
+        [],
+        [],
+      ]);
       const revision18State = {
         ...withoutMonsters,
         setup: setupBefore,
@@ -843,6 +854,8 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       "Frost Giant",
       // The Dwarf revision (`pulp_wars-78i.3`).
       "Brass Titan",
+      // The Candy revision (`pulp_wars-jdb.3`).
+      "Rock Candy Golem",
     ]);
   });
 });

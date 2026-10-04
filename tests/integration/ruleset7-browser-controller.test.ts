@@ -289,7 +289,7 @@ describe("Ruleset 7 browser controller", () => {
 
     const invalid = {
       ...setupV7(9, 1),
-      factions: ["CANDY", "CANDY"],
+      factions: ["NOT_A_FACTION", "NOT_A_FACTION"],
     } as unknown as MatchSetupV7;
     expect(
       await controller.launch(invalid, { replaceStoredMatch: true }),

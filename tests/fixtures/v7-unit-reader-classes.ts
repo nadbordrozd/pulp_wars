@@ -429,6 +429,28 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/undead-presentation-v7.ts::undeadBoundaryNoticeV7": "BOARD",
     "src/render/undead-presentation-v7.ts::unitAfflictionsV7": "BOARD",
     "src/render/undead-presentation-v7.ts::wailTargetsPresentationV7": "BOARD",
+    // The Candy revision (`pulp_wars-jdb.3`): every Candy list names units
+    // on the board. A `sugarRush` entry is a Candy-kind unit, and no Candy
+    // role tunnels or rides a tunnel; Splat and Sugar Toss entries last only
+    // for the active seat's turn, during which their units cannot burrow
+    // (a Mole tunnels on its own turn; a controlled Gunner tosses to its
+    // Martian controller's units). Re-bake places its unit on the board
+    // (its slot count goes through `assignedUnitCountV7`), eating reads the
+    // mover, and the previews and the label read the view's units.
+    "src/engine/v7/candy-reducer.ts::applyRebakeV7": "BOARD",
+    "src/engine/v7/candy-reducer.ts::applySugarTossV7": "BOARD",
+    "src/engine/v7/candy-reducer.ts::prunedCandyV7": "BOARD",
+    "src/engine/v7/candy-reducer.ts::resolveCandyEndTurnV7": "BOARD",
+    "src/engine/v7/candy-reducer.ts::resolveCrumbsEatingV7": "BOARD",
+    "src/engine/v7/candy.ts::crumbsBiteV7": "BOARD",
+    "src/engine/v7/query.ts::previewCrumbsEatV7": "BOARD",
+    "src/engine/v7/query.ts::previewRebakeV7": "BOARD",
+    "src/engine/v7/query.ts::previewSugarRushV7": "BOARD",
+    "src/engine/v7/query.ts::previewSugarTossV7": "BOARD",
+    "src/engine/v7/query.ts::publicSugarTossTargetsV7": "BOARD",
+    "src/engine/v7/state-schema.ts::candyListsValid": "BOARD",
+    "src/headless/candy-telemetry-v7.ts::recordCandyV7": "BOARD",
+    "src/render/dom/app-view-v7.ts::candyCommandLabelV7": "BOARD",
   };
 
 /**

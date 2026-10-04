@@ -1,7 +1,15 @@
 # Ruleset 7: Candy faction
 
-**Status:** contract (`pulp_wars-jdb.2`, epic `pulp_wars-jdb`). Nothing in
-it is implemented. It turns the approved design (`pulp_wars-jdb.1`, commit
+**Status:** contract (`pulp_wars-jdb.2`, epic `pulp_wars-jdb`). **The
+engine is implemented** by `pulp_wars-jdb.3` at `pulp-wars-poc-7r38`
+(`7rNN` below is `7r38`, `v7rNN` is `v7r38`, and "the previous identity" is
+`pulp-wars-poc-7r37`), and its rules are folded into
+[Ruleset 7: current rules, section 23](RULESET_7_CURRENT.md#23-candy-faction-rules);
+[section 23](#23-implementation-notes-pulp_wars-jdb3) here records what the
+engine bead did and where it reads the contract narrowly. The Normal AI
+(`jdb.4`), the wired art and UI (`jdb.6`), and the coarse balance (`jdb.7`)
+are pending: until then a Candy seat plays the ordinary policy and the
+setup offers the faction with its unit, portrait, city, and ship art and plain command buttons. It turns the approved design (`pulp_wars-jdb.1`, commit
 `0dd3686`: a first draft, a hard critique, a redraft, a second critique, and
 a final redraft, kept as [appendix A](#appendix-a-the-first-draft-and-its-critique)
 and [appendix B](#appendix-b-second-critique)) and the root rulings of
@@ -2573,6 +2581,96 @@ None open.
 10. **The numbers were computed against a registry that will move.** Other
     identities land before the Candy engine; the analysis must be re-run
     first ([section 18](#18-implementation-split-and-test-expectations)).
+
+## 23. Implementation notes (`pulp_wars-jdb.3`)
+
+The engine bead landed at `pulp-wars-poc-7r38`, after the Giant Spider
+(`7r36`) and the Martian and Ice Folk balance round (`7r37`).
+
+**The section 11 re-run.** Every table of
+[section 11](#11-per-unit-battle-analysis) was re-run with the real Candy
+registration on the `7r38` registry and is pinned in
+`tests/unit/ruleset-v7-candy-numbers.test.ts`. Every number matches the
+contract except two readings, and **no per-unit verdict flips**:
+
+1. a Gummy Bear's Sugar Frenzy continuation (its base Attack 3) against an
+   Ice Witch deals 10 and takes 1 (the contract's table says 9 and 2);
+2. a plain Gumdrop against a Yeti on Snow deals 5 and takes 3 (the contract
+   says 4 and 4): the balance round made Snow cover × 1.25 at `7r37`.
+   Rushed, it still deals 8 and takes 3.
+
+**Design notes.**
+
+- **One list for Rushed and Crashed** (`sugarRush`, with a `phase`); no
+  activation key was added.
+- **Crumbs are folded from events.** A death site only emits `CRUMBS_LEFT`
+  (`recordCrumbsV7`, called with every Grave record, and the Shatter path
+  directly); `applyCommandV7` folds the events of an accepted command into
+  `crumbs`. "Owned by a Candy seat and not mind-controlled" is one test: the
+  dead unit's owner's faction is `CANDY` (a controlled unit's owner is its
+  Martian controller). A Kaboom of the unit itself leaves none.
+- **Shared predicates** (`src/engine/v7/candy.ts`): the Rush legality, the
+  Rush bonus, the Overrun kind and its cap (`overrunKindV7`,
+  `overrunMayContinueV7`), Escape, Splat, Bounce, the Crumbs decision, the
+  eating test, the Peppermint hit, Home Sweet Home, and the Re-bake and
+  Toss readiness are each one function called by the reducer and by the
+  public query. The canonical Bounce destination is the shared displacement
+  rule plus "no chest"; the public one reads the view's tiles
+  (`publicBounceStateV7`), like the public Push and Knockback.
+- **The Crash check** sits immediately before "already acted" in `ATTACK`,
+  `RECOVER`, `PILLAGE`, `TEND_WOUNDED`, `RALLY`, `REBAKE`, and `SUGAR_TOSS`,
+  and right after the ownership check in `CAPTURE`.
+- **The Sugar Frenzy cap** reads `attacksUsed` after the attack: a
+  continuation is granted while it is at most
+  `SUGAR_FRENZY_MAX_CONTINUATIONS_V7` (2).
+- **State parsing** also refuses a Gummy Bear with an Overrun continuation
+  or a Donut Racer with an Escape that has no `RUSHED` entry.
+- **The Normal AI** leaves `SUGAR_RUSH`, `REBAKE`, and `SUGAR_TOSS` out of
+  its candidates until `jdb.4`.
+
+**Narrow readings and deviations** (each also in the
+[current rules' known discrepancies](RULESET_7_CURRENT.md#25-known-discrepancies)):
+
+1. **Eating needs a Move that moved the unit.** A unit eats Crumbs at the
+   end of a `MOVE` whose traversed path has at least one tile (and of a
+   `DISEMBARK`).
+2. **Event order of a landing.** In a `DISEMBARK` the eating events
+   (`CRUMBS_EATEN` and a Peppermint death) come after the landing's Field
+   Defense and treasure events and **before** its `TILES_REVEALED`, which
+   stays the last of the landing's own events as at `7r37`
+   ([section 6.3](#63-eaten-and-peppermint-surprise) lists `TILES_REVEALED`
+   before the eating step). A `MOVE` follows the contract's order.
+3. **A hidden Toss target is not found.** `SUGAR_TOSS` naming a unit the
+   actor cannot see is rejected with `HEAL_TARGET_NOT_FOUND`, so a rejection
+   reveals nothing (own units are always visible, so no legal Toss changes).
+4. **Projection.** `UNITS_CRASHED` goes to a viewer who owns or sees one of
+   its units, filtered to those; `UNIT_REBAKED` and `SUGAR_TOSSED` to the
+   acting seat only (the training and Tend precedent in this code base);
+   `CRUMBS_EATEN` in full to every viewer who sees the eater, and with
+   `unitId`, `damage`, `shieldDamage`, and `dies` null to the Crumbs' owner
+   and to every viewer who explored the tile but cannot see the eater.
+5. **The setup offers the faction now.** [Section 18](#18-implementation-split-and-test-expectations)
+   says no UI offers it until `jdb.6`; the engine bead's task asked for the
+   setup option, the colour `#ffb8d8`, and plain command buttons
+   so that a Candy match can be played; the correction pass also wired the
+   `jdb.5` unit sprites, portraits, cities, and ships (the icons, the Crumbs
+   marker, and the effects are registered and not drawn yet). The Gallery
+   shows a
+   Candy column with that art.
+6. **The balance matrix** accepts the letter `C` and the Candy pairings;
+   its Candy summary is `jdb.7`.
+7. **The release corpus** has no Ruleset 7 `:refresh` (the current release
+   validator keeps no corpus); nothing was regenerated.
+
+**Parity.** A match without a Candy seat plays command for command as at
+`7r37`: the all-Human parity digests and the five pinned `7r34` curiosity
+matches (every faction but the Candy) keep their command hashes, rounds,
+maps, and PRNG ends, and their event hashes once the four neutral Candy
+preview fields are removed; the mission and Showcase pins hold with the
+four empty lists removed. The three new command kinds move every later
+kind's ordinal by three, which changes four pinned Normal-decision hashes
+through the `-ordinal` tie-break only (their revision-12-ordinal hashes are
+unchanged).
 
 ## Appendix A: the first draft and its critique
 

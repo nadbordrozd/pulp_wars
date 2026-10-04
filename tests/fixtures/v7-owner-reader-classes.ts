@@ -119,4 +119,15 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/state-schema.ts::validateCrossReferences": "NEUTRAL_AWARE",
   // Headless faction metrics: the Spider's numbers are skipped first.
   "src/headless/v7.ts::unitKind": "NEUTRAL_AWARE",
+  // The Candy revision (`pulp_wars-jdb.3`). Re-bake: the acting seat and its
+  // registration. Crumbs: a dead unit whose owner is no player (the Spider)
+  // leaves none, and an owner that is no player has no bite (the lookups'
+  // missing result is the right answer). The state parser refuses a
+  // `sugarRush` or Splat entry of a neutral unit by name.
+  "src/engine/v7/candy-reducer.ts::applyRebakeV7": "PLAYER_ONLY",
+  "src/engine/v7/candy-reducer.ts::rebakeTileLegalV7": "PLAYER_ONLY",
+  "src/engine/v7/candy.ts::crumbsBiteV7": "NEUTRAL_SAFE",
+  "src/engine/v7/candy.ts::deathLeavesCrumbsV7": "NEUTRAL_SAFE",
+  "src/engine/v7/query.ts::publicRebakeFactsV7": "PLAYER_ONLY",
+  "src/engine/v7/state-schema.ts::candyListsValid": "NEUTRAL_AWARE",
 };

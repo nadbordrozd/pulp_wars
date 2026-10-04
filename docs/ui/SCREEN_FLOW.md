@@ -143,7 +143,8 @@ Roads, that text now describes the **Classic look** developer option
   [the Dinosaur production section](../art/VISUAL_DIRECTION_2026-10.md#19-dinosaur-production).
 - **Territory borders** are one thin solid line in the owner's faction
   colour (Human crimson, Undead violet, Goblin hazard yellow, Dinosaur
-  red-orange, Martian magenta, Ice Folk ice blue, Dwarf signal green) with a
+  red-orange, Martian magenta, Ice Folk ice blue, Dwarf signal green, Candy
+  cotton-candy pink) with a
   soft dark casing; a border shared by two owners alternates their colours.
 - **Roads** have no black casing. Terrain, resources and Treasure keep their
   art, drawn at lower contrast.
@@ -1127,6 +1128,38 @@ apart from the extra faction option.
   every viewer of a match with a Dwarf seat (numbers and names from the
   registry and the constants); a Dwarf viewer is not told of the Raider's
   Escape.
+
+## Current Ruleset 7 Candy stand-in (engine bead)
+
+The Candy engine bead (`pulp_wars-jdb.3`, `pulp-wars-poc-7r38`) adds only
+what a Candy match needs to be played; the Candy interface of
+[Candy spec section 15](../product/RULESET_7_CANDY.md#15-ui-requirements)
+is `pulp_wars-jdb.6`. The rules are
+[current rules section 23](../product/RULESET_7_CURRENT.md#23-candy-faction-rules).
+A match without a Candy seat looks as before apart from the extra faction
+option.
+
+- **Setup.** Every seat's faction select offers the Candy last, after the
+  Dwarves, under the one-faction-per-player rule. Saves, resume, and the
+  Showcase keep Candy seats.
+- **Art and labels.** Candy units, portraits, cities, and ships use the
+  production art of `pulp_wars-jdb.5` (a raster that fails to load falls
+  back to the Human art; there is no Candy badge yet) and are
+  named by the Candy registration (Gumdrop, Donut Racer, Gumball
+  Gunner, Marshmallow, Confectioner, Pie Launcher, Gummy Bear, Rock Candy
+  Golem). Borders and pennants use the Candy colour, cotton-candy pink
+  (`#ffb8d8`). The Gallery has a Candy column with the same art. The
+  Candy icons, the Crumbs marker, and the effect sprites are registered
+  and not drawn yet.
+- **Commands.** The dock lists the three Candy commands as plain buttons:
+  "Sugar Rush"; "Re-bake Gummy Bear: 5 Coins, 7 HP" (one per Crumbs tile
+  next to the Confectioner, from `previewRebakeV7`); "Toss to Gumdrop: +2"
+  (one per target, from `previewSugarTossV7`). The Confectioner's Tend
+  Wounded button reads "Frosting". No button text contains a coordinate.
+- **Not yet shown.** The Rush reach, the Rushed, Crashed, and Splatted
+  markers, Crumbs on the board, the Splat, Bounce, and eating lines of the
+  previews, the event log text of the seven Candy events, the full
+  technology text, and Help.
 
 ## Current Ruleset 7 revision 21 achievements overlay
 
