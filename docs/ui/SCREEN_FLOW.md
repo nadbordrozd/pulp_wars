@@ -1819,6 +1819,30 @@ pending choices prevent it from being offered. During an AI turn map
 inspection, Stats, Tech, Leaderboard, and Settings are allowed, but gameplay
 commands and End Turn are disabled.
 
+**Idle recovery (Ruleset 7).** A wounded own unit that neither moves nor uses a
+primary action recovers by itself at End Turn, exactly as if it had chosen
+Recover (`docs/product/RULESET_7_CURRENT.md`, section 10). Three cues show it,
+all from the public query `queryIdleRecoveryV7`, which lists the same units a
+Recover is offered for:
+
+- **End Turn hint:** while at least one own unit would recover, the End Turn
+  button carries a small green pill with the heart icon and the count
+  (`data-end-turn-recover`), the tooltip "3 units will recover", and the
+  accessible name "End turn. 3 units will recover." With nothing to recover
+  the button is the plain "End turn". The hint never names a unit or a tile.
+- **Dock line:** the selected unit's dock shows the chip "+4 at End Turn if
+  idle" (`data-unit-status="idle-recovery"`, with the amount End Turn would
+  heal) while that unit is one of them; its accessible name and the unit's ?
+  details say "Recovers 4 HP at End Turn if it does not move or act." A unit
+  that moved, acted, recovered already, is at full HP, or cannot recover
+  (Restless outside its territory, clockwork, an Egg, afloat) has no chip.
+- **Heal cue:** every visible `UNIT_RECOVERED` plays the Tend heal ring with
+  the rising green "+N" of Troll regeneration on the unit. An explicit Recover
+  plays it at the command (320 ms); the idle recoveries of one End Turn play
+  together as one 480 ms step before the next seat's turn. Reduced motion
+  holds the still midpoint frame; Fast animation speed scales it like every
+  other cue.
+
 ## 8. Context panels
 
 Panels are persistent beside the board on wide desktop and bottom sheets on

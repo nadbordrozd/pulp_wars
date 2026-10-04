@@ -234,6 +234,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::publicTractorBeamTargetsV7": "BOARD",
     "src/engine/v7/query.ts::publicTunnelCommandsV7": "BOARD",
     "src/engine/v7/query.ts::publicWitchesV7": "BOARD",
+    // Idle recovery: a burrowed unit has moved and never recovers idle.
+    "src/engine/v7/query.ts::queryIdleRecoveryV7": "BOARD",
     "src/engine/v7/query.ts::queryAssembleUnavailableReasonV7": "BOARD",
     "src/engine/v7/query.ts::queryCombatPreviewV7": "BOARD",
     "src/engine/v7/query.ts::queryLandingPreviewV7": "BOARD",

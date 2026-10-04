@@ -14,7 +14,7 @@ export interface SupportFeedbackV7 {
   readonly actor: {
     readonly unitId: number | null;
     readonly at: CoordV7;
-    /** Revision 17 REGENERATE: the HP regained, floated as "+N". */
+    /** REGENERATE and RECOVER: the HP regained, floated as "+N". */
     readonly amount?: number;
   };
   readonly recipients: readonly SupportCueUnitV7[];
@@ -125,7 +125,8 @@ export function drawSupportFeedbackV7(
       );
     return;
   }
-  if (feedback.effect === "REGENERATE") {
+  // Recover (section 10) is the same ring and "+N" on each recovered unit.
+  if (feedback.effect === "REGENERATE" || feedback.effect === "RECOVER") {
     for (const unit of [feedback.actor, ...feedback.recipients])
       drawRegeneration(
         context,
@@ -337,7 +338,10 @@ function drawLifesteal(
 }
 
 const UNDEAD_PULSE_COLORS: Readonly<
-  Record<Exclude<SupportEffectV7, "RALLY" | "TEND" | "REGENERATE">, string>
+  Record<
+    Exclude<SupportEffectV7, "RALLY" | "TEND" | "REGENERATE" | "RECOVER">,
+    string
+  >
 > = {
   RAISE: "#8ff0a4",
   DEVOUR: "#ff9a84",

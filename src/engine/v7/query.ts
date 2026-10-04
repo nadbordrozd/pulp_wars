@@ -134,6 +134,11 @@ import {
   shieldOfV7,
   tractorBeamDestinationV7,
 } from "./martian";
+import {
+  recoverEligibleV7,
+  recoveryGainV7,
+  type RecoveryFactsV7,
+} from "./recovery";
 import { riftAtV7 } from "./rift";
 import { grownHpV7 } from "./growth";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
@@ -908,20 +913,8 @@ function appendPublicUnitCommandsV7(
   )
     candidates.push({ kind: "DEVOUR", unitId: unit.id });
   if (overrun) return;
-  if (
-    !unit.activation.moved &&
-    !primaryUsedForQuery(unit) &&
-    unit.hp < unit.maxHp &&
-    unit.form !== "EMBARKED" &&
-    // The Dwarf revision section 7.2: clockwork never recovers by itself.
-    !unitIsConstructV7(view, unit) &&
-    !publicRestlessOutsideOwnTerritory(view, unit) &&
-    (unit.form !== "NAVAL" ||
-      [tileAtView(view, unit.at), ...adjacentPublicTiles(view, unit.at)].some(
-        (tile) =>
-          tile !== undefined && publicActiveOwnedPort(view, tile, player.id),
-      ))
-  )
+  // Section 10: the predicate End Turn idle recovery uses.
+  if (recoverEligibleV7(publicRecoveryFactsV7(view, unit)))
     candidates.push({ kind: "RECOVER", unitId: unit.id });
   if (
     !unit.activation.moved &&
@@ -5914,22 +5907,68 @@ function asView(
 }
 
 /**
- * Revision 13 Restless: an own land-form unit of a Restless kind (the Mind
- * Control revision: a body rule) outside its owner's territory cannot
- * Recover. Own units stand on explored tiles, so the public territory owner
- * is exact.
+ * Section 10: the Recover facts of one of the viewer's own units, from the
+ * `PlayerView` alone. Own units stand on explored tiles, so the public
+ * territory owner is exact (Restless is a body rule of the unit's kind, the
+ * Mind Control revision), and Deep Winter is the viewer's own research.
  */
-function publicRestlessOutsideOwnTerritory(
+function publicRecoveryFactsV7(
   view: PlayerViewV7,
   unit: PlayerViewV7["units"][number],
-): boolean {
-  if (
-    unit.form !== "LAND" ||
-    !factionRulesV7(unitFactionV7(view, unit)).restless
-  )
-    return false;
+): RecoveryFactsV7 {
   const tile = tileAtView(view, unit.at);
-  return tile?.explored !== true || tile.territoryOwnerId !== unit.ownerId;
+  const inOwnTerritory =
+    tile?.explored === true && tile.territoryOwnerId === unit.ownerId;
+  return {
+    form: unit.form,
+    hp: unit.hp,
+    maxHp: unit.maxHp,
+    activation: unit.activation,
+    construct: unitIsConstructV7(view, unit),
+    restless: factionRulesV7(unitFactionV7(view, unit)).restless,
+    inOwnTerritory,
+    byOwnActivePort:
+      unit.form === "NAVAL" &&
+      [tile, ...adjacentPublicTiles(view, unit.at)].some(
+        (candidate) =>
+          candidate !== undefined &&
+          publicActiveOwnedPort(view, candidate, unit.ownerId),
+      ),
+    deepWinter:
+      inOwnTerritory &&
+      isIceFolkLandUnitV7(view, unit) &&
+      unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).deepWinter,
+  };
+}
+
+/** One unit End Turn would heal, and by how much. */
+export interface IdleRecoveryV7 {
+  readonly unitId: UnitId;
+  readonly amount: number;
+}
+
+/**
+ * Section 10 idle recovery, previewed: the viewer's own units that recover
+ * by themselves if the viewer ends the turn now, in unit-ID order, each with
+ * the HP it regains. These are exactly the units a `RECOVER` is offered for
+ * (the shared predicate `recoverEligibleV7`), with the amount End Turn
+ * applies. Empty whenever the viewer is offered no command.
+ */
+export function queryIdleRecoveryV7(
+  input: GameStateV7 | PlayerViewV7,
+  viewerId?: PlayerId,
+): readonly IdleRecoveryV7[] {
+  const view = asView(input, viewerId);
+  if (!publicCommandOfferingAllowedV7(view)) return [];
+  return view.units
+    .filter((unit) => unit.ownerId === view.viewer.id)
+    .map((unit) => ({ unit, facts: publicRecoveryFactsV7(view, unit) }))
+    .filter(({ facts }) => recoverEligibleV7(facts))
+    .map(({ unit, facts }) => ({
+      unitId: unit.id,
+      amount: recoveryGainV7(facts),
+    }))
+    .sort((left, right) => left.unitId - right.unitId);
 }
 
 function tileAtView(view: PlayerViewV7, at: CoordV7) {

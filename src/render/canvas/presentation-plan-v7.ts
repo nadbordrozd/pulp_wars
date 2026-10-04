@@ -161,8 +161,11 @@ export type CorePresentationStepV7 =
         readonly unitId: number | null;
       };
       readonly recipients: readonly SupportCueUnitV7[];
-      /** Revision 17: Troll regeneration holds its "+N" float longer. */
-      readonly durationMs: 320 | 640;
+      /**
+       * Revision 17: Troll regeneration holds its "+N" float longer; a
+       * Recover (one step for every unit that recovers) sits between.
+       */
+      readonly durationMs: 320 | 480 | 640;
     }
   | {
       readonly kind: "WINDMILL_HEALING";
@@ -187,7 +190,7 @@ export type CorePresentationStepV7 =
 export interface SupportCueUnitV7 {
   readonly unitId: number;
   readonly at: CoordV7;
-  /** Revision 17 REGENERATE: the HP regained, floated as "+N". */
+  /** REGENERATE and RECOVER: the HP regained, floated as "+N". */
   readonly amount?: number;
 }
 
@@ -222,7 +225,14 @@ export type SupportEffectV7 =
    * Revision 17 Troll regeneration (bead pulp_wars-0ao.12): the Tend heal
    * ring with a rising "+N" on each regenerated Troll.
    */
-  | "REGENERATE";
+  | "REGENERATE"
+  /**
+   * Section 10 Recover (bead pulp_wars-v3w): the same heal ring and rising
+   * "+N" on each unit that recovered, by an explicit Recover or by itself at
+   * its owner's End Turn. Consecutive recoveries share one step, so an End
+   * Turn plays every idle recovery at once.
+   */
+  | "RECOVER";
 
 /**
  * The Mind Control revision: how long the control halo takes to shatter
@@ -973,6 +983,32 @@ export function corePresentationPlanV7(
           actor: first,
           recipients: rest,
           durationMs: 640,
+        });
+    } else if (event.kind === "UNIT_RECOVERED") {
+      // Section 10: a Recover, explicit or automatic at End Turn. The unit
+      // has not moved this turn, so it stands where the viewer saw it. End
+      // Turn emits its idle recoveries together; they share one step.
+      const unit =
+        before.units.find((candidate) => candidate.id === event.unitId) ??
+        after.units.find((candidate) => candidate.id === event.unitId);
+      if (unit === undefined || !explored.has(`${unit.at.x},${unit.at.y}`))
+        continue;
+      const cue = { unitId: unit.id, at: unit.at, amount: event.amount };
+      const last = steps.at(-1);
+      if (last?.kind === "SUPPORT" && last.effect === "RECOVER")
+        steps[steps.length - 1] = {
+          ...last,
+          recipients: [...last.recipients, cue],
+        };
+      else
+        steps.push({
+          kind: "SUPPORT",
+          effect: "RECOVER",
+          actor: cue,
+          recipients: [],
+          // The End Turn batch holds its "+N" a little longer than a
+          // single explicit Recover.
+          durationMs: event.automatic ? 480 : 320,
         });
     } else if (event.kind === "DEAD_RAISED") {
       const actor = [...after.units, ...before.units].find(

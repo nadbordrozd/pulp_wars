@@ -2099,6 +2099,13 @@ market income = min(3, 1 + distinct adjacent families)
   atomically with `RECOVER_NOT_LEGAL { reason: "RESTLESS" }` and is never
   offered; End Turn idle recovery skips it (no HP change, no event). Undead
   naval units keep the naval rule; Windmill healing is unchanged.
+- **Idle recovery is the automatic form of Recover:** at its owner's End
+  Turn, every own unit for which a `RECOVER` would be offered and accepted
+  at that moment recovers by itself, by the same amount, with
+  `UNIT_RECOVERED { automatic: true }` (an explicit Recover has
+  `automatic: false`). One predicate, `recoverEligibleV7`, decides the
+  offered `RECOVER`, End Turn, and the public preview `queryIdleRecoveryV7`
+  (the viewer's units End Turn would heal now, with the amounts).
 - **Wait** does not prevent idle recovery; moving or any primary action does.
 - **Goblin recovery** is the Human rule: Goblins are not Restless. A Goblin
   seat has no healer and no cure for Plague or Bitten

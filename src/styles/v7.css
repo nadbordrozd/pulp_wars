@@ -414,6 +414,34 @@
   filter: brightness(1.06);
 }
 
+/* Section 10: how many own units recover by themselves at End Turn. */
+.v7-end-turn-recover {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-left: 0.45rem;
+  padding: 0.1rem 0.4rem 0.1rem 0.3rem;
+  border-radius: 999px;
+  color: #eaffe9;
+  background: #1f5a2c;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+
+.v7-end-turn-recover-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.v7-chip.v7-idle-recovery-chip {
+  padding: 0.16rem 0.4rem;
+  color: #b9f5c0;
+  font-size: 0.65rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .v7-hud-menu {
   position: absolute;
   z-index: 20;

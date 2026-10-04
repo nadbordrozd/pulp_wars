@@ -21,7 +21,6 @@ import {
 import { forbiddenTechnologiesV7 } from "./forbidden-technologies";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
-  DEEP_WINTER_RECOVER_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
   ORIGINAL_BASELINE_V5_TREE,
@@ -179,6 +178,12 @@ import {
 } from "./dwarf-reducer";
 import { twinShotReadyV7, unitIsMachineV7 } from "./dwarf";
 import { unitIsConstructV7 } from "./afflictions";
+import {
+  recoverEligibleV7,
+  recoveryGainV7,
+  restlessOutsideOwnTerritoryV7,
+  type RecoveryFactsV7,
+} from "./recovery";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import {
   NEUTRAL_OWNER_ID_V7,
@@ -4465,7 +4470,7 @@ function applyRecover(
     return rejected(original, "RECOVER_NOT_LEGAL", { reason: "NO_PORT" });
   if (state.commandIndex >= Number.MAX_SAFE_INTEGER)
     return rejected(original, "INTEGER_OVERFLOW");
-  const amount = Math.min(recoveryAmount(state, unit), unit.maxHp - unit.hp);
+  const amount = recoveryGainV7(recoveryFacts(state, unit));
   return accepted(
     checked({
       ...state,
@@ -5941,35 +5946,19 @@ function recoverIdleUnits(
   state: GameStateV7,
   player: PlayerStateV7,
 ): { state: GameStateV7; events: readonly DomainEventV7[] } {
+  // Section 10: exactly the units a `RECOVER` is offered for now (the shared
+  // predicate `recoverEligibleV7`): an Egg, an embarked unit, a construct, a
+  // Restless unit outside own territory, and a ship away from a Port are
+  // skipped, with no HP change and no event.
   const items = state.units
-    .filter(
-      (unit) =>
-        unit.ownerId === player.id &&
-        unit.form !== "EMBARKED" &&
-        // Revision 19 section 6.2: idle recovery skips an Egg.
-        unit.form !== "EGG" &&
-        // The Dwarf revision section 7.2: and a construct.
-        !unitIsConstructV7(state, unit) &&
-        (unit.form !== "NAVAL" ||
-          [unit.at, ...adjacentCoords(state, unit.at)].some((at) =>
-            isActivePortV7(state, at, player.id),
-          )) &&
-        unit.hp > 0 &&
-        unit.hp < unit.maxHp &&
-        !unit.activation.moved &&
-        !primaryUsed(unit) &&
-        // Revision 13 Restless: no idle recovery and no event outside own
-        // territory.
-        !restlessOutsideOwnTerritory(state, unit),
-    )
-    .sort((a, b) => a.id - b.id)
-    .map((unit) => {
-      const amount = Math.min(
-        recoveryAmount(state, unit),
-        unit.maxHp - unit.hp,
-      );
-      return { unitId: unit.id, amount };
-    });
+    .filter((unit) => unit.ownerId === player.id)
+    .map((unit) => ({ unit, facts: recoveryFacts(state, unit) }))
+    .filter(({ facts }) => recoverEligibleV7(facts))
+    .sort((a, b) => a.unit.id - b.unit.id)
+    .map(({ unit, facts }) => ({
+      unitId: unit.id,
+      amount: recoveryGainV7(facts),
+    }));
   return {
     state: {
       ...state,
@@ -5989,27 +5978,34 @@ function recoverIdleUnits(
   };
 }
 
-function recoveryAmount(state: GameStateV7, unit: UnitStateV7): number {
-  if (unit.form === "NAVAL")
-    return [unit.at, ...adjacentCoords(state, unit.at)].some((at) =>
-      isActivePortV7(state, at, unit.ownerId),
-    )
-      ? 4
-      : 0;
-  if (unit.form === "EMBARKED") return 0;
-  // The Ice Folk revision section 6.6: Deep Winter heals an Ice Folk land
-  // unit 6 in its owner's territory (the Mind Control revision: a
-  // unit-level unlock, the controller's research through the kind's tree).
-  if (inOwnTerritory(state, unit))
-    return isIceFolkLandUnitV7(state, unit) &&
+/** The authoritative Recover facts of a player's unit (section 10). */
+function recoveryFacts(state: GameStateV7, unit: UnitStateV7): RecoveryFactsV7 {
+  const ownTerritory = inOwnTerritory(state, unit);
+  return {
+    form: unit.form,
+    hp: unit.hp,
+    maxHp: unit.maxHp,
+    activation: unit.activation,
+    construct: unitIsConstructV7(state, unit),
+    restless: factionRulesV7(unitFactionV7(state, unit)).restless,
+    inOwnTerritory: ownTerritory,
+    byOwnActivePort:
+      unit.form === "NAVAL" &&
+      [unit.at, ...adjacentCoords(state, unit.at)].some((at) =>
+        isActivePortV7(state, at, unit.ownerId),
+      ),
+    // The Ice Folk revision section 6.6: Deep Winter heals an Ice Folk land
+    // unit 6 in its owner's territory (the Mind Control revision: a
+    // unit-level unlock, the controller's research through the kind's tree).
+    deepWinter:
+      ownTerritory &&
+      isIceFolkLandUnitV7(state, unit) &&
       unitCapabilitiesV7(
         state,
         unit,
         requirePlayer(state, unit.ownerId).researchedTechs,
-      ).deepWinter
-      ? DEEP_WINTER_RECOVER_V7
-      : 4;
-  return restlessOutsideOwnTerritory(state, unit) ? 0 : 2;
+      ).deepWinter,
+  };
 }
 
 function inOwnTerritory(state: GameStateV7, unit: UnitStateV7): boolean {
@@ -6026,11 +6022,11 @@ function restlessOutsideOwnTerritory(
   state: GameStateV7,
   unit: UnitStateV7,
 ): boolean {
-  return (
-    unit.form === "LAND" &&
-    factionRulesV7(unitFactionV7(state, unit)).restless &&
-    !inOwnTerritory(state, unit)
-  );
+  return restlessOutsideOwnTerritoryV7({
+    form: unit.form,
+    restless: factionRulesV7(unitFactionV7(state, unit)).restless,
+    inOwnTerritory: inOwnTerritory(state, unit),
+  });
 }
 
 function adjacentCoords(

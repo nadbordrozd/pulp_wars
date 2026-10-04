@@ -97,8 +97,9 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/reducer.ts::applyTrainNaval": "PLAYER_ONLY",
   // Kill credit: the Spider's kills are nobody's; its death pays the bounty.
   "src/engine/v7/reducer.ts::plunderAwardsV7": "NEUTRAL_AWARE",
-  // Idle recovery of the ending seat's own units.
-  "src/engine/v7/reducer.ts::recoveryAmount": "PLAYER_ONLY",
+  // A Recover of the acting seat's unit, and idle recovery of the ending
+  // seat's own units.
+  "src/engine/v7/reducer.ts::recoveryFacts": "PLAYER_ONLY",
   // The shared attack exchange: the Spider's attack in the neutral turn.
   "src/engine/v7/reducer.ts::resolveAttackExchangeV7": "NEUTRAL_AWARE",
   "src/engine/v7/reducer.ts::resolveTreasure": "PLAYER_ONLY",

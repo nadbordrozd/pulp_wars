@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   applyCommandV7,
   projectEventsV7,
+  queryIdleRecoveryV7,
   queryPlayerCommandsV7,
   viewForV7,
   type CommandV7,
@@ -26,6 +27,10 @@ import {
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import { knightOverrunPublicFixtureV7 } from "../fixtures/ruleset7-tactical-ui";
+import {
+  IDLE_RECOVERY_UI_V7,
+  idleRecoveryUiFixtureV7,
+} from "../fixtures/v7-recovery-ui";
 import {
   AFFLICTION_SHOWCASE_V7,
   UNDEAD_SHOWCASE_V7,
@@ -529,6 +534,75 @@ describe("Revision 13 Undead DOM", () => {
     requiredButton("compact-menu").click();
     requiredButton("leaderboard").click();
     expect(document.querySelector(".v7-faction-chip")).toBeNull();
+    app.destroy();
+  });
+});
+
+describe("Idle recovery hints (pulp_wars-v3w)", () => {
+  const AT = IDLE_RECOVERY_UI_V7;
+
+  it("counts the recovering units on End Turn and says so in the dock", async () => {
+    const state = idleRecoveryUiFixtureV7();
+    const hint = queryIdleRecoveryV7(state, state.humanPlayerId);
+    expect(hint).toHaveLength(2);
+    const amount = required(hint[0]).amount;
+    const controller = new FixtureController(state);
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+
+    // End Turn: a heal icon and the count, named for assistive technology.
+    const end = requiredButton("end-turn");
+    const badge = requiredElement<HTMLElement>("[data-end-turn-recover]");
+    expect(end.contains(badge)).toBe(true);
+    expect(badge.dataset.endTurnRecover).toBe("2");
+    expect(badge.textContent).toBe("2");
+    expect(badge.querySelector('[data-icon="hp"]')).not.toBeNull();
+    expect(end.getAttribute("aria-label")).toBe(
+      "End turn. 2 units will recover.",
+    );
+    expect(end.title).toBe("2 units will recover");
+
+    // The dock of an idle wounded unit says what End Turn will heal.
+    selectUnitAt(controller, host, AT.wounded);
+    const chip = requiredElement<HTMLElement>(
+      '.v7-selection-dock [data-unit-status="idle-recovery"]',
+    );
+    expect(chip.textContent).toBe(`+${amount} at End Turn if idle`);
+    expect(chip.getAttribute("aria-label")).toBe(
+      `Recovers ${amount} HP at End Turn if it does not move or act.`,
+    );
+    selectUnitAt(controller, host, AT.healthy);
+    expect(
+      document.querySelector('[data-unit-status="idle-recovery"]'),
+    ).toBeNull();
+
+    // An explicit Recover takes the unit out of both.
+    selectUnitAt(controller, host, AT.wounded);
+    requiredButton("command-recover").click();
+    await waitUntil(() => controller.accepted.length === 1);
+    await waitUntil(
+      () =>
+        requiredElement<HTMLElement>("[data-end-turn-recover]").dataset
+          .endTurnRecover === "1",
+    );
+    expect(requiredButton("end-turn").getAttribute("aria-label")).toBe(
+      "End turn. 1 unit will recover.",
+    );
+    selectUnitAt(controller, host, AT.wounded);
+    expect(
+      document.querySelector('[data-unit-status="idle-recovery"]'),
+    ).toBeNull();
+
+    // Nothing left to recover: the plain End Turn button.
+    selectUnitAt(controller, host, AT.hurt);
+    await waitUntil(() => !requiredButton("command-recover").disabled);
+    requiredButton("command-recover").click();
+    await waitUntil(() => controller.accepted.length === 2);
+    await waitUntil(
+      () => document.querySelector("[data-end-turn-recover]") === null,
+    );
+    expect(requiredButton("end-turn").textContent).toBe("End turn");
+    expect(requiredButton("end-turn").hasAttribute("aria-label")).toBe(false);
     app.destroy();
   });
 });

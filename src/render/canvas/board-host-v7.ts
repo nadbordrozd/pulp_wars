@@ -827,8 +827,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         }
         for (const step of supportSteps) {
           // Revision 17: the still "+N" of Troll regeneration holds long
-          // enough to read.
-          const hold = step.effect === "REGENERATE" ? 480 : 100;
+          // enough to read; a Recover's "+N" a little less.
+          const hold =
+            step.effect === "REGENERATE"
+              ? 480
+              : step.effect === "RECOVER"
+                ? 320
+                : 100;
           await this.#animate(hold * durationScale, () => {
             this.#supportFeedback = {
               effect: step.effect,

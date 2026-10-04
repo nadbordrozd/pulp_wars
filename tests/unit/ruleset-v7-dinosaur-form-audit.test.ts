@@ -513,7 +513,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/movement.ts": 2,
     // Revision 20 removed the Stampede resolution and preview (two tests
     // each in the reducer and the queries).
-    "src/engine/v7/query.ts": 3,
+    // `pulp_wars-v3w`: the public Restless test moved to the shared Recover
+    // predicate (recovery.ts, which asks for the land form and excludes an
+    // Egg and an embarked unit by name).
+    "src/engine/v7/query.ts": 2,
     // `pulp_wars-b5f.6`: the Mind Control target gate moved from the
     // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
     // the reducer and the public query both call; the Brain gate stays in

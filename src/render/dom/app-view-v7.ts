@@ -48,6 +48,7 @@ import {
   cityLevelIncomeV7,
   forbiddenTechnologiesV7,
   queryTechnologyTreeV7,
+  queryIdleRecoveryV7,
   type CommandV7,
   type CoordV7,
   type EconomicPreviewV7,
@@ -63,6 +64,11 @@ import {
   type FactionIdV7,
 } from "../../engine/index";
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
+import {
+  endTurnRecoveryLabelV7,
+  idleRecoveryChipV7,
+  idleRecoveryExplanationV7,
+} from "../recovery-presentation-v7";
 import { downloadJsonFile } from "../../app/browser-download";
 import {
   loadBoardSaturationV7,
@@ -1569,6 +1575,22 @@ export class Ruleset7DomAppView {
         "end-turn",
         "v7-hud-end-turn",
       );
+      // Section 10: how many own units recover by themselves at this End
+      // Turn (a heal icon and the count; never a unit or a coordinate).
+      const recovering = queryIdleRecoveryV7(view).length;
+      if (recovering > 0) {
+        const label = endTurnRecoveryLabelV7(recovering);
+        const hint = el(this.#document, "span", "v7-end-turn-recover");
+        hint.dataset.endTurnRecover = String(recovering);
+        hint.setAttribute("aria-hidden", "true");
+        hint.append(
+          uiIconV7(this.#document, "hp", "v7-ui-icon v7-end-turn-recover-icon"),
+          text(this.#document, "span", String(recovering)),
+        );
+        end.append(hint);
+        end.title = label;
+        end.setAttribute("aria-label", `End turn. ${label}.`);
+      }
       end.onclick = () => void this.#dispatch(endTurn);
       end.disabled = this.#localBusy() || blocked;
       nav.append(end);
@@ -1943,6 +1965,28 @@ export class Ruleset7DomAppView {
         cue.setAttribute("aria-label", RESTLESS_EXPLANATION_V7);
         cue.title = RESTLESS_EXPLANATION_V7;
         identityColumn?.append(cue);
+      }
+      // Section 10: an idle wounded own unit recovers by itself at End Turn.
+      const idleRecovery =
+        this.#snapshot.offeredCommands.length === 0
+          ? undefined
+          : queryIdleRecoveryV7(view).find((entry) => entry.unitId === unit.id);
+      if (idleRecovery !== undefined) {
+        const explanation = idleRecoveryExplanationV7(idleRecovery.amount);
+        const cue = text(
+          this.#document,
+          "span",
+          idleRecoveryChipV7(idleRecovery.amount),
+          "v7-chip v7-idle-recovery-chip",
+        );
+        cue.dataset.unitStatus = "idle-recovery";
+        cue.setAttribute("aria-label", explanation);
+        cue.title = explanation;
+        identityColumn?.append(cue);
+        const state = el(this.#document, "section", "v7-tactical-state");
+        state.dataset.tacticalState = "idle-recovery";
+        state.append(text(this.#document, "strong", explanation));
+        unitDetails.append(state);
       }
       if (view.graves.some((grave) => same(grave, unit.at))) {
         const grave = text(this.#document, "span", "On a Grave", "v7-chip");
