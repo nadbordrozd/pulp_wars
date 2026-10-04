@@ -248,6 +248,16 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/undead-presentation-v7.ts::unitAfflictionsV7": "SEAT",
   "src/headless/cli.ts::factionsArgV7": "SEAT",
   "src/headless/ice-folk-telemetry-v7.ts::recordIceFolkV7": "SEAT",
+  // `pulp_wars-1wy.2`: the Martian mobility probe. The gate is the viewer
+  // seat's faction; the roles it trains are the seat's own (the carrier
+  // counts come from `martianArmyCountsV7`, which leaves controlled units
+  // out); the runner finds the Martian seat and names the winner's faction.
+  // Every per-unit read in the probe goes through `unitRoleRuleV7`.
+  "src/headless/martian-mobility-probe-match-v7.ts::runMartianMobilityProbeMatchV7":
+    "SEAT",
+  "src/headless/martian-mobility-probe-v7.ts::chooseMartianMobilityProbeCommandV7":
+    "SEAT",
+  "src/headless/martian-mobility-probe-v7.ts::probeProductionV7": "SEAT",
   "src/headless/v7.ts::ownerFaction": "SEAT",
 };
 

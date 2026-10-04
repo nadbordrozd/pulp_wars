@@ -294,6 +294,25 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/wail.ts::wailTargetsV7": "BOARD",
     "src/headless/ice-folk-telemetry-v7.ts::recordCombat": "BOARD",
     "src/headless/ice-folk-telemetry-v7.ts::recordIceFolkV7": "BOARD",
+    // `pulp_wars-1wy.2`: the Martian mobility probe is a policy; like the
+    // Normal AI it reads the board for targets, passengers, pulls, and
+    // commands, and the hostile mounds through the view's `burrowed` list
+    // (`hostilePresence`, and the Dwarf danger of `probeDangerV7`). Its
+    // match runner looks up the unit of a `UNIT_DIED` event through
+    // `allOwnedUnitsV7` (a unit that dies in its mound is a kill or a loss,
+    // so it reads no unit list itself); the carriers it counts are the ones
+    // on the board.
+    "src/headless/martian-mobility-probe-match-v7.ts::carriersOnBoardV7":
+      "BOARD",
+    "src/headless/martian-mobility-probe-v7.ts::chooseMartianMobilityProbeCommandV7":
+      "BOARD",
+    "src/headless/martian-mobility-probe-v7.ts::hostileUnits": "BOARD",
+    "src/headless/martian-mobility-probe-v7.ts::ownUnits": "BOARD",
+    "src/headless/martian-mobility-probe-v7.ts::probeBestPullV7": "BOARD",
+    "src/headless/martian-mobility-probe-v7.ts::probeDeliverV7": "BOARD",
+    "src/headless/martian-mobility-probe-v7.ts::probeExtractV7": "BOARD",
+    "src/headless/martian-mobility-probe-v7.ts::probeMindControlV7": "BOARD",
+    "src/headless/martian-mobility-probe-v7.ts::probeStepOnCenterV7": "BOARD",
     "src/headless/v7.ts::auditRelationshipCommandV7": "BOARD",
     "src/headless/v7.ts::cityIsBesieged": "BOARD",
     "src/headless/v7.ts::recordCommandAndEventsV7": "BOARD",
