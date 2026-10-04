@@ -1,0 +1,36 @@
+{
+  "id": "shrine-a-edit",
+  "jobId": "1c6cfcca-6c75-466a-9e69-0e1f1e1515b8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-shrine",
+    "subject": "CURIOSITY:SHRINE",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 737542,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass plate and the square stone slab under the shrine, so the stone arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the moss on it, the pale glowing idol, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass plate and the square stone slab under the shrine, so the stone arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the moss on it, the pale glowing idol, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass plate and the square stone slab under the shrine, so the stone arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the moss on it, the pale glowing idol, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass plate and the square stone slab under the shrine, so the stone arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the moss on it, the pale glowing idol, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "shrine-a",
+      "candidate": 0,
+      "sha256": "cb5d5dd32c6afa0c41460a8526e54c128c0c1372c0e1eadb369b0a03bf08102c"
+    }
+  }
+}

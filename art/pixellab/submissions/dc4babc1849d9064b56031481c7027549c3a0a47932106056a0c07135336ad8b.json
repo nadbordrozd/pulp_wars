@@ -1,0 +1,36 @@
+{
+  "id": "wreck-a-edit",
+  "jobId": "fcfaac2d-58c5-4d21-89e8-887dffc094ff",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-wreck",
+    "subject": "CURIOSITY:WRECK",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 737552,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all water: erase the blue water plate and the white foam under the ship, so the wreck floats on a transparent background with nothing at all under or around it. Keep the brown wooden hull, the ribs, the broken mast, the torn cream sail, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all water: erase the blue water plate and the white foam under the ship, so the wreck floats on a transparent background with nothing at all under or around it. Keep the brown wooden hull, the ribs, the broken mast, the torn cream sail, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all water: erase the blue water plate and the white foam under the ship, so the wreck floats on a transparent background with nothing at all under or around it. Keep the brown wooden hull, the ribs, the broken mast, the torn cream sail, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all water: erase the blue water plate and the white foam under the ship, so the wreck floats on a transparent background with nothing at all under or around it. Keep the brown wooden hull, the ribs, the broken mast, the torn cream sail, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "wreck-a",
+      "candidate": 0,
+      "sha256": "07ea449c427e8ea1f848f01a84c14cfd68f732e01a270d7afd5d420e1535bf7a"
+    }
+  }
+}

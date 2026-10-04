@@ -1,0 +1,36 @@
+{
+  "id": "effect-shrine-blessing-a-edit",
+  "jobId": "c3a7f1b3-3049-45e4-99ea-31fc860e147b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-effect-shrine-blessing",
+    "subject": "EFFECT:SHRINE_BLESSING",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 737575,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the big four-pointed star of light and the small sparkles around it: remove the pedestal, the round grass disc and the soil under the star completely, so the star floats alone on a transparent background. Recolour the star and the sparkles to warm white #fff6d8 with the shadow tone #e8d8a0, not orange."
+      }
+    ],
+    "prompt": "Erase everything except the big four-pointed star of light and the small sparkles around it: remove the pedestal, the round grass disc and the soil under the star completely, so the star floats alone on a transparent background. Recolour the star and the sparkles to warm white #fff6d8 with the shadow tone #e8d8a0, not orange.",
+    "negativePrompt": "",
+    "description": "Erase everything except the big four-pointed star of light and the small sparkles around it: remove the pedestal, the round grass disc and the soil under the star completely, so the star floats alone on a transparent background. Recolour the star and the sparkles to warm white #fff6d8 with the shadow tone #e8d8a0, not orange.",
+    "editInstruction": "Erase everything except the big four-pointed star of light and the small sparkles around it: remove the pedestal, the round grass disc and the soil under the star completely, so the star floats alone on a transparent background. Recolour the star and the sparkles to warm white #fff6d8 with the shadow tone #e8d8a0, not orange.",
+    "source": {
+      "recipe": "effect-shrine-blessing-a",
+      "candidate": 0,
+      "sha256": "8cf621e43e00705311bdf5db34b377e9563897c6ddc2331238e7963cb6024b2f"
+    }
+  }
+}

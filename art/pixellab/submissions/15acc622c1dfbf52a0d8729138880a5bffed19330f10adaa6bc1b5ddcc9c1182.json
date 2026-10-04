@@ -1,0 +1,36 @@
+{
+  "id": "effect-salvage-coins-gold-edit",
+  "jobId": "fad89a9e-c165-413c-8e99-900c0f57e6fc",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-effect-salvage-coins",
+    "subject": "EFFECT:SALVAGE_COINS",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 737577,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: recolour the orange coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange and not red. Keep the two coins, their shape, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Change only the colours: recolour the orange coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange and not red. Keep the two coins, their shape, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Change only the colours: recolour the orange coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange and not red. Keep the two coins, their shape, the outline and the art style exactly the same.",
+    "editInstruction": "Change only the colours: recolour the orange coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange and not red. Keep the two coins, their shape, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "effect-salvage-coins-a-edit",
+      "candidate": 0,
+      "sha256": "4438cdebc4177a84848e5e2893bd6458e69211363114a902b914818989d292aa"
+    }
+  }
+}

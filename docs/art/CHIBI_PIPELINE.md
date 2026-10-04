@@ -1225,3 +1225,40 @@ before and after board scenes from
 through a 721-variant registry, no game code changed) and a contact sheet.
 Its captures start Vite on port 6540 unless `--port` says otherwise and need
 `CHROME_PATH`; `--copy-to DIR` copies the key outputs.
+
+## The curiosities batch (bead `pulp_wars-737.5`)
+
+Batch `curiosities` holds the art of the
+[map curiosities](../product/RULESET_7_MAP_CURIOSITIES.md#122-art-pixellab-chibi-direction):
+the neutral Giant Spider and its portrait, the lair web, the Fountain of
+Youth, the Shrine and the Sunken Wreck as 80 x 80 tile overlays, five
+legend icons, three effect sprites and the provoked marker; 15 assets from
+39 recipes, all new PixelLab calls. The class contract, the accepted
+recipes, the prompt notes and the measurements are in
+[classes/curiosities.md](classes/curiosities.md). **Nothing registers it
+yet:** its registry lines are in
+[`chibi-curiosities-art-manifest.ts`](../../src/assets/chibi-curiosities-art-manifest.ts),
+which no game module imports until bead `pulp_wars-737.6`. It added these
+pipeline pieces:
+
+- **Four recipe classes without a faction layer:** `curiosity-monster`
+  (the unit sizes and options), `curiosity-portrait`, `curiosity-site` (a
+  `BUILDING` asset of exactly one cell) and `curiosity-item` (`ICON`,
+  `EFFECT` and `STATUS` assets with the icon camera), all `as-is`. The
+  batch's faction is `ORIGINAL`, as for the other neutral batches, and is
+  never sent. It sets `fixedFactionColours`, so the Spider and its portrait
+  are `ownerColour: false` and register with `fixedColours: true`.
+- **Subjects** (texts in `SHARED.json`): `UNIT:MONSTER_GIANT_SPIDER`,
+  `PORTRAIT:MONSTER_GIANT_SPIDER`, `CURIOSITY:{WEB,FOUNTAIN,SHRINE,WRECK}`,
+  `ICON:CURIOSITY:{WEB,FOUNTAIN,SHRINE,WRECK,BOUNTY}`,
+  `EFFECT:{FOUNTAIN_HEAL,SHRINE_BLESSING,SALVAGE_COINS}` and
+  `STATUS:PROVOKED` (the type `CuriosityArtSubjectV7` in
+  [`chibi-art-v7.ts`](../../src/assets/chibi-art-v7.ts), and the
+  manifest's subject pattern).
+
+`npm run art:curiosities-review` writes
+`art/pixellab/reviews/chibi-batch-curiosities/` (see
+[the class document, section 5](classes/curiosities.md#5-review-and-measurements)).
+It composes its sheets from the masters with no browser capture, and with
+`--preview recipe[:candidate],… --out DIR` lays raw candidates out the same
+way before acceptance.

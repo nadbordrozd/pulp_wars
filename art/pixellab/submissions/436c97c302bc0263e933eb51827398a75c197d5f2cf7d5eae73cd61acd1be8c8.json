@@ -1,0 +1,36 @@
+{
+  "id": "icon-shrine-a-edit",
+  "jobId": "474977c3-5c77-49f1-b12a-11ff80a7b6d4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-icon-shrine",
+    "subject": "ICON:CURIOSITY:SHRINE",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 737567,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass plate and the brown soil block under the stone arch, so the arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the pale glowing idol under it, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass plate and the brown soil block under the stone arch, so the arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the pale glowing idol under it, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass plate and the brown soil block under the stone arch, so the arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the pale glowing idol under it, the outline and the art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass plate and the brown soil block under the stone arch, so the arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the pale glowing idol under it, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "icon-shrine-a",
+      "candidate": 0,
+      "sha256": "9f707c7f70f2eeb83d4fd3cda55dab6f84971b7d5876a923ec246ebd7a6422c6"
+    }
+  }
+}

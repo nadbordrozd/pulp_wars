@@ -1,0 +1,58 @@
+{
+  "id": "wreck-b",
+  "jobId": "sync-992b99b5-8233-42ea-9869-3a99452f5ff1",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-wreck",
+    "subject": "CURIOSITY:WRECK",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 737554,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-curiosity-site.txt + scripts/art/chibi/fragments/class-curiosity-site.negative.txt",
+        "text": "Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: a small old shipwreck sticking out of the sea: the broken bow of a wooden ship tilted to one side, showing four curved hull ribs and a few weathered grey-brown planks, and one broken leaning mast with a tattered scrap of plain cream sailcloth and a frayed rope; old grey-brown driftwood with no paint and no flag; only the parts above the waterline are drawn, ending in a flat line at the bottom with a thin line of white foam; no water, no sea and no waves are drawn; the wreck is the only thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The ship is almost completely under water and is not a whole ship: only three separate pieces stick up, side by side: the pointed tip of the bow, a row of bare curved ribs like a ribcage, and the broken leaning mast. No deck and no whole hull.",
+        "negative": "whole ship, sailing ship, boat, intact hull, deck, water, sea, waves, blue, water plate, island, rock, sand"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small old shipwreck sticking out of the sea: the broken bow of a wooden ship tilted to one side, showing four curved hull ribs and a few weathered grey-brown planks, and one broken leaning mast with a tattered scrap of plain cream sailcloth and a frayed rope; old grey-brown driftwood with no paint and no flag; only the parts above the waterline are drawn, ending in a flat line at the bottom with a thin line of white foam; no water, no sea and no waves are drawn; the wreck is the only thing in the image. The ship is almost completely under water and is not a whole ship: only three separate pieces stick up, side by side: the pointed tip of the bow, a row of bare curved ribs like a ribcage, and the broken leaning mast. No deck and no whole hull.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, whole ship, sailing ship, boat, intact hull, deck, water, sea, waves, blue, water plate, rock, sand",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small ancient map landmark that belongs to no faction, a single compact feature with a simple clear silhouette that reads at a glance, calmer and less saturated than a unit, thick single-colour black outline, big simple shapes and flat colours with one shadow tone. It stands directly on the empty transparent background with nothing drawn under it: no ground, no grass, no soil, no water, no slab and no platform. Materials: weathered pale grey stone, bone white, old grey-brown driftwood and a little dull moss. No flag, no banner, no heraldry and nothing painted in a team colour. Subject: a small old shipwreck sticking out of the sea: the broken bow of a wooden ship tilted to one side, showing four curved hull ribs and a few weathered grey-brown planks, and one broken leaning mast with a tattered scrap of plain cream sailcloth and a frayed rope; old grey-brown driftwood with no paint and no flag; only the parts above the waterline are drawn, ending in a flat line at the bottom with a thin line of white foam; no water, no sea and no waves are drawn; the wreck is the only thing in the image. The ship is almost completely under water and is not a whole ship: only three separate pieces stick up, side by side: the pointed tip of the bow, a row of bare curved ribs like a ribcage, and the broken leaning mast. No deck and no whole hull. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon, whole ship, sailing ship, boat, intact hull, deck, water, sea, waves, blue, water plate, rock, sand."
+  }
+}

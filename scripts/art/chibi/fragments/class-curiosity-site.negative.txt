@@ -1,0 +1,1 @@
+pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, island, scenery, background, people, person, character, soldier, crowd, building, house, flag, banner, pennant, heraldry, red, crimson, orange, bright yellow, lime, purple, violet, magenta, pink, neon

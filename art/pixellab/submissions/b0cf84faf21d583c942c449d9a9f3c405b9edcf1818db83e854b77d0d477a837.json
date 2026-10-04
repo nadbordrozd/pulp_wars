@@ -1,0 +1,36 @@
+{
+  "id": "icon-web-a-edit",
+  "jobId": "5d253920-4b56-4d20-b2c2-d85fac9d9dc2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-icon-web",
+    "subject": "ICON:CURIOSITY:WEB",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 737566,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours: recolour the pink threads of the spider web and the skull to bone white #e8dfc8 with the shadow tone #b8ab8c, not pink and not purple. Keep the web's shape, the skull, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Change only the colours: recolour the pink threads of the spider web and the skull to bone white #e8dfc8 with the shadow tone #b8ab8c, not pink and not purple. Keep the web's shape, the skull, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Change only the colours: recolour the pink threads of the spider web and the skull to bone white #e8dfc8 with the shadow tone #b8ab8c, not pink and not purple. Keep the web's shape, the skull, the outline and the art style exactly the same.",
+    "editInstruction": "Change only the colours: recolour the pink threads of the spider web and the skull to bone white #e8dfc8 with the shadow tone #b8ab8c, not pink and not purple. Keep the web's shape, the skull, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "icon-web-a",
+      "candidate": 0,
+      "sha256": "8e7fd84b3e35f7be79fe46a986c4949c730d8a0c2e1aaacab78bc1bbe3076eae"
+    }
+  }
+}

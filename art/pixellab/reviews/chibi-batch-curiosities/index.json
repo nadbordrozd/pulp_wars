@@ -1,0 +1,35 @@
+{
+  "bead": "pulp_wars-737.5",
+  "batch": "curiosities",
+  "command": "npm run art:curiosities-review",
+  "accepted": {
+    "chibi-curiosity-giant-spider": "UNIT:MONSTER_GIANT_SPIDER",
+    "chibi-curiosity-portrait-giant-spider": "PORTRAIT:MONSTER_GIANT_SPIDER",
+    "chibi-curiosity-web": "CURIOSITY:WEB",
+    "chibi-curiosity-fountain": "CURIOSITY:FOUNTAIN",
+    "chibi-curiosity-shrine": "CURIOSITY:SHRINE",
+    "chibi-curiosity-wreck": "CURIOSITY:WRECK",
+    "chibi-curiosity-icon-web": "ICON:CURIOSITY:WEB",
+    "chibi-curiosity-icon-fountain": "ICON:CURIOSITY:FOUNTAIN",
+    "chibi-curiosity-icon-shrine": "ICON:CURIOSITY:SHRINE",
+    "chibi-curiosity-icon-wreck": "ICON:CURIOSITY:WRECK",
+    "chibi-curiosity-icon-bounty": "ICON:CURIOSITY:BOUNTY",
+    "chibi-curiosity-effect-fountain-heal": "EFFECT:FOUNTAIN_HEAL",
+    "chibi-curiosity-effect-shrine-blessing": "EFFECT:SHRINE_BLESSING",
+    "chibi-curiosity-effect-salvage-coins": "EFFECT:SALVAGE_COINS",
+    "chibi-curiosity-status-provoked": "STATUS:PROVOKED"
+  },
+  "files": [
+    "pieces-x4.png",
+    "pieces-1x.png",
+    "scale-x2.png",
+    "scale-1x.png",
+    "interface-x4.png",
+    "interface-1x.png",
+    "scene-x2.png",
+    "scene-1x.png",
+    "scene-zoom-0.75.png",
+    "pieces-zoom-0.75.png",
+    "readability.json"
+  ]
+}

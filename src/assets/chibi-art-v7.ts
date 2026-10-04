@@ -61,7 +61,36 @@ export type ArtSubjectV7 =
   | MartianArtSubjectV7
   | IceFolkArtSubjectV7
   | NavalFactionArtSubjectV7
-  | DwarfArtSubjectV7;
+  | DwarfArtSubjectV7
+  | CuriosityArtSubjectV7;
+
+/**
+ * Map curiosity art subjects (bead pulp_wars-737.5,
+ * docs/art/classes/curiosities.md): the neutral Giant Spider and its
+ * portrait, the four 80 x 80 tile overlays (the lair web under the Monster's
+ * home, the Fountain of Youth, the Shrine and the Sunken Wreck), their
+ * legend icons with the bounty icon, the effect sprites and the provoked
+ * marker. The assets are in chibi-curiosities-art-manifest.ts, which no
+ * game module imports until the curiosities UI bead (pulp_wars-737.6).
+ */
+export type CuriosityArtSubjectV7 =
+  | "UNIT:MONSTER_GIANT_SPIDER"
+  | "PORTRAIT:MONSTER_GIANT_SPIDER"
+  | `CURIOSITY:${CuriosityOverlayIdV7}`
+  | `ICON:CURIOSITY:${CuriosityOverlayIdV7 | "BOUNTY"}`
+  | `EFFECT:${CuriosityEffectIdV7}`
+  | "STATUS:PROVOKED";
+
+/** The tile overlays: the Monster's lair web and the three tile markers. */
+export type CuriosityOverlayIdV7 = "WEB" | "FOUNTAIN" | "SHRINE" | "WRECK";
+
+/**
+ * Curiosity effect sprites: FOUNTAIN_HEAL (the sparkle over a unit the
+ * Fountain heals), SHRINE_BLESSING (the light over a unit that claims a
+ * Shrine) and SALVAGE_COINS (the coins of a claimed Wreck).
+ */
+export type CuriosityEffectIdV7 =
+  "FOUNTAIN_HEAL" | "SHRINE_BLESSING" | "SALVAGE_COINS";
 
 /**
  * The naval sprites a player sees (bead pulp_wars-w5j.2, NAVAL_FACTIONS.md):

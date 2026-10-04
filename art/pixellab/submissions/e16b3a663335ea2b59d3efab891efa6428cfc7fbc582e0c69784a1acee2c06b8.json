@@ -1,0 +1,36 @@
+{
+  "id": "web-c-edit",
+  "jobId": "615a5234-2295-41af-980e-94ae2e122aa4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-web",
+    "subject": "CURIOSITY:WEB",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 737524,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the round grey-green hoop around the spider web and the short wooden pegs on it, so only the pale silk threads of the web remain, and make every thread bone white. Keep the web's shape, its centre and its long threads reaching outward exactly the same; transparent background between the threads."
+      }
+    ],
+    "prompt": "Change only one thing: erase the round grey-green hoop around the spider web and the short wooden pegs on it, so only the pale silk threads of the web remain, and make every thread bone white. Keep the web's shape, its centre and its long threads reaching outward exactly the same; transparent background between the threads.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the round grey-green hoop around the spider web and the short wooden pegs on it, so only the pale silk threads of the web remain, and make every thread bone white. Keep the web's shape, its centre and its long threads reaching outward exactly the same; transparent background between the threads.",
+    "editInstruction": "Change only one thing: erase the round grey-green hoop around the spider web and the short wooden pegs on it, so only the pale silk threads of the web remain, and make every thread bone white. Keep the web's shape, its centre and its long threads reaching outward exactly the same; transparent background between the threads.",
+    "source": {
+      "recipe": "web-c",
+      "candidate": 0,
+      "sha256": "405e87105fe5d03504f90d4803e9368365e5fa035ee49f9991b12b2d1038e8e9"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "effect-salvage-coins-a-edit",
+  "jobId": "3d3b6803-4074-4dd8-b7c1-5256142c5869",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-effect-salvage-coins",
+    "subject": "EFFECT:SALVAGE_COINS",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 737576,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the round coins: remove the white and green block under the coins completely, so the coins float alone on a transparent background. Recolour the coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange. Keep the coins' shape, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Erase everything except the round coins: remove the white and green block under the coins completely, so the coins float alone on a transparent background. Recolour the coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange. Keep the coins' shape, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase everything except the round coins: remove the white and green block under the coins completely, so the coins float alone on a transparent background. Recolour the coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange. Keep the coins' shape, the outline and the art style exactly the same.",
+    "editInstruction": "Erase everything except the round coins: remove the white and green block under the coins completely, so the coins float alone on a transparent background. Recolour the coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange. Keep the coins' shape, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "effect-salvage-coins-a",
+      "candidate": 0,
+      "sha256": "8a70dcf05d29f82c4e16f75d0578b8371774de51687016a3a5db5f75db7ca472"
+    }
+  }
+}

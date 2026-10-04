@@ -1,0 +1,36 @@
+{
+  "id": "effect-fountain-heal-a-edit",
+  "jobId": "85704f1e-9788-424b-b935-234c070fbd73",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-effect-fountain-heal",
+    "subject": "EFFECT:FOUNTAIN_HEAL",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-item",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 737574,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything except the three white water droplets and the small white sparkles: remove the green grass and brown soil block under them completely, so the droplets float alone on a transparent background. Keep the droplets, the sparkles, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Erase everything except the three white water droplets and the small white sparkles: remove the green grass and brown soil block under them completely, so the droplets float alone on a transparent background. Keep the droplets, the sparkles, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase everything except the three white water droplets and the small white sparkles: remove the green grass and brown soil block under them completely, so the droplets float alone on a transparent background. Keep the droplets, the sparkles, the outline and the art style exactly the same.",
+    "editInstruction": "Erase everything except the three white water droplets and the small white sparkles: remove the green grass and brown soil block under them completely, so the droplets float alone on a transparent background. Keep the droplets, the sparkles, the outline and the art style exactly the same.",
+    "source": {
+      "recipe": "effect-fountain-heal-a",
+      "candidate": 0,
+      "sha256": "7097d7aee6f95b8668a774b6479457f8797f26d86a463ac3be3ee6347546103e"
+    }
+  }
+}

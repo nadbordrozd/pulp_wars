@@ -1,0 +1,36 @@
+{
+  "id": "web-bones-edit",
+  "jobId": "16c51d3c-4ce4-4522-a6f3-2024d497cb15",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-web",
+    "subject": "CURIOSITY:WEB",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 737525,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Add only two tiny details: one small bone-white skull with a thin black outline caught on the web near its upper left rim, and one small bone with a thin black outline near its lower right rim. Do not redraw anything else: keep every bone-white thread of the web exactly the same; transparent background between the threads."
+      }
+    ],
+    "prompt": "Add only two tiny details: one small bone-white skull with a thin black outline caught on the web near its upper left rim, and one small bone with a thin black outline near its lower right rim. Do not redraw anything else: keep every bone-white thread of the web exactly the same; transparent background between the threads.",
+    "negativePrompt": "",
+    "description": "Add only two tiny details: one small bone-white skull with a thin black outline caught on the web near its upper left rim, and one small bone with a thin black outline near its lower right rim. Do not redraw anything else: keep every bone-white thread of the web exactly the same; transparent background between the threads.",
+    "editInstruction": "Add only two tiny details: one small bone-white skull with a thin black outline caught on the web near its upper left rim, and one small bone with a thin black outline near its lower right rim. Do not redraw anything else: keep every bone-white thread of the web exactly the same; transparent background between the threads.",
+    "source": {
+      "recipe": "web-c-edit",
+      "candidate": 0,
+      "sha256": "781addc018a33b901085bf6c66924567d2fc5779559b16da0f43670a4c3227df"
+    }
+  }
+}

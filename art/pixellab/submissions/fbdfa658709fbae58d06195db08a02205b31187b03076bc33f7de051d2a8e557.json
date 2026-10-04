@@ -1,0 +1,36 @@
+{
+  "id": "wreck-sunk-edit",
+  "jobId": "1255684e-973b-4b88-a226-448b58d5457f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "curiosities",
+    "asset": "chibi-curiosity-wreck",
+    "subject": "CURIOSITY:WRECK",
+    "faction": "ORIGINAL",
+    "recipeClass": "curiosity-site",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 737553,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Sink the ship halfway: erase everything below one straight horizontal line through the middle of the hull, so only the upper half of the hull, the mast and the torn sail remain, ending in a flat straight bottom edge with a thin line of white foam along it. Keep the upper hull, the mast, the cream sail, the outline and the art style exactly the same; transparent background."
+      }
+    ],
+    "prompt": "Sink the ship halfway: erase everything below one straight horizontal line through the middle of the hull, so only the upper half of the hull, the mast and the torn sail remain, ending in a flat straight bottom edge with a thin line of white foam along it. Keep the upper hull, the mast, the cream sail, the outline and the art style exactly the same; transparent background.",
+    "negativePrompt": "",
+    "description": "Sink the ship halfway: erase everything below one straight horizontal line through the middle of the hull, so only the upper half of the hull, the mast and the torn sail remain, ending in a flat straight bottom edge with a thin line of white foam along it. Keep the upper hull, the mast, the cream sail, the outline and the art style exactly the same; transparent background.",
+    "editInstruction": "Sink the ship halfway: erase everything below one straight horizontal line through the middle of the hull, so only the upper half of the hull, the mast and the torn sail remain, ending in a flat straight bottom edge with a thin line of white foam along it. Keep the upper hull, the mast, the cream sail, the outline and the art style exactly the same; transparent background.",
+    "source": {
+      "recipe": "wreck-a-edit",
+      "candidate": 0,
+      "sha256": "5ad2985b08cb737dd4eba3976540c5d5a55ad437820a478928e4debafdd240e7"
+    }
+  }
+}

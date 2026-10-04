@@ -1,0 +1,447 @@
+{
+  "schemaVersion": 1,
+  "batch": "curiosities",
+  "title": "Map curiosities: the neutral Giant Spider and its portrait, the lair web, the Fountain of Youth, the Shrine, the Sunken Wreck, their legend icons, effects and the provoked marker",
+  "bead": "pulp_wars-737.5",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-curiosity-giant-spider",
+      "subject": "UNIT:MONSTER_GIANT_SPIDER",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "curiosity-monster",
+      "canvas": { "width": 88, "height": 72 },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-curiosity-portrait-giant-spider",
+      "subject": "PORTRAIT:MONSTER_GIANT_SPIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "curiosity-portrait",
+      "canvas": { "width": 48, "height": 48 },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-curiosity-web",
+      "subject": "CURIOSITY:WEB",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": { "width": 80, "height": 80 }
+    },
+    {
+      "id": "chibi-curiosity-fountain",
+      "subject": "CURIOSITY:FOUNTAIN",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": { "width": 80, "height": 80 }
+    },
+    {
+      "id": "chibi-curiosity-shrine",
+      "subject": "CURIOSITY:SHRINE",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": { "width": 80, "height": 80 }
+    },
+    {
+      "id": "chibi-curiosity-wreck",
+      "subject": "CURIOSITY:WRECK",
+      "assetClass": "BUILDING",
+      "recipeClass": "curiosity-site",
+      "canvas": { "width": 80, "height": 80 }
+    },
+    {
+      "id": "chibi-curiosity-icon-web",
+      "subject": "ICON:CURIOSITY:WEB",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "chibi-curiosity-icon-fountain",
+      "subject": "ICON:CURIOSITY:FOUNTAIN",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "chibi-curiosity-icon-shrine",
+      "subject": "ICON:CURIOSITY:SHRINE",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "chibi-curiosity-icon-wreck",
+      "subject": "ICON:CURIOSITY:WRECK",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "chibi-curiosity-icon-bounty",
+      "subject": "ICON:CURIOSITY:BOUNTY",
+      "assetClass": "ICON",
+      "recipeClass": "curiosity-item",
+      "canvas": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "chibi-curiosity-effect-fountain-heal",
+      "subject": "EFFECT:FOUNTAIN_HEAL",
+      "assetClass": "EFFECT",
+      "recipeClass": "curiosity-item",
+      "canvas": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "chibi-curiosity-effect-shrine-blessing",
+      "subject": "EFFECT:SHRINE_BLESSING",
+      "assetClass": "EFFECT",
+      "recipeClass": "curiosity-item",
+      "canvas": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "chibi-curiosity-effect-salvage-coins",
+      "subject": "EFFECT:SALVAGE_COINS",
+      "assetClass": "EFFECT",
+      "recipeClass": "curiosity-item",
+      "canvas": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "chibi-curiosity-status-provoked",
+      "subject": "STATUS:PROVOKED",
+      "assetClass": "STATUS",
+      "recipeClass": "curiosity-item",
+      "canvas": { "width": 32, "height": 32 }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "spider-a",
+      "asset": "chibi-curiosity-giant-spider",
+      "endpoint": "create-image-pixen",
+      "seed": 737501,
+      "requestSize": { "width": 88, "height": 72 }
+    },
+    {
+      "id": "spider-b",
+      "asset": "chibi-curiosity-giant-spider",
+      "endpoint": "create-image-pixen",
+      "seed": 737502,
+      "requestSize": { "width": 88, "height": 72 },
+      "options": { "view": "high top-down" }
+    },
+    {
+      "id": "spider-portrait-a",
+      "asset": "chibi-curiosity-portrait-giant-spider",
+      "endpoint": "create-image-pixen",
+      "seed": 737511,
+      "requestSize": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "web-a",
+      "asset": "chibi-curiosity-web",
+      "endpoint": "create-image-pixen",
+      "seed": 737521,
+      "requestSize": { "width": 80, "height": 80 },
+      "options": { "view": "high top-down", "direction": null }
+    },
+    {
+      "id": "fountain-a",
+      "asset": "chibi-curiosity-fountain",
+      "endpoint": "create-image-pixen",
+      "seed": 737531,
+      "requestSize": { "width": 80, "height": 80 }
+    },
+    {
+      "id": "shrine-a",
+      "asset": "chibi-curiosity-shrine",
+      "endpoint": "create-image-pixen",
+      "seed": 737541,
+      "requestSize": { "width": 80, "height": 80 }
+    },
+    {
+      "id": "wreck-a",
+      "asset": "chibi-curiosity-wreck",
+      "endpoint": "create-image-pixen",
+      "seed": 737551,
+      "requestSize": { "width": 80, "height": 80 }
+    },
+    {
+      "id": "icon-web-a",
+      "asset": "chibi-curiosity-icon-web",
+      "endpoint": "create-image-pixen",
+      "seed": 737561,
+      "requestSize": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "icon-fountain-a",
+      "asset": "chibi-curiosity-icon-fountain",
+      "endpoint": "create-image-pixen",
+      "seed": 737562,
+      "requestSize": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "icon-shrine-a",
+      "asset": "chibi-curiosity-icon-shrine",
+      "endpoint": "create-image-pixen",
+      "seed": 737563,
+      "requestSize": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "icon-wreck-a",
+      "asset": "chibi-curiosity-icon-wreck",
+      "endpoint": "create-image-pixen",
+      "seed": 737564,
+      "requestSize": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "icon-bounty-a",
+      "asset": "chibi-curiosity-icon-bounty",
+      "endpoint": "create-image-pixen",
+      "seed": 737565,
+      "requestSize": { "width": 48, "height": 48 }
+    },
+    {
+      "id": "effect-fountain-heal-a",
+      "asset": "chibi-curiosity-effect-fountain-heal",
+      "endpoint": "create-image-pixen",
+      "seed": 737571,
+      "requestSize": { "width": 48, "height": 48 },
+      "options": { "view": "side" }
+    },
+    {
+      "id": "effect-shrine-blessing-a",
+      "asset": "chibi-curiosity-effect-shrine-blessing",
+      "endpoint": "create-image-pixen",
+      "seed": 737572,
+      "requestSize": { "width": 48, "height": 48 },
+      "options": { "view": "side" }
+    },
+    {
+      "id": "effect-salvage-coins-a",
+      "asset": "chibi-curiosity-effect-salvage-coins",
+      "endpoint": "create-image-pixen",
+      "seed": 737573,
+      "requestSize": { "width": 48, "height": 48 },
+      "options": { "view": "side" }
+    },
+    {
+      "id": "status-provoked-a",
+      "asset": "chibi-curiosity-status-provoked",
+      "endpoint": "create-image-pixen",
+      "seed": 737581,
+      "requestSize": { "width": 32, "height": 32 },
+      "options": { "view": "side" }
+    },
+    {
+      "id": "web-b",
+      "asset": "chibi-curiosity-web",
+      "endpoint": "create-image-pixen",
+      "seed": 737522,
+      "requestSize": { "width": 80, "height": 80 },
+      "options": { "view": "high top-down", "direction": null },
+      "promptAddendum": "Only loose silk on the ground: the web has no frame, no stone ring, no wall and no rim around it, and its strands reach out to all four corners of the image.",
+      "negativeAddendum": "stone ring, stone rim, wall, well, pit, frame, wheel, table, trampoline, drum"
+    },
+    {
+      "id": "web-c",
+      "asset": "chibi-curiosity-web",
+      "endpoint": "create-image-pixen",
+      "seed": 737523,
+      "requestSize": { "width": 80, "height": 80 },
+      "options": { "view": "side", "direction": null },
+      "promptAddendum": "Only loose silk: the web has no frame, no stone ring, no wall and no rim around it, and its strands reach out to all four corners of the image.",
+      "negativeAddendum": "stone ring, stone rim, wall, well, pit, frame, wheel, table, trampoline, drum, branch, tree"
+    },
+    {
+      "id": "fountain-b",
+      "asset": "chibi-curiosity-fountain",
+      "endpoint": "create-image-pixen",
+      "seed": 737532,
+      "requestSize": { "width": 80, "height": 80 },
+      "promptAddendum": "The basin is very wide and low, like a shallow paddling pool: it reaches from the left edge to the right edge of the image and is only a third as tall as it is wide."
+    },
+    {
+      "id": "shrine-a-edit",
+      "asset": "chibi-curiosity-shrine",
+      "endpoint": "edit-image-pixen",
+      "seed": 737542,
+      "requestSize": { "width": 80, "height": 80 },
+      "source": { "recipe": "shrine-a", "candidate": 0 },
+      "editInstruction": "Remove all ground: erase the green grass plate and the square stone slab under the shrine, so the stone arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the moss on it, the pale glowing idol, the outline and the art style exactly the same."
+    },
+    {
+      "id": "wreck-a-edit",
+      "asset": "chibi-curiosity-wreck",
+      "endpoint": "edit-image-pixen",
+      "seed": 737552,
+      "requestSize": { "width": 80, "height": 80 },
+      "source": { "recipe": "wreck-a", "candidate": 0 },
+      "editInstruction": "Remove all water: erase the blue water plate and the white foam under the ship, so the wreck floats on a transparent background with nothing at all under or around it. Keep the brown wooden hull, the ribs, the broken mast, the torn cream sail, the outline and the art style exactly the same."
+    },
+    {
+      "id": "web-c-edit",
+      "asset": "chibi-curiosity-web",
+      "endpoint": "edit-image-pixen",
+      "seed": 737524,
+      "requestSize": { "width": 80, "height": 80 },
+      "source": { "recipe": "web-c", "candidate": 0 },
+      "editInstruction": "Change only one thing: erase the round grey-green hoop around the spider web and the short wooden pegs on it, so only the pale silk threads of the web remain, and make every thread bone white. Keep the web's shape, its centre and its long threads reaching outward exactly the same; transparent background between the threads."
+    },
+    {
+      "id": "fountain-c",
+      "asset": "chibi-curiosity-fountain",
+      "endpoint": "create-image-pixen",
+      "seed": 737533,
+      "requestSize": { "width": 80, "height": 80 },
+      "promptAddendum": "The round basin is huge, flat and shallow and fills the whole width of the image: its stone rim touches the left edge and the right edge of the image. The spout is short."
+    },
+    {
+      "id": "wreck-sunk-edit",
+      "asset": "chibi-curiosity-wreck",
+      "endpoint": "edit-image-pixen",
+      "seed": 737553,
+      "requestSize": { "width": 80, "height": 80 },
+      "source": { "recipe": "wreck-a-edit", "candidate": 0 },
+      "editInstruction": "Sink the ship halfway: erase everything below one straight horizontal line through the middle of the hull, so only the upper half of the hull, the mast and the torn sail remain, ending in a flat straight bottom edge with a thin line of white foam along it. Keep the upper hull, the mast, the cream sail, the outline and the art style exactly the same; transparent background."
+    },
+    {
+      "id": "spider-portrait-a-edit",
+      "asset": "chibi-curiosity-portrait-giant-spider",
+      "endpoint": "edit-image-pixen",
+      "seed": 737512,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "spider-portrait-a", "candidate": 0 },
+      "editInstruction": "Change only the colours: recolour the spider's fur from red-brown to warm chestnut brown #8b5a2b with the shadow tone #5a3818, not red and not maroon, and make the inside of the mouth dark brown #3a2412. Keep the big black eyes with white shine, the bone-white fangs, the legs, the outline and the art style exactly the same."
+    },
+    {
+      "id": "spider-portrait-a-edit2",
+      "asset": "chibi-curiosity-portrait-giant-spider",
+      "endpoint": "edit-image-pixen",
+      "seed": 737513,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "spider-portrait-a", "candidate": 0 },
+      "editInstruction": "Change only the colours: recolour the spider's fur from red-brown to warm chestnut brown #8b5a2b with the shadow tone #5a3818, not red and not maroon, and make the inside of the mouth dark brown #3a2412. Keep the big black eyes with white shine, the bone-white fangs, the legs, the outline and the art style exactly the same."
+    },
+    {
+      "id": "web-bones-edit",
+      "asset": "chibi-curiosity-web",
+      "endpoint": "edit-image-pixen",
+      "seed": 737525,
+      "requestSize": { "width": 80, "height": 80 },
+      "source": { "recipe": "web-c-edit", "candidate": 0 },
+      "editInstruction": "Add only two tiny details: one small bone-white skull with a thin black outline caught on the web near its upper left rim, and one small bone with a thin black outline near its lower right rim. Do not redraw anything else: keep every bone-white thread of the web exactly the same; transparent background between the threads."
+    },
+    {
+      "id": "wreck-b",
+      "asset": "chibi-curiosity-wreck",
+      "endpoint": "create-image-pixen",
+      "seed": 737554,
+      "requestSize": { "width": 80, "height": 80 },
+      "promptAddendum": "The ship is almost completely under water and is not a whole ship: only three separate pieces stick up, side by side: the pointed tip of the bow, a row of bare curved ribs like a ribcage, and the broken leaning mast. No deck and no whole hull.",
+      "negativeAddendum": "whole ship, sailing ship, boat, intact hull, deck, water, sea, waves, blue, water plate, island, rock, sand"
+    },
+    {
+      "id": "icon-web-a-edit",
+      "asset": "chibi-curiosity-icon-web",
+      "endpoint": "edit-image-pixen",
+      "seed": 737566,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "icon-web-a", "candidate": 0 },
+      "editInstruction": "Change only the colours: recolour the pink threads of the spider web and the skull to bone white #e8dfc8 with the shadow tone #b8ab8c, not pink and not purple. Keep the web's shape, the skull, the outline and the art style exactly the same."
+    },
+    {
+      "id": "icon-shrine-a-edit",
+      "asset": "chibi-curiosity-icon-shrine",
+      "endpoint": "edit-image-pixen",
+      "seed": 737567,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "icon-shrine-a", "candidate": 0 },
+      "editInstruction": "Remove all ground: erase the green grass plate and the brown soil block under the stone arch, so the arch stands directly on a transparent background with nothing at all under it. Keep the grey stone arch, the pale glowing idol under it, the outline and the art style exactly the same."
+    },
+    {
+      "id": "icon-bounty-a-edit",
+      "asset": "chibi-curiosity-icon-bounty",
+      "endpoint": "edit-image-pixen",
+      "seed": 737568,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "icon-bounty-a", "candidate": 0 },
+      "editInstruction": "Change only the colours: recolour the orange coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange and not red. Keep the heap of coins, the bone-white fang on top, the outline and the art style exactly the same."
+    },
+    {
+      "id": "effect-fountain-heal-a-edit",
+      "asset": "chibi-curiosity-effect-fountain-heal",
+      "endpoint": "edit-image-pixen",
+      "seed": 737574,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "effect-fountain-heal-a", "candidate": 0 },
+      "editInstruction": "Erase everything except the three white water droplets and the small white sparkles: remove the green grass and brown soil block under them completely, so the droplets float alone on a transparent background. Keep the droplets, the sparkles, the outline and the art style exactly the same."
+    },
+    {
+      "id": "effect-shrine-blessing-a-edit",
+      "asset": "chibi-curiosity-effect-shrine-blessing",
+      "endpoint": "edit-image-pixen",
+      "seed": 737575,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "effect-shrine-blessing-a", "candidate": 0 },
+      "editInstruction": "Erase everything except the big four-pointed star of light and the small sparkles around it: remove the pedestal, the round grass disc and the soil under the star completely, so the star floats alone on a transparent background. Recolour the star and the sparkles to warm white #fff6d8 with the shadow tone #e8d8a0, not orange."
+    },
+    {
+      "id": "effect-salvage-coins-a-edit",
+      "asset": "chibi-curiosity-effect-salvage-coins",
+      "endpoint": "edit-image-pixen",
+      "seed": 737576,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "effect-salvage-coins-a", "candidate": 0 },
+      "editInstruction": "Erase everything except the round coins: remove the white and green block under the coins completely, so the coins float alone on a transparent background. Recolour the coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange. Keep the coins' shape, the outline and the art style exactly the same."
+    },
+    {
+      "id": "status-provoked-a-edit",
+      "asset": "chibi-curiosity-status-provoked",
+      "endpoint": "edit-image-pixen",
+      "seed": 737582,
+      "requestSize": { "width": 32, "height": 32 },
+      "source": { "recipe": "status-provoked-a", "candidate": 0 },
+      "editInstruction": "Change only the colours: recolour the red and dark red parts between and under the two fangs to dark charcoal grey #3a3a40, not red and not maroon. Keep the two big bone-white fangs, the outline and the art style exactly the same."
+    },
+    {
+      "id": "icon-web-b",
+      "asset": "chibi-curiosity-icon-web",
+      "endpoint": "create-image-pixen",
+      "seed": 737569,
+      "requestSize": { "width": 48, "height": 48 },
+      "options": { "view": "side" },
+      "promptAddendum": "Only loose silk: an irregular many-sided web with sagging rings, no round hoop, no rim and no wheel, with no skull; bone-white threads on a transparent background, the web fills the image.",
+      "negativeAddendum": "ship wheel, steering wheel, wheel, hoop, ring frame, wooden pegs, handles, skull, pink, branch, tree"
+    },
+    {
+      "id": "effect-salvage-coins-gold-edit",
+      "asset": "chibi-curiosity-effect-salvage-coins",
+      "endpoint": "edit-image-pixen",
+      "seed": 737577,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "effect-salvage-coins-a-edit", "candidate": 0 },
+      "editInstruction": "Change only the colours: recolour the orange coins to bright yellow gold #f2c230 with the shadow tone #c8901c, not orange and not red. Keep the two coins, their shape, the outline and the art style exactly the same."
+    },
+    {
+      "id": "status-provoked-b",
+      "asset": "chibi-curiosity-status-provoked",
+      "endpoint": "create-image-pixen",
+      "seed": 737583,
+      "requestSize": { "width": 32, "height": 32 },
+      "options": { "view": "side" },
+      "promptAddendum": "Instead of fangs: one round dark charcoal blob with two big angry white eyes, slanted down toward the middle like a frown, each with a small black pupil; nothing else.",
+      "negativeAddendum": "fangs, teeth, mouth, horns, tentacles, body, legs, red, pink"
+    },
+    {
+      "id": "icon-wreck-a-edit",
+      "asset": "chibi-curiosity-icon-wreck",
+      "endpoint": "edit-image-pixen",
+      "seed": 737570,
+      "requestSize": { "width": 48, "height": 48 },
+      "source": { "recipe": "icon-wreck-a", "candidate": 0 },
+      "editInstruction": "Change only the colours: recolour the red and maroon wooden hull to old grey-brown driftwood #6b5a48 with the shadow tone #45392e, not red and not maroon. Keep the ship's shape, the cream sail, the mast, the outline and the art style exactly the same."
+    }
+  ]
+}

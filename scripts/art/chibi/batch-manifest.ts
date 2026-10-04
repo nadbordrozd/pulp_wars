@@ -72,7 +72,20 @@ export type ChibiRecipeClass =
    * The Rift (bead pulp_wars-9s0.5): one 1 x 3 crack drawn into a strip of
    * three accepted ground tiles, cut into its three terrain pieces.
    */
-  | "rift";
+  | "rift"
+  /**
+   * Map curiosities (bead pulp_wars-737.5, docs/art/classes/curiosities.md):
+   * neutral, faction-less map features. None of the four classes sends a
+   * faction layer or an owner layer; their class texts name the shared
+   * neutral materials. The roaming Monster (unit sizes).
+   */
+  | "curiosity-monster"
+  /** The Monster's interface portrait. */
+  | "curiosity-portrait"
+  /** An 80 x 80 tile overlay: the lair web, the Fountain, the Shrine, the Wreck. */
+  | "curiosity-site"
+  /** A legend icon, an effect sprite or a board marker of a curiosity. */
+  | "curiosity-item";
 
 export type ChibiEndpoint =
   "create-image-pixen" | "create-image-pixflux" | "edit-image-pixen";
@@ -448,6 +461,71 @@ export const CHIBI_CLASS_RECIPES: Readonly<
         shading: "flat shading",
         detail: "low detail",
         view: "high top-down",
+      },
+    },
+  },
+  // Map curiosities (bead pulp_wars-737.5): owned by nobody, so no faction
+  // layer (a faction's cloth, steel or bone would make the Giant Spider or a
+  // shrine look like one player's piece) and no owner layer. The Monster has
+  // the unit sizes and options with its own class text (the unit text asks
+  // for a weapon and two feet).
+  "curiosity-monster": {
+    camera: "three-quarter",
+    factionLayer: false,
+    assetClasses: ["STANDARD_UNIT", "LARGE_UNIT", "GIANT_UNIT"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: { "create-image-pixen": PIECE_OPTIONS },
+  },
+  "curiosity-portrait": {
+    camera: "portrait",
+    factionLayer: false,
+    assetClasses: ["PORTRAIT"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: {
+      "create-image-pixen": {
+        outline: "single color black outline",
+        detail: "low detail",
+        view: "side",
+        direction: "south-east",
+      },
+    },
+  },
+  // A tile overlay is a BUILDING asset of exactly one cell (80 x 80,
+  // bottom-centred, so its canvas is the cell) with no owner colour.
+  "curiosity-site": {
+    camera: "three-quarter",
+    factionLayer: false,
+    assetClasses: ["BUILDING"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: { "create-image-pixen": PIECE_OPTIONS },
+  },
+  // Legend icons, effect sprites and the provoked marker: the icon camera
+  // (one item floating on transparency). The effect class cannot make them:
+  // its negative text excludes gold and its palette map needs a palette per
+  // asset; these are kept as generated and their colours are measured by
+  // the review (npm run art:curiosities-review).
+  "curiosity-item": {
+    camera: "icon",
+    factionLayer: false,
+    assetClasses: ["ICON", "EFFECT", "STATUS"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: {
+      "create-image-pixen": {
+        outline: "single color black outline",
+        detail: "low detail",
+        view: "low top-down",
       },
     },
   },
@@ -1036,7 +1114,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^STATUS:(PLAGUED|BITTEN)$|^EFFECT:[A-Z_]+$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY)$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;
