@@ -52,6 +52,38 @@ Ruleset 5 and 6 interfaces are unchanged.
   and Captain, erupts for 6", "Surface in the open", "Land here, safe",
   "Assemble here", "Beam the Grunt here").
 
+### Research prompts (bead `pulp_wars-gl1`)
+
+A tile in the player's own territory whose resource the player cannot use
+only for lack of a technology offers that technology in the dock, where
+its action would be.
+
+- **Which tiles.** Fruit, Game, Fish, Fertile Ground, Ore, Pearls and a
+  bare Forest (the Lumber Camp), on the player's turn, when the action
+  would be offered with the technology known. A fogged tile, another
+  player's or neutral land, a besieged city's land, a technology the match
+  forbids (the Naval branch on Dry Land, a mission's list) and a
+  technology already known have no prompt. Being short of Coins does not
+  hide it.
+- **The button.** The technology's icon and "Research Gathering", with a
+  dashed gold edge; nothing else. Its accessible name adds what it unlocks
+  in the faction's own words ("Research Farming to unlock Graveyard").
+- **Pressing it** opens the technology screen with that technology
+  selected and the focus on its Research control. When a prerequisite is
+  missing, the first missing one is selected instead and the asked-for
+  card keeps a dashed gold edge; after each research on the way the next
+  technology is selected. An unaffordable technology shows the screen's
+  usual `Need N Coins` and has no Research control.
+- **Closing** the screen (the close button, the scrim or Escape) returns
+  to the same tile. The focus goes back to the prompt, or, once the
+  technology is known, to the tile's action that replaced it.
+- The technology screen keeps its scroll position and the focused control
+  when it is redrawn without a focus request (interface art settling), so
+  the selected card stays in view on a phone.
+- The unlocking technology comes from the engine's public command query
+  and the faction's public technology tree; the interface restates no
+  rule.
+
 ## Current CHIBI board look (visual direction, October 2026)
 
 This overlay applies to the CHIBI art set of the current Ruleset 7 route

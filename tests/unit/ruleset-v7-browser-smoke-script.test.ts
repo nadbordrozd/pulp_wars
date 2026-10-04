@@ -643,6 +643,40 @@ describe("Ruleset 7 browser smoke script", () => {
     for (const name of ["candy-sugar-rush-armed.png", "candy-rebake-aimed.png"])
       expect(probe).toContain(`await driver.capture("${name}")`);
   });
+  it("probes the research prompt on its fixture: a Fruit, Tech on Gathering, the Harvest on return", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = readFileSync(
+      "scripts/browser-smoke-v7-research-prompt.ts",
+      "utf8",
+    );
+
+    // Dev server only (the fixture is a test fixture), after the Candy
+    // probe and before the Showcase probe's fresh front screen.
+    const call = source.indexOf("await probeResearchPromptV7({");
+    expect(call).toBeGreaterThan(source.indexOf("await probeCandyV7({"));
+    expect(call).toBeLessThan(
+      source.indexOf("await probeShowcaseMatch(connection)"),
+    );
+    expect(source).toContain(
+      "; research prompt ${researchPrompt}; Campaign ${campaign};",
+    );
+    expect(probe).toContain('module: "/tests/fixtures/v7-research-prompt.ts"');
+    expect(probe).toContain('fixture: "researchPromptSmokeFixtureV7"');
+    expect(probe).toContain('[data-action="research-prompt-gathering"]');
+    expect(probe).toContain("textContent === 'Research Gathering'");
+    expect(probe).toContain(
+      "document.activeElement?.dataset.action === 'research-gathering'",
+    );
+    expect(probe).toContain(
+      "trace.command.kind === 'RESEARCH' && trace.command.tech === 'GATHERING'",
+    );
+    expect(probe).toContain("await driver.pressEscape()");
+    expect(probe).toContain(
+      "document.activeElement?.dataset.action === 'command-harvest_fruit'",
+    );
+    for (const name of ["research-prompt-dock.png", "research-prompt-tech.png"])
+      expect(probe).toContain(`await driver.capture("${name}")`);
+  });
   it("waits for a fresh complete document and installed controller after reload", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
 

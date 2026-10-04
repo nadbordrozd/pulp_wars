@@ -195,6 +195,11 @@ import {
   wailPreviewDescriptionV7,
 } from "../undead-presentation-v7";
 import {
+  researchPathStepV7,
+  tileResearchPromptsV7,
+  type TileResearchPromptV7,
+} from "../research-prompt-v7";
+import {
   GOBLIN_FIELD_DEFENSE_EXPLANATION_V7,
   GOBLIN_HELP_RULES_V7,
   goblinBoundaryNoticeV7,
@@ -764,6 +769,13 @@ export class Ruleset7DomAppView {
   #candyPick: CandyPickV7 | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
+  /**
+   * Research prompts (bead pulp_wars-gl1): the technology a tile's prompt
+   * asked for while the technology screen it opened is up. The screen marks
+   * its card and, after a prerequisite is researched, selects the next
+   * technology on the way to it.
+   */
+  #techGoal: TechnologyIdV7 | null = null;
   #compactMenuOpen = false;
   #notice = "";
   #error = "";
@@ -2229,6 +2241,29 @@ export class Ruleset7DomAppView {
     // was scrolled and put the new one back there while the same selection
     // stays selected; a different selection starts at the top.
     const previousDockScroll = dockScrollPosition(main);
+    // Every render rebuilds the technology screen too. It keeps where the
+    // screen was scrolled (a phone shows one branch at a time), and a render
+    // that nobody asked a focus of (interface art settling) keeps the
+    // focused control, so the technology a research prompt opened on stays
+    // in view with its Research control ready (bead pulp_wars-gl1).
+    const techBefore = main.querySelector<HTMLElement>(
+      '[data-v7-region="overlay-tech"]',
+    );
+    const techScroll =
+      techBefore === null
+        ? null
+        : {
+            top: techBefore.scrollTop,
+            left:
+              techBefore.querySelector<HTMLElement>(".v7-tech-graph")
+                ?.scrollLeft ?? 0,
+          };
+    const focusedBefore = this.#document.activeElement;
+    const techFocusAction =
+      focusedBefore instanceof HTMLElement &&
+      focusedBefore.closest('[data-v7-region="overlay-tech"]') !== null
+        ? (focusedBefore.dataset.action ?? null)
+        : null;
     const dock =
       this.#selection === null ? null : this.#dock(view, this.#selection);
     if (dock !== null) {
@@ -2306,6 +2341,11 @@ export class Ruleset7DomAppView {
       previousDockScroll.key === dock.dataset.selectionKey
     )
       dock.scrollTop = previousDockScroll.top;
+    if (techScroll !== null && popup?.dataset.v7Region === "overlay-tech") {
+      popup.scrollTop = techScroll.top;
+      const graph = popup.querySelector<HTMLElement>(".v7-tech-graph");
+      if (graph !== null) graph.scrollLeft = techScroll.left;
+    }
     shell.dataset.contrast = this.#highContrast ? "high" : "standard";
     shell.dataset.uiScale = String(this.#uiScale);
     shell.style.setProperty("--ui-scale", String(this.#uiScale));
@@ -2318,6 +2358,15 @@ export class Ruleset7DomAppView {
         if (this.#destroyed) return;
         main
           .querySelector<HTMLButtonElement>(`[data-action="${focusAction}"]`)
+          ?.focus();
+      });
+    else if (techFocusAction !== null && this.#screen === "TECH")
+      queueMicrotask(() => {
+        if (this.#destroyed) return;
+        main
+          .querySelector<HTMLButtonElement>(
+            `[data-v7-region="overlay-tech"] [data-action="${techFocusAction}"]`,
+          )
           ?.focus();
       });
   }
@@ -4081,6 +4130,7 @@ export class Ruleset7DomAppView {
         this.#appendCommandArea(
           dock,
           (command) => "at" in command && same(command.at, tile.at),
+          tileResearchPromptsV7(view, tile.at),
         );
       }
     }
@@ -4389,13 +4439,85 @@ export class Ruleset7DomAppView {
   #appendCommandArea(
     dock: HTMLElement,
     predicate: (command: CommandV7) => boolean,
+    researchPrompts: readonly TileResearchPromptV7[] = [],
   ): void {
     const actions = this.#commandButtons(predicate);
+    for (const prompt of researchPrompts)
+      actions.append(this.#researchPromptButton(prompt));
     if (actions.querySelector("button") !== null) {
       dock.dataset.hasActions = "true";
       dock.append(actions);
       return;
     }
+  }
+
+  /**
+   * A research prompt of the tile dock (bead pulp_wars-gl1): the icon and
+   * name of the technology the tile's resource needs. It opens the
+   * technology screen on that technology, or on its first missing
+   * prerequisite.
+   */
+  #researchPromptButton(prompt: TileResearchPromptV7): HTMLButtonElement {
+    const faction = this.#viewerFaction();
+    const name = technologyNameV7(prompt.tech, faction);
+    const action = button(
+      this.#document,
+      "",
+      `research-prompt-${prompt.tech.toLowerCase()}`,
+      "v7-context-action v7-research-prompt",
+    );
+    const image =
+      this.#chibiArt(
+        technologySubjectV7(prompt.tech, faction),
+        CHIBI_DOM_BOXES_V7.action,
+        this.#viewerColour(),
+      )?.element ?? art(this.#document, RULESET7_TECH_ART_IDS[prompt.tech], "");
+    action.append(
+      image,
+      text(this.#document, "span", `Research ${name}`, "v7-research-label"),
+    );
+    action.dataset.tech = prompt.tech;
+    action.dataset.selectTech = prompt.select;
+    action.dataset.unlocks = prompt.command.toLowerCase();
+    const unlocked = commandLabel(
+      { kind: prompt.command } as CommandV7,
+      faction,
+    );
+    action.title = `Research ${name} · ${unlocked}`;
+    action.setAttribute("aria-label", `Research ${name} to unlock ${unlocked}`);
+    action.disabled = this.#localBusy();
+    action.onclick = () => this.#openResearchPrompt(prompt);
+    return action;
+  }
+
+  /**
+   * Opens the technology screen for a research prompt: its technology (or
+   * the first missing prerequisite) is selected and the Research control,
+   * when it is offered, has the focus. Closing returns to the same tile.
+   */
+  #openResearchPrompt(prompt: TileResearchPromptV7): void {
+    const view = this.#snapshot.view;
+    if (view === null || view.pendingChoices.length > 0) return;
+    this.#modalReturnAction = `research-prompt-${prompt.tech.toLowerCase()}`;
+    this.#techGoal = prompt.tech;
+    this.#selectedTech = prompt.select;
+    this.#screen = "TECH";
+    this.#render();
+    const selected = prompt.select.toLowerCase();
+    queueMicrotask(() => {
+      if (this.#destroyed) return;
+      const card = this.#root.querySelector<HTMLElement>(
+        `[data-action="tech-${selected}"]`,
+      );
+      card?.scrollIntoView?.({ block: "center", inline: "center" });
+      (
+        this.#root.querySelector<HTMLElement>(
+          `[data-action="research-${selected}"]`,
+        ) ??
+        card ??
+        this.#root.querySelector<HTMLElement>('[data-action="close-overlay"]')
+      )?.focus();
+    });
   }
 
   async #handleMapCommand(target: MapCommandTargetV7): Promise<void> {
@@ -4902,6 +5024,7 @@ export class Ruleset7DomAppView {
         (tech) => this.#technologyChibiArt(tech)?.element ?? null,
         this.#viewerFaction(),
         (tech) => this.#technologyUnavailableText(tech),
+        this.#techGoal,
       );
       const option = this.#document.createElement("option");
       option.value = laneId;
@@ -5833,6 +5956,7 @@ export class Ruleset7DomAppView {
     if (this.#snapshot.view?.pendingChoices.length) return;
     this.#modalReturnAction = returnAction;
     if (screen === "TECH") this.#selectedTech = null;
+    this.#techGoal = null;
     this.#screen = screen;
     this.#render();
     queueMicrotask(() => {
@@ -5952,7 +6076,7 @@ export class Ruleset7DomAppView {
     this.#iceFolkPick = null;
     this.#dwarfPick = null;
     this.#candyPick = null;
-    const restoreAction =
+    let restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
     this.#humanDispatchPending = true;
@@ -5979,7 +6103,24 @@ export class Ruleset7DomAppView {
     this.#notice =
       notice.text ??
       `${commandLabel(command, result.afterView.viewer.faction)}.`;
-    if (command.kind === "RESEARCH") this.#selectedTech = null;
+    if (command.kind === "RESEARCH") {
+      this.#selectedTech = null;
+      // Research prompts (bead pulp_wars-gl1): after a prerequisite, the
+      // next technology on the way to the prompted one is selected.
+      const goal = this.#techGoal;
+      const nodes =
+        goal === null ? [] : queryTechnologyTreeV7(result.afterView).nodes;
+      const next = goal === null ? null : researchPathStepV7(nodes, goal);
+      if (next === null) this.#techGoal = null;
+      else {
+        this.#selectedTech = next;
+        restoreAction = nodes.some(
+          (node) => node.id === next && node.affordable,
+        )
+          ? `research-${next.toLowerCase()}`
+          : `tech-${next.toLowerCase()}`;
+      }
+    }
     this.#pendingFocusAction = restoreAction;
     this.#humanDispatchSettling = true;
     const visibleMovement =
@@ -6211,16 +6352,30 @@ export class Ruleset7DomAppView {
 
   #closeOverlay(): void {
     const returnAction = this.#modalReturnAction;
+    const prompted = returnAction?.startsWith("research-prompt-") === true;
     this.#modalReturnAction = null;
+    this.#techGoal = null;
     this.#screen = "MATCH";
     this.#render();
     queueMicrotask(() => {
       if (this.#destroyed) return;
-      if (returnAction === null) this.#boardHost.focus();
-      else
-        this.#root
-          .querySelector<HTMLButtonElement>(`[data-action="${returnAction}"]`)
-          ?.focus();
+      if (returnAction === null) {
+        this.#boardHost.focus();
+        return;
+      }
+      const target = this.#root.querySelector<HTMLButtonElement>(
+        `[data-action="${returnAction}"]`,
+      );
+      if (target !== null) target.focus();
+      else if (prompted) {
+        // The research prompt is gone once its technology is known: the
+        // tile's first action takes the focus instead.
+        const action = this.#root.querySelector<HTMLButtonElement>(
+          ".v7-selection-dock .v7-context-actions button:not(:disabled)",
+        );
+        if (action === null) this.#boardHost.focus();
+        else action.focus();
+      }
     });
   }
 
@@ -8418,6 +8573,8 @@ function appendTechNode(
   /** Why a `DISABLED` technology is unavailable (Dry Land or a mission). */
   unavailable: (tech: TechnologyIdV7) => string = () =>
     technologyUnavailableTextV7("DRY_LAND"),
+  /** The technology a research prompt asked for (bead pulp_wars-gl1). */
+  goal: TechnologyIdV7 | null = null,
 ): void {
   const name = technologyNameV7(layout.node.id, faction);
   const node = el(documentRoot, "div", "v7-tech-node");
@@ -8428,6 +8585,8 @@ function appendTechNode(
     `v7-tech-card state-${layout.node.state.toLowerCase()}`,
   );
   card.dataset.selected = String(layout.node.id === selected);
+  if (layout.node.id === goal && layout.node.state !== "OWNED")
+    card.dataset.goal = "true";
   const artFrame = el(documentRoot, "span", "v7-tech-art");
   const assetId = RULESET7_TECH_ART_IDS[layout.node.id];
   const chibiImage = chibiArt(layout.node.id);
@@ -8496,6 +8655,7 @@ function appendTechNode(
         chibiArt,
         faction,
         unavailable,
+        goal,
       );
       children.append(edge);
     }

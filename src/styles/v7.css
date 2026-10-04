@@ -1455,9 +1455,19 @@
   height: 3rem;
 }
 
-.v7-action-label {
+.v7-action-label,
+.v7-research-label {
   overflow-wrap: normal;
   text-align: center;
+}
+
+/*
+ * Research prompt (bead pulp_wars-gl1): the technology a tile's resource
+ * needs. A dashed gold edge sets it apart from the actions on offer.
+ */
+.v7-context-action.v7-research-prompt {
+  border-style: dashed;
+  border-color: var(--gold);
 }
 
 .v7-train-card {
@@ -2264,6 +2274,12 @@
   outline-offset: 2px;
 }
 
+/* The technology a research prompt asked for (bead pulp_wars-gl1). */
+.v7-tech-card[data-goal="true"] {
+  border-style: dashed;
+  border-color: var(--gold);
+}
+
 .v7-tech-detail {
   position: sticky;
   z-index: 6;
@@ -2449,7 +2465,8 @@
     padding-inline: 0.15rem;
   }
 
-  .v7-selection-dock > .v7-context-actions .v7-action-label {
+  .v7-selection-dock > .v7-context-actions .v7-action-label,
+  .v7-selection-dock > .v7-context-actions .v7-research-label {
     font-size: 0.72rem;
   }
 
