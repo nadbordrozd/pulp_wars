@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  TRACTOR_FREE_PRIORITY_V7,
+  setMartianPolicyOptionsV7,
+} from "../../src/ai/v7-martian";
+import {
   TECHNOLOGY_IDS_V7,
   type CoordV7,
   type FactionIdV7,
@@ -225,7 +229,18 @@ describe("Normal AI second pass: Ice Folk, Martian abilities", () => {
       ],
       { factions: ["MARTIAN", "ORIGINAL"] },
     );
+    // `pulp_wars-1wy.4`: the Mothership's pull is free, so it goes before
+    // its own Move and attacks (1184); the policy of `pulp_wars-1wy.3`
+    // scored it as the utility pull (1150).
     const pull = unitCandidatesV7(state, at(6, 3), "TRACTOR_BEAM")[0];
-    expect(pull?.score.priority).toBe(1150);
+    expect(pull?.score.priority).toBe(TRACTOR_FREE_PRIORITY_V7);
+    const previous = setMartianPolicyOptionsV7({ mobilityPlay: false });
+    try {
+      expect(
+        unitCandidatesV7(state, at(6, 3), "TRACTOR_BEAM")[0]?.score.priority,
+      ).toBe(1150);
+    } finally {
+      setMartianPolicyOptionsV7(previous);
+    }
   });
 });

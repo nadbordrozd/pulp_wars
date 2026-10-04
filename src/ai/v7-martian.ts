@@ -12,6 +12,7 @@ import {
   technologyCapabilitiesV7,
   unitCapacitySlotsV7,
   unitFactionV7,
+  unitMayActAfterMoveV7,
   unitMovementModeV7,
   seatRoleMechanicsV7,
   unitRoleMechanicsV7,
@@ -22,7 +23,12 @@ import {
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import { isNeutralOwnerV7 } from "../engine/v7/types";
-import { mindControlTargetBlockV7 } from "../engine/v7/martian";
+import {
+  mindControlTargetBlockV7,
+  tractorBeamDestinationV7,
+  tractorBeamRuleV7,
+  tractorBeamTargetBlockV7,
+} from "../engine/v7/martian";
 import { queryTractorBeamPathV7 } from "../engine/v7/query";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
@@ -73,12 +79,34 @@ export interface MartianPolicyOptionsV7 {
    * controlled unit decides the same either way.
    */
   readonly mindControlPlay: boolean;
+  /**
+   * `pulp_wars-1wy.4` (the AI step of
+   * docs/product/RULESET_7_BALANCE_MARTIAN_ICE.md section 9): the mobility
+   * play. As Martians: carriers by ratio (one Saucer per three front units),
+   * Beam Down that delivers a passenger where it shoots on arrival and that
+   * extracts a spent unit from lethal reach, the Saucer's pull scored
+   * without its own attack and the Mothership's free pull with it and
+   * before its attacks, carriers that fly to a unit to extract and to the
+   * tile a siege pull is made from, and shooters that keep their distance.
+   * Against Martians: the guard against a pull for Saucers too and the
+   * Mothership as a target. Off, the policy decides as the engine step of
+   * `pulp_wars-1wy.3` did (`d2b9412f`, the head-to-head baseline).
+   */
+  readonly mobilityPlay: boolean;
 }
 
 export const DEFAULT_MARTIAN_POLICY_OPTIONS_V7: MartianPolicyOptionsV7 =
-  Object.freeze({ rangedStepBack: true, mindControlPlay: true });
+  Object.freeze({
+    rangedStepBack: true,
+    mindControlPlay: true,
+    mobilityPlay: true,
+  });
 export const LEGACY_MARTIAN_POLICY_OPTIONS_V7: MartianPolicyOptionsV7 =
-  Object.freeze({ rangedStepBack: false, mindControlPlay: false });
+  Object.freeze({
+    rangedStepBack: false,
+    mindControlPlay: false,
+    mobilityPlay: false,
+  });
 
 let martianPolicyOptions: MartianPolicyOptionsV7 =
   DEFAULT_MARTIAN_POLICY_OPTIONS_V7;
@@ -126,6 +154,11 @@ export function mindControlPlayV7(): boolean {
   return martianPolicyOptions.mindControlPlay;
 }
 
+/** Whether the mobility play is on (`mobilityPlay`). */
+export function mobilityPlayV7(): boolean {
+  return martianPolicyOptions.mobilityPlay;
+}
+
 // --- Priorities -----------------------------------------------------------
 
 /** Mind Control: above every ordinary kill (a conversion beats a kill). */
@@ -160,6 +193,11 @@ export const MIND_CONTROL_APPROACH_PRIORITY_V7 = 1183;
 export const PSYCHIC_COMMAND_DEFERRED_PRIORITY_V7 = 1100;
 /** A Tractor Beam that empties a hostile center for an own capturer. */
 export const TRACTOR_CAPTURE_PRIORITY_V7 = 1347;
+/**
+ * `pulp_wars-1wy.4`: a puller's Move to the tile that pull is made from
+ * (just below it: fly, pull, and the capturer steps on).
+ */
+export const TRACTOR_CAPTURE_MOVE_PRIORITY_V7 = 1346;
 /** A Tractor Beam that lifts the siege of an own city. */
 export const TRACTOR_SIEGE_PRIORITY_V7 = 1279;
 /** A Tractor Beam that pulls a hostile unit where own attacks kill it. */
@@ -167,8 +205,30 @@ export const TRACTOR_KILL_SETUP_PRIORITY_V7 = 1181;
 /** A Tractor Beam that pulls a fortified unit off its fortification, or an
  *  own unit out of lethal reach. */
 export const TRACTOR_UTILITY_PRIORITY_V7 = 1150;
+/**
+ * `pulp_wars-1wy.4`: the Mothership's free pull, in the utility cases:
+ * before its own Move toward a target (1175) and every attack (the pull
+ * costs it nothing, and it shoots what it pulled), below Mind Control.
+ */
+export const TRACTOR_FREE_PRIORITY_V7 = 1184;
 /** Beam Down of a passenger toward its objective: above routine Moves. */
 export const BEAM_DOWN_PRIORITY_V7 = 865;
+/**
+ * `pulp_wars-1wy.4`: Beam Down of a passenger onto a tile from which its
+ * shot on arrival kills (with the kills, below the pull that sets one up).
+ */
+export const BEAM_DOWN_KILL_PRIORITY_V7 = 1180;
+/** ... from which it shoots on arrival: above the chips (900), so the
+ *  passenger arrives before it fires, and above the step back (904). */
+export const BEAM_DOWN_ATTACK_PRIORITY_V7 = 906;
+/**
+ * `pulp_wars-1wy.4`: extraction, a carrier lifts a unit that has acted out
+ * of visible lethal reach: below the chips (every shot is fired first),
+ * above the delivery by route (865) and every routine Move.
+ */
+export const BEAM_DOWN_EXTRACT_PRIORITY_V7 = 890;
+/** A carrier flies to where it can extract such a unit: just above it. */
+export const CARRIER_RESCUE_MOVE_PRIORITY_V7 = 891;
 /** A Cooling ray unit steps out of melee reach before its half shot. */
 export const RAY_KITE_PRIORITY_V7 = 905;
 /**
@@ -241,6 +301,24 @@ export const FRONT_UNITS_PER_MOTHERSHIP_V7 = 6;
 export const BIG_MACHINE_BIAS_V7 = 30;
 /** Production: Saucers beyond the need cost this much. */
 export const SURPLUS_COST_V7 = 20;
+/**
+ * `pulp_wars-1wy.4` production: one Saucer for this many front units (it
+ * gains `SAUCER_BIAS_V7` below the need; beyond it the surplus cost).
+ */
+export const FRONT_UNITS_PER_SAUCER_V7 = 3;
+export const SAUCER_BIAS_V7 = 10;
+/** Beam Down for a shot: per point of the shot's whole hit. */
+export const BEAM_DOWN_HIT_VALUE_V7 = 2;
+/** ... and for a shot from two tiles or more (no retaliation). */
+export const BEAM_DOWN_STANDOFF_VALUE_V7 = 6;
+/** A shooter's routine Move next to a hostile melee unit costs this. */
+export const SHOOTER_CONTACT_COST_V7 = 8;
+/** Against Martians: a hostile Mothership (a carrier with a free pull). */
+export const MOTHERSHIP_TARGET_BONUS_V7 = 8;
+/** Against Martians: a Saucer's pull reaches this far (Move 3, reach 2). */
+export const SAUCER_PULL_RADIUS_V7 = 5;
+/** ... and since `pulp_wars-1wy.3` a Mothership's (Move 2, reach 3). */
+export const HEAVY_PULL_RADIUS_V7 = 5;
 /** Beam Down needs at least this much route progress. */
 export const BEAM_DOWN_MINIMUM_PROGRESS_V7 = 3;
 /** Beam Down value per route step gained. */
@@ -507,6 +585,9 @@ export function martianTargetBonusV7(
     view.cities.some((city) => city.ownerId === unit.ownerId)
   )
     bonus += SAUCER_TARGET_BONUS_V7;
+  // `pulp_wars-1wy.4`: the Mothership, the carrier with the free pull.
+  if (martianPolicyOptions.mobilityPlay && isMothershipForPolicyV7(view, unit))
+    bonus += MOTHERSHIP_TARGET_BONUS_V7;
   if (abilities.includes("MIND_CONTROL"))
     for (const controlledId of facts.controlledOfBrain.get(unit.id) ?? []) {
       const controlled = view.units.find((other) => other.id === controlledId);
@@ -658,8 +739,10 @@ export function martianArmyCountsV7(view: PlayerViewV7): MartianArmyCountsV7 {
  *   Grunts);
  * - a Projector gains 4 while there are more than four front units per
  *   Projector, otherwise (and before three front units) it costs 20;
- * - a Saucer beyond the first costs 20 unless the army has six front
- *   units, and beyond two it always does;
+ * - a Saucer gains 10 while the army has more than three front units per
+ *   Saucer and otherwise costs 20 (`pulp_wars-1wy.4`; the baseline: a
+ *   Saucer beyond the first costs 20 unless the army has six front units,
+ *   and beyond two it always does);
  * - a Brain gains 10 at war with four or more front units and fewer than
  *   one Brain per six; otherwise it costs 20;
  * - a Tripod (one per three front units) and a Mothership (one per six)
@@ -698,7 +781,17 @@ export function martianProductionAdjustmentV7(
       if (threatened) value -= THREATENED_SUPPORT_COST_V7 + 20;
       break;
     case "RAIDER":
-      if (owned >= 2 || (owned >= 1 && front < 6)) value -= SURPLUS_COST_V7;
+      if (martianPolicyOptions.mobilityPlay)
+        // `pulp_wars-1wy.4`: one Saucer per three front units (no bias in
+        // a threatened city: bodies first).
+        value +=
+          owned * FRONT_UNITS_PER_SAUCER_V7 >= front
+            ? -SURPLUS_COST_V7
+            : threatened
+              ? 0
+              : SAUCER_BIAS_V7;
+      else if (owned >= 2 || (owned >= 1 && front < 6))
+        value -= SURPLUS_COST_V7;
       if (threatened) value -= THREATENED_SUPPORT_COST_V7;
       break;
     case "CAPTAIN":
@@ -896,6 +989,15 @@ export interface MartianPolicyToolsV7 {
     at: CoordV7,
     excludeUnitId?: UnitId,
   ): number;
+  /**
+   * `pulp_wars-1wy.4`: the whole hit of own `attacker` on `target` after a
+   * Move or a Beam Down (a heat ray at half power), from any tile in range.
+   */
+  arrivalHit(attacker: PublicUnitV7, target: PublicUnitV7): number;
+  /** The tiles `unit`'s offered Moves end on. */
+  moveEnds(unit: PublicUnitV7): readonly CoordV7[];
+  /** Visible hostile units an attack may target. */
+  readonly hostileTargets: readonly PublicUnitV7[];
 }
 
 /** The whole hit of an attack (Shield and HP damage). */
@@ -909,19 +1011,30 @@ export function wholeHitV7(preview: CombatPreviewV7): number {
  * plus a bonus for a passenger that cannot walk this turn (a unit trained
  * this turn); never onto a tile inside visible lethal reach, never the
  * garrison of a city with a hostile unit nearby, and never a unit that can
- * still attack this turn.
+ * still attack this turn. `joins`: another own land unit stands within two
+ * tiles of the landing (the delivery by route needs it). With
+ * `mobilityPlay` an extraction or a shot on arrival
+ * (`beamDownMobilityScoreV7`) is scored first.
  */
 export function beamDownScoreV7(
   tools: MartianPolicyToolsV7,
   command: Extract<CommandV7, { kind: "BEAM_DOWN" }>,
   passengerCanAct: boolean,
   passengerCanMove: boolean,
+  joins = true,
 ): MartianScoreV7 {
   const { view } = tools;
   const passenger = tools.unit(command.passengerUnitId);
   if (passenger === undefined || passengerCanAct) return NOT_A_CANDIDATE_V7;
   if (beamDownPassengerIsGarrisonV7(tools, passenger))
     return NOT_A_CANDIDATE_V7;
+  if (martianPolicyOptions.mobilityPlay) {
+    const mobile = beamDownMobilityScoreV7(tools, command, passenger, joins);
+    if (mobile !== null) return mobile;
+  }
+  // The delivery by route joins a group: another own land unit near the
+  // landing (the policy checks it).
+  if (!joins) return NOT_A_CANDIDATE_V7;
   const abilities = unitRoleRuleV7(view, passenger).abilities;
   if (!abilities.includes("ATTACK") || abilities.includes("MIND_CONTROL"))
     return NOT_A_CANDIDATE_V7;
@@ -941,6 +1054,112 @@ export function beamDownScoreV7(
       BEAM_DOWN_STEP_VALUE_V7 * Math.min(progress, 8) +
       (passengerCanMove ? 0 : 8) -
       2 * danger,
+    immediate: -danger,
+  };
+}
+
+/** Whether `unit` has used its primary action this turn. */
+export function primaryUsedForPolicyV7(unit: PublicUnitV7): boolean {
+  return (
+    unit.activation.attacked ||
+    unit.activation.recovered ||
+    unit.activation.captured ||
+    unit.activation.specialActed
+  );
+}
+
+/**
+ * `pulp_wars-1wy.4` (docs/product/RULESET_7_BALANCE_MARTIAN_ICE.md section
+ * 9, "Beam Down"): the two uses the freed Beam Down adds, for a passenger
+ * with no offered attack that is not a threatened garrison and does not
+ * stand on a settlement center (a unit there holds or takes it). Null when
+ * neither applies (the delivery by route decides).
+ *
+ * - **Extraction** (890): a passenger that has used its primary action and
+ *   stands in visible lethal reach is set down outside it; by its retained
+ *   value, then the least danger.
+ * - **A shot on arrival** (906; 1180 when the shot kills): a passenger that
+ *   still has its primary action and may act after moving (a beamed unit
+ *   counts as moved, so a heat ray fires at half power and a Shield
+ *   Projector not at all) lands where a hostile unit is in its range that no
+ *   Move of its own reaches, outside visible lethal reach, and not further
+ *   from its campaign job than it stands. A shot that does not kill lands
+ *   within two tiles of another own land unit (`joins`). By the hit (2 a
+ *   point), the target's value when it dies, 6 more from two tiles or more
+ *   (no retaliation), less twice the danger.
+ */
+function beamDownMobilityScoreV7(
+  tools: MartianPolicyToolsV7,
+  command: Extract<CommandV7, { kind: "BEAM_DOWN" }>,
+  passenger: PublicUnitV7,
+  joins: boolean,
+): MartianScoreV7 | null {
+  const { view } = tools;
+  const rule = unitRoleRuleV7(view, passenger);
+  // A unit on a settlement center holds or takes it: it stays.
+  const onCenter = view.board.tiles[
+    passenger.at.y * view.board.width + passenger.at.x
+  ] as PlayerViewV7["board"]["tiles"][number] | undefined;
+  if (onCenter?.explored === true && onCenter.site !== null) return null;
+  if (primaryUsedForPolicyV7(passenger)) {
+    // An exhausted unit (trained this turn) has every flag set: it is
+    // delivered by route, not extracted.
+    if (passenger.activation.recovered && passenger.activation.captured)
+      return null;
+    const here = tools.danger(passenger, passenger.at);
+    if (here < passenger.hp) return null;
+    const there = tools.danger(passenger, command.to);
+    if (there >= passenger.hp) return NOT_A_CANDIDATE_V7;
+    return {
+      priority: BEAM_DOWN_EXTRACT_PRIORITY_V7,
+      strategic: tools.retainedValue(passenger) - 2 * there,
+      immediate: -there,
+    };
+  }
+  if (
+    !rule.abilities.includes("ATTACK") ||
+    rule.abilities.includes("MIND_CONTROL") ||
+    !unitMayActAfterMoveV7(view, passenger)
+  )
+    return null;
+  const inRange = (from: CoordV7, target: PublicUnitV7): boolean => {
+    const gap = chebyshev(from, target.at);
+    return gap >= rule.minimumRange && gap <= rule.range;
+  };
+  const ends = tools.moveEnds(passenger);
+  let best: { value: number; kills: boolean } | null = null;
+  for (const target of tools.hostileTargets) {
+    if (!inRange(command.to, target)) continue;
+    if (inRange(passenger.at, target)) continue;
+    if (ends.some((end) => inRange(end, target))) continue;
+    const hit = tools.arrivalHit(passenger, target);
+    if (hit <= 0) continue;
+    const kills =
+      hit >= target.hp + (tools.facts.shieldByUnit.get(target.id) ?? 0);
+    const value =
+      BEAM_DOWN_HIT_VALUE_V7 * hit +
+      (kills ? tools.targetValue(target) : 0) +
+      (chebyshev(command.to, target.at) >= 2 ? BEAM_DOWN_STANDOFF_VALUE_V7 : 0);
+    if (
+      best === null ||
+      (kills && !best.kills) ||
+      (kills === best.kills && value > best.value)
+    )
+      best = { value, kills };
+  }
+  // A shot that does not kill joins a group (another own land unit within
+  // two tiles of the landing): a lone unit in front of the army is lost.
+  if (best === null || (!best.kills && !joins)) return null;
+  // A passenger with a job is not carried away from it for a shot.
+  if ((tools.routeProgress(passenger, command.to) ?? 0) < 0)
+    return NOT_A_CANDIDATE_V7;
+  const danger = tools.danger(passenger, command.to);
+  if (danger >= passenger.hp) return NOT_A_CANDIDATE_V7;
+  return {
+    priority: best.kills
+      ? BEAM_DOWN_KILL_PRIORITY_V7
+      : BEAM_DOWN_ATTACK_PRIORITY_V7,
+    strategic: best.value - 2 * danger,
     immediate: -danger,
   };
 }
@@ -1003,6 +1222,13 @@ export function mindControlScoreV7(
  * other own attacks take at least half of its HP and Shield, and a hostile land unit
  * pulled away from an own city center it stands next to. Any other pull is
  * not a candidate: it never helps the enemy.
+ *
+ * `pulp_wars-1wy.4` (`mobilityPlay`): the puller's own attack counts only
+ * after a free pull (the Mothership's; a Saucer that pulls has spent its
+ * action); a pull into a kill or into half of the target's HP and Shield
+ * must add to what the own attacks deal where the target stands; and the
+ * free pull's utility cases go at 1184, before the Mothership's own Move
+ * toward a target and every attack.
  */
 export function tractorBeamScoreV7(
   tools: MartianPolicyToolsV7,
@@ -1046,9 +1272,28 @@ export function tractorBeamScoreV7(
       strategic: 30 + Math.floor(value / 2),
       immediate: 0,
     };
-  const killers = tools.projectedKillers(target, to);
+  // `pulp_wars-1wy.4`: a pull that is the puller's primary action (the
+  // Saucer's) leaves it nothing to shoot with, so its own attack does not
+  // count; the Mothership's free pull keeps it (pull, then shoot). A pull
+  // into a kill is one the own attacks do not already make where the
+  // target stands.
+  const mobility = martianPolicyOptions.mobilityPlay;
+  const spent =
+    mobility && tractorBeamRuleV7(view, mothership)?.free !== true
+      ? mothership.id
+      : undefined;
+  // The free pull goes before the puller's own Move and attacks (1184).
+  const utility =
+    mobility && spent === undefined
+      ? TRACTOR_FREE_PRIORITY_V7
+      : TRACTOR_UTILITY_PRIORITY_V7;
+  const killers = tools.projectedKillers(target, to, spent);
   const shield = tools.facts.shieldByUnit.get(target.id) ?? 0;
-  if (killers >= target.hp + shield)
+  if (
+    killers >= target.hp + shield &&
+    (!mobility ||
+      tools.projectedKillers(target, target.at, spent) < target.hp + shield)
+  )
     return {
       priority: TRACTOR_KILL_SETUP_PRIORITY_V7,
       strategic: value,
@@ -1062,17 +1307,27 @@ export function tractorBeamScoreV7(
     (fromTile.fortificationLevel ?? 0) > 0;
   if (fortified && killers > 0 && killers * 2 >= target.hp)
     return {
-      priority: TRACTOR_UTILITY_PRIORITY_V7,
+      priority: utility,
       strategic: Math.floor(value / 2),
       immediate: 0,
     };
   // pulp_wars-9s0.8: two more pulls. A hostile unit pulled where the
   // army's other attacks take at least half of its HP and Shield (the army
   // finishes what it starts) ...
-  const army = tools.projectedKillers(target, to, mothership.id);
-  if (army > 0 && army * 2 >= target.hp + shield)
+  // `pulp_wars-1wy.4`: the Mothership's own attack counts after its free
+  // pull, and the pull must add to what the attacks already deal.
+  const army = tools.projectedKillers(
+    target,
+    to,
+    mobility ? spent : mothership.id,
+  );
+  if (
+    army > 0 &&
+    army * 2 >= target.hp + shield &&
+    (!mobility || army > tools.projectedKillers(target, target.at, spent))
+  )
     return {
-      priority: TRACTOR_UTILITY_PRIORITY_V7,
+      priority: utility,
       strategic: Math.floor(value / 2),
       immediate: 0,
     };
@@ -1086,7 +1341,7 @@ export function tractorBeamScoreV7(
   );
   if (target.form === "LAND" && besieged !== undefined)
     return {
-      priority: TRACTOR_UTILITY_PRIORITY_V7,
+      priority: utility,
       strategic: 20 + Math.floor(value / 4),
       immediate: 0,
     };
@@ -1094,12 +1349,74 @@ export function tractorBeamScoreV7(
 }
 
 /**
+ * `pulp_wars-1wy.4` (the siege pull, set up): whether a puller's Move to
+ * `to` puts it where its Tractor Beam empties a hostile city center for an
+ * own capturer. The puller may still pull after the Move (the Saucer: its
+ * primary action unused; the Mothership: its free pull unused), no pull of
+ * that defender is offered from where it stands, a hostile unit the beam
+ * may target holds the center, `to` is within the beam's reach of it, the
+ * first tile of the pull (next to the center, toward `to`) is explored
+ * open land with no unit and no settlement, and an own capturer next to
+ * the center can still step on (`capturerCanEnter`).
+ */
+export function pullCaptureMoveV7(
+  tools: MartianPolicyToolsV7,
+  puller: PublicUnitV7,
+  to: CoordV7,
+  capturerCanEnter: (center: CoordV7) => boolean,
+): boolean {
+  const { view } = tools;
+  const rule = tractorBeamRuleV7(view, puller);
+  if (rule === null || !unitMayActAfterMoveV7(view, puller)) return false;
+  if (
+    rule.free
+      ? view.tractorUsedThisTurn.includes(puller.id)
+      : primaryUsedForPolicyV7(puller)
+  )
+    return false;
+  for (const city of view.cities) {
+    if (city.ownerId === null || !tools.isHostile(city.ownerId)) continue;
+    const defender = view.units.find((unit) => same(unit.at, city.at));
+    if (
+      defender === undefined ||
+      !tools.isHostile(defender.ownerId) ||
+      tractorBeamTargetBlockV7(view, rule, { at: to }, defender) !== null
+    )
+      continue;
+    if (
+      tools.commands.some(
+        (command) =>
+          command.kind === "TRACTOR_BEAM" &&
+          command.unitId === puller.id &&
+          command.targetUnitId === defender.id,
+      )
+    )
+      continue;
+    const step = tractorBeamDestinationV7(to, city.at);
+    const tile = view.board.tiles[step.y * view.board.width + step.x] as
+      PlayerViewV7["board"]["tiles"][number] | undefined;
+    if (
+      tile?.explored !== true ||
+      tile.biome === null ||
+      tile.terrain === "MOUNTAIN" ||
+      tile.terrain === "RIFT" ||
+      tile.site !== null ||
+      view.units.some((unit) => same(unit.at, step))
+    )
+      continue;
+    if (capturerCanEnter(city.at)) return true;
+  }
+  return false;
+}
+
+/**
  * `pulp_wars-1wy.3`: the Saucer and the Mothership both carry Beam Down and
  * a Tractor Beam now, so the policy's Saucer rules (staging, the target
  * bonus, no chip attacks) and Mothership rules (staying with the army, the
  * guard against a pull) are told apart by the Heavy Tractor Beam mechanic
- * instead of by the ability. The policy decides for each as it did before
- * the balance revision; its use of the new tools is `pulp_wars-1wy.4`.
+ * instead of by the ability. With `mobilityPlay` off the policy decides for
+ * each as it did before the balance revision; its use of the new tools
+ * (`pulp_wars-1wy.4`) is behind that switch.
  */
 export function isSaucerForPolicyV7(
   view: PlayerViewV7,

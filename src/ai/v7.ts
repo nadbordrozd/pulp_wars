@@ -1,6 +1,7 @@
 import type { CityId, PlayerId, UnitId } from "../engine/model/ids";
 import {
   BASIC_ECONOMIC_ACTIONS_V7,
+  BEAM_DOWN_PICKUP_RANGE_V7,
   EGG_DEFENSE2_V7,
   EGG_HP_V7,
   EMBARKED_LANDING_MAX_SPENT_V7,
@@ -207,6 +208,14 @@ import {
   MOTHERSHIP_GUARD_PRIORITY_V7,
   MOTHERSHIP_PULL_RADIUS_V7,
   WASTED_FULL_RAY_COST_V7,
+  CARRIER_RESCUE_MOVE_PRIORITY_V7,
+  HEAVY_PULL_RADIUS_V7,
+  SAUCER_PULL_RADIUS_V7,
+  SHOOTER_CONTACT_COST_V7,
+  TRACTOR_CAPTURE_MOVE_PRIORITY_V7,
+  mobilityPlayV7,
+  primaryUsedForPolicyV7,
+  pullCaptureMoveV7,
   beamDownScoreV7,
   isMothershipForPolicyV7,
   isSaucerForPolicyV7,
@@ -6852,6 +6861,10 @@ function curiosityRejectsV7(
   if (facts === null) return false;
   if (command.kind === "DISEMBARK")
     return monsterProvokedAtV7(facts, command.at) !== undefined;
+  // `pulp_wars-1wy.4`: a carrier sets no unit down on a Monster's provoke
+  // tiles (a delivery, a shot on arrival, or an extraction).
+  if (command.kind === "BEAM_DOWN")
+    return monsterProvokedAtV7(facts, command.to) !== undefined;
   if (command.kind === "ATTACK") {
     const monster = facts.monsterById.get(command.targetUnitId);
     if (monster === undefined) return false;
@@ -9010,6 +9023,8 @@ interface MartianContextCacheV7 {
   readonly hostileBrains: readonly PublicUnitV7[];
   /** Own Saucers with a `BEAM_DOWN` worth taking now. */
   readonly beamers: Map<UnitId, boolean>;
+  /** `pulp_wars-1wy.4`: the units a carrier extracts (null: not computed). */
+  readonly rescue: { units: readonly PublicUnitV7[] | null };
   /** The own offered attack previews on each target. */
   readonly attacksOnTarget: Map<UnitId, readonly CombatPreviewV7[]>;
 }
@@ -9067,6 +9082,7 @@ function martianCacheV7(context: PolicyContextV7): MartianContextCacheV7 {
       isHostile(view, owner),
     ),
     beamers: new Map(),
+    rescue: { units: null },
     attacksOnTarget: new Map(),
     tools: {
       view,
@@ -9083,6 +9099,29 @@ function martianCacheV7(context: PolicyContextV7): MartianContextCacheV7 {
       threatenedCityIds,
       projectedKillers: (target, at, excludeUnitId) =>
         martianProjectedKillersV7(context, target, at, excludeUnitId),
+      arrivalHit: (attacker, target) =>
+        publicProjectedDamageWithLookupV7(
+          view,
+          attacker,
+          target,
+          target.at,
+          {
+            uncapped: true,
+            ...(isRayUnitV7(view, attacker)
+              ? {
+                  rayAttack2: Math.floor(
+                    unitRoleRuleV7(view, attacker).attack2 / 2,
+                  ),
+                }
+              : {}),
+          },
+          context.lookup,
+        ),
+      moveEnds: (unit) =>
+        context.lookup.moveDestinationsByUnit.get(unit.id) ?? [],
+      hostileTargets: context.lookup.visibleHostiles.filter(
+        (unit) => unit.hp > 0,
+      ),
     },
   };
   context.martianCache = cache;
@@ -9153,7 +9192,12 @@ function martianProjectedKillersV7(
       unit.id === excludeUnitId ||
       unit.form !== "LAND" ||
       unit.activation.attacksUsed > 0 ||
-      unit.activation.handled
+      // `pulp_wars-1wy.4`: a unit that has moved (handled) still shoots if
+      // its role may act after a Move (a Grunt, a ray at half power).
+      (mobilityPlayV7()
+        ? !primaryReadyForPolicyV7(unit) ||
+          (unit.activation.moved && !unitMayActAfterMoveV7(view, unit))
+        : unit.activation.handled)
     )
       continue;
     const combat = publicCombatFacts(view, unit, context.lookup);
@@ -9488,21 +9532,30 @@ function martianSoleDefenderBesideV7(
   to: CoordV7,
 ): boolean {
   const view = context.view;
+  // `pulp_wars-1wy.4`: every puller. A Saucer pulls from its Move (3) plus
+  // its reach (2), a Mothership since `pulp_wars-1wy.3` from Move 2 plus
+  // reach 3: five tiles each. The baseline: the Mothership within four.
+  const mobility = mobilityPlayV7();
   const motherships = context.lookup.visibleHostiles.filter(
-    // `pulp_wars-1wy.3`: the Mothership (the Saucer's pull is weighed by
-    // the play-against-Martians step, `pulp_wars-1wy.4`).
-    (unit) => unit.form === "LAND" && isMothershipForPolicyV7(view, unit),
+    (unit) =>
+      unit.form === "LAND" &&
+      (isMothershipForPolicyV7(view, unit) ||
+        (mobility &&
+          isSaucerForPolicyV7(view, unit) &&
+          hasAbilityV7(view, unit, "TRACTOR_BEAM"))),
   );
   if (motherships.length === 0) return false;
+  const radius = (unit: PublicUnitV7): number =>
+    !mobility
+      ? MOTHERSHIP_PULL_RADIUS_V7
+      : isMothershipForPolicyV7(view, unit)
+        ? HEAVY_PULL_RADIUS_V7
+        : SAUCER_PULL_RADIUS_V7;
   return view.cities.some((city) => {
     if (city.ownerId !== view.viewer.id || distance(city.at, to) !== 1)
       return false;
     if (distance(city.at, actor.at) <= 1) return false;
-    if (
-      !motherships.some(
-        (unit) => distance(unit.at, city.at) <= MOTHERSHIP_PULL_RADIUS_V7,
-      )
-    )
+    if (!motherships.some((unit) => distance(unit.at, city.at) <= radius(unit)))
       return false;
     const near = view.units.filter(
       (unit) =>
@@ -9536,6 +9589,85 @@ function martianSaucerBeamsV7(
   return beams;
 }
 
+/**
+ * `pulp_wars-1wy.4`: own one-slot ground units that have used their primary
+ * action this turn and stand in visible lethal reach, away from an own city
+ * center: the units a carrier extracts (cached per decision).
+ */
+function martianRescueUnitsV7(
+  context: PolicyContextV7,
+): readonly PublicUnitV7[] {
+  const cache = martianCacheV7(context);
+  if (cache.rescue.units !== null) return cache.rescue.units;
+  const view = context.view;
+  const beamed = new Set(view.beamedThisTurn);
+  const units = view.units.filter(
+    (unit) =>
+      unit.ownerId === view.viewer.id &&
+      unit.form === "LAND" &&
+      unit.hp > 0 &&
+      primaryUsedForPolicyV7(unit) &&
+      !(unit.activation.recovered && unit.activation.captured) &&
+      !beamed.has(unit.id) &&
+      !fliesForPolicyV7(view, unit) &&
+      unitCapacitySlotsV7(view, unit) === 1 &&
+      !view.cities.some((city) => same(city.at, unit.at)) &&
+      visibleImmediateDamage(view, unit, unit.at, context) >= unit.hp,
+  );
+  cache.rescue.units = units;
+  return units;
+}
+
+/**
+ * `pulp_wars-1wy.4`: the value of a carrier's Move to `to` as the first
+ * half of an extraction, or null. The carrier still has its primary
+ * action, a unit of `martianRescueUnitsV7` is beyond its pick-up range now
+ * and within it from `to`, `to` is outside the carrier's lethal reach, and
+ * an empty explored land tile next to `to` is outside the unit's.
+ */
+function martianCarrierRescueMoveV7(
+  context: PolicyContextV7,
+  carrier: PublicUnitV7,
+  to: CoordV7,
+): number | null {
+  const view = context.view;
+  if (!primaryReadyForPolicyV7(carrier) || carrier.activation.handled)
+    return null;
+  let best: number | null = null;
+  for (const unit of martianRescueUnitsV7(context)) {
+    if (
+      distance(carrier.at, unit.at) <= BEAM_DOWN_PICKUP_RANGE_V7 ||
+      distance(to, unit.at) > BEAM_DOWN_PICKUP_RANGE_V7
+    )
+      continue;
+    if (visibleImmediateDamage(view, carrier, to, context) >= carrier.hp)
+      continue;
+    let lands = false;
+    for (let dy = -1; dy <= 1 && !lands; dy += 1)
+      for (let dx = -1; dx <= 1 && !lands; dx += 1) {
+        if (dx === 0 && dy === 0) continue;
+        const at = { x: to.x + dx, y: to.y + dy };
+        const tile = findPublicTileV7(view, at);
+        if (
+          tile?.explored !== true ||
+          tile.biome === null ||
+          tile.site !== null ||
+          (context.threatLookup.occupantsByKey.get(coordKey(at))?.length ?? 0) >
+            0 ||
+          // Map curiosities: never onto a Monster's provoke tiles.
+          (context.curiosities !== null &&
+            monsterProvokedAtV7(context.curiosities, at) !== undefined)
+        )
+          continue;
+        lands = visibleImmediateDamage(view, unit, at, context) < unit.hp;
+      }
+    if (!lands) continue;
+    const value = retainedUnitValue(view, unit);
+    if (best === null || value > best) best = value;
+  }
+  return best;
+}
+
 function martianBeamDownScoreV7(
   context: PolicyContextV7,
   command: Extract<CommandV7, { kind: "BEAM_DOWN" }>,
@@ -9558,12 +9690,16 @@ function martianBeamDownScoreV7(
       !fliesForPolicyV7(context.view, unit) &&
       distance(unit.at, command.to) <= 2,
   );
-  if (!joins) return { priority: -1, strategic: 0, immediate: 0 };
+  // `pulp_wars-1wy.4`: the group test is the delivery by route's; an
+  // extraction and a shot on arrival do not need it.
+  if (!joins && !mobilityPlayV7())
+    return { priority: -1, strategic: 0, immediate: 0 };
   return beamDownScoreV7(
     cache.tools,
     command,
     cache.attackers.has(passenger.id),
     cache.movers.has(passenger.id),
+    joins,
   );
 }
 
@@ -9646,6 +9782,13 @@ function martianRangedStepBackV7(
  * into range of a convertible target; a Projector moves to cover more own
  * units, and other units end next to it; a wounded unit with no Shield
  * leaves visible reach.
+ *
+ * `pulp_wars-1wy.4` (`mobilityPlay`): a puller flies to the tile from which
+ * its beam empties a hostile center for an own capturer (1346); a Saucer no
+ * longer waits unmoved to beam (the staging rule is unchanged); a carrier
+ * flies to a spent unit in lethal reach it can extract from there (891, the
+ * Saucer and the Mothership); a shooter's routine Move next to a hostile
+ * melee unit costs 8.
  *
  * Against Martians (any seat): a unit at 6 HP or less leaves, and does not
  * enter, the reach of a ready hostile Brain.
@@ -9730,6 +9873,20 @@ function martianMoveValueV7(
   const hostileLand = context.lookup.visibleHostiles.filter(
     (unit) => unit.form === "LAND" && unit.hp > 0,
   );
+  // `pulp_wars-1wy.4`: the siege pull, set up. A puller flies to the tile
+  // from which its beam empties a hostile center for an own capturer.
+  if (
+    mobilityPlayV7() &&
+    abilities.includes("TRACTOR_BEAM") &&
+    !actor.activation.moved &&
+    dangerThere() < actor.hp &&
+    pullCaptureMoveV7(cache.tools, actor, to, (center) =>
+      martianCapturerCanEnterV7(context, center),
+    )
+  ) {
+    next = Math.max(next, TRACTOR_CAPTURE_MOVE_PRIORITY_V7);
+    strategic += 40;
+  }
   const rangedStepBack = martianPolicyOptionsV7().rangedStepBack;
   // `pulp_wars-b5f.2`: a Tripod (minimum range 2) with a hostile unit
   // inside its minimum range cannot fire from where it stands.
@@ -9802,8 +9959,23 @@ function martianMoveValueV7(
       return { priority: -1, strategic: 0 };
   }
   // The Saucer: waits where it can beam; stages near the wave target.
-  if (isSaucerForPolicyV7(view, actor) && routine) {
-    if (!actor.activation.moved && martianSaucerBeamsV7(context, actor.id))
+  // `pulp_wars-1wy.4`: a carrier flies to a spent unit in lethal reach it
+  // can extract from there (the Mothership below).
+  const saucerRescue =
+    isSaucerForPolicyV7(view, actor) && routine && mobilityPlayV7()
+      ? martianCarrierRescueMoveV7(context, actor, to)
+      : null;
+  if (saucerRescue !== null) {
+    next = Math.max(next, CARRIER_RESCUE_MOVE_PRIORITY_V7);
+    strategic += saucerRescue;
+  } else if (isSaucerForPolicyV7(view, actor) && routine) {
+    // `pulp_wars-1wy.4`: Beam Down no longer needs an unmoved carrier, so
+    // the Saucer does not wait for it (the baseline's rule).
+    if (
+      !mobilityPlayV7() &&
+      !actor.activation.moved &&
+      martianSaucerBeamsV7(context, actor.id)
+    )
       return { priority: -1, strategic: 0 };
     const target = cache.tools.waveTarget;
     if (target !== null) {
@@ -9838,6 +10010,39 @@ function martianMoveValueV7(
     if (army === 0 && hostileLand.some((unit) => distance(unit.at, to) <= 3))
       return { priority: -1, strategic: 0 };
     strategic += 2 * Math.min(4, army);
+    // `pulp_wars-1wy.4`: the Mothership is a carrier too.
+    const rescue = mobilityPlayV7()
+      ? martianCarrierRescueMoveV7(context, actor, to)
+      : null;
+    if (rescue !== null) {
+      next = Math.max(next, CARRIER_RESCUE_MOVE_PRIORITY_V7);
+      strategic += rescue;
+    }
+  }
+  // `pulp_wars-1wy.4`: a shooter keeps its distance. A routine Move of a
+  // Martian ground unit with range 2 that ends next to a hostile melee unit
+  // it does not stand next to now, and not on a settlement center, costs 8:
+  // among equal Moves it takes the tile two tiles away.
+  if (
+    mobilityPlayV7() &&
+    routine &&
+    rule.range >= 2 &&
+    abilities.includes("ATTACK") &&
+    !fliesForPolicyV7(view, actor) &&
+    policyUnitFactionV7(view, actor) === "MARTIAN"
+  ) {
+    const contact = (at: CoordV7): boolean =>
+      hostileLand.some(
+        (unit) =>
+          distance(unit.at, at) === 1 &&
+          publicCombatFacts(view, unit, context.lookup).maximumRange < 2,
+      );
+    if (
+      contact(to) &&
+      !contact(actor.at) &&
+      !view.cities.some((city) => same(city.at, to))
+    )
+      strategic -= SHOOTER_CONTACT_COST_V7;
   }
   // The Brain: out of contact; into range of a convertible target.
   if (abilities.includes("MIND_CONTROL")) {

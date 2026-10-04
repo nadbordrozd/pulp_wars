@@ -323,7 +323,11 @@ describe("headless parity and the CLI flag", () => {
     // a Martian or Ice Folk seat: the Human against Undead pin is still the
     // 7r34 one (no change without such a seat), and the command and event
     // hashes and rounds of the other four were recomputed at 7r37 (their
-    // maps and PRNG ends are the 7r34 ones: generation is untouched).
+    // maps and PRNG ends are the 7r34 ones: generation is untouched). The
+    // Martian mobility play (`pulp_wars-1wy.4`, a Normal AI change on 7r37)
+    // moved the Pangea pin (its Martian seat buys and uses carriers); the
+    // Archipelago pin with a Martian seat and the three pins without one
+    // did not move.
     const pins: readonly {
       readonly mapType: MapTypeV7;
       readonly factions: readonly FactionIdV7[];
@@ -352,11 +356,11 @@ describe("headless parity and the CLI flag", () => {
         mapType: "PANGEA",
         factions: ["GOBLIN", "DINOSAUR", "MARTIAN"],
         seed: 11,
-        rounds: 14,
+        rounds: 13,
         commandHash:
-          "aefaea2259333a0f5885dfc7dc4a55602a7ccc4d12ccab8f46f2ed3cc7a34f86",
+          "fb6fa6473dffd510278d65aba484110eddb668b3135b2c14b30a50a6947294f8",
         eventHash:
-          "2f7dbda2a5666fd0d10f3b849458c36a714c6e98845f98450d7b852c2f906e0d",
+          "2a93ad4e35a5b1de34c1387538c3974f65cd263a4f80c6cd99f7a4bad34067c9",
         mapHash:
           "1517bca558c54df409c52f8915a4372daaaec00d474bbb4948b0688f8e887e04",
         finalPrngHash:

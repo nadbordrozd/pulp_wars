@@ -66,6 +66,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7-martian.ts::martianResearchV7": "BOARD",
     "src/ai/v7-martian.ts::martianRetainedValueV7": "BOARD",
     "src/ai/v7-martian.ts::martianTargetBonusV7": "BOARD",
+    // `pulp_wars-1wy.4`: the siege pull's setup reads the defender on a
+    // center and the first tile of the pull (a mound there blocks the pull
+    // itself; the engine then offers none).
+    "src/ai/v7-martian.ts::pullCaptureMoveV7": "BOARD",
     "src/ai/v7-martian.ts::readyHostileBrainsV7": "BOARD",
     "src/ai/v7-opening.ts::surveyCapital": "BOARD",
     "src/ai/v7-undead.ts::healthyLivingNeighboursV7": "BOARD",
@@ -113,6 +117,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/ai/v7.ts::mandatoryWorkDeltaV7": "BOARD",
     "src/ai/v7.ts::martianBeamDownScoreV7": "BOARD",
     "src/ai/v7.ts::martianCapturerCanEnterV7": "BOARD",
+    // `pulp_wars-1wy.4`: a carrier extracts the units on the board (a
+    // burrowed unit is no passenger).
+    "src/ai/v7.ts::martianRescueUnitsV7": "BOARD",
     "src/ai/v7.ts::martianConvertibleAfterV7": "BOARD",
     "src/ai/v7.ts::martianMoveValueV7": "BOARD",
     "src/ai/v7.ts::martianProjectedKillersV7": "BOARD",

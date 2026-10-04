@@ -457,9 +457,11 @@ and pick-ups too, and `tractorBeamsOwn`, `tractorBeamsHostile`, and
 telemetry's `glideMoves` counts Moves longer than the unit's Move, which
 now happen only on Snow. A match without a Martian or Ice Folk seat plays
 command for command as at `7r36`; the pinned hashes of the matches with
-such a seat were recomputed. The Normal AI does not use the new tools on
-purpose until `pulp_wars-1wy.4`, and the human-style probe and the coarse
-matrix of the balance design are `pulp_wars-1wy.2` and `pulp_wars-1wy.6`.
+such a seat were recomputed. The Normal AI uses the new tools on purpose
+since `pulp_wars-1wy.4` (a policy change on `7r37`: it moved the pinned
+Pangea match with a Martian seat, and no match without one), and the
+human-style probe and the coarse matrix of the balance design are
+`pulp_wars-1wy.2` and `pulp_wars-1wy.6`.
 
 ## Normal AI pressure telemetry (`pulp_wars-9s0.1`)
 

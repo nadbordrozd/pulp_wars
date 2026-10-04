@@ -119,8 +119,11 @@ Human-against-Undead `7r34` curiosity pin still hold with them removed);
 the four pinned matches with a Martian or Ice Folk seat were recomputed.
 Its contract test is `tests/unit/ruleset-v7-balance-martian-ice.test.ts`.
 Its numbers are the design's proposed ones: the Normal AI step
-(`pulp_wars-1wy.4`), the UI step (`pulp_wars-1wy.5`), and the coarse
-matrix with the human-style probe (`pulp_wars-1wy.6`) are still to come.
+(`pulp_wars-1wy.4`) is done (no rule or identity change; it moved the
+pinned Pangea match with a Martian seat of
+`tests/unit/ruleset-v7-curiosities.test.ts`), and the UI step
+(`pulp_wars-1wy.5`) and the coarse matrix with the human-style probe
+(`pulp_wars-1wy.6`) are still to come.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, and the
 Dwarves are part of the default route: match setup always offers a
 Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf choice for the human and

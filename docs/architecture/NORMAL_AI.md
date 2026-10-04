@@ -1223,7 +1223,8 @@ Shared estimates (every match; all neutral without a Martian unit):
   land, and a flyer never from a center it does not own. Machines never get
   cover or fortification in the estimate.
 - **Values.** A hostile Projector is worth 4 more per covered unit next to
-  it, a Saucer 8 more while its owner holds a city, a Brain the value of its
+  it, a Saucer 8 more while its owner holds a city, a Mothership 8 more
+  (since `pulp_wars-1wy.4`: the carrier with the free pull), a Brain the value of its
   controlled unit (released with it; doubled when it was the viewer's own,
   see the [Mind Control play](#mind-control-play-pulp_wars-b5f3)), and a
   ray unit that can fire at full power 4 more. An own controlled unit is
@@ -1241,8 +1242,10 @@ As Martians:
   two for every three Grunts). A Projector gains 4 while the army has more
   than four front units (Grunts, controlled units, Ray Gunners, Tripods, the
   Colossus; a controlled unit never counts as one of the seat's own roles)
-  per Projector and at least three, and otherwise costs 20; a second Saucer
-  costs 20 below six front units, a third always; a Brain gains 10 at war
+  per Projector and at least three, and otherwise costs 20; a Saucer gains
+  10 while the army has more than three front units per Saucer and otherwise
+  costs 20 (since `pulp_wars-1wy.4`; before, a second Saucer cost 20 below
+  six front units and a third always); a Brain gains 10 at war
   with four or more front units and fewer than one Brain per six, otherwise
   costs 20; a Tripod (one per three front units) and a Mothership (one per
   six) gain 30, so they are bought as soon as they are offered (the
@@ -1282,13 +1285,18 @@ As Martians:
   Value: 4 per route step gained (at most 8), 8 more for a passenger that
   cannot walk this turn (a unit trained this turn), minus twice the danger
   there. Commands are scored directly; nothing is previewed, so the larger
-  command list costs one cheap score each.
-- **Saucer.** An unmoved Saucer with a Beam Down worth taking makes no
-  routine Move. Otherwise, with a wave target, it moves only to stage
-  (720): about four tiles from that city, within two tiles of the army.
-  Its hits that do not kill are not candidates (a city save excuses it);
-  it never makes a routine Move into visible lethal reach unless that is no
-  worse.
+  command list costs one cheap score each. This is the delivery by route;
+  since `pulp_wars-1wy.4` an extraction or a shot on arrival is scored
+  first ([Martian mobility play](#martian-mobility-play-pulp_wars-1wy4)).
+- **Saucer.** With a wave target, it moves only to stage (720): about four
+  tiles from that city, within two tiles of the army. Its hits that do not
+  kill are not candidates (a city save excuses it); it never makes a routine
+  Move into visible lethal reach unless that is no worse. (Before
+  `pulp_wars-1wy.4` an unmoved Saucer with a Beam Down worth taking made no
+  routine Move: Beam Down needed an unmoved carrier. The beam is still
+  taken first, at 865 or above.) Its pulls, its extraction flights, and the
+  siege pull are in the
+  [Martian mobility play](#martian-mobility-play-pulp_wars-1wy4).
 - **Brain.** Mind Control (1186, above every kill) on the most valuable
   convertible target (what it becomes; see the
   [Mind Control play](#mind-control-play-pulp_wars-b5f3)). A Brain that
@@ -1302,7 +1310,10 @@ As Martians:
   it already stands next to one.
 - **Controlled units** are own units of their kind, played by their kind's
   per-unit rules ([Mind Control play](#mind-control-play-pulp_wars-b5f3)).
-- **Mothership.** The Tractor Beam is scored by the pull's effect: a
+- **Mothership** (and, since `pulp_wars-1wy.3`, every Saucer: both carry
+  the beam; what `pulp_wars-1wy.4` changed is in the
+  [Martian mobility play](#martian-mobility-play-pulp_wars-1wy4)). The
+  Tractor Beam is scored by the pull's effect: a
   defender off a hostile center next to an own capturer that can still step
   in (1347); a besieger off an own center (1279); a hostile unit pulled
   where own units that need not move deal its Shield plus HP (1181); a
@@ -1336,9 +1347,11 @@ Against Martians (every seat in such a match):
   Move into three tiles of a ready visible hostile Brain, and steps out of
   the Brain's range (1150, by its retained value, so the most valuable
   first) when it is inside it and a tile outside lethal reach exists.
-- **Mothership pulls.** While a visible hostile Mothership is within four
-  tiles of an own city center whose only adjacent own unit stands on it, a
-  Move that puts a second unit next to the center goes at 1245.
+- **Pulls.** While a visible hostile puller is within five tiles of an own
+  city center whose only adjacent own unit stands on it, a Move that puts a
+  second unit next to the center goes at 1245. A puller is a Mothership
+  (Move 2, reach 3) or, since `pulp_wars-1wy.4`, a Saucer (Move 3, reach 2);
+  before, a Mothership within four tiles.
 - **Goblin seats.** A Kaboom gains 4 per Shield point it strips from a
   hostile unit that own attacks can still hit this turn.
 
@@ -1575,6 +1588,150 @@ Dinosaur-Human; 11 x 11 and 14 x 14, seeds 0-1) end in the same state hash
 and command count as under the engine-step policy (`c24e06d`), and so do 12
 Martian matches (Martian-Undead, Goblin-Martian, Martian-Ice Folk) with the
 switch off.
+
+### Martian mobility play (`pulp_wars-1wy.4`)
+
+The AI step of the
+[Martian balance revision](../product/RULESET_7_BALANCE_MARTIAN_ICE.md#9-normal-ai-changes)
+(identity `7r37`, no rule and no identity change): Beam Down after a carrier
+Move and for pick-ups, the passenger that shoots on arrival, the Saucer's
+Tractor Beam, and the Mothership's free Heavy Tractor Beam are used on
+purpose. Everything is behind `MartianPolicyOptionsV7.mobilityPlay`
+(`setMartianPolicyOptionsV7`, tests and harnesses only); off, the policy
+decides as the engine step `pulp_wars-1wy.3` did. The rules live in
+`src/ai/v7-martian.ts` and the Martian helpers of `src/ai/v7.ts`; they read
+the public view, the offered commands, and the public queries
+(`queryTractorBeamPathV7`), add no PRNG use, no elapsed-time input, and no
+work units, and run only in a match with a Martian seat.
+
+As Martians:
+
+- **Carriers by ratio.** A Saucer gains 10 while the army has more than
+  three front units per Saucer (none before the first front unit) and
+  otherwise costs 20; in a threatened city it still costs 30 and gets no
+  bias (bodies first). The Mothership keeps its rule (30 when offered, one
+  per six front units), now at 8 Coins. The Grunt's threatened-city bias
+  (14) was rechecked for Attack 2 and 9 HP: the threatened city still trains
+  Grunts (the existing test), so it is unchanged.
+- **A shot on arrival** (Beam Down, 906; 1180 when the shot kills). A
+  passenger that still has its primary action and may act after moving (a
+  beamed unit counts as moved: a Grunt shoots at full Attack, a heat ray at
+  half power, a Shield Projector not at all), has no attack where it stands,
+  is not a Brain, is not a threatened garrison, and does not stand on a
+  settlement center, is set down where a hostile unit is in its range that
+  no Move of its own reaches. The landing is outside visible lethal reach
+  and not further from the passenger's campaign job than it stands; a shot
+  that does not kill lands within two tiles of another own land unit. Value:
+  2 per point of the hit, the target's value when it dies, 6 more from two
+  tiles or more (no retaliation), minus twice the danger.
+- **Extraction** (Beam Down, 890: after every chip, before the delivery by
+  route and every routine Move). A unit that has used its primary action
+  and stands in visible lethal reach, not on a settlement center, is set
+  down outside it; by its retained value, then the least danger. A carrier
+  that still has its primary action flies to within pick-up range (two
+  tiles) of such a unit when a tile next to its landing is safe for the unit
+  and the landing for the carrier (891, the Saucer and the Mothership).
+- **The Saucer's pull.** The pull is the Saucer's whole action, so its own
+  attack no longer counts toward a kill (the engine step counted it, as for
+  the Mothership of `7r36`). A pull into a kill (1181) or into half of the
+  target's HP and Shield (1150) must add to what the own attacks deal where
+  the target stands. Own units that have moved and may still attack (a
+  Grunt, a ray at half power) count.
+- **The Mothership's free pull** (1184: before its own Move toward a target,
+  1175, and every attack). Its own attack counts after the pull, so it pulls
+  a unit from two or three tiles next to itself and shoots it; the kill
+  setup stays at 1181, the siege pull at 1347.
+- **The siege pull, set up** (1346). A puller that can still pull after a
+  Move flies to a tile within its beam's reach of a hostile city center
+  held by a unit the beam may target, when an own capturer next to the
+  center can still step on, the first tile of the pull is open land, and
+  the landing is outside lethal reach. Then the pull (1347) and the
+  capturer's step (the generic 1290).
+- **Shooters keep their distance.** A routine Move of a Martian ground unit
+  with range 2 that ends next to a hostile melee unit it does not stand
+  next to now, and not on a settlement center, costs 8 (among equal Moves
+  it takes the tile two tiles away). The step back (904) is unchanged.
+- **The wait rule goes.** An unmoved Saucer with a Beam Down worth taking
+  may fly (Beam Down no longer needs an unmoved carrier); the beam is still
+  taken first.
+- **Map curiosities.** No Beam Down sets a unit down on a visible Giant
+  Spider's provoke tiles (the candidate filter of the curiosity policy, like
+  a Move or a landing), and a carrier does not fly to extract a unit whose
+  only safe landing is one.
+
+Against Martians (every seat in such a match):
+
+- **Pulls.** The guard against a pull (1245) covers Saucers and reaches five
+  tiles (above).
+- **Carriers.** A hostile Mothership is worth 8 more (a Saucer already is).
+
+Tried and dropped (they lost or did nothing in the development samples):
+
+- A **hover rule** for Saucers (staging plus the tiles two from a hostile
+  unit near own shooters): the old policy won both games on three seeds of
+  one 36-game mirror with it; without it the same sample came out 19 to 17.
+  The Saucer keeps the staging rule.
+- The **delivery in the danger estimate** (a visible hostile carrier counted
+  as able to set a shooter down within its Move plus three of any tile,
+  [section 9](../product/RULESET_7_BALANCE_MARTIAN_ICE.md#9-normal-ai-changes)
+  of the design): in a 28-game mirror the policy with it won 14, without it 16. Units
+  that count a shot from every Saucer everywhere hold back. Not adopted;
+  the estimate is unchanged.
+
+**Head-to-head, Martian mirror** (a scratch harness that sets `mobilityPlay`
+per seat before each decision; Dry Land, round cap 150, every seed in both
+seat orders; the user's small-sample rule). The acceptance sample, on seeds
+the rules were not developed on (11 x 11 seeds 300-309, 14 x 14 seeds
+300-307):
+
+| Board   | Games | Decided | New policy | Old policy |
+| ------- | ----: | ------: | ---------: | ---------: |
+| 11 x 11 |    20 |      20 |         12 |          8 |
+| 14 x 14 |    16 |      16 |          8 |          8 |
+| Total   |    36 |      36 | 20 (55.6%) |         16 |
+
+No round cap, error, stall, or rejection. The edge is small and inside the
+noise of 36 games: a Martian mirror is mostly decided by the map (16 of the
+18 seeds were won by the same seat in both orders; the new policy won both
+games of the other two). The development samples on other seeds, with
+intermediate rule sets, came out between 16 of 36 and 27 of 48 for the new
+policy; the sample of 16 was the one that led to dropping the hover rule.
+The new policy wins on what it was for:
+
+| Per 36 seat-games (acceptance sample)  | New | Old |
+| -------------------------------------- | --: | --: |
+| Tractor Beams                          | 119 |  83 |
+| ... by a Mothership (Heavy)            |  38 |  19 |
+| ... of a defender off a hostile center |  20 |   6 |
+| Hostile units pulled and killed        |  42 |  17 |
+| Beam Downs                             | 274 | 141 |
+| ... pick-ups away from a city          |  66 |  11 |
+| ... extractions                        |  63 |   1 |
+| ... after the carrier moved            | 100 |  34 |
+| Passengers that attacked on arrival    |  38 |   8 |
+| Kills                                  | 410 | 324 |
+| Units lost                             | 336 | 414 |
+| Cities captured                        |  94 |  85 |
+| Saucers trained                        |  76 |  49 |
+| Motherships trained                    |  23 |  17 |
+
+**Coarse look against each faction** (the new policy on both sides, Dry
+Land, 11 x 11 and 14 x 14, one seed each (300) in both seat orders, four
+games per opponent; Martian wins): Human 2, Undead 3, Goblin 3, Dinosaur 3,
+Ice Folk 3, Dwarf 2: 16 of 24 (66.7%). The old policy on both sides wins the
+same 16 of 24 on those seeds. On the 36 cells of the mobility probe's
+default run (11 x 11 seeds 0-1, 14 x 14 seed 0, six games per opponent) the
+new policy wins 27 (Human 5, Undead 4, Goblin 6, Dinosaur 4, Ice Folk 5,
+Dwarf 3) and the old policy 27 (5, 4, 4, 4, 5, 5); the probe itself won 26
+there. Together 43 of 60 (71.7%) for the new policy: Martians are far above
+the 60% line of the design with either policy, so the rules of `7r37` put
+them there, not this pass. The measurement and any tuning are
+`pulp_wars-1wy.6`; the first step of the design's fallback ladder is Grunt
+HP 8.
+
+**Parity.** Every rule is behind the Martian gate (a Martian seat, a
+Martian viewer, or a unit with Beam Down or the Tractor Beam), so a match
+without a Martian seat decides as before.
 
 ## Ice Folk play (`pulp_wars-7g3.4`)
 

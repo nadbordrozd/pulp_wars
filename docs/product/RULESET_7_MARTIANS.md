@@ -42,8 +42,9 @@ the current rules' sections
 [20.10](RULESET_7_CURRENT.md#2010-tractor-beam) win, and the
 [tuning record](#165-tuning-record) lists the changes. Its UI step
 (`pulp_wars-1wy.5`) is implemented
-([screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay));
-its Normal AI step (`pulp_wars-1wy.4`) is pending.
+([screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay)),
+and so is its Normal AI step (`pulp_wars-1wy.4`,
+[Normal AI notes](../architecture/NORMAL_AI.md#martian-mobility-play-pulp_wars-1wy4)).
 What the implementation changed or made precise is in
 [section 19](#19-implementation-notes-pulp_wars-t6s2). It is an
 overlay over the rules in force when `pulp_wars-t6s.2` starts: today that is
@@ -2660,8 +2661,9 @@ but too many limitations"; design, diagnosis, and reasons in the
 
 These are the design's proposed values; the coarse matrix and the
 human-style probe that accept or tune them are `pulp_wars-1wy.6`, within
-the bounds of the design's section 8.4. The Normal AI does not yet use the
-new tools on purpose (`pulp_wars-1wy.4`).
+the bounds of the design's section 8.4. The Normal AI uses the new tools
+on purpose since `pulp_wars-1wy.4`
+([Normal AI notes](../architecture/NORMAL_AI.md#martian-mobility-play-pulp_wars-1wy4)).
 
 ## 17. Decisions made in this spec
 

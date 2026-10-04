@@ -9,10 +9,11 @@ Saucer's Tractor Beam at Scouting, the glass-cannon Grunt, Snow cover
 [RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) (its sections 11, 20.7, 20.10,
 and 21.5), which is authoritative; what the implementation made precise is
 in [section 15](#15-implementation-notes-pulp_wars-1wy3). The UI step
-(`pulp_wars-1wy.5`) is implemented too ([section 11](#11-ui-and-help-text)).
-The Normal AI (`pulp_wars-1wy.4`) and the measurement (`pulp_wars-1wy.6`)
-of [section 12](#12-bead-breakdown) are pending, so the numbers are not yet
-measured. Sections 3 and 4 describe the rules before the change.
+(`pulp_wars-1wy.5`) is implemented too ([section 11](#11-ui-and-help-text)),
+and so is the Normal AI step (`pulp_wars-1wy.4`,
+[section 16](#16-normal-ai-notes-pulp_wars-1wy4)). Only the measurement
+(`pulp_wars-1wy.6`) of [section 12](#12-bead-breakdown) is pending, so the
+numbers are not yet measured. Sections 3 and 4 describe the rules before the change.
 
 The document diagnoses both factions with numbers from the engine's own
 combat formula, proposes four Martian changes and two Ice Folk changes with
@@ -39,6 +40,7 @@ the critique, and what the redraft changed.
 13. [Open questions](#13-open-questions)
 14. [Appendix A. Draft, critique, redraft](#appendix-a-draft-critique-redraft)
 15. [Implementation notes (`pulp_wars-1wy.3`)](#15-implementation-notes-pulp_wars-1wy3)
+16. [Normal AI notes (`pulp_wars-1wy.4`)](#16-normal-ai-notes-pulp_wars-1wy4)
 
 ## 1. Sources and the problem
 
@@ -1113,3 +1115,45 @@ precise rule, the engine does this (the current rules state each one):
    its estimates. The dock, picker, and Help texts quote the new rules
    (section 11's sentences); the rest of section 11 is `pulp_wars-1wy.5`
    (implemented since; see section 11, "As built").
+
+## 16. Normal AI notes (`pulp_wars-1wy.4`)
+
+The AI step implements [section 9](#9-normal-ai-changes) without a rule or
+identity change, behind one switch (`MartianPolicyOptionsV7.mobilityPlay`).
+The rules, their priorities, and the measurements are in the
+[Normal AI notes](../architecture/NORMAL_AI.md#martian-mobility-play-pulp_wars-1wy4).
+Where it differs from section 9:
+
+1. **Added: the siege pull is set up.** A puller flies to the tile its beam
+   empties a hostile center from when an own capturer can step on (fly,
+   pull, step). Section 9 only scored a pull that was already offered.
+2. **Added: a carrier flies to a unit it can extract.** Section 9 had the
+   extraction only when the carrier already stood in pick-up range.
+3. **Not adopted: the delivery in the danger estimate** ("a carrier can put
+   a Grunt shot on any tile within its Move plus three"). It was built and
+   measured: the policy with it won 14 of 28 mirror games against the
+   policy of `pulp_wars-1wy.3`, without it 16 of 28. A shot counted from
+   every Saucer over most of an 11 x 11 board makes units hold back.
+4. **Not adopted: a hover rule for Saucers** (two tiles from a hostile unit
+   the own shooters stand near, the probe's reposition rule): it lost a
+   36-game mirror (16 to 20) that came out 19 to 17 without it. The Saucer
+   keeps its staging rule, without the "unmoved Saucer waits to beam" rule.
+5. **The Grunt's threatened-city bias** was rechecked and is unchanged
+   (14): a threatened city still trains Grunts.
+6. **Ice Folk.** Staging, the Witch's escort, and the reach estimate read
+   Glide and Snow cover from the rules (the reach estimate's Glide step is
+   Snow onto Snow since `pulp_wars-1wy.3`); nothing was wrong, nothing
+   changed.
+7. **Result.** New against old in a Martian mirror: 20 of 36 on fresh
+   seeds (55.6%), inside the noise of a mirror that the map mostly
+   decides; kills 410 to 324 and losses 336 to 414 in those games.
+8. **Balance signal for `pulp_wars-1wy.6`.** Against the six factions
+   Martians score about 70% on small samples (43 of 60 decided games) with
+   either policy, the old one included, so the rules of `7r37` put them
+   above the 60% line of
+   [section 8.4](#84-tuning-bounds-and-fallback-ladders), not this pass.
+   The root's planned response in the measurement bead is the ladder's
+   first step, Grunt HP 8, once the coarse matrix confirms it.
+9. **Map curiosities.** A carrier respects the Spider avoidance of the
+   curiosity-aware policy: it neither delivers nor extracts a unit onto a
+   tile where a dormant Giant Spider would be provoked.

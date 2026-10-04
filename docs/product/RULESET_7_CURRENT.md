@@ -3594,11 +3594,15 @@ Disintegrator ([section 21.5](#215-snow)).
   Heavy Tractor Beam mechanic, now that both units carry Beam Down and a
   Tractor Beam), scores every offered pull, a Saucer's too, by the same
   effects, read from the tile the public query says the pull ends on, and
-  scores a Mothership's Beam Down like a Saucer's. Using the new tools on
-  purpose (a beamed unit that attacks on arrival, extraction, the free pull
-  before the Mothership's attack, more Saucers) and playing against them is
-  the next step, `pulp_wars-1wy.4`
-  ([section 24](#24-known-discrepancies)).
+  scores a Mothership's Beam Down like a Saucer's. Since `pulp_wars-1wy.4`
+  it uses the new tools on purpose: it trains one Saucer per three front
+  units, beams a unit to a tile it shoots from on arrival, extracts a unit
+  that has fired from lethal reach (and flies a carrier there to do it),
+  pulls with the Mothership's free beam before the Mothership moves or
+  shoots, flies a puller to where its beam empties a hostile center for an
+  own capturer, and keeps its shooters from stepping next to melee units;
+  against Martians every seat guards a center a Saucer could empty
+  ([Normal AI notes](../architecture/NORMAL_AI.md#martian-mobility-play-pulp_wars-1wy4)).
   Against Martians, Normal focus-fires a shielded unit that this turn's
   attacks can kill through its Shield (ranged hits first), values hits on
   Cooling ray units, keeps units at 6 HP or less out of a ready visible
@@ -7265,18 +7269,16 @@ map-curiosity steps and the pending balance steps below.
 
 **Open.**
 
-- **Martian and Ice Folk balance: the AI and the measurement
+- **Martian and Ice Folk balance: the measurement
   pending.** The engine step of the
   [balance design](RULESET_7_BALANCE_MARTIAN_ICE.md) (`pulp_wars-1wy.3`,
   `7r37`) implements its rules M1 to M4 and I1 and I2
   ([sections 20.7](#207-beam-down), [20.10](#2010-tractor-beam), and
-  [21.5](#215-snow)). Still to come: the **Normal AI** step
-  (`pulp_wars-1wy.4`): the policy keeps working on the new rules (every
-  command it picks is offered and accepted) and already scores a Saucer's
-  pull and a Mothership's Beam Down with its existing rules, but it does
-  not yet beam a unit in order to attack on arrival, extract a unit that
-  fired, pull before the Mothership's attack on purpose, buy more Saucers,
-  or defend against a Saucer's pull; and the
+  [21.5](#215-snow)), and the **Normal AI** step (`pulp_wars-1wy.4`) uses
+  them on purpose (the design's
+  [section 16](RULESET_7_BALANCE_MARTIAN_ICE.md#16-normal-ai-notes-pulp_wars-1wy4)
+  lists what it adopted and what it measured and dropped). Still to come:
+  the
   **measurement** (`pulp_wars-1wy.6`): the coarse Dry Land matrix and the
   human-style probe of the design's section 8, with its tuning bounds. The
   numbers of `7r37` are the design's proposed ones, not yet measured. The

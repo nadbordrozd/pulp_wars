@@ -202,8 +202,15 @@ describe("Martian Normal AI: Saucer, Brain, and Mothership", () => {
     expect(best?.score.priority).toBe(BEAM_DOWN_PRIORITY_V7);
     if (best?.command.kind === "BEAM_DOWN")
       expect(best.command.passengerUnitId).toBe(unitIdAtV7(state, at(8, 8)));
-    // The Saucer waits unmoved where it can beam.
-    expect(saucer.filter((item) => item.command.kind === "MOVE")).toEqual([]);
+    // Before `pulp_wars-1wy.4` (Beam Down needed an unmoved carrier) the
+    // Saucer waited unmoved where it could beam; it no longer has to
+    // (`ruleset-v7-martian-mobility-ai.test.ts`).
+    const previous = setMartianPolicyOptionsV7({ mobilityPlay: false });
+    try {
+      expect(unitCandidatesV7(state, at(4, 6), "MOVE")).toEqual([]);
+    } finally {
+      setMartianPolicyOptionsV7(previous);
+    }
   });
 
   it("takes a Mind Control on the most valuable convertible target", () => {
@@ -237,10 +244,30 @@ describe("Martian Normal AI: Saucer, Brain, and Mothership", () => {
   });
 
   it("never pulls a hostile unit for nothing", () => {
-    const state = asMartian([own("KNIGHT", 5, 5), foe("FIGHTER", 3, 3)]);
+    // `pulp_wars-1wy.4`: a Mothership that can still shoot pulls and then
+    // shoots (`ruleset-v7-martian-mobility-ai.test.ts`); one that has shot
+    // gains nothing from the pull.
+    const state = asMartian([
+      own("KNIGHT", 5, 5, {
+        activation: { attacked: true, attacksUsed: 1, handled: true },
+      }),
+      foe("FIGHTER", 3, 3),
+    ]);
     expect(
       candidatesV7(state).some((item) => item.command.kind === "TRACTOR_BEAM"),
     ).toBe(false);
+    // The policy of `pulp_wars-1wy.3`: no pull for a fresh Mothership.
+    const fresh = asMartian([own("KNIGHT", 5, 5), foe("FIGHTER", 3, 3)]);
+    const previous = setMartianPolicyOptionsV7({ mobilityPlay: false });
+    try {
+      expect(
+        candidatesV7(fresh).some(
+          (item) => item.command.kind === "TRACTOR_BEAM",
+        ),
+      ).toBe(false);
+    } finally {
+      setMartianPolicyOptionsV7(previous);
+    }
   });
 });
 
