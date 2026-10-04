@@ -135,7 +135,7 @@ describe("the balance registry (section 10)", () => {
     });
   });
 
-  it("M2 to M4: the Saucer pulls at Scouting, the Mothership is an 8-Coin carrier, the Grunt has Attack 2 and 9 HP", () => {
+  it("M2 to M4: the Saucer pulls at Scouting, the Mothership is an 8-Coin carrier, the Grunt has Attack 2 and 8 HP", () => {
     const saucer = effectiveRoleRuleV7("RAIDER", "MARTIAN");
     expect(saucer.technology).toBe("SCOUTING");
     expect(saucer.abilities).toEqual([
@@ -158,8 +158,10 @@ describe("the balance registry (section 10)", () => {
     ]);
     expect(roleMechanicsV7("KNIGHT", "MARTIAN").capacitySlots).toBe(2);
     const grunt = effectiveRoleRuleV7("FIGHTER", "MARTIAN");
+    // 8 HP since `pulp_wars-1wy.6` (the first step of the fallback ladder;
+    // 9 at the balance round, 10 before it).
     expect([grunt.cost, grunt.attack2, grunt.maxHp, grunt.defense2]).toEqual([
-      3, 4, 9, 3,
+      3, 4, 8, 3,
     ]);
     expect([grunt.move, grunt.minimumRange, grunt.range]).toEqual([1, 1, 2]);
     expect(roleMechanicsV7("FIGHTER", "MARTIAN").shield).toBe(2);
@@ -1210,7 +1212,7 @@ describe("M4: the Grunt's gun and body (sections 5.4 and 5.7)", () => {
     ).toBe(4);
   });
 
-  it("three Grunts kill a Fighter in a turn (5, 6, 1); two Fighter hits kill a Grunt (5, 6)", () => {
+  it("three Grunts kill a Fighter in a turn (5, 6, 1); two Fighter hits kill a Grunt (5, then its last 5)", () => {
     const state = martianFieldV7([
       { seat: 0, role: "FIGHTER", at: at(4, 3) },
       { seat: 0, role: "FIGHTER", at: at(4, 2) },
@@ -1241,14 +1243,16 @@ describe("M4: the Grunt's gun and body (sections 5.4 and 5.7)", () => {
       damageToDefender: 3,
       defenderShieldDamage: 2,
     });
+    // 8 HP (`pulp_wars-1wy.6`): the first hit leaves 5, which the second
+    // takes (a reported hit is capped at the HP left).
     const two = attackV7(one.state, at(4, 3), at(5, 2));
     expect(two.combat).toMatchObject({
-      damageToDefender: 6,
+      damageToDefender: 5,
       defenderDies: true,
     });
   });
 
-  it("against Yetis: two hits kill a Chilled Grunt (5, 6); in a Force Field the second leaves 3 and shatters it", () => {
+  it("against Yetis: two hits kill a Chilled Grunt (5, then its last 5); in a Force Field the second shatters it", () => {
     const build = (shield: number) =>
       iceFieldV7(
         [
@@ -1270,7 +1274,7 @@ describe("M4: the Grunt's gun and body (sections 5.4 and 5.7)", () => {
       damageToDefender: 3,
     });
     expect(attackV7(plain.state, at(4, 3), at(5, 2)).combat).toMatchObject({
-      damageToDefender: 6,
+      damageToDefender: 5,
       defenderDies: true,
       shatters: false,
     });
@@ -1285,10 +1289,10 @@ describe("M4: the Grunt's gun and body (sections 5.4 and 5.7)", () => {
     });
   });
 
-  it("a promoted Grunt has 14 HP", () => {
+  it("a promoted Grunt has 13 HP", () => {
     expect(
       effectiveRoleRuleV7("FIGHTER", "MARTIAN").maxHp + PROMOTION_HP_V7,
-    ).toBe(14);
+    ).toBe(13);
   });
 });
 

@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r38`. Role facts resolve through the unit's
+previews under `pulp-wars-poc-7r39`. Role facts resolve through the unit's
 kind (`unitFactionV7`: its owner's faction registration, or its original
 owner's while it is mind-controlled,
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14
@@ -1253,8 +1253,9 @@ Shared estimates (every match; all neutral without a Martian unit):
 As Martians:
 
 - **Production.** The role value gains two per Shield point
-  (`HP + 2 x Shield`). In a threatened city the Grunt gains 14 (12 before
-  `pulp_wars-b5f.2` raised its cost to 3) and the
+  (`HP + 2 x Shield`). In a threatened city the Grunt gains 15 (12 before
+  `pulp_wars-b5f.2` raised its cost to 3, 14 before `pulp_wars-1wy.6` gave
+  it 8 HP: the role value counts HP, and at 14 the Ray Gunner won) and the
   Projector, Saucer, and Brain cost 30 (bodies first; the Projector loses the
   Guard's threatened bonus too). In the preferred role the Grunt's repetition
   costs 5 a unit instead of 8; the Ray Gunner gains 10 (the main damage, about
@@ -1470,7 +1471,10 @@ head-to-head and the tests only):
 - In a threatened city the Grunt's production bias is 14 (was 12): it
   cancels the Grunt's third Coin in the role value's "minus twice the cost"
   term, so threatened cities still train Grunts (the existing test failed
-  with a Ray Gunner at 12). It is not behind the switch.
+  with a Ray Gunner at 12). It is not behind the switch. Since
+  `pulp_wars-1wy.6` (the Grunt at 8 HP, `7r39`) it is 15, for the same
+  reason: the role value counts HP, and at 14 the same test failed with a
+  Ray Gunner again.
 
 **Head-to-head, Martian mirror** (the policy with the step back on one seat
 and without it on the other, every seed in both seat orders, Dry Land

@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r38");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r38.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r39");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r39.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r37 and preserves the r38 save", () => {
+  it("cleans obsolete keys through v7r38 and preserves the r39 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r37.current",
+      "pulpWars.save.v7r38.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(37);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(38);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -175,7 +175,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r35.current", "r35"],
       ["pulpWars.save.v7r36.current", "r36"],
       ["pulpWars.save.v7r37.current", "r37"],
-      [SAVE_STORAGE_KEY_V7, "r38"],
+      ["pulpWars.save.v7r38.current", "r38"],
+      [SAVE_STORAGE_KEY_V7, "r39"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -207,8 +208,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r35.current",
         "pulpWars.save.v7r36.current",
         "pulpWars.save.v7r37.current",
+        "pulpWars.save.v7r38.current",
       ],
-      removedCount: 26,
+      removedCount: 27,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([

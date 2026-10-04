@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 38;
+const REVISION = 39;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -573,10 +573,11 @@ const ROSTER = [
     null,
     // `pulp_wars-b5f.2`: the ray pistol, range 1–2 (was 1), paid for with
     // cost 3 (was 2). `pulp_wars-1wy.3` (M4): Attack 2 (`4`, was 1.5) and
-    // 9 HP (was 10).
+    // 9 HP (was 10). `pulp_wars-1wy.6` (the fallback ladder's first step):
+    // 8 HP.
     3,
     1,
-    9,
+    8,
     2,
     4,
     3,
@@ -1232,8 +1233,8 @@ describe("Martian starting units and substitutions (section 10.10)", () => {
           form: "LAND",
           at: capital.at,
           homeCityId: capital.id,
-          hp: 9,
-          maxHp: 9,
+          hp: 8,
+          maxHp: 8,
           kills: 0,
           veteran: false,
         });
@@ -1257,8 +1258,8 @@ describe("Martian starting units and substitutions (section 10.10)", () => {
       role: "FIGHTER",
       form: "LAND",
       at: city.at,
-      hp: 9,
-      maxHp: 9,
+      hp: 8,
+      maxHp: 8,
       homeCityId: city.id,
       activation: { moved: true, attacked: true, handled: true },
     });

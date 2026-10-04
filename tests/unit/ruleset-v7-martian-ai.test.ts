@@ -308,7 +308,7 @@ describe("Martian Normal AI: production and research", () => {
     ).toBe(4);
     expect(
       martianProductionAdjustmentV7(view, "FIGHTER", counts, true, true, false),
-    ).toBe(18);
+    ).toBe(19);
     expect(
       martianProductionAdjustmentV7(view, "FIGHTER", counts, false, true, true),
     ).toBe(7);
@@ -391,12 +391,15 @@ describe("Martian Normal AI: production and research", () => {
 describe("Normal AI against Martians", () => {
   it("finishes a shielded unit with two attackers instead of wounding two", () => {
     // Two Fighters: each hits a Grunt for 5 (Shield 2 first). Together they
-    // kill the wounded Grunt (6 HP + Shield 2); the fresh one survives both.
+    // kill the wounded Grunt (6 HP + Shield 2); the Shield Projector (12 HP
+    // + Shield 3) survives both. (Until `pulp_wars-1wy.6` the second unit
+    // was a fresh Grunt, which at 8 HP + Shield 2 now dies to the two hits
+    // as well.)
     const state = againstMartian([
       own("FIGHTER", 5, 5),
       own("FIGHTER", 5, 3),
       foe("FIGHTER", 4, 4, { hp: 6 }),
-      foe("FIGHTER", 6, 4),
+      foe("GUARD", 6, 4),
     ]);
     const attacks = candidatesV7(state).filter(
       (item) => item.command.kind === "ATTACK",

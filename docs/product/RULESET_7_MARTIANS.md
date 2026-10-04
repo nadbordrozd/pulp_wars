@@ -35,7 +35,8 @@ engine step of the
 Beam Down after a Move with a pick-up within two tiles and a passenger that
 counts as moved, the Tractor Beam on the Saucer, the Mothership at 8 Coins
 with Beam Down and a free Heavy Tractor Beam, and the Grunt at Attack 2 and
-9 HP. Sections 3, 8.1, 8.4, 9, and 13 below describe the rules before it;
+9 HP (8 HP since `pulp_wars-1wy.6`, `pulp-wars-poc-7r39`, the design's
+first fallback). Sections 3, 8.1, 8.4, 9, and 13 below describe the rules before it;
 the current rules' sections
 [11](RULESET_7_CURRENT.md#11-unit-roster),
 [20.7](RULESET_7_CURRENT.md#207-beam-down), and
@@ -2661,7 +2662,9 @@ but too many limitations"; design, diagnosis, and reasons in the
 
 These are the design's proposed values; the coarse matrix and the
 human-style probe that accept or tune them are `pulp_wars-1wy.6`, within
-the bounds of the design's section 8.4. The Normal AI uses the new tools
+the bounds of the design's section 8.4. That bead moved one number: the
+**Grunt has 8 HP** since `pulp-wars-poc-7r39`
+([the measurement](RULESET_7_BALANCE_MARTIAN_ICE.md#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6)). The Normal AI uses the new tools
 on purpose since `pulp_wars-1wy.4`
 ([Normal AI notes](../architecture/NORMAL_AI.md#martian-mobility-play-pulp_wars-1wy4)).
 

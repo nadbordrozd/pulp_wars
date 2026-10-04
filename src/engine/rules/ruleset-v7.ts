@@ -1760,8 +1760,9 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     tacticalRole: "LINE",
     cost: 3,
     // `pulp_wars-1wy.3` (balance M4): a real gun and a weaker body, Attack 2
-    // and 9 HP (was Attack 1.5 and 10 HP).
-    maxHp: 9,
+    // and 9 HP (was Attack 1.5 and 10 HP). `pulp_wars-1wy.6` (the balance
+    // design's first fallback, Martians above 60%): 8 HP.
+    maxHp: 8,
     attack2: 4,
     defense2: 3,
     move: 1,

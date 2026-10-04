@@ -5,7 +5,10 @@ bars are defined in
 [the balance design, section 8.2](../product/RULESET_7_BALANCE_MARTIAN_ICE.md#82-the-human-style-probe).
 This report is the **baseline on the rules before `pulp_wars-1wy.3`**
 (identity `pulp-wars-poc-7r36`): the probe uses whatever is legal today. The
-run after the rules change belongs to `pulp_wars-1wy.6`.
+run after the rules change belongs to `pulp_wars-1wy.6`: it is in
+[the balance design, section 17](../product/RULESET_7_BALANCE_MARTIAN_ICE.md#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6)
+(the probe won 32 of 42 games at `7r38` and at `7r39`, with the Grunt at
+8 HP).
 
 **Measured on `pulp-wars-poc-7r36` and kept as the "before".** The current
 identity is `7r37` (`pulp_wars-1wy.3`: Beam Down after a Move and for

@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r38`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
+## Current release contract (`pulp-wars-poc-7r39`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
 
-The current runtime is `pulp-wars-poc-7r38` (autosave
-`pulpWars.save.v7r38.current`; saves and replays of `pulp-wars-poc-7r37`
+The current runtime is `pulp-wars-poc-7r39` (autosave
+`pulpWars.save.v7r39.current`; saves and replays of `pulp-wars-poc-7r38`
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -147,6 +147,16 @@ ship art (`pulp_wars-jdb.5`) and
 plain command buttons; its Normal AI (`pulp_wars-jdb.4`), its
 full UI with a browser smoke probe (`pulp_wars-jdb.6`), and its coarse
 balance (`pulp_wars-jdb.7`) are still to come.
+`pulp_wars-1wy.6` (`7r39`) is the measurement of the balance round: the
+Martian Grunt has 8 HP (was 9), the first step of the design's fallback
+ladder
+([balance design, section 17](../product/RULESET_7_BALANCE_MARTIAN_ICE.md#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6)).
+No shape changed. A match without a Martian seat is the `7r38` match (the
+all-Human parity digests, the mission pins, and the curiosity pins without
+a Martian seat hold); of the two pinned curiosity matches with a Martian
+seat, the Pangea one was recomputed and the Archipelago one did not move.
+The Normal AI's threatened-city Grunt bias went from 14 to 15 so that a
+threatened city still trains Grunts.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
 Dwarves, and the Candy are part of the default route: match setup always
 offers a
@@ -165,7 +175,7 @@ rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r38` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r39` identity (ruleset ID, autosave key, the
   eight-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`/`CANDY`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms

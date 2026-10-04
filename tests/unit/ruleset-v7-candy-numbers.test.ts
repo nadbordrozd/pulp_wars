@@ -360,7 +360,8 @@ describe("Candy battle analysis, re-run by the engine (section 11)", () => {
       // continuation stops on her.
       ["Ice Witch", "12, kill", "10 / 1"],
       ["Orc Warboss", "12, kill", "10 / 1"],
-      ["Grunt", "9 +2 sh, kill", "7 +2 sh / 2"],
+      // 8 HP since `pulp_wars-1wy.6` (the kill takes all the HP it has).
+      ["Grunt", "8 +2 sh, kill", "7 +2 sh / 2"],
       ["Guard", "10 / 6", "7 / 7"],
       ["Guard", "9 / 9", "6 / 10", { fieldDefense: true }],
     ];

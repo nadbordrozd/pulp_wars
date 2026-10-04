@@ -282,8 +282,10 @@ export const SHIELD_PRODUCTION_VALUE_V7 = 2;
  * Production: bodies first while the city is threatened. `pulp_wars-b5f.2`:
  * 14 (was 12), cancelling the Grunt's third Coin in the role value's
  * "minus twice the cost" term, so a threatened city still trains Grunts.
+ * `pulp_wars-1wy.6`: 15, cancelling the HP point the Grunt lost at 8 HP
+ * (the role value counts HP; at 14 it tied with the Ray Gunner and lost).
  */
-export const THREATENED_GRUNT_BIAS_V7 = 14;
+export const THREATENED_GRUNT_BIAS_V7 = 15;
 export const THREATENED_SUPPORT_COST_V7 = 30;
 /** Production: the Grunt pays less for repetition (5 instead of 8 a unit). */
 export const GRUNT_REPETITION_REFUND_V7 = 3;
@@ -730,7 +732,8 @@ export function martianArmyCountsV7(view: PlayerViewV7): MartianArmyCountsV7 {
  * they are"; "train bodies first under threat"):
  *
  * - every role gains two per Shield point (`HP + 2 x Shield`);
- * - in a threatened city the Grunt gains 14 (12 before its cost of 3) and
+ * - in a threatened city the Grunt gains 15 (12 before its cost of 3, 14
+ *   before its 8 HP) and
  *   the Projector, Saucer, and Brain cost 30 (a Projector would win the
  *   Guard's threatened bonus);
  * - the Grunt's repetition costs 5 a unit instead of 8 (bodies; in the

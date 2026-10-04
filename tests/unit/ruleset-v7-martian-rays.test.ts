@@ -680,8 +680,8 @@ describe("Martian heat rays: Pierce (section 6.4)", () => {
     const run = attackV7(state, at(3, 2), at(5, 2));
     expect(run.combat.defenderShieldDamage).toBe(2);
     const whole = run.combat.defenderShieldDamage + run.combat.damageToDefender;
-    // Capped at the Grunt's Shield plus HP (2 + 9, `pulp_wars-1wy.3`).
-    expect(whole).toBe(11);
+    // Capped at the Grunt's Shield plus HP (2 + 8, `pulp_wars-1wy.6`).
+    expect(whole).toBe(10);
     const share = Math.max(1, Math.ceil(whole / 2));
     expect(run.combat.splash).toMatchObject([
       { shieldDamage: 2, damage: share - 2 },

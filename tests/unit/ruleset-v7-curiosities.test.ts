@@ -335,12 +335,18 @@ describe("headless parity and the CLI flag", () => {
     // Martian mobility play (`pulp_wars-1wy.4`, a Normal AI change on 7r37)
     // moved the Pangea pin (its Martian seat buys and uses carriers); the
     // Archipelago pin with a Martian seat and the three pins without one
-    // did not move.
+    // did not move. The Grunt's 8 HP (`pulp_wars-1wy.6`, 7r39) moved the
+    // Pangea pin again (commands, events, and rounds; map and PRNG end as
+    // before): the Goblin human seat now falls to the Dinosaurs in round
+    // 14, after 248 commands, before the cap. The Archipelago pin with a
+    // Martian seat did not move.
     const pins: readonly {
       readonly mapType: MapTypeV7;
       readonly factions: readonly FactionIdV7[];
       readonly seed: number;
       readonly rounds: number;
+      /** Fewer than the cap of 250 only when the match ended first. */
+      readonly acceptedCommands?: number;
       readonly commandHash: string;
       readonly eventHash: string;
       readonly mapHash: string;
@@ -364,11 +370,12 @@ describe("headless parity and the CLI flag", () => {
         mapType: "PANGEA",
         factions: ["GOBLIN", "DINOSAUR", "MARTIAN"],
         seed: 11,
-        rounds: 13,
+        rounds: 14,
+        acceptedCommands: 248,
         commandHash:
-          "fb6fa6473dffd510278d65aba484110eddb668b3135b2c14b30a50a6947294f8",
+          "ed027b907f92330f450d48d2d99ba73eeefe7b758b73ff918ccb2c1dd51ff97c",
         eventHash:
-          "2a93ad4e35a5b1de34c1387538c3974f65cd263a4f80c6cd99f7a4bad34067c9",
+          "d073d0247127c29db71962f5661acfbfedc9fd533a1e6844bddb6d7f99701617",
         mapHash:
           "1517bca558c54df409c52f8915a4372daaaec00d474bbb4948b0688f8e887e04",
         finalPrngHash:
@@ -460,7 +467,7 @@ describe("headless parity and the CLI flag", () => {
         },
         pin.mapType,
       ).toEqual({
-        acceptedCommands: 250,
+        acceptedCommands: pin.acceptedCommands ?? 250,
         rounds: pin.rounds,
         commandHash: pin.commandHash,
         eventHash: pin.eventHash,

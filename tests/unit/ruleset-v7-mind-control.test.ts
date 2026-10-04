@@ -1421,12 +1421,13 @@ describe("Mind Control revision: state parsing (section 2.1)", () => {
 
 describe("Mind Control revision: saves and replays (section 5.4)", () => {
   it("a Normal AI match replays and saves mid-control exactly", () => {
-    // Martian against Ice Folk, seed 9 (seed 4 until the balance round,
-    // `pulp_wars-1wy.3`): the Normal AI's first Mind Control comes at about
-    // command 250. The replay of the command log reaches the same state,
+    // Martian against Ice Folk, seed 13 (seed 4 until the balance round,
+    // `pulp_wars-1wy.3`, seed 9 until the Grunt's 8 HP, `pulp_wars-1wy.6`):
+    // the Normal AI's first Mind Control comes at about command 310. The
+    // replay of the command log reaches the same state,
     // with the controlled unit, and a save of it loads back (the loader
     // replays the log, so a save needs a real match).
-    const setup = goblinSetupV7(["MARTIAN", "ICE_FOLK"], 9);
+    const setup = goblinSetupV7(["MARTIAN", "ICE_FOLK"], 13);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;

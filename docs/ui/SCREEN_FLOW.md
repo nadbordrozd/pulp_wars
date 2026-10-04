@@ -728,8 +728,8 @@ without a Martian seat looks as before apart from the extra faction option.
     **pick-up range** (the tiles within two of it) is tinted pale magenta
     with a dashed outer edge, so a badged unit inside it is a pick-up and
     one outside it stands at a city. The dock mirrors the badges with one
-    **portrait button** per passenger (its portrait and "9/9"; the
-    accessible name "Beam Grunt, 9 of 9 HP, picked up nearby" or "…, from
+    **portrait button** per passenger (its portrait and "8/8"; the
+    accessible name "Beam Grunt, 8 of 8 HP, picked up nearby" or "…, from
     your city"). Under them the caveat is **two icon chips**, not a
     sentence: the attack icon with "Can attack" and the move icon struck
     through with "No move" (together one image named "After landing it can

@@ -36,10 +36,11 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // The Candy revision (`pulp_wars-jdb.3`): identity, registration, and
 // shapes (docs/product/RULESET_7_CANDY.md section 2). The Candy engine took
 // 7r38 after the Martian and Ice Folk balance round (7r37); later beads that
-// bump the identity re-pin REVISION here.
+// bump the identity re-pin REVISION here: the Martian Grunt's 8 HP
+// (`pulp_wars-1wy.6`) took 7r39.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 38;
+const REVISION = 39;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

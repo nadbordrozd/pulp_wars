@@ -11,9 +11,13 @@ and 21.5), which is authoritative; what the implementation made precise is
 in [section 15](#15-implementation-notes-pulp_wars-1wy3). The UI step
 (`pulp_wars-1wy.5`) is implemented too ([section 11](#11-ui-and-help-text)),
 and so is the Normal AI step (`pulp_wars-1wy.4`,
-[section 16](#16-normal-ai-notes-pulp_wars-1wy4)). Only the measurement
-(`pulp_wars-1wy.6`) of [section 12](#12-bead-breakdown) is pending, so the
-numbers are not yet measured. Sections 3 and 4 describe the rules before the change.
+[section 16](#16-normal-ai-notes-pulp_wars-1wy4)). The measurement
+(`pulp_wars-1wy.6`) applied the first step of the Martian fallback ladder,
+**Grunt HP 8** (identity `pulp-wars-poc-7r39`), and rechecked on a small
+sample:
+[section 17](#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6). The
+Ice Folk numbers were not measured. Sections 3 and 4 describe the rules
+before the change.
 
 The document diagnoses both factions with numbers from the engine's own
 combat formula, proposes four Martian changes and two Ice Folk changes with
@@ -41,6 +45,7 @@ the critique, and what the redraft changed.
 14. [Appendix A. Draft, critique, redraft](#appendix-a-draft-critique-redraft)
 15. [Implementation notes (`pulp_wars-1wy.3`)](#15-implementation-notes-pulp_wars-1wy3)
 16. [Normal AI notes (`pulp_wars-1wy.4`)](#16-normal-ai-notes-pulp_wars-1wy4)
+17. [Measurement and the Grunt at 8 HP (`pulp_wars-1wy.6`)](#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6)
 
 ## 1. Sources and the problem
 
@@ -1153,7 +1158,88 @@ Where it differs from section 9:
    above the 60% line of
    [section 8.4](#84-tuning-bounds-and-fallback-ladders), not this pass.
    The root's planned response in the measurement bead is the ladder's
-   first step, Grunt HP 8, once the coarse matrix confirms it.
+   first step, Grunt HP 8, once the coarse matrix confirms it (done:
+   [section 17](#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6)).
 9. **Map curiosities.** A carrier respects the Spider avoidance of the
    curiosity-aware policy: it neither delivers nor extracts a unit onto a
    tile where a dormant Giant Spider would be provoked.
+
+## 17. Measurement and the Grunt at 8 HP (`pulp_wars-1wy.6`)
+
+**The change.** With the rules of `7r37` the Martians won about 70% of
+their coarse games ([section 16](#16-normal-ai-notes-pulp_wars-1wy4), item
+8), above the 60% line of
+[section 8.4](#84-tuning-bounds-and-fallback-ladders). This bead applied
+the ladder's first step and nothing else: the **Grunt has 8 HP** (was 9;
+Attack 2, Defense 1.5, Shield 2, cost 3, and range 1-2 unchanged), at
+identity `pulp-wars-poc-7r39`. A promoted Grunt has 13 HP. What it moves in
+a fight: after one Fighter or Yeti hit (Shield 2, HP 3) a Grunt has 5 HP
+left, which the second hit takes exactly, and a second Goblin Kaboom kills
+it (at 9 HP it took a third). The Normal AI's
+threatened-city Grunt bias went from 14 to 15, because the role value
+counts HP and at 14 a threatened city trained a Ray Gunner instead
+([Normal AI notes](../architecture/NORMAL_AI.md#martian-ranged-play-pulp_wars-b5f2));
+no other policy value changed.
+
+**The recheck is small on purpose** (the user's instruction: no extensive
+balance testing). It is one default run of
+`npm run probe:martian-mobility -- --markdown` before the change and one
+after: Dry Land, two seats, Rival, round cap 150, no curiosities, 11 x 11
+with seeds 0 and 1 and 14 x 14 with seed 0, both seat orders, six games
+per opponent. The run now includes the Candy as a seventh opponent (a
+Candy seat plays the ordinary Normal policy until `pulp_wars-jdb.4`), so
+it is 42 games per arm. The "Normal" arm is the coarse matrix of this
+bead: the Normal Martian AI against the Normal AI of each faction. The
+full matrix of [section 8.1](#81-coarse-dry-land-matrix) (about 40 games
+per pairing) was not run.
+
+Martian wins of 6 games per opponent:
+
+| Opponent          | Normal AI, 9 HP | Normal AI, 8 HP | Probe, 9 HP | Probe, 8 HP |
+| ----------------- | --------------: | --------------: | ----------: | ----------: |
+| Human             |               5 |               4 |           4 |           6 |
+| Undead            |               4 |               4 |           5 |           4 |
+| Goblin            |               6 |               6 |           4 |           4 |
+| Dinosaur          |               4 |               3 |           5 |           4 |
+| Ice Folk          |               5 |               3 |           5 |           5 |
+| Dwarf             |               3 |               3 |           4 |           4 |
+| Candy             |               5 |               5 |           5 |           5 |
+| **All seven, 42** |  **32 (76.2%)** |  **28 (66.7%)** |  32 (76.2%) |  32 (76.2%) |
+| First six, 36     |      27 (75.0%) |      23 (63.9%) |  27 (75.0%) |  27 (75.0%) |
+
+Every game was decided: no round cap, error, stall, or rejected command.
+The 9-HP columns were run at `7r38` and repeat, for the first six
+opponents, the 27 of 36 that `pulp_wars-1wy.4` reported for both arms.
+
+**Reading.** One game is 2.4 points and a 42-game win rate has a standard
+error of about 7 points, so these are indications only.
+
+- The Normal Martian AI drops by four games, from 76% to 67% (64% without
+  the Candy). That is the direction the ladder wanted and it is still
+  above the 60% line; the sample cannot tell 67% from 60%. It is nowhere
+  near the 40% floor, so the change stays.
+- The 8-HP Grunt costs the AI bodies, not kills: per Martian seat-game it
+  loses 5.4 units (3.6 at 9 HP) and kills 15.2 (15.2). The Martians are
+  physically weaker and deal the same damage.
+- The probe, which uses every mobility tool every turn, did not lose a
+  game by the change (32 of 42 both times) and loses fewer units than the
+  Normal AI (3.6 against 5.4 a game at 8 HP): mobility now pays more than
+  massing Grunts, which is the goal of the round. It passes the bars of
+  [section 8.2](#82-the-human-style-probe): at least 50% mixed, at least
+  40% against every faction (its lowest is 4 of 6), and not behind the
+  Normal AI.
+- Goblin 6 of 6 for the Normal AI is the one row beyond the 70/30 policy
+  line in both runs; six games do not establish it.
+- Watch bands of [section 8.3](#83-watch-bands) on this sample at 8 HP: a
+  city fell within two rounds of a defender pulled off its center after
+  about 44% of such pulls (Normal AI, 0.45 of 1.02 a game; the probe 0.24
+  of 0.57), under the 50% line; no round caps.
+
+**Not done here, by instruction:** no second ladder step. If a larger
+sample later confirms the Normal AI above 60%, the next steps are the
+Mothership at 9 Coins, then the heavy pull at 1 tile; both weaken mobility
+rather than the body, so they need the root's (and for Grunt Attack the
+user's) decision. The Ice Folk side of the acceptance (their 40-60% band
+and the Witch and Glide watch bands) was not measured in this bead; in
+these runs the Ice Folk lost to the Martians in 5 of 6 games at 9 HP and
+in 3 of 6 (Normal AI) at 8 HP.

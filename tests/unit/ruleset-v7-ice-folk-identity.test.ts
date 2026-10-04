@@ -33,12 +33,14 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // Tripod ranges (`pulp_wars-b5f.2`) to 7r32, Mind Control keeps the unit
 // (`pulp_wars-b5f.3`) to 7r33, the mission setup (`pulp_wars-68k.2`) to
 // 7r34, the map curiosities engine I (`pulp_wars-737.2`) to 7r35, the
-// Giant Spider (`pulp_wars-737.3`) to 7r36, and the Martian and Ice Folk
+// Giant Spider (`pulp_wars-737.3`) to 7r36, the Martian and Ice Folk
 // balance round (`pulp_wars-1wy.3`: Glide from Snow onto Snow, Snow cover
-// x 1.25) to 7r37, so these pins follow the current identity.
+// x 1.25) to 7r37, the Candy engine (`pulp_wars-jdb.3`) to 7r38, and the
+// Martian Grunt's 8 HP (`pulp_wars-1wy.6`) to 7r39, so these pins follow
+// the current identity.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 38;
+const REVISION = 39;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
