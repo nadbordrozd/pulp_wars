@@ -2248,6 +2248,149 @@ directive disabled (`NORMAL`); no run had a policy error or a stall.
 A garrison that dies is replaced by the next unit in the choice order, which
 has to walk in; a replacement cannot enter tiles the enemy holds.
 
+## Map curiosities (`pulp_wars-737.4`)
+
+The policy knows the [map curiosities](../product/RULESET_7_MAP_CURIOSITIES.md)
+(section 11 of that spec): the Giant Spider, the Fountain of Youth, the
+Shrine, and the Sunken Wreck. `src/ai/v7-curiosities.ts` holds the facts,
+the errand planner, and the constants; `src/ai/v7.ts` calls it at the points
+listed below. Every input is public: the view's `curiosities` and `monsters`,
+`previewMonsterV7`, the `monsterRetaliates` field of the combat preview, the
+visible units, and the explored tiles. Nothing reads the Spider's wander
+draw, the PRNG, or the clock. The rules are the same in Rival and
+Cooperative matches (the Spider is hostile to every seat).
+
+**The gate.** `curiosityFactsV7(view)` is null when the view has no explored
+curiosity and no visible Monster, and every rule below runs only when it is
+not null. A match without a curiosity therefore keeps its decisions and
+hashes; so does a match with one, until a seat first sees it. The module has
+a switch (`setCuriosityPolicyOptionsV7({ curiosityPlay: false })`, tests and
+headless harnesses only) that makes the facts null always, which is the
+policy of `pulp-wars-poc-7r36`; the head-to-head below uses it. No ruleset
+identity changed.
+
+**The Spider.**
+
+- **Routine Moves.** A `MOVE` or a `DISEMBARK` that ends on a visible
+  Spider's `provokeTiles` (the tiles next to it) is no candidate. The one
+  exception is a melee hunter's Move in a combined kill (below).
+- **Stepping away.** A unit the Spider would count among its targets (it
+  stands on a provoke tile, or it is in the Spider's `provokedBy` and inside
+  its `reachTiles`), which is no hunter and has no offered attack on another
+  unit, gets `MONSTER_STEP_AWAY_PRIORITY_V7` (1176) for a Move to a tile
+  where the Spider would not count it.
+- **Attacks.** An `ATTACK` on a Spider is a candidate only when (a) it kills
+  the Spider or the unit is a hunter in this turn's combined kill, or (b) the
+  preview says `monsterRetaliates` is false (the attacker stays outside its
+  reach), the attacker survives, the hit is more than
+  `MONSTER_REGENERATION_V7` (4), and the unit has no offered attack on
+  another unit. A kill adds the bounty (`MONSTER_BOUNTY_V7`, 10) to the
+  ordinary kill value.
+- **The combined kill** reuses the hunt plan of the second pass
+  (`huntPlansV7`): every visible Spider is a hunt target, so a plan exists
+  only when the own units that can strike it this turn (from where they
+  stand, or after a Move) project its whole HP between them. The hunters'
+  Moves and attacks take the hunt priorities (1177, 1178, 1182). Three
+  rules are stricter than for other hunts, because a failed kill leaves
+  units next to the Spider:
+  - each hunter that moves in may end only on the one tile the plan counted
+    for it (a ranged hunter's is never next to the Spider), so no hunter
+    takes the tile another needs;
+  - a hunter whose retaliation damage would kill it takes no part (judged
+    against the Spider as it stands, which is cautious for a late hitter);
+  - a sole city defender is never a hunter that moves.
+- **Threat.** `visibleImmediateDamage` counts a visible Spider for a unit on
+  its provoke tiles, or in its `provokedBy` inside its reach, with the
+  ordinary projected damage, and leaves it out of the Move-and-attack reach
+  estimate (standing in its reach unprovoked is safe). Its entry in the
+  threatened-tiles map is its provoke tiles, and it never threatens a city.
+- The policy never lures the Spider or feeds an enemy to it. Splash, Wail,
+  Kaboom, Bomb Run, and Eruption candidates are not filtered: a hit on the
+  Spider by one of these is incidental, as for any unit in the blast.
+
+**Errands** (`planCuriosityErrandsV7`). Each curiosity gets at most one own
+unit and each unit at most one errand, Fountains first, then Shrines, then
+Wrecks, the nearest unit by route steps over explored tiles (ties to the
+lower unit ID):
+
+- **Fountain.** A hurt own land unit standing on a Fountain that no visible
+  enemy can strike keeps it: its Moves are no candidates until it has full
+  HP. Otherwise, when no other owner's unit stands on it and no visible
+  enemy can strike a unit there, the nearest own land unit at half HP or
+  less that is no construct and no sole city defender, within two turns of
+  its Move, walks to it: `FOUNTAIN_ARRIVE_PRIORITY_V7` (946) for the Move
+  onto it and `FOUNTAIN_APPROACH_PRIORITY_V7` (944) for a Move that comes
+  closer, both above `RECOVER` (930) and the wounded Windmill staging (940).
+  These Moves are scored after the campaign's hold, so a wave that waits at
+  home does not keep a wounded unit from the Fountain.
+- **Shrine.** The nearest own unit that could be Promoted there (land form,
+  no veteran, not a growing dinosaur) within 4 route steps, no sole city
+  defender and with no capture to make (a capturer within 2 of a center it
+  can take): `CURIOSITY_CLAIM_PRIORITY_V7` (1330, the treasure-chest
+  priority) for the Move that ends on it and
+  `CURIOSITY_APPROACH_PRIORITY_V7` (725) for a Move that comes closer.
+- **Wreck.** The nearest own unit afloat (a boat or an embarked unit) within
+  4 water steps, or a Patrol Boat within 8 while the naval plan sees no
+  hostile ship: the same two priorities.
+
+A **sole city defender** is an own land unit on the center of one of its
+owner's cities with no other land unit of that owner within 2 of the
+center. It takes no errand and is never a moving hunter.
+
+### Curiosity measurements
+
+A small check, as the user asked (no balance testing): scratch harnesses at
+`pulp-wars-poc-7r36`, Normal against Normal, Rival mode, two seats, 16 x 16.
+"Old" is the policy before this bead (the switch off), "new" is this policy.
+
+**Unchanged without a curiosity.** 64 headless matches to 30 rounds (seeds
+0–7; Dry Land, Pangea, Lakes, Continents; four faction pairs; every fourth
+seed Cooperative), each played by the code before this bead and by this
+policy. All 32 with `curiosities: false` have the same final state hash. Of
+the 32 with the option on (every one of those boards drew a curiosity), 21
+have the same hash (no seat acted on the curiosity) and 11 differ. With the
+switch off, all 64 match the old code, so the switch is the old policy.
+A four-seat 16 x 16 Pangea board that draws no curiosity with the option on
+is pinned in `tests/unit/ruleset-v7-curiosities-ai.test.ts` (same hash and
+command hash with the switch on and off). No error or stall in any run.
+
+**Head-to-head.** 13 boards that drew a curiosity (the first 7 with a
+Spider on Pangea and Lakes, and the first 2 each with a Fountain, a Shrine,
+and a Wreck; seven faction pairs), each played in both seat orders to 60
+rounds: 26 games.
+
+|                          | New policy | Old policy |
+| ------------------------ | ---------: | ---------: |
+| Games won (1 undecided)  |         14 |         11 |
+| Units lost to the Spider |          0 |          6 |
+| Spiders slain            |          4 |          2 |
+| Shrines claimed          |          1 |          1 |
+| Wrecks salvaged          |          0 |          0 |
+| Fountain heals           |          0 |          0 |
+
+Seat 0 won 18 of the 25 decided games: on 11 of the 13 boards the same seat
+won in both orders, so the win count says little beyond "not worse". The
+new policy won both orders on one board (a Shrine board), and on one Spider
+board it won as seat 0 while the old policy as seat 0 was still short of a
+win at round 60.
+
+**Both seats the same policy,** the 7 Spider boards: the old policy lost 6
+units to the Spider and slew it on 2 boards; the new policy lost none and
+slew it on 3.
+
+**What the sample does not show.** No Wreck was salvaged and no unit healed
+on a Fountain by either policy, and the one Shrine claim per side was a
+routine Move for the old policy. These two-seat games are short (8 to 49
+rounds when decided) and the errands are deliberately narrow (4 route
+steps; half HP within two turns), so the Fountain, Shrine, and Wreck rules
+are covered by the unit tests rather than by these games. The coarse check
+of `pulp_wars-737.7` is the place to measure them on larger boards.
+
+A first draft lost 3 units to the Spider in one game: a hunter moved onto
+the only tile another hunter could reach, the kill fell short, and the
+units stayed next to the Spider; and 5-HP units joined kills they could not
+survive. The per-hunter tile and the retaliation rule above fixed both.
+
 ## Revision-8 merged industry and processor adjacency
 
 The current Ruleset 7 policy uses the single

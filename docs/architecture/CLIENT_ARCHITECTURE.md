@@ -564,8 +564,9 @@ and `MOVE` (`applyMove`, the Shrine and the Wreck) call.
   not show curiosities until the UI step (`pulp_wars-737.6`, after the
   Monster engine `737.3` and the art `737.5`): a match with the option on
   has them in its state and public view but they are invisible in the
-  browser, and their events have no log text. The Normal AI ignores them
-  until `pulp_wars-737.4`.
+  browser, and their events have no log text. The Normal AI plays them
+  since `pulp_wars-737.4`
+  ([Normal AI: map curiosities](NORMAL_AI.md#map-curiosities-pulp_wars-7374)).
 
 ## The Giant Spider (`pulp_wars-737.3`)
 

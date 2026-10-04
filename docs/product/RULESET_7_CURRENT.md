@@ -963,10 +963,12 @@ cannot hold its harvest records; and a result that fails the state schema.
 [map curiosities spec](RULESET_7_MAP_CURIOSITIES.md), folded here as they
 landed) are rare neutral features that map generation drops on a board:
 the **Giant Spider** (the Monster), a **Fountain of Youth**, a **Shrine**,
-and a **Sunken Wreck**. The Normal AI does not know about curiosities yet
-(`pulp_wars-737.4`: it walks next to the Spider and attacks it like any
-enemy unit), and the browser board does not draw them yet
-(`pulp_wars-737.6`, [section 24](#24-known-discrepancies)).
+and a **Sunken Wreck**. The Normal AI knows them (`pulp_wars-737.4`,
+[Normal AI: map curiosities](../architecture/NORMAL_AI.md#map-curiosities-pulp_wars-7374):
+it keeps away from the Spider unless it can kill it, walks wounded units to
+a safe Fountain, and claims Shrines and Wrecks); the browser board does not
+draw them yet (`pulp_wars-737.6`,
+[section 24](#24-known-discrepancies)).
 
 | Curiosity             | Where                   | Rule                                                                                                                                    |
 | --------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
@@ -7287,24 +7289,21 @@ map-curiosity steps and the pending balance steps below.
   row, and the Glide tiles in the movement range
   ([screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay)).
 
-- **Map curiosities: the AI and the board pending.** Engine steps I and II
+- **Map curiosities: the board pending.** Engine steps I and II
   of the [map curiosities spec](RULESET_7_MAP_CURIOSITIES.md)
   (`pulp_wars-737.2`, `7r35`, and `pulp_wars-737.3`, `7r36`) implement the
   option, placement, the Fountain, Shrine, and Wreck, and the Giant Spider
-  with its neutral turn ([section 2.7](#27-map-curiosities)). The Normal
-  AI's curiosity play (`pulp_wars-737.4`), the art (`pulp_wars-737.5`), and
+  with its neutral turn ([section 2.7](#27-map-curiosities)), and the
+  Normal AI plays them (`pulp_wars-737.4`). The art (`pulp_wars-737.5`) and
   the UI (`pulp_wars-737.6`: board drawing, the Spider's own sprite and
   panel, the tile panel's sentence, the move warning, the neutral-turn
-  playback, Help, and the checkbox's hint) are not. Until then the browser
+  playback, Help, and the checkbox's hint) are not done. Until then the browser
   offers the "Curiosities" checkbox (on by default) but **draws no
   curiosity marker**: a match with the option on has them in its state and
   public view, invisible on the board, and their events have no log text;
   the Spider is drawn as an ordinary unit with no owner colour and the base
   (Human) art of its mechanical role, the Juggernaut, and its neutral turn
-  plays with no banner. The Normal AI ignores curiosities: it claims one
-  only when a routine Move happens to end there, and treats the Spider as
-  any enemy unit, walking next to it and attacking it (so Normal units are
-  often hit by it).
+  plays with no banner.
 
 **Resolved by implementation** (`pulp_wars-b5f.3`):
 

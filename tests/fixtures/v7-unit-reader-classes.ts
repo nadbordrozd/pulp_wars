@@ -20,6 +20,13 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // state on which nothing is burrowed before its cue plays.
     "src/render/gallery-demo-v7.ts::buildGalleryDemoSceneV7": "BOARD",
     "src/render/gallery-demo-v7.ts::wounded": "BOARD",
+    // `pulp_wars-737.4`: the curiosity policy reads the board: the visible
+    // Monsters, the units that walk to a Fountain, a Shrine, or a Wreck, and
+    // the units that defend a center (a burrowed unit takes no errand and
+    // holds no center this turn).
+    "src/ai/v7-curiosities.ts::curiosityFactsV7": "BOARD",
+    "src/ai/v7-curiosities.ts::planCuriosityErrandsV7": "BOARD",
+    "src/ai/v7-curiosities.ts::soleCityDefenderV7": "BOARD",
     "src/ai/v7-dinosaur.ts::chosenLayEggCommandsV7": "BOARD",
     "src/ai/v7-dinosaur.ts::dinosaurProductionAdjustmentV7": "BOARD",
     // `pulp_wars-68k.3`: the mission directives read the board. A burrowed

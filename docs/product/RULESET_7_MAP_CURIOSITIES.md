@@ -9,10 +9,13 @@ owner, and the owner-reader audit) at `pulp-wars-poc-7r36`
 [current rules section 2.7](RULESET_7_CURRENT.md#27-map-curiosities), with
 the notes of [section 17](#17-implementation-notes-pulp_wars-7372) and
 [section 18](#18-implementation-notes-pulp_wars-7373). The art
-(`pulp_wars-737.5`, [class document](../art/classes/curiosities.md)) and
-the UI (`pulp_wars-737.6`, bead 6, with the notes of
-[section 19](#19-implementation-notes-pulp_wars-7376)) are implemented; the
-AI is pending. It is an overlay over
+(`pulp_wars-737.5`, [class document](../art/classes/curiosities.md)), the
+UI (`pulp_wars-737.6`, bead 6, with the notes of
+[section 19](#19-implementation-notes-pulp_wars-7376)), and the Normal AI
+(`pulp_wars-737.4`, bead 4, no identity change; see
+[section 20](#20-implementation-notes-pulp_wars-7374) and
+[Normal AI: map curiosities](../architecture/NORMAL_AI.md#map-curiosities-pulp_wars-7374))
+are implemented. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r31`,
 with the pending [Dwarf overlay](RULESET_7_DWARVES.md) and the pending
 [Mind Control overlay](RULESET_7_MIND_CONTROL.md). Every rule this document
@@ -915,6 +918,57 @@ implementation rules as follows:
   owner-reader audit of section 10.5; a DOM test selects the Spider,
   previews an attack on it and plans its neutral turn in matches of all
   seven factions.
+
+## 20. Implementation notes (`pulp_wars-737.4`)
+
+The Normal AI of section 11 landed with no identity change (the policy is
+not part of the ruleset identity; a match without a curiosity keeps its
+hashes). The policy and its measurements are in
+[Normal AI: map curiosities](../architecture/NORMAL_AI.md#map-curiosities-pulp_wars-7374).
+Where section 11 was silent or did not fit the code, the implementation
+rules as follows:
+
+- **The combined kill counts Moves.** Section 11 (a) speaks of "this
+  turn's offered attacks". A melee unit has no offered attack until it
+  stands next to the Spider, so the kill plan also counts the own units that
+  can move in and attack this turn (the existing hunt plan). A plan exists
+  only when the projected hits take all its HP; each hunter that moves is
+  held to the tile the plan counted for it, a hunter the retaliation would
+  kill is left out, and a ranged hunter never ends next to the Spider.
+- **A routine Move** is every `MOVE` and `DISEMBARK` except a hunter's Move
+  in such a kill. A treasure chest on a provoke tile is left alone.
+- **"With no attack"** (the step away) and **"no better target"** (rule (b))
+  both mean: the unit has no offered attack on a unit that is not a Monster.
+- **A sole city defender** is an own land unit on the center of one of its
+  owner's cities with no other land unit of that owner within 2 of it.
+- **"The last capturer of a planned capture"** is read as: a capturer
+  within 2 of a center it can take (a hostile city or an unowned village)
+  takes no Shrine errand.
+- **Fountain safety** ("no visible enemy can reach this turn") is the
+  policy's ordinary danger estimate for a unit standing on the Fountain
+  being zero. A hurt unit on such a Fountain makes no Move until it has full
+  HP.
+- **The campaign has no retreat logic by HP,** so "the Fountain counts as
+  recovery" is implemented as priorities: the walk to the Fountain outranks
+  `RECOVER` and the wounded Windmill staging and is not held back by a
+  campaign wave that waits at home.
+- **Other damage** (splash, Wail, Kaboom, a Bomb Run, an Eruption) is not
+  filtered: the policy does not aim these at the Spider, and a hit on it
+  this way is incidental. Raise Dead is not filtered either (a Skeleton may
+  rise next to the Spider; the ordinary "doomed Skeleton" rule counts the
+  Spider's hit).
+- **Cooperative matches.** The policy's own hostility test does not count
+  the neutral owner as hostile for an AI seat in a Cooperative match; the
+  curiosity rules read the view's `monsters` list instead, so they are the
+  same in both modes.
+- **Measured** (26 head-to-head games on 13 two-seat 16 x 16 boards that
+  drew a curiosity, both seat orders): the new policy lost no unit to the
+  Spider (the old one 6) and slew 4 Spiders (the old one 2); 14 wins to 11
+  with one undecided, most boards going to the same seat in both orders.
+  No Wreck was salvaged and no Fountain used by either policy in these
+  short games; the coarse check of bead 7 should measure the errands on
+  larger boards and may widen their bounds (4 steps; half HP within two
+  turns).
 
 ## Appendix A. Draft, critique, and changes
 

@@ -560,6 +560,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // Egg's nest tile too, so Eggs are not laid in an eruption ring).
     "src/ai/v7-dwarf.ts": 4,
     "src/ai/v7-campaign.ts": 1,
+    // `pulp_wars-737.4`: a sole city defender is a land-form unit (an Egg
+    // lies next to a center, never on one, and an embarked unit or a boat
+    // defends no center).
+    "src/ai/v7-curiosities.ts": 1,
     "src/ai/v7-dinosaur.ts": 2,
     "src/ai/v7-goblin.ts": 1,
     "src/ai/v7-ice-folk.ts": 7,

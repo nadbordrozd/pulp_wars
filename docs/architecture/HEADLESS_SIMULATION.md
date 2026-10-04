@@ -412,8 +412,11 @@ no curiosity plays command for command like the same match off. The
 placement rules are checked independently of the engine, and the
 distribution is printed, by
 `npm run validate:ruleset7-curiosity-maps` (`--seeds=N`, default 32,
-every map type, size, and AI count). The Normal AI does not seek
-curiosities yet (`pulp_wars-737.4`).
+every map type, size, and AI count). The Normal AI plays curiosities
+since `pulp_wars-737.4`
+([Normal AI: map curiosities](NORMAL_AI.md#map-curiosities-pulp_wars-7374)),
+only from the moment a seat sees one, so a match that drew none is
+unchanged.
 
 ## The Giant Spider (`pulp_wars-737.3`)
 
@@ -433,11 +436,12 @@ with two opponents draws one:
 npm run headless -- match --ruleset pulp-wars-poc-7r37 --map-type dry-land --size 16 --ai-count 2 --seed 7 --max-rounds 40
 ```
 
-The Normal AI ignores curiosities until `pulp_wars-737.4`, so its units
-walk next to the Spider and attack it like any enemy; the contract tests
-(`tests/unit/ruleset-v7-monster.test.ts`) play Normal rounds with a Spider
-next to units of all seven factions and headless matches with the option
-on at 16 x 16 without errors or stalls.
+The contract tests (`tests/unit/ruleset-v7-monster.test.ts`) play Normal
+rounds with a Spider next to units of all seven factions and headless
+matches with the option on at 16 x 16 without errors or stalls. Since
+`pulp_wars-737.4` the Normal AI keeps away from the Spider unless it can
+kill it (before, its units walked next to it and attacked it like any
+enemy).
 
 ## The Martian and Ice Folk balance round (`pulp_wars-1wy.3`)
 

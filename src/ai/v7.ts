@@ -316,6 +316,19 @@ import {
   type PlannedDwarfCommandV7,
 } from "./v7-dwarf";
 import {
+  MONSTER_BOUNTY_FOR_POLICY_V7,
+  MONSTER_REGENERATION_FOR_POLICY_V7,
+  MONSTER_STEP_AWAY_PRIORITY_V7,
+  curiosityErrandMoveV7,
+  curiosityFactsV7,
+  monsterProvokedAtV7,
+  monstersThreateningV7,
+  planCuriosityErrandsV7,
+  soleCityDefenderV7,
+  type CuriosityErrandV7,
+  type CuriosityFactsV7,
+} from "./v7-curiosities";
+import {
   directivePlanForViewV7,
   leashReadyCommandsV7,
   type DirectivePlanV7,
@@ -478,6 +491,20 @@ interface PolicyContextV7 {
   dwarfCache: DwarfContextCacheV7 | null;
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
+  /**
+   * Map curiosities (`pulp_wars-737.4`): the public curiosity facts, or null
+   * when the view has no curiosity and no Monster; every curiosity
+   * heuristic is gated on it (and on the switch of
+   * `src/ai/v7-curiosities.ts`).
+   */
+  readonly curiosities: CuriosityFactsV7 | null;
+  /** Curiosity matches: the errands (undefined until computed). */
+  curiosityErrands: ReadonlyMap<UnitId, CuriosityErrandV7> | undefined;
+  /**
+   * Curiosity matches: the own units with an offered attack on a unit that
+   * is not a Monster (undefined until computed).
+   */
+  curiosityOtherTargets: ReadonlySet<UnitId> | undefined;
   readonly commands: readonly CommandV7[];
   /**
    * `pulp_wars-68k.3`: the seat's active mission directive (null for NORMAL
@@ -1431,6 +1458,9 @@ function bareContext(
     dwarf: dwarfMatchForPolicyV7(view),
     dwarfCache: null,
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
+    curiosities: curiosityFactsV7(view),
+    curiosityErrands: undefined,
+    curiosityOtherTargets: undefined,
     commands,
     directive,
     openingGrowthHarvest: commands.some((command) =>
@@ -2525,6 +2555,17 @@ function* addHostileThreatsWorkV7(
   pathWork?: MutablePolicyPathDiagnosticsV7,
 ): Generator<void, void> {
   const view = context.view;
+  // Map curiosities (`pulp_wars-737.4`, section 11): a Monster threatens
+  // exactly its provoke tiles and never a city (it never comes within 2 of
+  // a center).
+  const monster = context.curiosities?.monsterById.get(unit.id);
+  if (monster !== undefined) {
+    (context.threatenedTiles as Map<UnitId, ReadonlySet<string>>).set(
+      unit.id,
+      monster.provokeKeys,
+    );
+    return;
+  }
   const reach = new Set(
     (yield* publicThreatenedTilesWorkV7(
       view,
@@ -3188,6 +3229,9 @@ function isPolicyCandidate(
     leavesSoleThreatenedDefender(context, command) &&
     !defenderActionException(context, command)
   )
+    return false;
+  // Map curiosities (`pulp_wars-737.4`): the Spider and the Fountain.
+  if (context.curiosities !== null && curiosityRejectsV7(context, command))
     return false;
   if (command.kind === "MOVE") {
     const actor = context.lookup.unitsById.get(command.unitId);
@@ -5165,6 +5209,13 @@ function scoreCommandWithContext(
       }
       // pulp_wars-9s0.8: the hunters' attacks on a hunted high-value unit.
       priority = huntAttackPriorityV7(context, command, preview, priority);
+      // Map curiosities (`pulp_wars-737.4`): the kill of a Monster is worth
+      // its bounty on top of the ordinary kill value.
+      if (
+        preview.defenderDies &&
+        context.curiosities?.monsterById.has(command.targetUnitId) === true
+      )
+        strategicValue += MONSTER_BOUNTY_FOR_POLICY_V7;
     }
   }
 
@@ -5613,6 +5664,19 @@ function scoreCommandWithContext(
         priority = hunt.priority;
         strategicValue += hunt.strategic;
       }
+    }
+    // Map curiosities (`pulp_wars-737.4`): the Fountain, the Shrine, the
+    // Wreck, and the step away from the Spider.
+    if (context.curiosities !== null && resultAt !== null) {
+      const curiosity = curiosityMoveValueV7(
+        context,
+        context.curiosities,
+        actor,
+        resultAt,
+        priority,
+      );
+      priority = curiosity.priority;
+      strategicValue += curiosity.strategic;
     }
   }
 
@@ -6427,6 +6491,13 @@ interface HuntPlanV7 {
   readonly target: PublicUnitV7;
   /** The hunters; `true` for one that strikes from where it stands. */
   readonly hunters: ReadonlyMap<UnitId, boolean>;
+  /**
+   * The tile the plan counted for each hunter that moves in first. Only a
+   * Monster hunt holds its hunters to it (`pulp_wars-737.4`): a hunter that
+   * took another hunter's only tile would leave the kill short and itself
+   * next to the Spider.
+   */
+  readonly tiles: ReadonlyMap<UnitId, string>;
 }
 
 function huntTargetV7(view: PlayerViewV7, unit: PublicUnitV7): boolean {
@@ -6441,9 +6512,19 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
   if (context.hunts !== undefined) return context.hunts;
   const view = context.view;
   const plans: HuntPlanV7[] = [];
-  const targets = context.lookup.visibleHostiles.filter(
-    (unit) => huntTargetV7(view, unit) || siegeTargetV7(context, unit),
-  );
+  // Map curiosities (`pulp_wars-737.4`, section 11 (a)): a visible Monster
+  // is hunted like a high-value unit, in both AI modes: only a kill this
+  // turn makes a plan. (No Monster has a hunt-target ability or stands on a
+  // center, so without the curiosity facts the list is unchanged.)
+  const monsters = context.curiosities?.monsterById ?? null;
+  const targets = [
+    ...context.lookup.visibleHostiles.filter(
+      (unit) =>
+        monsters?.has(unit.id) !== true &&
+        (huntTargetV7(view, unit) || siegeTargetV7(context, unit)),
+    ),
+    ...(context.curiosities?.monsters.map((monster) => monster.unit) ?? []),
+  ];
   // Indexed once per decision: the offered attacks and each unit's Moves
   // that a hunter may make (not boarding, not leaving a sole defender).
   const offeredAttacks = new Set<string>();
@@ -6486,9 +6567,17 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
         continue;
       const facts = publicCombatFacts(view, unit, context.lookup);
       if (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0) continue;
+      // Map curiosities (`pulp_wars-737.4`): a Monster is not worth a unit.
+      // A hunter its retaliation would kill takes no part (judged against
+      // the Monster as it stands, so a late hitter is judged cautiously).
+      const monster = monsters?.get(target.id);
       if (offeredAttacks.has(`${unit.id}:${target.id}`)) {
         const preview = queryCombatPreviewV7(view, unit.id, target.id);
-        if (preview !== null && preview.damageToDefender > 0)
+        if (
+          preview !== null &&
+          preview.damageToDefender > 0 &&
+          !(monster !== undefined && preview.attackerDies)
+        )
           candidates.push({
             unit,
             damage: preview.damageToDefender,
@@ -6499,15 +6588,33 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
         continue;
       }
       if (unit.activation.moved || !unitMayActAfterMoveV7(view, unit)) continue;
+      // Map curiosities: a sole city defender never walks to a Monster.
+      if (monster !== undefined && soleCityDefenderV7(view, unit)) continue;
       const tiles: string[] = [];
       let firstTile: CoordV7 | null = null;
       for (const to of movesByUnit.get(unit.id) ?? []) {
         const range = distance(to, target.at);
         if (range < facts.minimumRange || range > facts.maximumRange) continue;
+        // Map curiosities: only a melee hunter ends next to the Monster.
+        if (monster !== undefined && facts.maximumRange > 1 && range <= 1)
+          continue;
         tiles.push(coordKey(to));
         firstTile ??= to;
       }
       if (firstTile === null) continue;
+      if (
+        monster !== undefined &&
+        distance(firstTile, target.at) <= 1 &&
+        publicProjectedDamageWithLookupV7(
+          view,
+          target,
+          { ...unit, at: firstTile },
+          firstTile,
+          {},
+          context.lookup,
+        ) >= unit.hp
+      )
+        continue;
       // Projected from the tile it attacks from (a shot from two or more
       // tiles into a Witch's Blizzard is halved).
       const damage = publicProjectedDamageWithLookupV7(
@@ -6530,6 +6637,7 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
     // The hits in that order, each on what the earlier ones leave (a
     // wounded unit defends with less).
     const hunters = new Map<UnitId, boolean>();
+    const tiles = new Map<UnitId, string>();
     const usedTiles = new Set<string>();
     let left = target.hp;
     for (const candidate of candidates) {
@@ -6538,6 +6646,7 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
         const tile = candidate.tiles.find((key) => !usedTiles.has(key));
         if (tile === undefined) continue;
         usedTiles.add(tile);
+        tiles.set(candidate.unit.id, tile);
       }
       hunters.set(candidate.unit.id, candidate.stays);
       left -=
@@ -6559,7 +6668,7 @@ function huntPlansV7(context: PolicyContextV7): readonly HuntPlanV7[] {
           capturerNearV7(context, unit, target.at, hunters),
         ))
     )
-      plans.push({ target, hunters });
+      plans.push({ target, hunters, tiles });
   }
   context.hunts = plans;
   return plans;
@@ -6638,6 +6747,13 @@ function huntMoveValueV7(
   if (plan === undefined || plan.hunters.get(actor.id) !== false) return null;
   const range = distance(to, plan.target.at);
   if (range < facts.minimumRange || range > facts.maximumRange) return null;
+  // Map curiosities (`pulp_wars-737.4`): a Monster's hunter moves only to
+  // the tile the plan counted for it.
+  if (
+    context.curiosities?.monsterById.has(plan.target.id) === true &&
+    plan.tiles.get(actor.id) !== coordKey(to)
+  )
+    return null;
   return {
     priority: Math.max(priority, HUNT_MOVE_PRIORITY_V7),
     strategic: -visibleImmediateDamage(view, actor, to, context),
@@ -6657,6 +6773,161 @@ function huntAttackPriorityV7(
     priority,
     preview.defenderDies ? HUNT_KILL_PRIORITY_V7 : HUNT_ATTACK_PRIORITY_V7,
   );
+}
+
+/**
+ * Map curiosities (`pulp_wars-737.4`,
+ * docs/product/RULESET_7_MAP_CURIOSITIES.md section 11). Every helper below
+ * is reached only with `context.curiosities` set (a view with a curiosity or
+ * a Monster), so a match without one keeps its decisions.
+ *
+ * The unit's part in this turn's combined kill of the Monster `monsterId`:
+ * `true` when it strikes from where it stands, `false` when it moves in
+ * first, undefined when it has none (or no kill is planned).
+ */
+function monsterHunterV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+  monsterId: UnitId,
+): boolean | undefined {
+  return huntPlansV7(context)
+    .find((plan) => plan.target.id === monsterId)
+    ?.hunters.get(unitId);
+}
+
+/** The own units with an offered attack on a unit that is not a Monster. */
+function curiosityOtherTargetsV7(
+  context: PolicyContextV7,
+  facts: CuriosityFactsV7,
+): ReadonlySet<UnitId> {
+  if (context.curiosityOtherTargets !== undefined)
+    return context.curiosityOtherTargets;
+  const units = new Set<UnitId>();
+  for (const command of context.commands)
+    if (
+      command.kind === "ATTACK" &&
+      !facts.monsterById.has(command.targetUnitId)
+    )
+      units.add(command.unitId);
+  context.curiosityOtherTargets = units;
+  return units;
+}
+
+/** The curiosity errands of this decision (see `planCuriosityErrandsV7`). */
+function curiosityErrandsV7(
+  context: PolicyContextV7,
+  facts: CuriosityFactsV7,
+): ReadonlyMap<UnitId, CuriosityErrandV7> {
+  if (context.curiosityErrands !== undefined) return context.curiosityErrands;
+  const view = context.view;
+  const errands = planCuriosityErrandsV7({
+    view,
+    facts,
+    move: (unit) => publicCombatFacts(view, unit, context.lookup).move,
+    construct: (unit) => unitRoleMechanicsV7(view, unit).construct,
+    grows: (unit) => unitRoleRuleV7(view, unit).abilities.includes("GROW"),
+    captures: (unit) => canCaptureV7(view, unit),
+    danger: (unit, at) => visibleImmediateDamage(view, unit, at, context),
+    navalDanger: context.naval.visibleNavalDanger,
+  });
+  context.curiosityErrands = errands;
+  return errands;
+}
+
+/**
+ * The candidate filter of section 11:
+ *
+ * - a Move (or a landing) never ends on a visible Monster's provoke tiles,
+ *   except a melee hunter's Move in a combined kill of that Monster;
+ * - an attack on a Monster is offered only (a) as part of this turn's
+ *   combined kill (or as the kill itself), or (b) from outside its reach
+ *   when the hit beats its regeneration and the unit has no other target;
+ * - a hurt unit on a safe Fountain stands until it has healed.
+ */
+function curiosityRejectsV7(
+  context: PolicyContextV7,
+  command: CommandV7,
+): boolean {
+  const facts = context.curiosities;
+  if (facts === null) return false;
+  if (command.kind === "DISEMBARK")
+    return monsterProvokedAtV7(facts, command.at) !== undefined;
+  if (command.kind === "ATTACK") {
+    const monster = facts.monsterById.get(command.targetUnitId);
+    if (monster === undefined) return false;
+    const preview = queryCombatPreviewV7(
+      context.view,
+      command.unitId,
+      command.targetUnitId,
+    );
+    if (preview === null) return true;
+    if (
+      preview.defenderDies ||
+      monsterHunterV7(context, command.unitId, monster.unit.id) !== undefined
+    )
+      return false;
+    return !(
+      preview.monsterRetaliates === false &&
+      !preview.attackerDies &&
+      preview.damageToDefender > MONSTER_REGENERATION_FOR_POLICY_V7 &&
+      !curiosityOtherTargetsV7(context, facts).has(command.unitId)
+    );
+  }
+  if (command.kind !== "MOVE") return false;
+  const actor = context.lookup.unitsById.get(command.unitId);
+  const to = command.path.at(-1);
+  if (actor === undefined || to === undefined) return false;
+  const monster = monsterProvokedAtV7(facts, to);
+  // Only the tile the kill plan counted for this hunter (a melee hunter's:
+  // the plan gives a ranged hunter no tile next to the Monster).
+  if (
+    monster !== undefined &&
+    huntPlansV7(context)
+      .find((plan) => plan.target.id === monster.unit.id)
+      ?.tiles.get(actor.id) !== coordKey(to)
+  )
+    return true;
+  const errand = curiosityErrandsV7(context, facts).get(actor.id);
+  return (
+    errand?.kind === "FOUNTAIN" &&
+    same(errand.at, actor.at) &&
+    actor.hp < actor.maxHp
+  );
+}
+
+/**
+ * The Move values of section 11: an errand unit's Move onto or toward its
+ * Fountain, Shrine, or Wreck, and the step of a unit the Monster would
+ * attack (and that has no attack of its own to make) to a tile where it
+ * would not.
+ */
+function curiosityMoveValueV7(
+  context: PolicyContextV7,
+  facts: CuriosityFactsV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  let strategic = 0;
+  const errand = curiosityErrandsV7(context, facts).get(actor.id);
+  const value =
+    errand === undefined ? null : curiosityErrandMoveV7(errand, actor.at, to);
+  if (value !== null) {
+    priority = Math.max(priority, value.priority);
+    strategic += value.strategic;
+  }
+  const threats = monstersThreateningV7(facts, actor.id, actor.at);
+  if (
+    threats.length > 0 &&
+    monstersThreateningV7(facts, actor.id, to).length === 0 &&
+    !threats.some(
+      (monster) =>
+        monsterHunterV7(context, actor.id, monster.unit.id) !== undefined,
+    ) &&
+    !curiosityOtherTargetsV7(context, facts).has(actor.id)
+  )
+    priority = Math.max(priority, MONSTER_STEP_AWAY_PRIORITY_V7);
+  return { priority, strategic };
 }
 
 /**
@@ -11672,7 +11943,24 @@ function visibleImmediateDamage(
     (context?.martian ?? martianMatchForPolicyV7(view))
       ? martianFactsForViewV7(view)
       : null;
+  // Map curiosities (`pulp_wars-737.4`, section 11, "Threat"): a visible
+  // Monster is a threat exactly to a unit on its provoke tiles, or one
+  // listed in its `provokedBy` inside its reach, in both AI modes; it is
+  // left out of the ordinary reach estimate below. Null in a view with no
+  // curiosity and no Monster.
+  const curiosities = curiosityFactsV7(view);
+  if (curiosities !== null)
+    for (const monster of monstersThreateningV7(curiosities, actor.id, at))
+      total += publicProjectedDamageWithLookupV7(
+        view,
+        monster.unit,
+        actor,
+        at,
+        {},
+        effectiveLookup,
+      );
   for (const hostile of hostiles) {
+    if (curiosities?.monsterById.has(hostile.id) === true) continue;
     const facts = publicCombatFacts(view, hostile, effectiveLookup);
     const wail =
       undead &&
