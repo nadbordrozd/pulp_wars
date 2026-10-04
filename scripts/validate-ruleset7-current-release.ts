@@ -131,6 +131,7 @@ const result = spawnSync(
     "tests/unit/ruleset-v7-candy-interactions.test.ts",
     "tests/unit/ruleset-v7-candy-persistence.test.ts",
     "tests/unit/ruleset-v7-candy-headless.test.ts",
+    "tests/unit/ruleset-v7-candy-ai.test.ts",
     "tests/unit/ruleset-v7-dinosaur-form-audit.test.ts",
     "tests/unit/ruleset-v7-dinosaur-ai-basics.test.ts",
     "tests/unit/ruleset-v7-save.test.ts",

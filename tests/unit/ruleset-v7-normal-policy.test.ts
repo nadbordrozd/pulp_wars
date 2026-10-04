@@ -97,6 +97,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "./v7-martian",
       "./v7-ice-folk",
       "./v7-dwarf",
+      // pulp_wars-jdb.4: the Candy policy (public view and previews only).
+      "./v7-candy",
       // pulp_wars-737.4: map curiosities (public view and previews only).
       "./v7-curiosities",
       // pulp_wars-68k.3: mission directives (read from the public setup).

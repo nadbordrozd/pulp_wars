@@ -347,6 +347,30 @@ import {
   type PlannedDwarfCommandV7,
 } from "./v7-dwarf";
 import {
+  BOUNCE_COST_V7,
+  CANDY_ROUTINE_MOVE_PRIORITY_V7,
+  CRASHED_TARGET_VALUE_V7,
+  CRUMBS_EAT_OBJECTIVE_V7,
+  HOME_SWEET_HOME_THREAT_RADIUS_V7,
+  PIE_FIRST_OFFSET_V7,
+  candyArmyCountsV7,
+  candyMatchForPolicyV7,
+  candyPolicyOptionsV7,
+  candyProductionAdjustmentV7,
+  candyResearchV7,
+  crashedForPolicyV7,
+  crashedMoveValueV7,
+  eatsCrumbsWorthV7,
+  planSugarRushV7,
+  rebakeApproachValueV7,
+  rebakeScoreV7,
+  rushedMovePlanV7,
+  splatSavedHpV7,
+  sugarTossScoreV7,
+  type CandyPolicyToolsV7,
+  type RushPlanV7,
+} from "./v7-candy";
+import {
   MONSTER_BOUNTY_FOR_POLICY_V7,
   MONSTER_REGENERATION_FOR_POLICY_V7,
   MONSTER_STEP_AWAY_PRIORITY_V7,
@@ -520,6 +544,13 @@ interface PolicyContextV7 {
   readonly dwarf: boolean;
   /** Dwarf matches: per-decision public Dwarf facts and plans. */
   dwarfCache: DwarfContextCacheV7 | null;
+  /**
+   * The Candy revision (`pulp_wars-jdb.4`): a seat is Candy; all Candy
+   * heuristics are gated on it (and on the switch of `src/ai/v7-candy.ts`).
+   */
+  readonly candy: boolean;
+  /** Candy matches: per-decision public Candy plans. */
+  candyCache: CandyContextCacheV7 | null;
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
   /**
@@ -1504,6 +1535,8 @@ function bareContext(
     iceFolkCache: null,
     dwarf: dwarfMatchForPolicyV7(view),
     dwarfCache: null,
+    candy: candyMatchForPolicyV7(view),
+    candyCache: null,
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
     chokepoint: chokepointPlanForPolicyV7(view, {
       isHostile: (owner) => isHostile(view, owner),
@@ -3277,16 +3310,24 @@ function isPolicyCandidate(
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
-  // The Candy engine (`pulp_wars-jdb.3`, RULESET_7_CANDY.md section 14):
-  // the ordinary policy plays the Candy registration and never Rushes,
-  // Re-bakes, or Tosses; the Candy policy is `pulp_wars-jdb.4`. These
-  // commands are offered only in a match with a Candy seat.
-  if (
-    command.kind === "SUGAR_RUSH" ||
-    command.kind === "REBAKE" ||
-    command.kind === "SUGAR_TOSS"
-  )
-    return false;
+  // The Candy revision (`pulp_wars-jdb.4`, RULESET_7_CANDY.md section 14):
+  // a Rush only with a plan, and the one Re-bake and the one Toss per unit
+  // the Candy rules chose (their scores reject the others). With a group
+  // switched off the policy never asks for its command, like the ordinary
+  // policy of `pulp_wars-jdb.3`. These commands are offered only in a match
+  // with a Candy seat.
+  if (command.kind === "SUGAR_RUSH")
+    return candyRushPlanV7(context, command.unitId) !== null;
+  if (command.kind === "REBAKE")
+    return (
+      candyPolicyOptionsV7().rebake &&
+      candyUnitPlayV7(context, context.lookup.unitsById.get(command.unitId))
+    );
+  if (command.kind === "SUGAR_TOSS")
+    return (
+      candyPolicyOptionsV7().sugarToss &&
+      candyUnitPlayV7(context, context.lookup.unitsById.get(command.unitId))
+    );
   // The Dwarf revision (`pulp_wars-78i.4`): the large Tunnel, bombing-run,
   // and Assemble offer lists are pruned to the one command per unit the
   // Dwarf plans chose (without the Dwarf rules they score as no candidate).
@@ -4201,6 +4242,17 @@ function* sharedCityContextWorkV7(
           atWar,
           repetition,
         );
+  // The Candy revision (`pulp_wars-jdb.4`): the Candy role values.
+  const candyCounts =
+    context.candy &&
+    view.viewer.faction === "CANDY" &&
+    candyPolicyOptionsV7().production
+      ? candyArmyCountsV7(view)
+      : null;
+  const candyAdjustment = (role: UnitRoleIdV7, threatened: boolean) =>
+    candyCounts === null
+      ? 0
+      : candyProductionAdjustmentV7(view, role, candyCounts, threatened);
   const endgameCaptureShortfall =
     context.endgame !== null &&
     endgameRoutedUnitsV7(context, (unit) => canCaptureV7(view, unit)) <
@@ -4374,6 +4426,7 @@ function* sharedCityContextWorkV7(
         martianAdjustment(command.role, threatened, true) +
         iceAdjustment(command.role, threatened, true) +
         dwarfAdjustment(command.role, threatened, true) +
+        candyAdjustment(command.role, threatened) +
         savingsValue(command.role);
       const order = landOrder as readonly UnitRoleIdV7[];
       if (
@@ -4485,6 +4538,7 @@ function* sharedCityContextWorkV7(
                   martianAdjustment(command.role, threatened, false) +
                   iceAdjustment(command.role, threatened, false) +
                   dwarfAdjustment(command.role, threatened, false) +
+                  candyAdjustment(command.role, threatened) +
                   savingsValue(command.role) -
                   (savingsRole === command.role
                     ? 2 *
@@ -4990,6 +5044,22 @@ function scoreCommandWithContext(
       }
     }
     if (
+      context.candy &&
+      view.viewer.faction === "CANDY" &&
+      candyPolicyOptionsV7().research
+    ) {
+      // The Candy revision (`pulp_wars-jdb.4`): research toward the roles.
+      const plan = candyResearchV7(view, candyResearchFactsV7(context));
+      if (
+        plan !== null &&
+        plan.tech === command.tech &&
+        plan.priority > priority
+      ) {
+        priority = plan.priority;
+        strategicValue = plan.strategic;
+      }
+    }
+    if (
       view.viewer.faction === "DINOSAUR" &&
       priority < SIGNATURE_RESEARCH_PRIORITY_V7
     ) {
@@ -5303,6 +5373,20 @@ function scoreCommandWithContext(
         priority = dwarf.priority;
         strategicValue += dwarf.strategic;
       }
+      // The Candy revision (`pulp_wars-jdb.4`): the Pie Launcher's Splat
+      // before the melee chips; against the Candy, a Crashed target and a
+      // Bounce.
+      if (context.candy && actor !== undefined && targetUnit !== undefined) {
+        const candy = candyAttackAdjustmentV7(
+          context,
+          actor,
+          targetUnit,
+          preview,
+          priority,
+        );
+        priority = candy.priority;
+        strategicValue += candy.strategic;
+      }
       // pulp_wars-9s0.8: the hunters' attacks on a hunted high-value unit.
       priority = huntAttackPriorityV7(context, command, preview, priority);
       // pulp_wars-68k.6: focused fire, then the committed melee attack.
@@ -5352,6 +5436,27 @@ function scoreCommandWithContext(
     priority = dwarf.priority;
     strategicValue = dwarf.strategic;
     immediateValue = dwarf.immediate;
+  }
+
+  if (command.kind === "SUGAR_RUSH" && context.candy) {
+    // The Candy revision (`pulp_wars-jdb.4`): Rush for a reason.
+    const plan = candyRushPlanV7(context, command.unitId);
+    priority = plan?.priority ?? -1;
+    strategicValue = plan?.strategic ?? 0;
+  }
+
+  if (command.kind === "REBAKE" && context.candy) {
+    const rebake = rebakeScoreV7(candyCacheV7(context).tools, command);
+    priority = rebake.priority;
+    strategicValue = rebake.strategic;
+    immediateValue = rebake.immediate;
+  }
+
+  if (command.kind === "SUGAR_TOSS" && context.candy) {
+    const toss = sugarTossScoreV7(candyCacheV7(context).tools, command);
+    priority = toss.priority;
+    strategicValue = toss.strategic;
+    immediateValue = toss.immediate;
   }
 
   if (command.kind === "BEAM_DOWN" && context.martian) {
@@ -5770,6 +5875,19 @@ function scoreCommandWithContext(
       const dwarf = dwarfMoveValueV7(context, actor, resultAt, priority);
       priority = dwarf.priority;
       strategicValue += dwarf.strategic;
+    }
+    if (context.candy && resultAt !== null) {
+      // The Candy revision (`pulp_wars-jdb.4`).
+      const candy = candyMoveValueV7(
+        context,
+        actor,
+        resultAt,
+        priority,
+        objectiveValue,
+      );
+      priority = candy.priority;
+      strategicValue += candy.strategic;
+      objectiveValue += candy.objective;
     }
     // pulp_wars-9s0.8: move in for a kill on a high-value unit.
     if (resultAt !== null && !autoembark) {
@@ -11788,6 +11906,243 @@ function dwarfMoveValueV7(
   return { priority: next, strategic };
 }
 
+// --- The Candy revision (`pulp_wars-jdb.4`) --------------------------------
+
+interface CandyContextCacheV7 {
+  readonly tools: CandyPolicyToolsV7;
+  /** Each own unit's Rush plan of this decision (null: do not Rush). */
+  readonly rushPlans: Map<UnitId, RushPlanV7 | null>;
+  /** Each own Rushed unit's planned Move of this decision. */
+  readonly rushedMoves: Map<UnitId, ReturnType<typeof rushedMovePlanV7>>;
+}
+
+/**
+ * The Mind Control revision (section 8): the Candy unit rules for one own
+ * unit, by its kind (a controlled Candy unit Rushes for its controller).
+ */
+function candyUnitPlayV7(
+  context: PolicyContextV7,
+  unit: PublicUnitV7 | undefined,
+): unit is PublicUnitV7 {
+  return (
+    unit !== undefined &&
+    context.candy &&
+    unit.ownerId === context.view.viewer.id &&
+    policyUnitFactionV7(context.view, unit) === "CANDY"
+  );
+}
+
+function candyCacheV7(context: PolicyContextV7): CandyContextCacheV7 {
+  if (context.candyCache !== null) return context.candyCache;
+  const view = context.view;
+  const without = new Map<UnitId, PlayerViewV7>();
+  const cache: CandyContextCacheV7 = {
+    rushPlans: new Map(),
+    rushedMoves: new Map(),
+    tools: {
+      view,
+      commands: context.commands,
+      hostiles: context.lookup.visibleHostiles,
+      targetValue: (unit) =>
+        targetStrategicValue(view, unit.id, context.lookup),
+      danger: (unit, at) => visibleImmediateDamage(view, unit, at, context),
+      dangerWithout: (unit, at, withoutUnitId) => {
+        let projected = without.get(withoutUnitId);
+        if (projected === undefined) {
+          projected = projectPublicUnits(
+            view,
+            view.units.filter((other) => other.id !== withoutUnitId),
+            [],
+          );
+          without.set(withoutUnitId, projected);
+        }
+        return visibleImmediateDamage(projected, unit, at, context);
+      },
+      threatens: (unitId) =>
+        context.threats.some((item) => item.unitId === unitId),
+      projectedDamage: (attacker, target, bonusAttack2) =>
+        publicProjectedDamageWithLookupV7(
+          view,
+          attacker,
+          target,
+          target.at,
+          { bonusAttack2 },
+          context.lookup,
+        ),
+      moved: (unit, at, pathLength) =>
+        projectPublicUnitForPolicyV7(view, unit.id, {
+          at,
+          activation: {
+            ...unit.activation,
+            moved: true,
+            movedPathLength: pathLength,
+          },
+        }),
+      freeCapacity: (unit) => freeCapacity(view, unit.homeCityId),
+      threatenedEmptyCenter: (at) => movesOntoThreatenedCity(context, at),
+      holdsThreatenedCenter: (unit) => {
+        const city = cityAt(view, unit.at, context.lookup);
+        return (
+          city !== undefined &&
+          city.ownerId === view.viewer.id &&
+          threatenedCity(context, city.id)
+        );
+      },
+      attackCandidate: (command) => isPolicyCandidate(context, command),
+    },
+  };
+  context.candyCache = cache;
+  return cache;
+}
+
+/** The Rush plan of an own Candy unit this decision (section 14), or null. */
+function candyRushPlanV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+): RushPlanV7 | null {
+  if (!context.candy || !candyPolicyOptionsV7().rush) return null;
+  const unit = context.lookup.unitsById.get(unitId);
+  if (!candyUnitPlayV7(context, unit)) return null;
+  const cache = candyCacheV7(context);
+  const cached = cache.rushPlans.get(unitId);
+  if (cached !== undefined) return cached;
+  const plan = planSugarRushV7(cache.tools, unit);
+  cache.rushPlans.set(unitId, plan);
+  return plan;
+}
+
+/** The public facts of the Candy research plan. */
+function candyResearchFactsV7(
+  context: PolicyContextV7,
+): Parameters<typeof candyResearchV7>[1] {
+  const view = context.view;
+  const centers = view.cities
+    .filter((city) => city.ownerId === view.viewer.id)
+    .map((city) => city.at);
+  const seated = (unit: PublicUnitV7): boolean =>
+    context.curiosities?.monsterById.has(unit.id) !== true;
+  return {
+    ownedCities: centers.length,
+    hostileInSight: context.lookup.visibleHostiles.some(seated),
+    cityThreatened: context.lookup.visibleHostiles.some(
+      (unit) =>
+        unit.form === "LAND" &&
+        seated(unit) &&
+        centers.some(
+          (center) =>
+            distance(center, unit.at) <= HOME_SWEET_HOME_THREAT_RADIUS_V7,
+        ),
+    ),
+    walledCityVisible: view.cities.some(
+      (city) =>
+        isHostile(view, city.ownerId) &&
+        city.rewards.some((record) => record.reward === "WALLS"),
+    ),
+  };
+}
+
+/**
+ * Candy attack scoring (section 14). As the Candy: a Pie Launcher's chip
+ * that Splats a target the own melee units can attack goes before the
+ * chips of its tier and is worth the retaliation it saves ("Pie first").
+ * Against the Candy: a Crashed target wins a tie, and a melee attack that
+ * will be bounced loses a step.
+ */
+function candyAttackAdjustmentV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  target: PublicUnitV7,
+  preview: CombatPreviewV7,
+  priority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const view = context.view;
+  const options = candyPolicyOptionsV7();
+  let next = priority;
+  let strategic = 0;
+  if (
+    options.readCrash &&
+    crashedForPolicyV7(view, target.id) &&
+    isHostile(view, target.ownerId)
+  )
+    strategic += CRASHED_TARGET_VALUE_V7;
+  if (options.respectBounce && preview.bounce === "WILL_BOUNCE")
+    strategic -= BOUNCE_COST_V7;
+  if (
+    options.pieFirst &&
+    candyUnitPlayV7(context, actor) &&
+    preview.splatApplied &&
+    !preview.defenderDies
+  ) {
+    const saved = splatSavedHpV7(candyCacheV7(context).tools, actor, target);
+    if (saved > 0) {
+      next += PIE_FIRST_OFFSET_V7;
+      strategic += saved;
+    }
+  }
+  return { priority: next, strategic };
+}
+
+/**
+ * Candy Move scoring (section 14). As the Candy: the Move of a Rushed
+ * unit's kill plan; a Crashed unit steps out of reach; a Confectioner walks
+ * next to Crumbs it can Re-bake. Against the Candy: a routine Move that is
+ * no step back ends on hostile Crumbs when they are worth eating.
+ */
+function candyMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  priority: number,
+  objective: number,
+): {
+  readonly priority: number;
+  readonly strategic: number;
+  readonly objective: number;
+} {
+  const view = context.view;
+  const options = candyPolicyOptionsV7();
+  let next = priority;
+  let strategic = 0;
+  if (actor.form !== "LAND" || actor.ownerId !== view.viewer.id)
+    return { priority, strategic, objective: 0 };
+  const routine = priority >= 0 && priority < CANDY_ROUTINE_MOVE_PRIORITY_V7;
+  const eats =
+    options.eatCrumbs &&
+    routine &&
+    objective >= 0 &&
+    eatsCrumbsWorthV7(view, actor, to, (unit, at) =>
+      visibleImmediateDamage(view, unit, at, context),
+    );
+  const bonus = eats ? CRUMBS_EAT_OBJECTIVE_V7 : 0;
+  if (!candyUnitPlayV7(context, actor))
+    return { priority: next, strategic, objective: bonus };
+  const cache = candyCacheV7(context);
+  if (options.rush && view.sugarRush.length > 0) {
+    let plan = cache.rushedMoves.get(actor.id);
+    if (plan === undefined) {
+      plan = rushedMovePlanV7(cache.tools, actor);
+      cache.rushedMoves.set(actor.id, plan);
+    }
+    if (plan !== null && same(plan.to, to)) {
+      next = Math.max(next, plan.priority);
+      strategic += plan.strategic;
+    }
+  }
+  if (options.crashRetreat && crashedForPolicyV7(view, actor.id)) {
+    const crashed = crashedMoveValueV7(cache.tools, actor, to, next);
+    next = crashed.priority;
+    strategic += crashed.strategic;
+  }
+  if (options.rebake && next < CANDY_ROUTINE_MOVE_PRIORITY_V7) {
+    const approach = rebakeApproachValueV7(cache.tools, actor, to);
+    if (approach !== null) {
+      next = Math.max(next, approach.priority);
+      strategic += approach.strategic;
+    }
+  }
+  return { priority: next, strategic, objective: bonus };
+}
+
 function bestSweepFlankV7(context: PolicyContextV7, from: CoordV7): number {
   const hostiles = context.lookup.visibleHostiles;
   const hostileAt = (at: CoordV7): boolean =>
@@ -12762,6 +13117,12 @@ function visibleImmediateDamage(
   // listed in its `provokedBy` inside its reach, in both AI modes; it is
   // left out of the ordinary reach estimate below. Null in a view with no
   // curiosity and no Monster.
+  // The Candy revision (`pulp_wars-jdb.4`): the Crash of hostile Candy
+  // units (a match with a Candy seat, and the switch).
+  const readCrash =
+    candyPolicyOptionsV7().readCrash &&
+    (context?.candy ?? candyMatchForPolicyV7(view)) &&
+    view.sugarRush.length > 0;
   const curiosities = curiosityFactsV7(view);
   if (curiosities !== null)
     for (const monster of monstersThreateningV7(curiosities, actor.id, at))
@@ -12783,6 +13144,10 @@ function visibleImmediateDamage(
       isLivingOwnerV7(view, actor.ownerId);
     if (!wail && (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0))
       continue;
+    // The Candy revision (`pulp_wars-jdb.4`, section 14, "read the Crash"):
+    // a Crashed unit does not attack on its next turn (the list is empty
+    // in a match without a Candy seat).
+    if (readCrash && crashedForPolicyV7(view, hostile.id)) continue;
     const d = distance(hostile.at, at);
     const minimumRange = wail ? 1 : facts.minimumRange;
     const maximumRange = wail ? WAIL_THREAT_RADIUS_V7 : facts.maximumRange;
@@ -13559,7 +13924,15 @@ function projectPublicUnits(
           ...stat.base,
           value: rational(baseNumerator, baseDenominator),
         },
-        modifiers: embarked ? [] : stat.modifiers,
+        // The Candy revision: the projected total leaves the Rush bonus
+        // out, so its modifier goes too, and the preview adds the bonus
+        // from the unit's `sugarRush` entry under the first-attack rule (no
+        // unit has the modifier in a match without a Candy seat).
+        modifiers: embarked
+          ? []
+          : stat.modifiers.filter(
+              (modifier) => modifier.source !== "SUGAR_RUSH",
+            ),
         total: rational(numerator, denominator),
       });
       return [

@@ -586,7 +586,14 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/ai/v7-ice-folk.ts": 7,
     "src/ai/v7-martian.ts": 2,
     "src/ai/v7-undead.ts": 1,
-    "src/ai/v7.ts": 22,
+    // `pulp_wars-jdb.4`: a Rush plan, the Move of a Rushed unit's plan, and
+    // a Confectioner's walk to Crumbs take a land-form own unit (an Egg
+    // never Rushes or Re-bakes, and an embarked unit cannot); the melee
+    // unit a Crashed unit steps away from is a land-form unit (an Egg and
+    // an embarked unit never attack); the Candy Move rules take a land-form
+    // mover.
+    "src/ai/v7-candy.ts": 4,
+    "src/ai/v7.ts": 23,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

@@ -99,6 +99,17 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/ai/v7-dinosaur.ts::layEggTurnsV7": "SEAT",
   "src/ai/v7-dinosaur.ts::dinosaurProductionAdjustmentV7": "SEAT",
   "src/ai/v7-dinosaur.ts::hatchScoreV7": "SEAT",
+  // `pulp_wars-jdb.4`: the Candy match gate, the seat's production and
+  // research, and the roles of Crumbs (a Candy seat's own, re-baked under
+  // its own registration; a controlled Confectioner cannot Re-bake).
+  "src/ai/v7-candy.ts::candyMatchForPolicyV7": "SEAT",
+  "src/ai/v7-candy.ts::candyProductionAdjustmentV7": "SEAT",
+  "src/ai/v7-candy.ts::candyResearchV7": "SEAT",
+  "src/ai/v7-candy.ts::crumbsOrderV7": "SEAT",
+  "src/ai/v7-candy.ts::eatsCrumbsWorthV7": "SEAT",
+  "src/ai/v7-candy.ts::fragileRebakeV7": "SEAT",
+  "src/ai/v7-candy.ts::rebakeApproachValueV7": "SEAT",
+  "src/ai/v7-candy.ts::rebakeScoreV7": "SEAT",
   "src/ai/v7-dwarf.ts::dwarfMatchForPolicyV7": "SEAT",
   "src/ai/v7-dwarf.ts::dwarfFactsV7": "SEAT",
   "src/ai/v7-dwarf.ts::dwarfProductionAdjustmentV7": "SEAT",

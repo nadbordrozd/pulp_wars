@@ -37,6 +37,20 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // Monsters, the units that walk to a Fountain, a Shrine, or a Wreck, and
     // the units that defend a center (a burrowed unit takes no errand and
     // holds no center this turn).
+    // `pulp_wars-jdb.4`: the Candy policy reads the board: the units a Rush
+    // plan attacks or claims, the units on or beside Crumbs, the melee
+    // attackers a Splat helps, the Toss targets, and the own army counts (a
+    // Candy seat has no burrowed unit; a mound on Crumbs is read from the
+    // view's `burrowed` list).
+    "src/ai/v7-candy.ts::candyArmyCountsV7": "BOARD",
+    "src/ai/v7-candy.ts::claimedRushTargetsV7": "BOARD",
+    "src/ai/v7-candy.ts::fragileRebakeV7": "BOARD",
+    "src/ai/v7-candy.ts::planSugarRushV7": "BOARD",
+    "src/ai/v7-candy.ts::rebakeApproachValueV7": "BOARD",
+    "src/ai/v7-candy.ts::rebakeScoreV7": "BOARD",
+    "src/ai/v7-candy.ts::splatSavedHpV7": "BOARD",
+    "src/ai/v7-candy.ts::sugarTossScoreV7": "BOARD",
+    "src/ai/v7.ts::candyCacheV7": "BOARD",
     "src/ai/v7-curiosities.ts::curiosityFactsV7": "BOARD",
     "src/ai/v7-curiosities.ts::planCuriosityErrandsV7": "BOARD",
     "src/ai/v7-curiosities.ts::soleCityDefenderV7": "BOARD",

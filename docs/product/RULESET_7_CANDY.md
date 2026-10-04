@@ -6,9 +6,11 @@ engine is implemented** by `pulp_wars-jdb.3` at `pulp-wars-poc-7r38`
 `pulp-wars-poc-7r37`), and its rules are folded into
 [Ruleset 7: current rules, section 23](RULESET_7_CURRENT.md#23-candy-faction-rules);
 [section 23](#23-implementation-notes-pulp_wars-jdb3) here records what the
-engine bead did and where it reads the contract narrowly. The Normal AI
-(`jdb.4`), the wired art and UI (`jdb.6`), and the coarse balance (`jdb.7`)
-are pending: until then a Candy seat plays the ordinary policy and the
+engine bead did and where it reads the contract narrowly. **The Normal AI
+is implemented** by `pulp_wars-jdb.4`
+([Candy play](../architecture/NORMAL_AI.md#candy-play-pulp_wars-jdb4), with
+its measurements and the rules it reads narrowly). The wired art and UI
+(`jdb.6`) and the coarse balance (`jdb.7`) are pending: until then the
 setup offers the faction with its unit, portrait, city, and ship art and plain command buttons. It turns the approved design (`pulp_wars-jdb.1`, commit
 `0dd3686`: a first draft, a hard critique, a redraft, a second critique, and
 a final redraft, kept as [appendix A](#appendix-a-the-first-draft-and-its-critique)

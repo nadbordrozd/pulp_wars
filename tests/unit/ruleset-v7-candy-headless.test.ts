@@ -14,13 +14,12 @@ import {
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 
-// The Candy revision (`pulp_wars-jdb.3`): the Normal AI stays safe with
-// Candy seats. Until the Candy policy of `pulp_wars-jdb.4` it plays a Candy
-// seat with the ordinary policy (it trains, moves, attacks, captures, and
-// Frosts, and never Rushes, Re-bakes, or Tosses), and every other faction
-// plays against Candy units, Crumbs, Splat, and Bounce without an illegal
-// command, a crash, or a stall (docs/product/RULESET_7_CANDY.md sections 14,
-// 18, and 19.1).
+// The Candy revision (`pulp_wars-jdb.3`, `pulp_wars-jdb.4`): the Normal AI
+// stays safe with Candy seats. A Candy seat plays the Candy policy (it
+// trains, moves, attacks, captures, Frosts, Rushes, Re-bakes, and Tosses),
+// and every other faction plays against Candy units, Crumbs, Splat, and
+// Bounce without an illegal command, a crash, or a stall
+// (docs/product/RULESET_7_CANDY.md sections 14, 18, and 19.1).
 
 const MATCHES: readonly (readonly [
   readonly FactionIdV7[],
@@ -48,7 +47,14 @@ const MATCHES: readonly (readonly [
 describe("headless Normal matches with Candy seats", () => {
   it("finish without errors or stalls against every faction, in both seat orders", () => {
     const kinds = new Set<string>();
-    const totals = { crumbsLeft: 0, bounces: 0, splats: 0, crumbsEaten: 0 };
+    const totals = {
+      crumbsLeft: 0,
+      bounces: 0,
+      splats: 0,
+      crumbsEaten: 0,
+      rushes: 0,
+      rushedAttacks: 0,
+    };
     for (const [factions, mapType, seed] of MATCHES) {
       const label = `${factions.join("-")} ${mapType} ${seed}`;
       const setup: MatchSetupV7 = { ...goblinSetupV7(factions, seed), mapType };
@@ -62,14 +68,19 @@ describe("headless Normal matches with Candy seats", () => {
       totals.crumbsEaten += match.metrics.candy.crumbsEaten;
       totals.bounces += match.metrics.candy.bounces;
       totals.splats += match.metrics.candy.splats;
-      // The ordinary policy never issues a Candy command (the Candy policy
-      // is `pulp_wars-jdb.4`, which turns this round).
-      for (const kind of ["SUGAR_RUSH", "REBAKE", "SUGAR_TOSS"] as const)
-        expect(match.metrics.commandsByKind[kind], `${label} ${kind}`).toBe(0);
-      expect(match.metrics.candy.rushes, label).toBe(0);
+      totals.rushes += match.metrics.candy.rushes;
+      totals.rushedAttacks += match.metrics.candy.rushedAttacks;
+      expect(match.metrics.commandsByKind.SUGAR_RUSH, label).toBe(
+        match.metrics.candy.rushes,
+      );
     }
     for (const kind of ["TRAIN", "MOVE", "ATTACK", "RESEARCH", "CAPTURE"])
       expect(kinds.has(kind), kind).toBe(true);
+    // The Candy policy (`pulp_wars-jdb.4`) Rushes, and most Rushes are
+    // followed by the attack they were made for.
+    expect(kinds.has("SUGAR_RUSH")).toBe(true);
+    expect(totals.rushes).toBeGreaterThan(0);
+    expect(totals.rushedAttacks * 4).toBeGreaterThanOrEqual(totals.rushes * 3);
     // The passive Candy rules happen in ordinary play.
     expect(totals.crumbsLeft).toBeGreaterThan(0);
     expect(totals.bounces + totals.splats + totals.crumbsEaten).toBeGreaterThan(

@@ -2240,6 +2240,136 @@ longest decision was 189 ms. No Dwarf rule brought a turn to the
 [Martian measurements](#martian-measurements), since fixed by
 [`pulp_wars-9s0.9`](#the-redevelop-and-rebuild-cycle-pulp_wars-9s09)).
 
+## Candy play (`pulp_wars-jdb.4`)
+
+The Candy rules of
+[the Candy contract, section 14](../product/RULESET_7_CANDY.md#14-normal-ai-requirements)
+live in `src/ai/v7-candy.ts`. Every rule is gated on a match with a Candy
+seat and reads only the public view (`sugarRush`, `crumbs`, the `candy` stat
+block), the offered commands, and public previews. `CandyPolicyOptionsV7`
+switches each group on and off; with all off the policy decides as the
+`pulp_wars-jdb.3` policy, decision for decision (checked over six matches
+with Candy seats, 1,573 decisions, against a copy of that policy; and with
+the default options over three matches without a Candy seat, 981 decisions).
+
+As the Candy (an own unit of Candy kind):
+
+- **Sugar Rush** (`rush`). A plan per offered `SUGAR_RUSH`, only for a unit
+  with a visible hostile unit within its Move + 1 + range or a threatened own
+  center in Rushed reach:
+  1. _kill_ (1179, or 1279 against a unit that threatens an own city, so the
+     plain kills of the tier go first): the exact preview of the Rushed
+     attack (`assumeSugarRush`, from the unit's tile or the end of a Rushed
+     Move) kills a target that no plain plan of the unit kills, and the unit
+     does not end in visible lethal reach (the danger estimate without the
+     dead target) unless the target is a `CATAPULT`, `CAPTAIN`, or `KNIGHT`
+     role. A Gummy Bear also needs a Sugar Frenzy target next to its new
+     tile, or a key kill. A target another Rushed own unit is about to kill
+     is left to it. The plan's Move then has the kill tier (1180 or 1280),
+     and the kill follows by the ordinary score;
+  2. _city_ (1251): the Rushed Move reaches a threatened own center with no
+     own unit on it that the plain Move cannot;
+  3. _home_ (one above the attack's tier): with Home Sweet Home, an offered
+     attack that leaves the unit on or next to an own center (never for a
+     Confectioner, and never for a chip of a unit below half its HP, which
+     recovers instead).
+     The defender of a threatened own center never leaves it for a plan.
+- **The Crash** (`crashRetreat`). A Crashed unit next to a visible hostile
+  melee unit moves to a tile with less visible danger (935) or holds; any
+  other Crashed unit makes no routine Move into more danger than where it
+  stands.
+- **Re-bake** (`rebake`). The one best offered Re-bake per Confectioner
+  (the dearest role, the lowest `turnsLeft`, then `(y, x)`) at 1265, before
+  `TRAIN`; never where the copy would stand in visible lethal reach with no
+  own center next to it and no own fighting unit beside it. A Confectioner
+  with no offered Re-bake walks (1176) next to the best affordable own Crumbs
+  within 3, or a step closer when they last another turn, never into
+  visible lethal reach.
+- **Pie first** (`pieFirst`). A Pie Launcher's chip that Splats a target an
+  own unit has an offered adjacent attack on goes 3 above its tier and is
+  worth the retaliation those attacks would take.
+- **Sugar Toss** (`sugarToss`). The one best target per Gunner (the highest
+  role cost, a Golem counts 12; the lowest HP; the lowest ID): at 905 when
+  every offered attack of the Gunner neither kills nor deals 3 and none is
+  on a unit that threatens an own city, at 650 when it has no offered
+  attack.
+- **Production** (`production`): the first Marshmallow, Gunner, Confectioner,
+  Pie Launcher, and Gummy Bear gain 10; in a threatened city the Gumdrop
+  gains 12 and the Confectioner and the Pie Launcher cost 30; a Confectioner
+  beyond one per six front units and a Pie Launcher beyond one per four cost 20.
+- **Research** (`research`; the free opener keeps the existing scorer):
+  Drill when a hostile unit is in sight, else Marksmanship (1062); Home Sweet
+  Home once a visible hostile unit is within 3 of an own center (1150);
+  Administration at two cities and Sawmilling against a visible Walled city
+  or at three cities (1150); then Drill, Chivalry, and Peppermint Surprise
+  (1062).
+
+Against the Candy (every seat):
+
+- **The Crash** (`readCrash`): a Crashed hostile unit adds nothing to the
+  danger estimate, and wins a tie of the attack score (1).
+- **Crumbs** (`eatCrumbs`): a routine Move that is no step back gains 2 on
+  its objective value for ending on hostile Crumbs, unless the bite kills,
+  the tile is in visible lethal reach after it, or the bite is taken for a
+  role that costs less than 4 or takes half the eater's HP.
+- **Bounce** (`respectBounce`): a melee attack whose preview says
+  `WILL_BOUNCE` loses 1.
+- Confectioners are hunted by the existing support hunt.
+
+Not covered: the wave plan still counts Crashed units; Marshmallows and the
+Golem use the generic Guard and Juggernaut placement. The projection of a
+moved unit (`projectPublicUnits`) now drops the `SUGAR_RUSH` Attack
+modifier with the bonus it recomputes without, so the exact preview adds it
+back under the first-attack rule (the Knight sequence planner of a Rushed
+Gummy Bear reads it).
+
+### Candy measurements
+
+Dry Land, 11 x 11, Normal against Normal, Rival mode, at `pulp-wars-poc-7r38`,
+small samples by the balance-testing policy. A scratch harness sets the
+switch before each seat's decision; every seed is played in both seat
+assignments.
+
+**Head-to-head, Candy mirror** (this policy on one seat, the `jdb.3` policy
+on the other, `allowDuplicateFactions`): seeds 0-19, 40 games, **27 to 13**;
+the final code again on seeds 0-14, 30 games, **21 to 9**. In those 30 games
+the Candy policy Rushed 213 times with 192 Rushed attacks, Re-baked 5 times,
+Tossed 13 times, and Splatted 44 times. After the merge with `7r39` (the
+Grunt at 8 HP and the siege of a single-file front), seeds 0-9, 20 games:
+**13 to 7**.
+
+**Leave one group out** (the whole policy against the policy without the
+group, Candy mirror, seeds 0-14, 30 games each; wins of the whole policy
+first):
+
+| Group left out          | Result  | Decision                                |
+| ----------------------- | ------- | --------------------------------------- |
+| `rush`                  | 18 – 12 | kept                                    |
+| `production`            | 17 – 13 | kept                                    |
+| `research`              | 17 – 13 | kept                                    |
+| `pieFirst`, `sugarToss` | 16 – 14 | kept                                    |
+| `eatCrumbs`             | 16 – 14 | kept                                    |
+| `respectBounce`         | 16 – 14 | kept                                    |
+| `readCrash`             | 15 – 15 | kept (neutral; the contract's rule)     |
+| `rebake`                | 14 – 14 | kept (neutral; 8 Re-bakes in 30 games)  |
+| `crashRetreat`          | 14 – 16 | kept (inside the noise; the contract's) |
+| Rush bonus in danger    | 11 – 18 | **dropped**                             |
+
+The dropped rule added the Rush bonus (+1 Attack) of every free hostile
+Candy unit to the danger estimate; it was not in the contract, made every
+seat too timid against the Candy, and is removed from the code.
+
+**Against the Candy, a Human seat** (seeds 0-14, both seat assignments,
+against this Candy policy): 14 of 30 with the three "against" rules, 15 of 30 without them: neutral on wins (the second-pass precedent: kept as the
+contract's rules).
+
+**Candy against each faction** (this policy on both seats, seeds 0-2 in
+both seat assignments, 6 games each; in brackets the `jdb.3` policy on the
+Candy seat): Humans 2 (2), Undead 5 (1), Goblins 2 (2), Dinosaurs 3 (1),
+Martians 2 (1), Ice Folk 3 (1), Dwarves 3 (1): **20 of 42** (9 of 42). A
+sanity sample, not a balance result (`pulp_wars-jdb.7`). No match stalled,
+none had a rejected command, and the longest turn had 59 accepted commands.
+
 ## The Rift (`pulp_wars-9s0.5`)
 
 The policy plays the [Rift](../product/RULESET_7_RIFT.md) through the
