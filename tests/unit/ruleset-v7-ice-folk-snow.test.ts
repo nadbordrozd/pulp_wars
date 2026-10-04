@@ -185,7 +185,10 @@ describe("which tiles are Snow (section 6.1)", () => {
 });
 
 describe("Glide (section 6.2, 1)", () => {
-  it("a step that leaves Snow costs half: a Yeti moves two Snow tiles, a Sled four", () => {
+  // `pulp_wars-1wy.3`: Glide is a step from Snow onto Snow (it was every
+  // step that leaves Snow); ruleset-v7-balance-martian-ice.test.ts has the
+  // village run and the Blizzard ball.
+  it("a step from Snow onto Snow costs half: a Yeti moves two Snow tiles, a Sled four", () => {
     const state = iceFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(7, 7) },
@@ -194,14 +197,15 @@ describe("Glide (section 6.2, 1)", () => {
       ],
       { techs: { 0: ["DRILL", "FORTIFICATION"] } },
     );
-    // (7, 7) -> (8, 7) -> (9, 7): both steps leave Snow.
+    // (7, 7) -> (8, 7) -> (9, 7): both steps are from Snow onto Snow.
     walk(state, at(7, 7), at(8, 7), at(9, 7));
     expect(moveReason(state, at(7, 7), at(8, 7), at(9, 7), at(10, 7))).toBe(
       "BUDGET_EXCEEDED",
     );
-    // Leaving the last Snow tile costs half too; the next step costs full.
+    // With Deep Winter (6-10, 6-10) is Snow: four Snow steps.
     walk(state, at(7, 9), at(8, 10), at(9, 10), at(10, 10), at(10, 9));
-    // Without Deep Winter (10, x) is not Snow: the fourth step is too much.
+    // Without Deep Winter (10, x) is not Snow: the step off the Snow costs
+    // a full point, so the fourth step is too much.
     const plain = iceFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(7, 7) },
@@ -239,18 +243,21 @@ describe("Glide (section 6.2, 1)", () => {
       ],
       { techs: { 0: [] } },
     );
-    // (4, 3) -> (5, 3) -> (6, 3): (5, 3) is in her Blizzard before the
-    // command, so both steps cost half; (6, 3) is not, so a third step is
-    // too much.
-    walk(state, at(4, 3), at(5, 3), at(6, 3));
-    expect(moveReason(state, at(4, 3), at(5, 3), at(6, 3), at(7, 3))).toBe(
+    // (4, 3) -> (5, 3) -> (5, 4): both tiles are in her Blizzard before the
+    // command, so both steps cost half. (6, 3) is not Snow before the
+    // command, whatever her Blizzard would cover after it: the step onto it
+    // costs a full point (`pulp_wars-1wy.3`), so she leaves her Blizzard's
+    // old footprint by one tile a turn.
+    walk(state, at(4, 3), at(5, 3), at(5, 4));
+    walk(state, at(4, 3), at(5, 3));
+    expect(moveReason(state, at(4, 3), at(5, 3), at(6, 3))).toBe(
       "BUDGET_EXCEEDED",
     );
   });
 });
 
 describe("Snow cover (section 6.2, 2)", () => {
-  it("an unfortified Ice Folk defender on Snow has cover x 1.5: a Fighter deals a Yeti 4 instead of 5", () => {
+  it("an unfortified Ice Folk defender on Snow has cover x 1.25: a Fighter deals a Yeti 5, as in the open", () => {
     const snow = iceFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(7, 6) },
@@ -258,13 +265,15 @@ describe("Snow cover (section 6.2, 2)", () => {
       ],
       { activeSeat: 1, techs: { 0: ["DRILL", "FORTIFICATION"] } },
     );
-    // The Yeti's retaliation is 4 at Defense 1.5 (`pulp_wars-7g3.7`).
+    // `pulp_wars-1wy.3`: x 1.25 (`SNOW_COVER_V7`; x 1.5 gave 4 and 4): on
+    // the formula's rounding a Yeti takes 5 and deals 3 back, as in the
+    // open; the cover shows on the Mammoth and the Witch.
     expect(attackV7(snow, at(7, 5), at(7, 6)).combat).toMatchObject({
-      damageToDefender: 4,
-      damageToAttacker: 4,
+      damageToDefender: 5,
+      damageToAttacker: 3,
       snowCover: true,
-      defenseBonusNumerator: 3,
-      defenseBonusDenominator: 2,
+      defenseBonusNumerator: 5,
+      defenseBonusDenominator: 4,
     });
     const open = iceFieldV7(
       [
@@ -280,7 +289,7 @@ describe("Snow cover (section 6.2, 2)", () => {
   });
 
   it("is not added to a Forest's cover, needs fortification 0, and Acid ignores it", () => {
-    // A Snowy Forest: still x 1.5.
+    // A Snowy Forest: the Forest's x 1.5, not Snow cover (`pulp_wars-1wy.3`).
     const forest = forestV7(
       iceFieldV7(
         [
@@ -294,7 +303,7 @@ describe("Snow cover (section 6.2, 2)", () => {
     expect(attackV7(forest, at(6, 6), at(7, 7)).combat).toMatchObject({
       defenseBonusNumerator: 3,
       defenseBonusDenominator: 2,
-      snowCover: true,
+      snowCover: false,
     });
     // Field Defense in own territory: fortified, no Snow cover.
     const fortified = patchTileV7(
@@ -337,12 +346,14 @@ describe("Snow cover (section 6.2, 2)", () => {
     expect(attackV7(human, at(6, 6), at(7, 7)).combat.snowCover).toBe(false);
   });
 
-  it("counts for Wail (not an attack): 1 on a Yeti on Snow, 2 in the open", () => {
+  // `pulp_wars-1wy.3`: at x 1.25 a Yeti takes 2 on Snow too, so the
+  // example is the Mammoth (Defense 2).
+  it("counts for Wail (not an attack): 1 on a Mammoth on Snow, 2 in the open", () => {
     const state = iceFieldV7(
       [
         { seat: 1, role: "MARKSMAN", at: at(7, 5) },
-        { seat: 0, role: "FIGHTER", at: at(7, 6) },
-        { seat: 0, role: "FIGHTER", at: at(6, 4) },
+        { seat: 0, role: "GUARD", at: at(7, 6) },
+        { seat: 0, role: "GUARD", at: at(6, 4) },
       ],
       {
         factions: ["ICE_FOLK", "UNDEAD"],
@@ -565,10 +576,11 @@ describe("the Blizzard's ranged-damage halving (section 6.3)", () => {
       { activeSeat: 1, techs: { 0: [] } },
     );
     const far = attackV7(state, at(5, 5), at(5, 3));
+    // 5 at Snow cover x 1.25 (`pulp_wars-1wy.3`; 4 at x 1.5), halved: 3.
     expect(far.combat).toMatchObject({
       blizzardHalved: true,
       snowCover: true,
-      damageToDefender: 2,
+      damageToDefender: 3,
     });
     const near = attackV7(far.state, at(4, 4), at(5, 3));
     expect(near.combat.blizzardHalved).toBe(false);

@@ -222,8 +222,15 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       const { curiosities: option, ...setupBefore } = revision19State.setup;
       expect(option).toBe(false);
       // `pulp_wars-737.3`: the empty Monster list, left out.
-      const { monsters, ...withoutMonsters } = revision19State;
+      // `pulp_wars-1wy.3`: and the two empty per-turn Martian lists.
+      const {
+        monsters,
+        beamedThisTurn,
+        tractorUsedThisTurn,
+        ...withoutMonsters
+      } = revision19State;
       expect(monsters).toEqual([]);
+      expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);
       const revision18State = {
         ...withoutMonsters,
         setup: setupBefore,

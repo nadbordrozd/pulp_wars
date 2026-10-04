@@ -1,10 +1,18 @@
 # Ruleset 7: Martians win by mobility, Ice Folk toned down
 
-Design for epic `pulp_wars-1wy`, bead `pulp_wars-1wy.1`. Status: **design
-only**. Nothing here is implemented; the rules of
-[RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) (identity `pulp-wars-poc-7r35`)
-stay authoritative until the engine bead of [section 12](#12-bead-breakdown)
-lands and updates them.
+Design for epic `pulp_wars-1wy`, bead `pulp_wars-1wy.1`. Status: **the
+engine step is implemented** (`pulp_wars-1wy.3`, identity
+`pulp-wars-poc-7r37`): M1 to M4 and I1 and I2 with the proposed numbers, as
+ruled by the root on 2026-10-04 ([section 13](#13-open-questions): the
+Saucer's Tractor Beam at Scouting, the glass-cannon Grunt, Snow cover
+× 1.25), and folded into
+[RULESET_7_CURRENT.md](RULESET_7_CURRENT.md) (its sections 11, 20.7, 20.10,
+and 21.5), which is authoritative; what the implementation made precise is
+in [section 15](#15-implementation-notes-pulp_wars-1wy3). The Normal AI
+(`pulp_wars-1wy.4`), the UI (`pulp_wars-1wy.5`), and the measurement
+(`pulp_wars-1wy.6`) of [section 12](#12-bead-breakdown) are pending, so the
+numbers are not yet measured. Sections 3 and 4 describe the rules before
+the change.
 
 The document diagnoses both factions with numbers from the engine's own
 combat formula, proposes four Martian changes and two Ice Folk changes with
@@ -30,6 +38,7 @@ the critique, and what the redraft changed.
 12. [Bead breakdown](#12-bead-breakdown)
 13. [Open questions](#13-open-questions)
 14. [Appendix A. Draft, critique, redraft](#appendix-a-draft-critique-redraft)
+15. [Implementation notes (`pulp_wars-1wy.3`)](#15-implementation-notes-pulp_wars-1wy3)
 
 ## 1. Sources and the problem
 
@@ -929,6 +938,11 @@ bump the identity and can run while the engine queue is busy.
 
 ## 13. Open questions
 
+**Ruled by the root (2026-10-04, epic `pulp_wars-1wy`):** 1, the Saucer's
+Tractor Beam at Scouting (tier 1) is accepted; 2, the glass-cannon Grunt
+(Attack 2, 9 HP) is accepted; 3, Snow cover × 1.25 is accepted. The
+questions as they were asked:
+
 1. **Tractor Beam at tier 1.** M2 puts the pull on the Saucer at Scouting.
    Acceptable, or should the Saucer's pull need Raiding (tier 2)?
 2. **The glass-cannon Grunt.** M4 makes the Grunt kill and die faster (two
@@ -1013,3 +1027,63 @@ bump the identity and can run while the engine queue is busy.
   for the Saucer to act every turn (one pulls, one delivers); M3 answers
   the Mothership complaint; M4 the Grunt complaint; I1 the movement
   complaint. I2 is the only optional one, and it is open question 3.
+
+## 15. Implementation notes (`pulp_wars-1wy.3`)
+
+The engine step (`pulp-wars-poc-7r37`) implements sections 5 and 6 with the
+proposed numbers. Where the design left a choice or the code needed a
+precise rule, the engine does this (the current rules state each one):
+
+1. **State shape.** The two per-turn facts are side lists of the state,
+   not activation flags: `beamedThisTurn` and `tractorUsedThisTurn`, sorted
+   unit IDs of the active seat's turn, emptied at its End Turn, pruned when
+   a listed unit leaves the board or changes owner, public on a visible
+   unit. They follow the Dwarf lists `surfacedThisTurn` and
+   `bombedThisTurn`, add no key to any unit, and are empty in a match
+   without a Martian seat, so such a match is the `7r36` match apart from
+   the two empty lists (the pinned all-Human parity digests and the
+   Human against Undead command-for-command pin did not move).
+2. **A beamed unit's activation** is exactly the end of an ordinary Move:
+   `moved` and `handled`, `movedPathLength` unchanged, every other flag
+   kept. "It cannot Move again" also spends a pending Escape (only a
+   mind-controlled Human Raider can have one when beamed); a pending
+   Overrun attack is kept.
+3. **"Has not landed this turn"** for the Mothership's free pull is the
+   exhausted activation (Recover and Capture both set, which no turn of
+   ordinary commands produces): a Mothership that landed, embarked, or was
+   trained this turn cannot pull; one that moved, attacked, or beamed can.
+4. **Each step of a pull must be explored by the actor.** A tile next to
+   the puller always is, but the first tile of a pull from three tiles
+   away is two tiles from a Mothership whose Sight is 1. Without the
+   condition an unexplored tile holding a unit the actor cannot see would
+   make an offered pull fail; with it the path is exact from the view (the
+   Push rule has the same "explored by the attacker" condition).
+5. **The technology a pull assumes for another player's unit** (Mountain
+   and Deep Water entry, read from the board) is read once, from the tile
+   the target stands on before the pull, for both steps.
+6. **Snow cover and terrain cover.** One function gives the multiplier:
+   × 1.5 on a Forest or Mountain, else × 1.25 on Snow, else none. On a
+   snowy Forest or Mountain the combat preview's `snowCover` is now false
+   (it was true while both were × 1.5) and the unit stats name the terrain.
+7. **Shared predicates.** The Beam Down carrier, passenger, and destination
+   tests and the Tractor Beam rule, actor, target, step, and path are each
+   one function in `src/engine/v7/martian.ts`, called by the reducer on the
+   state and by the public command query on the view; the two callers only
+   collect the tile facts.
+   `tests/unit/ruleset-v7-balance-martian-ice.test.ts` checks offered
+   equals accepted and the previews against the events.
+8. **Numbers changed by the Grunt's 9 HP elsewhere.** A second Yeti hit
+   kills a Chilled Grunt by plain damage (it shattered the 10-HP one), and
+   a Chilled Grunt in a Force Field dies to two Yeti hits (the second leaves 3 and
+   shatters it; the 10-HP one took three). The replica's tables of section
+   5.7 and 6.2 were confirmed by the engine for every value the tests pin
+   (Grunt 5 / 4 / 6 / 7, three Grunts 5, 6, 1; half-power rays 3 and 5;
+   Mothership 6 with 4 absorbed; a Fighter on a Yeti on Snow 5 and 3 back;
+   the Witch in two hits, the Mammoth in four; a Marksman into the Blizzard
+   3).
+9. **Normal AI and UI.** Neither is extended here. The policy keeps its
+   Saucer and Mothership rules apart by the Heavy Tractor Beam mechanic
+   (both units now carry both abilities), reads a pull's final tile from
+   the public query, and reads Glide and Snow cover from the new rules in
+   its estimates. The dock, picker, and Help texts quote the new rules
+   (section 11's sentences); the rest of section 11 is `pulp_wars-1wy.5`.

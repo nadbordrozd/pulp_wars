@@ -1,19 +1,30 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
+  BEAM_DOWN_PICKUP_RANGE_V7,
   FORCE_FIELD_SHIELD_V7,
+  HEAVY_TRACTOR_PULL_V7,
+  HEAVY_TRACTOR_RANGE_V7,
   MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
+  TRACTOR_BEAM_PULL_V7,
+  TRACTOR_BEAM_RANGE_V7,
   attackIsRayV7,
+  canEnterTerrainV7,
   isMindControlledV7,
+  primaryActionBlockedAfterMoveV7,
   technologyCapabilitiesV7,
   unitCapacitySlotsV7,
+  unitIsMountainBornV7,
+  unitMovementModeV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
   type MartianUnitFactsV7,
+  type SluggishLookupV7,
 } from "../rules/ruleset-v7";
 import { unitIsConstructV7 } from "./afflictions";
 import type { DomainEventV7 } from "./events";
+import { isAfloatFormV7, isNeutralOwnerV7 } from "./types";
 import type {
   BurrowedEntryV7,
   CoolingStatusV7,
@@ -533,7 +544,8 @@ export function releaseControlledV7<U extends UnitStateV7>(
  * rejects a controlled unit without its Brain. Every reducer output runs
  * through this before validation.
  */
-export function prunedMartianV7(state: GameStateV7): GameStateV7 {
+export function prunedMartianV7(input: GameStateV7): GameStateV7 {
+  const state = prunedMartianTurnListsV7(input);
   if (
     state.shields.length === 0 &&
     state.cooling.length === 0 &&
@@ -571,6 +583,34 @@ export function prunedMartianV7(state: GameStateV7): GameStateV7 {
 }
 
 /**
+ * The Martian balance revision (`pulp_wars-1wy.3`): drops the
+ * `beamedThisTurn` and `tractorUsedThisTurn` entries of units that left the
+ * board or no longer belong to the active player (a beamed controlled unit
+ * released in the same turn).
+ */
+function prunedMartianTurnListsV7(state: GameStateV7): GameStateV7 {
+  if (
+    state.beamedThisTurn.length === 0 &&
+    state.tractorUsedThisTurn.length === 0
+  )
+    return state;
+  const active = state.turnOrder[state.activeSeatIndex];
+  const own = new Set(
+    state.units
+      .filter((unit) => unit.hp > 0 && unit.ownerId === active)
+      .map((unit) => unit.id),
+  );
+  const beamedThisTurn = state.beamedThisTurn.filter((id) => own.has(id));
+  const tractorUsedThisTurn = state.tractorUsedThisTurn.filter((id) =>
+    own.has(id),
+  );
+  return beamedThisTurn.length === state.beamedThisTurn.length &&
+    tractorUsedThisTurn.length === state.tractorUsedThisTurn.length
+    ? state
+    : { ...state, beamedThisTurn, tractorUsedThisTurn };
+}
+
+/**
  * Section 6.4 Pierce: the tile directly behind `target` seen from
  * `attacker`, when the target stands in one of the eight directions (the
  * offset's `|dx|` and `|dy|` are each 0 or equal to the distance); null for
@@ -593,23 +633,360 @@ export function pierceTileV7(
 }
 
 /**
- * Section 8.4: the tile a Tractor Beam pulls `target` to: one step from the
- * target toward the Mothership (`sign` of the offset on each axis).
+ * Section 8.4: one step of a Tractor Beam: the tile next to `target` toward
+ * the puller (`sign` of the offset on each axis).
  */
 export function tractorBeamDestinationV7(
-  mothership: CoordV7,
+  puller: CoordV7,
   target: CoordV7,
 ): CoordV7 {
   return {
-    x: target.x + Math.sign(mothership.x - target.x),
-    y: target.y + Math.sign(mothership.y - target.y),
+    x: target.x + Math.sign(puller.x - target.x),
+    y: target.y + Math.sign(puller.y - target.y),
   };
 }
 
+// ---------------------------------------------------------------------------
+// The Martian balance revision (docs/product/RULESET_7_BALANCE_MARTIAN_ICE.md
+// sections 5.1 to 5.3, `pulp_wars-1wy.3`): the Beam Down and Tractor Beam
+// predicates. Each is ONE function read by the reducer (on the canonical
+// state) and by the public command query (on the actor's view), so that every
+// offered command is accepted and every rejected one is not offered. The two
+// callers differ only in how they collect the tile facts.
+// ---------------------------------------------------------------------------
+
+type ActivationV7 = UnitStateV7["activation"];
+
+/** Whether the unit has used a primary action this turn. */
+export function primaryActionUsedV7(
+  activation: Pick<
+    ActivationV7,
+    "attacked" | "recovered" | "captured" | "specialActed"
+  >,
+): boolean {
+  return (
+    activation.attacked ||
+    activation.recovered ||
+    activation.captured ||
+    activation.specialActed
+  );
+}
+
 /**
- * The exhausted activation of a controlled or released unit, a beamed unit,
- * or a rising.
+ * Whether the activation is the exhausted one (a unit that landed, embarked,
+ * was trained, hatched, raised, controlled, or released this turn): Recover
+ * and Capture are both primary actions, so no turn of ordinary commands sets
+ * both flags.
  */
+export function activationIsExhaustedV7(
+  activation: Pick<ActivationV7, "recovered" | "captured">,
+): boolean {
+  return activation.recovered && activation.captured;
+}
+
+/** The actor facts the Beam Down and Tractor Beam readiness rules read. */
+export interface MartianActorV7 {
+  readonly id: UnitId;
+  readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly activation: ActivationV7;
+}
+
+/**
+ * Beam Down row 3: the carrier may act: no Overrun, no primary action used
+ * (a landing is the exhausted activation), and it may act after its Move
+ * (it may have moved; a sluggish carrier that moved may not).
+ */
+export function beamDownCarrierReadyV7(
+  lookup: SluggishLookupV7,
+  carrier: MartianActorV7,
+): boolean {
+  return (
+    !carrier.activation.overrunActive &&
+    !primaryActionUsedV7(carrier.activation) &&
+    !primaryActionBlockedAfterMoveV7(lookup, carrier)
+  );
+}
+
+/**
+ * Beam Down row 6: whether `passenger` may be beamed by `carrier`: another
+ * living own land-form unit that uses one slot and does not fly, that was
+ * not beamed this turn, and that stands on or next to the center of a city
+ * of the carrier's owner (`ownCenters`) or within
+ * `BEAM_DOWN_PICKUP_RANGE_V7` of the carrier.
+ */
+export function beamDownPassengerLegalV7(
+  roster: FactionRosterV7,
+  carrier: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly at: CoordV7;
+  },
+  passenger: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form: UnitStateV7["form"];
+    readonly at: CoordV7;
+    readonly hp: number;
+  },
+  ownCenters: readonly CoordV7[],
+  beamedThisTurn: readonly UnitId[],
+): boolean {
+  return (
+    passenger.id !== carrier.id &&
+    passenger.hp > 0 &&
+    passenger.ownerId === carrier.ownerId &&
+    passenger.form === "LAND" &&
+    unitCapacitySlotsV7(roster, passenger) === 1 &&
+    unitMovementModeV7(roster, passenger) !== "FLY" &&
+    !beamedThisTurn.includes(passenger.id) &&
+    (chebyshev(carrier.at, passenger.at) <= BEAM_DOWN_PICKUP_RANGE_V7 ||
+      ownCenters.some((center) => chebyshev(center, passenger.at) <= 1))
+  );
+}
+
+/** What a tile holds, as a Beam Down or a pull reads it. */
+export interface PlacementTileFactsV7 {
+  /** Whether the actor has explored the tile. */
+  readonly explored: boolean;
+  /** Null unless the tile is a settlement site. */
+  readonly site: unknown;
+  readonly terrain: TerrainIdV7;
+  /** A unit (other than the moved one) or a mound is on the tile. */
+  readonly occupied: boolean;
+  /** A treasure chest is on the tile. */
+  readonly chest: boolean;
+  /**
+   * The tile is in territory allied to the player the rule names: the actor
+   * for a Beam Down, the pulled unit's owner for a Tractor Beam.
+   */
+  readonly alliedTerritory: boolean;
+}
+
+/**
+ * Beam Down row 7: whether `to` is a legal destination: one of the eight
+ * tiles around the carrier, not a settlement site, enterable by the
+ * passenger in land form with the actor's technologies (never a Rift, which
+ * only a flyer enters, and no passenger flies), with no unit, mound, or
+ * treasure chest, and not in territory allied to the actor. `facts` is
+ * undefined for a tile off the board.
+ */
+export function beamDownDestinationLegalV7(
+  roster: FactionRosterV7,
+  carrier: { readonly at: CoordV7 },
+  passenger: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
+  technology: { readonly engineering: boolean; readonly navigation: boolean },
+  to: CoordV7,
+  facts: PlacementTileFactsV7 | undefined,
+): boolean {
+  return (
+    facts !== undefined &&
+    facts.explored &&
+    chebyshev(carrier.at, to) === 1 &&
+    facts.site === null &&
+    canEnterTerrainV7({
+      terrain: facts.terrain,
+      movementMode: unitMovementModeV7(roster, passenger),
+      afloat: false,
+      ...technology,
+      mountainBorn: unitIsMountainBornV7(roster, passenger),
+    }) &&
+    !facts.occupied &&
+    !facts.chest &&
+    !facts.alliedTerritory
+  );
+}
+
+/**
+ * The activation of a beamed passenger (section 5.1): it counts as having
+ * moved this turn, exactly like the end of an ordinary Move (`moved` and
+ * `handled`; `movedPathLength` is kept, so a Beam Down is never a Charge!
+ * run-up), and every other flag is kept: a passenger that had not acted may
+ * still use a primary action a unit may use after moving, and one that had
+ * acted is only relocated. It cannot Move again: a pending Escape is spent.
+ * A pending Overrun attack keeps the unit unhandled, as the state requires.
+ */
+export function beamedActivationV7(activation: ActivationV7): ActivationV7 {
+  return {
+    ...activation,
+    moved: true,
+    escapeAvailable: false,
+    handled: activation.overrunActive ? activation.handled : true,
+  };
+}
+
+/** How a role's Tractor Beam works (sections 5.2 and 5.3). */
+export interface TractorBeamRuleV7 {
+  /** The target's Chebyshev distance, inclusive. */
+  readonly minimumRange: number;
+  readonly maximumRange: number;
+  /** The most tiles the target is pulled. */
+  readonly pull: number;
+  /**
+   * Free and once a turn (the Heavy Tractor Beam) instead of a primary
+   * action.
+   */
+  readonly free: boolean;
+}
+
+const TRACTOR_BEAM_RULE_V7: TractorBeamRuleV7 = Object.freeze({
+  minimumRange: TRACTOR_BEAM_RANGE_V7,
+  maximumRange: TRACTOR_BEAM_RANGE_V7,
+  pull: TRACTOR_BEAM_PULL_V7,
+  free: false,
+});
+const HEAVY_TRACTOR_BEAM_RULE_V7: TractorBeamRuleV7 = Object.freeze({
+  minimumRange: TRACTOR_BEAM_RANGE_V7,
+  maximumRange: HEAVY_TRACTOR_RANGE_V7,
+  pull: HEAVY_TRACTOR_PULL_V7,
+  free: true,
+});
+
+/**
+ * The Tractor Beam of the unit's role under its kind, or null for a role
+ * without `TRACTOR_BEAM`: the Heavy Tractor Beam for a role with the
+ * `heavyTractorBeam` mechanic (the Mothership), the ordinary one otherwise
+ * (the Saucer).
+ */
+export function tractorBeamRuleV7(
+  roster: FactionRosterV7,
+  unit: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+  },
+): TractorBeamRuleV7 | null {
+  if (!unitRoleRuleV7(roster, unit).abilities.includes("TRACTOR_BEAM"))
+    return null;
+  return unitRoleMechanicsV7(roster, unit).heavyTractorBeam
+    ? HEAVY_TRACTOR_BEAM_RULE_V7
+    : TRACTOR_BEAM_RULE_V7;
+}
+
+/**
+ * Whether the puller may use its Tractor Beam now. The ordinary one is a
+ * primary action (no Overrun, no primary action used, and it may act after
+ * its Move). The Heavy one is free once a turn: the puller may have moved
+ * and may have used its primary action, but it has not landed (or otherwise
+ * been exhausted) this turn, has not used the beam this turn
+ * (`tractorUsedThisTurn`), and a sluggish puller that moved may not.
+ */
+export function tractorBeamActorReadyV7(
+  lookup: SluggishLookupV7,
+  puller: MartianActorV7,
+  rule: TractorBeamRuleV7,
+  tractorUsedThisTurn: readonly UnitId[],
+): boolean {
+  if (
+    puller.activation.overrunActive ||
+    primaryActionBlockedAfterMoveV7(lookup, puller)
+  )
+    return false;
+  return rule.free
+    ? !activationIsExhaustedV7(puller.activation) &&
+        !tractorUsedThisTurn.includes(puller.id)
+    : !primaryActionUsedV7(puller.activation);
+}
+
+/** Why a living, visible, non-allied unit is not a legal pull target. */
+export type TractorBeamTargetBlockV7 = "TARGET_IMMUNE" | "OUT_OF_RANGE";
+
+/**
+ * The per-target Tractor Beam conditions, in the reducer's rejection order:
+ * `TARGET_IMMUNE` for an Egg, a `JUGGERNAUT`-role unit, the neutral Monster,
+ * or a two-slot unit; `OUT_OF_RANGE` outside the rule's reach.
+ */
+export function tractorBeamTargetBlockV7(
+  roster: FactionRosterV7,
+  rule: TractorBeamRuleV7,
+  puller: { readonly at: CoordV7 },
+  target: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form: UnitStateV7["form"];
+    readonly at: CoordV7;
+  },
+): TractorBeamTargetBlockV7 | null {
+  if (
+    target.form === "EGG" ||
+    target.role === "JUGGERNAUT" ||
+    isNeutralOwnerV7(target.ownerId) ||
+    unitCapacitySlotsV7(roster, target) !== 1
+  )
+    return "TARGET_IMMUNE";
+  const distance = chebyshev(puller.at, target.at);
+  return distance < rule.minimumRange || distance > rule.maximumRange
+    ? "OUT_OF_RANGE"
+    : null;
+}
+
+/**
+ * One step of a pull (the Push conditions of the current rules section 13.4
+ * and the chest condition): the tile is explored by the actor, not a
+ * settlement site, of the target's land or water kind and enterable by it
+ * with `technology` (the shared `canEnterTerrainV7`), with no unit, mound,
+ * or treasure chest, and not in territory allied to the target. `facts` is
+ * undefined off the board.
+ */
+export function tractorBeamStepLegalV7(
+  roster: FactionRosterV7,
+  target: {
+    readonly id: UnitId;
+    readonly ownerId: PlayerId;
+    readonly role: UnitRoleIdV7;
+    readonly form: UnitStateV7["form"];
+  },
+  technology: { readonly engineering: boolean; readonly navigation: boolean },
+  facts: PlacementTileFactsV7 | undefined,
+): boolean {
+  return (
+    facts !== undefined &&
+    facts.explored &&
+    facts.site === null &&
+    canEnterTerrainV7({
+      terrain: facts.terrain,
+      movementMode: unitMovementModeV7(roster, target),
+      afloat: isAfloatFormV7(target.form),
+      ...technology,
+      mountainBorn: unitIsMountainBornV7(roster, target),
+    }) &&
+    !facts.occupied &&
+    !facts.chest &&
+    !facts.alliedTerritory
+  );
+}
+
+/**
+ * The tiles a pull crosses (sections 5.2 and 5.3), in order: at most
+ * `rule.pull` times, the target steps one tile toward the puller
+ * (`tractorBeamDestinationV7` from where it then stands) while it is not yet
+ * next to the puller and the tile passes `stepLegal`. The last tile is where
+ * it ends; an empty path means the pull is blocked.
+ */
+export function tractorBeamPathV7(
+  rule: TractorBeamRuleV7,
+  puller: CoordV7,
+  target: CoordV7,
+  stepLegal: (to: CoordV7) => boolean,
+): readonly CoordV7[] {
+  const path: CoordV7[] = [];
+  let current = target;
+  while (path.length < rule.pull && chebyshev(puller, current) > 1) {
+    const next = tractorBeamDestinationV7(puller, current);
+    if (!stepLegal(next)) break;
+    path.push(next);
+    current = next;
+  }
+  return path;
+}
+
+/** The exhausted activation of a controlled or released unit or a rising. */
 export function exhaustedMartianActivationV7(): UnitStateV7["activation"] {
   return {
     moved: true,

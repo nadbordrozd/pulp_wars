@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 36;
+const REVISION = 37;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -366,6 +366,16 @@ describe("Martian faction registration (sections 2 and 11)", () => {
         targetUnitId: 7,
         from: at(6, 2),
         to: at(5, 2),
+        path: [at(5, 2)],
+      },
+      // `pulp_wars-1wy.3`: a Heavy Tractor Beam's two-tile path.
+      {
+        kind: "UNIT_PULLED",
+        sourceUnitId: 5,
+        targetUnitId: 7,
+        from: at(7, 2),
+        to: at(5, 2),
+        path: [at(6, 2), at(5, 2)],
       },
       { kind: "UNIT_DIED", unitId: 5, cause: "BRAIN_LOST" },
     ];
@@ -560,12 +570,13 @@ const ROSTER = [
     "FIGHTER",
     null,
     // `pulp_wars-b5f.2`: the ray pistol, range 1–2 (was 1), paid for with
-    // cost 3 (was 2) and Attack 1.5 (`3`, was 2).
+    // cost 3 (was 2). `pulp_wars-1wy.3` (M4): Attack 2 (`4`, was 1.5) and
+    // 9 HP (was 10).
     3,
     1,
-    10,
+    9,
     2,
-    3,
+    4,
     3,
     1,
     1,
@@ -592,7 +603,8 @@ const ROSTER = [
     1,
     2,
     true,
-    ["ATTACK", "CHARGE", "FLY", "BEAM_DOWN"],
+    // `pulp_wars-1wy.3` (M2): the Saucer has the Tractor Beam.
+    ["ATTACK", "CHARGE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
     "FLY",
     false,
     false,
@@ -683,7 +695,8 @@ const ROSTER = [
     "Mothership",
     "KNIGHT",
     "CHIVALRY",
-    10,
+    // `pulp_wars-1wy.3` (M3): cost 8 (was 10) and Beam Down.
+    8,
     2,
     16,
     4,
@@ -694,7 +707,7 @@ const ROSTER = [
     1,
     1,
     true,
-    ["ATTACK", "FLY", "TRACTOR_BEAM"],
+    ["ATTACK", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
     "FLY",
     false,
     false,
@@ -770,6 +783,8 @@ describe("Martian roster (section 3)", () => {
         buildsFieldDefense,
         hatchTurns: null,
         splash: false,
+        // `pulp_wars-1wy.3` (M3): only the Mothership's pull is Heavy.
+        heavyTractorBeam: role === "KNIGHT",
       });
       expect(MARTIAN_ROLE_MECHANICS_V7[role]).toBe(
         roleMechanicsV7(role, "MARTIAN"),
@@ -926,7 +941,8 @@ describe("Martian roster (section 3)", () => {
       ["GUARD", 2],
       ["CAPTAIN", 2],
       ["CATAPULT", 4],
-      ["KNIGHT", 5],
+      // `pulp_wars-1wy.3` (M3): the Mothership costs 8.
+      ["KNIGHT", 4],
     ] as const) {
       const state = martianFieldV7([
         { seat: 0, role, at: at(4, 3) },
@@ -1213,8 +1229,8 @@ describe("Martian starting units and substitutions (section 10.10)", () => {
           form: "LAND",
           at: capital.at,
           homeCityId: capital.id,
-          hp: 10,
-          maxHp: 10,
+          hp: 9,
+          maxHp: 9,
           kills: 0,
           veteran: false,
         });
@@ -1238,8 +1254,8 @@ describe("Martian starting units and substitutions (section 10.10)", () => {
       role: "FIGHTER",
       form: "LAND",
       at: city.at,
-      hp: 10,
-      maxHp: 10,
+      hp: 9,
+      maxHp: 9,
       homeCityId: city.id,
       activation: { moved: true, attacked: true, handled: true },
     });
@@ -1494,14 +1510,27 @@ describe("Martian Showcase (section 2.4)", () => {
     expect(kinds.has("BEAM_DOWN")).toBe(true);
     expect(kinds.has("TRACTOR_BEAM")).toBe(true);
     expect(kinds.has("ATTACK")).toBe(true);
-    // The Grunt on the capital center is the passenger.
+    // The Grunt on the capital center is a passenger of the Saucer and of
+    // the Mothership (`pulp_wars-1wy.3`: every carrier, and every own unit
+    // in a city or within two tiles of the carrier).
+    for (const carrier of ["RAIDER", "KNIGHT"] as const)
+      expect(
+        offered.some(
+          (command) =>
+            command.kind === "BEAM_DOWN" &&
+            command.unitId === own(carrier).id &&
+            command.passengerUnitId === own("FIGHTER").id,
+        ),
+        carrier,
+      ).toBe(true);
+    // Both pullers have a target.
     expect(
-      offered.every(
-        (command) =>
-          command.kind !== "BEAM_DOWN" ||
-          command.passengerUnitId === own("FIGHTER").id,
-      ),
-    ).toBe(true);
+      new Set(
+        offered.flatMap((command) =>
+          command.kind === "TRACTOR_BEAM" ? [command.unitId] : [],
+        ),
+      ).size,
+    ).toBeGreaterThanOrEqual(1);
     // The capital is full: it cannot train until a slot frees.
     const capital = must(
       state.cities.find((city) => city.ownerId === martianId && city.isCapital),

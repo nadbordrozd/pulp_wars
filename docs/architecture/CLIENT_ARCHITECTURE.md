@@ -2,12 +2,14 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r36` (autosave
-`pulpWars.save.v7r36.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r35.current`;
+The current client runs `pulp-wars-poc-7r37` (autosave
+`pulpWars.save.v7r37.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r36.current`;
 [mission setups](#mission-setups-pulp_wars-68k2),
-[map curiosities](#map-curiosities-pulp_wars-7372), and
-[the Giant Spider](#the-giant-spider-pulp_wars-7373) are described below),
+[map curiosities](#map-curiosities-pulp_wars-7372),
+[the Giant Spider](#the-giant-spider-pulp_wars-7373), and
+[the Martian and Ice Folk balance round](#the-martian-and-ice-folk-balance-round-pulp_wars-1wy3)
+are described below),
 whose rules for all seven factions
 the setup screen offers, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk,
 and Dwarf, are described by
@@ -559,6 +561,46 @@ the Monster, a unit whose `ownerId` is the reserved neutral owner
   overlays, the provoke warning, the neutral-turn banner, the event log
   text, and Help belong to `pulp_wars-737.6`; until then the neutral turn
   plays back like any other accepted boundary.
+
+## The Martian and Ice Folk balance round (`pulp_wars-1wy.3`)
+
+`pulp-wars-poc-7r37` implements the engine step of the
+[balance design](../product/RULESET_7_BALANCE_MARTIAN_ICE.md)
+([current rules sections 20.7](../product/RULESET_7_CURRENT.md#207-beam-down),
+[20.10](../product/RULESET_7_CURRENT.md#2010-tractor-beam), and
+[21.5](../product/RULESET_7_CURRENT.md#215-snow)).
+
+- **Shared predicates.** The Beam Down and Tractor Beam legality lives in
+  `src/engine/v7/martian.ts` as functions that take the roster (a state or
+  a view) and plain tile facts: `beamDownCarrierReadyV7`,
+  `beamDownPassengerLegalV7`, `beamDownDestinationLegalV7`,
+  `beamedActivationV7`, `tractorBeamRuleV7`, `tractorBeamActorReadyV7`,
+  `tractorBeamTargetBlockV7`, `tractorBeamStepLegalV7`, and
+  `tractorBeamPathV7`. The reducer (`applyBeamDown`, `applyTractorBeam`)
+  and the public command query call the same functions and differ only in
+  how they collect `PlacementTileFactsV7` (the canonical board, or the
+  view's explored tiles), so an offered command is an accepted one.
+- **State, view, events.** `GameStateV7.beamedThisTurn` and
+  `tractorUsedThisTurn` (sorted unit IDs of the active seat's turn, emptied
+  at its End Turn, pruned by `prunedMartianV7`) and their view copies for
+  visible units; `UNIT_PULLED.path`; no command or event kind is new.
+- **Registry.** The role mechanic `heavyTractorBeam` tells the Mothership's
+  free, longer pull from the Saucer's; `coverBonusV7` is the one cover
+  multiplier (terrain × 1.5, else Snow × 1.25) read by the combat
+  resolution, the public combat preview, Wail, the unit stats, and the
+  Normal AI's estimate; Glide's both-ends cost is in the two movement
+  validators (canonical and public) and in the AI's reach estimate.
+- **Queries.** `previewTractorBeamV7` gains `path`, and
+  `queryTractorBeamPathV7` returns it without the full command query.
+- **Presentation until the UI step.** The dock's buttons and pickers are
+  driven by the offered commands, so a Saucer's Tractor Beam, a
+  Mothership's Beam Down, a pick-up passenger, and the Mothership's pull
+  after its attack are all reachable now; the texts of
+  `src/render/martian-presentation-v7.ts` and
+  `src/render/ice-folk-presentation-v7.ts` quote the new rules. The
+  two-tile path in the aiming panel, a per-unit Tractor Beam tooltip, and
+  the rest of the design's section 11 belong to `pulp_wars-1wy.5`; the
+  Normal AI's use of the new tools to `pulp_wars-1wy.4`.
 
 ## 0. Ruleset-6 replacement boundary
 

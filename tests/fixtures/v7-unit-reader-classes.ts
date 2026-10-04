@@ -180,6 +180,10 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/missions/build.ts::validateMissionDefinitionV7": "BOARD",
     "src/engine/v7/martian.ts::coolingStepV7": "BOARD",
     "src/engine/v7/martian.ts::mindControlCooldownStepV7": "BOARD",
+    // `pulp_wars-1wy.3`: the per-turn Martian lists name units on the board
+    // (a beamed passenger and a pulling Mothership stand on it; neither can
+    // burrow in the same turn).
+    "src/engine/v7/martian.ts::prunedMartianTurnListsV7": "BOARD",
     "src/engine/v7/martian.ts::rechargeShieldsV7": "BOARD",
     "src/engine/v7/movement.ts::inHostileZoc": "BOARD",
     "src/engine/v7/movement.ts::publicHostileZoc": "BOARD",
@@ -241,6 +245,8 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::queryLandingPreviewV7": "BOARD",
     "src/engine/v7/query.ts::queryPublicSelectionV7": "BOARD",
     "src/engine/v7/query.ts::queryThreatenedTilesV7": "BOARD",
+    // `pulp_wars-1wy.3`: the path of a pull, between two units on the board.
+    "src/engine/v7/query.ts::queryTractorBeamPathV7": "BOARD",
     "src/engine/v7/query.ts::queryUnitStatsV7": "BOARD",
     "src/engine/v7/reducer.ts::applyAttack": "BOARD",
     "src/engine/v7/reducer.ts::applyBeamDown": "BOARD",

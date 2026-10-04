@@ -135,7 +135,7 @@ describe("Ice Folk texts (section 13.2)", () => {
 
   it("names the Snow tile for the viewer's faction", () => {
     expect(snowTooltipV7(humanView(iceFolkUiFixtureV7()))).toBe(
-      "Snow: your units move at half cost and have cover here unless fortified",
+      "Snow: your units move at half cost from Snow to Snow and have light cover here unless fortified",
     );
     expect(snowTooltipV7(humanView(iceFolkVictimFixtureV7()))).toBe(
       "Snow: your units stop on entering, as in a Forest. Ice Folk units have cover",

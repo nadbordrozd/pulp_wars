@@ -133,7 +133,7 @@ export const HIDDEN_BLIZZARD_PREVIEW_V7 = "A hidden Blizzard may change this";
 export const SNOW_LABEL_V7 = "Snow";
 export const BLIZZARD_LABEL_V7 = "Blizzard";
 export const SNOW_TOOLTIP_ICE_FOLK_V7 =
-  "Snow: your units move at half cost and have cover here unless fortified";
+  "Snow: your units move at half cost from Snow to Snow and have light cover here unless fortified";
 export const SNOW_TOOLTIP_OTHERS_V7 =
   "Snow: your units stop on entering, as in a Forest. Ice Folk units have cover";
 export const BLIZZARD_TOOLTIP_V7 =
@@ -338,7 +338,7 @@ export function iceFolkHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       "Snow",
-      "Ice Folk land is Snow: Ice Folk units move at half cost on it and have cover unless they are fortified, and other units stop on entering it, as in a Forest.",
+      "Ice Folk land is Snow: Ice Folk units move at half cost from Snow to Snow and have light cover on it unless they are fortified, and other units stop on entering it, as in a Forest.",
     ],
     [
       "Blizzard",
@@ -521,7 +521,7 @@ export function iceFolkRecruitNotesV7(
   return [
     ...(mechanics.mountainBorn ? [`${MOUNTAIN_BORN_INFO_V7}.`] : []),
     ...(mechanics.glides
-      ? ["Moves at half cost from Snow."]
+      ? ["Moves at half cost from Snow to Snow."]
       : ["Never glides on Snow."]),
     ...(roleMechanicsV7(role, "ORIGINAL").buildsFieldDefense &&
     !mechanics.buildsFieldDefense
@@ -578,8 +578,8 @@ export function iceFolkUnitInfoLinesV7(
       id: "snow",
       name: SNOW_LABEL_V7,
       description: mechanics.snowCover
-        ? "On Snow: cover here, and it moves at half cost from this tile."
-        : "On Snow, but fortified: no Snow cover here.",
+        ? "On Snow: light cover here, and it moves at half cost onto Snow."
+        : "On Snow, but no Snow cover here.",
     });
   if (mechanics.rockfall)
     lines.push({

@@ -304,6 +304,12 @@ export interface PlayerViewV7 {
   readonly surfacedThisTurn: readonly UnitId[];
   /** The Dwarf revision (section 6.3): `bombedThisTurn` of visible units. */
   readonly bombedThisTurn: readonly UnitId[];
+  /**
+   * The Martian balance revision (`pulp_wars-1wy.3`): `beamedThisTurn` and
+   * `tractorUsedThisTurn` of visible units.
+   */
+  readonly beamedThisTurn: readonly UnitId[];
+  readonly tractorUsedThisTurn: readonly UnitId[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }
@@ -830,6 +836,14 @@ export function viewForV7(
       visibleUnitIds.has(unitId),
     ),
     bombedThisTurn: state.bombedThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
+    // The Martian balance revision (`pulp_wars-1wy.3`): the public per-turn
+    // lists of visible units (every own unit is visible).
+    beamedThisTurn: state.beamedThisTurn.filter((unitId) =>
+      visibleUnitIds.has(unitId),
+    ),
+    tractorUsedThisTurn: state.tractorUsedThisTurn.filter((unitId) =>
       visibleUnitIds.has(unitId),
     ),
     pendingChoices: state.pendingChoices.filter((choice) =>

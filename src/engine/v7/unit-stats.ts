@@ -558,8 +558,8 @@ export function publicUnitStatsV7(
                     ? "Snow cover"
                     : label(terrainSource),
                   terrainSource === "SNOW"
-                    ? "Snow cover multiplies an unfortified Ice Folk unit's Defense by 1.5."
-                    : `${label(terrainSource)} multiplies Defense by 1.5.`,
+                    ? `Snow cover multiplies an unfortified Ice Folk unit's Defense by ${String(defense.numerator / defense.denominator)}.`
+                    : `${label(terrainSource)} multiplies Defense by ${String(defense.numerator / defense.denominator)}.`,
                   defenseDelta.denominator,
                 ),
               ]),
@@ -829,8 +829,9 @@ function defenseSourceAt(
   snowCover: boolean,
 ): UnitStatModifierSourceV7 | null {
   if (numerator === 1) return null;
-  // The Ice Folk revision: Snow cover is reported as the source whenever it
-  // applies (on a Snowy Forest or Mountain too: the same multiplier).
+  // The Ice Folk revision: Snow cover is the source whenever it applies
+  // (`pulp_wars-1wy.3`: never on a snowy Forest or Mountain, whose larger
+  // terrain cover applies instead).
   if (snowCover) return "SNOW";
   const terrain = tileAtV7(state.board, unit.at)?.terrain;
   return terrain === "MOUNTAIN"

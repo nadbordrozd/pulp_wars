@@ -7,6 +7,14 @@ This report is the **baseline on the rules before `pulp_wars-1wy.3`**
 (identity `pulp-wars-poc-7r36`): the probe uses whatever is legal today. The
 run after the rules change belongs to `pulp_wars-1wy.6`.
 
+**Measured on `pulp-wars-poc-7r36` and kept as the "before".** The current
+identity is `7r37` (`pulp_wars-1wy.3`: Beam Down after a Move and for
+pick-ups, the Saucer's Tractor Beam, the Mothership's free Heavy Tractor
+Beam, the Grunt at Attack 2 and 9 HP); every number and the JSON below are
+the `7r36` run and were not rerun. On `7r37` the probe's rules are the same
+except that it counts a Mothership's own attack after its free pull and
+does not beam a unit that cannot attack after moving in order to shoot.
+
 Data: [RULESET_7_MARTIAN_MOBILITY_PROBE.json](RULESET_7_MARTIAN_MOBILITY_PROBE.json)
 (summary and every match).
 

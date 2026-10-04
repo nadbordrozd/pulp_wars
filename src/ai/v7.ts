@@ -23,6 +23,8 @@ import {
   unitMovementModeV7,
   unitTakesCoverV7,
   unitAlphaAttack2V7,
+  SNOW_COVER_V7,
+  terrainGivesCoverV7,
   terrainStopsMoveV7,
   unitCapacitySlotsV7,
   unitIsMountainBornV7,
@@ -206,6 +208,8 @@ import {
   MOTHERSHIP_PULL_RADIUS_V7,
   WASTED_FULL_RAY_COST_V7,
   beamDownScoreV7,
+  isMothershipForPolicyV7,
+  isSaucerForPolicyV7,
   enemyTurnShieldV7,
   fliesForPolicyV7,
   hasAbilityV7,
@@ -2969,8 +2973,13 @@ function* publicThreatenedTilesWorkV7(
         const roadCost = unit.form === "LAND" && priorRoadNode;
         const roadEdge =
           roadCost && publicRoadNodeForOwner(tile, unit.ownerId, lookup);
+        // `pulp_wars-1wy.3`: Glide is a step from Snow onto Snow.
         const glideCost =
-          glides && priorTile?.explored === true && priorTile.snow === true;
+          glides &&
+          priorTile?.explored === true &&
+          priorTile.snow === true &&
+          tile.explored &&
+          tile.snow === true;
         const spent2 = current.spent2 + (roadCost || glideCost ? 1 : 2);
         if (spent2 > facts.move * 2) continue;
         const key = coordKey(tile.at);
@@ -9049,10 +9058,8 @@ function martianAttackRejectedV7(
     hasAbilityV7(view, actor, "PIERCE")
   )
     return !attackPurposeFactsV7(context, command, preview).savesCity;
-  if (
-    actor.ownerId === view.viewer.id &&
-    hasAbilityV7(view, actor, "BEAM_DOWN")
-  )
+  // `pulp_wars-1wy.3`: the Saucer (the Mothership carries Beam Down too).
+  if (actor.ownerId === view.viewer.id && isSaucerForPolicyV7(view, actor))
     return !attackPurposeFactsV7(context, command, preview).savesCity;
   return false;
 }
@@ -9211,7 +9218,9 @@ function martianSoleDefenderBesideV7(
 ): boolean {
   const view = context.view;
   const motherships = context.lookup.visibleHostiles.filter(
-    (unit) => unit.form === "LAND" && hasAbilityV7(view, unit, "TRACTOR_BEAM"),
+    // `pulp_wars-1wy.3`: the Mothership (the Saucer's pull is weighed by
+    // the play-against-Martians step, `pulp_wars-1wy.4`).
+    (unit) => unit.form === "LAND" && isMothershipForPolicyV7(view, unit),
   );
   if (motherships.length === 0) return false;
   return view.cities.some((city) => {
@@ -9522,7 +9531,7 @@ function martianMoveValueV7(
       return { priority: -1, strategic: 0 };
   }
   // The Saucer: waits where it can beam; stages near the wave target.
-  if (abilities.includes("BEAM_DOWN") && routine) {
+  if (isSaucerForPolicyV7(view, actor) && routine) {
     if (!actor.activation.moved && martianSaucerBeamsV7(context, actor.id))
       return { priority: -1, strategic: 0 };
     const target = cache.tools.waveTarget;
@@ -9546,7 +9555,7 @@ function martianMoveValueV7(
     }
   }
   // The Mothership stays with the army.
-  if (abilities.includes("TRACTOR_BEAM") && routine) {
+  if (isMothershipForPolicyV7(view, actor) && routine) {
     const army = view.units.filter(
       (unit) =>
         unit.id !== actor.id &&
@@ -11896,12 +11905,16 @@ function publicProjectedDamageWithLookupV7(
   const acid =
     attacker.form === "LAND" && attackFacts.abilities.includes("ACID");
   const defenderTile = findPublicTileV7(view, defenderAt);
-  // The Ice Folk revision (`pulp_wars-7g3.4`): Snow cover (x 1.5, not added
-  // to Forest or Mountain cover) for an Ice Folk land unit with no
-  // fortification of its own; only Snow tiles carry the flag.
+  // The Ice Folk revision (`pulp_wars-7g3.4`; `pulp_wars-1wy.3`): Snow cover
+  // (x 1.25, yielding to the x 1.5 of a Forest or Mountain) for an Ice Folk
+  // land unit with no fortification of its own; only Snow tiles carry the
+  // flag.
   const snowCover =
     !acid &&
     defender.form === "LAND" &&
+    !terrainGivesCoverV7(
+      defenderTile?.explored === true ? defenderTile.terrain : null,
+    ) &&
     defenderTile?.explored === true &&
     defenderTile.snow === true &&
     // The Mind Control revision: a body rule, by the defender's kind.
@@ -11913,7 +11926,7 @@ function publicProjectedDamageWithLookupV7(
   const bonus = acid
     ? { numerator: 1, denominator: 1 }
     : snowCover
-      ? { numerator: 3, denominator: 2 }
+      ? SNOW_COVER_V7
       : projectedDefenseBonus(view, defender, defenderAt);
   const ownTerritoryFortification =
     !acid &&

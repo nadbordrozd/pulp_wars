@@ -297,7 +297,9 @@ describe("Shatter worked examples (section 5.6)", () => {
     });
   });
 
-  it("Grunt 10 HP, Shield 2: Yeti 5 (Shield 2, HP 3), then the second would leave 1: shatters", () => {
+  // `pulp_wars-1wy.3`: the Grunt has 9 HP (was 10), so the second Yeti's 6
+  // kills it outright; at 10 HP it left 1 and shattered it.
+  it("Grunt 9 HP, Shield 2: Yeti 5 (Shield 2, HP 3), then the second kills it by plain damage (6): no Shatter", () => {
     const state = against("MARTIAN", "FIGHTER", [
       { seat: 0, role: "FIGHTER", at: at(4, 3) },
       { seat: 0, role: "FIGHTER", at: at(4, 4) },
@@ -309,8 +311,9 @@ describe("Shatter worked examples (section 5.6)", () => {
       damageToAttacker: 3,
     });
     expect(second?.combat).toMatchObject({
-      shatters: true,
-      damageToDefender: 7,
+      shatters: false,
+      defenderDies: true,
+      damageToDefender: 6,
     });
   });
 

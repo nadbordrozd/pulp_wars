@@ -18,7 +18,6 @@ import {
   type PlayerViewV7,
 } from "../../src/engine/index";
 import {
-  BEAM_DOWN_MOVED_V7,
   BEAM_DOWN_NO_PASSENGER_V7,
   MARTIAN_HELP_RULES_V7,
   MIND_CONTROLLED_LABEL_V7,
@@ -217,7 +216,7 @@ describe("Martian texts (section 13.2)", () => {
       `Train ${label("CATAPULT")} (strides, heat ray, Pierce)`,
     );
     expect(martianRoleUnlockTextV7("RAIDER")).toBe(
-      `Train ${label("RAIDER")} (flies, Beam Down)`,
+      `Train ${label("RAIDER")} (flies, Beam Down, Tractor Beam)`,
     );
     expect(martianRoleUnlockTextV7("GUARD")).toBe(
       `Train ${label("GUARD")} (Force Field)`,
@@ -326,17 +325,23 @@ describe("Martian previews (section 13.1)", () => {
       previewBeamDownV7(view, saucer.id, unitAt(view, AT.capitalGrunt).id),
     ).not.toBeNull();
     expect(beamDownUnavailableTextV7(view, saucer.id, true)).toBeNull();
-    // A Saucer that moved this turn.
+    // `pulp_wars-1wy.3`: a Saucer that moved this turn still beams.
     const movedState = applyCommandV7(state, state.humanPlayerId, {
       kind: "MOVE",
       unitId: saucer.id,
       path: [{ x: AT.saucer.x - 1, y: AT.saucer.y }],
     });
     if (!movedState.accepted) throw new Error(movedState.error.code);
+    const movedView = humanView(movedState.state);
     expect(
-      beamDownUnavailableTextV7(humanView(movedState.state), saucer.id, false),
-    ).toBe(BEAM_DOWN_MOVED_V7);
-    // No unit on or next to an own city center.
+      previewBeamDownV7(
+        movedView,
+        saucer.id,
+        unitAt(movedView, AT.capitalGrunt).id,
+      ),
+    ).not.toBeNull();
+    expect(beamDownUnavailableTextV7(movedView, saucer.id, true)).toBeNull();
+    // No unit in an own city or within two tiles of the Saucer.
     const alone = humanView(
       martianUiFieldV7([{ seat: 0, role: "RAIDER", at: AT.saucer }]),
     );

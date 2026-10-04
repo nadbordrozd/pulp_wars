@@ -8,8 +8,10 @@ import {
   ASSEMBLE_COST_V7,
   BLASTING_ERUPTION_DAMAGE_V7,
   DIVE_BOMB_DAMAGE_V7,
+  HEAVY_TRACTOR_PULL_V7,
   REPAIR_MACHINE_V7,
   SHIELD_CAP_V7,
+  SNOW_COVER_V7,
   MIND_CONTROL_HP_V7,
   effectiveRoleRuleV7,
 } from "../rules/ruleset-v7";
@@ -276,7 +278,7 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   DEAD_RAISED: ["kind", "playerId", "unitId", "results"],
   GRAVE_DEVOURED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
   UNIT_PUSHED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
-  UNIT_PULLED: ["kind", "sourceUnitId", "targetUnitId", "from", "to"],
+  UNIT_PULLED: ["kind", "sourceUnitId", "targetUnitId", "from", "to", "path"],
   UNIT_TUNNELLED: [
     "kind",
     "playerId",
@@ -1067,12 +1069,19 @@ function validPayload(
         Number(e.amount) < Number(e.hpAfter)
       );
     case "UNIT_PUSHED":
-    case "UNIT_PULLED":
       return (
         id(e.sourceUnitId) &&
         id(e.targetUnitId) &&
         parseCoordV7(e.from) !== null &&
         parseCoordV7(e.to) !== null
+      );
+    case "UNIT_PULLED":
+      return (
+        id(e.sourceUnitId) &&
+        id(e.targetUnitId) &&
+        parseCoordV7(e.from) !== null &&
+        parseCoordV7(e.to) !== null &&
+        pulledPath(e.from, e.to, e.path)
       );
     case "UNIT_TUNNELLED":
       return tunnelled(e, false);
@@ -1411,9 +1420,10 @@ function combat(input: unknown): boolean {
       (input.defenderDies === true &&
         input.retaliation === false &&
         input.attackerDies === false)) &&
+    // `pulp_wars-1wy.3`: Snow cover is `SNOW_COVER_V7` (x 1.25).
     (input.snowCover !== true ||
-      (input.defenseBonusNumerator === 3 &&
-        input.defenseBonusDenominator === 2 &&
+      (input.defenseBonusNumerator === SNOW_COVER_V7.numerator &&
+        input.defenseBonusDenominator === SNOW_COVER_V7.denominator &&
         input.fortificationLevel === 0)) &&
     (input.attacksRemaining === 0 || input.attacksRemaining === 1) &&
     // The Dwarf revision (section 7.3): an unmoved Clockwork Gunner's first
@@ -1666,6 +1676,34 @@ function income(input: unknown): boolean {
 function coords(input: unknown): boolean {
   return (
     isDenseArrayV7(input) && input.every((item) => parseCoordV7(item) !== null)
+  );
+}
+/**
+ * The Martian balance revision (`pulp_wars-1wy.3`): the path of a pull: one
+ * to `HEAVY_TRACTOR_PULL_V7` tiles, each next to the one before (the first
+ * next to `from`), ending on `to`.
+ */
+function pulledPath(from: unknown, to: unknown, input: unknown): boolean {
+  if (
+    !isDenseArrayV7(input) ||
+    input.length < 1 ||
+    input.length > HEAVY_TRACTOR_PULL_V7
+  )
+    return false;
+  let prior = parseCoordV7(from);
+  const end = parseCoordV7(to);
+  for (const item of input) {
+    const at = parseCoordV7(item);
+    if (
+      at === null ||
+      prior === null ||
+      Math.max(Math.abs(at.x - prior.x), Math.abs(at.y - prior.y)) !== 1
+    )
+      return false;
+    prior = at;
+  }
+  return (
+    prior !== null && end !== null && prior.x === end.x && prior.y === end.y
   );
 }
 function sortedCoords(input: unknown): boolean {

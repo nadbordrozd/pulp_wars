@@ -204,7 +204,8 @@ export function martianPickTargetsV7(
           ? { previewNote: lines.slice(1).join(" · ") }
           : {}),
         pullTo: preview.to,
-        semanticLabel: `Pull the ${name} one tile closer${lines.length === 0 ? "" : `. ${lines.join(". ")}`}`,
+        // `pulp_wars-1wy.3`: a Heavy Tractor Beam pulls up to two tiles.
+        semanticLabel: `Pull the ${name} ${preview.path.length === 1 ? "one tile" : "two tiles"} closer${lines.length === 0 ? "" : `. ${lines.join(". ")}`}`,
       },
     ];
   });

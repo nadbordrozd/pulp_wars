@@ -168,10 +168,12 @@ describe("Martian mobility probe: danger", () => {
 
 describe("Martian mobility probe: focus fire", () => {
   it("kills a target with every shot that reaches it, and only then", () => {
+    // `pulp_wars-1wy.3` (7r37): a Grunt (Attack 2) deals a Fighter at 9 HP
+    // 5, so the kill takes both shots (at Attack 1.5 the target had 5 HP).
     const state = martianFieldV7([
       own("FIGHTER", 5, 3),
       own("FIGHTER", 5, 4),
-      foe("FIGHTER", 3, 3, { hp: 5 }),
+      foe("FIGHTER", 3, 3, { hp: 9 }),
     ]);
     const target = unitIdAtV7(state, at(3, 3));
     const result = play(state);
@@ -202,7 +204,8 @@ describe("Martian mobility probe: focus fire", () => {
     const state = martianFieldV7([
       own("FIGHTER", 5, 3),
       own("FIGHTER", 6, 2),
-      foe("FIGHTER", 3, 3, { hp: 5 }),
+      // 9 HP (7r37): one shot is not enough, so the second Grunt walks up.
+      foe("FIGHTER", 3, 3, { hp: 9 }),
     ]);
     const target = unitIdAtV7(state, at(3, 3));
     const result = play(state);
@@ -269,11 +272,43 @@ describe("Martian mobility probe: pulls", () => {
     );
   });
 
+  it("counts the Mothership's own attack after its free pull, from three tiles away", () => {
+    // 7r37: the Heavy Tractor Beam reaches three tiles, pulls two, and is
+    // free, so the Mothership pulls the Fighter next to itself and then
+    // kills it with its own attack. A Saucer's pull is its primary action:
+    // alone it sets up nothing.
+    const state = martianFieldV7([
+      own("KNIGHT", 5, 3),
+      foe("FIGHTER", 2, 3, { hp: 5 }),
+    ]);
+    const target = unitIdAtV7(state, at(2, 3));
+    const pull = probeBestPullV7(viewerViewV7(state), indexOf(state));
+    expect(pull?.tool).toBe("PULL_KILL");
+    expect(pull?.to).toEqual(at(4, 3));
+    const result = play(state);
+    expect(
+      result.choices
+        .filter((choice) => !choice.tool.startsWith("TRAIN"))
+        .map((choice) => choice.tool),
+    ).toEqual(["PULL_KILL", "FOCUS_ATTACK"]);
+    expect(result.state.units.some((unit) => unit.id === target)).toBe(false);
+    const saucer = martianFieldV7([
+      own("RAIDER", 5, 3),
+      foe("FIGHTER", 3, 3, { hp: 5 }),
+    ]);
+    expect(
+      probeBestPullV7(viewerViewV7(saucer), indexOf(saucer))?.tool ?? "NONE",
+    ).not.toBe("PULL_KILL");
+  });
+
   it("does not pull a unit that nothing can finish", () => {
+    // A Guard (17 HP): the Mothership's attack after its free pull (7r37)
+    // and the Ray Gunner's full ray together do not kill it (they do kill
+    // a Fighter now).
     const state = martianFieldV7([
       own("KNIGHT", 5, 3),
       own("MARKSMAN", 6, 3),
-      foe("FIGHTER", 3, 3),
+      foe("GUARD", 3, 3),
     ]);
     expect(probeBestPullV7(viewerViewV7(state), indexOf(state))).toBeNull();
   });
@@ -365,8 +400,9 @@ describe("Martian mobility probe: Beam Down", () => {
   });
 
   it("uses whatever Beam Down the engine offers: a pick-up away from a city by a carrier that moved", () => {
-    // Today's rules offer no such command; the engine step of
-    // `pulp_wars-1wy.3` will. The probe reads the offer, not the rule.
+    // Since `pulp_wars-1wy.3` (7r37) the engine offers it (at 7r36 it did
+    // not, and the probe was shown the command by hand). The probe reads
+    // the offer, not the rule.
     const state = martianFieldV7([
       own("RAIDER", 5, 2, { activation: { moved: true, movedPathLength: 3 } }),
       own("FIGHTER", 6, 1, {
@@ -378,23 +414,72 @@ describe("Martian mobility probe: Beam Down", () => {
       foe("FIGHTER", 7, 0),
     ]);
     const view = viewerViewV7(state);
-    expect(
-      queryPlayerCommandsV7(view).some(
-        (command) => command.kind === "BEAM_DOWN",
-      ),
-    ).toBe(false);
     const pickUp: CommandV7 = {
       kind: "BEAM_DOWN",
       unitId: unitIdAtV7(state, at(5, 2)),
       passengerUnitId: unitIdAtV7(state, at(6, 1)),
       to: at(4, 3),
     };
+    const offered = queryPlayerCommandsV7(view);
+    expect(offered).toContainEqual(pickUp);
+    // From the engine's own offer: the Grunt is picked up and set down on
+    // a tile out of lethal reach.
+    const real = chooseMartianMobilityProbeCommandV7(
+      view,
+      createMobilityProbeMemoryV7(),
+    );
+    expect(real?.tool).toBe("EXTRACT");
+    expect(offered).toContainEqual(real?.command);
+    expect(real?.command).toMatchObject({
+      kind: "BEAM_DOWN",
+      unitId: pickUp.unitId,
+      passengerUnitId: pickUp.passengerUnitId,
+    });
+    const to = real?.command.kind === "BEAM_DOWN" ? real.command.to : null;
+    expect(to).not.toBeNull();
+    if (to !== null)
+      expect(probeLethalV7(view, publicUnitAtV7(state, at(6, 1)), to)).toBe(
+        false,
+      );
+    // And it still reads only what it is offered.
     const choice = chooseMartianMobilityProbeCommandV7(
       view,
       createMobilityProbeMemoryV7(),
       [pickUp, { kind: "END_TURN" }],
     );
     expect(choice).toEqual({ command: pickUp, tool: "EXTRACT" });
+  });
+
+  it("does not deliver a unit that cannot attack after moving to shoot on arrival", () => {
+    // A beamed unit counts as moved (7r37): a Shield Projector never
+    // attacks after moving, so a tile next to an enemy is no attack
+    // delivery for it; a Grunt's is.
+    const build = (role: "GUARD" | "FIGHTER") =>
+      martianFieldV7([
+        own("RAIDER", 6, 4),
+        own(role, 8, 7),
+        foe("FIGHTER", 3, 4),
+      ]);
+    const projector = build("GUARD");
+    expect(
+      probeDeliverV7(viewerViewV7(projector), indexOf(projector))?.tool ??
+        "NONE",
+    ).not.toBe("DELIVER_ATTACK");
+    const grunt = build("FIGHTER");
+    expect(probeDeliverV7(viewerViewV7(grunt), indexOf(grunt))?.tool).toBe(
+      "DELIVER_ATTACK",
+    );
+    // The delivered Grunt then shoots: the engine offers it the attack.
+    const delivered = play(grunt);
+    expect(delivered.choices.map((choice) => choice.tool)).toContain(
+      "DELIVER_ATTACK",
+    );
+    const gruntId = unitIdAtV7(grunt, at(8, 7));
+    expect(
+      queryPlayerCommandsV7(viewerViewV7(delivered.state)).some(
+        (command) => command.kind === "ATTACK" && command.unitId === gruntId,
+      ),
+    ).toBe(true);
   });
 });
 

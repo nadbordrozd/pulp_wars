@@ -133,7 +133,9 @@ describe("Normal AI second pass: Spitters", () => {
 
 describe("Normal AI second pass: the hunt", () => {
   // Seat 1's Ice Witch (12 HP), in sight of the capital, two tiles from
-  // three own Fighters that can each step next to her and hit her for 5.
+  // three own Fighters that can each step next to her and hit her for 6
+  // (`pulp_wars-1wy.3`: Snow cover x 1.25; it was 5 at x 1.5), so two of
+  // them kill her.
   const hunters = [
     own("FIGHTER", 4, 6),
     own("FIGHTER", 6, 4),
@@ -147,11 +149,15 @@ describe("Normal AI second pass: the hunt", () => {
     });
     const move = moveCandidateV7(state, at(4, 6), at(5, 6));
     expect(move?.score.priority).toBe(1177);
-    // Above the routine Moves of every hunter.
-    for (const hunter of hunters) {
-      const best = unitCandidatesV7(state, hunter.at, "MOVE")[0];
-      expect(best?.score.priority).toBe(1177);
-    }
+    // Above the routine Moves of the hunters the kill needs (two of the
+    // three).
+    expect(
+      hunters.filter(
+        (hunter) =>
+          unitCandidatesV7(state, hunter.at, "MOVE")[0]?.score.priority ===
+          1177,
+      ).length,
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it("does not move in when the hunters cannot kill her this turn", () => {
@@ -206,16 +212,14 @@ describe("Normal AI second pass: Ice Folk, Martian abilities", () => {
   it("pulls a hostile unit where the other own attacks take half of it", () => {
     const state = field(
       [
-        // Pulled to (6, 4): the Grunts (2 each) and the Projector (2) take
+        // Pulled to (6, 4): the Grunts (4 each) and the Projector (2) take
         // 10 of the Guard's 17 HP; with the Mothership's 5 it would still
-        // live, so this is no kill setup. `pulp_wars-b5f.2`: a Grunt (Attack
-        // 1.5, was 2) deals 2, not 4, so two more Grunts join with their ray
-        // pistols from two tiles away.
+        // live, so this is no kill setup. `pulp_wars-1wy.3`: a Grunt has
+        // Attack 2 again (4 on the Guard; at Attack 1.5, `pulp_wars-b5f.2`,
+        // it took two more Grunts with their ray pistols).
         own("KNIGHT", 6, 3),
         own("FIGHTER", 5, 4),
         own("FIGHTER", 7, 4),
-        own("FIGHTER", 4, 4),
-        own("FIGHTER", 8, 4),
         own("GUARD", 7, 3),
         foe("GUARD", 6, 5),
       ],

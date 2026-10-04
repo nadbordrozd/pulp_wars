@@ -437,10 +437,16 @@ describe("Martian board plan", () => {
         passengerUnitId: null,
       },
     });
-    expect(stageOne.targets.map((target) => target.family)).toEqual([
-      "BEAM_DOWN_PASSENGER",
-    ]);
-    expect(stageOne.targets[0]?.at).toEqual(passenger.at);
+    // `pulp_wars-1wy.3`: the city Grunt and the own units within two tiles
+    // of the Saucer are passengers.
+    expect(
+      stageOne.targets.every(
+        (target) => target.family === "BEAM_DOWN_PASSENGER",
+      ),
+    ).toBe(true);
+    expect(stageOne.targets.map((target) => target.at)).toContainEqual(
+      passenger.at,
+    );
     const stageTwo = planFor(view, AT.saucer, {
       martianPick: {
         kind: "BEAM_DOWN",

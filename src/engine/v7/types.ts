@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r36" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r37" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -47,8 +47,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r33",
   "pulp-wars-poc-7r34",
   "pulp-wars-poc-7r35",
+  "pulp-wars-poc-7r36",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r36.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r37.current" as const;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
@@ -729,6 +730,20 @@ export interface GameStateV7 {
    * Gyrocopters bombed this turn, sorted. Emptied at its End Turn.
    */
   readonly bombedThisTurn: readonly UnitId[];
+  /**
+   * The Martian balance revision (`pulp_wars-1wy.3`, Beam Down): the active
+   * player's units that were beamed this turn, sorted. A listed unit is not
+   * a Beam Down passenger again. Emptied at the End Turn. Always empty in a
+   * match whose setup has no MARTIAN seat.
+   */
+  readonly beamedThisTurn: readonly UnitId[];
+  /**
+   * The Martian balance revision (`pulp_wars-1wy.3`, the Heavy Tractor
+   * Beam): the active player's units that used their free Tractor Beam this
+   * turn, sorted. Emptied at the End Turn. Always empty in a match whose
+   * setup has no MARTIAN seat.
+   */
+  readonly tractorUsedThisTurn: readonly UnitId[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
 }

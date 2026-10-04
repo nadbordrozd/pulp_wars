@@ -1,6 +1,9 @@
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   EGG_DEFENSE2_V7,
+  NO_COVER_V7,
+  coverBonusV7,
+  terrainGivesCoverV7,
   armouredDamageV7,
   attackIgnoresCityWallsV7,
   attackIsChargeV7,
@@ -67,10 +70,10 @@ import {
 } from "./types";
 
 export interface DefenseBonusV7 {
-  readonly numerator: 1 | 3 | 2 | 4;
-  readonly denominator: 1 | 2;
+  readonly numerator: 1 | 3 | 5;
+  readonly denominator: 1 | 2 | 4;
 }
-const NO_BONUS: DefenseBonusV7 = { numerator: 1, denominator: 1 };
+const NO_BONUS: DefenseBonusV7 = NO_COVER_V7;
 
 export function defenseBonusForUnitV7(
   state: GameStateV7,
@@ -79,19 +82,19 @@ export function defenseBonusForUnitV7(
 ): DefenseBonusV7 {
   // The Martian revision section 7.1: a walker or flyer never gets cover.
   if (!unitTakesCoverV7(state, unit)) return NO_BONUS;
-  const terrain = tileAtV7(state.board, unit.at)?.terrain;
-  return terrain === "FOREST" ||
-    terrain === "MOUNTAIN" ||
-    snowCoverAppliesV7(state, unit, snowAt)
-    ? { numerator: 3, denominator: 2 }
-    : NO_BONUS;
+  return coverBonusV7(
+    terrainGivesCoverV7(tileAtV7(state.board, unit.at)?.terrain),
+    snowCoverAppliesV7(state, unit, snowAt),
+  );
 }
 
 /**
- * The Ice Folk revision (section 6.2, 2): Snow cover. A land-form unit of an
- * Ice Folk seat standing on Snow whose OWN fortification level is 0 has
- * cover `× 1.5` (the Forest and Mountain cover, never added to it).
- * `snowAt` is the Snow the caller may read (canonical, or a viewer's).
+ * The Ice Folk revision (section 6.2, 2; `pulp_wars-1wy.3`): Snow cover. A
+ * land-form unit of an Ice Folk seat standing on Snow whose OWN
+ * fortification level is 0 has cover `x 1.25` (`SNOW_COVER_V7`), unless it
+ * stands on a Forest or Mountain, whose `x 1.5` applies instead (never
+ * added). `snowAt` is the Snow the caller may read (canonical, or a
+ * viewer's).
  */
 export function snowCoverAppliesV7(
   state: GameStateV7,
@@ -102,6 +105,7 @@ export function snowCoverAppliesV7(
     unitTakesCoverV7(state, unit) &&
     unitOwnerIsIceFolkV7(state, unit) &&
     snowAt(unit.at) &&
+    !terrainGivesCoverV7(tileAtV7(state.board, unit.at)?.terrain) &&
     fortificationLevelForUnitV7(state, unit) === 0
   );
 }

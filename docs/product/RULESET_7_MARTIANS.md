@@ -28,6 +28,20 @@ when the Brain is lost; its engine, Normal AI, and UI are implemented
 (`pulp_wars-b5f.3`, `pulp-wars-poc-7r33`, folded into
 [current rules sections 20.8 and 20.9](RULESET_7_CURRENT.md#208-mind-control);
 the Thrall art is retired). The Thrall text below is history.
+**The balance round changed Beam Down, the Tractor Beam, the Mothership,
+and the Grunt** (`pulp_wars-1wy.3`, identity `pulp-wars-poc-7r37`, the
+engine step of the
+[Martian and Ice Folk balance design](RULESET_7_BALANCE_MARTIAN_ICE.md)):
+Beam Down after a Move with a pick-up within two tiles and a passenger that
+counts as moved, the Tractor Beam on the Saucer, the Mothership at 8 Coins
+with Beam Down and a free Heavy Tractor Beam, and the Grunt at Attack 2 and
+9 HP. Sections 3, 8.1, 8.4, 9, and 13 below describe the rules before it;
+the current rules' sections
+[11](RULESET_7_CURRENT.md#11-unit-roster),
+[20.7](RULESET_7_CURRENT.md#207-beam-down), and
+[20.10](RULESET_7_CURRENT.md#2010-tractor-beam) win, and the
+[tuning record](#165-tuning-record) lists the changes. Its Normal AI
+(`pulp_wars-1wy.4`) and UI (`pulp_wars-1wy.5`) steps are pending.
 What the implementation changed or made precise is in
 [section 19](#19-implementation-notes-pulp_wars-t6s2). It is an
 overlay over the rules in force when `pulp_wars-t6s.2` starts: today that is
@@ -2623,6 +2637,29 @@ Grunt shots: before, 3,627 attacks, all adjacent, 67% drawing retaliation;
 after, 7,172, of which 6,313 (88%) from two tiles and 7% drawing
 retaliation. The Normal AI changes are in the
 [Normal AI notes](../architecture/NORMAL_AI.md#martian-ranged-play-pulp_wars-b5f2).
+
+`pulp_wars-1wy.3` (identity `pulp-wars-poc-7r37`; the user's playtest of
+2026-10-04: "mothership is such an expensive unit and it doesn't do
+anything", "grunts are super weak", "beaming down could be a great trick
+but too many limitations"; design, diagnosis, and reasons in the
+[balance design](RULESET_7_BALANCE_MARTIAN_ICE.md), root rulings of
+2026-10-04: the Saucer's pull at Scouting, the glass-cannon Grunt):
+
+| Parameter            | Before (`7r36`)                           | Chosen                                                                    |
+| -------------------- | ----------------------------------------- | ------------------------------------------------------------------------- |
+| Beam Down carrier    | an unmoved Saucer                         | a Saucer or a Mothership, after its Move too                              |
+| Beam Down passenger  | on or next to an own city center          | that, or within 2 tiles of the carrier; once a turn per unit              |
+| Beamed unit          | exhausted                                 | counts as moved: it may still attack (a ray at half power), not move      |
+| Saucer abilities     | Attack, Beam Down                         | Attack, Beam Down, Tractor Beam (exactly 2 tiles, pulls 1), one per turn  |
+| Mothership cost      | 10                                        | 8                                                                         |
+| Mothership abilities | Attack, Tractor Beam (its primary action) | Attack, Beam Down, Heavy Tractor Beam                                     |
+| Mothership's pull    | exactly 2 tiles, pulls 1                  | 2 or 3 tiles, pulls up to 2, free once a turn (it may still move and act) |
+| Grunt Attack / HP    | 1.5 (`3`) / 10                            | 2 (`4`) / 9                                                               |
+
+These are the design's proposed values; the coarse matrix and the
+human-style probe that accept or tune them are `pulp_wars-1wy.6`, within
+the bounds of the design's section 8.4. The Normal AI does not yet use the
+new tools on purpose (`pulp_wars-1wy.4`).
 
 ## 17. Decisions made in this spec
 

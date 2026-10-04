@@ -2199,6 +2199,8 @@ function initialMapStateFromV7(
     burrowed: [],
     surfacedThisTurn: [],
     bombedThisTurn: [],
+    beamedThisTurn: [],
+    tractorUsedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });
@@ -2255,6 +2257,8 @@ function showcaseInitialStateV7(
     burrowed: [],
     surfacedThisTurn: [],
     bombedThisTurn: [],
+    beamedThisTurn: [],
+    tractorUsedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });

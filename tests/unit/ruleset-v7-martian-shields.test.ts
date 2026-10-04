@@ -50,7 +50,7 @@ describe("Martian Shields: absorption (section 5.3)", () => {
     expect(absorbHitV7(2, 10, 0)).toEqual({ shieldDamage: 0, hpDamage: 0 });
   });
 
-  it("Fighter attacks a Grunt: hit 5, Shield 2, HP 3, and takes 3 back; the next Fighter deals 6 HP", () => {
+  it("Fighter attacks a Grunt: hit 5, Shield 2, HP 3, and takes 3 back; the next Fighter kills it (6)", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 2) },
@@ -68,7 +68,7 @@ describe("Martian Shields: absorption (section 5.3)", () => {
       rayPower: "NONE",
       coolingApplied: false,
     });
-    expect(first.target?.hp).toBe(7);
+    expect(first.target?.hp).toBe(6);
     expect(shieldAtV7(first.state, at(5, 2))).toBe(0);
     expect(first.state.shields).toEqual([]);
     // The Shield does not recharge between attacks of one turn.
@@ -77,7 +77,7 @@ describe("Martian Shields: absorption (section 5.3)", () => {
       damageToDefender: 6,
       defenderShieldDamage: 0,
     });
-    expect(second.target?.hp).toBe(1);
+    expect(second.combat.defenderDies).toBe(true);
   });
 
   it("Guard attacks a Grunt: hit 3, Shield 2, HP 1", () => {
@@ -118,16 +118,16 @@ describe("Martian Shields: absorption (section 5.3)", () => {
       { seat: 1, role: "FIGHTER", at: at(5, 3) },
     ]);
     const run = attackV7(state, at(5, 2), at(5, 3));
-    // The Grunt (Attack 1.5 since `pulp_wars-b5f.2`, was 2 and 5) deals 3;
-    // the Fighter retaliates for 5.
+    // The Grunt (Attack 2 and 9 HP since `pulp_wars-1wy.3`) deals 5;
+    // the Fighter retaliates for 5 (2 absorbed).
     expect(run.combat).toMatchObject({
-      damageToDefender: 3,
+      damageToDefender: 5,
       defenderShieldDamage: 0,
       damageToAttacker: 3,
       attackerShieldDamage: 2,
       retaliation: true,
     });
-    expect(run.attacker?.hp).toBe(7);
+    expect(run.attacker?.hp).toBe(6);
     // It meets the enemy turn with Shield 0.
     expect(shieldAtV7(run.state, at(5, 2))).toBe(0);
   });
@@ -218,10 +218,10 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
     expect(preview?.targets.map((target) => target.damage)).toEqual([0, 0]);
     expect(shieldAtV7(result.state, at(5, 2))).toBe(0);
     expect(shieldAtV7(result.state, at(6, 3))).toBe(2);
-    expect(unitAtV7(result.state, at(5, 2)).hp).toBe(10);
+    expect(unitAtV7(result.state, at(5, 2)).hp).toBe(9);
   });
 
-  it("Goblin Kaboom (5) on a Grunt: Shield 2, HP 3; a second deals 5, a third kills", () => {
+  it("Goblin Kaboom (5) on a Grunt (9 HP): Shield 2, HP 3; a second deals 5, a third kills", () => {
     const state = martianFieldV7(
       [
         { seat: 0, role: "FIGHTER", at: at(5, 2) },
@@ -254,7 +254,7 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
     const second = kaboom(first.state, at(4, 3));
     expect(second.grunt).toMatchObject({ damage: 5, shieldDamage: 0 });
     const third = kaboom(second.state, at(6, 3));
-    expect(third.grunt).toMatchObject({ damage: 2, dies: true });
+    expect(third.grunt).toMatchObject({ damage: 1, dies: true });
   });
 
   it("a death blast of 2 is absorbed by a full Shield, and a chain strips a Shield once", () => {
@@ -461,14 +461,14 @@ describe("Martian Shields: other factions' damage (sections 5.3 and 10)", () => 
         dies: false,
       },
     ]);
-    expect(unitAtV7(started.state, at(5, 2)).hp).toBe(8);
+    expect(unitAtV7(started.state, at(5, 2)).hp).toBe(7);
     expect(shieldAtV7(started.state, at(5, 2))).toBe(2);
     // The spread ignores the neighbour's full Shield.
     expect(started.state.plagued.map((entry) => entry.unitId)).toEqual([
       unitAtV7(base, at(5, 2)).id,
       unitAtV7(base, at(6, 2)).id,
     ]);
-    expect(unitAtV7(started.state, at(6, 2)).hp).toBe(10);
+    expect(unitAtV7(started.state, at(6, 2)).hp).toBe(9);
   });
 
   it("Bomb splash is computed from the whole hit and each victim's Shield absorbs its share", () => {
@@ -558,7 +558,7 @@ describe("Martian Shields: recharge (sections 5.2, 5.4, and 5.5)", () => {
       kinds.lastIndexOf("TURN_STARTED") + 1,
     );
     // The recharge is not healing.
-    expect(unitAtV7(started.state, at(5, 2)).hp).toBe(10);
+    expect(unitAtV7(started.state, at(5, 2)).hp).toBe(9);
   });
 
   it("emits no event when nothing changed", () => {
@@ -745,7 +745,7 @@ describe("Martian Shields: recharge (sections 5.2, 5.4, and 5.5)", () => {
     ]);
     // Covered during the enemy turn.
     expect(shieldAtV7(ended.state, at(5, 2))).toBe(4);
-    expect(unitAtV7(ended.state, at(5, 2)).hp).toBe(7);
+    expect(unitAtV7(ended.state, at(5, 2)).hp).toBe(6);
   });
 });
 

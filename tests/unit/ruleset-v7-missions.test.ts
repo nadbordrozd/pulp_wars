@@ -98,8 +98,12 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
 function missionStateHash(state: GameStateV7): string {
   // The Giant Spider (`pulp_wars-737.3`) added the `monsters` list, always
   // empty on a mission board, so the pins leave it out.
-  const { monsters, ...rest } = state;
-  expect(monsters).toEqual([]);
+  // The Martian balance round (`pulp_wars-1wy.3`) added the per-turn lists
+  // `beamedThisTurn` and `tractorUsedThisTurn`, empty in every initial
+  // state, so the pins leave them out too: no mission has a Martian or Ice
+  // Folk unit, so no mission revision changed.
+  const { monsters, beamedThisTurn, tractorUsedThisTurn, ...rest } = state;
+  expect([monsters, beamedThisTurn, tractorUsedThisTurn]).toEqual([[], [], []]);
   return canonicalHash({
     ...rest,
     rulesetId: "*",
@@ -140,9 +144,16 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {
-  const { curiosities, monsters, ...rest } = state;
+  const {
+    curiosities,
+    monsters,
+    beamedThisTurn,
+    tractorUsedThisTurn,
+    ...rest
+  } = state;
   const { curiosities: option, ...setup } = state.setup;
   expect([curiosities, monsters, option]).toEqual([[], [], false]);
+  expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);
   return canonicalHash({
     ...rest,
     rulesetId: "*",

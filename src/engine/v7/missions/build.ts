@@ -521,6 +521,8 @@ export function buildMissionStateV7(
     burrowed: [],
     surfacedThisTurn: [],
     bombedThisTurn: [],
+    beamedThisTurn: [],
+    tractorUsedThisTurn: [],
     pendingChoices: [],
     outcome: null,
   });

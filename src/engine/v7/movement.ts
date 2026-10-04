@@ -154,8 +154,8 @@ function validateMovementPathWithOptionsV7(
   let currentRoadNode = isUsableRoadNodeV7(state, player, current);
   let spentPoints2 = 0;
   // The Ice Folk revision (sections 6.1, 6.2, and 6.5): Snow is read once,
-  // from the state before the command. An Ice Folk unit Glides (a step that
-  // leaves Snow costs half); another faction's ground unit stops on entering
+  // from the state before the command. An Ice Folk unit Glides (a step from
+  // Snow onto Snow costs half); another faction's ground unit stops on entering
   // Snow, and Snow it could not know about (a hidden Witch's Blizzard)
   // interrupts the Move. A Sabretooth Prowls through zones of control and,
   // like a flyer, never ends on a settlement center it does not own.
@@ -192,7 +192,13 @@ function validateMovementPathWithOptionsV7(
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     const wasExplored = contains(explored, step);
     const wasKnownBeforeCommand = contains(knownBeforeCommand, step);
-    spentPoints2 += currentRoadNode || (glides && currentSnow) ? 1 : 2;
+    // The Ice Folk balance revision (`pulp_wars-1wy.3`,
+    // RULESET_7_BALANCE_MARTIAN_ICE.md section 6.1): Glide is a step from a
+    // Snow tile onto a Snow tile (both ends read from the state before the
+    // command); it never adds to a Road node's half cost.
+    const stepSnow = snowAt(step);
+    spentPoints2 +=
+      currentRoadNode || (glides && currentSnow && stepSnow) ? 1 : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     const owner = tileOwner(state, tile);
@@ -373,7 +379,6 @@ function validateMovementPathWithOptionsV7(
       roadEdge,
     });
     // The Ice Folk revision section 6.2 (3): deep snow, waived by a Road edge.
-    const stepSnow = snowAt(step);
     const snowStops = snowStopped && stepSnow && !roadEdge;
     const terrainStops = groundStops || snowStops;
     const stops = !wasExplored || terrainStops || entersZoc;
@@ -755,7 +760,12 @@ function validatePlayerMovementPathWithContextV7(
       )
         return { legal: false, reason: "ENGINEERING_REQUIRED" };
     }
-    spentPoints2 += currentRoadNode || (glides && currentSnow) ? 1 : 2;
+    // `pulp_wars-1wy.3`: Glide is a step from Snow onto Snow, both ends from
+    // the public Snow flags. Hidden Snow can only make the canonical step
+    // cheaper, so every offered Move stays within the canonical budget.
+    const stepSnow = tile.explored && tile.snow === true;
+    spentPoints2 +=
+      currentRoadNode || (glides && currentSnow && stepSnow) ? 1 : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
@@ -809,7 +819,6 @@ function validatePlayerMovementPathWithContextV7(
       !flies && !prowls && publicHostileZoc(view, unit, step, context);
     const stepRoadNode = isUsablePublicRoadNodeV7(view, tile, context);
     const roadEdge = currentRoadNode && stepRoadNode;
-    const stepSnow = tile.explored && tile.snow === true;
     const snowStops = snowStopped && stepSnow && !roadEdge;
     const terrainStops =
       tile.explored &&

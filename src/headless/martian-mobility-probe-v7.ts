@@ -51,10 +51,12 @@ import type { PlayerId, UnitId } from "../engine/model/ids";
 import {
   effectiveRoleRuleV7,
   roleMechanicsV7,
+  unitMayActAfterMoveV7,
   unitMovementModeV7,
   unitRoleRuleV7,
 } from "../engine/rules/ruleset-v7";
 import type { CommandV7 } from "../engine/v7/commands";
+import { tractorBeamRuleV7 } from "../engine/v7/martian";
 import {
   previewTractorBeamV7,
   queryCombatPreviewV7,
@@ -593,7 +595,13 @@ export function probeBestPullV7(
       offer({ command, tool: "PULL_CITY", to, value, center: city.at });
       continue;
     }
-    const excluded = new Set([command.unitId]);
+    // A pull that is the puller's primary action leaves it nothing to
+    // shoot with; a free pull (the Heavy Tractor Beam, `pulp_wars-1wy.3`)
+    // does not, so that puller's own attack counts in the follow-up.
+    const puller = view.units.find((unit) => unit.id === command.unitId);
+    const pullIsFree =
+      puller !== undefined && tractorBeamRuleV7(view, puller)?.free === true;
+    const excluded = new Set<UnitId>(pullIsFree ? [] : [command.unitId]);
     const need = probeToughnessV7(view, target);
     if (
       probeFollowUpDamageV7(view, index, target, to, excluded) >= need &&
@@ -896,11 +904,13 @@ export function probeDeliverV7(
         return end === undefined ? [] : [end];
       },
     );
-    // Only a passenger that still has its primary action can shoot on
-    // arrival (if the rules let a beamed unit act at all).
+    // A beamed unit counts as moved (`pulp_wars-1wy.3`): it shoots on
+    // arrival only if it still has its primary action and may act after
+    // moving (a Shield Projector or a sluggish unit may not).
     const targets = hostile.filter(
       (unit) =>
         !primaryUsed(passenger) &&
+        unitMayActAfterMoveV7(view, passenger) &&
         inRange(range, command.to, unit.at) &&
         !ends.some((end) => inRange(range, end, unit.at)),
     );

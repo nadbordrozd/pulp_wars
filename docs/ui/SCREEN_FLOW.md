@@ -624,7 +624,7 @@ without a Martian seat looks as before apart from the extra faction option.
   icon), Charge "Strafe"; Fortification is "Force Fields" (the Force Field
   icon) and Explosives "Disintegrator" in the tree, its detail and research;
   unit unlocks read "Train Tripod (strides, heat ray, Pierce)", "Train Saucer
-  (flies, Beam Down)" and so on, all from the registry. Rewards read "A free
+  (flies, Beam Down, Tractor Beam)" and so on, all from the registry. Rewards read "A free
   Grunt" and "Colossus: A giant unit (2 slots)". In a match with a Martian
   seat the leaderboard and turn status name each player's faction.
 - **Board markers** (code-drawn, `MARTIAN_PALETTE_V7`; calm: one row and one
@@ -687,10 +687,16 @@ without a Martian seat looks as before apart from the extra faction option.
 - **Abilities.** Beam Down, Mind Control and Tractor Beam are one button
   each (the offered commands, one per passenger and tile or per target, are
   never buttons). A button without a legal choice is `aria-disabled` and
-  names why: "A Saucer that moved this turn cannot Beam Down", "No unit on
-  or next to one of your city centers", "No free tile next to this Saucer";
+  names why: "No unit in one of your cities or within 2 tiles can be
+  beamed", "No free tile next to this unit";
   "Recovering: N turns", "Controls a unit already", "No wounded enemy in
-  reach"; "No unit two tiles away can be pulled". A
+  reach"; "No unit in reach can be pulled". (`pulp_wars-1wy.3`, `7r37`:
+  the Saucer and the Mothership both show Beam Down and Tractor Beam; a
+  carrier that moved still beams, so "A Saucer that moved this turn cannot
+  Beam Down" is gone; the Mothership's Tractor Beam button stays after its
+  Move or attack until it is used. The texts quote the new rules; the rest
+  of the balance round's UI, the two-tile path in the aiming panel and a
+  per-unit tooltip, is `pulp_wars-1wy.5`.) A
   press aims the ability: the dock replaces the actions with the aiming
   panel of the [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8)
   (the ability's icon and name with its `?`, unit choices as chips, each
@@ -699,11 +705,12 @@ without a Martian seat looks as before apart from the extra faction option.
   ability's (magenta dashed outlines) and the camera frames them above the
   dock. Escape steps back (a Beam Down tile to its passenger) and then
   leaves.
-  - **Beam Down**: first the passengers (on or next to own city centers;
-    chips "Beam Grunt", accessible name adding "8 of 8 HP"), then the
-    legal tiles around the Saucer on the board only ("Beam here",
-    "destroys Field Defense"; named "Beam the Grunt here"); the `?` adds
-    "The unit cannot act this turn"; a tile performs it.
+  - **Beam Down**: first the passengers (on or next to own city centers,
+    or within two tiles of the carrier; chips "Beam Grunt", accessible name
+    adding "8 of 8 HP"), then the legal tiles around the carrier on the
+    board only ("Beam here", "destroys Field Defense"; named "Beam the
+    Grunt here"); the tooltip says "It can still attack but not move"; a
+    tile performs it.
   - **Mind Control**: the legal targets, wounded hostile units ("Take · 5
     HP", with "Mind Control recovers for 2 turns · Returns if this Brain is
     lost"; named "Take the Marksman, 5 of 12 HP" with no tile); the dock's
@@ -712,11 +719,12 @@ without a Martian seat looks as before apart from the extra faction option.
     that cannot be taken is marked grey with why: "Too healthy (10 HP)",
     "Unhurt", "Immune", "Already controlled", "Protected on a city or
     village center". A target performs it, like an attack.
-  - **Tractor Beam**: the targets two tiles away; the focused one shows its
-    destination (magenta tile and an arrow) and "Pulled out of Walls",
-    "Pulled off Field Defense", "Empties Player 2's City", "Lifts the siege
-    of your City" (named "Pull the Fighter one tile closer"; no text names
-    the tile it lands on).
+  - **Tractor Beam**: the targets two tiles away (a Mothership's: two or
+    three); the focused one shows its destination (magenta tile and an
+    arrow) and "Pulled out of Walls", "Pulled off Field Defense", "Empties
+    Player 2's City", "Lifts the siege of your City" (named "Pull the
+    Fighter one tile closer", or "two tiles closer" for a Mothership's
+    longer pull; no text names the tile it lands on).
 - **Moves.** A machine's Move onto water is a dotted pale-blue "Launch"
   outline (no label box); the dock's legend reads "Launch: crosses water as
   a transport" and the cursor description says it ends the turn afloat.

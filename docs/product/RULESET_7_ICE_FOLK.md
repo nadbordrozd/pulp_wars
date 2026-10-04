@@ -18,7 +18,15 @@ is implemented** (`pulp_wars-7g3.4`,
 [section 12.1](#121-implementation-status-pulp_wars-7g34)). **Coarse balance
 is done** (`pulp_wars-7g3.7`, identity `pulp-wars-poc-7r27`: the Yeti has 9 HP
 and Defense 1.5; [section 16.5](#165-tuning-record) and the
-[Ice Folk balance report](../validation/RULESET_7_ICE_FOLK_BALANCE.md)). What the engine implementation changed or
+[Ice Folk balance report](../validation/RULESET_7_ICE_FOLK_BALANCE.md)).
+**The balance round toned Snow down** (`pulp_wars-1wy.3`, identity
+`pulp-wars-poc-7r37`, the engine step of the
+[Martian and Ice Folk balance design](RULESET_7_BALANCE_MARTIAN_ICE.md)):
+Glide is a half-cost step only from Snow onto Snow, and Snow cover is
+× 1.25. Sections 6.2, 9, and 13 below describe the rules before it (Glide
+on every step that leaves Snow, cover × 1.5); the current rules'
+[section 21.5](RULESET_7_CURRENT.md#215-snow) wins, and
+[section 16.5](#165-tuning-record) lists the change. What the engine implementation changed or
 made precise is in [section 19](#19-implementation-notes-pulp_wars-7g33). It is an
 overlay over the rules in force when `pulp_wars-7g3.3` starts: the
 [Martian faction](RULESET_7_MARTIANS.md) (epic `pulp_wars-t6s`, whose engine
@@ -2866,6 +2874,22 @@ is deferred by the user). Evidence:
 
 Named levers and AI work proposed to the root are in section 6 of the report
 (the Witch is almost never killed: an AI gap, not a number).
+
+`pulp_wars-1wy.3` (identity `pulp-wars-poc-7r37`; the user's playtest of
+2026-10-04: "ice folks are over powered with all the bonuses on snow
+especially the fast movement. I like it all qualitatively but quantitively
+they are too strong"; design and reasons in the
+[balance design](RULESET_7_BALANCE_MARTIAN_ICE.md), root ruling of
+2026-10-04: Snow cover × 1.25):
+
+| Parameter  | Before (`7r36`)                          | Chosen                                                       | Effect                                                                                                        |
+| ---------- | ---------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Glide      | half cost on every step that leaves Snow | half cost only on a step from Snow onto Snow                 | a Yeti leaves home one tile a turn (was two), a Sled two (was three), the Witch's Blizzard ball one (was two) |
+| Snow cover | × 1.5 (the Forest and Mountain cover)    | × 1.25; a snowy Forest or Mountain keeps the terrain's × 1.5 | a Fighter deals a Yeti 5 and takes 3 back, as in the open; two Fighter hits kill the Witch, four the Mammoth  |
+
+Every statline, deep snow, the Blizzard's halving, Chill, and Shatter are
+unchanged. The values are the design's proposed ones; the coarse matrix
+that accepts or tunes them is `pulp_wars-1wy.6`.
 
 ## 17. Decisions made in this spec
 

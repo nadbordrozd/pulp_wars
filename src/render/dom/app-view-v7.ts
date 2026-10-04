@@ -239,6 +239,7 @@ import {
   MIND_CONTROLLED_NO_SLOT_V7,
   MIND_CONTROL_NO_TARGET_V7,
   TRACTOR_BEAM_LABEL_V7,
+  TRACTOR_BEAM_NO_TARGET_V7,
   TRACTOR_BEAM_PICK_V7,
   TRACTOR_BEAM_TOOLTIP_V7,
   beamDownUnavailableTextV7,
@@ -2179,8 +2180,8 @@ export class Ruleset7DomAppView {
               SNOW_LABEL_V7,
               "snow",
               mechanics.snowCover
-                ? "On Snow: it moves at half cost from here and has cover"
-                : "On Snow, but fortified: no Snow cover here",
+                ? "On Snow: it moves at half cost onto Snow and has light cover"
+                : "On Snow, but no Snow cover here",
             );
           if (mechanics.rockfall)
             iceChip(
@@ -5822,7 +5823,7 @@ export class Ruleset7DomAppView {
         label: TRACTOR_BEAM_LABEL_V7,
         tooltip: TRACTOR_BEAM_TOOLTIP_V7,
         icon: "tractor-beam",
-        blocked: () => (acted ? null : "No unit two tiles away can be pulled"),
+        blocked: () => (acted ? null : TRACTOR_BEAM_NO_TARGET_V7),
       },
     ];
     for (const entry of entries) {
@@ -7297,7 +7298,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r36",
+    rulesetId: "pulp-wars-poc-7r37",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),

@@ -69,14 +69,16 @@ function offeredAndActual(state: GameStateV7, bansheeAt: CoordV7) {
 }
 
 describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
-  it("counts an Ice Folk target's Snow cover: 1 on a Yeti on Snow, 2 in the open", () => {
-    // Undead seat 1's Banshee; Ice Folk seat 0's Yetis on its territory
+  // `pulp_wars-1wy.3`: Snow cover is x 1.25, which a Yeti does not feel
+  // against a Wail (2 either way), so the targets are Mammoths (Defense 2).
+  it("counts an Ice Folk target's Snow cover: 1 on a Mammoth on Snow, 2 in the open", () => {
+    // Undead seat 1's Banshee; Ice Folk seat 0's Mammoths on its territory
     // Snow (7, 7) and on open Grass (6, 5).
     const state = iceFieldV7(
       [
         { seat: 1, role: "MARKSMAN", at: at(6, 6) },
-        { seat: 0, role: "FIGHTER", at: at(7, 7) },
-        { seat: 0, role: "FIGHTER", at: at(6, 5) },
+        { seat: 0, role: "GUARD", at: at(7, 7) },
+        { seat: 0, role: "GUARD", at: at(6, 5) },
       ],
       { factions: ["ICE_FOLK", "UNDEAD"], activeSeat: 1, techs: { 0: [] } },
     );
@@ -132,10 +134,12 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
     // Ice Folk seat 0's Witch on (5, 2) makes (4..6, 1..3) Snow; seat 1
     // has not explored her tile, so its view shows no Snow there. Seat 1
     // has not explored (8, 6) either, beside the Yeti on territory Snow.
+    // `pulp_wars-1wy.3`: the unit beside the Witch is a Mammoth, which
+    // Snow cover x 1.25 saves a point (a Yeti takes 2 either way).
     const visible = iceFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(5, 2) },
-        { seat: 0, role: "FIGHTER", at: at(6, 3) },
+        { seat: 0, role: "GUARD", at: at(6, 3) },
         { seat: 0, role: "FIGHTER", at: at(4, 4) },
         { seat: 0, role: "FIGHTER", at: at(7, 7) },
         { seat: 1, role: "MARKSMAN", at: at(6, 5) },
@@ -153,7 +157,7 @@ describe("the public Wail preview equals the Wail (pulp_wars-7g3.9)", () => {
       hidden,
       at(6, 5),
     );
-    // The Yeti at (6, 3) beside the hidden Witch: the preview reads open
+    // The Mammoth at (6, 3) beside the hidden Witch: the preview reads open
     // ground (2) and is flagged; the Wail deals 1 (Snow cover).
     expect(offered["6,3"]).toEqual({
       ...actual["6,3"],

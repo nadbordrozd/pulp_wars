@@ -358,8 +358,9 @@ export interface RoleMechanicsV7 {
    */
   readonly mountainBorn: boolean;
   /**
-   * The Ice Folk revision (section 6.2): Glide. In land form a step that
-   * leaves a Snow tile costs one half-point. True for every Ice Folk land
+   * The Ice Folk revision (section 6.2): Glide. In land form a step from a
+   * Snow tile onto a Snow tile costs one half-point (`pulp_wars-1wy.3`:
+   * both ends, no longer every step that leaves Snow). True for every Ice Folk land
    * role except the Sabretooth; false for every other faction.
    */
   readonly glides: boolean;
@@ -428,6 +429,15 @@ export interface RoleMechanicsV7 {
    * damage takes (the Steam Tank's 4), or null.
    */
   readonly plated: number | null;
+  /**
+   * The Martian balance revision (docs/product/RULESET_7_BALANCE_MARTIAN_ICE.md
+   * section 5.3): the role's `TRACTOR_BEAM` is the Heavy Tractor Beam (the
+   * Mothership): reach 2 to `HEAVY_TRACTOR_RANGE_V7`, a pull of up to
+   * `HEAVY_TRACTOR_PULL_V7` tiles, and free once a turn instead of a primary
+   * action. False for every other role (the Saucer's pull is the ordinary
+   * primary-action Tractor Beam).
+   */
+  readonly heavyTractorBeam: boolean;
 }
 
 export interface FactionTechnologyTreeV7 {
@@ -1074,6 +1084,7 @@ const mechanics = (
           unmovedShots: 1,
           knockback: false,
           plated: null,
+          heavyTractorBeam: false,
           ...overrides[roleId],
         },
       ]),
@@ -1709,8 +1720,10 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     label: "Grunt",
     tacticalRole: "LINE",
     cost: 3,
-    maxHp: 10,
-    attack2: 3,
+    // `pulp_wars-1wy.3` (balance M4): a real gun and a weaker body, Attack 2
+    // and 9 HP (was Attack 1.5 and 10 HP).
+    maxHp: 9,
+    attack2: 4,
     defense2: 3,
     move: 1,
     // `pulp_wars-b5f.2`: the Grunt's ray pistol, a plain shot (no heat ray)
@@ -1736,7 +1749,8 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CHARGE", "FLY", "BEAM_DOWN"],
+    // `pulp_wars-1wy.3` (balance M2): the Saucer has the Tractor Beam.
+    abilities: ["ATTACK", "CHARGE", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
   }),
   MARKSMAN: role({
     role: "MARKSMAN",
@@ -1808,7 +1822,10 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     role: "KNIGHT",
     label: "Mothership",
     tacticalRole: "BREAKTHROUGH",
-    cost: 10,
+    // `pulp_wars-1wy.3` (balance M3): the carrier costs 8 (was 10), has Beam
+    // Down, and its Tractor Beam is the Heavy one (role mechanic
+    // `heavyTractorBeam`).
+    cost: 8,
     maxHp: 16,
     attack2: 5,
     defense2: 4,
@@ -1818,7 +1835,7 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "FLY", "TRACTOR_BEAM"],
+    abilities: ["ATTACK", "FLY", "BEAM_DOWN", "TRACTOR_BEAM"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -1860,6 +1877,7 @@ export const MARTIAN_ROLE_MECHANICS_V7 = mechanics({
     movementMode: "FLY",
     advancesAfterKill: false,
     capacitySlots: 2,
+    heavyTractorBeam: true,
   },
   JUGGERNAUT: { shield: 3, movementMode: "STRIDE", capacitySlots: 2 },
   BATTLESHIP: { splash: true },
@@ -3218,8 +3236,72 @@ export const MIND_CONTROL_COOLDOWN_TURNS_V7 = 2;
  * most.
  */
 export const MIND_CONTROL_LIMIT_V7 = 1;
-/** The Martian revision (section 8.4): the exact Tractor Beam distance. */
+/**
+ * The Martian revision (section 8.4): the Tractor Beam distance: the exact
+ * distance of the Saucer's pull and the minimum of the Heavy Tractor Beam.
+ */
 export const TRACTOR_BEAM_RANGE_V7 = 2;
+/** The Martian revision (section 8.4): the tiles a Tractor Beam pulls. */
+export const TRACTOR_BEAM_PULL_V7 = 1;
+/**
+ * The Martian balance revision (section 5.3): the Heavy Tractor Beam (the
+ * Mothership) reaches from `TRACTOR_BEAM_RANGE_V7` to this distance.
+ */
+export const HEAVY_TRACTOR_RANGE_V7 = 3;
+/** The Martian balance revision (section 5.3): the most tiles it pulls. */
+export const HEAVY_TRACTOR_PULL_V7 = 2;
+/**
+ * The Martian balance revision (section 5.1): a Beam Down carrier picks up
+ * an own unit within this Chebyshev distance (or from an own city).
+ */
+export const BEAM_DOWN_PICKUP_RANGE_V7 = 2;
+/**
+ * The Ice Folk balance revision (RULESET_7_BALANCE_MARTIAN_ICE.md section
+ * 6.2): Snow cover is `x 1.25`. A Forest or Mountain stays
+ * `TERRAIN_COVER_V7` (`x 1.5`) and wins on a snowy Forest or Mountain.
+ */
+export const SNOW_COVER_V7 = Object.freeze({
+  numerator: 5,
+  denominator: 4,
+} as const);
+/** The Forest and Mountain cover, `x 1.5`. */
+export const TERRAIN_COVER_V7 = Object.freeze({
+  numerator: 3,
+  denominator: 2,
+} as const);
+/** No cover. */
+export const NO_COVER_V7 = Object.freeze({
+  numerator: 1,
+  denominator: 1,
+} as const);
+/** A cover multiplier on the defender's Defense force. */
+export type CoverBonusV7 =
+  typeof NO_COVER_V7 | typeof SNOW_COVER_V7 | typeof TERRAIN_COVER_V7;
+
+/**
+ * THE cover multiplier of a defender that takes cover, shared by the combat
+ * resolution, the public combat preview, Wail, the unit stats, and the AI
+ * estimate: the terrain's `x 1.5` on a Forest or Mountain, else Snow cover
+ * `x 1.25` (`snowCover`: an Ice Folk unit on Snow with no fortification of
+ * its own, on any other terrain), else none. They are never added.
+ */
+export function coverBonusV7(
+  terrainCover: boolean,
+  snowCover: boolean,
+): CoverBonusV7 {
+  return terrainCover
+    ? TERRAIN_COVER_V7
+    : snowCover
+      ? SNOW_COVER_V7
+      : NO_COVER_V7;
+}
+
+/** Whether the terrain gives the Forest and Mountain cover. */
+export function terrainGivesCoverV7(
+  terrain: string | null | undefined,
+): boolean {
+  return terrain === "FOREST" || terrain === "MOUNTAIN";
+}
 
 /** The Ice Folk revision (section 5.5): the Shatter threshold. */
 export const SHATTER_HP_V7 = 3;

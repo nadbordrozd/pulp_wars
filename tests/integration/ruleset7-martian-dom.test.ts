@@ -33,7 +33,8 @@ import {
   type Ruleset7ControllerPortV7,
 } from "../../src/render/dom/app-view-v7";
 import {
-  BEAM_DOWN_MOVED_V7,
+  BEAM_DOWN_LABEL_V7,
+  BEAM_DOWN_TOOLTIP_V7,
   DISINTEGRATOR_UNLOCK_TEXT_V7,
   FORCE_FIELDS_UNLOCK_TEXT_V7,
   MARTIAN_HELP_RULES_V7,
@@ -283,14 +284,24 @@ describe("Martian abilities", () => {
       passengerUnitId: null,
     });
     // The board's only targets are the passengers; the actions step aside.
+    // `pulp_wars-1wy.3`: the city Grunt and the own units within two tiles
+    // of the Saucer.
     const passengers = boardPlan(host).targets;
-    expect(passengers.map((target) => target.family)).toEqual([
-      "BEAM_DOWN_PASSENGER",
-    ]);
+    expect(passengers.length).toBeGreaterThanOrEqual(1);
+    expect(
+      passengers.every((target) => target.family === "BEAM_DOWN_PASSENGER"),
+    ).toBe(true);
     expect(document.querySelector('[data-action="command-disband"]')).toBe(
       null,
     );
-    host.callbacks?.onCommand(required(passengers[0]));
+    host.callbacks?.onCommand(
+      required(
+        passengers.find(
+          (target) =>
+            target.at.x === passenger.at.x && target.at.y === passenger.at.y,
+        ),
+      ),
+    );
     await waitUntil(
       () =>
         host.lastModel?.interaction.martianPick?.kind === "BEAM_DOWN" &&
@@ -433,7 +444,8 @@ describe("Martian abilities", () => {
     app.destroy();
   });
 
-  it("names why a moved Saucer cannot Beam Down", async () => {
+  // `pulp_wars-1wy.3`: Beam Down no longer needs an unmoved Saucer.
+  it("a moved Saucer still offers Beam Down", async () => {
     const controller = new FixtureController(martianUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -451,9 +463,9 @@ describe("Martian abilities", () => {
     await controller.dispatch(move);
     host.callbacks?.onSelection({ kind: "UNIT", unitId: saucer.id });
     const beam = requiredButton("martian-beam-down");
-    expect(beam.getAttribute("aria-disabled")).toBe("true");
+    expect(beam.getAttribute("aria-disabled")).toBeNull();
     expect(beam.getAttribute("aria-label")).toBe(
-      `Beam Down unavailable. ${BEAM_DOWN_MOVED_V7}`,
+      `${BEAM_DOWN_LABEL_V7}. ${BEAM_DOWN_TOOLTIP_V7}`,
     );
     app.destroy();
   });

@@ -550,8 +550,10 @@ Folk land role but the Sabretooth) **slides**:
   not in a hostile ZOC it knew of. It stops on the last tile so entered.
 - Its Move then continues with the half-points it has left: another step
   (onto land, or onto ice in a new direction, which starts a new slide) or
-  nothing. Entering ice costs the ordinary step cost (half from a Road node
-  or, by Glide, from Snow); a step that leaves an ice tile costs a full point
+  nothing. Entering ice costs the ordinary step cost (half from a Road
+  node; since `7r37`, `pulp_wars-1wy.3`, Glide gives no discount here: it
+  is a step from Snow onto Snow, and ice is never Snow); a step that leaves
+  an ice tile costs a full point
   (water has no Roads); slid tiles cost nothing.
 - **The slide is forced:** a `MOVE` path must follow every slide to its end;
   a path that stops or turns where a slide continues is rejected with

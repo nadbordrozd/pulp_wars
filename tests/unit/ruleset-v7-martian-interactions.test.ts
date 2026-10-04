@@ -154,7 +154,7 @@ describe("Goblin rules (section 10.2)", () => {
     expect(grunt.attacker?.at).toEqual(at(5, 3));
     expect(kindsV7(grunt.events)).toContain("EXPLOSION_RESOLVED");
     expect(shieldAtV7(grunt.state, at(5, 3))).toBe(0);
-    expect(grunt.attacker?.hp).toBe(10);
+    expect(grunt.attacker?.hp).toBe(9);
     // The Saucer does not advance and is still in the blast area.
     const saucer = attackV7(build("RAIDER", at(4, 3)), at(4, 3), at(5, 3));
     expect(saucer.attacker?.at).toEqual(at(4, 3));
@@ -493,7 +493,7 @@ describe("public queries (section 11)", () => {
       ...tripod,
       units: tripod.units.map((unit) =>
         sameV7(unit.at, at(2, 3))
-          ? { ...unit, role: "FIGHTER" as const, hp: 10, maxHp: 10 }
+          ? { ...unit, role: "FIGHTER" as const, hp: 9, maxHp: 9 }
           : unit,
       ),
     });

@@ -1,5 +1,9 @@
 import {
+  BEAM_DOWN_PICKUP_RANGE_V7,
   FORCE_FIELD_SHIELD_V7,
+  HEAVY_TRACTOR_PULL_V7,
+  HEAVY_TRACTOR_RANGE_V7,
+  beamDownPassengerLegalV7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_HP_V7,
   MIND_CONTROL_RANGE_V7,
@@ -108,15 +112,14 @@ function capitalized(text: string): string {
 // ------------------------------------------------------------ section 13.2
 
 export const BEAM_DOWN_LABEL_V7 = "Beam Down";
-export const BEAM_DOWN_TOOLTIP_V7 =
-  "Bring a unit from one of your cities to a tile next to this Saucer. It cannot act this turn.";
-export const BEAM_DOWN_MOVED_V7 =
-  "A Saucer that moved this turn cannot Beam Down";
-export const BEAM_DOWN_NO_PASSENGER_V7 =
-  "No unit on or next to one of your city centers";
-export const BEAM_DOWN_NO_TILE_V7 = "No free tile next to this Saucer";
+// `pulp_wars-1wy.3`: Beam Down after a Move, with a pick-up within
+// `BEAM_DOWN_PICKUP_RANGE_V7`, by the Saucer and the Mothership; the unit
+// counts as moved. The full dock and picker flow is `pulp_wars-1wy.5`.
+export const BEAM_DOWN_TOOLTIP_V7 = `Bring one of your units from a city, or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to this unit. It can still attack but not move.`;
+export const BEAM_DOWN_NO_PASSENGER_V7 = `No unit in one of your cities or within ${BEAM_DOWN_PICKUP_RANGE_V7} tiles can be beamed`;
+export const BEAM_DOWN_NO_TILE_V7 = "No free tile next to this unit";
 export const BEAM_DOWN_PICK_PASSENGER_V7 = "Choose the unit to beam down";
-export const BEAM_DOWN_PICK_TILE_V7 = "Choose a tile next to the Saucer";
+export const BEAM_DOWN_PICK_TILE_V7 = "Choose a tile next to the carrier";
 export const MIND_CONTROL_LABEL_V7 = "Mind Control";
 export const MIND_CONTROL_TOOLTIP_V7 = `Take a wounded hostile unit with ${MIND_CONTROL_HP_V7} HP or less within ${MIND_CONTROL_RANGE_V7} tiles. It fights for you as itself until this Brain is lost.`;
 export const MIND_CONTROL_PICK_V7 = "Choose a weakened enemy to take";
@@ -124,7 +127,10 @@ export const MIND_CONTROL_IMMUNE_V7 = "Immune";
 export const MIND_CONTROL_PROTECTED_V7 =
   "Protected on a city or village center";
 export const TRACTOR_BEAM_LABEL_V7 = "Tractor Beam";
-export const TRACTOR_BEAM_TOOLTIP_V7 = `Pull a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile toward this Mothership.`;
+// `pulp_wars-1wy.3`: the Saucer's pull and the Mothership's Heavy Tractor
+// Beam, in one text (a per-unit tooltip is `pulp_wars-1wy.5`).
+export const TRACTOR_BEAM_TOOLTIP_V7 = `A Saucer pulls a unit ${TRACTOR_BEAM_RANGE_V7} tiles away one tile closer. A Mothership pulls a unit ${TRACTOR_BEAM_RANGE_V7} or ${HEAVY_TRACTOR_RANGE_V7} tiles away up to ${HEAVY_TRACTOR_PULL_V7} tiles closer, once a turn, and can still act.`;
+export const TRACTOR_BEAM_NO_TARGET_V7 = "No unit in reach can be pulled";
 export const TRACTOR_BEAM_PICK_V7 = "Choose a unit to pull";
 export const PSYCHIC_COMMAND_LABEL_V7 = "Psychic Command";
 export const PSYCHIC_COMMAND_STATUS_V7 =
@@ -293,7 +299,14 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
   const projector = martianRolesWith("FORCE_FIELD").map(label);
   const beamers = martianRolesWith("BEAM_DOWN").map(label);
   const brains = martianRolesWith("MIND_CONTROL").map(label);
-  const pullers = martianRolesWith("TRACTOR_BEAM").map(label);
+  const heavy = (role: UnitRoleIdV7): boolean =>
+    roleMechanicsV7(role, "MARTIAN").heavyTractorBeam;
+  const lightPullers = martianRolesWith("TRACTOR_BEAM")
+    .filter((role) => !heavy(role))
+    .map(label);
+  const heavyPullers = martianRolesWith("TRACTOR_BEAM")
+    .filter(heavy)
+    .map(label);
   const strafers = martianRolesWith("CHARGE").map(label);
   // `pulp_wars-b5f.2`: the Grunt's ray pistol (a land role with range 2
   // and no heat ray) and the Tripod's range-2-only ray.
@@ -360,7 +373,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       BEAM_DOWN_LABEL_V7,
-      `a ${joinOr(beamers)} that has not moved brings a unit from one of its owner's cities to a tile next to itself; the unit cannot act that turn.`,
+      `a ${joinOr(beamers)} brings one of your units from a city, or from up to ${BEAM_DOWN_PICKUP_RANGE_V7} tiles away, next to itself; the unit can still attack but not move.`,
     ],
     [
       MIND_CONTROL_LABEL_V7,
@@ -368,7 +381,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
     ],
     [
       TRACTOR_BEAM_LABEL_V7,
-      `a ${joinOr(pullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} tiles away one tile toward itself, out of Walls, Field Defense, or a city center.`,
+      `a ${joinOr(lightPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} tiles away one tile closer; a ${joinOr(heavyPullers)} pulls a unit ${numberWord(TRACTOR_BEAM_RANGE_V7)} or ${numberWord(HEAVY_TRACTOR_RANGE_V7)} tiles away up to ${numberWord(HEAVY_TRACTOR_PULL_V7)} tiles closer, once a turn, and can still act.`,
     ],
     [
       `${PSYCHIC_COMMAND_LABEL_V7}, ${STRAFE_LABEL_V7}`,
@@ -826,22 +839,14 @@ export function beamDownUnavailableTextV7(
     saucer.activation.captured
   )
     return null;
-  // A moved Saucer is often handled already (nothing left to do); the
-  // reason still explains the missing Beam Down.
-  if (saucer.activation.moved) return BEAM_DOWN_MOVED_V7;
-  if (saucer.activation.handled) return null;
-  const near = (left: PublicUnitV7["at"], right: PublicUnitV7["at"]): boolean =>
-    Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y)) <= 1;
-  const passengers = view.units.filter(
-    (unit) =>
-      unit.id !== saucer.id &&
-      unit.ownerId === view.viewer.id &&
-      unit.form === "LAND" &&
-      unitRoleMechanicsV7(view, unit).capacitySlots === 1 &&
-      unitRoleMechanicsV7(view, unit).movementMode !== "FLY" &&
-      view.cities.some(
-        (city) => city.ownerId === view.viewer.id && near(city.at, unit.at),
-      ),
+  // `pulp_wars-1wy.3`: a carrier that moved may still Beam Down (a moved
+  // carrier is handled, so `handled` no longer hides the reason); the
+  // passengers are the engine's own test.
+  const centers = view.cities
+    .filter((city) => city.ownerId === view.viewer.id)
+    .map((city) => city.at);
+  const passengers = view.units.filter((unit) =>
+    beamDownPassengerLegalV7(view, saucer, unit, centers, view.beamedThisTurn),
   );
   return passengers.length === 0
     ? BEAM_DOWN_NO_PASSENGER_V7
@@ -879,8 +884,14 @@ export function martianBoundaryNoticeV7(
       const passenger = unitById(event.passengerUnitId);
       const name =
         passenger === undefined ? "unit" : martianUnitNameV7(after, passenger);
+      // `pulp_wars-1wy.3`: the carrier is a Saucer or a Mothership.
+      const carrier = unitById(event.unitId);
+      const carrierName =
+        carrier === undefined
+          ? martianLabelV7("RAIDER")
+          : martianUnitNameV7(after, carrier);
       parts.push(
-        `${owner(event.playerId)} ${martianLabelV7("RAIDER")} beamed down a ${name}`,
+        `${owner(event.playerId)} ${carrierName} beamed down a ${name}`,
       );
     } else if (event.kind === "UNIT_MIND_CONTROLLED") {
       toast = true;
@@ -917,8 +928,9 @@ export function martianBoundaryNoticeV7(
         target === undefined
           ? "a unit"
           : `${target.ownerId === source.ownerId ? "its" : possessive(after, target.ownerId)} ${martianUnitNameV7(after, target)}`;
+      // `pulp_wars-1wy.3`: the puller is a Saucer or a Mothership.
       parts.push(
-        `${owner(source.ownerId)} ${martianLabelV7("KNIGHT")} pulled ${targetName}`,
+        `${owner(source.ownerId)} ${martianUnitNameV7(after, source)} pulled ${targetName}`,
       );
     }
   }

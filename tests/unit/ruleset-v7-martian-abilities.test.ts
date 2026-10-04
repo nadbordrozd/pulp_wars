@@ -85,7 +85,7 @@ const beamField = (
   );
 
 describe("Beam Down (section 8.1)", () => {
-  it("moves an own unit from a city to a tile next to an unmoved Saucer, exhausted", () => {
+  it("moves an own unit from a city to a tile next to the Saucer; it counts as moved", () => {
     const state = beamField();
     const saucer = unitAtV7(state, at(4, 3));
     const grunt = unitAtV7(state, CAPITAL);
@@ -133,15 +133,30 @@ describe("Beam Down (section 8.1)", () => {
       kills: grunt.kills,
       homeCityId: grunt.homeCityId,
       captureEligible: false,
-      activation: { moved: true, attacked: true, handled: true },
+      // `pulp_wars-1wy.3`: it counts as having moved (like the end of an
+      // ordinary Move); it is not exhausted and may still attack.
+      activation: {
+        ...grunt.activation,
+        moved: true,
+        handled: true,
+      },
     });
+    expect(run.state.beamedThisTurn).toEqual([grunt.id]);
     expect(shieldAtV7(run.state, at(5, 3))).toBe(2);
     // The Saucer has used its primary action and is handled.
     expect(unitAtV7(run.state, at(4, 3)).activation).toMatchObject({
+      specialActed: true,
       handled: true,
     });
+    // Neither moves, and the Saucer does nothing more.
     expect(
-      offeredV7(run.state).filter(
+      offeredV7(
+        run.state,
+        "MOVE",
+        "BEAM_DOWN",
+        "TRACTOR_BEAM",
+        "RECOVER",
+      ).filter(
         (command) =>
           "unitId" in command &&
           (command.unitId === saucer.id || command.unitId === grunt.id),
@@ -155,8 +170,8 @@ describe("Beam Down (section 8.1)", () => {
   });
 
   it("rejects in the order of the legality table", () => {
-    // 2: a role without Beam Down.
-    const state = beamField([{ seat: 0, role: "KNIGHT", at: at(7, 7) }]);
+    // 2: a role without Beam Down (the Mothership has it, `pulp_wars-1wy.3`).
+    const state = beamField([{ seat: 0, role: "CATAPULT", at: at(7, 7) }]);
     expect(
       rejectedV7(state, {
         kind: "BEAM_DOWN",
@@ -164,7 +179,7 @@ describe("Beam Down (section 8.1)", () => {
         passengerUnitId: idAt(state, CAPITAL),
         to: at(6, 6),
       }),
-    ).toEqual({ code: "UNIT_ROLE_INVALID", params: { role: "KNIGHT" } });
+    ).toEqual({ code: "UNIT_ROLE_INVALID", params: { role: "CATAPULT" } });
     // 1: not the actor's own unit.
     expect(
       rejectedV7(state, {
@@ -185,7 +200,7 @@ describe("Beam Down (section 8.1)", () => {
     expect(
       rejectedV7(acted, beam(acted, at(4, 3), CAPITAL, at(5, 3))).code,
     ).toBe("UNIT_ALREADY_ACTED");
-    // 4 before 5: an embarked Saucer that moved.
+    // 4: an embarked Saucer that moved.
     const afloat = beamField(
       [],
       { water: [at(4, 3)] },
@@ -194,7 +209,8 @@ describe("Beam Down (section 8.1)", () => {
     expect(
       rejectedV7(afloat, beam(afloat, at(4, 3), CAPITAL, at(5, 3))),
     ).toEqual({ code: "BEAM_DOWN_NOT_LEGAL", params: { reason: "EMBARKED" } });
-    // 5 before 6: a Saucer that moved, with no legal passenger either.
+    // `pulp_wars-1wy.3`: row 5 is gone. A Saucer that moved may Beam Down;
+    // with no legal passenger the rejection is row 6.
     const moved = martianFieldV7([
       { seat: 0, role: "RAIDER", at: at(4, 3), activation: movedV7(1) },
       FAR,
@@ -206,8 +222,14 @@ describe("Beam Down (section 8.1)", () => {
         passengerUnitId: idAt(moved, at(1, 1)),
         to: at(5, 3),
       }),
-    ).toEqual({ code: "BEAM_DOWN_NOT_LEGAL", params: { reason: "MOVED" } });
+    ).toEqual({
+      code: "BEAM_DOWN_NOT_LEGAL",
+      params: { reason: "NO_PASSENGER" },
+    });
     expect(offeredV7(moved, "BEAM_DOWN")).toEqual([]);
+    const flown = beamField([], {}, { activation: movedV7(3) });
+    expect(offeredV7(flown, "BEAM_DOWN")).toHaveLength(8);
+    playV7(flown, beam(flown, at(4, 3), CAPITAL, at(5, 3)));
   });
 
   it("the passenger: another own land-form one-slot non-flyer on or next to an own city center", () => {
@@ -527,6 +549,7 @@ describe("Tractor Beam (section 8.4)", () => {
         targetUnitId: victim.id,
         from: target,
         to,
+        path: [to],
         fortificationLost: 0,
         emptiesCenterOfCityId: null,
         liftsSiegeOfCityId: null,
@@ -538,6 +561,7 @@ describe("Tractor Beam (section 8.4)", () => {
         targetUnitId: victim.id,
         from: target,
         to,
+        path: [to],
       });
       // No damage; the target keeps everything but its capture eligibility.
       expect(unitAtV7(run.state, to), label).toEqual({
@@ -545,28 +569,50 @@ describe("Tractor Beam (section 8.4)", () => {
         at: to,
         captureEligible: false,
       });
-      expect(unitAtV7(run.state, SHIP).activation.handled, label).toBe(true);
+      // `pulp_wars-1wy.3`: the Mothership's pull is free once a turn: its
+      // activation is untouched and the per-turn fact records the use.
+      expect(unitAtV7(run.state, SHIP).activation, label).toEqual(
+        ship.activation,
+      );
+      expect(run.state.tractorUsedThisTurn, label).toEqual([ship.id]);
     }
   });
 
   it("rejects an actor that cannot use it, in order", () => {
     const target: MartianPieceV7 = { seat: 1, role: "GUARD", at: at(6, 2) };
+    // `pulp_wars-1wy.3`: the Saucer has the Tractor Beam; a Tripod has not.
     const role = martianFieldV7([
-      { seat: 0, role: "RAIDER", at: SHIP },
+      { seat: 0, role: "CATAPULT", at: SHIP },
       target,
     ]);
     expect(rejectedV7(role, pull(role, SHIP, at(6, 2)))).toEqual({
       code: "UNIT_ROLE_INVALID",
-      params: { role: "RAIDER" },
+      params: { role: "CATAPULT" },
     });
-    const acted = shipField(
-      [target],
-      {},
+    // The Saucer's pull is a primary action.
+    const acted = martianFieldV7([
       {
+        seat: 0,
+        role: "RAIDER",
+        at: SHIP,
         activation: { attacked: true, attacksUsed: 1 },
       },
-    );
+      target,
+    ]);
     expect(rejectedV7(acted, pull(acted, SHIP, at(6, 2))).code).toBe(
+      "UNIT_ALREADY_ACTED",
+    );
+    // The Mothership's is free once a turn: after its attack too, but not
+    // twice (ruleset-v7-balance-martian-ice.test.ts has the whole rule).
+    const used = playV7(
+      shipField(
+        [target],
+        {},
+        { activation: { attacked: true, attacksUsed: 1 } },
+      ),
+      pull(shipField([target]), SHIP, at(6, 2)),
+    );
+    expect(rejectedV7(used.state, pull(used.state, SHIP, at(5, 2))).code).toBe(
       "UNIT_ALREADY_ACTED",
     );
     const afloat = shipField([target], { water: [SHIP] }, { form: "EMBARKED" });
@@ -593,9 +639,9 @@ describe("Tractor Beam (section 8.4)", () => {
         // An own two-slot Mothership and an own Colossus.
         { seat: 0, role: "KNIGHT", at: at(4, 4) },
         { seat: 0, role: "JUGGERNAUT", at: at(6, 4) },
-        // Distance 1 and 3.
+        // Distance 1 and 4 (`pulp_wars-1wy.3`: the Mothership reaches 3).
         { seat: 1, role: "FIGHTER", at: at(5, 3) },
-        { seat: 1, role: "FIGHTER", at: at(7, 2) },
+        { seat: 1, role: "FIGHTER", at: at(8, 2) },
         // A one-slot dinosaur at distance 2: legal.
         { seat: 1, role: "GUARD", at: at(2, 0) },
       ],
@@ -616,7 +662,7 @@ describe("Tractor Beam (section 8.4)", () => {
     expect(rejectedV7(state, pull(state, SHIP, at(2, 7))).params).toEqual({
       reason: "TARGET_IMMUNE",
     });
-    for (const where of [at(5, 3), at(7, 2)])
+    for (const where of [at(5, 3), at(8, 2)])
       expect(rejectedV7(state, pull(state, SHIP, where)).params).toEqual({
         reason: "OUT_OF_RANGE",
       });

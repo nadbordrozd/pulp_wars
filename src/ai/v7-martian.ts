@@ -22,10 +22,8 @@ import {
 import type { CommandV7 } from "../engine/v7/commands";
 import type { CombatPreviewV7 } from "../engine/v7/events";
 import { isNeutralOwnerV7 } from "../engine/v7/types";
-import {
-  mindControlTargetBlockV7,
-  tractorBeamDestinationV7,
-} from "../engine/v7/martian";
+import { mindControlTargetBlockV7 } from "../engine/v7/martian";
+import { queryTractorBeamPathV7 } from "../engine/v7/query";
 import type { CoordV7, TechnologyIdV7, UnitRoleIdV7 } from "../engine/v7/types";
 import type { PlayerViewV7, PublicUnitV7 } from "../engine/v7/view";
 
@@ -505,7 +503,7 @@ export function martianTargetBonusV7(
     bonus += PROJECTOR_TARGET_BONUS_V7 * Math.min(4, covered);
   }
   if (
-    abilities.includes("BEAM_DOWN") &&
+    isSaucerForPolicyV7(view, unit) &&
     view.cities.some((city) => city.ownerId === unit.ownerId)
   )
     bonus += SAUCER_TARGET_BONUS_V7;
@@ -1016,7 +1014,10 @@ export function tractorBeamScoreV7(
   const target = tools.unit(command.targetUnitId);
   if (mothership === undefined || target === undefined)
     return NOT_A_CANDIDATE_V7;
-  const to = tractorBeamDestinationV7(mothership.at, target.at);
+  // `pulp_wars-1wy.3`: the tile the pull ends on comes from the public
+  // query (one tile for a Saucer, up to two for a Mothership).
+  const to = queryTractorBeamPathV7(view, mothership.id, target.id)?.at(-1);
+  if (to === undefined) return NOT_A_CANDIDATE_V7;
   const city = view.cities.find((candidate) => same(candidate.at, target.at));
   if (target.ownerId === view.viewer.id) {
     const before = tools.danger(target, target.at);
@@ -1090,6 +1091,35 @@ export function tractorBeamScoreV7(
       immediate: 0,
     };
   return NOT_A_CANDIDATE_V7;
+}
+
+/**
+ * `pulp_wars-1wy.3`: the Saucer and the Mothership both carry Beam Down and
+ * a Tractor Beam now, so the policy's Saucer rules (staging, the target
+ * bonus, no chip attacks) and Mothership rules (staying with the army, the
+ * guard against a pull) are told apart by the Heavy Tractor Beam mechanic
+ * instead of by the ability. The policy decides for each as it did before
+ * the balance revision; its use of the new tools is `pulp_wars-1wy.4`.
+ */
+export function isSaucerForPolicyV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return (
+    unitRoleRuleV7(view, unit).abilities.includes("BEAM_DOWN") &&
+    !unitRoleMechanicsV7(view, unit).heavyTractorBeam
+  );
+}
+
+/** The Mothership: a puller with the Heavy Tractor Beam. */
+export function isMothershipForPolicyV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+): boolean {
+  return (
+    unitRoleRuleV7(view, unit).abilities.includes("TRACTOR_BEAM") &&
+    unitRoleMechanicsV7(view, unit).heavyTractorBeam
+  );
 }
 
 export function chebyshev(left: CoordV7, right: CoordV7): number {

@@ -653,14 +653,17 @@ export type DomainEventV7 =
     }
   | {
       /**
-       * The Martian revision (section 8.4): the Mothership `sourceUnitId`
-       * pulled `targetUnitId` one tile toward itself.
+       * The Martian revision (section 8.4): the Saucer or Mothership
+       * `sourceUnitId` pulled `targetUnitId` toward itself. `to` is the
+       * final tile and `path` the tiles crossed in order (one, or two for
+       * a Heavy Tractor Beam), ending with `to`.
        */
       readonly kind: "UNIT_PULLED";
       readonly sourceUnitId: UnitId;
       readonly targetUnitId: UnitId;
       readonly from: CoordV7;
       readonly to: CoordV7;
+      readonly path: readonly CoordV7[];
     }
   | {
       /**

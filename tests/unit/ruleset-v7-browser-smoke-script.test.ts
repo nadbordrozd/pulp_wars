@@ -307,10 +307,13 @@ describe("Ruleset 7 browser smoke script", () => {
       `await pointerClick(connection, '[data-action="martian-beam-down"]')`,
     );
     expect(beam).toBeGreaterThan(preview);
+    // `pulp_wars-1wy.3`: the Grunt is picked by its own passenger button
+    // (units within two tiles of the Saucer are passengers too).
     const passenger = probe.indexOf(
-      `await pointerClick(connection, '[data-action^="beam-passenger-"]')`,
+      `await pointerClick(connection, beamPassenger)`,
     );
     expect(passenger).toBeGreaterThan(beam);
+    expect(probe).toContain(`'[data-action="beam-passenger-'`);
     expect(probe).not.toContain(
       `await pointerClick(connection, '[data-action^="beam-tile-"]')`,
     );
@@ -641,7 +644,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r36", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r37", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

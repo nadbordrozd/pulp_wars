@@ -120,12 +120,12 @@ describe("Ice Folk Normal AI: the Witch", () => {
 
   it("steps to the tile with the most own units around it", () => {
     const state = asIce([
-      own("CAPTAIN", 6, 2),
+      own("CAPTAIN", 5, 2),
       own("FIGHTER", 3, 3),
       own("FIGHTER", 4, 4),
       foe("FIGHTER", 1, 0),
     ]);
-    const best = unitCandidatesV7(state, at(6, 2))[0];
+    const best = unitCandidatesV7(state, at(5, 2))[0];
     expect(best?.command.kind).toBe("MOVE");
     expect(best?.score.priority).toBe(WITCH_MOVE_PRIORITY_V7);
     const end = best === undefined ? undefined : endOf(best.command);
@@ -134,7 +134,7 @@ describe("Ice Folk Normal AI: the Witch", () => {
     expect(chebyshev(end, at(3, 3))).toBeLessThanOrEqual(1);
     expect(chebyshev(end, at(4, 4))).toBeLessThanOrEqual(1);
     // Every other Move of hers is not a candidate.
-    expect(unitCandidatesV7(state, at(6, 2), "MOVE")).toHaveLength(1);
+    expect(unitCandidatesV7(state, at(5, 2), "MOVE")).toHaveLength(1);
   });
 
   it("units end their Move next to her at equal route progress", () => {

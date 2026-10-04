@@ -47,7 +47,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     const result = runCli(
       "match",
       "--ruleset",
-      "pulp-wars-poc-7r36",
+      "pulp-wars-poc-7r37",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -56,7 +56,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     expect(result).toMatchObject({
       acceptedCommands: 1,
       termination: "COMMAND_CAP",
-      metrics: { rulesetId: "pulp-wars-poc-7r36" },
+      metrics: { rulesetId: "pulp-wars-poc-7r37" },
     });
   });
 
@@ -65,7 +65,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       runCli(
         "match",
         "--ruleset",
-        "pulp-wars-poc-7r36",
+        "pulp-wars-poc-7r37",
         "--factions",
         "original,candy",
         "--max-commands",
@@ -78,7 +78,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
       runCli(
         "match",
         "--ruleset",
-        "pulp-wars-poc-7r36",
+        "pulp-wars-poc-7r37",
         "--factions",
         "undead",
         "--max-commands",
@@ -87,13 +87,13 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     ).toThrow(/ruleset 7 --factions must contain exactly 2 seat values/);
     expect(() =>
       runCli("match", "--ruleset", "pulp-wars-poc-7", "--max-commands", "1"),
-    ).toThrow(/pulp-wars-poc-7r36/);
+    ).toThrow(/pulp-wars-poc-7r37/);
   }, 15_000);
 
   it("accepts seat-ordered Human, Undead, and Goblin factions in match and batch modes", () => {
     const common = [
       "--ruleset",
-      "pulp-wars-poc-7r36",
+      "pulp-wars-poc-7r37",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -199,7 +199,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
   it("defaults to Continents and accepts all map types in match and batch modes", () => {
     const common = [
       "--ruleset",
-      "pulp-wars-poc-7r36",
+      "pulp-wars-poc-7r37",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -239,7 +239,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
   it("accepts the showcase map type at size 16 only", () => {
     const common = [
       "--ruleset",
-      "pulp-wars-poc-7r36",
+      "pulp-wars-poc-7r37",
       "--max-commands",
       "1",
       "--max-rounds",
@@ -257,7 +257,7 @@ describe("ruleset-7 revision-3 headless CLI dispatch", () => {
     expect(match).toMatchObject({
       acceptedCommands: 1,
       termination: "COMMAND_CAP",
-      metrics: { rulesetId: "pulp-wars-poc-7r36" },
+      metrics: { rulesetId: "pulp-wars-poc-7r37" },
     });
     const explicit = runCli(
       "match",

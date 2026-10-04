@@ -25,7 +25,6 @@ import {
   MIND_CONTROL_LIMIT_V7,
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
-  TRACTOR_BEAM_RANGE_V7,
   canEnterTerrainV7,
   effectiveRoleRuleV7,
   flyerMayStandOnSiteV7,
@@ -42,7 +41,6 @@ import {
   technologyCapabilitiesV7,
   seatRoleMechanicsV7,
   unitCapabilitiesV7,
-  unitCapacitySlotsV7,
   unitFactionV7,
   unitGrowsV7,
   PROMOTION_HP_V7,
@@ -106,7 +104,6 @@ import {
 import type { DomainEventV7 } from "./events";
 import {
   calculateCombatPreviewV7,
-  displacementDestinationLegalV7,
   pushedDestinationV7,
   tractorBeamTargetTechnologyV7,
 } from "./combat";
@@ -149,6 +146,10 @@ import {
   type CreateInitialMapStateResultV7,
 } from "./map";
 import {
+  beamDownCarrierReadyV7,
+  beamDownDestinationLegalV7,
+  beamDownPassengerLegalV7,
+  beamedActivationV7,
   controlledByBrainV7,
   coolingStepV7,
   mindControlCooldownStepV7,
@@ -157,7 +158,11 @@ import {
   rechargeShieldsAtEndTurnV7,
   rechargeShieldsV7,
   releaseControlledV7,
-  tractorBeamDestinationV7,
+  tractorBeamActorReadyV7,
+  tractorBeamPathV7,
+  tractorBeamRuleV7,
+  tractorBeamStepLegalV7,
+  tractorBeamTargetBlockV7,
   withFiredRayV7,
   withFullShieldsV7,
   withShieldDamageV7,
@@ -2191,11 +2196,15 @@ function applyHatch(
 }
 
 /**
- * The Martian revision `BEAM_DOWN` (section 8.1): a primary action of a
- * Saucer that has not moved this turn. It moves one own land-form, one-slot,
- * non-flying unit that stands on or next to an own city center to a tile
- * next to the Saucer. The legality checks run in the section's fixed order;
- * the first failure is the (atomic) rejection.
+ * The Martian revision `BEAM_DOWN` (section 8.1; the balance revision
+ * `pulp_wars-1wy.3`, RULESET_7_BALANCE_MARTIAN_ICE.md section 5.1): a
+ * primary action of a carrier (the Saucer and the Mothership), which may
+ * have moved. It moves one own land-form, one-slot, non-flying unit that
+ * was not beamed this turn and stands on or next to an own city center, or
+ * within `BEAM_DOWN_PICKUP_RANGE_V7` of the carrier, to a tile next to the
+ * carrier; the passenger then counts as having moved. The legality checks
+ * run in the section's fixed order, through the predicates the public
+ * command query shares; the first failure is the (atomic) rejection.
  */
 function applyBeamDown(
   original: GameStateV7,
@@ -2211,23 +2220,25 @@ function applyBeamDown(
   const saucer = actorCheck.unit;
   if (!unitRoleRuleV7(state, saucer).abilities.includes("BEAM_DOWN"))
     return rejected(original, "UNIT_ROLE_INVALID", { role: saucer.role });
-  if (saucer.activation.overrunActive || primaryUsed(saucer))
+  // Row 3 (the carrier may have moved; a sluggish carrier that moved may
+  // not act), shared with the public command query.
+  if (!beamDownCarrierReadyV7(state, saucer))
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: saucer.id });
   if (saucer.form !== "LAND")
     return rejected(original, "BEAM_DOWN_NOT_LEGAL", { reason: "EMBARKED" });
-  if (saucer.activation.moved)
-    return rejected(original, "BEAM_DOWN_NOT_LEGAL", { reason: "MOVED" });
+  // Row 6, shared with the public command query.
+  const ownCenters = state.cities
+    .filter((city) => city.ownerId === actor)
+    .map((city) => city.at);
   const passenger = state.units.find(
     (unit) =>
       unit.id === command.passengerUnitId &&
-      unit.id !== saucer.id &&
-      unit.hp > 0 &&
-      unit.ownerId === actor &&
-      unit.form === "LAND" &&
-      unitCapacitySlotsV7(state, unit) === 1 &&
-      unitMovementModeV7(state, unit) !== "FLY" &&
-      state.cities.some(
-        (city) => city.ownerId === actor && chebyshev(city.at, unit.at) <= 1,
+      beamDownPassengerLegalV7(
+        state,
+        saucer,
+        unit,
+        ownCenters,
+        state.beamedThisTurn,
       ),
   );
   if (passenger === undefined)
@@ -2240,25 +2251,32 @@ function applyBeamDown(
     tile === undefined
       ? undefined
       : state.cities.find((city) => city.id === tile.territoryCityId)?.ownerId;
-  // A Rift (pulp_wars-9s0.5) is never a Beam Down destination: every
-  // passenger is a non-flyer, and `canEnterTerrainV7` keeps them off it.
+  // Row 7, shared with the public command query. A Rift (pulp_wars-9s0.5)
+  // is never a Beam Down destination: every passenger is a non-flyer, and
+  // `canEnterTerrainV7` keeps them off it.
   if (
     tile === undefined ||
-    chebyshev(saucer.at, command.to) !== 1 ||
-    tile.site !== null ||
-    !canEnterTerrainV7({
-      terrain: tile.terrain,
-      movementMode: unitMovementModeV7(state, passenger),
-      afloat: false,
-      engineering: player.researchedTechs.includes("ENGINEERING"),
-      navigation: player.researchedTechs.includes("NAVIGATION"),
-      mountainBorn: unitIsMountainBornV7(state, passenger),
-    }) ||
-    // The Dwarf revision section 5.3: the occupancy predicate.
-    tileOccupiedV7(state, command.to) ||
-    state.treasureChests.some((chest) => same(chest, command.to)) ||
-    (territoryOwner !== undefined &&
-      arePlayersAlliedV7(state, actor, territoryOwner))
+    !beamDownDestinationLegalV7(
+      state,
+      saucer,
+      passenger,
+      {
+        engineering: player.researchedTechs.includes("ENGINEERING"),
+        navigation: player.researchedTechs.includes("NAVIGATION"),
+      },
+      command.to,
+      {
+        explored: isExplored(player, command.to),
+        site: tile.site,
+        terrain: tile.terrain,
+        // The Dwarf revision section 5.3: the occupancy predicate.
+        occupied: tileOccupiedV7(state, command.to),
+        chest: state.treasureChests.some((chest) => same(chest, command.to)),
+        alliedTerritory:
+          territoryOwner !== undefined &&
+          arePlayersAlliedV7(state, actor, territoryOwner),
+      },
+    )
   )
     return rejected(original, "INVALID_TILE", { action: "BEAM_DOWN" });
   try {
@@ -2279,7 +2297,10 @@ function applyBeamDown(
             ...unit,
             at: to,
             captureEligible: false,
-            activation: exhaustedActivation(),
+            // The balance revision section 5.1: the passenger counts as
+            // having moved (it may still attack, at half power for a ray),
+            // not as exhausted.
+            activation: beamedActivationV7(unit.activation),
           }
         : unit.id === saucer.id
           ? {
@@ -2329,6 +2350,10 @@ function applyBeamDown(
         commandIndex: nextSafe(state.commandIndex),
         players: setExplored(state.players, actor, reveal.explored),
         units,
+        // Once per turn per passenger (no chain teleports).
+        beamedThisTurn: [...state.beamedThisTurn, passenger.id].sort(
+          (left, right) => left - right,
+        ),
       },
       actor,
       events,
@@ -2494,12 +2519,19 @@ function applyMindControl(
 }
 
 /**
- * The Martian revision `TRACTOR_BEAM` (section 8.4): a primary action of a
- * Mothership, the mirror of Push. A visible own or hostile unit exactly
- * `TRACTOR_BEAM_RANGE_V7` tiles away (not an Egg, a `JUGGERNAUT`-role unit,
- * or a two-slot unit) is pulled one tile toward the Mothership when the
- * destination passes the Push conditions and holds no treasure chest. It
- * deals no damage and changes nothing on either tile.
+ * The Martian revision `TRACTOR_BEAM` (section 8.4; the balance revision
+ * `pulp_wars-1wy.3`, RULESET_7_BALANCE_MARTIAN_ICE.md sections 5.2 and
+ * 5.3), the mirror of Push. The Saucer's is a primary action: a visible own
+ * or hostile unit exactly `TRACTOR_BEAM_RANGE_V7` tiles away (not an Egg, a
+ * `JUGGERNAUT`-role unit, or a two-slot unit) is pulled one tile toward it.
+ * The Mothership's Heavy Tractor Beam is free once a turn (it may have
+ * moved and used its primary action), reaches 2 to
+ * `HEAVY_TRACTOR_RANGE_V7`, and pulls up to `HEAVY_TRACTOR_PULL_V7` tiles,
+ * stopping next to the Mothership or at the first tile that fails. Every
+ * step passes the Push conditions, is explored by the actor, and holds no
+ * treasure chest. It deals no damage and changes nothing on any tile. The
+ * rule, the readiness, the target test, the step test, and the path are the
+ * functions the public command query uses.
  */
 function applyTractorBeam(
   original: GameStateV7,
@@ -2513,12 +2545,11 @@ function applyTractorBeam(
   if (!actorCheck.ok)
     return rejected(original, actorCheck.code, actorCheck.params);
   const mothership = actorCheck.unit;
-  if (!unitRoleRuleV7(state, mothership).abilities.includes("TRACTOR_BEAM"))
+  const rule = tractorBeamRuleV7(state, mothership);
+  if (rule === null)
     return rejected(original, "UNIT_ROLE_INVALID", { role: mothership.role });
   if (
-    mothership.activation.overrunActive ||
-    primaryUsed(mothership) ||
-    primaryActionBlockedAfterMoveV7(state, mothership)
+    !tractorBeamActorReadyV7(state, mothership, rule, state.tractorUsedThisTurn)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: mothership.id });
   if (mothership.form !== "LAND")
@@ -2532,39 +2563,46 @@ function applyTractorBeam(
     });
   if (arePlayersAlliedV7(state, actor, target.ownerId))
     return rejected(original, "TARGET_ALLIED");
-  if (
-    target.form === "EGG" ||
-    target.role === "JUGGERNAUT" ||
-    unitCapacitySlotsV7(state, target) !== 1
-  )
-    return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", {
-      reason: "TARGET_IMMUNE",
+  const block = tractorBeamTargetBlockV7(state, rule, mothership, target);
+  if (block !== null)
+    return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", { reason: block });
+  const player = requirePlayer(state, actor);
+  // The technology the pull assumes for the target is read once, from the
+  // tile it stands on before the pull.
+  const technology = tractorBeamTargetTechnologyV7(
+    target.ownerId === actor,
+    player.researchedTechs,
+    tileAtV7(state.board, target.at)?.terrain,
+  );
+  const path = tractorBeamPathV7(rule, mothership.at, target.at, (step) => {
+    const tile = tileAtV7(state.board, step);
+    if (tile === undefined) return false;
+    const territoryOwner =
+      tile.territoryCityId === null
+        ? undefined
+        : state.cities.find((city) => city.id === tile.territoryCityId)
+            ?.ownerId;
+    return tractorBeamStepLegalV7(state, target, technology, {
+      explored: isExplored(player, step),
+      site: tile.site,
+      terrain: tile.terrain,
+      // The Dwarf revision section 5.3: the occupancy predicate.
+      occupied: tileOccupiedV7(state, step, target.id),
+      chest: state.treasureChests.some((chest) => same(chest, step)),
+      alliedTerritory:
+        territoryOwner !== undefined &&
+        arePlayersAlliedV7(state, target.ownerId, territoryOwner),
     });
-  if (chebyshev(mothership.at, target.at) !== TRACTOR_BEAM_RANGE_V7)
-    return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", {
-      reason: "OUT_OF_RANGE",
-    });
-  const to = tractorBeamDestinationV7(mothership.at, target.at);
-  if (
-    !displacementDestinationLegalV7(
-      state,
-      target,
-      to,
-      tractorBeamTargetTechnologyV7(
-        target.ownerId === actor,
-        requirePlayer(state, actor).researchedTechs,
-        tileAtV7(state.board, target.at)?.terrain,
-      ),
-    ) ||
-    state.treasureChests.some((chest) => same(chest, to))
-  )
+  });
+  const to = path.at(-1);
+  if (to === undefined)
     return rejected(original, "TRACTOR_BEAM_NOT_LEGAL", { reason: "BLOCKED" });
   try {
     const from = target.at;
     const units = state.units.map((unit) =>
       unit.id === target.id
         ? { ...unit, at: to, captureEligible: false }
-        : unit.id === mothership.id
+        : unit.id === mothership.id && !rule.free
           ? {
               ...unit,
               activation: {
@@ -2582,6 +2620,7 @@ function applyTractorBeam(
         targetUnitId: target.id,
         from,
         to,
+        path,
       },
     ];
     let players = state.players;
@@ -2609,6 +2648,12 @@ function applyTractorBeam(
         commandIndex: nextSafe(state.commandIndex),
         players,
         units,
+        // The Heavy Tractor Beam is free once a turn: the per-turn fact.
+        tractorUsedThisTurn: rule.free
+          ? [...state.tractorUsedThisTurn, mothership.id].sort(
+              (left, right) => left - right,
+            )
+          : state.tractorUsedThisTurn,
       },
       actor,
       events,
@@ -5169,11 +5214,21 @@ function applyEndTurn(
     // The Dwarf revision (sections 5.4 and 6.3): the per-turn lists of the
     // active seat are emptied after the Chill countdown.
     const counted = chillCountdownV7(fields.state, actor);
+    // The Martian balance revision (`pulp_wars-1wy.3`): so are the beamed
+    // passengers and the used free Tractor Beams.
     const expired =
       counted.surfacedThisTurn.length === 0 &&
-      counted.bombedThisTurn.length === 0
+      counted.bombedThisTurn.length === 0 &&
+      counted.beamedThisTurn.length === 0 &&
+      counted.tractorUsedThisTurn.length === 0
         ? counted
-        : { ...counted, surfacedThisTurn: [], bombedThisTurn: [] };
+        : {
+            ...counted,
+            surfacedThisTurn: [],
+            bombedThisTurn: [],
+            beamedThisTurn: [],
+            tractorUsedThisTurn: [],
+          };
     const preview = playerIncomeV7(expired, actor);
     const nextIndex = nextActiveSeat(state);
     if (nextIndex === null) return rejected(original, "INVALID_STATE");

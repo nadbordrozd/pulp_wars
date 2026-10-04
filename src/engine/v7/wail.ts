@@ -2,7 +2,9 @@ import type { UnitId } from "../model/ids";
 import {
   EGG_DEFENSE2_V7,
   armouredDamageV7,
+  coverBonusV7,
   gravesEnabledV7,
+  terrainGivesCoverV7,
   unitRoleRuleV7,
   unitTakesCoverV7,
   type FactionRosterV7,
@@ -277,16 +279,18 @@ export function wailTargetV7(
 ): WailTargetV7 {
   const takesCover = unitTakesCoverV7(roster, unit);
   const fortificationLevel = takesCover ? facts.walls + facts.fieldDefense : 0;
+  // `pulp_wars-1wy.3`: Snow cover is x 1.25 and yields to the x 1.5 of a
+  // Forest or Mountain (the shared `coverBonusV7`).
+  const terrainCover = takesCover && terrainGivesCoverV7(facts.terrain);
   const snowCover =
     takesCover &&
+    !terrainCover &&
     unitOwnerIsIceFolkV7(roster, unit) &&
     facts.snow &&
     fortificationLevel === 0;
-  const covered =
-    takesCover &&
-    (facts.terrain === "FOREST" || facts.terrain === "MOUNTAIN" || snowCover);
-  const defenseBonusNumerator = covered ? 3 : 1;
-  const defenseBonusDenominator = covered ? 2 : 1;
+  const cover = coverBonusV7(terrainCover, snowCover);
+  const defenseBonusNumerator = cover.numerator;
+  const defenseBonusDenominator = cover.denominator;
   const defense2 = defense2For(
     unitRoleRuleV7(roster, unit).defense2,
     unit,

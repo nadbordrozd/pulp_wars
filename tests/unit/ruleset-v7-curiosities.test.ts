@@ -247,14 +247,21 @@ describe("the Curiosities setup option (section 3)", () => {
 /** The 7r34 initial state, apart from the identity and the new keys. */
 function normalizedInitialState(state: GameStateV7): string {
   // The Monster (`pulp_wars-737.3`) adds the `monsters` list, empty here.
+  // The Martian balance round (`pulp_wars-1wy.3`) adds the per-turn lists
+  // `beamedThisTurn` and `tractorUsedThisTurn`, empty in every initial
+  // state.
   const {
     curiosities: _curiosities,
     monsters: _monsters,
+    beamedThisTurn: _beamed,
+    tractorUsedThisTurn: _tractor,
     rulesetId: _rulesetId,
     setup,
     ...rest
   } = state;
   if (_monsters.length !== 0) throw new Error("a Monster with the option off");
+  if (_beamed.length !== 0 || _tractor.length !== 0)
+    throw new Error("a per-turn Martian fact in an initial state");
   const {
     curiosities: _option,
     rulesetId: _setupRulesetId,
@@ -426,7 +433,12 @@ describe("generation (section 4)", () => {
 describe("headless parity and the CLI flag", () => {
   it("with the option off plays the 7r34 matches command for command (pinned on main) across map types and factions", () => {
     // Computed on main at 7r34 (8540406a): runAiMatchV7 with
-    // { maxCommands: 250, maxRounds: 40 }.
+    // { maxCommands: 250, maxRounds: 40 }. The Martian and Ice Folk balance
+    // round (`pulp_wars-1wy.3`, 7r37) changes, by design, every match with
+    // a Martian or Ice Folk seat: the Human against Undead pin is still the
+    // 7r34 one (no change without such a seat), and the command and event
+    // hashes and rounds of the other four were recomputed at 7r37 (their
+    // maps and PRNG ends are the 7r34 ones: generation is untouched).
     const pins: readonly {
       readonly mapType: MapTypeV7;
       readonly factions: readonly FactionIdV7[];
@@ -455,11 +467,11 @@ describe("headless parity and the CLI flag", () => {
         mapType: "PANGEA",
         factions: ["GOBLIN", "DINOSAUR", "MARTIAN"],
         seed: 11,
-        rounds: 13,
+        rounds: 14,
         commandHash:
-          "d2e14a4374b4a614b8ea439c05e6f47a2e89f04275ae22244a4f83662fdd8345",
+          "aefaea2259333a0f5885dfc7dc4a55602a7ccc4d12ccab8f46f2ed3cc7a34f86",
         eventHash:
-          "e52f3a22016077cf1f693cfeb8fce14ecd061510143029c63338b449b8fe32c6",
+          "2f7dbda2a5666fd0d10f3b849458c36a714c6e98845f98450d7b852c2f906e0d",
         mapHash:
           "1517bca558c54df409c52f8915a4372daaaec00d474bbb4948b0688f8e887e04",
         finalPrngHash:
@@ -471,9 +483,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 5,
         rounds: 18,
         commandHash:
-          "ac8a3ae715f19634e477c2fb2d85701c75be99d0930706823b177d6e014bd2c8",
+          "4a94649df32e45905f1cc9f9f429b87315f23484be4d95c6063880a153036e8a",
         eventHash:
-          "63955968ff22619ac306b67be9eacc6565f7656203e6e76b9fb57afd94652ae9",
+          "2cf136bb8d40d93c6324d3137d45e15b4c731131dad3cda074ba630fe823b821",
         mapHash:
           "b61c6c033e3e155090fd5e96a0cb367ab6b08c9366e2f3851d1aad33e1aeaeb2",
         finalPrngHash:
@@ -485,9 +497,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 7,
         rounds: 13,
         commandHash:
-          "d29baf2f673506ebedfecd8d4d745a8456339d9c46bf430d6d638d1ff029d011",
+          "ed2e432a790823a0f3696f32e8f28631f54942ac0eb61d4b94121211c3d23884",
         eventHash:
-          "40711158e12c533ed3f29a55f1de2292bd79b31ee4d913fbdf622f9cc893678d",
+          "15e073adaadba4242d1c313338ef96c4a52318755feef684c3b2e80c53f724a3",
         mapHash:
           "0b9f8b6f89840ef3f3c732d5e46513903e992acab6bfb3bbc0c193055e19ca19",
         finalPrngHash:
@@ -497,11 +509,11 @@ describe("headless parity and the CLI flag", () => {
         mapType: "LAKES",
         factions: ["DWARF", "UNDEAD", "ICE_FOLK", "DINOSAUR"],
         seed: 2,
-        rounds: 11,
+        rounds: 12,
         commandHash:
-          "4d934599b7d4b9cbce0ced92d7b2f324080c22e8ab14731722c7b0a95c9e1fbb",
+          "9de2a7466f33c0a18d3a96321ea55a73b564bb9618b3f2260206deb5f1ad038d",
         eventHash:
-          "74b8347a6c30112ac964ca78ff1b167fd5c46372ef0444b2a957b530f852d635",
+          "c64eef23a4dfc9347a8653d67965630926b8b531d65c81659f632efb81905c78",
         mapHash:
           "b7462b1f8c2713a3bfb271e507db798fd74a6a6988461f9f162549b3028bf292",
         finalPrngHash:

@@ -16,8 +16,9 @@ import {
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
   PROMOTION_KILLS_V7,
-  TRACTOR_BEAM_RANGE_V7,
   armouredDamageV7,
+  coverBonusV7,
+  terrainGivesCoverV7,
   attackIgnoresCityWallsV7,
   attackIsChargeV7,
   canEnterTerrainV7,
@@ -127,12 +128,21 @@ import {
 } from "./ice-folk";
 import {
   absorbHitV7,
+  beamDownCarrierReadyV7,
+  beamDownDestinationLegalV7,
+  beamDownPassengerLegalV7,
   controlledByBrainV7,
   mindControlTargetBlockV7,
   pierceTileV7,
   rayPowerV7,
   shieldOfV7,
-  tractorBeamDestinationV7,
+  tractorBeamActorReadyV7,
+  tractorBeamPathV7,
+  tractorBeamRuleV7,
+  tractorBeamStepLegalV7,
+  tractorBeamTargetBlockV7,
+  type PlacementTileFactsV7,
+  type TractorBeamRuleV7,
 } from "./martian";
 import {
   recoverEligibleV7,
@@ -774,15 +784,16 @@ function appendPublicUnitCommandsV7(
         targetUnitId: target.id,
       });
   }
-  // The Martian revision: Beam Down (an unmoved Saucer), Mind Control, and
-  // the Tractor Beam, each offered exactly for its legal targets.
-  if (
-    !overrun &&
-    unit.form === "LAND" &&
-    !primaryUsedForQuery(unit) &&
-    !primaryActionBlockedAfterMoveV7(view, unit)
-  ) {
-    if (rule.abilities.includes("BEAM_DOWN") && !unit.activation.moved)
+  // The Martian revision: Beam Down (a carrier, after its Move too), Mind
+  // Control, and the Tractor Beam, each offered exactly for its legal
+  // targets. `pulp_wars-1wy.3`: the carrier and puller readiness are the
+  // reducer's own predicates; the Heavy Tractor Beam is offered after the
+  // Mothership's Move and after its primary action, once a turn.
+  if (unit.form === "LAND") {
+    if (
+      rule.abilities.includes("BEAM_DOWN") &&
+      beamDownCarrierReadyV7(view, unit)
+    )
       for (const passenger of publicBeamDownPassengersV7(view, unit))
         for (const to of publicBeamDownDestinationsV7(view, unit, passenger))
           candidates.push({
@@ -791,15 +802,24 @@ function appendPublicUnitCommandsV7(
             passengerUnitId: passenger.id,
             to,
           });
-    if (rule.abilities.includes("MIND_CONTROL"))
+    if (
+      !overrun &&
+      !primaryUsedForQuery(unit) &&
+      !primaryActionBlockedAfterMoveV7(view, unit) &&
+      rule.abilities.includes("MIND_CONTROL")
+    )
       for (const target of publicMindControlTargetsV7(view, unit))
         candidates.push({
           kind: "MIND_CONTROL",
           unitId: unit.id,
           targetUnitId: target.id,
         });
-    if (rule.abilities.includes("TRACTOR_BEAM"))
-      for (const target of publicTractorBeamTargetsV7(view, unit))
+    const tractor = tractorBeamRuleV7(view, unit);
+    if (
+      tractor !== null &&
+      tractorBeamActorReadyV7(view, unit, tractor, view.tractorUsedThisTurn)
+    )
+      for (const target of publicTractorBeamTargetsV7(view, unit, tractor))
         candidates.push({
           kind: "TRACTOR_BEAM",
           unitId: unit.id,
@@ -1513,35 +1533,77 @@ function publicHatchTargetsV7(
 }
 
 /**
- * The Martian revision section 8.1 row 6: the passengers an own Saucer may
- * beam: other own living land-form one-slot non-flying units standing on or
- * next to the center of an own city, in unit-ID order. Own units and cities
- * are always visible to their owner.
+ * The Martian revision section 8.1 row 6 (`pulp_wars-1wy.3`): the passengers
+ * an own carrier may beam, in unit-ID order: the reducer's own test
+ * (`beamDownPassengerLegalV7`): other own living land-form one-slot
+ * non-flying units, not beamed this turn, standing on or next to the center
+ * of an own city or within `BEAM_DOWN_PICKUP_RANGE_V7` of the carrier. Own
+ * units, own cities, and the own entries of `beamedThisTurn` are always
+ * visible to their owner.
  */
 function publicBeamDownPassengersV7(
   view: PlayerViewV7,
   saucer: PlayerViewV7["units"][number],
 ): readonly PlayerViewV7["units"][number][] {
-  const centers = view.cities.filter((city) => city.ownerId === saucer.ownerId);
+  const centers = view.cities
+    .filter((city) => city.ownerId === saucer.ownerId)
+    .map((city) => city.at);
   return view.units
-    .filter(
-      (unit) =>
-        unit.id !== saucer.id &&
-        unit.hp > 0 &&
-        unit.ownerId === saucer.ownerId &&
-        unit.form === "LAND" &&
-        unitCapacitySlotsV7(view, unit) === 1 &&
-        unitMovementModeV7(view, unit) !== "FLY" &&
-        centers.some((city) => chebyshev(city.at, unit.at) <= 1),
+    .filter((unit) =>
+      beamDownPassengerLegalV7(
+        view,
+        saucer,
+        unit,
+        centers,
+        view.beamedThisTurn,
+      ),
     )
     .sort((left, right) => left.id - right.id);
 }
 
 /**
+ * The placement facts of a public tile for a Beam Down or a pull, or
+ * undefined off the board. `alliedTo` is the player whose alliance with the
+ * tile's territory owner blocks the placement; `exceptUnitId` is the moved
+ * unit. An unexplored tile reports `explored: false`, which fails every
+ * placement.
+ */
+function publicPlacementFactsV7(
+  view: PlayerViewV7,
+  at: CoordV7,
+  alliedTo: PlayerId,
+  exceptUnitId?: UnitId,
+): PlacementTileFactsV7 | undefined {
+  const tile = tileAtView(view, at);
+  if (tile === undefined) return undefined;
+  if (!tile.explored)
+    return {
+      explored: false,
+      site: null,
+      terrain: "GRASS",
+      occupied: false,
+      chest: false,
+      alliedTerritory: false,
+    };
+  return {
+    explored: true,
+    site: tile.site,
+    terrain: tile.terrain,
+    // The Dwarf revision section 5.3: the occupancy predicate.
+    occupied: tileOccupiedV7(view, at, exceptUnitId),
+    chest: view.treasureChests.some((chest) => same(chest, at)),
+    alliedTerritory:
+      tile.territoryOwnerId !== null &&
+      publicAllied(view, alliedTo, tile.territoryOwnerId),
+  };
+}
+
+/**
  * Section 8.1 row 7: the legal Beam Down tiles of `passenger` around the
- * Saucer, in (y, x) order: land, with no unit and no treasure chest, not a
- * settlement site, not in territory allied to the actor, and enterable by
- * the passenger. Every tile around an own Saucer is explored.
+ * carrier, in (y, x) order, by the reducer's own test
+ * (`beamDownDestinationLegalV7`): land, with no unit and no treasure chest,
+ * not a settlement site, not in territory allied to the actor, and
+ * enterable by the passenger. Every tile around an own carrier is explored.
  */
 function publicBeamDownDestinationsV7(
   view: PlayerViewV7,
@@ -1549,27 +1611,20 @@ function publicBeamDownDestinationsV7(
   passenger: PlayerViewV7["units"][number],
 ): readonly CoordV7[] {
   const player = view.viewer;
-  const movementMode = unitMovementModeV7(view, passenger);
+  const technology = {
+    engineering: player.researchedTechs.includes("ENGINEERING"),
+    navigation: player.researchedTechs.includes("NAVIGATION"),
+  };
   return adjacentPublicTiles(view, saucer.at)
-    .filter(
-      (tile) =>
-        tile.explored &&
-        tile.site === null &&
-        canEnterTerrainV7({
-          terrain: tile.terrain,
-          movementMode,
-          afloat: false,
-          engineering: player.researchedTechs.includes("ENGINEERING"),
-          navigation: player.researchedTechs.includes("NAVIGATION"),
-          mountainBorn: unitIsMountainBornV7(view, passenger),
-        }) &&
-        // The Dwarf revision section 5.3: the occupancy predicate.
-        !tileOccupiedV7(view, tile.at) &&
-        !view.treasureChests.some((chest) => same(chest, tile.at)) &&
-        !(
-          tile.territoryOwnerId !== null &&
-          publicAllied(view, player.id, tile.territoryOwnerId)
-        ),
+    .filter((tile) =>
+      beamDownDestinationLegalV7(
+        view,
+        saucer,
+        passenger,
+        technology,
+        tile.at,
+        publicPlacementFactsV7(view, tile.at, player.id),
+      ),
     )
     .map((tile) => tile.at)
     .sort((left, right) => left.y - right.y || left.x - right.x);
@@ -1611,30 +1666,29 @@ function publicMindControlTargetsV7(
 }
 
 /**
- * Section 8.4: the tile an own Mothership would pull `target` to, or null
- * when the pull is illegal: the target is visible, own or hostile, exactly
- * `TRACTOR_BEAM_RANGE_V7` tiles away, not an Egg, a `JUGGERNAUT`-role unit,
- * or a two-slot unit, and the destination passes the Push conditions and
- * holds no treasure chest. The destination is next to the Mothership, so it
- * is explored and every unit on it is visible.
+ * Section 8.4 (`pulp_wars-1wy.3`): the tiles an own puller's Tractor Beam
+ * would pull `target` across (the last is where it ends), or null when the
+ * pull is illegal. It is the reducer's own rule on the view: the target is
+ * visible, own or hostile, within the rule's reach, not an Egg, a
+ * `JUGGERNAUT`-role unit, or a two-slot unit (`tractorBeamTargetBlockV7`),
+ * and each step passes the Push conditions, is explored by the actor, and
+ * holds no treasure chest (`tractorBeamStepLegalV7`, `tractorBeamPathV7`).
+ * Every unit on an explored tile is visible, so the path is exact.
  */
-function publicTractorBeamDestinationV7(
+function publicTractorBeamPathV7(
   view: PlayerViewV7,
   mothership: PlayerViewV7["units"][number],
   target: PlayerViewV7["units"][number],
-): CoordV7 | null {
+  rule: TractorBeamRuleV7,
+): readonly CoordV7[] | null {
   if (
     target.hp <= 0 ||
     publicAllied(view, mothership.ownerId, target.ownerId) ||
-    target.form === "EGG" ||
-    target.role === "JUGGERNAUT" ||
-    unitCapacitySlotsV7(view, target) !== 1 ||
-    chebyshev(mothership.at, target.at) !== TRACTOR_BEAM_RANGE_V7
+    tractorBeamTargetBlockV7(view, rule, mothership, target) !== null
   )
     return null;
-  const to = tractorBeamDestinationV7(mothership.at, target.at);
-  const tile = tileAtView(view, to);
-  if (tile?.explored !== true || tile.site !== null) return null;
+  // The technology the pull assumes for the target is read once, from the
+  // tile it stands on before the pull.
   const technology = tractorBeamTargetTechnologyV7(
     target.ownerId === view.viewer.id,
     view.viewer.researchedTechs,
@@ -1643,34 +1697,56 @@ function publicTractorBeamDestinationV7(
       return from?.explored === true ? from.terrain : undefined;
     })(),
   );
-  return canEnterTerrainV7({
-    terrain: tile.terrain,
-    movementMode: unitMovementModeV7(view, target),
-    afloat: isAfloatFormV7(target.form),
-    ...technology,
-    mountainBorn: unitIsMountainBornV7(view, target),
-  }) &&
-    // The Dwarf revision section 5.3: the occupancy predicate.
-    !tileOccupiedV7(view, to, target.id) &&
-    !view.treasureChests.some((chest) => same(chest, to)) &&
-    !(
-      tile.territoryOwnerId !== null &&
-      publicAllied(view, target.ownerId, tile.territoryOwnerId)
-    )
-    ? to
-    : null;
+  const path = tractorBeamPathV7(rule, mothership.at, target.at, (step) =>
+    tractorBeamStepLegalV7(
+      view,
+      target,
+      technology,
+      publicPlacementFactsV7(view, step, target.ownerId, target.id),
+    ),
+  );
+  return path.length === 0 ? null : path;
 }
 
-/** The legal Tractor Beam targets of an own Mothership, in unit-ID order. */
+/**
+ * The tiles a Tractor Beam by own unit `unitId` on `targetUnitId` would
+ * cross (the last is where the target ends), from the view alone, or null
+ * when the unit has no Tractor Beam or the target is illegal. It does not
+ * test whether the puller may still act this turn: for a `TRACTOR_BEAM`
+ * that `queryPlayerCommandsV7` offers it is the path of
+ * `previewTractorBeamV7` without the full command query.
+ */
+export function queryTractorBeamPathV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): readonly CoordV7[] | null {
+  const puller = view.units.find((unit) => unit.id === unitId);
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (
+    puller === undefined ||
+    target === undefined ||
+    puller.ownerId !== view.viewer.id ||
+    puller.id === target.id
+  )
+    return null;
+  const rule = tractorBeamRuleV7(view, puller);
+  return rule === null
+    ? null
+    : publicTractorBeamPathV7(view, puller, target, rule);
+}
+
+/** The legal Tractor Beam targets of an own puller, in unit-ID order. */
 function publicTractorBeamTargetsV7(
   view: PlayerViewV7,
   mothership: PlayerViewV7["units"][number],
+  rule: TractorBeamRuleV7,
 ): readonly PlayerViewV7["units"][number][] {
   return view.units
     .filter(
       (target) =>
         target.id !== mothership.id &&
-        publicTractorBeamDestinationV7(view, mothership, target) !== null,
+        publicTractorBeamPathV7(view, mothership, target, rule) !== null,
     )
     .sort((left, right) => left.id - right.id);
 }
@@ -1793,7 +1869,13 @@ export interface TractorBeamPreviewV7 {
   readonly unitId: UnitId;
   readonly targetUnitId: UnitId;
   readonly from: CoordV7;
+  /** The tile the target ends on (the last tile of `path`). */
   readonly to: CoordV7;
+  /**
+   * The tiles the target crosses, in order: one, or two for a Heavy Tractor
+   * Beam (`pulp_wars-1wy.3`). Equals `UNIT_PULLED.path`.
+   */
+  readonly path: readonly CoordV7[];
   /** Fortification levels the target has on `from` and not on `to`. */
   readonly fortificationLost: number;
   /** The city whose center the pull empties of a unit not besieging it. */
@@ -1820,8 +1902,11 @@ export function previewTractorBeamV7(
   const mothership = view.units.find((unit) => unit.id === unitId);
   const target = view.units.find((unit) => unit.id === targetUnitId);
   if (mothership === undefined || target === undefined) return null;
-  const to = publicTractorBeamDestinationV7(view, mothership, target);
-  if (to === null) return null;
+  const rule = tractorBeamRuleV7(view, mothership);
+  if (rule === null) return null;
+  const path = publicTractorBeamPathV7(view, mothership, target, rule);
+  const to = path?.at(-1);
+  if (path === null || to === undefined) return null;
   const fortification = (at: CoordV7): number => {
     const tile = tileAtView(view, at);
     return unitTakesCoverV7(view, target) &&
@@ -1838,6 +1923,7 @@ export function previewTractorBeamV7(
     targetUnitId,
     from: target.at,
     to,
+    path,
     fortificationLost: Math.max(
       0,
       fortification(target.at) - fortification(to),
@@ -6456,20 +6542,18 @@ function publicCombatPreviewCore(
         : defenderRule.defense2 + fortificationLevel * 2;
   // The Ice Folk revision section 6.2: Snow cover from the public Snow flag
   // (a hidden Witch's Blizzard is not known; `hiddenBlizzardPossible`).
+  // `pulp_wars-1wy.3`: Snow cover is x 1.25 and yields to the x 1.5 of a
+  // Forest or Mountain (the shared `coverBonusV7`).
+  const terrainCover =
+    !acid && targetTakesCover && terrainGivesCoverV7(targetTile.terrain);
   const snowCover =
     !acid &&
     targetTakesCover &&
+    !terrainCover &&
     targetTile.snow === true &&
     tileFortification === 0 &&
     unitOwnerIsIceFolkV7(view, target);
-  const bonus =
-    !acid &&
-    targetTakesCover &&
-    (targetTile.terrain === "FOREST" ||
-      targetTile.terrain === "MOUNTAIN" ||
-      snowCover)
-      ? { numerator: 3, denominator: 2 }
-      : { numerator: 1, denominator: 1 };
+  const bonus = coverBonusV7(terrainCover, snowCover);
   const breachApplied = false;
   const applied = bonus;
   // The Dwarf revision section 7.1: Unflinching (a construct's attack).

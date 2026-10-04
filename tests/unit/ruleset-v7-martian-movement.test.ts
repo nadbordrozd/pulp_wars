@@ -236,14 +236,22 @@ describe("the shared terrain-entry rule", () => {
   //   public Knockback (the canonical Knockback is the shared displacement
   //   rule in combat.ts). Tested in ruleset-v7-dwarf-tunnel.test.ts and
   //   ruleset-v7-dwarf-units.test.ts.
+  // - The balance revision (`pulp_wars-1wy.3`): martian.ts (2), the Beam
+  //   Down destination and the Tractor Beam step, each ONE predicate shared
+  //   by the reducer and the public query (`beamDownDestinationLegalV7`,
+  //   `tractorBeamStepLegalV7`), so reducer.ts loses its Beam Down site (4)
+  //   and query.ts its Beam Down and Tractor Beam sites (5). Tested in
+  //   ruleset-v7-martian-abilities.test.ts and
+  //   ruleset-v7-balance-martian-ice.test.ts.
   it("is the only terrain-entry rule: the audited call sites of canEnterTerrainV7", () => {
     const AUDITED: Readonly<Record<string, number>> = {
       "src/engine/v7/combat.ts": 1,
       "src/engine/v7/eggs.ts": 2,
       "src/engine/v7/movement.ts": 3,
-      "src/engine/v7/query.ts": 7,
-      "src/engine/v7/reducer.ts": 5,
+      "src/engine/v7/query.ts": 5,
+      "src/engine/v7/reducer.ts": 4,
       "src/engine/v7/dwarf-reducer.ts": 1,
+      "src/engine/v7/martian.ts": 2,
     };
     for (const [file, count] of Object.entries(AUDITED)) {
       const source = readFileSync(file, "utf8");

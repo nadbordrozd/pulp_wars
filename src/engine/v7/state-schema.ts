@@ -14,6 +14,7 @@ import {
   gravesEnabledV7,
   growthStageForKillsV7,
   roleMechanicsV7,
+  type RoleMechanicsV7,
 } from "../rules/ruleset-v7";
 import { ACHIEVEMENT_REQUIRED_TECH_V7 } from "./achievements";
 import { isEggActivationV7 } from "./eggs";
@@ -98,6 +99,7 @@ import {
 
 const STATE_KEYS = [
   "activeSeatIndex",
+  "beamedThisTurn",
   "bitten",
   "board",
   "bombedThisTurn",
@@ -126,6 +128,7 @@ const STATE_KEYS = [
   "shields",
   "surfacedThisTurn",
   "mindControlled",
+  "tractorUsedThisTurn",
   "treasureChests",
   "turnOrder",
   "units",
@@ -214,6 +217,10 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
         );
   const surfacedThisTurn = parseSortedUnitIds(input.surfacedThisTurn);
   const bombedThisTurn = parseSortedUnitIds(input.bombedThisTurn);
+  // The Martian balance revision (`pulp_wars-1wy.3`): the per-turn lists of
+  // beamed passengers and used free Tractor Beams.
+  const beamedThisTurn = parseSortedUnitIds(input.beamedThisTurn);
+  const tractorUsedThisTurn = parseSortedUnitIds(input.tractorUsedThisTurn);
   const choices = parseChoices(input.pendingChoices);
   const outcome = parseOutcome(input.outcome);
   const turnOrder = parsePlayerIdSequence(input.turnOrder);
@@ -241,6 +248,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     burrowed === null ||
     surfacedThisTurn === null ||
     bombedThisTurn === null ||
+    beamedThisTurn === null ||
+    tractorUsedThisTurn === null ||
     choices === null ||
     outcome === undefined ||
     turnOrder === null ||
@@ -281,6 +290,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       burrowed,
       surfacedThisTurn,
       bombedThisTurn,
+      beamedThisTurn,
+      tractorUsedThisTurn,
       choices,
       outcome,
       humanPlayerId,
@@ -322,6 +333,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     burrowed,
     surfacedThisTurn,
     bombedThisTurn,
+    beamedThisTurn,
+    tractorUsedThisTurn,
     pendingChoices: choices,
     outcome,
   };
@@ -1523,6 +1536,8 @@ interface CrossInput {
   burrowed: readonly BurrowedEntryV7[];
   surfacedThisTurn: readonly UnitId[];
   bombedThisTurn: readonly UnitId[];
+  beamedThisTurn: readonly UnitId[];
+  tractorUsedThisTurn: readonly UnitId[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
@@ -1798,6 +1813,14 @@ function validateCrossReferences(value: CrossInput): boolean {
       units,
       surfacedThisTurn,
       bombedThisTurn,
+      value.activePlayerId,
+      value.setup,
+    ) ||
+    !martianTurnListsValid(
+      kindOf,
+      units,
+      value.beamedThisTurn,
+      value.tractorUsedThisTurn,
       value.activePlayerId,
       value.setup,
     )
@@ -2126,6 +2149,47 @@ function turnListsValid(
         kindOf(unit) === "DWARF"
       );
     }) && bombedThisTurn.every((unitId) => unitById.has(unitId))
+  );
+}
+
+/**
+ * The Martian balance revision (`pulp_wars-1wy.3`): `beamedThisTurn` lists
+ * only units on the board owned by the active player (a controlled unit
+ * included); `tractorUsedThisTurn` lists only units on the board owned by
+ * the active player whose role, under its kind, has the Heavy Tractor Beam
+ * (in land form when it pulled; it may have self-launched since). Both are
+ * empty in a match without a Martian seat.
+ */
+function martianTurnListsValid(
+  kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
+  units: readonly UnitStateV7[],
+  beamedThisTurn: readonly UnitId[],
+  tractorUsedThisTurn: readonly UnitId[],
+  activePlayerId: PlayerStateV7["id"],
+  setup: MatchSetupV7,
+): boolean {
+  if (beamedThisTurn.length === 0 && tractorUsedThisTurn.length === 0)
+    return true;
+  if (!setup.factions.includes("MARTIAN")) return false;
+  const unitById = new Map(units.map((unit) => [unit.id, unit]));
+  const mechanicsOf = (unit: UnitStateV7): RoleMechanicsV7 | undefined => {
+    const kind = kindOf(unit);
+    return kind === undefined ? undefined : roleMechanicsV7(unit.role, kind);
+  };
+  return (
+    beamedThisTurn.every(
+      (unitId) => unitById.get(unitId)?.ownerId === activePlayerId,
+    ) &&
+    tractorUsedThisTurn.every((unitId) => {
+      const unit = unitById.get(unitId);
+      // No form test: a Mothership may pull and then end its Move on water
+      // (it self-launches) in the same turn.
+      return (
+        unit !== undefined &&
+        unit.ownerId === activePlayerId &&
+        mechanicsOf(unit)?.heavyTractorBeam === true
+      );
+    })
   );
 }
 

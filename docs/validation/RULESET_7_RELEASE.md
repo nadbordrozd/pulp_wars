@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r36`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
+## Current release contract (`pulp-wars-poc-7r37`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf)
 
-The current runtime is `pulp-wars-poc-7r36` (autosave
-`pulpWars.save.v7r36.current`; saves and replays of `pulp-wars-poc-7r35`
+The current runtime is `pulp-wars-poc-7r37` (autosave
+`pulpWars.save.v7r37.current`; saves and replays of `pulp-wars-poc-7r36`
 and earlier are refused, and startup removes their autosave keys). Its seven
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, and Dwarf, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -103,6 +103,24 @@ which curiosities a board draws. Its contract tests are
 `tests/unit/ruleset-v7-monster.test.ts` and
 `tests/unit/ruleset-v7-owner-readers.test.ts`, and the curiosity-map
 validator checks the Monster's lair rules independently.
+`pulp_wars-1wy.3` (`7r37`) is the engine step of the Martian and Ice Folk
+balance round
+([balance design](../product/RULESET_7_BALANCE_MARTIAN_ICE.md)): Beam Down
+after a Move with a pick-up within two tiles and a passenger that counts as
+moved, the Tractor Beam on the Saucer, the Mothership at 8 Coins with Beam
+Down and the free Heavy Tractor Beam, the Grunt at Attack 2 and 9 HP, Glide
+only from Snow onto Snow, and Snow cover × 1.25
+([current rules sections 20.7](../product/RULESET_7_CURRENT.md#207-beam-down),
+[20.10](../product/RULESET_7_CURRENT.md#2010-tractor-beam), and
+[21.5](../product/RULESET_7_CURRENT.md#215-snow)). A match without a
+Martian or Ice Folk seat is the `7r36` match apart from the two empty
+per-turn lists (the all-Human parity digests, the mission pins, and the
+Human-against-Undead `7r34` curiosity pin still hold with them removed);
+the four pinned matches with a Martian or Ice Folk seat were recomputed.
+Its contract test is `tests/unit/ruleset-v7-balance-martian-ice.test.ts`.
+Its numbers are the design's proposed ones: the Normal AI step
+(`pulp_wars-1wy.4`), the UI step (`pulp_wars-1wy.5`), and the coarse
+matrix with the human-style probe (`pulp_wars-1wy.6`) are still to come.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, and the
 Dwarves are part of the default route: match setup always offers a
 Human/Undead/Goblin/Dinosaur/Martian/Ice Folk/Dwarf choice for the human and
@@ -119,7 +137,7 @@ rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r36` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r37` identity (ruleset ID, autosave key, the
   seven-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms
@@ -180,7 +198,7 @@ rerun their matrices.
     shooter is then Cooling), selects the Saucer, beams the capital's Grunt
     down through the Beam Down button with the passenger and tile picked in
     the dock (checking the "Saucer beamed down a" announcement and the
-    exhausted Grunt next to the Saucer), and resumes the save with its
+    moved Grunt next to the Saucer), and resumes the save with its
     Martian seat on a fresh default-route load.
   - The **Ice Folk probe** (`pulp_wars-7g3.6`) checks the same seven
     faction options, launches a Showcase with an Ice Folk human seat
@@ -256,7 +274,7 @@ rerun their matrices.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (`7r36`) captures. The revision-2 validator described below as
+  (`7r37`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 
