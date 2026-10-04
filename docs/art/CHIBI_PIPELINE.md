@@ -1349,3 +1349,86 @@ art/explorations/faction-buildings-2026-10 --ids …`); a chain's first
 - The review is `npm run art:faction-buildings-review`: its sheets read
   the production records, its "after" scenes are the game's own drawing,
   and it captures a captured city and the Gallery's Buildings tab.
+
+## The Candy batches (bead `pulp_wars-jdb.5`)
+
+Batches `direction-candy` and `naval-candy` hold the direction and the
+production art of an eighth faction, the [Candy](factions/CANDY.md):
+faction `CANDY`, `fixedFactionColours`, 39 assets (eight units, eight
+portraits, City 1 to 3, the Crumbs marker, twelve icons, seven effects) and
+the five naval pieces, from 75 recipes, all new PixelLab calls. **Nothing
+registers them yet:** the entries are in
+[`chibi-direction-candy-art-manifest.ts`](../../src/assets/chibi-direction-candy-art-manifest.ts),
+which no game module imports until bead `pulp_wars-jdb.6`. They added these
+pipeline pieces:
+
+- **`candy-pink` accent preset** and a **value step**
+  ([`accent.ts`](../../scripts/art/chibi/accent.ts)): a preset may carry
+  `value: { scale, add }`, and every accent pixel's value becomes
+  `min(1, value * scale + add)`, after the saturation step. The earlier
+  presets have no value step and keep their derivation byte for byte.
+  PixelLab draws "cotton-candy pink, colour #ffb8d8" as a saturated
+  raspberry shaded with wine red (34% to 53% of a sample's pixels in the
+  Martian magenta's band); the preset finds every pink and wine tone (hue
+  310 to 356, saturation and value at least 0.3), moves its hue to 329 to
+  338, caps its saturation at 0.5 (scale 0.55, add 0.08) and lifts its
+  value (scale 0.6, add 0.42), so a wine shade becomes a rose and the tones
+  keep their order. Every Candy asset but the effects names it.
+- **Subjects**: `UNIT:CANDY:<ROLE>`, `PORTRAIT:CANDY:<ROLE>`,
+  `CITY:CANDY:<level>`, `CRUMBS` (a `RESOURCE`-class marker like `GRAVE`),
+  `ICON:ACTION:{SUGAR_RUSH,REBAKE,SUGAR_TOSS,SPLAT,BOUNCE}`,
+  `ICON:ACTION:CANDY:TEND_WOUNDED` (Frosting),
+  `ICON:TECH:CANDY:{FORTIFICATION,EXPLOSIVES}` (Home Sweet Home, Peppermint
+  Surprise), `ICON:STATUS:{RUSHED,CRASHED,SPLATTED}`,
+  `ICON:HUD:CANDY:EMBLEM` and
+  `EFFECT:{GUMBALL_SHOT,PIE,SPLAT,SUGAR_TOSS,REBAKE_PUFF,PEPPERMINT_POP,BOUNCE}`
+  (the type `CandyArtSubjectV7` in
+  [`chibi-art-v7.ts`](../../src/assets/chibi-art-v7.ts), and `CANDY`,
+  `CRUMBS` and the three status names in the manifest's subject pattern);
+  the naval subjects are the generic naval ones, live once `CANDY` is a
+  faction.
+- **Effects** are `palette-map` assets on
+  `scripts/art/chibi/palettes/candy-sugar.png`, written by
+  `npx tsx scripts/art/candy-direction/sugar-palette.ts` (a test checks the
+  bytes).
+
+What worked, added to the prompt notes of the earlier batches:
+
+- **Measure the first samples before iterating on shape.** The pink was
+  wrong on every sample in the same way, so one accent preset fixed the
+  whole faction and no colour edit was needed.
+- **A word names its strongest picture**: "bear" drew a plush teddy bear
+  with a cream belly through seven recipes, whatever the materials and the
+  negative said; a subject line without the word ("a chubby jelly figure
+  moulded in one piece like a jelly baby, with two small round ears") drew
+  the gummy sweet. "Balloon whisk" drew a balloon.
+- **A dome cannot be made taller by an edit**: "redraw it bigger and
+  taller" turned a squat gumdrop into a pill.
+- **A faction of faces puts a face on a machine**; "erase the white face …
+  so it is plain pink frosting" removed it.
+- **Check an effect after the palette map, not before**: red maps to
+  caramel and pale teal to mint. A colour edit that names the palette's hex
+  values fixed both.
+- **The `resource` class draws a single calm object** even for a heap; the
+  subject line that named "three broken pieces … with many small loose
+  crumbs" gave the Crumbs.
+
+`npm run art:chibi-candy-direction-review` writes
+`art/pixellab/reviews/chibi-batch-direction-candy/`: `lineup-{1x,x3}.png`
+and `lineup.json` (the spec's 32 px lineup with the Dwarf lineup's measures
+and calibrated thresholds), `roster-{x4,1x}.png` and `roster-zoom-0.75.png`
+(each unit on Grass, Forest, Mountain and Snow beside the other seven
+factions' unit of its role), `terrain-x2.png`, `portraits-x4.png`,
+`icons-x4.png`, `effects-x3.png`, `markers-x3.png` (the Crumbs on every
+ground and Snow, and the Crashed, Rushed and Splatted markers on units at
+the sizes of `CANDY_MARKERS_V7`), `cities-x3.png`, `naval-x4.png` (the
+Candy ships beside the seven fleets), `palette.{png,json}`,
+`readability.json` and the scenes
+`scene-{mixed,terrain,coast}-{desktop,phone}-zoom-{1,0.75}.png` of
+[`scene.ts`](../../scripts/art/candy-direction/scene.ts), drawn by the real
+board host in the live look with the Candy rasters under Human stand-in
+subjects (the ships under the shared ship subjects the Human fleet takes)
+and the stand-in seat's faction colour set to the Candy pink in the page.
+Captures start Vite on port 6541 unless `--port` says otherwise and need
+`CHROME_PATH` (and `node` on the `PATH` for Vite); `--copy-to DIR` copies
+the key sheets.

@@ -1,0 +1,63 @@
+{
+  "id": "icon-splat-a",
+  "jobId": "sync-b8814f58-37e8-4554-be0e-1d2e09fe0e39",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-splat",
+    "subject": "ICON:ACTION:SPLAT",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 54701,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-icon.txt",
+        "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+        "text": "Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim.",
+        "negative": "red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+        "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CANDY.json",
+        "text": "Subject: one cream pie hitting flat and bursting, seen from the front: a round pale biscuit crust with white whipped cream splashing outward in five thick white blobs; nothing else in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "grass, ground tile, slab, platform, person, character, face, eyes, plate, fork, checkerboard, dark background"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one cream pie hitting flat and bursting, seen from the front: a round pale biscuit crust with white whipped cream splashing outward in five thick white blobs; nothing else in the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, plate, fork, checkerboard, dark background",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: one cream pie hitting flat and bursting, seen from the front: a round pale biscuit crust with white whipped cream splashing outward in five thick white blobs; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, grass, slab, platform, person, character, face, eyes, plate, fork, checkerboard, dark background."
+  }
+}

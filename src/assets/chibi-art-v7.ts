@@ -70,7 +70,8 @@ export type ArtSubjectV7 =
   | IceFolkArtSubjectV7
   | NavalFactionArtSubjectV7
   | DwarfArtSubjectV7
-  | CuriosityArtSubjectV7;
+  | CuriosityArtSubjectV7
+  | CandyArtSubjectV7;
 
 /**
  * Map curiosity art subjects (bead pulp_wars-737.5,
@@ -212,6 +213,51 @@ export type DwarfEffectIdV7 =
 
 /** Roles with their own Dwarf art (docs/art/factions/DWARF.md). */
 export type DwarfArtRoleV7 = UndeadArtRoleV7;
+
+/**
+ * Candy art subjects (bead pulp_wars-jdb.5, CANDY.md): the eight units,
+ * their portraits, the cake-castle City 1-3, the Crumbs marker of a tile,
+ * the command, ability, status and technology icons
+ * (`ICON:ACTION:CANDY:TEND_WOUNDED` is Frosting; `ICON:TECH:CANDY:*` are
+ * Home Sweet Home and Peppermint Surprise, the Candy names of
+ * Fortification and Explosives; `ICON:HUD:CANDY:EMBLEM` is the faction's
+ * wrapped sweet) and the effect sprites. The art exists before the faction
+ * is wired in: nothing resolves these subjects until the Candy UI bead
+ * (pulp_wars-jdb.6) registers them. The Candy naval subjects need no type
+ * here: they are NavalFactionArtSubjectV7 (`UNIT:CANDY:<ROLE>`,
+ * `PORTRAIT:CANDY:<ROLE>`, what navalArtSubjectV7 returns) as soon as the
+ * engine bead (pulp_wars-jdb.3) makes `CANDY` a FactionIdV7.
+ */
+export type CandyArtSubjectV7 =
+  | `UNIT:CANDY:${CandyArtRoleV7}`
+  | `PORTRAIT:CANDY:${CandyArtRoleV7}`
+  | `CITY:CANDY:${1 | 2 | 3}`
+  | "CRUMBS"
+  | `ICON:ACTION:${"SUGAR_RUSH" | "REBAKE" | "SUGAR_TOSS" | "SPLAT" | "BOUNCE"}`
+  | "ICON:ACTION:CANDY:TEND_WOUNDED"
+  | `ICON:TECH:CANDY:${"FORTIFICATION" | "EXPLOSIVES"}`
+  | `ICON:STATUS:${"RUSHED" | "CRASHED" | "SPLATTED"}`
+  | "ICON:HUD:CANDY:EMBLEM"
+  | `EFFECT:${CandyEffectIdV7}`;
+
+/**
+ * Candy effect sprites: GUMBALL_SHOT (the Gumball Gunner's shot), PIE (the
+ * Pie Launcher's pie in flight), SPLAT (the pie landing), SUGAR_TOSS (the
+ * tossed sweet), REBAKE_PUFF (the oven puff of a Re-bake), PEPPERMINT_POP
+ * (Peppermint Surprise under an enemy that eats Crumbs) and BOUNCE (the
+ * spring under a bounced attacker).
+ */
+export type CandyEffectIdV7 =
+  | "GUMBALL_SHOT"
+  | "PIE"
+  | "SPLAT"
+  | "SUGAR_TOSS"
+  | "REBAKE_PUFF"
+  | "PEPPERMINT_POP"
+  | "BOUNCE";
+
+/** Roles with their own Candy art (docs/art/factions/CANDY.md). */
+export type CandyArtRoleV7 = UndeadArtRoleV7;
 
 /** The Rift pieces (bead pulp_wars-9s0.5, docs/art/classes/terrain-tiles.md). */
 export type RiftPieceV7 =

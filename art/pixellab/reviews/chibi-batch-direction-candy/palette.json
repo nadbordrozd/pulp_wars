@@ -1,0 +1,73 @@
+{
+  "note": "Measured on the eight accepted unit masters (after the candy-pink accent step). Shares are of the opaque pixels; the roles overlap a little and leave out a few tones.",
+  "roles": [
+    {
+      "name": "outline",
+      "use": "the thick chibi outline",
+      "hex": "#030202",
+      "share": 11.3,
+      "lightness": 0.5
+    },
+    {
+      "name": "pinkLit",
+      "use": "glaze, frosting, jelly and crystal, lit",
+      "hex": "#fba3c7",
+      "share": 25.6,
+      "lightness": 76.6
+    },
+    {
+      "name": "pinkShade",
+      "use": "the shadow tone of the pink",
+      "hex": "#b25d81",
+      "share": 24.9,
+      "lightness": 50.5
+    },
+    {
+      "name": "white",
+      "use": "marshmallow, cream, sugar and the hard shine",
+      "hex": "#fcf7f5",
+      "share": 4.6,
+      "lightness": 97.5
+    },
+    {
+      "name": "cream",
+      "use": "cream shade, vanilla and pale sponge",
+      "hex": "#f0d8bb",
+      "share": 7.3,
+      "lightness": 87.5
+    },
+    {
+      "name": "biscuit",
+      "use": "wafer, graham cracker, donut dough and caramel",
+      "hex": "#c8783a",
+      "share": 11.9,
+      "lightness": 58
+    },
+    {
+      "name": "chocolate",
+      "use": "chocolate, gingerbread shade and feet",
+      "hex": "#6d2415",
+      "share": 9.2,
+      "lightness": 25.6
+    },
+    {
+      "name": "mint",
+      "use": "the small mint trim",
+      "hex": "#8ddab2",
+      "share": 1.8,
+      "lightness": 81.3
+    }
+  ],
+  "codePalette": {
+    "faction": "#ffb8d8",
+    "pink": "#fba4c7",
+    "pinkShade": "#b25d80",
+    "pinkDark": "#8f4565",
+    "white": "#fcf7f5",
+    "cream": "#f0d7ba",
+    "biscuit": "#c8783a",
+    "chocolate": "#6d2415",
+    "mint": "#8ddab3",
+    "outline": "#24121a"
+  }
+}

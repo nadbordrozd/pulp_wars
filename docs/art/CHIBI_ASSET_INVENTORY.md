@@ -689,3 +689,38 @@ eruption ring, the eruption and bomb timelines and the Gyrocopter's shadow
 are code-drawn or code-driven; their pure functions and constants are in
 [`chibi-direction-dwarf-presentation.ts`](../../src/assets/chibi-direction-dwarf-presentation.ts)
 and described in [DWARF.md](factions/DWARF.md#code-drawn-pieces).
+
+## Candy production art: batches `direction-candy` and `naval-candy` (bead `pulp_wars-jdb.5`)
+
+An eighth faction's art, made before the faction is in the game and **not
+registered**: the entries are in
+[`chibi-direction-candy-art-manifest.ts`](../../src/assets/chibi-direction-candy-art-manifest.ts),
+which nothing imports until bead `pulp_wars-jdb.6` (the review scenes
+excepted). Fixed faction colours (cotton-candy pink glaze and frosting with
+a hard white shine, marshmallow white and cream, biscuit, caramel and
+chocolate, a little mint trim), no owner mask. See
+[CANDY.md](factions/CANDY.md).
+
+| Subjects                                                                     | Assets                                                       | Class and canvas                                           |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------------- |
+| `UNIT:CANDY:FIGHTER`, `MARKSMAN`, `GUARD`, `CAPTAIN`                         | Gumdrop, Gumball Gunner, Marshmallow, Confectioner           | `STANDARD_UNIT`, 56 x 80                                   |
+| `UNIT:CANDY:RAIDER`, `CATAPULT`, `KNIGHT`                                    | Donut Racer, Pie Launcher, Gummy Bear                        | `LARGE_UNIT`, 72 x 88                                      |
+| `UNIT:CANDY:JUGGERNAUT`                                                      | Rock Candy Golem                                             | `GIANT_UNIT`, 88 x 104                                     |
+| `PORTRAIT:CANDY:<ROLE>`                                                      | eight portraits                                              | `PORTRAIT`, 48 x 48                                        |
+| `CITY:CANDY:1` to `3`                                                        | the gingerbread village, cake town and cake castle           | `SETTLEMENT`, 80 x 80, 88 x 88, 96 x 88; no pennant anchor |
+| `CRUMBS`                                                                     | the Crumbs pile of a tile                                    | `RESOURCE`, 40 x 40 (the Grave's class and canvas)         |
+| `ICON:ACTION:SUGAR_RUSH`, `REBAKE`, `SUGAR_TOSS`, `SPLAT`, `BOUNCE`          | five command and ability icons                               | `ICON`, 48 x 48                                            |
+| `ICON:ACTION:CANDY:TEND_WOUNDED`                                             | Frosting                                                     | `ICON`, 48 x 48                                            |
+| `ICON:TECH:CANDY:FORTIFICATION`, `ICON:TECH:CANDY:EXPLOSIVES`                | Home Sweet Home and Peppermint Surprise                      | `ICON`, 48 x 48                                            |
+| `ICON:STATUS:RUSHED`, `CRASHED`, `SPLATTED`                                  | the three status chips, also the board markers               | `ICON`, 48 x 48                                            |
+| `ICON:HUD:CANDY:EMBLEM`                                                      | the faction emblem, a wrapped sweet                          | `ICON`, 48 x 48                                            |
+| `EFFECT:GUMBALL_SHOT`, `PIE`, `SUGAR_TOSS`, `BOUNCE`                         | four effect sprites                                          | `EFFECT`, 40 x 40, palette `candy-sugar`                   |
+| `EFFECT:SPLAT`, `REBAKE_PUFF`, `PEPPERMINT_POP`                              | three effect sprites                                         | `EFFECT`, 48 x 48, palette `candy-sugar`                   |
+| `UNIT:CANDY:PATROL_BOAT`, `BATTLESHIP`, `EMBARKED_TRANSPORT` (generic naval) | `chibi-naval-candy-patrol-boat`, `-battleship`, `-transport` | the shared ships' canvases (72 x 88, 88 x 96, 72 x 72)     |
+| `PORTRAIT:CANDY:PATROL_BOAT`, `BATTLESHIP` (generic naval)                   | `chibi-naval-candy-portrait-patrol-boat`, `-battleship`      | `PORTRAIT`, 48 x 48                                        |
+
+44 assets from 75 recipes (75 PixelLab calls). The role icon and the pips
+on Crumbs, the Crashed tint, the Rushed sparkle trail and the Home Sweet
+Home chip are code-drawn by the UI bead; the palette and the proposed
+marker sizes are in
+[`chibi-direction-candy-presentation.ts`](../../src/assets/chibi-direction-candy-presentation.ts).

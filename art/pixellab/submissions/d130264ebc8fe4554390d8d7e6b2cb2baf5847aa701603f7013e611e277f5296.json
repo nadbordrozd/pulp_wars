@@ -1,0 +1,36 @@
+{
+  "id": "candy-city-1-calm-a-edit",
+  "jobId": "0e025970-e2f8-4866-af02-1a0345659068",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-city-1",
+    "subject": "CITY:CANDY:1",
+    "faction": "CANDY",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 53102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass, the path and the brown slab under the house, so the gingerbread house and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the gingerbread walls, the white frosting roof, the chimney, the door, the lollipop tree, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass, the path and the brown slab under the house, so the gingerbread house and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the gingerbread walls, the white frosting roof, the chimney, the door, the lollipop tree, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass, the path and the brown slab under the house, so the gingerbread house and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the gingerbread walls, the white frosting roof, the chimney, the door, the lollipop tree, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass, the path and the brown slab under the house, so the gingerbread house and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the gingerbread walls, the white frosting roof, the chimney, the door, the lollipop tree, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "candy-city-1-calm-a",
+      "candidate": 0,
+      "sha256": "f6f5ace5b6a98d33f293c3046dcac7c1c53cd1b1e9efa2676de42c89fe37a55e"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "gummy-bear-a-jelly-paint",
+  "jobId": "86c2e232-3d0b-49a4-8686-2268dfe408a7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gummy-bear",
+    "subject": "UNIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 51208,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The figure has a big pale cream oval on its belly and a cream patch around its mouth. Paint over both: fill the whole belly and the patch around the mouth with the pink of its arms and legs, so no cream, white or beige area is left on the body except one thin white shine streak on the belly: a pink jelly sweet of one single colour. Keep the eyes, smile, pose, fists, shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "The figure has a big pale cream oval on its belly and a cream patch around its mouth. Paint over both: fill the whole belly and the patch around the mouth with the pink of its arms and legs, so no cream, white or beige area is left on the body except one thin white shine streak on the belly: a pink jelly sweet of one single colour. Keep the eyes, smile, pose, fists, shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "The figure has a big pale cream oval on its belly and a cream patch around its mouth. Paint over both: fill the whole belly and the patch around the mouth with the pink of its arms and legs, so no cream, white or beige area is left on the body except one thin white shine streak on the belly: a pink jelly sweet of one single colour. Keep the eyes, smile, pose, fists, shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "The figure has a big pale cream oval on its belly and a cream patch around its mouth. Paint over both: fill the whole belly and the patch around the mouth with the pink of its arms and legs, so no cream, white or beige area is left on the body except one thin white shine streak on the belly: a pink jelly sweet of one single colour. Keep the eyes, smile, pose, fists, shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "gummy-bear-a-jelly",
+      "candidate": 0,
+      "sha256": "192dbfbf3d2c00c8f1f075b635ea06d3800025f13d20e778757fc243d5fb0bab"
+    }
+  }
+}

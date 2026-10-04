@@ -58,6 +58,16 @@ export interface AccentSpec {
     readonly add: number;
     readonly max: number;
   };
+  /**
+   * Every accent pixel (bead pulp_wars-jdb.5): the value becomes
+   * `min(1, value * scale + add)`, a lift that keeps the order of the tones,
+   * for an accent that PixelLab shades too dark. Omitted, the value is kept,
+   * as in the earlier presets.
+   */
+  readonly value?: {
+    readonly scale: number;
+    readonly add: number;
+  };
 }
 
 /**
@@ -177,6 +187,33 @@ export const ACCENT_PRESETS = {
     hue: 49,
     hueSpread: 0.35,
   },
+  /**
+   * The Candy pink (bead pulp_wars-jdb.5, CANDY.md): cotton-candy pink, lit
+   * about `#ffb8d8`. PixelLab draws "cotton-candy pink, colour #ffb8d8" as a
+   * saturated raspberry (lit about `#da5673`) shaded with a dark wine red
+   * (`#871e4a`, `#761a2e`): the lit tone is 30 from the Martian magenta and
+   * the shade sits on the Human crimson cloth. The step finds every pink
+   * and wine tone by colour (hue 310 to 356, saturation at least 0.3, value
+   * at least 0.3), moves its hue to 329 to 338, pales it (saturation at
+   * most 0.5) and lifts its value (a wine shade of value 0.4 becomes a rose
+   * of 0.66), so the sprite keeps its lit tone and its shadow tone in the
+   * same order. Chocolate, caramel and biscuit (hue 0 to 45), cream and
+   * white (saturation below 0.3), mint and the near-black outline lie
+   * outside the band and are never touched.
+   */
+  "candy-pink": {
+    band: {
+      hueFrom: 310,
+      hueTo: 356,
+      saturationMin: 0.3,
+      valueMin: 0.3,
+      hueCentre: 340,
+    },
+    hue: 334,
+    hueSpread: 0.25,
+    saturation: { scale: 0.55, add: 0.08, max: 0.5 },
+    value: { scale: 0.6, add: 0.42 },
+  },
 } as const satisfies Readonly<Record<string, AccentSpec>>;
 
 export type AccentPresetName = keyof typeof ACCENT_PRESETS;
@@ -293,6 +330,8 @@ export function accentRaster(base: RgbaRaster, spec: AccentSpec): AccentResult {
           spec.saturation.max,
           saturation * spec.saturation.scale + spec.saturation.add,
         );
+      if (spec.value !== undefined)
+        value = Math.min(1, value * spec.value.scale + spec.value.add);
       if (spec.trim !== undefined) {
         let accentNear = 0;
         let darkNear = 0;

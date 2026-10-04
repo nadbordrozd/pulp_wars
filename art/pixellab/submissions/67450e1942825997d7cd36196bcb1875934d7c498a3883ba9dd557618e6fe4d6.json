@@ -1,0 +1,37 @@
+{
+  "id": "candy-battleship-a",
+  "jobId": "fe487537-7ad3-4629-8250-76970d7f6ec3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-battleship",
+    "subject": "UNIT:CANDY:BATTLESHIP",
+    "faction": "CANDY",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 57011,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the stone castle becomes a round cake tower with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants become pale pink. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the stone castle becomes a round cake tower with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants become pale pink. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the stone castle becomes a round cake tower with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants become pale pink. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the stone castle becomes a round cake tower with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants become pale pink. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "battleship-d-edit",
+      "candidate": 1,
+      "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+    }
+  }
+}

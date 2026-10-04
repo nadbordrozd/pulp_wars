@@ -1,0 +1,39 @@
+{
+  "bead": "pulp_wars-jdb.5",
+  "batches": [
+    "direction-candy",
+    "naval-candy"
+  ],
+  "command": "npm run art:chibi-candy-direction-review",
+  "note": "No sheet or capture draws a base plate. The scene-* captures register the Candy rasters under Human stand-in subjects, show a Grave glyph where Crumbs would lie, and draw the stand-in seat's border in the Candy pink (scripts/art/candy-direction/scene.ts): the faction is not in the engine yet. With --skip-capture the scene-* files of an earlier run are kept and not listed here.",
+  "files": [
+    "cities-x3.png",
+    "effects-x3.png",
+    "icons-x4.png",
+    "lineup-1x.png",
+    "lineup-x3.png",
+    "lineup.json",
+    "markers-x3.png",
+    "naval-x4.png",
+    "palette.json",
+    "palette.png",
+    "portraits-x4.png",
+    "readability.json",
+    "roster-1x.png",
+    "roster-x4.png",
+    "roster-zoom-0.75.png",
+    "scene-coast-desktop-zoom-0.75.png",
+    "scene-coast-desktop-zoom-1.png",
+    "scene-coast-phone-zoom-0.75.png",
+    "scene-coast-phone-zoom-1.png",
+    "scene-mixed-desktop-zoom-0.75.png",
+    "scene-mixed-desktop-zoom-1.png",
+    "scene-mixed-phone-zoom-0.75.png",
+    "scene-mixed-phone-zoom-1.png",
+    "scene-terrain-desktop-zoom-0.75.png",
+    "scene-terrain-desktop-zoom-1.png",
+    "scene-terrain-phone-zoom-0.75.png",
+    "scene-terrain-phone-zoom-1.png",
+    "terrain-x2.png"
+  ]
+}

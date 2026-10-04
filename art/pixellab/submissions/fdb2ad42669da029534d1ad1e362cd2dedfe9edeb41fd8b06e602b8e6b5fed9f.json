@@ -1,0 +1,64 @@
+{
+  "id": "gummy-bear-c",
+  "jobId": "sync-bd6534c4-9ee4-48c5-9282-46b625f19841",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gummy-bear",
+    "subject": "UNIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 51205,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+        "text": "Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim.",
+        "negative": "red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CANDY.json",
+        "text": "Subject: Gummy Bear, one giant living gummy sweet, a jelly sweet moulded in the simple shape of a bear, standing upright: a smooth rounded body of glossy translucent pink jelly, colour #f4a0c4, one single pink colour all over, a little lighter in its middle where light shines through and shaded with a deeper rose pink at its edges, with long hard white shine streaks on its head and belly; a big round head with two small round ears, a fat round body, two short stubby rounded arms held up like a boxer and two short stubby rounded legs, all smooth lumps of the same jelly with no paws and no fingers; the face is only two small black dot eyes and a tiny smile pressed into the jelly; it holds nothing and wears nothing; wide and heavy, bigger than a soldier; simple smooth shapes and very few details; clearly a jelly sweet, not a plush teddy bear and not an animal."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The sweet is drawn large and fills most of the width of the image. Its belly is the same pink as the rest of it.",
+        "negative": "fur, teddy bear, plush toy, real bear, claws, teeth, fangs, tongue, open mouth, snout, muzzle, nose, human, armour, clothes, hat, backpack, bag, white belly, cream belly, belly patch, tummy patch, two-colour body, weapon, club, lollipop, ice cream, red, green, yellow, orange"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Gummy Bear, one giant living gummy sweet, a jelly sweet moulded in the simple shape of a bear, standing upright: a smooth rounded body of glossy translucent pink jelly, colour #f4a0c4, one single pink colour all over, a little lighter in its middle where light shines through and shaded with a deeper rose pink at its edges, with long hard white shine streaks on its head and belly; a big round head with two small round ears, a fat round body, two short stubby rounded arms held up like a boxer and two short stubby rounded legs, all smooth lumps of the same jelly with no paws and no fingers; the face is only two small black dot eyes and a tiny smile pressed into the jelly; it holds nothing and wears nothing; wide and heavy, bigger than a soldier; simple smooth shapes and very few details; clearly a jelly sweet, not a plush teddy bear and not an animal. The sweet is drawn large and fills most of the width of the image. Its belly is the same pink as the rest of it.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, teddy bear, plush toy, real bear, claws, teeth, fangs, tongue, open mouth, snout, muzzle, nose, human, armour, clothes, hat, backpack, bag, white belly, cream belly, belly patch, tummy patch, two-colour body, weapon, club, lollipop, ice cream, green, yellow, orange",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Gummy Bear, one giant living gummy sweet, a jelly sweet moulded in the simple shape of a bear, standing upright: a smooth rounded body of glossy translucent pink jelly, colour #f4a0c4, one single pink colour all over, a little lighter in its middle where light shines through and shaded with a deeper rose pink at its edges, with long hard white shine streaks on its head and belly; a big round head with two small round ears, a fat round body, two short stubby rounded arms held up like a boxer and two short stubby rounded legs, all smooth lumps of the same jelly with no paws and no fingers; the face is only two small black dot eyes and a tiny smile pressed into the jelly; it holds nothing and wears nothing; wide and heavy, bigger than a soldier; simple smooth shapes and very few details; clearly a jelly sweet, not a plush teddy bear and not an animal. The sweet is drawn large and fills most of the width of the image. Its belly is the same pink as the rest of it. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, teddy bear, plush toy, real bear, claws, teeth, fangs, tongue, open mouth, snout, muzzle, nose, human, armour, clothes, hat, backpack, bag, white belly, cream belly, belly patch, tummy patch, two-colour body, weapon, club, lollipop, ice cream, green, yellow, orange."
+  }
+}

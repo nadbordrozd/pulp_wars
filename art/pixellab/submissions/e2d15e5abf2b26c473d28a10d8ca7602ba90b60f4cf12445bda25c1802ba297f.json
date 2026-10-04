@@ -1,0 +1,36 @@
+{
+  "id": "candy-city-3-calm-a-edit",
+  "jobId": "4b52aa88-4ec0-4d99-a04e-b48a6ab869ff",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-city-3",
+    "subject": "CITY:CANDY:3",
+    "faction": "CANDY",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 53302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass and the brown slab under the castle, so the wafer wall, the towers and the tiered cake stand directly on a transparent background with nothing at all under them; the bottom of the wall is the lowest thing. Keep the pink frosted tiered cake, the towers with cone roofs, the wafer wall, the gate, the lollipop, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass and the brown slab under the castle, so the wafer wall, the towers and the tiered cake stand directly on a transparent background with nothing at all under them; the bottom of the wall is the lowest thing. Keep the pink frosted tiered cake, the towers with cone roofs, the wafer wall, the gate, the lollipop, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass and the brown slab under the castle, so the wafer wall, the towers and the tiered cake stand directly on a transparent background with nothing at all under them; the bottom of the wall is the lowest thing. Keep the pink frosted tiered cake, the towers with cone roofs, the wafer wall, the gate, the lollipop, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass and the brown slab under the castle, so the wafer wall, the towers and the tiered cake stand directly on a transparent background with nothing at all under them; the bottom of the wall is the lowest thing. Keep the pink frosted tiered cake, the towers with cone roofs, the wafer wall, the gate, the lollipop, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "candy-city-3-calm-a",
+      "candidate": 0,
+      "sha256": "c61b96d87cb51ea568fa3c9834328262d54d64d1b3d086b3acecafc5dd76f058"
+    }
+  }
+}

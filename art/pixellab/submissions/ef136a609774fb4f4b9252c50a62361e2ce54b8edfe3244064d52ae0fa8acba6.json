@@ -1,0 +1,36 @@
+{
+  "id": "icon-sugar-toss-a-edit",
+  "jobId": "346d4994-78b4-4700-88f4-ceeaf21139d9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-sugar-toss",
+    "subject": "ICON:ACTION:SUGAR_TOSS",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 54402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase the whole background: remove the grey checkered floor and every small object behind and around the sweet, so that only the pink wrapped sweet with its two white wrapper ends and the curved white arrow under it are left on a fully transparent background. Keep the sweet, the arrow, their shapes, colours, thick black outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Erase the whole background: remove the grey checkered floor and every small object behind and around the sweet, so that only the pink wrapped sweet with its two white wrapper ends and the curved white arrow under it are left on a fully transparent background. Keep the sweet, the arrow, their shapes, colours, thick black outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase the whole background: remove the grey checkered floor and every small object behind and around the sweet, so that only the pink wrapped sweet with its two white wrapper ends and the curved white arrow under it are left on a fully transparent background. Keep the sweet, the arrow, their shapes, colours, thick black outline and art style exactly the same.",
+    "editInstruction": "Erase the whole background: remove the grey checkered floor and every small object behind and around the sweet, so that only the pink wrapped sweet with its two white wrapper ends and the curved white arrow under it are left on a fully transparent background. Keep the sweet, the arrow, their shapes, colours, thick black outline and art style exactly the same.",
+    "source": {
+      "recipe": "icon-sugar-toss-a",
+      "candidate": 0,
+      "sha256": "1d9a649ddd40c1b11af4a691ac439d536a550ca78db812206ee1beb7d438e311"
+    }
+  }
+}

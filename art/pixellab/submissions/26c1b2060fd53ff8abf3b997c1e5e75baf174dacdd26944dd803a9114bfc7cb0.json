@@ -1,0 +1,36 @@
+{
+  "id": "gummy-bear-e-bare",
+  "jobId": "29c384b7-420d-4bf9-9964-18136b33848e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gummy-bear",
+    "subject": "UNIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 51209,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase everything the jelly figure carries: the big brown and blue club on its back, the brown strap across its chest and the small bottle on its hip, so it is a bare pink jelly figure that holds nothing and wears nothing; where they were, draw the same glossy pink jelly as the rest of the body. Do not redraw anything else. Keep the head, ears, face, raised fist, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Erase everything the jelly figure carries: the big brown and blue club on its back, the brown strap across its chest and the small bottle on its hip, so it is a bare pink jelly figure that holds nothing and wears nothing; where they were, draw the same glossy pink jelly as the rest of the body. Do not redraw anything else. Keep the head, ears, face, raised fist, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Erase everything the jelly figure carries: the big brown and blue club on its back, the brown strap across its chest and the small bottle on its hip, so it is a bare pink jelly figure that holds nothing and wears nothing; where they were, draw the same glossy pink jelly as the rest of the body. Do not redraw anything else. Keep the head, ears, face, raised fist, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Erase everything the jelly figure carries: the big brown and blue club on its back, the brown strap across its chest and the small bottle on its hip, so it is a bare pink jelly figure that holds nothing and wears nothing; where they were, draw the same glossy pink jelly as the rest of the body. Do not redraw anything else. Keep the head, ears, face, raised fist, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "gummy-bear-e",
+      "candidate": 0,
+      "sha256": "5cea5b414c0eac47c98ffcee8714acfab61ee222b672cdd7a0fc16a72c30943b"
+    }
+  }
+}

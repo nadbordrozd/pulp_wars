@@ -1,0 +1,36 @@
+{
+  "id": "portrait-gummy-bear-a-edit",
+  "jobId": "4e180289-5943-4222-9896-de012432e683",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-gummy-bear",
+    "subject": "PORTRAIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 52202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the flat pale mint and cream plate with sprinkles under the pink jelly figure, so the jelly bust ends cleanly at its bottom with nothing under it; do not redraw anything else. Keep the pink jelly head, ears, face, raised fist, shapes, colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the flat pale mint and cream plate with sprinkles under the pink jelly figure, so the jelly bust ends cleanly at its bottom with nothing under it; do not redraw anything else. Keep the pink jelly head, ears, face, raised fist, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the flat pale mint and cream plate with sprinkles under the pink jelly figure, so the jelly bust ends cleanly at its bottom with nothing under it; do not redraw anything else. Keep the pink jelly head, ears, face, raised fist, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the flat pale mint and cream plate with sprinkles under the pink jelly figure, so the jelly bust ends cleanly at its bottom with nothing under it; do not redraw anything else. Keep the pink jelly head, ears, face, raised fist, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-gummy-bear-a",
+      "candidate": 0,
+      "sha256": "5074c51419897aca01a6272632dc67d2fbb932314bea7f5db019ea92aa113cfa"
+    }
+  }
+}

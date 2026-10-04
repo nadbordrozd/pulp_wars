@@ -1,0 +1,58 @@
+{
+  "id": "crumbs-b",
+  "jobId": "sync-27a77bad-f6c2-4914-b7ab-515706c0c690",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-crumbs",
+    "subject": "CRUMBS",
+    "faction": "CANDY",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 55002,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-resource.txt + scripts/art/chibi/fragments/class-resource.negative.txt",
+        "text": "Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it.",
+        "negative": "pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CANDY.json",
+        "text": "Subject: a small heap of cookie crumbs: three broken pieces of a pale golden biscuit with bitten edges lying in a low heap, with many small loose crumbs scattered round them, one small blob of cotton-candy pink frosting and a few tiny white sugar grains; low and wide, much smaller than a unit; nothing else in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "grass, ground tile, slab, platform, plate, dish, bowl, person, character, face, eyes, whole cookie, whole cake, brownie, square block, tile, rocks, stones, rubble, bones"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small heap of cookie crumbs: three broken pieces of a pale golden biscuit with bitten edges lying in a low heap, with many small loose crumbs scattered round them, one small blob of cotton-candy pink frosting and a few tiny white sugar grains; low and wide, much smaller than a unit; nothing else in the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, grass, ground tile, slab, plate, dish, bowl, person, face, eyes, whole cookie, whole cake, brownie, square block, tile, rocks, stones, rubble, bones",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small calm resource marker recognisable by its shape alone, smaller and less saturated than a unit, thick single-colour black outline, simple shapes. It sits directly on the empty transparent background with nothing drawn under it. Subject: a small heap of cookie crumbs: three broken pieces of a pale golden biscuit with bitten edges lying in a low heap, with many small loose crumbs scattered round them, one small blob of cotton-candy pink frosting and a few tiny white sugar grains; low and wide, much smaller than a unit; nothing else in the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, disc, ground plate, platform, soil patch, grass square, scenery, background, pile of many items, unit, character, building, grass, ground tile, slab, plate, dish, bowl, person, face, eyes, whole cookie, whole cake, brownie, square block, tile, rocks, stones, rubble, bones."
+  }
+}

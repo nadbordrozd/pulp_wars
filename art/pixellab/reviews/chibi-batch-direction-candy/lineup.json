@@ -1,0 +1,83 @@
+{
+  "note": "The 32 px lineup of spec 15.4. Measures of scripts/art/dwarf-direction/measure.ts; a pair is distinct when its palette distance and its worse colour-vision simulation both reach their thresholds, and in greyscale its lightness distance reaches its threshold or its silhouettes overlap little enough. The thresholds are the quartiles of the same-role pairs of the six first factions.",
+  "calibrationPairs": 120,
+  "thresholds": {
+    "palette": 18.5,
+    "simulated": 12.5,
+    "lightness": 5.5,
+    "silhouette": 0.65
+  },
+  "pairs": [
+    {
+      "candy": "Gumdrop",
+      "rival": "goblin-goblin",
+      "palette": 34.1,
+      "deuteranopia": 15.3,
+      "protanopia": 17,
+      "lightness": 17.1,
+      "silhouetteOverlap": 0.55,
+      "distinct": true
+    },
+    {
+      "candy": "Gumdrop",
+      "rival": "ice-folk-yeti",
+      "palette": 27.8,
+      "deuteranopia": 14.4,
+      "protanopia": 13.1,
+      "lightness": 18.5,
+      "silhouetteOverlap": 0.73,
+      "distinct": true
+    },
+    {
+      "candy": "Marshmallow",
+      "rival": "ice-folk-mammoth",
+      "palette": 20.1,
+      "deuteranopia": 9.9,
+      "protanopia": 8.3,
+      "lightness": 15.3,
+      "silhouetteOverlap": 0.75,
+      "distinct": false
+    },
+    {
+      "candy": "Marshmallow",
+      "rival": "ice-folk-ice-witch",
+      "palette": 25.2,
+      "deuteranopia": 19,
+      "protanopia": 15.8,
+      "lightness": 10.8,
+      "silhouetteOverlap": 0.62,
+      "distinct": true
+    },
+    {
+      "candy": "Gummy Bear",
+      "rival": "ice-folk-sabretooth",
+      "palette": 46.9,
+      "deuteranopia": 24.9,
+      "protanopia": 30.7,
+      "lightness": 17.5,
+      "silhouetteOverlap": 0.53,
+      "distinct": true
+    },
+    {
+      "candy": "Confectioner",
+      "rival": "dwarf-engineer",
+      "palette": 17.8,
+      "deuteranopia": 6.4,
+      "protanopia": 7.3,
+      "lightness": 18.1,
+      "silhouetteOverlap": 0.6,
+      "distinct": false
+    },
+    {
+      "candy": "Confectioner",
+      "rival": "martian-brain",
+      "palette": 23.1,
+      "deuteranopia": 16,
+      "protanopia": 12.8,
+      "lightness": 5.7,
+      "silhouetteOverlap": 0.71,
+      "distinct": true
+    }
+  ],
+  "failures": 2
+}

@@ -1,0 +1,36 @@
+{
+  "id": "confectioner-a-apron",
+  "jobId": "27bb5b04-cd14-4e4e-8d71-3e9814632489",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-confectioner",
+    "subject": "UNIT:CANDY:CAPTAIN",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 51602,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the apron and what is under it: the apron becomes a big apron of glossy pink frosting, colour #f79cc4, with a white frill at its hem, covering the whole body from the neck down to the feet, so no dark trousers show; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting on the head, the white baker's hat, the whisk, the arms, the brown feet, shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the apron and what is under it: the apron becomes a big apron of glossy pink frosting, colour #f79cc4, with a white frill at its hem, covering the whole body from the neck down to the feet, so no dark trousers show; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting on the head, the white baker's hat, the whisk, the arms, the brown feet, shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the apron and what is under it: the apron becomes a big apron of glossy pink frosting, colour #f79cc4, with a white frill at its hem, covering the whole body from the neck down to the feet, so no dark trousers show; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting on the head, the white baker's hat, the whisk, the arms, the brown feet, shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the apron and what is under it: the apron becomes a big apron of glossy pink frosting, colour #f79cc4, with a white frill at its hem, covering the whole body from the neck down to the feet, so no dark trousers show; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting on the head, the white baker's hat, the whisk, the arms, the brown feet, shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "confectioner-a",
+      "candidate": 0,
+      "sha256": "a3016eb3f64c2c4d4cbeaa8b3f030bc7d06d31fa0e468f725e223f8a0a20b7f8"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "gumdrop-b-big",
+  "jobId": "e61ec0d1-e163-405b-a5cd-a4a30ff3d99f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gumdrop",
+    "subject": "UNIT:CANDY:FIGHTER",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 51003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Redraw the same gumdrop character bigger and taller: the pink dome becomes a tall gumdrop, taller than it is wide, about 46 pixels wide and 62 pixels tall, so the top of the dome almost reaches the top of the image and the feet stay near the bottom; the face stays in the middle of the dome. Keep the same face, the candy-cane spear, the round waffle shield, the pale mint frill, the dark brown feet, the colours, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Redraw the same gumdrop character bigger and taller: the pink dome becomes a tall gumdrop, taller than it is wide, about 46 pixels wide and 62 pixels tall, so the top of the dome almost reaches the top of the image and the feet stay near the bottom; the face stays in the middle of the dome. Keep the same face, the candy-cane spear, the round waffle shield, the pale mint frill, the dark brown feet, the colours, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Redraw the same gumdrop character bigger and taller: the pink dome becomes a tall gumdrop, taller than it is wide, about 46 pixels wide and 62 pixels tall, so the top of the dome almost reaches the top of the image and the feet stay near the bottom; the face stays in the middle of the dome. Keep the same face, the candy-cane spear, the round waffle shield, the pale mint frill, the dark brown feet, the colours, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Redraw the same gumdrop character bigger and taller: the pink dome becomes a tall gumdrop, taller than it is wide, about 46 pixels wide and 62 pixels tall, so the top of the dome almost reaches the top of the image and the feet stay near the bottom; the face stays in the middle of the dome. Keep the same face, the candy-cane spear, the round waffle shield, the pale mint frill, the dark brown feet, the colours, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "gumdrop-b",
+      "candidate": 0,
+      "sha256": "3aa174d0d5bc48f394cdc5e1211e7ef5a37d93c1345e47e831d4ff4b1bbc494e"
+    }
+  }
+}

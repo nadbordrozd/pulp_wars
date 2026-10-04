@@ -1,0 +1,37 @@
+{
+  "id": "candy-portrait-battleship-a",
+  "jobId": "d8d588c0-bf3b-4780-bee6-67d9abae4337",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-portrait-battleship",
+    "subject": "PORTRAIT:CANDY:BATTLESHIP",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 57041,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the grey castles become round cake towers with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants pale pink. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the grey castles become round cake towers with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants pale pink. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the grey castles become round cake towers with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants pale pink. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the grey castles become round cake towers with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants pale pink. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-battleship-b",
+      "candidate": 0,
+      "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+    }
+  }
+}

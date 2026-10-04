@@ -1,0 +1,36 @@
+{
+  "id": "portrait-confectioner-a-whisk",
+  "jobId": "6e121f05-dfdd-4209-aabf-ae5babf5cb55",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-confectioner",
+    "subject": "PORTRAIT:CANDY:CAPTAIN",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 52602,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: turn the pink balloon on a stick beside the head into a kitchen whisk, a pink handle with a rounded cage of thin pale grey wire loops at its top; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting, the white baker's hat, the apron, shapes, colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: turn the pink balloon on a stick beside the head into a kitchen whisk, a pink handle with a rounded cage of thin pale grey wire loops at its top; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting, the white baker's hat, the apron, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: turn the pink balloon on a stick beside the head into a kitchen whisk, a pink handle with a rounded cage of thin pale grey wire loops at its top; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting, the white baker's hat, the apron, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: turn the pink balloon on a stick beside the head into a kitchen whisk, a pink handle with a rounded cage of thin pale grey wire loops at its top; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting, the white baker's hat, the apron, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-confectioner-a",
+      "candidate": 0,
+      "sha256": "bcfca921cd5496255ec6c2503d68e181204996ca1b74537e0291d00a4cad7abe"
+    }
+  }
+}

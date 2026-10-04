@@ -3364,3 +3364,5 @@ faction)` gives `IMPROVEMENT:<FACTION>:<ID>`; the plan asks with the
 Evidence: `npm run art:faction-buildings-review` (the scenes of each
 faction's territory beside a Human one, a captured city, the Gallery's
 Buildings tab).
+
+The Candy faction's direction and production art, its naval set included (bead `pulp_wars-jdb.5`, not live yet), is described in [factions/CANDY.md](factions/CANDY.md).

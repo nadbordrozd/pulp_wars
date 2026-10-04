@@ -1,0 +1,36 @@
+{
+  "id": "gummy-bear-e-bare-b",
+  "jobId": "f7d692c8-08f4-4dd4-9c70-54489114052f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gummy-bear",
+    "subject": "UNIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 51210,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the pale cream ring that lies round the figure's neck like a collar, so the head joins the body as smooth pink jelly with nothing round the neck; do not redraw anything else. Keep the head, ears, face, raised fist, belly, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the pale cream ring that lies round the figure's neck like a collar, so the head joins the body as smooth pink jelly with nothing round the neck; do not redraw anything else. Keep the head, ears, face, raised fist, belly, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the pale cream ring that lies round the figure's neck like a collar, so the head joins the body as smooth pink jelly with nothing round the neck; do not redraw anything else. Keep the head, ears, face, raised fist, belly, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the pale cream ring that lies round the figure's neck like a collar, so the head joins the body as smooth pink jelly with nothing round the neck; do not redraw anything else. Keep the head, ears, face, raised fist, belly, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "gummy-bear-e-bare",
+      "candidate": 0,
+      "sha256": "6fb45caf6d6f7b5243748bc692c8d40ba764475203ca8264e89750bb5fc233f8"
+    }
+  }
+}

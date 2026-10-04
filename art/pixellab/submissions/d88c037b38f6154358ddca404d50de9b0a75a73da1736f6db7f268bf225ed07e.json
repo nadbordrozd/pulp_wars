@@ -1,0 +1,36 @@
+{
+  "id": "effect-gumball-shot-a-pink",
+  "jobId": "d55841c1-2c2e-4c43-84c0-58a32f97bf32",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-effect-candy-gumball-shot",
+    "subject": "EFFECT:GUMBALL_SHOT",
+    "faction": "CANDY",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 56302,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colour of the ball: it becomes a glossy pale pink gumball, colour #f79cc4, shaded with rose #d9779f, with one white shine dot; do not redraw anything else. Keep the round shape, the white speed lines, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colour of the ball: it becomes a glossy pale pink gumball, colour #f79cc4, shaded with rose #d9779f, with one white shine dot; do not redraw anything else. Keep the round shape, the white speed lines, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colour of the ball: it becomes a glossy pale pink gumball, colour #f79cc4, shaded with rose #d9779f, with one white shine dot; do not redraw anything else. Keep the round shape, the white speed lines, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colour of the ball: it becomes a glossy pale pink gumball, colour #f79cc4, shaded with rose #d9779f, with one white shine dot; do not redraw anything else. Keep the round shape, the white speed lines, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-gumball-shot-a",
+      "candidate": 0,
+      "sha256": "db2f707661633ba0977cb945ef3550bb76c9b8ef52f8d7fd13cf544836d87aaf"
+    }
+  }
+}

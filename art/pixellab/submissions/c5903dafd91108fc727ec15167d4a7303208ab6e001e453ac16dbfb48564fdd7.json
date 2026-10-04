@@ -1,0 +1,36 @@
+{
+  "id": "pie-launcher-a-pie",
+  "jobId": "8e50530b-9aff-4aae-abea-cd8c6e85b31e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-pie-launcher",
+    "subject": "UNIT:CANDY:CATAPULT",
+    "faction": "CANDY",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 51702,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things: erase the white face with a dark eye that looks out of the pink frosting behind the barrel, so it is plain pink frosting with no face; and turn the cupcake on the arm into a flat round cream pie, a wide shallow pale biscuit crust heaped with white whipped cream. Do not redraw anything else. Keep the gingerbread frame, peppermint wheels, pink arm, shapes, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things: erase the white face with a dark eye that looks out of the pink frosting behind the barrel, so it is plain pink frosting with no face; and turn the cupcake on the arm into a flat round cream pie, a wide shallow pale biscuit crust heaped with white whipped cream. Do not redraw anything else. Keep the gingerbread frame, peppermint wheels, pink arm, shapes, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things: erase the white face with a dark eye that looks out of the pink frosting behind the barrel, so it is plain pink frosting with no face; and turn the cupcake on the arm into a flat round cream pie, a wide shallow pale biscuit crust heaped with white whipped cream. Do not redraw anything else. Keep the gingerbread frame, peppermint wheels, pink arm, shapes, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Change only two things: erase the white face with a dark eye that looks out of the pink frosting behind the barrel, so it is plain pink frosting with no face; and turn the cupcake on the arm into a flat round cream pie, a wide shallow pale biscuit crust heaped with white whipped cream. Do not redraw anything else. Keep the gingerbread frame, peppermint wheels, pink arm, shapes, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "pie-launcher-a",
+      "candidate": 0,
+      "sha256": "1b5d6e09dd65867a40f96ccafb293b553a10ed1924ef18a16dd06c574f7d7d00"
+    }
+  }
+}

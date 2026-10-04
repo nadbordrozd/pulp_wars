@@ -1,0 +1,37 @@
+{
+  "id": "candy-transport-a",
+  "jobId": "237a89ed-e07c-48e4-a910-b8dd2f880202",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-transport",
+    "subject": "UNIT:CANDY:EMBARKED_TRANSPORT",
+    "faction": "CANDY",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 57021,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a donut raft: the hull becomes one big fat ring donut of golden biscuit-brown dough #d9a05b floating flat, with thick glossy pale pink frosting #ffb8d8 and tiny white sprinkles on its top; the red tarp becomes a heap of white whipped cream in its middle; the pennant pole becomes a small pink and white candy cane. Nothing red. Keep the oars, size, thick black outline and style the same, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a donut raft: the hull becomes one big fat ring donut of golden biscuit-brown dough #d9a05b floating flat, with thick glossy pale pink frosting #ffb8d8 and tiny white sprinkles on its top; the red tarp becomes a heap of white whipped cream in its middle; the pennant pole becomes a small pink and white candy cane. Nothing red. Keep the oars, size, thick black outline and style the same, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a donut raft: the hull becomes one big fat ring donut of golden biscuit-brown dough #d9a05b floating flat, with thick glossy pale pink frosting #ffb8d8 and tiny white sprinkles on its top; the red tarp becomes a heap of white whipped cream in its middle; the pennant pole becomes a small pink and white candy cane. Nothing red. Keep the oars, size, thick black outline and style the same, with nothing under the hull.",
+    "editInstruction": "Turn it into a donut raft: the hull becomes one big fat ring donut of golden biscuit-brown dough #d9a05b floating flat, with thick glossy pale pink frosting #ffb8d8 and tiny white sprinkles on its top; the red tarp becomes a heap of white whipped cream in its middle; the pennant pole becomes a small pink and white candy cane. Nothing red. Keep the oars, size, thick black outline and style the same, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "embarked-transport-a-edit",
+      "candidate": 0,
+      "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "candy-city-2-calm-a-edit",
+  "jobId": "fd9ab9a1-c953-462d-a339-945e19ff30bf",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-city-2",
+    "subject": "CITY:CANDY:2",
+    "faction": "CANDY",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 53202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the green grass, the path and the brown slab under the town, and the small flag on top of the cake, so the cake keep, the two gingerbread houses and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the pink frosted cake, the gingerbread houses with white frosting roofs, the lollipop, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the green grass, the path and the brown slab under the town, and the small flag on top of the cake, so the cake keep, the two gingerbread houses and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the pink frosted cake, the gingerbread houses with white frosting roofs, the lollipop, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the green grass, the path and the brown slab under the town, and the small flag on top of the cake, so the cake keep, the two gingerbread houses and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the pink frosted cake, the gingerbread houses with white frosting roofs, the lollipop, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the green grass, the path and the brown slab under the town, and the small flag on top of the cake, so the cake keep, the two gingerbread houses and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the pink frosted cake, the gingerbread houses with white frosting roofs, the lollipop, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "candy-city-2-calm-a",
+      "candidate": 0,
+      "sha256": "fe053805cfc1d0656a8937f9243ec5ccb489eff21fc904a2ce0c475266165aca"
+    }
+  }
+}

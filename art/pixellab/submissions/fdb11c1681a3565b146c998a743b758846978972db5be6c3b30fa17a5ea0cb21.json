@@ -1,0 +1,36 @@
+{
+  "id": "effect-sugar-toss-a-edit",
+  "jobId": "cbd6db54-9f5e-4984-9a04-4e63c433e7d1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-effect-candy-sugar-toss",
+    "subject": "EFFECT:SUGAR_TOSS",
+    "faction": "CANDY",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 56402,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase the brown heap at the bottom of the image completely, so that only the pink wrapped sweet with its two wrapper ends and the small white sparkles are left on a fully transparent background. Keep the sweet, its shape, colours, thick black outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Erase the brown heap at the bottom of the image completely, so that only the pink wrapped sweet with its two wrapper ends and the small white sparkles are left on a fully transparent background. Keep the sweet, its shape, colours, thick black outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Erase the brown heap at the bottom of the image completely, so that only the pink wrapped sweet with its two wrapper ends and the small white sparkles are left on a fully transparent background. Keep the sweet, its shape, colours, thick black outline and art style exactly the same.",
+    "editInstruction": "Erase the brown heap at the bottom of the image completely, so that only the pink wrapped sweet with its two wrapper ends and the small white sparkles are left on a fully transparent background. Keep the sweet, its shape, colours, thick black outline and art style exactly the same.",
+    "source": {
+      "recipe": "effect-sugar-toss-a",
+      "candidate": 0,
+      "sha256": "b9f757c06e5488275dec0c48df137f10e7a396013879a6d27df8ca75945acca4"
+    }
+  }
+}

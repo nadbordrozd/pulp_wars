@@ -1,0 +1,36 @@
+{
+  "id": "candy-patrol-boat-a-dry",
+  "jobId": "aa5779c3-5b57-423a-88fe-2c4ffbe93b05",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-patrol-boat",
+    "subject": "UNIT:CANDY:PATROL_BOAT",
+    "faction": "CANDY",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 57002,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the blue water and the blue wave lines under the hull, so the bottom of the chocolate hull is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the chocolate hull, the pink frosting, the wafer sail, the candy-cane mast, the pennant, shapes, colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the blue water and the blue wave lines under the hull, so the bottom of the chocolate hull is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the chocolate hull, the pink frosting, the wafer sail, the candy-cane mast, the pennant, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the blue water and the blue wave lines under the hull, so the bottom of the chocolate hull is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the chocolate hull, the pink frosting, the wafer sail, the candy-cane mast, the pennant, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the blue water and the blue wave lines under the hull, so the bottom of the chocolate hull is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the chocolate hull, the pink frosting, the wafer sail, the candy-cane mast, the pennant, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "candy-patrol-boat-a",
+      "candidate": 0,
+      "sha256": "d494c30906d049de6a39a08a52680118b33893998cba92646bc1e52263227c2a"
+    }
+  }
+}

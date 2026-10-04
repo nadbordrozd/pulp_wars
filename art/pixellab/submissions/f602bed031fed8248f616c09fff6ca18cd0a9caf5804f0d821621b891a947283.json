@@ -1,0 +1,36 @@
+{
+  "id": "effect-pie-a-white",
+  "jobId": "be210736-05e2-4c5f-b6fb-21c37ab3967c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-effect-candy-pie",
+    "subject": "EFFECT:PIE",
+    "faction": "CANDY",
+    "recipeClass": "effect",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 56102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the pale blue-green cream on top of the pie becomes pure white whipped cream, colour #ffffff, shaded with pale cream #fbf0dc; do not redraw anything else. Keep the pie crust, the small pink sweet on top, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the pale blue-green cream on top of the pie becomes pure white whipped cream, colour #ffffff, shaded with pale cream #fbf0dc; do not redraw anything else. Keep the pie crust, the small pink sweet on top, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the pale blue-green cream on top of the pie becomes pure white whipped cream, colour #ffffff, shaded with pale cream #fbf0dc; do not redraw anything else. Keep the pie crust, the small pink sweet on top, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the pale blue-green cream on top of the pie becomes pure white whipped cream, colour #ffffff, shaded with pale cream #fbf0dc; do not redraw anything else. Keep the pie crust, the small pink sweet on top, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "effect-pie-a",
+      "candidate": 0,
+      "sha256": "59683b9026e54559b7b3da1a2d9506b8696bed3aa3f2fff1873876ef4d252458"
+    }
+  }
+}

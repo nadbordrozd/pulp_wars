@@ -1,0 +1,754 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-candy",
+  "recipes": {
+    "candy-battleship-a": {
+      "id": "candy-battleship-a",
+      "asset": "chibi-naval-candy-battleship",
+      "jobId": "fe487537-7ad3-4629-8250-76970d7f6ec3",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-battleship",
+        "subject": "UNIT:CANDY:BATTLESHIP",
+        "faction": "CANDY",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 57011,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the stone castle becomes a round cake tower with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants become pale pink. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the stone castle becomes a round cake tower with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants become pale pink. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the stone castle becomes a round cake tower with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants become pale pink. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+        "editInstruction": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the stone castle becomes a round cake tower with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants become pale pink. Nothing red. Keep the ship shape, size, thick black outline and style the same, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "battleship-d-edit",
+          "candidate": 1,
+          "sha256": "5e25304bde0efd61f1b26773999c39ba85df48ad2e128994a7b1bc7bbc13f5f3"
+        }
+      },
+      "submittedAt": "2026-10-04T09:17:32.335Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-battleship-a.png",
+      "rawSheetSha256": "67aa200334e59bc20b8d5e53599e2efbc4452143421ce5fc2dece4473fedf8f5",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0698,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0698,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T09:18:15.941Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The carrack as a layered-cake galleon: cream sponge hull with pink frosting drips, a wafer tower with whipped cream, cream sails and pink pennants.",
+        "reviewedAt": "2026-10-04T09:28:44.693Z"
+      }
+    },
+    "candy-patrol-boat-a": {
+      "id": "candy-patrol-boat-a",
+      "asset": "chibi-naval-candy-patrol-boat",
+      "jobId": "c5d12de8-35f0-444c-baef-2b5e780f1922",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-patrol-boat",
+        "subject": "UNIT:CANDY:PATROL_BOAT",
+        "faction": "CANDY",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 57001,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+        "editInstruction": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, waterline, thick black outline and style the same, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "patrol-boat-a-edit",
+          "candidate": 0,
+          "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+        }
+      },
+      "submittedAt": "2026-10-04T09:16:24.118Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-patrol-boat-a.png",
+      "rawSheetSha256": "a1baf9fef084475c15808ff4159fd38fe59bc59a7a54b92aac33ae6f474da71d",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.2516,
+          "footprintWidthShare": 0.7895,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.2516,
+          "footprintWidthShare": 0.7895,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T09:17:32.239Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right boat, but the edit drew blue water under the hull; superseded by candy-patrol-boat-a-dry.",
+        "reviewedAt": "2026-10-04T09:28:43.554Z"
+      }
+    },
+    "candy-patrol-boat-a-dry": {
+      "id": "candy-patrol-boat-a-dry",
+      "asset": "chibi-naval-candy-patrol-boat",
+      "jobId": "aa5779c3-5b57-423a-88fe-2c4ffbe93b05",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-patrol-boat",
+        "subject": "UNIT:CANDY:PATROL_BOAT",
+        "faction": "CANDY",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 57002,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the blue water and the blue wave lines under the hull, so the bottom of the chocolate hull is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the chocolate hull, the pink frosting, the wafer sail, the candy-cane mast, the pennant, shapes, colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the blue water and the blue wave lines under the hull, so the bottom of the chocolate hull is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the chocolate hull, the pink frosting, the wafer sail, the candy-cane mast, the pennant, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the blue water and the blue wave lines under the hull, so the bottom of the chocolate hull is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the chocolate hull, the pink frosting, the wafer sail, the candy-cane mast, the pennant, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the blue water and the blue wave lines under the hull, so the bottom of the chocolate hull is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the chocolate hull, the pink frosting, the wafer sail, the candy-cane mast, the pennant, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "candy-patrol-boat-a",
+          "candidate": 0,
+          "sha256": "d494c30906d049de6a39a08a52680118b33893998cba92646bc1e52263227c2a"
+        }
+      },
+      "submittedAt": "2026-10-04T09:25:54.335Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-patrol-boat-a-dry.png",
+      "rawSheetSha256": "3c8dc8ccc5876813c7d916aa78187847476ccdcea116f2f48bdd13e64c32409a",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.2737,
+          "footprintWidthShare": 0.8246,
+          "suspect": true
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.2737,
+          "footprintWidthShare": 0.8246,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T09:26:23.751Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The cog as a chocolate-bar boat: a hull of chocolate blocks with a pink frosting rim, a waffle wafer sail, a pink candy-cane mast and pennant; no water under the hull.",
+        "reviewedAt": "2026-10-04T09:28:44.177Z"
+      }
+    },
+    "candy-portrait-battleship-a": {
+      "id": "candy-portrait-battleship-a",
+      "asset": "chibi-naval-candy-portrait-battleship",
+      "jobId": "d8d588c0-bf3b-4780-bee6-67d9abae4337",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-portrait-battleship",
+        "subject": "PORTRAIT:CANDY:BATTLESHIP",
+        "faction": "CANDY",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 57041,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the grey castles become round cake towers with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants pale pink. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the grey castles become round cake towers with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants pale pink. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the grey castles become round cake towers with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants pale pink. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a layered-cake galleon: the hull becomes layers of pale cream sponge cake #f3dfb8 with pale pink frosting #ffb8d8 dripping from its top edge; the grey castles become round cake towers with white whipped cream on top; the red sails become white cream sails; the masts become pink and white striped candy canes; the pennants pale pink. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-battleship-b",
+          "candidate": 0,
+          "sha256": "7ad384ea7048e910e14443de77e5b649cf8e3df1ee23c3bf92d576d2dbbb8d58"
+        }
+      },
+      "submittedAt": "2026-10-04T09:19:47.028Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-portrait-battleship-a.png",
+      "rawSheetSha256": "09f3088e5925c28e4e54f47495272a9bef2ea66368dd446c0977abfed647f61a",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0769,
+          "footprintWidthShare": 0.7941,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.0769,
+          "footprintWidthShare": 0.7941,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T09:20:19.073Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The cake galleon, whole.",
+        "reviewedAt": "2026-10-04T09:28:46.444Z"
+      }
+    },
+    "candy-portrait-patrol-boat-a": {
+      "id": "candy-portrait-patrol-boat-a",
+      "asset": "chibi-naval-candy-portrait-patrol-boat",
+      "jobId": "19e91968-4c53-4e0d-b6ea-e97a02b5a4b9",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-portrait-patrol-boat",
+        "subject": "PORTRAIT:CANDY:PATROL_BOAT",
+        "faction": "CANDY",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 57031,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "batch": "5",
+          "recipe": "portrait-patrol-boat-a",
+          "candidate": 0,
+          "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+        }
+      },
+      "submittedAt": "2026-10-04T09:19:04.814Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-portrait-patrol-boat-a.png",
+      "rawSheetSha256": "c1bf53d0ff51ae6e22ae77f02ced6f2651c209a2dcb9b1322eb2ffc8e8270dee",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.3302,
+          "footprintWidthShare": 0.9667,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.3302,
+          "footprintWidthShare": 0.9667,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T09:19:47.020Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The chocolate-bar boat, whole.",
+        "reviewedAt": "2026-10-04T09:28:45.905Z"
+      }
+    },
+    "candy-transport-a": {
+      "id": "candy-transport-a",
+      "asset": "chibi-naval-candy-transport",
+      "jobId": "237a89ed-e07c-48e4-a910-b8dd2f880202",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-transport",
+        "subject": "UNIT:CANDY:EMBARKED_TRANSPORT",
+        "faction": "CANDY",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 57021,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a donut raft: the hull becomes one big fat ring donut of golden biscuit-brown dough #d9a05b floating flat, with thick glossy pale pink frosting #ffb8d8 and tiny white sprinkles on its top; the red tarp becomes a heap of white whipped cream in its middle; the pennant pole becomes a small pink and white candy cane. Nothing red. Keep the oars, size, thick black outline and style the same, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a donut raft: the hull becomes one big fat ring donut of golden biscuit-brown dough #d9a05b floating flat, with thick glossy pale pink frosting #ffb8d8 and tiny white sprinkles on its top; the red tarp becomes a heap of white whipped cream in its middle; the pennant pole becomes a small pink and white candy cane. Nothing red. Keep the oars, size, thick black outline and style the same, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a donut raft: the hull becomes one big fat ring donut of golden biscuit-brown dough #d9a05b floating flat, with thick glossy pale pink frosting #ffb8d8 and tiny white sprinkles on its top; the red tarp becomes a heap of white whipped cream in its middle; the pennant pole becomes a small pink and white candy cane. Nothing red. Keep the oars, size, thick black outline and style the same, with nothing under the hull.",
+        "editInstruction": "Turn it into a donut raft: the hull becomes one big fat ring donut of golden biscuit-brown dough #d9a05b floating flat, with thick glossy pale pink frosting #ffb8d8 and tiny white sprinkles on its top; the red tarp becomes a heap of white whipped cream in its middle; the pennant pole becomes a small pink and white candy cane. Nothing red. Keep the oars, size, thick black outline and style the same, with nothing under the hull.",
+        "source": {
+          "batch": "4",
+          "recipe": "embarked-transport-a-edit",
+          "candidate": 0,
+          "sha256": "578a6fc04765643c75b3948088f8a803f4d00d06c0faab0e6a8896e7e55297bb"
+        }
+      },
+      "submittedAt": "2026-10-04T09:18:15.948Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-transport-a.png",
+      "rawSheetSha256": "6aabd7648daf9f29544fe3efc343cf6688a0b6a2f978ac9959ab7a16be41d637",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.253,
+          "footprintWidthShare": 0.9,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.253,
+          "footprintWidthShare": 0.9,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T09:19:04.807Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The barge as a donut raft: a pink-frosted ring donut with sprinkles, whipped cream in the middle, an oar and a candy-cane pole.",
+        "reviewedAt": "2026-10-04T09:28:45.308Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-naval-candy-battleship": {
+      "id": "chibi-naval-candy-battleship",
+      "subject": "UNIT:CANDY:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "candy-battleship-a",
+      "candidate": 0,
+      "candidateSha256": "a0c0fd3bc9ef72b0c3c6ed4e68af0ff7214786ebfc8140bce809fef8bca47610",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-candy-battleship.png",
+        "sha256": "89d705f5133f4978198c93c5005d32a94768cdd62f68295dd165d131d5472f28",
+        "pixelSha256": "50518bc438f5bf72f2e5019c7979112ffc0e7acd87dd71603819c278b656f314",
+        "width": 88,
+        "height": 96
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 274,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 44,
+        "y": 56
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 16,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0.0698,
+        "footprintWidthShare": 0.7714,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The carrack as a layered-cake galleon: cream sponge hull with pink frosting drips, a wafer tower with whipped cream, cream sails and pink pennants.",
+      "acceptedAt": "2026-10-04T09:28:44.693Z"
+    },
+    "chibi-naval-candy-patrol-boat": {
+      "id": "chibi-naval-candy-patrol-boat",
+      "subject": "UNIT:CANDY:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "candy-patrol-boat-a-dry",
+      "candidate": 0,
+      "candidateSha256": "77106f6f123f2a443e1a61106a95c0bf2079717f775f37c1417d073af09e1cc9",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-candy-patrol-boat.png",
+        "sha256": "18e44ffadcda2d108aefedbf817b759e395de4b9730dd917873adbcd41ce3be6",
+        "pixelSha256": "ae122bc2ffa406901b7ecfff6a0cbe045db720e619ed6cf4492e0e1922cf6068",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 360,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 15,
+        "groundShare": 0.2737,
+        "footprintWidthShare": 0.8246,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The cog as a chocolate-bar boat: a hull of chocolate blocks with a pink frosting rim, a waffle wafer sail, a pink candy-cane mast and pennant; no water under the hull.",
+      "acceptedAt": "2026-10-04T09:28:44.177Z"
+    },
+    "chibi-naval-candy-portrait-battleship": {
+      "id": "chibi-naval-candy-portrait-battleship",
+      "subject": "PORTRAIT:CANDY:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "candy-portrait-battleship-a",
+      "candidate": 0,
+      "candidateSha256": "636075341fa8fdbbf32d0adad84dd5a95e9a24eaca80ab7c08f2c2c29b063994",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-candy-portrait-battleship.png",
+        "sha256": "82efb05db388ce8dc88e04a01301f05b2bdac2280fda25201197a3bcd484838f",
+        "pixelSha256": "8b3d13444c12393de7dd01c7fc6070a447b11dd11547976275bff2adb590faf4",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 46,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0769,
+        "footprintWidthShare": 0.7941,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The cake galleon, whole.",
+      "acceptedAt": "2026-10-04T09:28:46.444Z"
+    },
+    "chibi-naval-candy-portrait-patrol-boat": {
+      "id": "chibi-naval-candy-portrait-patrol-boat",
+      "subject": "PORTRAIT:CANDY:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "candy-portrait-patrol-boat-a",
+      "candidate": 0,
+      "candidateSha256": "d393994025cbd118f71ead99fbfb144d2dfdb3ea164ed7cc62f4ec75ec8beabb",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-candy-portrait-patrol-boat.png",
+        "sha256": "843260d5fbd50a2035a1576f85c4ab5ca1e476d12d27b51b72ef92e1d7f91fac",
+        "pixelSha256": "c120ccf4c156443546b77b49127afb99f838a4db1d3bd2a8fba211cfd10b5a3c",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 60,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 9,
+        "groundShare": 0.3302,
+        "footprintWidthShare": 0.9667,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The chocolate-bar boat, whole.",
+      "acceptedAt": "2026-10-04T09:28:45.905Z"
+    },
+    "chibi-naval-candy-transport": {
+      "id": "chibi-naval-candy-transport",
+      "subject": "UNIT:CANDY:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "candy-transport-a",
+      "candidate": 0,
+      "candidateSha256": "97f053e8a370ac1f028ef8db9321d82dec271a9321807a970d6b692644a8dc96",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-candy-transport.png",
+        "sha256": "5fedca1b8c26a3ef407a1aafe70671f6c2f7a930fa87cfcb460595cec3a87091",
+        "pixelSha256": "5ff5a0cfa85eb647f1f0d8ce101b29a4facd1736699ef148147ac0d80c5e5363",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 724,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0.253,
+        "footprintWidthShare": 0.9,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The barge as a donut raft: a pink-frosted ring donut with sprinkles, whipped cream in the middle, an oar and a candy-cane pole.",
+      "acceptedAt": "2026-10-04T09:28:45.308Z"
+    }
+  }
+}

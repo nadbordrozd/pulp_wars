@@ -1,0 +1,37 @@
+{
+  "id": "candy-portrait-patrol-boat-a",
+  "jobId": "19e91968-4c53-4e0d-b6ea-e97a02b5a4b9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-portrait-patrol-boat",
+    "subject": "PORTRAIT:CANDY:PATROL_BOAT",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 57031,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Turn it into a chocolate-bar boat: the hull becomes a dark chocolate bar #5a3423 marked into square blocks with a thick rim of pale pink frosting #ffb8d8; the red sail becomes a pale biscuit wafer #e9c98f with a waffle grid; the mast becomes a pink and white striped candy cane; the pennant becomes pale pink. Nothing red. Keep the boat shape, size, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-patrol-boat-a",
+      "candidate": 0,
+      "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "id": "gumdrop-a",
+  "jobId": "sync-09c4a427-284f-4fb3-aa18-e77b16567221",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gumdrop",
+    "subject": "UNIT:CANDY:FIGHTER",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 51001,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+        "text": "Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim.",
+        "negative": "red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CANDY.json",
+        "text": "Subject: Gumdrop, a chunky cute living gumdrop soldier: the whole body is one big round dome-shaped gumdrop of glossy cotton-candy pink jelly, colour #ffb8d8, dusted with small white sugar crystals, with one big hard white highlight on its top; the face is on the dome itself, two big round black dot eyes and a small happy smile; two tiny stubby pink arms and two tiny round dark chocolate brown feet; it holds one oversized candy-cane spear with pink and white stripes and a pointed tip upright in one hand, and a round pale biscuit wafer shield with a waffle grid on its other arm; no helmet, no hair and no clothes; simple shapes and very few details."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The gumdrop is drawn large: its dome is about as wide as half of the image.",
+        "negative": "human, person, skin, hair, helmet, armour, hat, crown, legs in trousers, green skin, tall, thin"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Gumdrop, a chunky cute living gumdrop soldier: the whole body is one big round dome-shaped gumdrop of glossy cotton-candy pink jelly, colour #ffb8d8, dusted with small white sugar crystals, with one big hard white highlight on its top; the face is on the dome itself, two big round black dot eyes and a small happy smile; two tiny stubby pink arms and two tiny round dark chocolate brown feet; it holds one oversized candy-cane spear with pink and white stripes and a pointed tip upright in one hand, and a round pale biscuit wafer shield with a waffle grid on its other arm; no helmet, no hair and no clothes; simple shapes and very few details. The gumdrop is drawn large: its dome is about as wide as half of the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, skin, hair, helmet, armour, hat, crown, legs in trousers, green skin, tall, thin",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: Gumdrop, a chunky cute living gumdrop soldier: the whole body is one big round dome-shaped gumdrop of glossy cotton-candy pink jelly, colour #ffb8d8, dusted with small white sugar crystals, with one big hard white highlight on its top; the face is on the dome itself, two big round black dot eyes and a small happy smile; two tiny stubby pink arms and two tiny round dark chocolate brown feet; it holds one oversized candy-cane spear with pink and white stripes and a pointed tip upright in one hand, and a round pale biscuit wafer shield with a waffle grid on its other arm; no helmet, no hair and no clothes; simple shapes and very few details. The gumdrop is drawn large: its dome is about as wide as half of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, skin, hair, helmet, armour, hat, crown, legs in trousers, green skin, tall, thin."
+  }
+}

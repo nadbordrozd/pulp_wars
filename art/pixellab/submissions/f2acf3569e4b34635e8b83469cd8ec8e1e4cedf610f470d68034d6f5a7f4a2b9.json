@@ -1,0 +1,64 @@
+{
+  "id": "portrait-confectioner-a",
+  "jobId": "sync-81b65ebc-ba79-4347-aff3-5c76087e6aa2",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-confectioner",
+    "subject": "PORTRAIT:CANDY:CAPTAIN",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 52601,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/CANDY.md#prompt-fragment + docs/art/factions/CANDY.md#negative-fragment",
+        "text": "Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim.",
+        "negative": "red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/CANDY.json",
+        "text": "Subject: Confectioner portrait, a close-up of the head and shoulders of a chunky cute living caramel sweet who is a pastry cook: a big round head of glossy golden caramel brown with pink frosting and tiny sprinkles dripping over its top, big round brass goggles with pale lenses over its eyes and a small friendly smile; a tall white puffy baker's hat on top; the top of a white apron on its shoulders; and a balloon whisk with a pale wire head and a pink handle raised beside the head; no crown, no coat and no hair."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "A close-up bust: the caramel head with its goggles and baker's hat fills the whole square; no legs.",
+        "negative": "full body, legs, feet, human, person, girl, woman, princess, skin, hair, pink hair, crown, tiara, lab coat, beard"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Confectioner portrait, a close-up of the head and shoulders of a chunky cute living caramel sweet who is a pastry cook: a big round head of glossy golden caramel brown with pink frosting and tiny sprinkles dripping over its top, big round brass goggles with pale lenses over its eyes and a small friendly smile; a tall white puffy baker's hat on top; the top of a white apron on its shoulders; and a balloon whisk with a pale wire head and a pink handle raised beside the head; no crown, no coat and no hair. A close-up bust: the caramel head with its goggles and baker's hat fills the whole square; no legs.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, girl, woman, princess, skin, hair, pink hair, crown, tiara, lab coat, beard",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: cheerful sugary confectionery, bright, glossy and silly. Its fixed colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8, shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream; warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure white highlight on every glossy surface; a few tiny pastel sprinkles and a little pale mint green trim. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Confectioner portrait, a close-up of the head and shoulders of a chunky cute living caramel sweet who is a pastry cook: a big round head of glossy golden caramel brown with pink frosting and tiny sprinkles dripping over its top, big round brass goggles with pale lenses over its eyes and a small friendly smile; a tall white puffy baker's hat on top; the top of a white apron on its shoulders; and a balloon whisk with a pale wire head and a pink handle raised beside the head; no crown, no coat and no hair. A close-up bust: the caramel head with its goggles and baker's hat fills the whole square; no legs. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, red, crimson, magenta, hot pink, neon pink, purple, violet, hazard yellow, gold, bright orange, blue, cyan, bright green, lime, jade, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, gumball machine guardian statue, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, Adventure Time, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, human, person, girl, woman, princess, skin, hair, pink hair, crown, tiara, lab coat, beard."
+  }
+}

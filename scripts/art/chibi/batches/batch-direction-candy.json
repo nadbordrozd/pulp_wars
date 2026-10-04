@@ -1,0 +1,1401 @@
+{
+  "schemaVersion": 1,
+  "batch": "direction-candy",
+  "title": "Candy units, portraits, icons, markers, effects and the cake-castle City 1-3 in fixed faction colours",
+  "bead": "pulp_wars-jdb.5",
+  "faction": "CANDY",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-direction-candy-gumdrop",
+      "subject": "UNIT:CANDY:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-marshmallow",
+      "subject": "UNIT:CANDY:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-gummy-bear",
+      "subject": "UNIT:CANDY:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-rock-candy-golem",
+      "subject": "UNIT:CANDY:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-donut-racer",
+      "subject": "UNIT:CANDY:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-gumball-gunner",
+      "subject": "UNIT:CANDY:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-confectioner",
+      "subject": "UNIT:CANDY:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-pie-launcher",
+      "subject": "UNIT:CANDY:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-portrait-candy-gumdrop",
+      "subject": "PORTRAIT:CANDY:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-portrait-candy-marshmallow",
+      "subject": "PORTRAIT:CANDY:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-portrait-candy-gummy-bear",
+      "subject": "PORTRAIT:CANDY:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-portrait-candy-rock-candy-golem",
+      "subject": "PORTRAIT:CANDY:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-portrait-candy-donut-racer",
+      "subject": "PORTRAIT:CANDY:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-portrait-candy-gumball-gunner",
+      "subject": "PORTRAIT:CANDY:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-portrait-candy-confectioner",
+      "subject": "PORTRAIT:CANDY:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-portrait-candy-pie-launcher",
+      "subject": "PORTRAIT:CANDY:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-city-1",
+      "subject": "CITY:CANDY:1",
+      "subjectKey": "CITY:CANDY:1/CALM",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-city-2",
+      "subject": "CITY:CANDY:2",
+      "subjectKey": "CITY:CANDY:2/CALM",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 88,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-city-3",
+      "subject": "CITY:CANDY:3",
+      "subjectKey": "CITY:CANDY:3/CALM",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 96,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-action-sugar-rush",
+      "subject": "ICON:ACTION:SUGAR_RUSH",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-action-rebake",
+      "subject": "ICON:ACTION:REBAKE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-tech-home-sweet-home",
+      "subject": "ICON:TECH:CANDY:FORTIFICATION",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-status-crashed",
+      "subject": "ICON:STATUS:CRASHED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-candy-crumbs",
+      "subject": "CRUMBS",
+      "assetClass": "RESOURCE",
+      "recipeClass": "resource",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-effect-candy-splat",
+      "subject": "EFFECT:SPLAT",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/candy-sugar.png",
+        "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-candy-pie",
+      "subject": "EFFECT:PIE",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/candy-sugar.png",
+        "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-candy-peppermint-pop",
+      "subject": "EFFECT:PEPPERMINT_POP",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/candy-sugar.png",
+        "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
+      }
+    },
+    {
+      "id": "chibi-direction-icon-action-sugar-toss",
+      "subject": "ICON:ACTION:SUGAR_TOSS",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-action-frosting",
+      "subject": "ICON:ACTION:CANDY:TEND_WOUNDED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-tech-peppermint-surprise",
+      "subject": "ICON:TECH:CANDY:EXPLOSIVES",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-action-splat",
+      "subject": "ICON:ACTION:SPLAT",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-action-bounce",
+      "subject": "ICON:ACTION:BOUNCE",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-status-rushed",
+      "subject": "ICON:STATUS:RUSHED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-status-splatted",
+      "subject": "ICON:STATUS:SPLATTED",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-icon-candy-emblem",
+      "subject": "ICON:HUD:CANDY:EMBLEM",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-direction-effect-candy-gumball-shot",
+      "subject": "EFFECT:GUMBALL_SHOT",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/candy-sugar.png",
+        "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-candy-sugar-toss",
+      "subject": "EFFECT:SUGAR_TOSS",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/candy-sugar.png",
+        "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-candy-rebake-puff",
+      "subject": "EFFECT:REBAKE_PUFF",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/candy-sugar.png",
+        "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
+      }
+    },
+    {
+      "id": "chibi-direction-effect-candy-bounce",
+      "subject": "EFFECT:BOUNCE",
+      "assetClass": "EFFECT",
+      "recipeClass": "effect",
+      "canvas": {
+        "width": 40,
+        "height": 40
+      },
+      "palette": {
+        "path": "scripts/art/chibi/palettes/candy-sugar.png",
+        "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "gumdrop-a",
+      "asset": "chibi-direction-candy-gumdrop",
+      "endpoint": "create-image-pixen",
+      "seed": 51001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The gumdrop is drawn large: its dome is about as wide as half of the image.",
+      "negativeAddendum": "human, person, skin, hair, helmet, armour, hat, crown, legs in trousers, green skin, tall, thin",
+      "notes": "Sample unit 1 (spec 15.4): a fresh creation with the unit class."
+    },
+    {
+      "id": "marshmallow-a",
+      "asset": "chibi-direction-candy-marshmallow",
+      "endpoint": "create-image-pixen",
+      "seed": 51101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "human, person, skin, hair, helmet, armour, snowman, ghost, yeti, fur, ice, blue shading, grey shading, sword, spear",
+      "notes": "Sample unit 2: a fresh creation with the unit class."
+    },
+    {
+      "id": "gummy-bear-a",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "create-image-pixen",
+      "seed": 51201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The bear is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "fur, teddy bear, real bear, brown bear, claws, teeth, fangs, human, armour, clothes, hat, red, green, yellow, orange",
+      "notes": "Sample unit 3: a fresh creation with the unit class on the large canvas."
+    },
+    {
+      "id": "rock-candy-golem-a",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 51301,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The golem is drawn large and fills most of the image.",
+      "negativeAddendum": "gumball machine, glass dome, robot, metal, stone, grey rock, ice, blue crystal, purple crystal, human, armour, helmet, weapon",
+      "notes": "Sample unit 4: a fresh creation with the unit class on the giant canvas."
+    },
+    {
+      "id": "gumdrop-b",
+      "asset": "chibi-direction-candy-gumdrop",
+      "endpoint": "create-image-pixen",
+      "seed": 51002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The gumdrop dome is drawn very large: about 44 pixels wide and 56 pixels tall, so the figure fills most of the image like the other soldiers of the game.",
+      "negativeAddendum": "human, person, child, skin, hair, helmet, armour, hat, crown, shirt, striped shirt, trousers, separate round head on a small body, lollipop head, green skin, tall, thin, tiny figure",
+      "notes": "gumdrop-a drew a small ball-headed child in a striped shirt (48 px tall, the Human Fighter is 72): a second creation with a subject line that says the whole figure is the dome."
+    },
+    {
+      "id": "gummy-bear-b",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "create-image-pixen",
+      "seed": 51202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The bear is drawn large and fills most of the width of the image. Both hands are empty.",
+      "negativeAddendum": "fur, teddy bear, plush toy, real bear, brown bear, claws, teeth, fangs, human, armour, clothes, hat, white belly, cream belly patch, muzzle patch, weapon, club, lollipop, ice cream, red, green, yellow, orange",
+      "notes": "gummy-bear-a drew a plush teddy bear with a cream belly and muzzle and an ice-cream club: a second creation with a subject line that says one single piece of jelly and empty fists."
+    },
+    {
+      "id": "gummy-bear-a-jelly",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 51203,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gummy-bear-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the teddy bear into a gummy jelly sweet moulded from one single piece of pink jelly: the cream belly patch, the cream muzzle and the cream inner ears become the same glossy pink jelly as the rest of the body, with one big white shine highlight on the belly and one on the head; erase the ice-cream club so both hands are empty round fists. Keep the bear's pose, size, simple eyes and smile, thick black outline and art style the same, on a transparent background.",
+      "notes": "The edit route for the same fix: keep gummy-bear-a's pose and size, lose the plush belly, the muzzle and the club."
+    },
+    {
+      "id": "rock-candy-golem-a-edit",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 51302,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "rock-candy-golem-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: erase the small pale teal creature with a face on the golem's belly, so the belly is plain pink sugar crystal; and erase the round pale teal and brown weapon in its lower hand, so that hand is an empty pink crystal fist. Do not redraw anything else. Keep the pink crystal body, the caramel bands, the head, the pose, the shapes, outline and art style exactly the same, on a transparent background.",
+      "notes": "rock-candy-golem-a is the right golem, but it carries a pale teal crystal with a face on its belly and a teal-and-brown round weapon: mint is small trim only, and the golem fights with its fists."
+    },
+    {
+      "id": "gumdrop-b-big",
+      "asset": "chibi-direction-candy-gumdrop",
+      "endpoint": "edit-image-pixen",
+      "seed": 51003,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "gumdrop-b",
+        "candidate": 0
+      },
+      "editInstruction": "Redraw the same gumdrop character bigger and taller: the pink dome becomes a tall gumdrop, taller than it is wide, about 46 pixels wide and 62 pixels tall, so the top of the dome almost reaches the top of the image and the feet stay near the bottom; the face stays in the middle of the dome. Keep the same face, the candy-cane spear, the round waffle shield, the pale mint frill, the dark brown feet, the colours, thick black outline and art style the same, on a transparent background.",
+      "notes": "gumdrop-b is the right gumdrop but only 48 px tall (the Goblin is 65, the Human Fighter 72): at half size it would be a 24 px blob."
+    },
+    {
+      "id": "gumdrop-c",
+      "asset": "chibi-direction-candy-gumdrop",
+      "endpoint": "create-image-pixen",
+      "seed": 51004,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The gumdrop is a tall one, taller than it is wide, like a sugarloaf or a bell: about 46 pixels wide and 64 pixels tall, so the figure fills the image from near the top to the bottom like the other soldiers of the game.",
+      "negativeAddendum": "human, person, child, skin, hair, helmet, armour, hat, crown, shirt, striped shirt, trousers, separate round head on a small body, lollipop head, green skin, thin, tiny figure, wide flat blob",
+      "notes": "A third creation asking for a tall gumdrop, in case the enlarging edit redraws the character."
+    },
+    {
+      "id": "gummy-bear-a-jelly-pink",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 51204,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gummy-bear-a-jelly",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of two areas: the big cream oval on the belly and the cream patch around the mouth become the same pink as the rest of the body, colour #da5673, shaded like the body, so the whole bear is one single pink colour like a gummy jelly sweet; add one long white shine streak on the belly. Keep the small black eyes, the small smile, the pose, the fists, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "gummy-bear-a-jelly lost the club but kept the cream belly and muzzle of a plush teddy bear."
+    },
+    {
+      "id": "gummy-bear-c",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "create-image-pixen",
+      "seed": 51205,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The sweet is drawn large and fills most of the width of the image. Its belly is the same pink as the rest of it.",
+      "negativeAddendum": "fur, teddy bear, plush toy, real bear, claws, teeth, fangs, tongue, open mouth, snout, muzzle, nose, human, armour, clothes, hat, backpack, bag, white belly, cream belly, belly patch, tummy patch, two-colour body, weapon, club, lollipop, ice cream, red, green, yellow, orange",
+      "notes": "The edits kept the cream belly and muzzle of a plush teddy bear (gummy-bear-a-jelly, gummy-bear-a-jelly-pink): a creation from a subject line that describes a moulded jelly sweet."
+    },
+    {
+      "id": "gummy-bear-d",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "create-image-pixen",
+      "seed": 51206,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The sweet is drawn large and fills most of the width of the image. Its belly is the same pink as the rest of it.",
+      "negativeAddendum": "fur, teddy bear, plush toy, real bear, claws, teeth, fangs, tongue, open mouth, snout, muzzle, nose, human, armour, clothes, hat, backpack, bag, white belly, cream belly, belly patch, tummy patch, two-colour body, weapon, club, lollipop, ice cream, red, green, yellow, orange",
+      "notes": "The same request with another seed."
+    },
+    {
+      "id": "gummy-bear-e",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "create-image-pixen",
+      "seed": 51207,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The sweet is drawn large and fills most of the width of the image. Its tummy is the same pink jelly as the rest of it.",
+      "negativeAddendum": "fur, teddy bear, plush toy, real bear, claws, teeth, fangs, tongue, open mouth, snout, muzzle, nose, human, armour, clothes, hat, backpack, bag, white belly, cream belly, peach belly, belly patch, tummy patch, two-colour body, weapon, club, stick, lollipop, ice cream, red, green, yellow, orange",
+      "notes": "Every request that says \"bear\" drew a plush teddy bear with a pale belly patch (gummy-bear-a to -d): a subject line that never says the word."
+    },
+    {
+      "id": "gummy-bear-a-jelly-paint",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 51208,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gummy-bear-a-jelly",
+        "candidate": 0
+      },
+      "editInstruction": "The figure has a big pale cream oval on its belly and a cream patch around its mouth. Paint over both: fill the whole belly and the patch around the mouth with the pink of its arms and legs, so no cream, white or beige area is left on the body except one thin white shine streak on the belly: a pink jelly sweet of one single colour. Keep the eyes, smile, pose, fists, shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "A second colour edit of gummy-bear-a-jelly with paint-over wording; the hex wording of gummy-bear-a-jelly-pink left the belly cream."
+    },
+    {
+      "id": "gummy-bear-e-bare",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 51209,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gummy-bear-e",
+        "candidate": 0
+      },
+      "editInstruction": "Erase everything the jelly figure carries: the big brown and blue club on its back, the brown strap across its chest and the small bottle on its hip, so it is a bare pink jelly figure that holds nothing and wears nothing; where they were, draw the same glossy pink jelly as the rest of the body. Do not redraw anything else. Keep the head, ears, face, raised fist, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "gummy-bear-e is the gummy sweet (one pink jelly, glossy, no belly patch), but it carries a chocolate club on its back, a strap and a bottle."
+    },
+    {
+      "id": "gummy-bear-e-bare-b",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 51210,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "gummy-bear-e-bare",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the pale cream ring that lies round the figure's neck like a collar, so the head joins the body as smooth pink jelly with nothing round the neck; do not redraw anything else. Keep the head, ears, face, raised fist, belly, pose, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "gummy-bear-e-bare is a bare jelly bear, but a pale cream ring was left round its neck where the strap was; it reads as a collar or a scarf."
+    },
+    {
+      "id": "donut-racer-a",
+      "asset": "chibi-direction-candy-donut-racer",
+      "endpoint": "create-image-pixen",
+      "seed": 51401,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The donut is drawn large: it fills most of the width of the image and stands on its edge like a wheel, seen from its side so its hole shows.",
+      "negativeAddendum": "bicycle, motorbike, car, kart, cart, horse, wolf, wheels with spokes, human, person, child, helmet, flat donut lying down, plate, bright orange, bright yellow",
+      "notes": "A fresh creation with the machine class: the donut is the vehicle."
+    },
+    {
+      "id": "gumball-gunner-a",
+      "asset": "chibi-direction-candy-gumball-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 51501,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The jellybean is drawn large: about 40 pixels wide and 54 pixels tall.",
+      "negativeAddendum": "human, person, child, skin, hair, helmet, armour, hat, shirt, trousers, separate round head on a small body, gumball machine, vending machine, robot, metal gun, rifle, green skin, thin, tiny figure",
+      "notes": "A fresh creation with the unit class."
+    },
+    {
+      "id": "confectioner-a",
+      "asset": "chibi-direction-candy-confectioner",
+      "endpoint": "create-image-pixen",
+      "seed": 51601,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "promptAddendum": "The caramel ball is drawn large: about 42 pixels wide.",
+      "negativeAddendum": "human, person, girl, woman, princess, skin, hair, pink hair, crown, tiara, lab coat, dress, glasses, wizard, robe, beard, weapon, sword",
+      "notes": "A fresh creation with the unit class; never a princess or a lab coat (spec 2.1, 15.4)."
+    },
+    {
+      "id": "pie-launcher-a",
+      "asset": "chibi-direction-candy-pie-launcher",
+      "endpoint": "create-image-pixen",
+      "seed": 51701,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The catapult is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "wood, timber, planks, logs, rope, stone, boulder, metal, iron, crew, soldier, person, character, face, eyes, house, building, cannon",
+      "notes": "A fresh creation with the machine class."
+    },
+    {
+      "id": "portrait-gumdrop-a",
+      "asset": "chibi-direction-portrait-candy-gumdrop",
+      "endpoint": "create-image-pixen",
+      "seed": 52001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the pink dome with its face fills the whole square; no legs and no feet.",
+      "negativeAddendum": "full body, legs, feet, human, person, skin, hair, helmet, shirt",
+      "notes": "Portrait sample: a fresh creation with the portrait class and the close-up addendum of the Ice Folk and Dwarf portraits."
+    },
+    {
+      "id": "portrait-marshmallow-a",
+      "asset": "chibi-direction-portrait-candy-marshmallow",
+      "endpoint": "create-image-pixen",
+      "seed": 52101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the white block with its face fills the whole square; no legs and no feet.",
+      "negativeAddendum": "full body, legs, feet, human, person, skin, hair, snowman, ghost, ice, blue shading",
+      "notes": "Portrait sample."
+    },
+    {
+      "id": "portrait-gummy-bear-a",
+      "asset": "chibi-direction-portrait-candy-gummy-bear",
+      "endpoint": "create-image-pixen",
+      "seed": 52201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the jelly head and shoulders fill the whole square; no legs.",
+      "negativeAddendum": "full body, legs, feet, fur, teddy bear, plush toy, real bear, muzzle patch, snout, nose, cream belly, clothes, collar, scarf",
+      "notes": "Portrait sample."
+    },
+    {
+      "id": "portrait-rock-candy-golem-a",
+      "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 52301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the crystal head and shoulders fill the whole square; no legs.",
+      "negativeAddendum": "full body, legs, feet, stone, grey rock, ice, blue crystal, purple crystal, metal, armour, helmet, human, gumball machine",
+      "notes": "Portrait sample."
+    },
+    {
+      "id": "pie-launcher-a-pie",
+      "asset": "chibi-direction-candy-pie-launcher",
+      "endpoint": "edit-image-pixen",
+      "seed": 51702,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "pie-launcher-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things: erase the white face with a dark eye that looks out of the pink frosting behind the barrel, so it is plain pink frosting with no face; and turn the cupcake on the arm into a flat round cream pie, a wide shallow pale biscuit crust heaped with white whipped cream. Do not redraw anything else. Keep the gingerbread frame, peppermint wheels, pink arm, shapes, thick black outline and art style the same, on a transparent background.",
+      "notes": "pie-launcher-a is a gingerbread cart on peppermint wheels, but a white bird-like face looks out of its frosting (the request says no crew and no face) and its ammunition is a cupcake, not a pie."
+    },
+    {
+      "id": "portrait-gummy-bear-a-edit",
+      "asset": "chibi-direction-portrait-candy-gummy-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 52202,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-gummy-bear-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the flat pale mint and cream plate with sprinkles under the pink jelly figure, so the jelly bust ends cleanly at its bottom with nothing under it; do not redraw anything else. Keep the pink jelly head, ears, face, raised fist, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-gummy-bear-a sits on a mint and cream plate with sprinkles."
+    },
+    {
+      "id": "portrait-donut-racer-a",
+      "asset": "chibi-direction-portrait-candy-donut-racer",
+      "endpoint": "create-image-pixen",
+      "seed": 52401,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, plate, human, person, child, bicycle, car, flat donut lying down, bright orange, bright yellow",
+      "notes": "The whole donut and rider with the icon class, as the machine portraits of the other factions."
+    },
+    {
+      "id": "portrait-gumball-gunner-a",
+      "asset": "chibi-direction-portrait-candy-gumball-gunner",
+      "endpoint": "create-image-pixen",
+      "seed": 52501,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the cream jellybean with its face fills the whole square; no legs and no feet.",
+      "negativeAddendum": "full body, legs, feet, human, person, skin, hair, helmet, gumball machine, vending machine, robot",
+      "notes": "A fresh creation with the portrait class."
+    },
+    {
+      "id": "portrait-confectioner-a",
+      "asset": "chibi-direction-portrait-candy-confectioner",
+      "endpoint": "create-image-pixen",
+      "seed": 52601,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up bust: the caramel head with its goggles and baker's hat fills the whole square; no legs.",
+      "negativeAddendum": "full body, legs, feet, human, person, girl, woman, princess, skin, hair, pink hair, crown, tiara, lab coat, beard",
+      "notes": "A fresh creation with the portrait class; never a princess or a lab coat."
+    },
+    {
+      "id": "portrait-pie-launcher-a",
+      "asset": "chibi-direction-portrait-candy-pie-launcher",
+      "endpoint": "create-image-pixen",
+      "seed": 52701,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, wood, timber, rope, stone, metal, crew, person, character, face, eyes, cannon, cupcake",
+      "notes": "The whole machine with the icon class."
+    },
+    {
+      "id": "candy-city-1-calm-a",
+      "asset": "chibi-direction-candy-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 53101,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "negativeAddendum": "person, character, figure, face, eyes, flag, red, bright orange, bright yellow, purple, blue, stone, timber, thatch, grass",
+      "notes": "City sample: the calm settlement class, as the Martian, Ice Folk and Dwarf direction cities."
+    },
+    {
+      "id": "candy-city-2-calm-a",
+      "asset": "chibi-direction-candy-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 53201,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "negativeAddendum": "person, character, figure, face, eyes, flag, red, bright orange, bright yellow, purple, blue, stone, timber, thatch, grass",
+      "notes": "City sample."
+    },
+    {
+      "id": "candy-city-3-calm-a",
+      "asset": "chibi-direction-candy-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 53301,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "negativeAddendum": "person, character, figure, face, eyes, flag, red, bright orange, bright yellow, purple, blue, stone, timber, thatch, grass",
+      "notes": "City sample."
+    },
+    {
+      "id": "icon-sugar-rush-a",
+      "asset": "chibi-direction-icon-action-sugar-rush",
+      "endpoint": "create-image-pixen",
+      "seed": 54001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, hand, yellow, gold, blue",
+      "notes": "Icon sample: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-rebake-a",
+      "asset": "chibi-direction-icon-action-rebake",
+      "endpoint": "create-image-pixen",
+      "seed": 54101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, bare hand, oven, fire",
+      "notes": "Icon sample."
+    },
+    {
+      "id": "icon-home-sweet-home-a",
+      "asset": "chibi-direction-icon-tech-home-sweet-home",
+      "endpoint": "create-image-pixen",
+      "seed": 54201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, village, many houses, tree",
+      "notes": "Icon sample."
+    },
+    {
+      "id": "icon-crashed-a",
+      "asset": "chibi-direction-icon-status-crashed",
+      "endpoint": "create-image-pixen",
+      "seed": 54301,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, lollipop stick, snail, shell",
+      "notes": "Icon sample: the Crashed chip and the swirl over a Crashed unit's head."
+    },
+    {
+      "id": "crumbs-a",
+      "asset": "chibi-direction-candy-crumbs",
+      "endpoint": "create-image-pixen",
+      "seed": 55001,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, plate, dish, bowl, person, character, face, eyes, whole cookie, whole cake, rocks, stones, rubble, bones",
+      "notes": "The Crumbs marker of a tile: an unowned marker with the resource class and the Grave's canvas (the class skips the faction layer, so the subject line names the colours)."
+    },
+    {
+      "id": "effect-splat-a",
+      "asset": "chibi-direction-effect-candy-splat",
+      "endpoint": "create-image-pixen",
+      "seed": 56001,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Effect sample: the Splat on a struck unit."
+    },
+    {
+      "id": "effect-pie-a",
+      "asset": "chibi-direction-effect-candy-pie",
+      "endpoint": "create-image-pixen",
+      "seed": 56101,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "Effect sample: the pie in flight."
+    },
+    {
+      "id": "effect-peppermint-pop-a",
+      "asset": "chibi-direction-effect-candy-peppermint-pop",
+      "endpoint": "create-image-pixen",
+      "seed": 56201,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Effect sample: Peppermint Surprise going off under an enemy that eats Crumbs."
+    },
+    {
+      "id": "candy-city-1-calm-a-edit",
+      "asset": "chibi-direction-candy-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 53102,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "candy-city-1-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass, the path and the brown slab under the house, so the gingerbread house and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the gingerbread walls, the white frosting roof, the chimney, the door, the lollipop tree, the colours, outline and art style exactly the same.",
+      "notes": "The village stands on a grass slab."
+    },
+    {
+      "id": "candy-city-2-calm-a-edit",
+      "asset": "chibi-direction-candy-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 53202,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "candy-city-2-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass, the path and the brown slab under the town, and the small flag on top of the cake, so the cake keep, the two gingerbread houses and the lollipop tree stand directly on a transparent background with nothing at all under them. Keep the pink frosted cake, the gingerbread houses with white frosting roofs, the lollipop, the colours, outline and art style exactly the same.",
+      "notes": "The town stands on a grass slab, and the cake carries a small pink flag (no part of a city is a flag: the pennants are retired)."
+    },
+    {
+      "id": "candy-city-3-calm-a-edit",
+      "asset": "chibi-direction-candy-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 53302,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "candy-city-3-calm-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the green grass and the brown slab under the castle, so the wafer wall, the towers and the tiered cake stand directly on a transparent background with nothing at all under them; the bottom of the wall is the lowest thing. Keep the pink frosted tiered cake, the towers with cone roofs, the wafer wall, the gate, the lollipop, the colours, outline and art style exactly the same.",
+      "notes": "The castle stands on a grass slab."
+    },
+    {
+      "id": "portrait-confectioner-a-whisk",
+      "asset": "chibi-direction-portrait-candy-confectioner",
+      "endpoint": "edit-image-pixen",
+      "seed": 52602,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-confectioner-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: turn the pink balloon on a stick beside the head into a kitchen whisk, a pink handle with a rounded cage of thin pale grey wire loops at its top; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting, the white baker's hat, the apron, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "portrait-confectioner-a drew the \"balloon whisk\" as a pink balloon on a stick."
+    },
+    {
+      "id": "portrait-pie-launcher-b",
+      "asset": "chibi-direction-portrait-candy-pie-launcher",
+      "endpoint": "create-image-pixen",
+      "seed": 52702,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The machine is drawn large and fills the whole square.",
+      "negativeAddendum": "grass, ground tile, slab, platform, wood, timber, rope, stone, metal, crew, person, character, face, eyes, cupcake, trebuchet, thin frame",
+      "notes": "portrait-pie-launcher-a drew a thin wooden trebuchet, small in its square, unlike the map sprite (a pink barrel on a gingerbread cart): a second creation from a subject line that describes the accepted sprite."
+    },
+    {
+      "id": "icon-rebake-b",
+      "asset": "chibi-direction-icon-action-rebake",
+      "endpoint": "create-image-pixen",
+      "seed": 54102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, bare hand, oven, fire, checkerboard, checkered background, grid background, dark background",
+      "notes": "icon-rebake-a drew a small mitt on a dark checkerboard background: a second creation from a subject line that crosses a big whisk over a big mitt."
+    },
+    {
+      "id": "icon-sugar-toss-a",
+      "asset": "chibi-direction-icon-action-sugar-toss",
+      "endpoint": "create-image-pixen",
+      "seed": 54401,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, hand, checkerboard, dark background",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-frosting-a",
+      "asset": "chibi-direction-icon-action-frosting",
+      "endpoint": "create-image-pixen",
+      "seed": 54501,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, hand, cake, cupcake, ice cream cone, checkerboard, dark background",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-peppermint-surprise-a",
+      "asset": "chibi-direction-icon-tech-peppermint-surprise",
+      "endpoint": "create-image-pixen",
+      "seed": 54601,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, lollipop stick, black bomb, fire, flames, checkerboard, dark background",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-splat-a",
+      "asset": "chibi-direction-icon-action-splat",
+      "endpoint": "create-image-pixen",
+      "seed": 54701,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, plate, fork, checkerboard, dark background",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-bounce-a",
+      "asset": "chibi-direction-icon-action-bounce",
+      "endpoint": "create-image-pixen",
+      "seed": 54801,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, metal, steel, checkerboard, dark background",
+      "notes": "A fresh creation with the icon class."
+    },
+    {
+      "id": "icon-rushed-a",
+      "asset": "chibi-direction-icon-status-rushed",
+      "endpoint": "create-image-pixen",
+      "seed": 54901,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, yellow, gold, blue, cloud, checkerboard, dark background",
+      "notes": "The Rushed chip: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-splatted-a",
+      "asset": "chibi-direction-icon-status-splatted",
+      "endpoint": "create-image-pixen",
+      "seed": 54951,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, plate, ghost, cloud, checkerboard, dark background",
+      "notes": "The Splatted chip and the pie on a Splatted unit's face: a fresh creation with the icon class."
+    },
+    {
+      "id": "icon-emblem-a",
+      "asset": "chibi-direction-icon-candy-emblem",
+      "endpoint": "create-image-pixen",
+      "seed": 54971,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, lollipop, stick, bow tie, ribbon, checkerboard, dark background",
+      "notes": "The faction emblem (spec 15.4): a wrapped sweet."
+    },
+    {
+      "id": "crumbs-b",
+      "asset": "chibi-direction-candy-crumbs",
+      "endpoint": "create-image-pixen",
+      "seed": 55002,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, plate, dish, bowl, person, character, face, eyes, whole cookie, whole cake, brownie, square block, tile, rocks, stones, rubble, bones",
+      "notes": "crumbs-a drew one flat square slab of brownie with pink lumps on it, like a tile: a second creation from a subject line that names broken pieces and loose crumbs."
+    },
+    {
+      "id": "effect-splat-b",
+      "asset": "chibi-direction-effect-candy-splat",
+      "endpoint": "create-image-pixen",
+      "seed": 56002,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "effect-splat-a drew a pie in a bowl with purple, blue and orange inside, muddy once palette-mapped: a second creation from a subject line of white cream and pink drops only."
+    },
+    {
+      "id": "effect-pie-a-white",
+      "asset": "chibi-direction-effect-candy-pie",
+      "endpoint": "edit-image-pixen",
+      "seed": 56102,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "effect-pie-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the pale blue-green cream on top of the pie becomes pure white whipped cream, colour #ffffff, shaded with pale cream #fbf0dc; do not redraw anything else. Keep the pie crust, the small pink sweet on top, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-pie-a is the right pie, but its cream is pale teal, which the palette maps to mint; the Pie Launcher's pie has white cream."
+    },
+    {
+      "id": "effect-gumball-shot-a",
+      "asset": "chibi-direction-effect-candy-gumball-shot",
+      "endpoint": "create-image-pixen",
+      "seed": 56301,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "The Gumball Gunner's shot."
+    },
+    {
+      "id": "effect-sugar-toss-a",
+      "asset": "chibi-direction-effect-candy-sugar-toss",
+      "endpoint": "create-image-pixen",
+      "seed": 56401,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "The sweet of Sugar Toss in flight."
+    },
+    {
+      "id": "effect-rebake-puff-a",
+      "asset": "chibi-direction-effect-candy-rebake-puff",
+      "endpoint": "create-image-pixen",
+      "seed": 56501,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "The oven puff of a Re-bake."
+    },
+    {
+      "id": "effect-bounce-a",
+      "asset": "chibi-direction-effect-candy-bounce",
+      "endpoint": "create-image-pixen",
+      "seed": 56601,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "notes": "The spring of a Bounce."
+    },
+    {
+      "id": "icon-sugar-toss-a-edit",
+      "asset": "chibi-direction-icon-action-sugar-toss",
+      "endpoint": "edit-image-pixen",
+      "seed": 54402,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-sugar-toss-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase the whole background: remove the grey checkered floor and every small object behind and around the sweet, so that only the pink wrapped sweet with its two white wrapper ends and the curved white arrow under it are left on a fully transparent background. Keep the sweet, the arrow, their shapes, colours, thick black outline and art style exactly the same.",
+      "notes": "icon-sugar-toss-a is the right sweet and arrow, drawn on a grey checkered floor with scenery."
+    },
+    {
+      "id": "icon-splatted-b",
+      "asset": "chibi-direction-icon-status-splatted",
+      "endpoint": "create-image-pixen",
+      "seed": 54952,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "grass, ground tile, slab, platform, person, character, face, eyes, plate, bowl, shell, clam, cup, cupcake case, ghost, cloud, checkerboard, dark background",
+      "notes": "icon-splatted-a drew whipped cream inside a pink shell, like a clam: a second creation from a subject line that says a blob with splashes and drips."
+    },
+    {
+      "id": "effect-gumball-shot-a-pink",
+      "asset": "chibi-direction-effect-candy-gumball-shot",
+      "endpoint": "edit-image-pixen",
+      "seed": 56302,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "effect-gumball-shot-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colour of the ball: it becomes a glossy pale pink gumball, colour #f79cc4, shaded with rose #d9779f, with one white shine dot; do not redraw anything else. Keep the round shape, the white speed lines, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "effect-gumball-shot-a is the right ball with speed lines, but the palette maps its colour to caramel brown: a chocolate ball, not a pink gumball."
+    },
+    {
+      "id": "effect-sugar-toss-a-edit",
+      "asset": "chibi-direction-effect-candy-sugar-toss",
+      "endpoint": "edit-image-pixen",
+      "seed": 56402,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "effect-sugar-toss-a",
+        "candidate": 0
+      },
+      "editInstruction": "Erase the brown heap at the bottom of the image completely, so that only the pink wrapped sweet with its two wrapper ends and the small white sparkles are left on a fully transparent background. Keep the sweet, its shape, colours, thick black outline and art style exactly the same.",
+      "notes": "effect-sugar-toss-a is the right sweet, with a brown heap like a campfire under it."
+    },
+    {
+      "id": "icon-splatted-b-edit",
+      "asset": "chibi-direction-icon-status-splatted",
+      "endpoint": "edit-image-pixen",
+      "seed": 54953,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-splatted-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the face, the two eyes, the pink cheeks and the open mouth, so the middle of the splat is plain white whipped cream with no face; do not redraw anything else. Keep the white blob, its round splashes, the drip, the small sprinkles, shapes, colours, outline and art style exactly the same, on a transparent background.",
+      "notes": "icon-splatted-b is the right splat of cream, but it has a smiling face; a status marker is not a character."
+    },
+    {
+      "id": "confectioner-a-apron",
+      "asset": "chibi-direction-candy-confectioner",
+      "endpoint": "edit-image-pixen",
+      "seed": 51602,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "confectioner-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the apron and what is under it: the apron becomes a big apron of glossy pink frosting, colour #f79cc4, with a white frill at its hem, covering the whole body from the neck down to the feet, so no dark trousers show; do not redraw anything else. Keep the caramel head, the goggles, the pink frosting on the head, the white baker's hat, the whisk, the arms, the brown feet, shapes, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Root ruling of the correction pass: a pink frosting apron, so the Confectioner separates from the Dwarf Engineer in the lineup and reads as Candy (confectioner-a wears a small white apron over dark trousers)."
+    }
+  ]
+}

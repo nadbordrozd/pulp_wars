@@ -1,0 +1,36 @@
+{
+  "id": "icon-splatted-b-edit",
+  "jobId": "0015bbed-e9ca-4335-abb6-16f38f4ef1a3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-status-splatted",
+    "subject": "ICON:STATUS:SPLATTED",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 54953,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the face, the two eyes, the pink cheeks and the open mouth, so the middle of the splat is plain white whipped cream with no face; do not redraw anything else. Keep the white blob, its round splashes, the drip, the small sprinkles, shapes, colours, outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the face, the two eyes, the pink cheeks and the open mouth, so the middle of the splat is plain white whipped cream with no face; do not redraw anything else. Keep the white blob, its round splashes, the drip, the small sprinkles, shapes, colours, outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the face, the two eyes, the pink cheeks and the open mouth, so the middle of the splat is plain white whipped cream with no face; do not redraw anything else. Keep the white blob, its round splashes, the drip, the small sprinkles, shapes, colours, outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the face, the two eyes, the pink cheeks and the open mouth, so the middle of the splat is plain white whipped cream with no face; do not redraw anything else. Keep the white blob, its round splashes, the drip, the small sprinkles, shapes, colours, outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-splatted-b",
+      "candidate": 0,
+      "sha256": "f7ea79c787e99b79332ccd43e7a9a2063272254bc2a4afba7462af6dba4fe9c1"
+    }
+  }
+}

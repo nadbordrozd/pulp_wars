@@ -1,0 +1,36 @@
+{
+  "id": "gummy-bear-a-jelly-pink",
+  "jobId": "21db126d-71a9-4347-95b1-dbf5072c6af7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gummy-bear",
+    "subject": "UNIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 51204,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colour of two areas: the big cream oval on the belly and the cream patch around the mouth become the same pink as the rest of the body, colour #da5673, shaded like the body, so the whole bear is one single pink colour like a gummy jelly sweet; add one long white shine streak on the belly. Keep the small black eyes, the small smile, the pose, the fists, the shapes, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colour of two areas: the big cream oval on the belly and the cream patch around the mouth become the same pink as the rest of the body, colour #da5673, shaded like the body, so the whole bear is one single pink colour like a gummy jelly sweet; add one long white shine streak on the belly. Keep the small black eyes, the small smile, the pose, the fists, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colour of two areas: the big cream oval on the belly and the cream patch around the mouth become the same pink as the rest of the body, colour #da5673, shaded like the body, so the whole bear is one single pink colour like a gummy jelly sweet; add one long white shine streak on the belly. Keep the small black eyes, the small smile, the pose, the fists, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colour of two areas: the big cream oval on the belly and the cream patch around the mouth become the same pink as the rest of the body, colour #da5673, shaded like the body, so the whole bear is one single pink colour like a gummy jelly sweet; add one long white shine streak on the belly. Keep the small black eyes, the small smile, the pose, the fists, the shapes, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "gummy-bear-a-jelly",
+      "candidate": 0,
+      "sha256": "192dbfbf3d2c00c8f1f075b635ea06d3800025f13d20e778757fc243d5fb0bab"
+    }
+  }
+}

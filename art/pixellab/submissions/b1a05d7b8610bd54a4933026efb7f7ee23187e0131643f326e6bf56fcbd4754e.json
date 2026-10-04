@@ -1,0 +1,36 @@
+{
+  "id": "gummy-bear-a-jelly",
+  "jobId": "331cf44b-710c-4513-a850-f8dd62a147be",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-gummy-bear",
+    "subject": "UNIT:CANDY:KNIGHT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 51203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the teddy bear into a gummy jelly sweet moulded from one single piece of pink jelly: the cream belly patch, the cream muzzle and the cream inner ears become the same glossy pink jelly as the rest of the body, with one big white shine highlight on the belly and one on the head; erase the ice-cream club so both hands are empty round fists. Keep the bear's pose, size, simple eyes and smile, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn the teddy bear into a gummy jelly sweet moulded from one single piece of pink jelly: the cream belly patch, the cream muzzle and the cream inner ears become the same glossy pink jelly as the rest of the body, with one big white shine highlight on the belly and one on the head; erase the ice-cream club so both hands are empty round fists. Keep the bear's pose, size, simple eyes and smile, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn the teddy bear into a gummy jelly sweet moulded from one single piece of pink jelly: the cream belly patch, the cream muzzle and the cream inner ears become the same glossy pink jelly as the rest of the body, with one big white shine highlight on the belly and one on the head; erase the ice-cream club so both hands are empty round fists. Keep the bear's pose, size, simple eyes and smile, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Turn the teddy bear into a gummy jelly sweet moulded from one single piece of pink jelly: the cream belly patch, the cream muzzle and the cream inner ears become the same glossy pink jelly as the rest of the body, with one big white shine highlight on the belly and one on the head; erase the ice-cream club so both hands are empty round fists. Keep the bear's pose, size, simple eyes and smile, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "gummy-bear-a",
+      "candidate": 0,
+      "sha256": "a3bba4c3ef2e4595e2fca4722d3b18af69f79252918334ca1abedfe5683a8220"
+    }
+  }
+}
