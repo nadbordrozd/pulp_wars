@@ -22,8 +22,8 @@
  *   scenes of scripts/art/faction-buildings/scene.ts drawn by the real board
  *   host in the live look: the studied faction's city territory beside a
  *   Human one, today ("before") and with the proposal in the studied
- *   territory ("after"). Undead and Martian are always captured; Dwarf and
- *   Dinosaur once they have an accepted sample.
+ *   territory ("after"). Undead and Martian are always captured; Dinosaur,
+ *   Ice Folk (under its Snow) and Dwarf once they have an accepted sample.
  * - `scene-undead-after-grass-<variant>-desktop-zoom-1.png`: the Undead
  *   scene with each other grass candidate.
  * - `before-after-contact.png`: every scene's before and after side by side
@@ -609,7 +609,7 @@ function sceneCaptures(
 ): SceneCapture[] {
   const captures: SceneCapture[] = [];
   const factions: FactionIdV7[] = ["UNDEAD", "MARTIAN"];
-  for (const extra of ["DWARF", "DINOSAUR"] as const)
+  for (const extra of ["DINOSAUR", "ICE_FOLK", "DWARF"] as const)
     if (sceneBuildings(extra, masters).length > 0) factions.push(extra);
   for (const faction of factions)
     for (const after of [false, true])

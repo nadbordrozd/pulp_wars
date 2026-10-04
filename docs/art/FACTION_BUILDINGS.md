@@ -1,10 +1,12 @@
 # Faction building looks: proposal and sample study
 
-**Status:** proposal for bead `pulp_wars-xdh.1` (epic `pulp_wars-xdh`),
-waiting for the user's review. **Nothing here is wired into the game.** The
-PixelLab sample is prepared but **not generated yet**: the worker shell had
-no `PIXELLAB_API_KEY` (see [Sample study](#sample-study)). The Undead grass
-candidates need no PixelLab call and are in the board study already.
+**Status:** bead `pulp_wars-xdh.1` (epic `pulp_wars-xdh`). The root accepted
+the proposal table, the naming rule and the "gloam" Undead grass
+(2026-10-04), and the user asked for all of it to be made. **Every proposed
+building now has an accepted PixelLab sample** in the exploration run (25
+PixelLab calls, see [Sample study](#5-sample-study)). **Nothing here is
+wired into the game**: the runtime lookup, the names and the import of the
+samples into production batches are the next bead.
 
 The user's request (2026-10-03): some, not all, building sprites and
 descriptions become faction specific. When the Undead take a city, the
@@ -75,8 +77,8 @@ The code reads names in `title(tile.improvement)` (the board label in
 
 ## 3. Per-faction table
 
-"same" means the shared building as today. **Bold** changes are in this
-bead's sample.
+"same" means the shared building as today. Every change has an accepted
+sample; **bold** marks the first four that were made.
 
 | Building    | Human | Undead                     | Goblin | Dinosaur           | Martian         | Ice Folk        | Dwarf             |
 | ----------- | ----- | -------------------------- | ------ | ------------------ | --------------- | --------------- | ----------------- |
@@ -95,17 +97,17 @@ bead's sample.
 
 ### The changes
 
-| Faction  | Building → name               | Look (one line)                                                                                   | Flavour description (rules text unchanged)                        | Why                                                         |
-| -------- | ----------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
-| Undead   | Farm → **Graveyard**          | three rows of low dark burial mounds with small dark wooden crosses and a few pale violet flowers | "Quiet plots, tended for later. Counts as a Farm."                | the user's example; the Undead do not eat                   |
-| Undead   | Windmill → Bone Mill          | the same windmill in dark slate with ragged charcoal sails and one violet window                  | "Grinds old bones into something useful. Counts as a Windmill."   | a grain mill beside a graveyard; cheap (an edit of today's) |
-| Martian  | Windmill → **Solar Array**    | three tilted navy solar panels on chrome stands, a mast with one small magenta light              | "Drinks the light of a lesser star. Counts as a Windmill."        | the user's example; sails are the opposite of a saucer      |
-| Martian  | Farm → Hydroponic Farm        | the vegetable beds in chrome troughs under small glass domes                                      | "Earth vegetables, under glass. Counts as a Farm."                | second priority; the plants keep the Farm readable          |
-| Dinosaur | Windmill → **Grinding Stone** | a huge round millstone on basalt stones, a wooden lever, a hide lean-to on bone poles             | "Push the pole, crush the grain. Counts as a Windmill."           | the worst anachronism: machinery in a stone-age camp        |
-| Dinosaur | Sawmill → Chopping Block      | a big stone axe in a split stump beside split logs, no steel saw                                  | "A big stone axe and a bigger arm. Counts as a Sawmill."          | a steel circular saw in a stone-age camp                    |
-| Ice Folk | Farm → Frost Garden           | rows of hardy blue-green frost cabbages in snow-banked beds                                       | "Cabbages that like the cold. Counts as a Farm."                  | green open beds look wrong under the Ice Folk Snow          |
-| Dwarf    | Farm → **Mushroom Farm**      | three rows of big tan and russet mushrooms on dark peat beds                                      | "Grown in the dark, eaten with ale. Counts as a Farm."            | the classic dwarf crop; still plainly a farm                |
-| Dwarf    | Windmill → Steam Pump         | a squat copper boiler tower with a chimney puffing steam and a turning cog wheel                  | "Hisses, clanks and keeps the pressure up. Counts as a Windmill." | steampunk; second priority                                  |
+| Faction  | Building → name               | Look (one line)                                                                                  | Flavour description (rules text unchanged)                        | Why                                                         |
+| -------- | ----------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------- |
+| Undead   | Farm → **Graveyard**          | three rows of dark slate gravestones with moss, on mounds of dark earth with tiny violet flowers | "Quiet plots, tended for later. Counts as a Farm."                | the user's example; the Undead do not eat                   |
+| Undead   | Windmill → Bone Mill          | the same windmill in dark slate with ragged charcoal sails, charcoal roofs and violet windows    | "Grinds old bones into something useful. Counts as a Windmill."   | a grain mill beside a graveyard; cheap (an edit of today's) |
+| Martian  | Windmill → **Solar Array**    | three tilted navy solar panels on chrome stands, a mast with one small magenta light             | "Drinks the light of a lesser star. Counts as a Windmill."        | the user's example; sails are the opposite of a saucer      |
+| Martian  | Farm → Hydroponic Farm        | the vegetable beds in chrome troughs under small glass domes                                     | "Earth vegetables, under glass. Counts as a Farm."                | second priority; the plants keep the Farm readable          |
+| Dinosaur | Windmill → **Grinding Stone** | an upright grindstone with a wooden lever on a big flat millstone, a hide lean-to on bone poles  | "Push the pole, crush the grain. Counts as a Windmill."           | the worst anachronism: machinery in a stone-age camp        |
+| Dinosaur | Sawmill → Chopping Block      | a huge axe in a tree stump, a pile of split logs and a hide lean-to, no saw blade                | "A big stone axe and a bigger arm. Counts as a Sawmill."          | a steel circular saw in a stone-age camp                    |
+| Ice Folk | Farm → Frost Garden           | three rows of blue-green frost cabbages on thin banks of snow                                    | "Cabbages that like the cold. Counts as a Farm."                  | green open beds look wrong under the Ice Folk Snow          |
+| Dwarf    | Farm → **Mushroom Farm**      | four rows of tan and brown mushrooms on thin peat beds                                           | "Grown in the dark, eaten with ale. Counts as a Farm."            | the classic dwarf crop; still plainly a farm                |
+| Dwarf    | Windmill → Steam Pump         | a copper boiler with a domed top, an iron chimney puffing steam and a brass cog wheel            | "Hisses, clanks and keeps the pressure up. Counts as a Windmill." | steampunk; second priority                                  |
 
 **Kept the same, on purpose.** The Goblins keep everything (the user: they
 can have the same farms; scrap-built versions would add clutter for little
@@ -121,7 +123,7 @@ the Fish resource and the Port); a Dinosaur fern grove or nest as the Farm
 farms kept, and the Goblin cities already carry the scrap look); a
 graveyard of pale round-topped headstones (that is the shape of the
 code-drawn **Grave** marker, a gameplay marker the Necromancer raises from;
-the Graveyard uses dark crosses and mounds so the two never mix).
+the Graveyard's stones are dark slate with moss, so the two differ by tone).
 
 ## 4. The Undead territory grass
 
@@ -145,13 +147,13 @@ a colour change only.
 | **gloam** (proposed) | `#749b76` | `#86ab86` `#54605e` `#4c5656` | the only one that reads as evening; still clearly grass; not spooky "props" |
 | wilt                 | `#a1a678` | dry olive                     | autumnal, but reads as dry land or a different biome; rejected              |
 
-A PixelLab alternative is prepared (recipes `undead-grass-a` and
+A PixelLab alternative was tried (recipes `undead-grass-a` and
 `undead-grass-b`, Pixflux forced to
 [`undead-grass.png`](../../scripts/art/chibi/palettes/undead-grass.png) and
-`undead-grass-leaves.png` with the gloam colours; the second adds a few
-dusky purple fallen leaves). The recolour is the recommendation either way:
-a new Pixflux field has a different tuft pattern, so it would be a second
-texture beside today's, where the recolour is the same field at dusk.
+`undead-grass-leaves.png` with the gloam colours) and rejected: the first
+drew tree canopies into the meadow, the second a clean dusk meadow with far
+fewer tufts than today's Grass, which would be a second texture beside it.
+The recolour is the same field at dusk and is the accepted grass.
 
 Wiring notes for production:
 
@@ -163,43 +165,71 @@ Wiring notes for production:
   stronger.
 - **Forest.** The Forest master carries its ground; the study re-composites
   the two Forest bodies over the Undead grass (`groundComposite`, as the
-  pipeline builds them). The tree canopies stay bright yellow-green, which
-  is the strongest remaining mismatch; a calm recolour of the Forest body
-  in Undead territory is a possible follow-up, not proposed here.
+  pipeline builds them). The tree canopies keep their colours. In the board
+  captures they read as trees on dusk grass and do not clash, so no canopy
+  tone was made; it stays a possible follow-up if play shows otherwise.
 - **Mountains** draw Grass under their fringe, which follows automatically.
 
 ## 5. Sample study
 
-### What is prepared
+### What was made
 
 Exploration run
 [`art/explorations/faction-buildings-2026-10/`](../../art/explorations/faction-buildings-2026-10/)
-(`batch.json`, `subjects.json`, `faction.md`, run fragments), validated by
-`npm run art:chibi -- prompts --exploration art/explorations/faction-buildings-2026-10`.
-The classes skip the faction layer, so each subject line names its
-materials; the run overrides `class-calm-building` (no Human materials
-named) and `class-crop-rows` / `camera-crop-pattern` (no "plants" or
-"vegetable garden", so a graveyard is not drawn as cabbages).
+(`batch.json`, `subjects.json`, `faction.md`, run fragments, records, raw
+sheets, receipts, and the accepted masters under `assets/buildings/`). The
+classes skip the faction layer, so each subject line names its materials;
+the run overrides `class-calm-building` (no Human materials named) and
+`class-crop-rows` / `camera-crop-pattern` (no "plants" or "vegetable
+garden"). 25 PixelLab calls: 18 creations and 7 edits.
 
-| Asset                           | Class           | Recipes (seed)                           | Approach                                                                        |
-| ------------------------------- | --------------- | ---------------------------------------- | ------------------------------------------------------------------------------- |
-| `chibi-undead-graveyard`        | `crop-rows`     | `graveyard-flux-a` (97101), `-b` (97102) | Pixflux high top-down like the accepted `veg-flux-a` Farm; then tune `cropRows` |
-| `chibi-dwarf-mushroom-farm`     | `crop-rows`     | `mushroom-flux-a` (97201), `-b` (97202)  | as above                                                                        |
-| `chibi-martian-solar-array`     | `calm-building` | `solar-a` (97301), `-b` (97302)          | Pixen creation; a ground-removal edit if it stands on a slab                    |
-| `chibi-dinosaur-grinding-stone` | `calm-building` | `grindstone-a` (97401), `-b` (97402)     | as above                                                                        |
-| `chibi-undead-grass-1`          | `terrain`       | `undead-grass-a` (97501)                 | Pixflux 160 x 160, forced gloam palette, seamless crop                          |
-| `chibi-undead-grass-leaves-1`   | `terrain`       | `undead-grass-b` (97502)                 | as above, with a few dusky purple leaves                                        |
+| Asset                           | Accepted recipe        | Recipes tried | How                                                                                                  |
+| ------------------------------- | ---------------------- | ------------- | ---------------------------------------------------------------------------------------------------- |
+| `chibi-undead-graveyard`        | `graveyard-pixen-a`    | 4             | Pixen creation; its top row of five stones stamped on three rows in a brick pattern                  |
+| `chibi-undead-bone-mill`        | `bone-mill-edit-b`     | 2             | two edits of the accepted shared Windmill (`windmill-flat-a`): colours and sails, then the roofs     |
+| `chibi-martian-solar-array`     | `solar-b-edit-c`       | 4             | Pixen creation, then a ground-removal edit                                                           |
+| `chibi-martian-hydroponic-farm` | `hydroponic-edit-a`    | 2             | an edit of the accepted Farm candidate (`veg-flux-a`); its top trough stamped as five domes per tile |
+| `chibi-dinosaur-grinding-stone` | `grindstone-a`         | 2             | Pixen creation, as drawn                                                                             |
+| `chibi-dinosaur-chopping-block` | `chopping-block-b`     | 2             | Pixen creation, as drawn                                                                             |
+| `chibi-ice-folk-frost-garden`   | `frost-garden-edit-a`  | 2             | an edit of `veg-flux-a`; its top row stamped as five cabbages per tile, brick pattern                |
+| `chibi-dwarf-mushroom-farm`     | `mushroom-flux-b-edit` | 3             | Pixflux creation, then a colour edit; its tan and brown beds stamped on four rows                    |
+| `chibi-dwarf-steam-pump`        | `steam-pump-b`         | 2             | Pixen creation, as drawn                                                                             |
+| Undead grass (PixelLab)         | none                   | 2             | rejected, see section 4; the code recolour "gloam" is the grass                                      |
 
-The two `crop-rows` assets carry a provisional `cropRows` (three rows, the
-whole first bed stamped across the period); it must be set from the
-accepted candidate's beds before `accept`, as for the Farm. Ten calls in
-all, plus about two ground-removal edits and any retries.
+Rejected, with the reason recorded in `records.json`:
 
-To generate (needs `PIXELLAB_API_KEY` in the environment):
+- `graveyard-flux-a`, `graveyard-flux-b`: Pixflux ignored the subject (pink
+  slabs on grass; stumps and bushes on beds). `graveyard-pixen-b`: the
+  runner-up, pointed grey-brown stones, thinner and paler.
+- `mushroom-flux-a`: blue, red and yellow mushrooms and a row of trees.
+  `mushroom-flux-b`: the right shapes with red and green caps (recoloured by
+  the accepted edit).
+- `solar-a`: small, the lamp low. `solar-b`: the chosen design on a slab.
+  `solar-b-edit`: the slab became a glass plate.
+- `grindstone-b`: a canopy over grey blocks, no millstone.
+- `bone-mill-edit-a`: kept its red roofs.
+- `hydroponic-pixen-a`, `frost-garden-pixen-a`: soil plates, no plant or no
+  gaps. `chopping-block-a`: small, on a grass slab. `steam-pump-a`: a third
+  of a tile wide.
+
+What worked, for the production batches:
+
+- **A Farm replacement is best made by editing the accepted Farm candidate**
+  ("Turn each of the three raised beds of soil into …; Keep the three rows
+  … exactly the same"): rows, gaps and plant sizes stay, so the `crop-rows`
+  stamps are easy. Pixflux creations of a new field ignored the subject
+  twice; Pixen creations drew it.
+- **Colours by hex in an edit** moved the mushroom caps and the mill's
+  roofs; "Change only one thing: …" kept the rest.
+- **Ground removal**: "Remove all ground: … stand directly on a transparent
+  background with nothing at all under them: no slab, no plate, no glass,
+  no shadow" worked where "Erase only the flat slab" drew a glass plate.
+
+To add or redo a recipe (the key is loaded by Node, never printed):
 
 ```sh
-npm run art:chibi -- generate --exploration art/explorations/faction-buildings-2026-10 \
-  --ids graveyard-flux-a,graveyard-flux-b,solar-a,solar-b,mushroom-flux-a,mushroom-flux-b,grindstone-a,grindstone-b
+node node_modules/.bin/tsx --env-file=$HOME/.zshrc scripts/art/chibi-pipeline.ts \
+  generate --exploration art/explorations/faction-buildings-2026-10 --ids <recipe>
 npm run art:chibi -- accept --exploration art/explorations/faction-buildings-2026-10 \
   --id <recipe> --candidate 0 --notes "..." --native-pass --enlarged-pass --owners-pass --no-plate-pass --camera-pass
 npm run art:faction-buildings-review
@@ -211,10 +241,9 @@ npm run art:faction-buildings-review
 [`art/pixellab/reviews/faction-buildings-study/`](../../art/pixellab/reviews/faction-buildings-study/)
 (the list is in the script's header): `buildings-{x3,1x}.png` (today's
 building beside the sample, Farms also as 3 x 3 blocks, and the faction's
-City 2; a sample not yet accepted is a "PixelLab pending" plate),
-`grass-x2.png`, the scenes
-`scene-{undead,martian}-{before,after}-{desktop,phone}-zoom-{1,0.75}.png`
-(Dwarf and Dinosaur join once they have a sample),
+City 2), `grass-x2.png`, the scenes
+`scene-<faction>-{before,after}-{desktop,phone}-zoom-{1,0.75}.png` for
+Undead, Martian, Dinosaur, Ice Folk (under its Snow) and Dwarf,
 `scene-undead-after-grass-<candidate>-desktop-zoom-1.png` and
 `before-after-contact.png`.
 
@@ -228,42 +257,51 @@ variants of a subject picks one entry per cell (`chibiVariantV7`), and the
 studied territory's cells get the proposed raster. That is what a
 per-territory lookup would draw.
 
-![Undead and Martian territories beside Human ones, today and proposed](../../art/pixellab/reviews/faction-buildings-study/before-after-contact.png)
+![Each faction's territory beside a Human one, today and proposed](../../art/pixellab/reviews/faction-buildings-study/before-after-contact.png)
+
+![Every sample beside today's building](../../art/pixellab/reviews/faction-buildings-study/buildings-1x.png)
 
 ## 6. Weak spots and open questions
 
-- **No PixelLab sample yet.** The building rows of the sheets and the
-  Martian "after" scene show today's art until the recipes are generated
-  and accepted.
-- **The Graveyard must not look like a Grave.** The gameplay Grave marker
-  is a pale round-topped headstone; the recipes exclude that shape. Check
-  it at zoom 0.75 beside a Grave once generated.
-- **Names in rules text.** "Windmill: +1 per adjacent farm" stays generic.
-  Should a Martian viewer read "Solar Array: +1 per adjacent farm" or keep
-  "Windmill"? The proposal keeps the generic word in rules and shows the
-  faction name as the title (question for the user).
-- **Forest canopy** stays bright in Undead territory (above).
-- **Ice Folk** already have Snow over their territory, drawn under
-  buildings; a Frost Garden must read on Snow and on bare Grass.
+- **The Bone Mill is very dark.** Roofs, sails and tower are close in tone;
+  at zoom 0.75 it is a black windmill shape with violet dots. It reads as
+  "the Undead windmill", but a lighter slate tower would separate the sails.
+- **The Graveyard's stones are round-topped**, like the Grave marker, but
+  dark slate where the marker is pale. If the two are confused in play, the
+  pointed-stone runner-up (`graveyard-pixen-b`) is in the run.
+- **Roads under the new Farms.** The Hydroponic Farm's troughs are 23 px
+  tall, so its gaps are under 4 px (the Farm's are 4 to 5); the Graveyard's
+  are about 5 px, the Frost Garden's 9 px, the Mushroom Farm's 6 px.
+- **The Mushroom Farm shows a faint join** every 70 px where the bed's
+  outline is stamped, and its rows are uniform.
+- **The Frost Garden's snow banks vanish on Snow** (white on white); the
+  cabbages carry it there. On bare Grass the banks show.
+- **The Solar Array keeps a few grey stepping stones** under its feet.
+- **The Chopping Block's axe head is smooth grey**: it reads as a big axe,
+  not clearly as stone.
+- **Style.** The Pixen creations (Solar Array, Steam Pump, Chopping Block,
+  Grinding Stone) are a little more detailed and saturated than the calm
+  shared set; none takes a player colour.
+- **Names in rules text** are settled (root, 2026-10-04): the board shows
+  the faction's name; rules text keeps the generic name with "Counts as a
+  Farm."
 
 ## 7. Production breakdown (proposed beads)
 
-1. **Samples and the user's pick** (this bead, once the key is available):
-   generate the ten recipes, accept, rerun the review.
-2. **Runtime: faction building resolution** (`ui/presentation`): an
+1. **Runtime: faction building resolution** (`ui/presentation`): an
    improvement subject per faction (`IMPROVEMENT:<FACTION>:<ID>`, falling
    back to `IMPROVEMENT:<ID>`), resolved from the territory owner's faction
    in the board renderer, the tile dock and the technology card of that
-   faction's viewer; Undead grass variants resolved the same way for
-   Grass, the Forest ground and the Mountain fringe; tests that a captured
-   city's buildings flip and that every other faction is unchanged.
-3. **Runtime: names and flavour text** (`ui/presentation`): the display
+   faction's viewer (through `factionImprovementSubjectV7` in
+   `chibi-ui-art-v7.ts` once the Gallery bead that adds it has landed);
+   Undead grass variants resolved the same way for Grass, the Forest ground
+   and the Mountain fringe; tests that a captured city's buildings flip and
+   that every other faction is unchanged.
+2. **Runtime: names and flavour text** (`ui/presentation`): the display
    name in the board label, dock title and build button, the flavour line
-   in the dock; rules texts unchanged; tests.
-4. **Production art, one batch per faction** (`asset-only`): import the
-   accepted samples, then the "later" pieces (Undead Bone Mill, Martian
-   Hydroponic Farm, Dinosaur Chopping Block, Ice Folk Frost Garden, Dwarf
-   Steam Pump), each reviewed with this board study.
-
-2 and 3 can be one bead if small; 4 can start with the sampled pieces while
-2 is built, since the review scene does not need the runtime.
+   in the dock; rules texts unchanged; tests. Can be one bead with 1.
+3. **Production art** (`asset-only`): `import` the nine accepted recipe
+   chains into one batch per faction, register them in a manifest module,
+   and bake the three gloam Grass tiles and two Forest composites as
+   masters; `art:validate` then re-derives every crop-rows and seated
+   master. Any redo from section 6 (a lighter Bone Mill) belongs here.

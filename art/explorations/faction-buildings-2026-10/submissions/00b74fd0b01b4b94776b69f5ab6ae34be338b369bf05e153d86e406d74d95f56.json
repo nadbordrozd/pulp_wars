@@ -1,0 +1,57 @@
+{
+  "id": "hydroponic-pixen-a",
+  "jobId": "sync-383f4582-ca22-45e4-bd5c-09c5d219f218",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "faction-buildings",
+    "asset": "chibi-martian-hydroponic-farm",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-FACTION-BUILDINGS",
+    "recipeClass": "crop-rows",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 97702,
+    "noBackground": true,
+    "options": {
+      "outline": "selective outline",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style-crop.txt + scripts/art/chibi/fragments/style-crop.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "art/explorations/faction-buildings-2026-10/fragments/camera-crop-pattern.txt",
+        "text": "Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/faction-buildings-2026-10/fragments/class-crop-rows.txt + art/explorations/faction-buildings-2026-10/fragments/class-crop-rows.negative.txt",
+        "text": "Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent.",
+        "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/faction-buildings-2026-10/subjects.json",
+        "text": "Subject: a small hydroponic farm: three straight horizontal troughs of polished silver chrome, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the troughs; in each trough grows one row of five round leafy green vegetables side by side, each under its own small clear pale glass dome with one white highlight. Troughs, plants and domes only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "brown soil, dirt, wood, planks, fence, barn, building, saucer, alien"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent. Subject: a small hydroponic farm: three straight horizontal troughs of polished silver chrome, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the troughs; in each trough grows one row of five round leafy green vegetables side by side, each under its own small clear pale glass dome with one white highlight. Troughs, plants and domes only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, brown soil, dirt, wood, planks, saucer, alien",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent. Subject: a small hydroponic farm: three straight horizontal troughs of polished silver chrome, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the troughs; in each trough grows one row of five round leafy green vegetables side by side, each under its own small clear pale glass dome with one white highlight. Troughs, plants and domes only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, brown soil, dirt, wood, planks, saucer, alien."
+  }
+}

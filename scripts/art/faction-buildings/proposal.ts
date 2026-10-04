@@ -13,7 +13,7 @@ export interface FactionBuildingChangeV7 {
   readonly name: string;
   /** The look, in one line. */
   readonly look: string;
-  /** "sample": in this bead's PixelLab sample; "later": production only. */
+  /** "sample": has a PixelLab sample in the exploration run; "later": not made yet. */
   readonly stage: "sample" | "later";
   /** The exploration asset of the sample, when it has one. */
   readonly asset?: string;
@@ -24,7 +24,7 @@ export const FACTION_BUILDING_CHANGES_V7: readonly FactionBuildingChangeV7[] = [
     faction: "UNDEAD",
     improvement: "FARM",
     name: "Graveyard",
-    look: "three rows of low dark burial mounds with small dark wooden crosses and a few pale violet flowers",
+    look: "three rows of dark slate gravestones with moss on mounds of dark earth and tiny violet flowers",
     stage: "sample",
     asset: "chibi-undead-graveyard",
   },
@@ -33,7 +33,8 @@ export const FACTION_BUILDING_CHANGES_V7: readonly FactionBuildingChangeV7[] = [
     improvement: "WINDMILL",
     name: "Bone Mill",
     look: "the windmill in dark slate with ragged charcoal sails and one violet window",
-    stage: "later",
+    stage: "sample",
+    asset: "chibi-undead-bone-mill",
   },
   {
     faction: "MARTIAN",
@@ -48,13 +49,14 @@ export const FACTION_BUILDING_CHANGES_V7: readonly FactionBuildingChangeV7[] = [
     improvement: "FARM",
     name: "Hydroponic Farm",
     look: "the vegetable beds in chrome troughs under small glass domes",
-    stage: "later",
+    stage: "sample",
+    asset: "chibi-martian-hydroponic-farm",
   },
   {
     faction: "DINOSAUR",
     improvement: "WINDMILL",
     name: "Grinding Stone",
-    look: "a huge round millstone on basalt stones with a wooden lever and a hide lean-to on bone poles",
+    look: "an upright grindstone with a wooden lever on a big flat millstone, a hide lean-to on bone poles",
     stage: "sample",
     asset: "chibi-dinosaur-grinding-stone",
   },
@@ -62,21 +64,23 @@ export const FACTION_BUILDING_CHANGES_V7: readonly FactionBuildingChangeV7[] = [
     faction: "DINOSAUR",
     improvement: "SAWMILL",
     name: "Chopping Block",
-    look: "a big stone axe in a split stump beside a pile of split logs, no steel saw",
-    stage: "later",
+    look: "a huge axe in a tree stump, a pile of split logs and a hide lean-to, no saw blade",
+    stage: "sample",
+    asset: "chibi-dinosaur-chopping-block",
   },
   {
     faction: "ICE_FOLK",
     improvement: "FARM",
     name: "Frost Garden",
-    look: "rows of hardy blue-green frost cabbages in snow-banked beds",
-    stage: "later",
+    look: "three rows of blue-green frost cabbages on thin banks of snow",
+    stage: "sample",
+    asset: "chibi-ice-folk-frost-garden",
   },
   {
     faction: "DWARF",
     improvement: "FARM",
     name: "Mushroom Farm",
-    look: "three rows of big tan and russet mushrooms on dark peat beds",
+    look: "four rows of tan and brown mushrooms on thin peat beds",
     stage: "sample",
     asset: "chibi-dwarf-mushroom-farm",
   },
@@ -84,8 +88,9 @@ export const FACTION_BUILDING_CHANGES_V7: readonly FactionBuildingChangeV7[] = [
     faction: "DWARF",
     improvement: "WINDMILL",
     name: "Steam Pump",
-    look: "a squat copper boiler tower with a chimney puffing steam and a turning cog wheel",
-    stage: "later",
+    look: "a copper boiler with a domed top, an iron chimney puffing steam and a brass cog wheel",
+    stage: "sample",
+    asset: "chibi-dwarf-steam-pump",
   },
 ];
 

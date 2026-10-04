@@ -231,6 +231,10 @@ export function factionBuildingsSceneViewV7(
       site: cell.city ? "CITY" : null,
       territoryCityId: cityId(cell.seat),
       territoryOwnerId: playerId(cell.seat),
+      // The Ice Folk's own territory lies under Snow (the Ice Folk revision).
+      ...(faction === "ICE_FOLK" && cell.seat === 0
+        ? { snow: true, biome: "PLAINS" }
+        : {}),
     } as Tile;
   });
   const cities: PlayerViewV7["cities"][number][] = [];

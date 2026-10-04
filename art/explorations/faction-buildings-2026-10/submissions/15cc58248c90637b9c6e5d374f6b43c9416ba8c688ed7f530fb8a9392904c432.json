@@ -1,0 +1,58 @@
+{
+  "id": "graveyard-flux-a",
+  "jobId": "sync-facda484-81c3-4169-907a-268ab46ca9e2",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "faction-buildings",
+    "asset": "chibi-undead-graveyard",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-FACTION-BUILDINGS",
+    "recipeClass": "crop-rows",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 97101,
+    "noBackground": true,
+    "options": {
+      "outline": "selective outline",
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style-crop.txt + scripts/art/chibi/fragments/style-crop.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "art/explorations/faction-buildings-2026-10/fragments/camera-crop-pattern.txt",
+        "text": "Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+      },
+      {
+        "layer": "class",
+        "source": "art/explorations/faction-buildings-2026-10/fragments/class-crop-rows.txt + art/explorations/faction-buildings-2026-10/fragments/class-crop-rows.negative.txt",
+        "text": "Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent.",
+        "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/faction-buildings-2026-10/subjects.json",
+        "text": "Subject: a small old graveyard plot: three straight horizontal strips of dark grey-brown earth, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip lies one row of five small low rounded burial mounds of dark earth side by side, each with a small dark weathered wooden cross at its head, and a few tiny pale violet flowers between the mounds; muted dark slate, dusty grey-brown and charcoal colours. Earth, mounds, crosses and flowers only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent. Subject: a small old graveyard plot: three straight horizontal strips of dark grey-brown earth, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip lies one row of five small low rounded burial mounds of dark earth side by side, each with a small dark weathered wooden cross at its head, and a few tiny pale violet flowers between the mounds; muted dark slate, dusty grey-brown and charcoal colours. Earth, mounds, crosses and flowers only.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent. Subject: a small old graveyard plot: three straight horizontal strips of dark grey-brown earth, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip lies one row of five small low rounded burial mounds of dark earth side by side, each with a small dark weathered wooden cross at its head, and a few tiny pale violet flowers between the mounds; muted dark slate, dusty grey-brown and charcoal colours. Earth, mounds, crosses and flowers only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages."
+  }
+}

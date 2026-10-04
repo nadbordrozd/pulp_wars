@@ -1,0 +1,36 @@
+{
+  "id": "solar-b-edit",
+  "jobId": "4153e689-7054-415b-8912-23b2e6507aa5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "faction-buildings",
+    "asset": "chibi-martian-solar-array",
+    "subject": "IMPROVEMENT:WINDMILL",
+    "faction": "TEST-FACTION-BUILDINGS",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 97303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Erase only the flat slab of grass, dirt and stone under the machine, making it fully transparent. Do not change anything standing on it: the three dark blue solar panels, the chrome frame and feet and the mast with the pink light stay exactly as they are, with the same colours, outline and art style."
+      }
+    ],
+    "prompt": "Erase only the flat slab of grass, dirt and stone under the machine, making it fully transparent. Do not change anything standing on it: the three dark blue solar panels, the chrome frame and feet and the mast with the pink light stay exactly as they are, with the same colours, outline and art style.",
+    "negativePrompt": "",
+    "description": "Erase only the flat slab of grass, dirt and stone under the machine, making it fully transparent. Do not change anything standing on it: the three dark blue solar panels, the chrome frame and feet and the mast with the pink light stay exactly as they are, with the same colours, outline and art style.",
+    "editInstruction": "Erase only the flat slab of grass, dirt and stone under the machine, making it fully transparent. Do not change anything standing on it: the three dark blue solar panels, the chrome frame and feet and the mast with the pink light stay exactly as they are, with the same colours, outline and art style.",
+    "source": {
+      "recipe": "solar-b",
+      "candidate": 0,
+      "sha256": "ac004eca679ac06d827bed5cae8d188faa5d214d5778efd50c17fde2c819f302"
+    }
+  }
+}
