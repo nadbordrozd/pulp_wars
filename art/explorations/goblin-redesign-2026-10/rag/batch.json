@@ -1,0 +1,600 @@
+{
+  "schemaVersion": 1,
+  "batch": "goblin-redesign-rag",
+  "title": "Goblin redesign direction B (Rust-red rags and canvas): fresh creations of the eight units, eight portraits, three cities and the ships in fixed faction colours (exploration, never registered; the alternative)",
+  "bead": "pulp_wars-wrn.1",
+  "faction": "TEST-GOBLIN-RAG",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-redesign-rag-goblin",
+      "subject": "UNIT:GOBLIN:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-wolf-rider",
+      "subject": "UNIT:GOBLIN:RAIDER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-bomb-chucker",
+      "subject": "UNIT:GOBLIN:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-orc-brute",
+      "subject": "UNIT:GOBLIN:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-orc-warboss",
+      "subject": "UNIT:GOBLIN:CAPTAIN",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-rocket-cart",
+      "subject": "UNIT:GOBLIN:CATAPULT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-scrap-buggy",
+      "subject": "UNIT:GOBLIN:KNIGHT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-troll",
+      "subject": "UNIT:GOBLIN:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-goblin",
+      "subject": "PORTRAIT:GOBLIN:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-wolf-rider",
+      "subject": "PORTRAIT:GOBLIN:RAIDER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-bomb-chucker",
+      "subject": "PORTRAIT:GOBLIN:MARKSMAN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-orc-brute",
+      "subject": "PORTRAIT:GOBLIN:GUARD",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-orc-warboss",
+      "subject": "PORTRAIT:GOBLIN:CAPTAIN",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-rocket-cart",
+      "subject": "PORTRAIT:GOBLIN:CATAPULT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-scrap-buggy",
+      "subject": "PORTRAIT:GOBLIN:KNIGHT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-troll",
+      "subject": "PORTRAIT:GOBLIN:JUGGERNAUT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-city-1",
+      "subject": "CITY:GOBLIN:1",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-city-2",
+      "subject": "CITY:GOBLIN:2",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 96,
+        "height": 100
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-city-3",
+      "subject": "CITY:GOBLIN:3",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 96,
+        "height": 104
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-patrol-boat",
+      "subject": "UNIT:GOBLIN:PATROL_BOAT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-battleship",
+      "subject": "UNIT:GOBLIN:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-transport",
+      "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-patrol-boat",
+      "subject": "PORTRAIT:GOBLIN:PATROL_BOAT",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-redesign-rag-portrait-battleship",
+      "subject": "PORTRAIT:GOBLIN:BATTLESHIP",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "goblin-a",
+      "asset": "chibi-redesign-rag-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 94001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "notes": "Sample stage (run first): a fresh creation of the goblin in direction B, seed a; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "goblin-b",
+      "asset": "chibi-redesign-rag-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 94002,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "notes": "Sample stage (run first): a fresh creation of the goblin in direction B, seed b; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "orc-brute-a",
+      "asset": "chibi-redesign-rag-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 94031,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "helmet covering the face, visor, face guard, dark skin",
+      "notes": "Sample stage (run first): a fresh creation of the orc brute in direction B, seed a; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "orc-brute-b",
+      "asset": "chibi-redesign-rag-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 94032,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "helmet covering the face, visor, face guard, dark skin",
+      "notes": "Sample stage (run first): a fresh creation of the orc brute in direction B, seed b; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "orc-warboss-a",
+      "asset": "chibi-redesign-rag-orc-warboss",
+      "endpoint": "create-image-pixen",
+      "seed": 94041,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "visor, face guard, helmet covering the face, long cape, cloak covering the body, megaphone covering the face, dark skin",
+      "notes": "Sample stage (run first): a fresh creation of the orc warboss in direction B, seed a; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "orc-warboss-b",
+      "asset": "chibi-redesign-rag-orc-warboss",
+      "endpoint": "create-image-pixen",
+      "seed": 94042,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "visor, face guard, helmet covering the face, long cape, cloak covering the body, megaphone covering the face, dark skin",
+      "notes": "Sample stage (run first): a fresh creation of the orc warboss in direction B, seed b; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "troll-a",
+      "asset": "chibi-redesign-rag-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 94071,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The figure is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "smock, apron, overalls, dark green skin, blue skin, grey skin, dark skin",
+      "notes": "Sample stage (run first): a fresh creation of the troll in direction B, seed a; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "troll-b",
+      "asset": "chibi-redesign-rag-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 94072,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The figure is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "smock, apron, overalls, dark green skin, blue skin, grey skin, dark skin",
+      "notes": "Sample stage (run first): a fresh creation of the troll in direction B, seed b; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "wolf-rider-a",
+      "asset": "chibi-redesign-rag-wolf-rider",
+      "endpoint": "create-image-pixen",
+      "seed": 94011,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The figure is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "horse, black wolf, dark wolf",
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the wolf rider in direction B."
+    },
+    {
+      "id": "bomb-chucker-a",
+      "asset": "chibi-redesign-rag-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 94021,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the bomb chucker in direction B."
+    },
+    {
+      "id": "rocket-cart-a",
+      "asset": "chibi-redesign-rag-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 94051,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The machine is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "catapult, missile, steel rocket, dark planks",
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the rocket cart in direction B."
+    },
+    {
+      "id": "scrap-buggy-a",
+      "asset": "chibi-redesign-rag-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 94061,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The machine is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "horse, cart, wooden planks, modern car",
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the scrap buggy in direction B."
+    },
+    {
+      "id": "portrait-goblin-a",
+      "asset": "chibi-redesign-rag-portrait-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 94081,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait goblin in direction B."
+    },
+    {
+      "id": "portrait-wolf-rider-a",
+      "asset": "chibi-redesign-rag-portrait-wolf-rider",
+      "endpoint": "create-image-pixen",
+      "seed": 94091,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait wolf rider in direction B."
+    },
+    {
+      "id": "portrait-bomb-chucker-a",
+      "asset": "chibi-redesign-rag-portrait-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 94101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait bomb chucker in direction B."
+    },
+    {
+      "id": "portrait-orc-brute-a",
+      "asset": "chibi-redesign-rag-portrait-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 94111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait orc brute in direction B."
+    },
+    {
+      "id": "portrait-orc-warboss-a",
+      "asset": "chibi-redesign-rag-portrait-orc-warboss",
+      "endpoint": "create-image-pixen",
+      "seed": 94121,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "visor, face guard, helmet covering the face",
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait orc warboss in direction B."
+    },
+    {
+      "id": "portrait-rocket-cart-a",
+      "asset": "chibi-redesign-rag-portrait-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 94131,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait rocket cart in direction B."
+    },
+    {
+      "id": "portrait-scrap-buggy-a",
+      "asset": "chibi-redesign-rag-portrait-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 94141,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait scrap buggy in direction B."
+    },
+    {
+      "id": "portrait-troll-a",
+      "asset": "chibi-redesign-rag-portrait-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 94151,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait troll in direction B."
+    },
+    {
+      "id": "city-1-a",
+      "asset": "chibi-redesign-rag-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 94161,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the city 1 in direction B."
+    },
+    {
+      "id": "city-2-a",
+      "asset": "chibi-redesign-rag-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 94171,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the city 2 in direction B."
+    },
+    {
+      "id": "city-3-a",
+      "asset": "chibi-redesign-rag-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 94181,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the city 3 in direction B."
+    },
+    {
+      "id": "patrol-boat-a",
+      "asset": "chibi-redesign-rag-patrol-boat",
+      "endpoint": "create-image-pixen",
+      "seed": 94191,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the patrol boat in direction B."
+    },
+    {
+      "id": "battleship-a",
+      "asset": "chibi-redesign-rag-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 94201,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the battleship in direction B."
+    },
+    {
+      "id": "transport-a",
+      "asset": "chibi-redesign-rag-transport",
+      "endpoint": "create-image-pixen",
+      "seed": 94211,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the transport in direction B."
+    },
+    {
+      "id": "portrait-patrol-boat-a",
+      "asset": "chibi-redesign-rag-portrait-patrol-boat",
+      "endpoint": "create-image-pixen",
+      "seed": 94221,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait patrol boat in direction B."
+    },
+    {
+      "id": "portrait-battleship-a",
+      "asset": "chibi-redesign-rag-portrait-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 94231,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait battleship in direction B."
+    }
+  ]
+}

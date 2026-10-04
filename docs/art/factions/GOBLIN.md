@@ -24,6 +24,13 @@ The roster and rules come from the
 (sections 2.3, 3, 6, 7 and 11.4). Patrol Boat and Battleship reuse the Human
 art ([section 3](../../product/RULESET_7_REVISION_17_GOBLINS.md#3-goblin-roster)).
 
+**Redesign under way (epic `pulp_wars-wrn`):** the user found the live
+look too dark (2026-10-04) and asked for a redesign from scratch. The
+direction study, with three palettes, recoloured mockups and ready
+PixelLab recipes, is [GOBLIN_REDESIGN.md](GOBLIN_REDESIGN.md). Until a
+direction is chosen and generated, the sections below still describe the
+live art.
+
 ## New direction (October 2026): scrap raiders in fixed colours
 
 **Status:** the user chose this look on 2026-10-02 after two study passes

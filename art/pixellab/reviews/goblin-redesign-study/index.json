@@ -1,0 +1,2429 @@
+{
+  "bead": "pulp_wars-wrn.1",
+  "note": "Recolour mockups of the CURRENT Goblin shapes; no PixelLab call, no production asset changed.",
+  "grounds": [
+    { "id": "grass", "mean": [137, 183, 91], "lightness": 69 },
+    { "id": "snow", "mean": [182, 210, 159], "lightness": 81 },
+    { "id": "mountain", "mean": [162, 170, 182], "lightness": 69 },
+    { "id": "grey", "mean": [118, 118, 118], "lightness": 50 }
+  ],
+  "directions": [
+    {
+      "id": "lime",
+      "letter": "A",
+      "name": "Lime, sand and hazard paint",
+      "summary": "Bright lime goblins, mid-green orcs and a sage troll with a pale belly; pale sand-buff leather, weathered grey-tan planks, light tin scrap, and hazard-yellow paint (the faction colour) daubed on helmets, shields, plates and everything that explodes.",
+      "ink": "#0e0b06",
+      "skins": {
+        "goblin": {
+          "colours": ["#2c4f12", "#5a9424", "#86c232", "#acdc55", "#d4f08a"],
+          "shares": [0.1, 0.22, 0.38, 0.22, 0.08]
+        },
+        "orc": {
+          "colours": ["#16330f", "#326426", "#4a8a3a", "#6faa55", "#9fcb80"],
+          "shares": [0.1, 0.22, 0.38, 0.22, 0.08]
+        },
+        "troll": {
+          "colours": ["#21391b", "#4c6c3c", "#739a59", "#9dbf80", "#cde0b4"],
+          "shares": [0.1, 0.22, 0.38, 0.22, 0.08]
+        }
+      },
+      "ramps": {
+        "leather": {
+          "colours": ["#4a3218", "#9a7a46", "#d0b073", "#e6cc95", "#f6e6bf"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "wood": {
+          "colours": ["#2f2a20", "#645a46", "#958a6c", "#b8ad8c", "#d8cfb0"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "metal": {
+          "colours": ["#2e3539", "#68737a", "#9aa5a8", "#c4cccc", "#eef2ee"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "rust": {
+          "colours": ["#8c5a00", "#c98d00", "#fdd20f", "#ffe24d", "#fff1a0"],
+          "shares": [0.08, 0.2, 0.42, 0.22, 0.08]
+        },
+        "light": {
+          "colours": ["#9c8a66", "#c9b78f", "#ece0c0", "#f8f1dc", "#fffbf0"],
+          "shares": [0.08, 0.2, 0.42, 0.22, 0.08]
+        },
+        "accent": {
+          "colours": ["#8c5a00", "#c98d00", "#fdd20f", "#ffe24d", "#fff1a0"],
+          "shares": [0.08, 0.2, 0.42, 0.22, 0.08]
+        }
+      },
+      "swatches": [
+        { "role": "Goblin skin", "hex": "#86c232" },
+        { "role": "Orc skin", "hex": "#4a8a3a" },
+        { "role": "Troll skin", "hex": "#739a59" },
+        { "role": "Sand leather", "hex": "#d0b073" },
+        { "role": "Grey-tan planks", "hex": "#958a6c" },
+        { "role": "Tin scrap", "hex": "#9aa5a8" },
+        { "role": "Hazard paint shade", "hex": "#c98d00" },
+        { "role": "Hazard yellow", "hex": "#fdd20f" }
+      ]
+    },
+    {
+      "id": "rag",
+      "letter": "B",
+      "name": "Rust-red rags and canvas",
+      "summary": "Yellow-green skin, rust-red cloth and straps, patched light canvas instead of planks, a little dark iron; hazard yellow on what explodes.",
+      "ink": "#0e0806",
+      "skins": {
+        "goblin": {
+          "colours": ["#55601a", "#7f8f22", "#a8bb34", "#cbd85a", "#e8f08f"],
+          "shares": [0.1, 0.22, 0.38, 0.22, 0.08]
+        },
+        "orc": {
+          "colours": ["#3a4a16", "#556b22", "#6e8e30", "#95b052", "#c2d488"],
+          "shares": [0.1, 0.22, 0.38, 0.22, 0.08]
+        },
+        "troll": {
+          "colours": ["#3a5232", "#587450", "#7a9670", "#a2bb96", "#cfdfc4"],
+          "shares": [0.1, 0.22, 0.38, 0.22, 0.08]
+        }
+      },
+      "ramps": {
+        "leather": {
+          "colours": ["#5e1c10", "#8c2c18", "#b8452a", "#d9683e", "#f0956a"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "wood": {
+          "colours": ["#8a7a58", "#b5a27a", "#d8c79e", "#ece0bf", "#fbf4e0"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "metal": {
+          "colours": ["#2e3236", "#4a5056", "#6a7177", "#8f979c", "#bcc3c6"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "rust": {
+          "colours": ["#5a2412", "#83381c", "#a8522b", "#c87443", "#e09a68"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "light": {
+          "colours": ["#9c8a66", "#c9b78f", "#ece0c0", "#f8f1dc", "#fffbf0"],
+          "shares": [0.08, 0.2, 0.42, 0.22, 0.08]
+        },
+        "accent": {
+          "colours": ["#8c5a00", "#c98d00", "#fdd20f", "#ffe24d", "#fff1a0"],
+          "shares": [0.08, 0.2, 0.42, 0.22, 0.08]
+        }
+      },
+      "swatches": [
+        { "role": "Goblin skin", "hex": "#a8bb34" },
+        { "role": "Orc skin", "hex": "#6e8e30" },
+        { "role": "Troll skin", "hex": "#7a9670" },
+        { "role": "Rust-red cloth", "hex": "#b8452a" },
+        { "role": "Canvas", "hex": "#d8c79e" },
+        { "role": "Iron", "hex": "#6a7177" },
+        { "role": "Rust", "hex": "#a8522b" },
+        { "role": "Hazard yellow", "hex": "#fdd20f" }
+      ]
+    },
+    {
+      "id": "teal",
+      "letter": "C",
+      "name": "Teal, bone and copper",
+      "summary": "Teal-green skin, bleached bone-white hide and pale driftwood, copper scrap; hazard yellow on what explodes.",
+      "ink": "#060e0c",
+      "skins": {
+        "goblin": {
+          "colours": ["#1f5a48", "#2f8064", "#45a682", "#72c9a2", "#a8e6c8"],
+          "shares": [0.1, 0.22, 0.38, 0.22, 0.08]
+        },
+        "orc": {
+          "colours": ["#24504a", "#33736a", "#4b958a", "#77b7a8", "#a9d8cc"],
+          "shares": [0.1, 0.22, 0.38, 0.22, 0.08]
+        },
+        "troll": {
+          "colours": ["#2c4c40", "#406c5a", "#5a8c74", "#84b099", "#b6d6c4"],
+          "shares": [0.1, 0.22, 0.38, 0.22, 0.08]
+        }
+      },
+      "ramps": {
+        "leather": {
+          "colours": ["#7c6e58", "#a8987a", "#cfc1a0", "#e9dfc6", "#fbf7ea"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "wood": {
+          "colours": ["#6a5a44", "#8f7d60", "#b5a280", "#d6c7a6", "#efe5cc"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "metal": {
+          "colours": ["#5a2a12", "#8a4420", "#b8632f", "#d98a4a", "#f2b27a"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "rust": {
+          "colours": ["#4a2410", "#73391a", "#9a5428", "#c0763c", "#de9e64"],
+          "shares": [0.12, 0.25, 0.35, 0.2, 0.08]
+        },
+        "light": {
+          "colours": ["#9c8a66", "#c9b78f", "#ece0c0", "#f8f1dc", "#fffbf0"],
+          "shares": [0.08, 0.2, 0.42, 0.22, 0.08]
+        },
+        "accent": {
+          "colours": ["#8c5a00", "#c98d00", "#fdd20f", "#ffe24d", "#fff1a0"],
+          "shares": [0.08, 0.2, 0.42, 0.22, 0.08]
+        }
+      },
+      "swatches": [
+        { "role": "Goblin skin", "hex": "#45a682" },
+        { "role": "Orc skin", "hex": "#4b958a" },
+        { "role": "Troll skin", "hex": "#5a8c74" },
+        { "role": "Bone hide", "hex": "#cfc1a0" },
+        { "role": "Driftwood", "hex": "#b5a280" },
+        { "role": "Copper", "hex": "#b8632f" },
+        { "role": "Dark copper", "hex": "#9a5428" },
+        { "role": "Hazard yellow", "hex": "#fdd20f" }
+      ]
+    }
+  ],
+  "collisions": [
+    {
+      "direction": "lime",
+      "swatches": [
+        {
+          "role": "Goblin skin",
+          "hex": "#86c232",
+          "nearest": "Grass #89b75b",
+          "deltaE": 22.9,
+          "nearestUnderDeficiency": "Human gold #f1b21b",
+          "worstDeltaE": 2.2
+        },
+        {
+          "role": "Orc skin",
+          "hex": "#4a8a3a",
+          "nearest": "Grass #89b75b",
+          "deltaE": 19.2,
+          "nearestUnderDeficiency": "Dwarf copper #c27c3a",
+          "worstDeltaE": 1.6
+        },
+        {
+          "role": "Troll skin",
+          "hex": "#739a59",
+          "nearest": "Grass #89b75b",
+          "deltaE": 16.1,
+          "nearestUnderDeficiency": "Dinosaur tawny fur #a2804b",
+          "worstDeltaE": 6.4
+        },
+        {
+          "role": "Sand leather",
+          "hex": "#d0b073",
+          "nearest": "Dinosaur shaman fur #c2924b",
+          "deltaE": 14.5,
+          "nearestUnderDeficiency": "Grass #89b75b",
+          "worstDeltaE": 6.4
+        },
+        {
+          "role": "Grey-tan planks",
+          "hex": "#958a6c",
+          "nearest": "Dinosaur tawny fur #a2804b",
+          "deltaE": 17.6,
+          "nearestUnderDeficiency": "Dwarf signal green #2db885",
+          "worstDeltaE": 8.7
+        },
+        {
+          "role": "Tin scrap",
+          "hex": "#9aa5a8",
+          "nearest": "Mountain ground #a2aab6",
+          "deltaE": 5.8,
+          "nearestUnderDeficiency": "Mountain ground #a2aab6",
+          "worstDeltaE": 5
+        },
+        {
+          "role": "Hazard paint shade",
+          "hex": "#c98d00",
+          "nearest": "Human gold #f1b21b",
+          "deltaE": 15.6,
+          "nearestUnderDeficiency": "Dinosaur red-orange #fe7500",
+          "worstDeltaE": 2.8
+        },
+        {
+          "role": "Hazard yellow",
+          "hex": "#fdd20f",
+          "nearest": "Human gold #f1b21b",
+          "deltaE": 17.4,
+          "nearestUnderDeficiency": "Human gold #f1b21b",
+          "worstDeltaE": 11.7
+        }
+      ]
+    },
+    {
+      "direction": "rag",
+      "swatches": [
+        {
+          "role": "Goblin skin",
+          "hex": "#a8bb34",
+          "nearest": "Grass #89b75b",
+          "deltaE": 22.2,
+          "nearestUnderDeficiency": "Human gold #f1b21b",
+          "worstDeltaE": 4.7
+        },
+        {
+          "role": "Orc skin",
+          "hex": "#6e8e30",
+          "nearest": "Grass #89b75b",
+          "deltaE": 15.6,
+          "nearestUnderDeficiency": "Human faction crimson #d01c3a",
+          "worstDeltaE": 5.8
+        },
+        {
+          "role": "Troll skin",
+          "hex": "#7a9670",
+          "nearest": "Snow #b6d29f",
+          "deltaE": 22.8,
+          "nearestUnderDeficiency": "Dwarf signal green #2db885",
+          "worstDeltaE": 7.2
+        },
+        {
+          "role": "Rust-red cloth",
+          "hex": "#b8452a",
+          "nearest": "Dwarf ginger beard #c8642a",
+          "deltaE": 15.5,
+          "nearestUnderDeficiency": "Human faction crimson #d01c3a",
+          "worstDeltaE": 5.2
+        },
+        {
+          "role": "Canvas",
+          "hex": "#d8c79e",
+          "nearest": "Undead bone #e6e0c8",
+          "deltaE": 13.3,
+          "nearestUnderDeficiency": "Snow #b6d29f",
+          "worstDeltaE": 1.7
+        },
+        {
+          "role": "Iron",
+          "hex": "#6a7177",
+          "nearest": "Mountain ground #a2aab6",
+          "deltaE": 22.2,
+          "nearestUnderDeficiency": "Martian magenta #e83aae",
+          "worstDeltaE": 16.6
+        },
+        {
+          "role": "Rust",
+          "hex": "#a8522b",
+          "nearest": "Dwarf ginger beard #c8642a",
+          "deltaE": 14.2,
+          "nearestUnderDeficiency": "Human faction crimson #d01c3a",
+          "worstDeltaE": 3.5
+        },
+        {
+          "role": "Hazard yellow",
+          "hex": "#fdd20f",
+          "nearest": "Human gold #f1b21b",
+          "deltaE": 17.4,
+          "nearestUnderDeficiency": "Human gold #f1b21b",
+          "worstDeltaE": 11.7
+        }
+      ]
+    },
+    {
+      "direction": "teal",
+      "swatches": [
+        {
+          "role": "Goblin skin",
+          "hex": "#45a682",
+          "nearest": "Dwarf signal green #2db885",
+          "deltaE": 13.4,
+          "nearestUnderDeficiency": "Dwarf signal green #2db885",
+          "worstDeltaE": 6.8
+        },
+        {
+          "role": "Orc skin",
+          "hex": "#4b958a",
+          "nearest": "Mountain ground #a2aab6",
+          "deltaE": 29,
+          "nearestUnderDeficiency": "Martian magenta #e83aae",
+          "worstDeltaE": 12.7
+        },
+        {
+          "role": "Troll skin",
+          "hex": "#5a8c74",
+          "nearest": "Dwarf signal green #2db885",
+          "deltaE": 30,
+          "nearestUnderDeficiency": "Dwarf signal green #2db885",
+          "worstDeltaE": 13.4
+        },
+        {
+          "role": "Bone hide",
+          "hex": "#cfc1a0",
+          "nearest": "Undead bone #e6e0c8",
+          "deltaE": 12.3,
+          "nearestUnderDeficiency": "Snow #b6d29f",
+          "worstDeltaE": 3.1
+        },
+        {
+          "role": "Driftwood",
+          "hex": "#b5a280",
+          "nearest": "Dinosaur tawny fur #a2804b",
+          "deltaE": 18.4,
+          "nearestUnderDeficiency": "Dwarf signal green #2db885",
+          "worstDeltaE": 4.2
+        },
+        {
+          "role": "Copper",
+          "hex": "#b8632f",
+          "nearest": "Dwarf ginger beard #c8642a",
+          "deltaE": 8.5,
+          "nearestUnderDeficiency": "Dwarf ginger beard #c8642a",
+          "worstDeltaE": 5.2
+        },
+        {
+          "role": "Dark copper",
+          "hex": "#9a5428",
+          "nearest": "Dwarf copper #c27c3a",
+          "deltaE": 17.7,
+          "nearestUnderDeficiency": "Human faction crimson #d01c3a",
+          "worstDeltaE": 4.8
+        },
+        {
+          "role": "Hazard yellow",
+          "hex": "#fdd20f",
+          "nearest": "Human gold #f1b21b",
+          "deltaE": 17.4,
+          "nearestUnderDeficiency": "Human gold #f1b21b",
+          "worstDeltaE": 11.7
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "current": {
+      "units": {
+        "Goblin": {
+          "opaque": 2211,
+          "ink": 0.313,
+          "dark": 0.532,
+          "mid": 0.258,
+          "light": 0.193,
+          "bright": 0.016,
+          "meanLightness": 38.4,
+          "p10": 20,
+          "p90": 59.1,
+          "meanChroma": 34.5,
+          "factionColour": 0,
+          "againstGround": -31,
+          "width": 53,
+          "height": 65,
+          "histogram": [
+            0.009, 0.073, 0.245, 0.251, 0.186, 0.178, 0.036, 0.006, 0.007, 0.01
+          ]
+        },
+        "Wolf Rider": {
+          "opaque": 3016,
+          "ink": 0.227,
+          "dark": 0.713,
+          "mid": 0.169,
+          "light": 0.11,
+          "bright": 0.008,
+          "meanLightness": 30.1,
+          "p10": 9.9,
+          "p90": 58.9,
+          "meanChroma": 17.6,
+          "factionColour": 0,
+          "againstGround": -39.3,
+          "width": 62,
+          "height": 79,
+          "histogram": [
+            0.11, 0.257, 0.229, 0.139, 0.136, 0.04, 0.048, 0.036, 0.003, 0.002
+          ]
+        },
+        "Bomb Chucker": {
+          "opaque": 2087,
+          "ink": 0.282,
+          "dark": 0.675,
+          "mid": 0.202,
+          "light": 0.099,
+          "bright": 0.023,
+          "meanLightness": 28.4,
+          "p10": 9,
+          "p90": 55.8,
+          "meanChroma": 32.2,
+          "factionColour": 0.017,
+          "againstGround": -40.9,
+          "width": 46,
+          "height": 66,
+          "histogram": [
+            0.193, 0.197, 0.211, 0.151, 0.103, 0.054, 0.067, 0, 0.023, 0
+          ]
+        },
+        "Orc Brute": {
+          "opaque": 2623,
+          "ink": 0.226,
+          "dark": 0.882,
+          "mid": 0.103,
+          "light": 0.009,
+          "bright": 0.005,
+          "meanLightness": 23.5,
+          "p10": 9,
+          "p90": 35.3,
+          "meanChroma": 11.1,
+          "factionColour": 0,
+          "againstGround": -45.9,
+          "width": 53,
+          "height": 78,
+          "histogram": [
+            0.143, 0.269, 0.292, 0.224, 0.033, 0.024, 0.009, 0.002, 0, 0.004
+          ]
+        },
+        "Orc Warboss": {
+          "opaque": 3104,
+          "ink": 0.298,
+          "dark": 0.591,
+          "mid": 0.203,
+          "light": 0.088,
+          "bright": 0.118,
+          "meanLightness": 37.7,
+          "p10": 14.3,
+          "p90": 79.8,
+          "meanChroma": 20.1,
+          "factionColour": 0,
+          "againstGround": -31.7,
+          "width": 56,
+          "height": 79,
+          "histogram": [
+            0.052, 0.161, 0.264, 0.155, 0.1, 0.144, 0.006, 0.039, 0.039, 0.041
+          ]
+        },
+        "Rocket Cart": {
+          "opaque": 3455,
+          "ink": 0.298,
+          "dark": 0.552,
+          "mid": 0.186,
+          "light": 0.13,
+          "bright": 0.132,
+          "meanLightness": 35,
+          "p10": 3.7,
+          "p90": 78.9,
+          "meanChroma": 40.8,
+          "factionColour": 0.021,
+          "againstGround": -34.3,
+          "width": 66,
+          "height": 74,
+          "histogram": [
+            0.221, 0.158, 0.122, 0.125, 0.071, 0.134, 0.036, 0.052, 0.057, 0.024
+          ]
+        },
+        "Scrap Buggy": {
+          "opaque": 2993,
+          "ink": 0.422,
+          "dark": 0.675,
+          "mid": 0.231,
+          "light": 0.062,
+          "bright": 0.032,
+          "meanLightness": 27.8,
+          "p10": 6,
+          "p90": 50.7,
+          "meanChroma": 11.5,
+          "factionColour": 0,
+          "againstGround": -41.5,
+          "width": 68,
+          "height": 78,
+          "histogram": [
+            0.157, 0.314, 0.135, 0.083, 0.164, 0.053, 0.046, 0.016, 0.029, 0.003
+          ]
+        },
+        "Troll": {
+          "opaque": 3829,
+          "ink": 0.198,
+          "dark": 0.832,
+          "mid": 0.134,
+          "light": 0.028,
+          "bright": 0.006,
+          "meanLightness": 26.6,
+          "p10": 17,
+          "p90": 36.4,
+          "meanChroma": 16.8,
+          "factionColour": 0,
+          "againstGround": -42.8,
+          "width": 71,
+          "height": 77,
+          "histogram": [
+            0.014, 0.283, 0.532, 0.081, 0.052, 0.007, 0.016, 0.009, 0, 0.006
+          ]
+        }
+      },
+      "mean": {
+        "ink": 0.283,
+        "dark": 0.682,
+        "mid": 0.186,
+        "light": 0.09,
+        "bright": 0.042,
+        "meanLightness": 30.9,
+        "p10": 11.1,
+        "p90": 56.9,
+        "meanChroma": 23.1,
+        "factionColour": 0.005,
+        "againstGround": -38.4
+      }
+    },
+    "lime": {
+      "units": {
+        "Goblin": {
+          "opaque": 2211,
+          "ink": 0.143,
+          "dark": 0.274,
+          "mid": 0.091,
+          "light": 0.382,
+          "bright": 0.252,
+          "meanLightness": 59.2,
+          "p10": 23,
+          "p90": 83,
+          "meanChroma": 40.7,
+          "factionColour": 0,
+          "againstGround": -10.1,
+          "width": 53,
+          "height": 65,
+          "histogram": [0, 0, 0.274, 0, 0.043, 0.128, 0.08, 0.223, 0.202, 0.05]
+        },
+        "Wolf Rider": {
+          "opaque": 3016,
+          "ink": 0.122,
+          "dark": 0.203,
+          "mid": 0.193,
+          "light": 0.357,
+          "bright": 0.247,
+          "meanLightness": 59.7,
+          "p10": 21.7,
+          "p90": 83,
+          "meanChroma": 20.9,
+          "factionColour": 0,
+          "againstGround": -9.7,
+          "width": 62,
+          "height": 79,
+          "histogram": [
+            0, 0, 0.203, 0, 0.131, 0.094, 0.169, 0.156, 0.181, 0.066
+          ]
+        },
+        "Bomb Chucker": {
+          "opaque": 2087,
+          "ink": 0.112,
+          "dark": 0.142,
+          "mid": 0.21,
+          "light": 0.292,
+          "bright": 0.356,
+          "meanLightness": 63.6,
+          "p10": 29.8,
+          "p90": 89.9,
+          "meanChroma": 52.9,
+          "factionColour": 0.172,
+          "againstGround": -5.7,
+          "width": 46,
+          "height": 66,
+          "histogram": [
+            0, 0, 0.142, 0.004, 0.147, 0.131, 0.095, 0.125, 0.296, 0.06
+          ]
+        },
+        "Orc Brute": {
+          "opaque": 2623,
+          "ink": 0.099,
+          "dark": 0.209,
+          "mid": 0.346,
+          "light": 0.315,
+          "bright": 0.131,
+          "meanLightness": 51.3,
+          "p10": 18.2,
+          "p90": 81.4,
+          "meanChroma": 20.4,
+          "factionColour": 0,
+          "againstGround": -18,
+          "width": 53,
+          "height": 78,
+          "histogram": [
+            0, 0.111, 0.097, 0.14, 0.081, 0.209, 0.157, 0.091, 0.08, 0.033
+          ]
+        },
+        "Orc Warboss": {
+          "opaque": 3104,
+          "ink": 0.104,
+          "dark": 0.281,
+          "mid": 0.212,
+          "light": 0.278,
+          "bright": 0.229,
+          "meanLightness": 56,
+          "p10": 21.7,
+          "p90": 89.4,
+          "meanChroma": 22.5,
+          "factionColour": 0,
+          "againstGround": -13.4,
+          "width": 56,
+          "height": 79,
+          "histogram": [
+            0, 0.04, 0.24, 0.038, 0.072, 0.11, 0.108, 0.162, 0.164, 0.066
+          ]
+        },
+        "Rocket Cart": {
+          "opaque": 3455,
+          "ink": 0.155,
+          "dark": 0.257,
+          "mid": 0.178,
+          "light": 0.352,
+          "bright": 0.213,
+          "meanLightness": 54.1,
+          "p10": 17.3,
+          "p90": 85.5,
+          "meanChroma": 35.6,
+          "factionColour": 0.032,
+          "againstGround": -15.2,
+          "width": 66,
+          "height": 74,
+          "histogram": [
+            0, 0.176, 0.078, 0.092, 0.04, 0.224, 0.022, 0.154, 0.163, 0.05
+          ]
+        },
+        "Scrap Buggy": {
+          "opaque": 2993,
+          "ink": 0.229,
+          "dark": 0.254,
+          "mid": 0.201,
+          "light": 0.219,
+          "bright": 0.327,
+          "meanLightness": 57.3,
+          "p10": 21.7,
+          "p90": 89.4,
+          "meanChroma": 21.9,
+          "factionColour": 0.074,
+          "againstGround": -12.1,
+          "width": 68,
+          "height": 78,
+          "histogram": [
+            0, 0, 0.254, 0, 0.199, 0.026, 0.176, 0.018, 0.274, 0.052
+          ]
+        },
+        "Troll": {
+          "opaque": 3829,
+          "ink": 0.084,
+          "dark": 0.211,
+          "mid": 0.221,
+          "light": 0.423,
+          "bright": 0.146,
+          "meanLightness": 56.6,
+          "p10": 21.7,
+          "p90": 83,
+          "meanChroma": 27.2,
+          "factionColour": 0,
+          "againstGround": -12.8,
+          "width": 71,
+          "height": 77,
+          "histogram": [0, 0, 0.211, 0, 0.129, 0.219, 0.056, 0.24, 0.124, 0.022]
+        }
+      },
+      "mean": {
+        "ink": 0.131,
+        "dark": 0.229,
+        "mid": 0.207,
+        "light": 0.327,
+        "bright": 0.238,
+        "meanLightness": 57.2,
+        "p10": 21.9,
+        "p90": 85.6,
+        "meanChroma": 30.3,
+        "factionColour": 0.035,
+        "againstGround": -12.1
+      }
+    },
+    "rag": {
+      "units": {
+        "Goblin": {
+          "opaque": 2211,
+          "ink": 0.143,
+          "dark": 0.215,
+          "mid": 0.286,
+          "light": 0.34,
+          "bright": 0.159,
+          "meanLightness": 53.1,
+          "p10": 21,
+          "p90": 83.2,
+          "meanChroma": 44.2,
+          "factionColour": 0,
+          "againstGround": -16.3,
+          "width": 53,
+          "height": 65,
+          "histogram": [
+            0, 0, 0.123, 0.242, 0.135, 0.151, 0.003, 0.211, 0.128, 0.007
+          ]
+        },
+        "Wolf Rider": {
+          "opaque": 3016,
+          "ink": 0.122,
+          "dark": 0.381,
+          "mid": 0.275,
+          "light": 0.263,
+          "bright": 0.082,
+          "meanLightness": 46.3,
+          "p10": 20.6,
+          "p90": 72.3,
+          "meanChroma": 26.2,
+          "factionColour": 0,
+          "againstGround": -23,
+          "width": 62,
+          "height": 79,
+          "histogram": [
+            0, 0, 0.188, 0.208, 0.26, 0.081, 0.094, 0.128, 0.039, 0.003
+          ]
+        },
+        "Bomb Chucker": {
+          "opaque": 2087,
+          "ink": 0.112,
+          "dark": 0.317,
+          "mid": 0.287,
+          "light": 0.29,
+          "bright": 0.105,
+          "meanLightness": 48.6,
+          "p10": 21.9,
+          "p90": 78.3,
+          "meanChroma": 46,
+          "factionColour": 0.017,
+          "againstGround": -20.7,
+          "width": 46,
+          "height": 66,
+          "histogram": [
+            0, 0, 0.144, 0.264, 0.196, 0.147, 0.042, 0.11, 0.086, 0.011
+          ]
+        },
+        "Orc Brute": {
+          "opaque": 2623,
+          "ink": 0.099,
+          "dark": 0.245,
+          "mid": 0.339,
+          "light": 0.189,
+          "bright": 0.227,
+          "meanLightness": 55.2,
+          "p10": 29,
+          "p90": 82,
+          "meanChroma": 22.3,
+          "factionColour": 0,
+          "againstGround": -14.2,
+          "width": 53,
+          "height": 78,
+          "histogram": [
+            0, 0, 0.164, 0.081, 0.169, 0.17, 0.188, 0.033, 0.175, 0.019
+          ]
+        },
+        "Orc Warboss": {
+          "opaque": 3104,
+          "ink": 0.104,
+          "dark": 0.438,
+          "mid": 0.262,
+          "light": 0.203,
+          "bright": 0.097,
+          "meanLightness": 44.6,
+          "p10": 21,
+          "p90": 75,
+          "meanChroma": 33.1,
+          "factionColour": 0,
+          "againstGround": -24.7,
+          "width": 56,
+          "height": 79,
+          "histogram": [
+            0, 0, 0.281, 0.158, 0.247, 0.114, 0.068, 0.069, 0.037, 0.026
+          ]
+        },
+        "Rocket Cart": {
+          "opaque": 3455,
+          "ink": 0.155,
+          "dark": 0.081,
+          "mid": 0.356,
+          "light": 0.228,
+          "bright": 0.336,
+          "meanLightness": 62.2,
+          "p10": 35.8,
+          "p90": 89.3,
+          "meanChroma": 40.2,
+          "factionColour": 0.023,
+          "againstGround": -7.2,
+          "width": 66,
+          "height": 74,
+          "histogram": [
+            0, 0.021, 0.027, 0.123, 0.085, 0.262, 0.075, 0.071, 0.289, 0.046
+          ]
+        },
+        "Scrap Buggy": {
+          "opaque": 2993,
+          "ink": 0.229,
+          "dark": 0.441,
+          "mid": 0.249,
+          "light": 0.214,
+          "bright": 0.097,
+          "meanLightness": 43.6,
+          "p10": 20.6,
+          "p90": 72.3,
+          "meanChroma": 17.2,
+          "factionColour": 0.01,
+          "againstGround": -25.8,
+          "width": 68,
+          "height": 78,
+          "histogram": [
+            0, 0, 0.304, 0.16, 0.225, 0.052, 0.147, 0.055, 0.052, 0.004
+          ]
+        },
+        "Troll": {
+          "opaque": 3829,
+          "ink": 0.084,
+          "dark": 0.34,
+          "mid": 0.292,
+          "light": 0.309,
+          "bright": 0.059,
+          "meanLightness": 47.7,
+          "p10": 21,
+          "p90": 73.2,
+          "meanChroma": 31.6,
+          "factionColour": 0,
+          "againstGround": -21.6,
+          "width": 71,
+          "height": 77,
+          "histogram": [
+            0, 0, 0.119, 0.222, 0.292, 0.187, 0.024, 0.112, 0.04, 0.005
+          ]
+        }
+      },
+      "mean": {
+        "ink": 0.131,
+        "dark": 0.307,
+        "mid": 0.293,
+        "light": 0.255,
+        "bright": 0.145,
+        "meanLightness": 50.2,
+        "p10": 23.9,
+        "p90": 78.2,
+        "meanChroma": 32.6,
+        "factionColour": 0.006,
+        "againstGround": -19.2
+      }
+    },
+    "teal": {
+      "units": {
+        "Goblin": {
+          "opaque": 2211,
+          "ink": 0.143,
+          "dark": 0.201,
+          "mid": 0.273,
+          "light": 0.341,
+          "bright": 0.185,
+          "meanLightness": 57.6,
+          "p10": 34.1,
+          "p90": 86.5,
+          "meanChroma": 30.4,
+          "factionColour": 0,
+          "againstGround": -11.7,
+          "width": 53,
+          "height": 65,
+          "histogram": [
+            0, 0, 0.05, 0.194, 0.151, 0.082, 0.218, 0.2, 0.086, 0.019
+          ]
+        },
+        "Wolf Rider": {
+          "opaque": 3016,
+          "ink": 0.122,
+          "dark": 0.149,
+          "mid": 0.385,
+          "light": 0.26,
+          "bright": 0.206,
+          "meanLightness": 55.2,
+          "p10": 23.3,
+          "p90": 78.4,
+          "meanChroma": 35.3,
+          "factionColour": 0,
+          "againstGround": -14.1,
+          "width": 62,
+          "height": 79,
+          "histogram": [
+            0, 0, 0.134, 0.146, 0.086, 0.17, 0.218, 0.172, 0.049, 0.025
+          ]
+        },
+        "Bomb Chucker": {
+          "opaque": 2087,
+          "ink": 0.112,
+          "dark": 0.251,
+          "mid": 0.334,
+          "light": 0.314,
+          "bright": 0.101,
+          "meanLightness": 50.7,
+          "p10": 31,
+          "p90": 77.4,
+          "meanChroma": 35.3,
+          "factionColour": 0.017,
+          "againstGround": -18.6,
+          "width": 46,
+          "height": 66,
+          "histogram": [
+            0, 0.088, 0.012, 0.206, 0.249, 0.081, 0.16, 0.14, 0.057, 0.006
+          ]
+        },
+        "Orc Brute": {
+          "opaque": 2623,
+          "ink": 0.099,
+          "dark": 0.164,
+          "mid": 0.371,
+          "light": 0.32,
+          "bright": 0.145,
+          "meanLightness": 53.4,
+          "p10": 30.9,
+          "p90": 80.7,
+          "meanChroma": 29.5,
+          "factionColour": 0,
+          "againstGround": -15.9,
+          "width": 53,
+          "height": 78,
+          "histogram": [
+            0, 0, 0.097, 0.192, 0.062, 0.309, 0.194, 0.035, 0.091, 0.019
+          ]
+        },
+        "Orc Warboss": {
+          "opaque": 3104,
+          "ink": 0.104,
+          "dark": 0.103,
+          "mid": 0.365,
+          "light": 0.208,
+          "bright": 0.325,
+          "meanLightness": 60.4,
+          "p10": 30.9,
+          "p90": 89,
+          "meanChroma": 24.8,
+          "factionColour": 0,
+          "againstGround": -9,
+          "width": 56,
+          "height": 79,
+          "histogram": [
+            0, 0, 0.062, 0.112, 0.217, 0.1, 0.154, 0.196, 0.127, 0.032
+          ]
+        },
+        "Rocket Cart": {
+          "opaque": 3455,
+          "ink": 0.155,
+          "dark": 0.08,
+          "mid": 0.373,
+          "light": 0.293,
+          "bright": 0.255,
+          "meanLightness": 59.8,
+          "p10": 35.8,
+          "p90": 89.4,
+          "meanChroma": 30.5,
+          "factionColour": 0.023,
+          "againstGround": -9.6,
+          "width": 66,
+          "height": 74,
+          "histogram": [
+            0, 0.021, 0.004, 0.254, 0.099, 0.108, 0.212, 0.09, 0.153, 0.059
+          ]
+        },
+        "Scrap Buggy": {
+          "opaque": 2993,
+          "ink": 0.229,
+          "dark": 0.345,
+          "mid": 0.361,
+          "light": 0.21,
+          "bright": 0.084,
+          "meanLightness": 44.8,
+          "p10": 23.3,
+          "p90": 74.8,
+          "meanChroma": 41.2,
+          "factionColour": 0.01,
+          "againstGround": -24.5,
+          "width": 68,
+          "height": 78,
+          "histogram": [
+            0, 0.074, 0.228, 0.159, 0.088, 0.187, 0.155, 0.069, 0.036, 0.003
+          ]
+        },
+        "Troll": {
+          "opaque": 3829,
+          "ink": 0.084,
+          "dark": 0.117,
+          "mid": 0.401,
+          "light": 0.215,
+          "bright": 0.266,
+          "meanLightness": 58.5,
+          "p10": 29.6,
+          "p90": 82.9,
+          "meanChroma": 22.6,
+          "factionColour": 0,
+          "againstGround": -10.9,
+          "width": 71,
+          "height": 77,
+          "histogram": [
+            0, 0, 0.117, 0.037, 0.185, 0.183, 0.211, 0.158, 0.1, 0.008
+          ]
+        }
+      },
+      "mean": {
+        "ink": 0.131,
+        "dark": 0.176,
+        "mid": 0.358,
+        "light": 0.27,
+        "bright": 0.196,
+        "meanLightness": 55.1,
+        "p10": 29.9,
+        "p90": 82.4,
+        "meanChroma": 31.2,
+        "factionColour": 0.006,
+        "againstGround": -14.3
+      }
+    },
+    "human": {
+      "units": {
+        "fighter": {
+          "opaque": 2440,
+          "ink": 0.16,
+          "dark": 0.241,
+          "mid": 0.269,
+          "light": 0.275,
+          "bright": 0.215,
+          "meanLightness": 54,
+          "p10": 28,
+          "p90": 82.2,
+          "meanChroma": 46.2,
+          "factionColour": 0.159,
+          "againstGround": -15.3,
+          "width": 52,
+          "height": 72,
+          "histogram": [
+            0.002, 0.029, 0.073, 0.191, 0.142, 0.201, 0.053, 0.161, 0.114, 0.034
+          ]
+        },
+        "raider": {
+          "opaque": 2660,
+          "ink": 0.251,
+          "dark": 0.312,
+          "mid": 0.291,
+          "light": 0.146,
+          "bright": 0.251,
+          "meanLightness": 50,
+          "p10": 23,
+          "p90": 82.4,
+          "meanChroma": 54.1,
+          "factionColour": 0.133,
+          "againstGround": -19.4,
+          "width": 62,
+          "height": 73,
+          "histogram": [
+            0.01, 0.084, 0.176, 0.092, 0.233, 0.02, 0.133, 0.131, 0.077, 0.043
+          ]
+        },
+        "marksman": {
+          "opaque": 2375,
+          "ink": 0.242,
+          "dark": 0.532,
+          "mid": 0.103,
+          "light": 0.143,
+          "bright": 0.222,
+          "meanLightness": 45.3,
+          "p10": 14.3,
+          "p90": 83.1,
+          "meanChroma": 40.8,
+          "factionColour": 0.141,
+          "againstGround": -24,
+          "width": 55,
+          "height": 70,
+          "histogram": [
+            0, 0.288, 0.076, 0.189, 0.075, 0.008, 0.107, 0.06, 0.129, 0.068
+          ]
+        },
+        "guard": {
+          "opaque": 2535,
+          "ink": 0.239,
+          "dark": 0.253,
+          "mid": 0.251,
+          "light": 0.274,
+          "bright": 0.221,
+          "meanLightness": 54.1,
+          "p10": 23.4,
+          "p90": 87.7,
+          "meanChroma": 35.5,
+          "factionColour": 0.123,
+          "againstGround": -15.2,
+          "width": 53,
+          "height": 72,
+          "histogram": [
+            0.005, 0.045, 0.165, 0.157, 0.111, 0.071, 0.159, 0.119, 0.123, 0.045
+          ]
+        },
+        "captain": {
+          "opaque": 1924,
+          "ink": 0.189,
+          "dark": 0.377,
+          "mid": 0.19,
+          "light": 0.223,
+          "bright": 0.209,
+          "meanLightness": 49.5,
+          "p10": 19.8,
+          "p90": 82.8,
+          "meanChroma": 46.9,
+          "factionColour": 0.15,
+          "againstGround": -19.8,
+          "width": 48,
+          "height": 66,
+          "histogram": [
+            0.012, 0.111, 0.222, 0.11, 0.113, 0.042, 0.09, 0.18, 0.064, 0.056
+          ]
+        },
+        "catapult": {
+          "opaque": 2105,
+          "ink": 0.193,
+          "dark": 0.469,
+          "mid": 0.265,
+          "light": 0.138,
+          "bright": 0.128,
+          "meanLightness": 41.4,
+          "p10": 14.8,
+          "p90": 76.3,
+          "meanChroma": 41.6,
+          "factionColour": 0.063,
+          "againstGround": -27.9,
+          "width": 63,
+          "height": 75,
+          "histogram": [
+            0.049, 0.138, 0.159, 0.185, 0.128, 0.109, 0.077, 0.117, 0.019, 0.018
+          ]
+        },
+        "knight": {
+          "opaque": 2552,
+          "ink": 0.281,
+          "dark": 0.246,
+          "mid": 0.359,
+          "light": 0.127,
+          "bright": 0.268,
+          "meanLightness": 52.4,
+          "p10": 26.4,
+          "p90": 89.6,
+          "meanChroma": 39,
+          "factionColour": 0.221,
+          "againstGround": -16.9,
+          "width": 61,
+          "height": 79,
+          "histogram": [
+            0.004, 0.022, 0.125, 0.323, 0.062, 0.107, 0.065, 0.132, 0.079, 0.081
+          ]
+        },
+        "juggernaut": {
+          "opaque": 3971,
+          "ink": 0.204,
+          "dark": 0.353,
+          "mid": 0.32,
+          "light": 0.143,
+          "bright": 0.185,
+          "meanLightness": 47.2,
+          "p10": 17.8,
+          "p90": 81.7,
+          "meanChroma": 34.8,
+          "factionColour": 0.139,
+          "againstGround": -22.1,
+          "width": 76,
+          "height": 86,
+          "histogram": [
+            0.013, 0.098, 0.139, 0.247, 0.143, 0.06, 0.075, 0.054, 0.151, 0.02
+          ]
+        }
+      },
+      "mean": {
+        "ink": 0.22,
+        "dark": 0.348,
+        "mid": 0.256,
+        "light": 0.184,
+        "bright": 0.212,
+        "meanLightness": 49.2,
+        "p10": 20.9,
+        "p90": 83.2,
+        "meanChroma": 42.4,
+        "factionColour": 0.141,
+        "againstGround": -20.1
+      }
+    },
+    "undead": {
+      "units": {
+        "undead-skeleton": {
+          "opaque": 2606,
+          "ink": 0.267,
+          "dark": 0.455,
+          "mid": 0.184,
+          "light": 0.169,
+          "bright": 0.192,
+          "meanLightness": 44.8,
+          "p10": 9.8,
+          "p90": 98.2,
+          "meanChroma": 16,
+          "factionColour": 0.032,
+          "againstGround": -24.6,
+          "width": 51,
+          "height": 78,
+          "histogram": [
+            0.127, 0.189, 0.124, 0.105, 0.069, 0.066, 0.059, 0.069, 0.047, 0.145
+          ]
+        },
+        "undead-ghoul": {
+          "opaque": 2891,
+          "ink": 0.26,
+          "dark": 0.418,
+          "mid": 0.287,
+          "light": 0.168,
+          "bright": 0.127,
+          "meanLightness": 39.9,
+          "p10": 6.7,
+          "p90": 79.3,
+          "meanChroma": 16.9,
+          "factionColour": 0.063,
+          "againstGround": -29.5,
+          "width": 66,
+          "height": 69,
+          "histogram": [
+            0.125, 0.148, 0.145, 0.034, 0.193, 0.098, 0.057, 0.153, 0.046, 0.001
+          ]
+        },
+        "undead-banshee": {
+          "opaque": 1982,
+          "ink": 0.233,
+          "dark": 0.183,
+          "mid": 0.144,
+          "light": 0.192,
+          "bright": 0.481,
+          "meanLightness": 67,
+          "p10": 27,
+          "p90": 98.4,
+          "meanChroma": 19.5,
+          "factionColour": 0.071,
+          "againstGround": -2.3,
+          "width": 49,
+          "height": 71,
+          "histogram": [
+            0.009, 0.062, 0.072, 0.113, 0.039, 0.069, 0.029, 0.155, 0.189, 0.263
+          ]
+        },
+        "undead-zombie": {
+          "opaque": 2150,
+          "ink": 0.167,
+          "dark": 0.542,
+          "mid": 0.134,
+          "light": 0.131,
+          "bright": 0.193,
+          "meanLightness": 40.5,
+          "p10": 10.4,
+          "p90": 88.4,
+          "meanChroma": 13.3,
+          "factionColour": 0.048,
+          "againstGround": -28.9,
+          "width": 51,
+          "height": 68,
+          "histogram": [
+            0.071, 0.318, 0.099, 0.094, 0.058, 0.097, 0.069, 0.029, 0.141, 0.023
+          ]
+        },
+        "undead-necromancer": {
+          "opaque": 2157,
+          "ink": 0.369,
+          "dark": 0.465,
+          "mid": 0.16,
+          "light": 0.113,
+          "bright": 0.263,
+          "meanLightness": 44.6,
+          "p10": 6.4,
+          "p90": 95.4,
+          "meanChroma": 21.6,
+          "factionColour": 0.077,
+          "againstGround": -24.8,
+          "width": 53,
+          "height": 69,
+          "histogram": [
+            0.169, 0.196, 0.1, 0.051, 0.049, 0.125, 0.026, 0.063, 0.04, 0.179
+          ]
+        },
+        "undead-lich": {
+          "opaque": 3159,
+          "ink": 0.362,
+          "dark": 0.483,
+          "mid": 0.09,
+          "light": 0.212,
+          "bright": 0.215,
+          "meanLightness": 45.5,
+          "p10": 4.5,
+          "p90": 91.7,
+          "meanChroma": 29.6,
+          "factionColour": 0.087,
+          "againstGround": -23.8,
+          "width": 64,
+          "height": 83,
+          "histogram": [
+            0.151, 0.145, 0.058, 0.161, 0.036, 0.113, 0.12, 0.023, 0.017, 0.176
+          ]
+        },
+        "undead-vampire": {
+          "opaque": 3591,
+          "ink": 0.312,
+          "dark": 0.569,
+          "mid": 0.174,
+          "light": 0.118,
+          "bright": 0.139,
+          "meanLightness": 35.2,
+          "p10": 6.8,
+          "p90": 85.3,
+          "meanChroma": 18.9,
+          "factionColour": 0.065,
+          "againstGround": -34.1,
+          "width": 67,
+          "height": 77,
+          "histogram": [
+            0.16, 0.265, 0.094, 0.15, 0.054, 0.038, 0.098, 0.004, 0.11, 0.027
+          ]
+        },
+        "undead-abomination": {
+          "opaque": 5213,
+          "ink": 0.241,
+          "dark": 0.526,
+          "mid": 0.205,
+          "light": 0.126,
+          "bright": 0.143,
+          "meanLightness": 36.5,
+          "p10": 5.7,
+          "p90": 79,
+          "meanChroma": 11.6,
+          "factionColour": 0.044,
+          "againstGround": -32.8,
+          "width": 82,
+          "height": 85,
+          "histogram": [
+            0.182, 0.242, 0.067, 0.102, 0.07, 0.135, 0.059, 0.057, 0.065, 0.021
+          ]
+        }
+      },
+      "mean": {
+        "ink": 0.276,
+        "dark": 0.455,
+        "mid": 0.172,
+        "light": 0.154,
+        "bright": 0.219,
+        "meanLightness": 44.2,
+        "p10": 9.7,
+        "p90": 89.5,
+        "meanChroma": 18.4,
+        "factionColour": 0.061,
+        "againstGround": -25.1
+      }
+    },
+    "dinosaur": {
+      "units": {
+        "dinosaur-caveman": {
+          "opaque": 2078,
+          "ink": 0.331,
+          "dark": 0.344,
+          "mid": 0.133,
+          "light": 0.29,
+          "bright": 0.233,
+          "meanLightness": 50.9,
+          "p10": 12.1,
+          "p90": 91.4,
+          "meanChroma": 26.5,
+          "factionColour": 0.009,
+          "againstGround": -18.4,
+          "width": 52,
+          "height": 70,
+          "histogram": [
+            0.047, 0.225, 0.035, 0.081, 0.068, 0.121, 0.07, 0.127, 0.032, 0.193
+          ]
+        },
+        "dinosaur-raptor": {
+          "opaque": 2800,
+          "ink": 0.229,
+          "dark": 0.426,
+          "mid": 0.117,
+          "light": 0.364,
+          "bright": 0.093,
+          "meanLightness": 46.7,
+          "p10": 15.5,
+          "p90": 72.5,
+          "meanChroma": 46.7,
+          "factionColour": 0.201,
+          "againstGround": -22.6,
+          "width": 67,
+          "height": 77,
+          "histogram": [
+            0.004, 0.189, 0.226, 0.043, 0.067, 0.096, 0.194, 0.088, 0.07, 0.023
+          ]
+        },
+        "dinosaur-spitter": {
+          "opaque": 2991,
+          "ink": 0.146,
+          "dark": 0.41,
+          "mid": 0.313,
+          "light": 0.202,
+          "bright": 0.075,
+          "meanLightness": 39.4,
+          "p10": 11.2,
+          "p90": 73.4,
+          "meanChroma": 40.6,
+          "factionColour": 0.122,
+          "againstGround": -29.9,
+          "width": 53,
+          "height": 77,
+          "histogram": [
+            0.084, 0.237, 0.073, 0.179, 0.143, 0.007, 0.154, 0.053, 0.06, 0.008
+          ]
+        },
+        "dinosaur-ankylosaurus": {
+          "opaque": 2101,
+          "ink": 0.225,
+          "dark": 0.595,
+          "mid": 0.171,
+          "light": 0.139,
+          "bright": 0.096,
+          "meanLightness": 32.9,
+          "p10": 2.3,
+          "p90": 72.3,
+          "meanChroma": 32.4,
+          "factionColour": 0.07,
+          "againstGround": -36.5,
+          "width": 49,
+          "height": 65,
+          "histogram": [
+            0.248, 0.117, 0.187, 0.113, 0.08, 0.036, 0.105, 0.044, 0.021, 0.048
+          ]
+        },
+        "dinosaur-shaman": {
+          "opaque": 2454,
+          "ink": 0.255,
+          "dark": 0.329,
+          "mid": 0.198,
+          "light": 0.271,
+          "bright": 0.202,
+          "meanLightness": 50,
+          "p10": 12.4,
+          "p90": 87.1,
+          "meanChroma": 33.1,
+          "factionColour": 0.06,
+          "againstGround": -19.4,
+          "width": 53,
+          "height": 75,
+          "histogram": [
+            0.037, 0.186, 0.027, 0.092, 0.141, 0.104, 0.168, 0.089, 0.109, 0.049
+          ]
+        },
+        "dinosaur-triceratops": {
+          "opaque": 2962,
+          "ink": 0.148,
+          "dark": 0.674,
+          "mid": 0.004,
+          "light": 0.206,
+          "bright": 0.116,
+          "meanLightness": 30.8,
+          "p10": 5.3,
+          "p90": 81.3,
+          "meanChroma": 42.3,
+          "factionColour": 0.137,
+          "againstGround": -38.6,
+          "width": 67,
+          "height": 67,
+          "histogram": [
+            0.436, 0.166, 0.059, 0.012, 0.003, 0.153, 0.053, 0.001, 0.088, 0.029
+          ]
+        },
+        "dinosaur-t-rex": {
+          "opaque": 2685,
+          "ink": 0.009,
+          "dark": 0.44,
+          "mid": 0.344,
+          "light": 0.123,
+          "bright": 0.094,
+          "meanLightness": 30.7,
+          "p10": 0.6,
+          "p90": 65.1,
+          "meanChroma": 35.5,
+          "factionColour": 0.063,
+          "againstGround": -38.7,
+          "width": 60,
+          "height": 80,
+          "histogram": [
+            0.433, 0, 0.006, 0.281, 0.026, 0.041, 0.113, 0.006, 0.094, 0
+          ]
+        },
+        "dinosaur-brontosaurus": {
+          "opaque": 2711,
+          "ink": 0.158,
+          "dark": 0.246,
+          "mid": 0.403,
+          "light": 0.234,
+          "bright": 0.116,
+          "meanLightness": 46,
+          "p10": 12.4,
+          "p90": 93.8,
+          "meanChroma": 42.6,
+          "factionColour": 0.155,
+          "againstGround": -23.3,
+          "width": 74,
+          "height": 89,
+          "histogram": [
+            0.018, 0.177, 0.046, 0.367, 0.004, 0.042, 0.214, 0.02, 0.001, 0.112
+          ]
+        }
+      },
+      "mean": {
+        "ink": 0.188,
+        "dark": 0.433,
+        "mid": 0.21,
+        "light": 0.229,
+        "bright": 0.128,
+        "meanLightness": 40.9,
+        "p10": 9,
+        "p90": 79.6,
+        "meanChroma": 37.5,
+        "factionColour": 0.102,
+        "againstGround": -28.4
+      }
+    },
+    "martian": {
+      "units": {
+        "martian-grunt": {
+          "opaque": 1949,
+          "ink": 0.204,
+          "dark": 0.203,
+          "mid": 0.274,
+          "light": 0.206,
+          "bright": 0.316,
+          "meanLightness": 57.4,
+          "p10": 19.5,
+          "p90": 84.9,
+          "meanChroma": 18.2,
+          "factionColour": 0.012,
+          "againstGround": -11.9,
+          "width": 48,
+          "height": 75,
+          "histogram": [
+            0.068, 0.037, 0.05, 0.083, 0.168, 0.099, 0.075, 0.104, 0.269, 0.046
+          ]
+        },
+        "martian-saucer": {
+          "opaque": 1892,
+          "ink": 0.131,
+          "dark": 0.311,
+          "mid": 0.2,
+          "light": 0.227,
+          "bright": 0.262,
+          "meanLightness": 53.4,
+          "p10": 17,
+          "p90": 95.7,
+          "meanChroma": 20.6,
+          "factionColour": 0.029,
+          "againstGround": -15.9,
+          "width": 63,
+          "height": 56,
+          "histogram": [
+            0.04, 0.075, 0.152, 0.057, 0.081, 0.178, 0.155, 0.081, 0.074, 0.108
+          ]
+        },
+        "martian-ray-gunner": {
+          "opaque": 2288,
+          "ink": 0.272,
+          "dark": 0.381,
+          "mid": 0.358,
+          "light": 0.133,
+          "bright": 0.128,
+          "meanLightness": 42,
+          "p10": 3.7,
+          "p90": 79.2,
+          "meanChroma": 19.3,
+          "factionColour": 0.041,
+          "againstGround": -27.4,
+          "width": 56,
+          "height": 73,
+          "histogram": [
+            0.124, 0.105, 0.124, 0.097, 0.193, 0.103, 0.061, 0.118, 0.034, 0.043
+          ]
+        },
+        "martian-shield-projector": {
+          "opaque": 2849,
+          "ink": 0.16,
+          "dark": 0.189,
+          "mid": 0.385,
+          "light": 0.297,
+          "bright": 0.128,
+          "meanLightness": 51.6,
+          "p10": 25.3,
+          "p90": 81.9,
+          "meanChroma": 22.8,
+          "factionColour": 0.065,
+          "againstGround": -17.7,
+          "width": 54,
+          "height": 73,
+          "histogram": [
+            0.012, 0.037, 0.1, 0.24, 0.051, 0.163, 0.213, 0.069, 0.074, 0.04
+          ]
+        },
+        "martian-brain": {
+          "opaque": 2276,
+          "ink": 0.139,
+          "dark": 0.186,
+          "mid": 0.151,
+          "light": 0.174,
+          "bright": 0.49,
+          "meanLightness": 63.5,
+          "p10": 21.1,
+          "p90": 92.7,
+          "meanChroma": 17.8,
+          "factionColour": 0.011,
+          "againstGround": -5.8,
+          "width": 52,
+          "height": 69,
+          "histogram": [
+            0, 0.09, 0.067, 0.029, 0.129, 0.089, 0.059, 0.166, 0.219, 0.152
+          ]
+        },
+        "martian-tripod": {
+          "opaque": 2272,
+          "ink": 0.271,
+          "dark": 0.324,
+          "mid": 0.291,
+          "light": 0.197,
+          "bright": 0.188,
+          "meanLightness": 49.9,
+          "p10": 19.3,
+          "p90": 86.4,
+          "meanChroma": 21.3,
+          "factionColour": 0.045,
+          "againstGround": -19.5,
+          "width": 58,
+          "height": 77,
+          "histogram": [
+            0.01, 0.178, 0.103, 0.059, 0.212, 0.112, 0.059, 0.106, 0.113, 0.048
+          ]
+        },
+        "martian-colossus": {
+          "opaque": 4159,
+          "ink": 0.265,
+          "dark": 0.159,
+          "mid": 0.291,
+          "light": 0.26,
+          "bright": 0.29,
+          "meanLightness": 59.4,
+          "p10": 27.2,
+          "p90": 92.9,
+          "meanChroma": 22,
+          "factionColour": 0.041,
+          "againstGround": -10,
+          "width": 83,
+          "height": 89,
+          "histogram": [
+            0.038, 0.039, 0.072, 0.04, 0.211, 0.109, 0.18, 0.057, 0.138, 0.117
+          ]
+        },
+        "martian-mothership": {
+          "opaque": 2186,
+          "ink": 0.157,
+          "dark": 0.379,
+          "mid": 0.194,
+          "light": 0.196,
+          "bright": 0.231,
+          "meanLightness": 50.7,
+          "p10": 16.8,
+          "p90": 96.2,
+          "meanChroma": 19.7,
+          "factionColour": 0.076,
+          "againstGround": -18.7,
+          "width": 68,
+          "height": 68,
+          "histogram": [
+            0.015, 0.186, 0.066, 0.152, 0.081, 0.141, 0.097, 0.13, 0.02, 0.113
+          ]
+        }
+      },
+      "mean": {
+        "ink": 0.2,
+        "dark": 0.267,
+        "mid": 0.268,
+        "light": 0.211,
+        "bright": 0.254,
+        "meanLightness": 53.5,
+        "p10": 18.7,
+        "p90": 88.7,
+        "meanChroma": 20.2,
+        "factionColour": 0.04,
+        "againstGround": -15.9
+      }
+    },
+    "iceFolk": {
+      "units": {
+        "ice-folk-snow-hunter": {
+          "opaque": 2081,
+          "ink": 0.166,
+          "dark": 0.474,
+          "mid": 0.141,
+          "light": 0.218,
+          "bright": 0.167,
+          "meanLightness": 44.8,
+          "p10": 12.9,
+          "p90": 95,
+          "meanChroma": 17.2,
+          "factionColour": 0.013,
+          "againstGround": -24.6,
+          "width": 53,
+          "height": 65,
+          "histogram": [
+            0.051, 0.239, 0.167, 0.057, 0.056, 0.059, 0.123, 0.129, 0, 0.119
+          ]
+        },
+        "ice-folk-sabretooth": {
+          "opaque": 2107,
+          "ink": 0.186,
+          "dark": 0.181,
+          "mid": 0.16,
+          "light": 0.157,
+          "bright": 0.502,
+          "meanLightness": 67.3,
+          "p10": 18,
+          "p90": 98.7,
+          "meanChroma": 20.5,
+          "factionColour": 0.028,
+          "againstGround": -2,
+          "width": 60,
+          "height": 49,
+          "histogram": [
+            0.001, 0.124, 0.055, 0.072, 0.062, 0.034, 0.071, 0.131, 0.18, 0.271
+          ]
+        },
+        "ice-folk-ice-witch": {
+          "opaque": 1547,
+          "ink": 0.158,
+          "dark": 0.263,
+          "mid": 0.204,
+          "light": 0.28,
+          "bright": 0.252,
+          "meanLightness": 57.9,
+          "p10": 22.7,
+          "p90": 98.7,
+          "meanChroma": 22.3,
+          "factionColour": 0.085,
+          "againstGround": -11.5,
+          "width": 48,
+          "height": 55,
+          "histogram": [
+            0.013, 0.036, 0.167, 0.071, 0.087, 0.165, 0.142, 0.071, 0.061, 0.186
+          ]
+        },
+        "ice-folk-yeti": {
+          "opaque": 1983,
+          "ink": 0.228,
+          "dark": 0.173,
+          "mid": 0.271,
+          "light": 0.226,
+          "bright": 0.329,
+          "meanLightness": 59.2,
+          "p10": 20,
+          "p90": 95,
+          "meanChroma": 17,
+          "factionColour": 0.011,
+          "againstGround": -10.1,
+          "width": 52,
+          "height": 54,
+          "histogram": [
+            0.018, 0.084, 0.031, 0.112, 0.102, 0.212, 0.086, 0.093, 0.101, 0.162
+          ]
+        },
+        "ice-folk-boulder-yeti": {
+          "opaque": 3021,
+          "ink": 0.206,
+          "dark": 0.141,
+          "mid": 0.107,
+          "light": 0.274,
+          "bright": 0.478,
+          "meanLightness": 69.2,
+          "p10": 25.5,
+          "p90": 98.4,
+          "meanChroma": 17.5,
+          "factionColour": 0.045,
+          "againstGround": -0.1,
+          "width": 58,
+          "height": 80,
+          "histogram": [
+            0.003, 0.056, 0.071, 0.049, 0.048, 0.099, 0.045, 0.199, 0.155, 0.274
+          ]
+        },
+        "ice-folk-sled": {
+          "opaque": 2990,
+          "ink": 0.246,
+          "dark": 0.233,
+          "mid": 0.277,
+          "light": 0.278,
+          "bright": 0.211,
+          "meanLightness": 55.4,
+          "p10": 25.4,
+          "p90": 91,
+          "meanChroma": 15.4,
+          "factionColour": 0.026,
+          "againstGround": -13.9,
+          "width": 69,
+          "height": 76,
+          "histogram": [
+            0.031, 0.018, 0.079, 0.178, 0.17, 0.154, 0.114, 0.075, 0.079, 0.102
+          ]
+        },
+        "ice-folk-mammoth": {
+          "opaque": 2284,
+          "ink": 0.244,
+          "dark": 0.181,
+          "mid": 0.367,
+          "light": 0.183,
+          "bright": 0.269,
+          "meanLightness": 57.5,
+          "p10": 26.4,
+          "p90": 92.5,
+          "meanChroma": 17.5,
+          "factionColour": 0.006,
+          "againstGround": -11.8,
+          "width": 53,
+          "height": 61,
+          "histogram": [
+            0.003, 0.078, 0.056, 0.065, 0.249, 0.138, 0.121, 0.035, 0.049, 0.206
+          ]
+        },
+        "ice-folk-frost-giant": {
+          "opaque": 5066,
+          "ink": 0.199,
+          "dark": 0.319,
+          "mid": 0.286,
+          "light": 0.168,
+          "bright": 0.227,
+          "meanLightness": 51.3,
+          "p10": 16.2,
+          "p90": 97.9,
+          "meanChroma": 22.1,
+          "factionColour": 0.098,
+          "againstGround": -18.1,
+          "width": 80,
+          "height": 92,
+          "histogram": [
+            0.018, 0.148, 0.124, 0.105, 0.13, 0.129, 0.1, 0.028, 0.052, 0.166
+          ]
+        }
+      },
+      "mean": {
+        "ink": 0.204,
+        "dark": 0.246,
+        "mid": 0.227,
+        "light": 0.223,
+        "bright": 0.304,
+        "meanLightness": 57.8,
+        "p10": 20.9,
+        "p90": 95.9,
+        "meanChroma": 18.7,
+        "factionColour": 0.039,
+        "againstGround": -11.5
+      }
+    },
+    "dwarf": {
+      "units": {
+        "dwarf-hammerer": {
+          "opaque": 2263,
+          "ink": 0.228,
+          "dark": 0.516,
+          "mid": 0.255,
+          "light": 0.182,
+          "bright": 0.047,
+          "meanLightness": 38.2,
+          "p10": 13.3,
+          "p90": 71.2,
+          "meanChroma": 28,
+          "factionColour": 0,
+          "againstGround": -31.1,
+          "width": 51,
+          "height": 64,
+          "histogram": [
+            0.01, 0.231, 0.182, 0.192, 0.092, 0.144, 0.034, 0.074, 0.014, 0.026
+          ]
+        },
+        "dwarf-gyrocopter": {
+          "opaque": 2200,
+          "ink": 0.132,
+          "dark": 0.507,
+          "mid": 0.183,
+          "light": 0.206,
+          "bright": 0.105,
+          "meanLightness": 42.4,
+          "p10": 14.3,
+          "p90": 77.2,
+          "meanChroma": 22.2,
+          "factionColour": 0,
+          "againstGround": -26.9,
+          "width": 66,
+          "height": 65,
+          "histogram": [
+            0.02, 0.17, 0.15, 0.191, 0.095, 0.124, 0.094, 0.068, 0.08, 0.008
+          ]
+        },
+        "dwarf-clockwork-gunner": {
+          "opaque": 2446,
+          "ink": 0.311,
+          "dark": 0.52,
+          "mid": 0.202,
+          "light": 0.184,
+          "bright": 0.094,
+          "meanLightness": 40.1,
+          "p10": 12.1,
+          "p90": 74.3,
+          "meanChroma": 26.9,
+          "factionColour": 0,
+          "againstGround": -29.2,
+          "width": 53,
+          "height": 76,
+          "histogram": [
+            0.055, 0.178, 0.24, 0.12, 0.074, 0.097, 0.095, 0.046, 0.063, 0.031
+          ]
+        },
+        "dwarf-steam-mole": {
+          "opaque": 1744,
+          "ink": 0.236,
+          "dark": 0.463,
+          "mid": 0.224,
+          "light": 0.17,
+          "bright": 0.143,
+          "meanLightness": 43.7,
+          "p10": 15.2,
+          "p90": 84.8,
+          "meanChroma": 29,
+          "factionColour": 0.001,
+          "againstGround": -25.7,
+          "width": 55,
+          "height": 58,
+          "histogram": [
+            0.082, 0.125, 0.14, 0.158, 0.145, 0.057, 0.113, 0.043, 0.08, 0.058
+          ]
+        },
+        "dwarf-engineer": {
+          "opaque": 2329,
+          "ink": 0.207,
+          "dark": 0.542,
+          "mid": 0.179,
+          "light": 0.14,
+          "bright": 0.14,
+          "meanLightness": 41.9,
+          "p10": 17.8,
+          "p90": 79.2,
+          "meanChroma": 25.3,
+          "factionColour": 0,
+          "againstGround": -27.5,
+          "width": 49,
+          "height": 71,
+          "histogram": [
+            0.039, 0.202, 0.087, 0.213, 0.155, 0.063, 0.091, 0.054, 0.04, 0.054
+          ]
+        },
+        "dwarf-steam-cannon": {
+          "opaque": 2919,
+          "ink": 0.192,
+          "dark": 0.465,
+          "mid": 0.232,
+          "light": 0.178,
+          "bright": 0.125,
+          "meanLightness": 42.3,
+          "p10": 10.8,
+          "p90": 81.2,
+          "meanChroma": 27.3,
+          "factionColour": 0.006,
+          "againstGround": -27,
+          "width": 67,
+          "height": 80,
+          "histogram": [
+            0.048, 0.139, 0.209, 0.158, 0.092, 0.068, 0.125, 0.055, 0.049, 0.056
+          ]
+        },
+        "dwarf-steam-tank": {
+          "opaque": 2803,
+          "ink": 0.245,
+          "dark": 0.432,
+          "mid": 0.251,
+          "light": 0.139,
+          "bright": 0.178,
+          "meanLightness": 45.7,
+          "p10": 12.5,
+          "p90": 80.5,
+          "meanChroma": 24.7,
+          "factionColour": 0,
+          "againstGround": -23.6,
+          "width": 61,
+          "height": 79,
+          "histogram": [
+            0.026, 0.135, 0.198, 0.102, 0.112, 0.122, 0.08, 0.119, 0.02, 0.085
+          ]
+        },
+        "dwarf-brass-titan": {
+          "opaque": 4574,
+          "ink": 0.261,
+          "dark": 0.528,
+          "mid": 0.223,
+          "light": 0.149,
+          "bright": 0.1,
+          "meanLightness": 37.9,
+          "p10": 11.1,
+          "p90": 75.3,
+          "meanChroma": 22,
+          "factionColour": 0.007,
+          "againstGround": -31.4,
+          "width": 86,
+          "height": 97,
+          "histogram": [
+            0.091, 0.186, 0.161, 0.209, 0.071, 0.073, 0.094, 0.018, 0.051, 0.047
+          ]
+        }
+      },
+      "mean": {
+        "ink": 0.227,
+        "dark": 0.497,
+        "mid": 0.219,
+        "light": 0.169,
+        "bright": 0.117,
+        "meanLightness": 41.5,
+        "p10": 13.4,
+        "p90": 78,
+        "meanChroma": 25.7,
+        "factionColour": 0.002,
+        "againstGround": -27.8
+      }
+    }
+  },
+  "recolour": [
+    {
+      "direction": "lime",
+      "units": [
+        {
+          "unit": "Goblin",
+          "classes": {
+            "ink": 691,
+            "leather": 407,
+            "skin": 785,
+            "metal": 313,
+            "light": 15
+          },
+          "innerLinePixels": 375,
+          "rimPixels": 57
+        },
+        {
+          "unit": "Wolf Rider",
+          "classes": {
+            "ink": 685,
+            "leather": 681,
+            "skin": 380,
+            "metal": 1259,
+            "light": 11
+          },
+          "innerLinePixels": 316,
+          "rimPixels": 72
+        },
+        {
+          "unit": "Bomb Chucker",
+          "classes": {
+            "ink": 588,
+            "metal": 176,
+            "accent": 35,
+            "rust": 542,
+            "leather": 244,
+            "skin": 487,
+            "keep": 15
+          },
+          "innerLinePixels": 354,
+          "rimPixels": 43
+        },
+        {
+          "unit": "Orc Brute",
+          "classes": {
+            "ink": 594,
+            "metal": 733,
+            "light": 11,
+            "wood": 610,
+            "skin": 672,
+            "leather": 3
+          },
+          "innerLinePixels": 334,
+          "rimPixels": 49
+        },
+        {
+          "unit": "Orc Warboss",
+          "classes": {
+            "ink": 924,
+            "metal": 650,
+            "leather": 1018,
+            "skin": 254,
+            "light": 258
+          },
+          "innerLinePixels": 600,
+          "rimPixels": 39
+        },
+        {
+          "unit": "Rocket Cart",
+          "classes": {
+            "ink": 1031,
+            "light": 193,
+            "leather": 333,
+            "accent": 120,
+            "metal": 29,
+            "keep": 457,
+            "wood": 818,
+            "rust": 32,
+            "skin": 442
+          },
+          "innerLinePixels": 494,
+          "rimPixels": 54
+        },
+        {
+          "unit": "Scrap Buggy",
+          "classes": {
+            "ink": 1263,
+            "metal": 1204,
+            "rust": 294,
+            "leather": 15,
+            "light": 56,
+            "skin": 126,
+            "accent": 31,
+            "keep": 4
+          },
+          "innerLinePixels": 579,
+          "rimPixels": 80
+        },
+        {
+          "unit": "Troll",
+          "classes": {
+            "ink": 760,
+            "metal": 500,
+            "skin": 1333,
+            "leather": 1190,
+            "light": 46
+          },
+          "innerLinePixels": 438,
+          "rimPixels": 51
+        }
+      ]
+    },
+    {
+      "direction": "rag",
+      "units": [
+        {
+          "unit": "Goblin",
+          "classes": {
+            "ink": 691,
+            "leather": 407,
+            "skin": 785,
+            "metal": 313,
+            "light": 15
+          },
+          "innerLinePixels": 375,
+          "rimPixels": 57
+        },
+        {
+          "unit": "Wolf Rider",
+          "classes": {
+            "ink": 685,
+            "leather": 681,
+            "skin": 380,
+            "metal": 1259,
+            "light": 11
+          },
+          "innerLinePixels": 316,
+          "rimPixels": 72
+        },
+        {
+          "unit": "Bomb Chucker",
+          "classes": {
+            "ink": 588,
+            "metal": 176,
+            "accent": 35,
+            "rust": 542,
+            "leather": 244,
+            "skin": 487,
+            "keep": 15
+          },
+          "innerLinePixels": 354,
+          "rimPixels": 43
+        },
+        {
+          "unit": "Orc Brute",
+          "classes": {
+            "ink": 594,
+            "metal": 733,
+            "light": 11,
+            "wood": 610,
+            "skin": 672,
+            "leather": 3
+          },
+          "innerLinePixels": 334,
+          "rimPixels": 49
+        },
+        {
+          "unit": "Orc Warboss",
+          "classes": {
+            "ink": 924,
+            "metal": 650,
+            "leather": 1018,
+            "skin": 254,
+            "light": 258
+          },
+          "innerLinePixels": 600,
+          "rimPixels": 39
+        },
+        {
+          "unit": "Rocket Cart",
+          "classes": {
+            "ink": 1031,
+            "light": 193,
+            "leather": 333,
+            "accent": 120,
+            "metal": 29,
+            "keep": 457,
+            "wood": 818,
+            "rust": 32,
+            "skin": 442
+          },
+          "innerLinePixels": 494,
+          "rimPixels": 54
+        },
+        {
+          "unit": "Scrap Buggy",
+          "classes": {
+            "ink": 1263,
+            "metal": 1204,
+            "rust": 294,
+            "leather": 15,
+            "light": 56,
+            "skin": 126,
+            "accent": 31,
+            "keep": 4
+          },
+          "innerLinePixels": 579,
+          "rimPixels": 80
+        },
+        {
+          "unit": "Troll",
+          "classes": {
+            "ink": 760,
+            "metal": 500,
+            "skin": 1333,
+            "leather": 1190,
+            "light": 46
+          },
+          "innerLinePixels": 438,
+          "rimPixels": 51
+        }
+      ]
+    },
+    {
+      "direction": "teal",
+      "units": [
+        {
+          "unit": "Goblin",
+          "classes": {
+            "ink": 691,
+            "leather": 407,
+            "skin": 785,
+            "metal": 313,
+            "light": 15
+          },
+          "innerLinePixels": 375,
+          "rimPixels": 57
+        },
+        {
+          "unit": "Wolf Rider",
+          "classes": {
+            "ink": 685,
+            "leather": 681,
+            "skin": 380,
+            "metal": 1259,
+            "light": 11
+          },
+          "innerLinePixels": 316,
+          "rimPixels": 72
+        },
+        {
+          "unit": "Bomb Chucker",
+          "classes": {
+            "ink": 588,
+            "metal": 176,
+            "accent": 35,
+            "rust": 542,
+            "leather": 244,
+            "skin": 487,
+            "keep": 15
+          },
+          "innerLinePixels": 354,
+          "rimPixels": 43
+        },
+        {
+          "unit": "Orc Brute",
+          "classes": {
+            "ink": 594,
+            "metal": 733,
+            "light": 11,
+            "wood": 610,
+            "skin": 672,
+            "leather": 3
+          },
+          "innerLinePixels": 334,
+          "rimPixels": 49
+        },
+        {
+          "unit": "Orc Warboss",
+          "classes": {
+            "ink": 924,
+            "metal": 650,
+            "leather": 1018,
+            "skin": 254,
+            "light": 258
+          },
+          "innerLinePixels": 600,
+          "rimPixels": 39
+        },
+        {
+          "unit": "Rocket Cart",
+          "classes": {
+            "ink": 1031,
+            "light": 193,
+            "leather": 333,
+            "accent": 120,
+            "metal": 29,
+            "keep": 457,
+            "wood": 818,
+            "rust": 32,
+            "skin": 442
+          },
+          "innerLinePixels": 494,
+          "rimPixels": 54
+        },
+        {
+          "unit": "Scrap Buggy",
+          "classes": {
+            "ink": 1263,
+            "metal": 1204,
+            "rust": 294,
+            "leather": 15,
+            "light": 56,
+            "skin": 126,
+            "accent": 31,
+            "keep": 4
+          },
+          "innerLinePixels": 579,
+          "rimPixels": 80
+        },
+        {
+          "unit": "Troll",
+          "classes": {
+            "ink": 760,
+            "metal": 500,
+            "skin": 1333,
+            "leather": 1190,
+            "light": 46
+          },
+          "innerLinePixels": 438,
+          "rimPixels": 51
+        }
+      ]
+    }
+  ],
+  "files": [
+    "overview.png",
+    "diagnosis-x3.png",
+    "histograms.png",
+    "directions-grass-1x.png",
+    "directions-grass-x3.png",
+    "directions-snow-1x.png",
+    "directions-snow-x3.png",
+    "directions-mountain-1x.png",
+    "directions-mountain-x3.png",
+    "extras-x2.png",
+    "classes-x3.png",
+    "index.json"
+  ]
+}

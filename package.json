@@ -68,6 +68,7 @@
     "art:visual-direction-review": "tsx scripts/art/visual-direction-review.ts",
     "art:visual-direction-demo-review": "tsx scripts/art/visual-direction-review.ts --demo",
     "art:goblin-direction-study-review": "tsx scripts/art/goblin-direction-review.ts",
+    "art:goblin-redesign-study-review": "tsx scripts/art/goblin-redesign-study-review.ts",
     "art:undead-direction-study-review": "tsx scripts/art/undead-direction-review.ts",
     "art:dinosaur-direction-study-review": "tsx scripts/art/dinosaur-direction-review.ts",
     "art:chibi-undead-direction-review": "tsx scripts/art/chibi-undead-direction-review.ts",
