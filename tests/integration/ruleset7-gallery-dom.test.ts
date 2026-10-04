@@ -495,16 +495,63 @@ describe("Ruleset 7 Gallery", () => {
     expect(
       cell("CITY_2", "MARTIAN").querySelector("canvas")?.dataset.subject,
     ).toBe("CITY:MARTIAN:2");
-    const farm = rows[4]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
-    expect(farm).toHaveLength(1);
-    expect(farm?.[0]?.getAttribute("aria-label")).toBe("Farm, every faction");
-    expect(farm?.[0]?.closest("td")?.getAttribute("colspan")).toBe("7");
-    farm?.[0]?.click();
-    expect(required("#v7-gallery-detail-title").textContent).toBe("Farm");
+    // A shared improvement is one cell across every faction.
+    const forge = rows[9]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
+    expect(forge).toHaveLength(1);
+    expect(forge?.[0]?.getAttribute("aria-label")).toBe("Forge, every faction");
+    expect(forge?.[0]?.closest("td")?.getAttribute("colspan")).toBe("7");
+    // Faction building looks (bead pulp_wars-xdh.2): the Farm, Windmill and
+    // Sawmill rows have one cell per faction, named as that faction has it.
+    const cellNames = (row: number) =>
+      [
+        ...(rows[row]?.querySelectorAll<HTMLElement>(".v7-gallery-cell-name") ??
+          []),
+      ].map((node) => node.textContent);
+    expect(cellNames(4)).toEqual([
+      "Farm",
+      "Graveyard",
+      "Farm",
+      "Farm",
+      "Hydroponic Farm",
+      "Frost Garden",
+      "Mushroom Farm",
+    ]);
+    expect(cellNames(7)).toEqual([
+      "Windmill",
+      "Bone Mill",
+      "Windmill",
+      "Grinding Stone",
+      "Solar Array",
+      "Windmill",
+      "Steam Pump",
+    ]);
+    expect(cellNames(8)[3]).toBe("Chopping Block");
+    for (const row of [5, 6, 9, 10, 11, 12, 13, 14])
+      expect(rows[row]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
+    const graveyard = cell("FARM", "UNDEAD");
+    expect(graveyard.getAttribute("aria-label")).toBe("Graveyard, Undead");
+    expect(graveyard.querySelector("canvas")?.dataset.subject).toBe(
+      "IMPROVEMENT:UNDEAD:FARM",
+    );
+    expect(
+      cell("FARM", "GOBLIN").querySelector("canvas")?.dataset.subject,
+    ).toBe("IMPROVEMENT:FARM");
+    graveyard.click();
+    expect(required("#v7-gallery-detail-title").textContent).toBe("Graveyard");
+    expect(required(".v7-gallery-detail-faction").textContent).toBe("Undead");
+    expect(required(".v7-gallery-description").textContent).toBe(
+      "Quiet plots, tended for later. Counts as a Farm. Built on Fertile Ground.",
+    );
     expect(required(".v7-gallery-detail").textContent).toContain(
       "+2 population",
     );
     expect(required(".v7-gallery-tech").textContent).toContain("Farming");
+    required<HTMLButtonElement>('[data-action="gallery-detail-close"]').click();
+    cell("FARM", "ORIGINAL").click();
+    expect(required("#v7-gallery-detail-title").textContent).toBe("Farm");
+    expect(required(".v7-gallery-description").textContent).toBe(
+      "Built on Fertile Ground.",
+    );
     required<HTMLButtonElement>('[data-action="gallery-detail-close"]').click();
     cell("CITY_1", "UNDEAD").click();
     expect(required(".v7-gallery-detail-faction").textContent).toBe("Undead");

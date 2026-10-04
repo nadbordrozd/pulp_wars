@@ -1314,3 +1314,38 @@ pipeline pieces:
 It composes its sheets from the masters with no browser capture, and with
 `--preview recipe[:candidate],… --out DIR` lays raw candidates out the same
 way before acceptance.
+[`scene.ts`](../../scripts/art/faction-buildings/scene.ts) and a contact
+sheet. Its captures start Vite on port 6540 unless `--port` says otherwise
+and need `CHROME_PATH`; `--copy-to DIR` copies the outputs.
+
+### The faction building batches (bead `pulp_wars-xdh.2`)
+
+Batches `buildings-undead`, `buildings-martian`, `buildings-dinosaur`,
+`buildings-ice-folk` and `buildings-dwarf` hold the nine production
+masters, one batch per faction. They added one pipeline piece and one
+side script:
+
+- **Faction improvement subjects.** A batch asset may have the subject
+  `IMPROVEMENT:<FACTION>:<ID>` (`IMPROVEMENT:UNDEAD:FARM`); its subject
+  line is that key in `scripts/art/chibi/subjects/<FACTION>.json`. The
+  assets are `calm-building` (seated) and `crop-rows` masters with
+  `ownerColour: false`, like the shared set.
+- **Imported chains.** Every accepted chain of the exploration run was
+  imported (`import --batch buildings-<faction> --from
+art/explorations/faction-buildings-2026-10 --ids …`); a chain's first
+  recipe may be a cross-batch edit of `direction-human` (`windmill-flat-a`,
+  `veg-flux-a`). Sources that are not the master (`solar-b`,
+  `mushroom-flux-b`, `bone-mill-edit-a`) are recorded as rejected with the
+  reason. The Bone Mill's `bone-mill-edit-c` and `bone-mill-edit-d` were
+  generated in the production batch.
+- **The Undead ground is not a batch.** The gloam Grass is an exact colour
+  swap of the accepted Grass masters, so it has no recipe:
+  [`gloam-grass.ts`](../../scripts/art/faction-buildings/gloam-grass.ts)
+  bakes `chibi-undead-grass-1..3` and `chibi-undead-forest-1..2` into
+  `public/assets/chibi/terrain/` and records the swap and every hash in
+  `gloam-grass.json`. `art:validate` calls `gloamGrassProblems`: the
+  masters must be what the Grass masters and Forest bodies derive today.
+  After a change to those, run the bake again and review the diff.
+- The review is `npm run art:faction-buildings-review`: its sheets read
+  the production records, its "after" scenes are the game's own drawing,
+  and it captures a captured city and the Gallery's Buildings tab.

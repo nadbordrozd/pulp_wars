@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-dinosaur",
+  "title": "Dinosaur building looks: the Grinding Stone (Windmill) and the Chopping Block (Sawmill)",
+  "bead": "pulp_wars-xdh.2",
+  "faction": "DINOSAUR",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-dinosaur-grinding-stone",
+      "subject": "IMPROVEMENT:DINOSAUR:WINDMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-dinosaur-chopping-block",
+      "subject": "IMPROVEMENT:DINOSAUR:SAWMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "grindstone-a",
+      "asset": "chibi-dinosaur-grinding-stone",
+      "endpoint": "create-image-pixen",
+      "seed": 97401,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The millstone is drawn large and fills most of the image, touching neither edge.",
+      "negativeAddendum": "windmill, sails, blades, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, spoked wheel, cart",
+      "notes": "Dinosaur Windmill: a calm-building creation; a ground-removal edit follows if it stands on a slab."
+    },
+    {
+      "id": "chopping-block-b",
+      "asset": "chibi-dinosaur-chopping-block",
+      "endpoint": "create-image-pixen",
+      "seed": 97802,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The stone axe in the stump is drawn large and fills most of the image, touching neither edge.",
+      "negativeAddendum": "saw blade, circular saw, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, water wheel",
+      "notes": "Second seed of chopping-block-a."
+    }
+  ]
+}

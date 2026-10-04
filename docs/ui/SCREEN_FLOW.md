@@ -98,7 +98,10 @@ Roads, that text now describes the **Classic look** developer option
 - **Ports, Shipyards and every other improvement** carry no owner colour
   (the Port and Shipyard pennants were retired with the city pennants): the shared set (Farm as
   beds of mixed vegetables, Lumber Camp, Windmill, Sawmill, Forge, Workshop,
-  Market, Monument) and the neutral Village are drawn as authored.
+  Market, Monument) and the neutral Village are drawn as authored. A few
+  of them take the look of the faction that owns their territory, and
+  Undead territory has its own Grass: see the
+  [faction buildings overlay](#current-ruleset-7-faction-buildings-overlay).
 - **Human units, portraits and City 1 to 3** use the direction's art in the
   faction's fixed crimson and gold for every player, on the board and in the
   docks, training cards and technology cards. **Goblin units, portraits
@@ -1161,9 +1164,13 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   Dinosaurs') shows "—".
 - **Buildings tab.** Rows City 1, City 2, City 3 (the three art levels),
   Village and every improvement; a building whose art differs between
-  factions (the cities today; the improvements once the faction building
-  looks of `pulp_wars-xdh` give them their own subjects) has one cell per
-  faction, a building every faction shares has one cell across the row.
+  factions has one cell per faction, a building every faction shares has
+  one cell across the row. The cities differ, and since the
+  [faction buildings](#current-ruleset-7-faction-buildings-overlay)
+  (`pulp_wars-xdh.2`) so do the Farm, the Windmill and the Sawmill: each
+  cell is named as that faction has the building ("Graveyard", "Solar
+  Array"; "Farm" for a faction that keeps the shared one), and an Undead
+  cell stands on the Undead ground.
 - **Filters.** A "Filters" disclosure (open on a wide screen, closed on a
   phone) holds a chip per faction and a chip per row, each group with All
   and None. The tab and both selections are remembered per viewer in this
@@ -1196,6 +1203,53 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   takes no pointer or focus and has no cursor.
 - **Minimal text.** No coordinates anywhere; labels are names, icons and
   numbers.
+
+## Current Ruleset 7 faction buildings overlay
+
+This overlay (`pulp_wars-xdh.2`, epic `pulp_wars-xdh`; the table, the art
+and the evidence are in
+[the faction building looks](../art/FACTION_BUILDINGS.md)) applies to the
+CHIBI art set's live look of the current Ruleset 7 route. It is
+presentation only: no rule, number, command or save changes, and the
+LEGACY art set and the "Classic look" draw the shared buildings and ground
+as before.
+
+- **Whose look.** An improvement is drawn in the look of the faction that
+  **owns the territory it stands in**. When a city changes hands, the
+  buildings inside its borders change with it, for every viewer. Unowned
+  land and every faction without a look of its own draw the shared
+  building.
+- **Which buildings.** Undead: Farm → **Graveyard**, Windmill → **Bone
+  Mill**. Martian: Farm → **Hydroponic Farm**, Windmill → **Solar Array**.
+  Dinosaur: Windmill → **Grinding Stone**, Sawmill → **Chopping Block**.
+  Ice Folk: Farm → **Frost Garden**. Dwarf: Farm → **Mushroom Farm**,
+  Windmill → **Steam Pump**. Humans and Goblins, and every other
+  improvement of every faction, keep the shared set.
+- **Ground.** Inside Undead territory the Grass, the grass under Forest
+  trees and the grass at a Mountain's fringe are a cooler, duller green
+  ("gloam"); nothing is added to the ground. The territory border sits on
+  the colour step. Water, the rocky Mountain ground and the Rift are
+  unchanged.
+- **Names.** The board's accessible label and the tile dock's title use the
+  owner faction's name. A build button uses the viewer's faction's name
+  (the viewer builds in its own territory): an Undead viewer has
+  "Graveyard" where a Human has "Farm". Technology names (Farming,
+  Milling) and every rules text keep the generic building ("+1 per
+  adjacent farm").
+- **One flavour line.** The tile dock of a faction building shows one
+  muted line under its title that ends with what the building counts as:
+  "Quiet plots, tended for later. Counts as a Farm." The same line is the
+  build button's tooltip after its name, and leads the building's
+  description in the Gallery. No other text is added, and none names a
+  tile coordinate.
+- **Art in the interface.** The tile dock, the build buttons and the
+  technology cards that show a building (Farming, Milling, Sawmilling)
+  show the same art as the board: the dock by the territory owner, the
+  buttons and cards by the viewer's faction.
+- **Help.** In a match with a faction that has such a building, the Help
+  has one line: "Some buildings look and are named differently in a
+  faction's territory (an Undead Farm is a Graveyard). They work the
+  same."
 
 ## Current Ruleset 7 playtest round 3 interface overlay
 

@@ -163,7 +163,7 @@ export function grassColourMap(spec: GrassVariantSpec): Map<string, string> {
   return map;
 }
 
-function recolour(
+export function recolourGrass(
   raster: RgbaRaster,
   map: ReadonlyMap<string, string>,
 ): RgbaRaster {
@@ -244,7 +244,7 @@ async function main(): Promise<void> {
     console.log(
       `${spec.id}: ${[...map].map(([from, to]) => `${from}->${to}`).join(" ")}`,
     );
-    const tiles = grass.map((tile) => recolour(tile, map));
+    const tiles = grass.map((tile) => recolourGrass(tile, map));
     for (const [index, tile] of tiles.entries())
       await writeFile(
         path.join(root, undeadGrassFile(spec.id, index + 1)),

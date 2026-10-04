@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-martian",
+  "recipes": {
+    "hydroponic-edit-a": {
+      "id": "hydroponic-edit-a",
+      "asset": "chibi-martian-hydroponic-farm",
+      "jobId": "8cbb96b1-508a-4d4c-926a-daf8c374c570",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-martian-hydroponic-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "crop-rows",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 97701,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn each of the three raised beds of soil into a long trough of polished silver chrome metal with a soft blue-grey shade (no brown soil left), and put a small clear pale glass dome with one white highlight over every vegetable plant. Keep the green vegetable plants, the three rows, the empty transparent gaps between them, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Turn each of the three raised beds of soil into a long trough of polished silver chrome metal with a soft blue-grey shade (no brown soil left), and put a small clear pale glass dome with one white highlight over every vegetable plant. Keep the green vegetable plants, the three rows, the empty transparent gaps between them, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Turn each of the three raised beds of soil into a long trough of polished silver chrome metal with a soft blue-grey shade (no brown soil left), and put a small clear pale glass dome with one white highlight over every vegetable plant. Keep the green vegetable plants, the three rows, the empty transparent gaps between them, the outline and the art style exactly the same.",
+        "editInstruction": "Turn each of the three raised beds of soil into a long trough of polished silver chrome metal with a soft blue-grey shade (no brown soil left), and put a small clear pale glass dome with one white highlight over every vegetable plant. Keep the green vegetable plants, the three rows, the empty transparent gaps between them, the outline and the art style exactly the same.",
+        "source": {
+          "batch": "direction-human",
+          "recipe": "veg-flux-a",
+          "candidate": 0,
+          "sha256": "99d23ea79dc1291fbd9d1d03b827b32aabda408c17fb0aa15bbd5adb57a331c4"
+        }
+      },
+      "submittedAt": "2026-10-04T08:47:39.515Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/hydroponic-edit-a.png",
+      "rawSheetSha256": "07721473b808812a0de116cbd7247ce1fd70708904a1448af937f09b9060e971",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.2393,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 15,
+          "groundShare": 0.2393,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T08:48:26.702Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "hydroponic-edit-a"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The accepted Farm's vegetables in chrome troughs, each plant under a glass dome; the top trough is stamped on every row, five domes to a tile. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+        "reviewedAt": "2026-10-04T09:12:33.754Z"
+      }
+    },
+    "solar-b": {
+      "id": "solar-b",
+      "asset": "chibi-martian-solar-array",
+      "jobId": "sync-35f86707-9107-4b47-8863-606d788dc2e2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-martian-solar-array",
+        "subject": "IMPROVEMENT:WINDMILL",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 97302,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/faction-buildings-2026-10/fragments/class-calm-building.txt + art/explorations/faction-buildings-2026-10/fragments/class-calm-building.negative.txt",
+            "text": "Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/faction-buildings-2026-10/subjects.json",
+            "text": "Subject: a solar power collector: three big flat rectangular solar panels of dark navy-blue glass divided into a grid of small square cells by thin silver lines, tilted up toward the sky on slender polished chrome stands, side by side in a row, each on short dark gunmetal feet, with one short chrome mast between them topped by one small hot magenta pink light; wide and low, like a toy. Machine only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The machine is drawn large and fills most of the image, touching neither edge.",
+            "negative": "windmill, sails, blades, propeller, wind turbine, house, roof, wood, brick, plaster, terracotta"
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a solar power collector: three big flat rectangular solar panels of dark navy-blue glass divided into a grid of small square cells by thin silver lines, tilted up toward the sky on slender polished chrome stands, side by side in a row, each on short dark gunmetal feet, with one short chrome mast between them topped by one small hot magenta pink light; wide and low, like a toy. Machine only. The machine is drawn large and fills most of the image, touching neither edge.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, windmill, sails, blades, propeller, wind turbine, house, roof, wood, brick, plaster, terracotta",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a solar power collector: three big flat rectangular solar panels of dark navy-blue glass divided into a grid of small square cells by thin silver lines, tilted up toward the sky on slender polished chrome stands, side by side in a row, each on short dark gunmetal feet, with one short chrome mast between them topped by one small hot magenta pink light; wide and low, like a toy. Machine only. The machine is drawn large and fills most of the image, touching neither edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, windmill, sails, blades, propeller, wind turbine, house, roof, wood, brick, plaster, terracotta."
+      },
+      "submittedAt": "2026-10-04T08:34:09.048Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/solar-b.png",
+      "rawSheetSha256": "ac004eca679ac06d827bed5cae8d188faa5d214d5778efd50c17fde2c819f302",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.5823,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T08:35:09.293Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "solar-b"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The chosen design on a grass and dirt slab; the source of solar-b-edit-c, which removes the ground.",
+        "reviewedAt": "2026-10-04T09:14:11.027Z"
+      }
+    },
+    "solar-b-edit-c": {
+      "id": "solar-b-edit-c",
+      "asset": "chibi-martian-solar-array",
+      "jobId": "a9c49e9b-18ee-4313-838c-5dce0750e2ed",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-martian-solar-array",
+        "subject": "IMPROVEMENT:WINDMILL",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 97304,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove all ground: erase the grass, dirt and stone plate under the solar panels, so the three round grey feet stand directly on a transparent background with nothing at all under them: no slab, no plate, no glass, no shadow. Keep the three dark blue solar panels, the frame, the feet, the mast with the pink light, the colours, outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Remove all ground: erase the grass, dirt and stone plate under the solar panels, so the three round grey feet stand directly on a transparent background with nothing at all under them: no slab, no plate, no glass, no shadow. Keep the three dark blue solar panels, the frame, the feet, the mast with the pink light, the colours, outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove all ground: erase the grass, dirt and stone plate under the solar panels, so the three round grey feet stand directly on a transparent background with nothing at all under them: no slab, no plate, no glass, no shadow. Keep the three dark blue solar panels, the frame, the feet, the mast with the pink light, the colours, outline and art style exactly the same.",
+        "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the solar panels, so the three round grey feet stand directly on a transparent background with nothing at all under them: no slab, no plate, no glass, no shadow. Keep the three dark blue solar panels, the frame, the feet, the mast with the pink light, the colours, outline and art style exactly the same.",
+        "source": {
+          "recipe": "solar-b",
+          "candidate": 0,
+          "sha256": "ac004eca679ac06d827bed5cae8d188faa5d214d5778efd50c17fde2c819f302"
+        }
+      },
+      "submittedAt": "2026-10-04T08:44:20.569Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-martian/solar-b-edit-c.png",
+      "rawSheetSha256": "97e0fe893d09cc2ddd890b57fb7d2f5997764e2a29ee6c164a16e05029caf475",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4889,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4889,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T08:45:02.953Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "solar-b-edit-c"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Three tilted navy panels in a dark frame, a mast with a magenta light; the slab is gone, a few grey stepping stones stay under the feet. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+        "reviewedAt": "2026-10-04T09:12:32.409Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-martian-hydroponic-farm": {
+      "id": "chibi-martian-hydroponic-farm",
+      "subject": "IMPROVEMENT:MARTIAN:FARM",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "hydroponic-edit-a",
+      "candidate": 0,
+      "candidateSha256": "cf468ad9228bea7238cdf552af01598c0746c06b671e02321b272da7ca3c5ccb",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-hydroponic-farm.png",
+        "sha256": "33095522cd017c2149ba7b30e302e70892dd04744d64c2155ab4d5af3e1426e1",
+        "pixelSha256": "e449e66ed754fddf0cea487a7cdd005ba608e3c93ecb7b31117dcc773385222f",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "crop-rows",
+        "cropRows": {
+          "rows": 3,
+          "band": 0,
+          "period": 80,
+          "stamps": [
+            {
+              "left": 9,
+              "width": 16,
+              "at": 0
+            },
+            {
+              "left": 25,
+              "width": 16,
+              "at": 16
+            },
+            {
+              "left": 41,
+              "width": 16,
+              "at": 32
+            },
+            {
+              "left": 57,
+              "width": 14,
+              "at": 48
+            },
+            {
+              "left": 56,
+              "width": 1,
+              "at": 62
+            },
+            {
+              "left": 56,
+              "width": 1,
+              "at": 63
+            },
+            {
+              "left": 25,
+              "width": 16,
+              "at": 64
+            }
+          ],
+          "rowOffsets": [0, 32, 16],
+          "phase": 0.5,
+          "saturation": 1,
+          "strawMix": 0
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The accepted Farm's vegetables in chrome troughs, each plant under a glass dome; the top trough is stamped on every row, five domes to a tile. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+      "acceptedAt": "2026-10-04T09:12:33.754Z"
+    },
+    "chibi-martian-solar-array": {
+      "id": "chibi-martian-solar-array",
+      "subject": "IMPROVEMENT:MARTIAN:WINDMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "solar-b-edit-c",
+      "candidate": 0,
+      "candidateSha256": "7fbcf1f6826108b7f4324fedd5d90b41cbfde0419fc1fe1b05459ed6d3b7cb58",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-martian-solar-array.png",
+        "sha256": "e57a02974d748711e2b558b132ee804f8b3f9c41db54fde19173d462f39d2be4",
+        "pixelSha256": "10d435d801587afb99218ef1aa65eeb99debbc31367ffdb0ce7bb3726576cf9f",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Three tilted navy panels in a dark frame, a mast with a magenta light; the slab is gone, a few grey stepping stones stay under the feet. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+      "acceptedAt": "2026-10-04T09:12:32.409Z"
+    }
+  }
+}

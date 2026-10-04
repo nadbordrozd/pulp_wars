@@ -29,6 +29,14 @@ export type ArtSubjectV7 =
   | `TERRAIN:RIFT_${RiftPieceV7}`
   | `RESOURCE:${ResourceIdV7}`
   | `IMPROVEMENT:${ImprovementIdV7}`
+  /**
+   * Faction building looks (epic pulp_wars-xdh, FACTION_BUILDINGS.md): an
+   * improvement as the faction that owns its territory draws it, and the
+   * Undead territory ground. Each falls back to its shared subject
+   * (chibiFallbackSubjectV7).
+   */
+  | FactionImprovementSubjectV7
+  | FactionTerrainSubjectV7
   | `UNIT:${UnitRoleIdV7 | "EMBARKED_TRANSPORT"}`
   | `UNIT:UNDEAD:${UndeadArtRoleV7}`
   /** Revision 17: the Goblin units (bead pulp_wars-0ao.8, GOBLIN.md). */
@@ -333,6 +341,69 @@ export type DinosaurArtRoleV7 = UndeadArtRoleV7;
 
 /** Roles with their own Martian art (docs/art/factions/MARTIAN.md). */
 export type MartianArtRoleV7 = UndeadArtRoleV7;
+
+/**
+ * The improvements a faction draws in its own look (epic pulp_wars-xdh,
+ * docs/art/FACTION_BUILDINGS.md, section 3). Purely visual: the look follows
+ * the owner of the territory the improvement stands in, and every other
+ * improvement of every faction is the shared building.
+ */
+export const FACTION_IMPROVEMENT_LOOKS_V7: Readonly<
+  Partial<Record<FactionIdV7, readonly ImprovementIdV7[]>>
+> = {
+  UNDEAD: ["FARM", "WINDMILL"],
+  DINOSAUR: ["WINDMILL", "SAWMILL"],
+  MARTIAN: ["FARM", "WINDMILL"],
+  ICE_FOLK: ["FARM"],
+  DWARF: ["FARM", "WINDMILL"],
+};
+
+export type FactionImprovementSubjectV7 =
+  `IMPROVEMENT:${Exclude<FactionIdV7, "ORIGINAL">}:${ImprovementIdV7}`;
+
+/** True when the faction draws this improvement in a look of its own. */
+export function factionHasImprovementLookV7(
+  improvement: ImprovementIdV7,
+  faction: FactionIdV7 | null | undefined,
+): faction is Exclude<FactionIdV7, "ORIGINAL"> {
+  return (
+    faction !== null &&
+    faction !== undefined &&
+    (FACTION_IMPROVEMENT_LOOKS_V7[faction]?.includes(improvement) ?? false)
+  );
+}
+
+/**
+ * The ground of a faction's territory (FACTION_BUILDINGS.md, section 4):
+ * the Undead "gloam" Grass, a cooler, duller green, under the Grass, the
+ * Forest trees and the Mountain fringe inside Undead borders.
+ */
+export type TerritoryGroundV7 = "UNDEAD";
+
+export type FactionTerrainSubjectV7 =
+  `TERRAIN:${TerritoryGroundV7}:${"GRASS" | "FOREST"}`;
+
+/** The territory ground a faction's borders draw, or null for the shared one. */
+export function territoryGroundV7(
+  faction: FactionIdV7 | null | undefined,
+): TerritoryGroundV7 | null {
+  return faction === "UNDEAD" ? "UNDEAD" : null;
+}
+
+/**
+ * A terrain subject as a territory ground draws it: Grass and Forest take
+ * the ground's own subject; every other terrain (water, the rocky Mountain,
+ * the Rift) is unchanged.
+ */
+export function territoryTerrainSubjectV7(
+  subject: ArtSubjectV7,
+  ground: TerritoryGroundV7 | null | undefined,
+): ArtSubjectV7 {
+  if (ground === null || ground === undefined) return subject;
+  if (subject === "TERRAIN:GRASS") return `TERRAIN:${ground}:GRASS`;
+  if (subject === "TERRAIN:FOREST") return `TERRAIN:${ground}:FOREST`;
+  return subject;
+}
 
 /** Factions with their own city art; every other faction uses `CITY:<level>`. */
 export type CityArtFactionV7 =
@@ -698,6 +769,7 @@ const OWNED_SUBJECT_PREFIXES = ["UNIT:", "CITY:", "PORTRAIT:"] as const;
 function allowedClasses(subject: ArtSubjectV7): readonly ChibiAssetClassV7[] {
   if (
     subject === "TERRAIN:FOREST" ||
+    subject === "TERRAIN:UNDEAD:FOREST" ||
     subject === "TERRAIN:MOUNTAIN" ||
     subject === "TERRAIN:MINED_MOUNTAIN"
   )

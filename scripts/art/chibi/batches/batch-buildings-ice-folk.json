@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-ice-folk",
+  "title": "Ice Folk building looks: the Frost Garden (Farm)",
+  "bead": "pulp_wars-xdh.2",
+  "faction": "ICE_FOLK",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-ice-folk-frost-garden",
+      "subject": "IMPROVEMENT:ICE_FOLK:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-rows",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "cropRows": {
+        "rows": 3,
+        "band": 0,
+        "period": 80,
+        "stamps": [
+          {
+            "left": 8,
+            "width": 16,
+            "at": 0
+          },
+          {
+            "left": 24,
+            "width": 16,
+            "at": 16
+          },
+          {
+            "left": 40,
+            "width": 16,
+            "at": 32
+          },
+          {
+            "left": 56,
+            "width": 16,
+            "at": 48
+          },
+          {
+            "left": 24,
+            "width": 16,
+            "at": 64
+          }
+        ],
+        "rowOffsets": [0, 8, 0],
+        "phase": 0.5,
+        "saturation": 1,
+        "strawMix": 0
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "frost-garden-edit-a",
+      "asset": "chibi-ice-folk-frost-garden",
+      "endpoint": "edit-image-pixen",
+      "seed": 97901,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-human",
+        "recipe": "veg-flux-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same.",
+      "notes": "The Ice Folk Farm as an edit of the accepted Farm candidate (veg-flux-a)."
+    }
+  ]
+}

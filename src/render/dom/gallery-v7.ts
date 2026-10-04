@@ -41,6 +41,7 @@ import {
   GALLERY_UNIT_ROWS_V7,
   galleryBuildingDetailsV7,
   galleryBuildingGroundV7,
+  galleryBuildingNameV7,
   galleryBuildingPerFactionV7,
   galleryBuildingSubjectV7,
   galleryNavalRowV7,
@@ -703,7 +704,8 @@ export class GalleryViewV7 {
     }
     const key = cellKey(row, faction);
     keys.push(key);
-    const name = galleryRowLabelV7(row);
+    // A faction's own look carries its own name ("Graveyard").
+    const name = galleryBuildingNameV7(row, faction);
     const node = button(
       this.#document,
       "",
@@ -727,7 +729,7 @@ export class GalleryViewV7 {
     const canvas = this.#tile(
       {
         subject: galleryBuildingSubjectV7(row, faction ?? "ORIGINAL"),
-        ground: galleryBuildingGroundV7(row),
+        ground: galleryBuildingGroundV7(row, faction),
         ownerColor: faction === null ? undefined : factionColourV7(faction),
         scale: TABLE_SCALE,
       },
@@ -1252,7 +1254,7 @@ export class GalleryViewV7 {
           detail.row,
           detail.faction ?? "ORIGINAL",
         ),
-        ground: galleryBuildingGroundV7(detail.row),
+        ground: galleryBuildingGroundV7(detail.row, detail.faction),
         ownerColor:
           detail.faction === null ? undefined : factionColourV7(detail.faction),
         scale: DETAIL_SCALE,

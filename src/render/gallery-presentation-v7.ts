@@ -18,9 +18,12 @@ import {
 import {
   cityArtSubjectV7,
   navalArtSubjectV7,
+  territoryGroundV7,
+  territoryTerrainSubjectV7,
   unitArtSubjectV7,
   type ArtSubjectV7,
 } from "../assets/chibi-art-v7";
+import { factionBuildingV7 } from "./faction-buildings-v7";
 import {
   factionImprovementSubjectV7,
   portraitSubjectV7,
@@ -294,8 +297,9 @@ export function galleryBuildingSubjectV7(
 
 /**
  * True when the factions differ on this building: the row then has one
- * column per faction, else one shared cell. Cities differ today; the
- * improvements become per-faction rows as soon as their subjects do.
+ * column per faction, else one shared cell. Cities differ, and so do the
+ * improvements some faction draws in a look of its own (the Farm, the
+ * Windmill and the Sawmill, epic pulp_wars-xdh).
  */
 export function galleryBuildingPerFactionV7(
   row: GalleryBuildingRowIdV7,
@@ -309,14 +313,36 @@ export function galleryBuildingPerFactionV7(
   );
 }
 
-/** The ground a building stands on in its cell (null: the art has its own). */
+/**
+ * The name of a building row as a faction has it: the faction's own name
+ * of an improvement it draws in its own look ("Graveyard", epic
+ * pulp_wars-xdh), else the row's name. `null` is the shared cell.
+ */
+export function galleryBuildingNameV7(
+  row: GalleryBuildingRowIdV7,
+  faction: FactionIdV7 | null,
+): string {
+  if (row === "CITY_1" || row === "CITY_2" || row === "CITY_3")
+    return galleryRowLabelV7(row);
+  if (row === "VILLAGE") return galleryRowLabelV7(row);
+  return factionBuildingV7(row, faction)?.name ?? galleryRowLabelV7(row);
+}
+
+/**
+ * The ground a building stands on in its cell (null: the art has its own):
+ * in a faction's own cell, the ground of that faction's territory (the
+ * Undead gloam Grass).
+ */
 export function galleryBuildingGroundV7(
   row: GalleryBuildingRowIdV7,
+  faction: FactionIdV7 | null = null,
 ): ArtSubjectV7 | null {
   if (row === "MINE") return null;
   if (row === "PORT" || row === "SHIPYARD") return "TERRAIN:SHALLOW_WATER";
-  if (row === "LUMBER_CAMP") return "TERRAIN:FOREST";
-  return "TERRAIN:GRASS";
+  return territoryTerrainSubjectV7(
+    row === "LUMBER_CAMP" ? "TERRAIN:FOREST" : "TERRAIN:GRASS",
+    territoryGroundV7(faction),
+  );
 }
 
 export interface GalleryBuildingDetailsV7 {
@@ -392,9 +418,21 @@ export function galleryBuildingDetailsV7(
   row: GalleryBuildingRowIdV7,
   faction: FactionIdV7 | null,
 ): GalleryBuildingDetailsV7 {
-  const name = galleryRowLabelV7(row);
+  const name = galleryBuildingNameV7(row, faction);
   const factionName = faction === null ? null : factionNameV7(faction);
-  const description = BUILDING_DESCRIPTIONS[row];
+  // A faction's own look: its flavour line ("... Counts as a Farm.") leads;
+  // the rules, effects and cost below are the generic building's.
+  const own =
+    row === "CITY_1" ||
+    row === "CITY_2" ||
+    row === "CITY_3" ||
+    row === "VILLAGE"
+      ? null
+      : factionBuildingV7(row, faction);
+  const description =
+    own === null
+      ? BUILDING_DESCRIPTIONS[row]
+      : `${own.flavour} ${BUILDING_DESCRIPTIONS[row]}`;
   if (
     row === "CITY_1" ||
     row === "CITY_2" ||

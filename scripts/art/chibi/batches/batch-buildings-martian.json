@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-martian",
+  "title": "Martian building looks: the Solar Array (Windmill) and the Hydroponic Farm (Farm)",
+  "bead": "pulp_wars-xdh.2",
+  "faction": "MARTIAN",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-martian-solar-array",
+      "subject": "IMPROVEMENT:MARTIAN:WINDMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 72,
+        "height": 72
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-martian-hydroponic-farm",
+      "subject": "IMPROVEMENT:MARTIAN:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-rows",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "cropRows": {
+        "rows": 3,
+        "band": 0,
+        "period": 80,
+        "stamps": [
+          {
+            "left": 9,
+            "width": 16,
+            "at": 0
+          },
+          {
+            "left": 25,
+            "width": 16,
+            "at": 16
+          },
+          {
+            "left": 41,
+            "width": 16,
+            "at": 32
+          },
+          {
+            "left": 57,
+            "width": 14,
+            "at": 48
+          },
+          {
+            "left": 56,
+            "width": 1,
+            "at": 62
+          },
+          {
+            "left": 56,
+            "width": 1,
+            "at": 63
+          },
+          {
+            "left": 25,
+            "width": 16,
+            "at": 64
+          }
+        ],
+        "rowOffsets": [0, 32, 16],
+        "phase": 0.5,
+        "saturation": 1,
+        "strawMix": 0
+      }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "solar-b",
+      "asset": "chibi-martian-solar-array",
+      "endpoint": "create-image-pixen",
+      "seed": 97302,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The machine is drawn large and fills most of the image, touching neither edge.",
+      "negativeAddendum": "windmill, sails, blades, propeller, wind turbine, house, roof, wood, brick, plaster, terracotta",
+      "notes": "Second seed of solar-a."
+    },
+    {
+      "id": "solar-b-edit-c",
+      "asset": "chibi-martian-solar-array",
+      "endpoint": "edit-image-pixen",
+      "seed": 97304,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "solar-b",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the solar panels, so the three round grey feet stand directly on a transparent background with nothing at all under them: no slab, no plate, no glass, no shadow. Keep the three dark blue solar panels, the frame, the feet, the mast with the pink light, the colours, outline and art style exactly the same.",
+      "notes": "solar-b-edit turned the grass slab into a pale glass plate instead of removing it."
+    },
+    {
+      "id": "hydroponic-edit-a",
+      "asset": "chibi-martian-hydroponic-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 97701,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-human",
+        "recipe": "veg-flux-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn each of the three raised beds of soil into a long trough of polished silver chrome metal with a soft blue-grey shade (no brown soil left), and put a small clear pale glass dome with one white highlight over every vegetable plant. Keep the green vegetable plants, the three rows, the empty transparent gaps between them, the outline and the art style exactly the same.",
+      "notes": "The Martian Farm as an edit of the accepted Farm candidate (veg-flux-a), so the beds, plants and gaps stay."
+    }
+  ]
+}

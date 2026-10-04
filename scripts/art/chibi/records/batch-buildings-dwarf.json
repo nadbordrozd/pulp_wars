@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-dwarf",
+  "recipes": {
+    "mushroom-flux-b": {
+      "id": "mushroom-flux-b",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "jobId": "sync-bdc3b4d1-9fd6-43ce-8273-2512f2ff11cc",
+      "request": {
+        "endpoint": "create-image-pixflux",
+        "model": "create-image-pixflux",
+        "batch": "faction-buildings",
+        "asset": "chibi-dwarf-mushroom-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "crop-rows",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 97202,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "shading": "flat shading",
+          "detail": "low detail",
+          "view": "high top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-crop.txt + scripts/art/chibi/fragments/style-crop.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "art/explorations/faction-buildings-2026-10/fragments/camera-crop-pattern.txt",
+            "text": "Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/faction-buildings-2026-10/fragments/class-crop-rows.txt + art/explorations/faction-buildings-2026-10/fragments/class-crop-rows.negative.txt",
+            "text": "Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent.",
+            "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/faction-buildings-2026-10/subjects.json",
+            "text": "Subject: a small mushroom farm: three straight horizontal strips of dark brown peat soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of five plump round mushrooms side by side, with broad smooth tan and russet-brown caps and short pale cream stalks, and a few small mushrooms between the big ones. Mushrooms and soil only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "red cap, white spots, fly agaric, glowing, green plants, cabbages, vegetables, grass"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent. Subject: a small mushroom farm: three straight horizontal strips of dark brown peat soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of five plump round mushrooms side by side, with broad smooth tan and russet-brown caps and short pale cream stalks, and a few small mushrooms between the big ones. Mushrooms and soil only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, red cap, white spots, fly agaric, glowing, green plants, cabbages, vegetables",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent. Subject: a small mushroom farm: three straight horizontal strips of dark brown peat soil, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip grows one row of five plump round mushrooms side by side, with broad smooth tan and russet-brown caps and short pale cream stalks, and a few small mushrooms between the big ones. Mushrooms and soil only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, red cap, white spots, fly agaric, glowing, green plants, cabbages, vegetables."
+      },
+      "submittedAt": "2026-10-04T08:35:44.418Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/mushroom-flux-b.png",
+      "rawSheetSha256": "ee4d612ad9faa18df4b87a070f8b38de571518e132b9565fbb4e2d1dde9226a9",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.3317,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T08:36:07.294Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "mushroom-flux-b"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right shapes with red and green caps; the source of mushroom-flux-b-edit, which recolours them.",
+        "reviewedAt": "2026-10-04T09:14:12.248Z"
+      }
+    },
+    "mushroom-flux-b-edit": {
+      "id": "mushroom-flux-b-edit",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "jobId": "fdf07bb8-b9e6-4f1e-8bce-d7752e39961e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-dwarf-mushroom-farm",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "crop-rows",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 97203,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of the mushroom caps: every cap becomes a warm tan brown (#b98a55) or a russet brown (#8a5a34) with small cream spots, with no red, no pink and no green caps anywhere. Keep the mushrooms, their cream stalks, the three strips of brown soil, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colours of the mushroom caps: every cap becomes a warm tan brown (#b98a55) or a russet brown (#8a5a34) with small cream spots, with no red, no pink and no green caps anywhere. Keep the mushrooms, their cream stalks, the three strips of brown soil, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colours of the mushroom caps: every cap becomes a warm tan brown (#b98a55) or a russet brown (#8a5a34) with small cream spots, with no red, no pink and no green caps anywhere. Keep the mushrooms, their cream stalks, the three strips of brown soil, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colours of the mushroom caps: every cap becomes a warm tan brown (#b98a55) or a russet brown (#8a5a34) with small cream spots, with no red, no pink and no green caps anywhere. Keep the mushrooms, their cream stalks, the three strips of brown soil, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "mushroom-flux-b",
+          "candidate": 0,
+          "sha256": "ee4d612ad9faa18df4b87a070f8b38de571518e132b9565fbb4e2d1dde9226a9"
+        }
+      },
+      "submittedAt": "2026-10-04T08:41:58.394Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/mushroom-flux-b-edit.png",
+      "rawSheetSha256": "9557251c74eecc338e08e369542786da71c17c0d51bc4b820a5cd3b779249246",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.4784,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.4784,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T08:42:35.043Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "mushroom-flux-b-edit"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Tan and brown mushrooms on thin peat beds; the russet-red middle row is not used (rows are stamped from the first and third bed). Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+        "reviewedAt": "2026-10-04T09:12:38.461Z"
+      }
+    },
+    "steam-pump-b": {
+      "id": "steam-pump-b",
+      "asset": "chibi-dwarf-steam-pump",
+      "jobId": "sync-0558f5c4-d5c8-4e16-9dc9-a35eeb4191cb",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-dwarf-steam-pump",
+        "subject": "IMPROVEMENT:WINDMILL",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 98002,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/faction-buildings-2026-10/fragments/class-calm-building.txt + art/explorations/faction-buildings-2026-10/fragments/class-calm-building.negative.txt",
+            "text": "Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/faction-buildings-2026-10/subjects.json",
+            "text": "Subject: a steam pump house: one squat round boiler tower of riveted copper on a short grey stone footing, with a domed copper top, one white-faced pressure gauge, a tall dark iron chimney puffing one small puff of white steam, and one big brass cog wheel turning on its side beside a thick copper pipe; chunky and low. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The building is drawn large and fills most of the image, touching neither edge.",
+            "negative": "windmill, sails, blades, propeller, wood, plaster, terracotta, thatch, dwarf, face, eyes"
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a steam pump house: one squat round boiler tower of riveted copper on a short grey stone footing, with a domed copper top, one white-faced pressure gauge, a tall dark iron chimney puffing one small puff of white steam, and one big brass cog wheel turning on its side beside a thick copper pipe; chunky and low. Buildings only. The building is drawn large and fills most of the image, touching neither edge.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, windmill, sails, blades, propeller, wood, plaster, terracotta, thatch, dwarf, face, eyes",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a steam pump house: one squat round boiler tower of riveted copper on a short grey stone footing, with a domed copper top, one white-faced pressure gauge, a tall dark iron chimney puffing one small puff of white steam, and one big brass cog wheel turning on its side beside a thick copper pipe; chunky and low. Buildings only. The building is drawn large and fills most of the image, touching neither edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, windmill, sails, blades, propeller, wood, plaster, terracotta, thatch, dwarf, face, eyes."
+      },
+      "submittedAt": "2026-10-04T08:52:59.087Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/steam-pump-b.png",
+      "rawSheetSha256": "7905664f98778066d8ada074ca40fca0bbb2e2c23c5aac4fc0f98a1a3e71df33",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1688,
+          "footprintWidthShare": 0.7458,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T08:53:36.799Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "steam-pump-b"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A copper boiler with a domed top, an iron chimney puffing steam and a brass cog wheel on a short stone footing. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+        "reviewedAt": "2026-10-04T09:12:39.559Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-dwarf-mushroom-farm": {
+      "id": "chibi-dwarf-mushroom-farm",
+      "subject": "IMPROVEMENT:DWARF:FARM",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "mushroom-flux-b-edit",
+      "candidate": 0,
+      "candidateSha256": "4ab25ae508a1b3256060320e53bdb9a570b9da8e78dc6ccddaaab6df4b05164c",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-mushroom-farm.png",
+        "sha256": "0a5fb31ce0df5458fbb12a946dbde12128d38347e7cee933e4d828cd39d519d6",
+        "pixelSha256": "56393d7af46b44c7065d9e2df4e3df5713bf6aade1ed0d02402afea720317051",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "crop-rows",
+        "cropRows": {
+          "rows": 4,
+          "band": 0,
+          "period": 80,
+          "stamps": [
+            {
+              "left": 5,
+              "width": 70,
+              "at": 0,
+              "band": 0,
+              "rows": [0, 2]
+            },
+            {
+              "left": 29,
+              "width": 10,
+              "at": 70,
+              "band": 0,
+              "rows": [0, 2]
+            },
+            {
+              "left": 5,
+              "width": 70,
+              "at": 0,
+              "band": 2,
+              "rows": [1, 3]
+            },
+            {
+              "left": 29,
+              "width": 10,
+              "at": 70,
+              "band": 2,
+              "rows": [1, 3]
+            }
+          ],
+          "rowOffsets": [0, 6, 40, 46],
+          "saturation": 1,
+          "strawMix": 0
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Tan and brown mushrooms on thin peat beds; the russet-red middle row is not used (rows are stamped from the first and third bed). Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+      "acceptedAt": "2026-10-04T09:12:38.461Z"
+    },
+    "chibi-dwarf-steam-pump": {
+      "id": "chibi-dwarf-steam-pump",
+      "subject": "IMPROVEMENT:DWARF:WINDMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "steam-pump-b",
+      "candidate": 0,
+      "candidateSha256": "7905664f98778066d8ada074ca40fca0bbb2e2c23c5aac4fc0f98a1a3e71df33",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dwarf-steam-pump.png",
+        "sha256": "fb42ea37bb6a5adea97bbf08f7f5147374470298501689c2c7c992cb58aa460d",
+        "pixelSha256": "a17145ac0cd49fbf5db55b44d79a6395ef1b3e3f9c850a0447c397679567eb75",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A copper boiler with a domed top, an iron chimney puffing steam and a brass cog wheel on a short stone footing. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+      "acceptedAt": "2026-10-04T09:12:39.559Z"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "mushroom-flux-b-edit",
+  "jobId": "fdf07bb8-b9e6-4f1e-8bce-d7752e39961e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "faction-buildings",
+    "asset": "chibi-dwarf-mushroom-farm",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-FACTION-BUILDINGS",
+    "recipeClass": "crop-rows",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 97203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours of the mushroom caps: every cap becomes a warm tan brown (#b98a55) or a russet brown (#8a5a34) with small cream spots, with no red, no pink and no green caps anywhere. Keep the mushrooms, their cream stalks, the three strips of brown soil, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the colours of the mushroom caps: every cap becomes a warm tan brown (#b98a55) or a russet brown (#8a5a34) with small cream spots, with no red, no pink and no green caps anywhere. Keep the mushrooms, their cream stalks, the three strips of brown soil, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the colours of the mushroom caps: every cap becomes a warm tan brown (#b98a55) or a russet brown (#8a5a34) with small cream spots, with no red, no pink and no green caps anywhere. Keep the mushrooms, their cream stalks, the three strips of brown soil, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the colours of the mushroom caps: every cap becomes a warm tan brown (#b98a55) or a russet brown (#8a5a34) with small cream spots, with no red, no pink and no green caps anywhere. Keep the mushrooms, their cream stalks, the three strips of brown soil, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "mushroom-flux-b",
+      "candidate": 0,
+      "sha256": "ee4d612ad9faa18df4b87a070f8b38de571518e132b9565fbb4e2d1dde9226a9"
+    }
+  }
+}

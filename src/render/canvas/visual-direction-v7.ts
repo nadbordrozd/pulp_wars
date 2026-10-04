@@ -650,10 +650,15 @@ export function terrainKeepDarkV7(subject: ArtSubjectV7): number | undefined {
 }
 
 export function terrainPivotV7(subject: ArtSubjectV7): RgbTripleV7 | undefined {
-  // The Rift's pieces stand on the Grass tile (bead pulp_wars-9s0.5).
+  // The Rift's pieces stand on the Grass tile (bead pulp_wars-9s0.5). The
+  // Undead territory ground (bead pulp_wars-xdh.2) is toned around the
+  // same Grass pivot as every Grass tile, as the study judged it: its own
+  // mean would make the step at the border stronger than accepted.
   if (
     subject === "TERRAIN:GRASS" ||
     subject === "TERRAIN:FOREST" ||
+    subject === "TERRAIN:UNDEAD:GRASS" ||
+    subject === "TERRAIN:UNDEAD:FOREST" ||
     subject.startsWith("TERRAIN:RIFT_")
   )
     return GRASS_PIVOT;
@@ -900,7 +905,18 @@ export function createDirectedChibiArtV7(input: {
         return base.resolve(request);
       }
       if (group === "TERRAIN") {
-        const resolved = base.resolve(request);
+        // A faction's territory ground (`TERRAIN:UNDEAD:GRASS`, bead
+        // pulp_wars-xdh.2) is direction art: it is resolved from the
+        // direction's registry and toned like every terrain tile. Shared
+        // terrain is not converted and comes from the base resolver.
+        const own =
+          input.samples !== undefined &&
+          request.subject.startsWith("TERRAIN:") &&
+          !humanPiece(request.subject)
+            ? input.samples.resolve(request)
+            : null;
+        const resolved =
+          own !== null && own.kind !== "MISSING" ? own : base.resolve(request);
         return resolved.kind === "READY"
           ? withTone(
               resolved,

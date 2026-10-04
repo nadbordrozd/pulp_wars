@@ -1,0 +1,36 @@
+{
+  "id": "bone-mill-edit-b",
+  "jobId": "a2d5da48-d991-40c5-a76e-b2c253218748",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "faction-buildings",
+    "asset": "chibi-undead-bone-mill",
+    "subject": "IMPROVEMENT:WINDMILL",
+    "faction": "TEST-FACTION-BUILDINGS",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 64,
+      "height": 72
+    },
+    "seed": 97602,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the red roofs. The cone roof on top and the small roof over the door become near-black charcoal slate (#2b2b31) with a dark grey edge (#44454d), with no red, no orange and no brown left on them. Do not redraw anything else: the dark stone tower, the four dark ragged sails, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the red roofs. The cone roof on top and the small roof over the door become near-black charcoal slate (#2b2b31) with a dark grey edge (#44454d), with no red, no orange and no brown left on them. Do not redraw anything else: the dark stone tower, the four dark ragged sails, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the red roofs. The cone roof on top and the small roof over the door become near-black charcoal slate (#2b2b31) with a dark grey edge (#44454d), with no red, no orange and no brown left on them. Do not redraw anything else: the dark stone tower, the four dark ragged sails, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the red roofs. The cone roof on top and the small roof over the door become near-black charcoal slate (#2b2b31) with a dark grey edge (#44454d), with no red, no orange and no brown left on them. Do not redraw anything else: the dark stone tower, the four dark ragged sails, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "bone-mill-edit-a",
+      "candidate": 0,
+      "sha256": "aca4aeb2e9ab280b814dde1d5069e2a147ae15536fa4e4eeb165ce8c0b53efd6"
+    }
+  }
+}

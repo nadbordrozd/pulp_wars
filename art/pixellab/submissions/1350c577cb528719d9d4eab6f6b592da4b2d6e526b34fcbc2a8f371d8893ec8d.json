@@ -1,0 +1,36 @@
+{
+  "id": "solar-b-edit-c",
+  "jobId": "a9c49e9b-18ee-4313-838c-5dce0750e2ed",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "faction-buildings",
+    "asset": "chibi-martian-solar-array",
+    "subject": "IMPROVEMENT:WINDMILL",
+    "faction": "TEST-FACTION-BUILDINGS",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 97304,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass, dirt and stone plate under the solar panels, so the three round grey feet stand directly on a transparent background with nothing at all under them: no slab, no plate, no glass, no shadow. Keep the three dark blue solar panels, the frame, the feet, the mast with the pink light, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass, dirt and stone plate under the solar panels, so the three round grey feet stand directly on a transparent background with nothing at all under them: no slab, no plate, no glass, no shadow. Keep the three dark blue solar panels, the frame, the feet, the mast with the pink light, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass, dirt and stone plate under the solar panels, so the three round grey feet stand directly on a transparent background with nothing at all under them: no slab, no plate, no glass, no shadow. Keep the three dark blue solar panels, the frame, the feet, the mast with the pink light, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass, dirt and stone plate under the solar panels, so the three round grey feet stand directly on a transparent background with nothing at all under them: no slab, no plate, no glass, no shadow. Keep the three dark blue solar panels, the frame, the feet, the mast with the pink light, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "solar-b",
+      "candidate": 0,
+      "sha256": "ac004eca679ac06d827bed5cae8d188faa5d214d5778efd50c17fde2c819f302"
+    }
+  }
+}

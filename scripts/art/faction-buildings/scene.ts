@@ -1,34 +1,28 @@
 /**
- * Board study scenes of the faction building looks (bead pulp_wars-xdh.1,
+ * Board review scenes of the faction building looks (epic pulp_wars-xdh,
  * docs/art/FACTION_BUILDINGS.md). Loaded in the browser through the Vite
  * dev server by scripts/art/faction-buildings-review.ts and drawn by the real
  * CanvasBoardHostV7 with the CHIBI art set and the live look the game draws
- * (`liveBoardLookV7`). Nothing here is part of the game build, and nothing
- * in the game changes: the proposal is not wired in.
+ * (`liveBoardLookV7`). Nothing here is part of the game build.
  *
  * Each scene is an 8 x 6 patch of the Showcase board: the left half is a
  * city territory of the studied faction (seat 0, the viewer), the right half
  * a Human city territory (seat 1) with the same buildings in the same
- * places, so every proposed building stands beside today's shared one and
- * the grass changes at the territory border. Outside the patch is fog.
+ * places, so every faction building stands beside the shared one and the
+ * grass changes at the territory border. Outside the patch is fog.
  *
- * **The "after" frame.** The renderer resolves art by subject and cell
- * (`chibiVariantV7`: variant `(31x + 17y) mod n`). On the 16 x 16 Showcase
- * board `31x + 17y` is different for every cell and below 721, so a
- * registry that lists 721 variants of a subject picks one entry per cell.
- * The scene fills that list with the live variant the cell would get
- * (`live[i mod live.length]`) and puts the proposed raster on the cells of
- * the studied faction's territory. That draws exactly what a per-territory
- * lookup would, with no change to the game's code:
+ * Since bead pulp_wars-xdh.2 the game draws the faction looks itself (the
+ * plan asks for `IMPROVEMENT:<FACTION>:<ID>` and the Undead ground by the
+ * owner of each cell's territory), so:
  *
- * - **Buildings** go through the direction registry the board host is given
- *   (`visualDirectionArt`), which buildings are resolved from first.
- * - **Grass** (and the Forest master, which carries the grass under its
- *   trees) is resolved from the default CHIBI registry that the host builds
- *   from `CHIBI_ART_ASSETS_V7` in its constructor, so the scene swaps that
- *   module array's Grass and Forest entries while it constructs its host and
- *   restores them at once. The terrain is then toned by the live look like
- *   any Grass tile (contrast 65% around the Grass pivot).
+ * - **"after"** is the scene in the live look, exactly what the game draws.
+ * - **"before"** hides the faction subjects from the direction registry the
+ *   host is given, so every cell falls back to the shared building and
+ *   ground: the board as it was before the faction looks.
+ * - **`captured`** gives the Human half to the studied faction (its city
+ *   and its territory change owner): the frame after the city was taken.
+ * - **`grass`** replaces the Undead ground with another candidate of the
+ *   study (the rejected "cool", "dusk" and "wilt").
  */
 import type {
   CityId,
@@ -45,7 +39,6 @@ import {
   type ChibiArtAssetV7,
   type ChibiArtRegistryV7,
 } from "../../../src/assets/chibi-art-v7";
-import { CHIBI_ART_ASSETS_V7 } from "../../../src/assets/chibi-art-manifest";
 import { CanvasBoardHostV7 } from "../../../src/render/canvas/board-host-v7";
 import {
   LIVE_DIRECTION_ART_REGISTRY_V7,
@@ -53,14 +46,6 @@ import {
 } from "../../../src/render/canvas/live-board-look-v7";
 
 type Tile = PlayerViewV7["board"]["tiles"][number];
-
-/** One proposed building raster, by its improvement. */
-export interface SceneBuildingV7 {
-  readonly improvement: ImprovementIdV7;
-  readonly url: string;
-  readonly width: number;
-  readonly height: number;
-}
 
 /** A grass variant: three tiles and the two Forest composites. */
 export interface SceneGrassV7 {
@@ -70,10 +55,12 @@ export interface SceneGrassV7 {
 
 export interface FactionBuildingsSceneOptionsV7 {
   readonly faction: FactionIdV7;
-  /** false: today's art everywhere; true: the proposal in seat 0's territory. */
+  /** false: the shared art everywhere; true: what the game draws. */
   readonly after: boolean;
-  readonly buildings: readonly SceneBuildingV7[];
+  /** Another Undead ground candidate instead of the production one. */
   readonly grass: SceneGrassV7 | null;
+  /** The Human half belongs to the studied faction (its city was taken). */
+  readonly captured?: boolean;
 }
 
 const TERRAIN: Readonly<Record<string, TerrainIdV7>> = {
@@ -139,40 +126,16 @@ function cellAtLocal(x: number, y: number): ParsedCell | undefined {
   };
 }
 
-/** The cell index `chibiVariantV7` derives on a board under 16 x 16. */
-const VARIANT_SLOTS = 31 * 15 + 17 * 15 + 1;
-const slotOf = (at: CoordV7): number => at.x * 31 + at.y * 17;
-
-/**
- * `live` spread over one slot per cell, with `proposed(at)` on the cells it
- * returns a raster for.
- */
-function perCellVariants(
-  live: readonly ChibiArtAssetV7[],
-  cells: readonly CoordV7[],
-  proposed: (slot: number) => ChibiArtAssetV7 | null,
-): readonly ChibiArtAssetV7[] {
-  if (live.length === 0) return live;
-  const taken = new Set(cells.map(slotOf));
-  return Array.from({ length: VARIANT_SLOTS }, (_, slot) => {
-    const today = live[slot % live.length] as ChibiArtAssetV7;
-    const next = taken.has(slot) ? proposed(slot) : null;
-    return next ?? today;
-  });
-}
-
 export function factionBuildingsSceneViewV7(
   live: PlayerViewV7,
   faction: FactionIdV7,
+  /** The Human city and its territory belong to the studied faction. */
+  captured = false,
 ): {
   readonly view: PlayerViewV7;
-  /** The board cells of seat 0's territory, where the proposal applies. */
+  /** The board cells of the studied faction's own (left) territory. */
   readonly factionCells: readonly CoordV7[];
 } {
-  if (live.board.width > 16 || live.board.height > 16)
-    throw new Error(
-      "the per-cell variant trick needs a board of 16 x 16 or less",
-    );
   if (live.board.width < COLUMNS || live.board.height < ROWS)
     throw new Error(`the scene needs a ${COLUMNS} x ${ROWS} board`);
   const viewerId = live.viewer.id;
@@ -209,7 +172,9 @@ export function factionBuildingsSceneViewV7(
       controller: seat === 0 ? viewer.controller : ("AI" as const),
     }),
   );
-  const playerId = (seat: number): PlayerId => players[seat]?.id ?? viewerId;
+  // A captured city: both halves are the studied faction's.
+  const playerId = (seat: number): PlayerId =>
+    players[captured ? 0 : seat]?.id ?? viewerId;
   const cityId = (seat: number): CityId =>
     (Number(liveCapital.id) + 700 + seat) as CityId;
   const factionCells: CoordV7[] = [];
@@ -327,132 +292,48 @@ export function factionBuildingsSceneViewV7(
   };
 }
 
-function sceneAsset(
-  id: string,
-  subject: ArtSubjectV7,
-  assetClass: ChibiArtAssetV7["assetClass"],
-  url: string,
-  width: number,
-  height: number,
-): ChibiArtAssetV7 {
-  return { id, subject, assetClass, width, height, url };
-}
+const factionSubject = (subject: ArtSubjectV7): boolean =>
+  subject.split(":").length === 3 &&
+  (subject.startsWith("IMPROVEMENT:") || subject.startsWith("TERRAIN:"));
 
-/** The live direction registry with the proposed buildings on `cells`. */
-function buildingRegistry(
-  buildings: readonly SceneBuildingV7[],
-  cells: readonly CoordV7[],
-): ChibiArtRegistryV7 {
-  const bySubject = new Map<ArtSubjectV7, readonly ChibiArtAssetV7[]>();
-  for (const building of buildings) {
-    const subject: ArtSubjectV7 = `IMPROVEMENT:${building.improvement}`;
-    const proposed = sceneAsset(
-      `chibi-study-${building.improvement.toLowerCase()}`,
-      subject,
-      "BUILDING",
-      building.url,
-      building.width,
-      building.height,
-    );
-    bySubject.set(
-      subject,
-      perCellVariants(
-        LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject),
-        cells,
-        () => proposed,
-      ),
-    );
-  }
+/** The live direction registry without the faction buildings and ground. */
+function registryWithoutFactionLooks(): ChibiArtRegistryV7 {
   return {
     variants: (subject) =>
-      bySubject.get(subject) ??
-      LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject),
+      factionSubject(subject)
+        ? []
+        : LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject),
   };
 }
 
-/** CHIBI_ART_ASSETS_V7 with the Grass and Forest of `cells` replaced. */
-function grassAssets(
-  grass: SceneGrassV7,
-  cells: readonly CoordV7[],
-): ChibiArtAssetV7[] {
-  const swap = (
-    subject: ArtSubjectV7,
-    rasters: (slot: number) => ChibiArtAssetV7,
-  ) => {
-    const live = CHIBI_ART_ASSETS_V7.filter(
-      (asset) => asset.subject === subject,
-    );
-    return perCellVariants(live, cells, rasters).map((asset, slot) => ({
-      ...asset,
-      // Registry entries need unique ids.
-      id: `${asset.id}--slot-${slot}`,
-    }));
-  };
-  const firstForest = CHIBI_ART_ASSETS_V7.find(
-    (asset) => asset.subject === "TERRAIN:FOREST",
-  );
-  if (firstForest === undefined) throw new Error("no Forest asset");
-  const replaced = [
-    ...swap("TERRAIN:GRASS", (slot) =>
-      sceneAsset(
-        `chibi-study-grass-${slot % grass.tiles.length}`,
-        "TERRAIN:GRASS",
-        "TERRAIN",
-        grass.tiles[slot % grass.tiles.length] ?? "",
-        80,
-        80,
-      ),
-    ),
-    ...swap("TERRAIN:FOREST", (slot) => {
-      const forests = CHIBI_ART_ASSETS_V7.filter(
-        (asset) => asset.subject === "TERRAIN:FOREST",
-      );
-      const today = forests[slot % forests.length] ?? firstForest;
-      const url = grass.forests[slot % grass.forests.length] ?? today.url;
-      return {
-        ...today,
-        url,
-        ...(today.layers === undefined
+/** The live direction registry with another Undead ground candidate. */
+function registryWithGrass(grass: SceneGrassV7): ChibiArtRegistryV7 {
+  const swap = (subject: ArtSubjectV7, urls: readonly string[]) =>
+    LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject).map(
+      (asset, index): ChibiArtAssetV7 => ({
+        ...asset,
+        id: `${asset.id}--study`,
+        url: urls[index % urls.length] ?? asset.url,
+        ...(asset.layers === undefined
           ? {}
           : {
               layers: {
-                bodyUrl: today.layers.bodyUrl,
-                groundUrl: grass.tiles[0] ?? today.layers.groundUrl,
+                bodyUrl: asset.layers.bodyUrl,
+                groundUrl: grass.tiles[0] ?? asset.layers.groundUrl,
               },
             }),
-      };
-    }),
-  ];
-  return [
-    ...CHIBI_ART_ASSETS_V7.filter(
-      (asset) =>
-        asset.subject !== "TERRAIN:GRASS" && asset.subject !== "TERRAIN:FOREST",
-    ),
-    ...replaced,
-  ];
-}
-
-/**
- * A board host whose default CHIBI registry holds `assets`: the host builds
- * that registry from CHIBI_ART_ASSETS_V7 in its constructor, so the array is
- * swapped for the constructor only.
- */
-function hostWithDefaultArt(
-  assets: ChibiArtAssetV7[] | null,
-): CanvasBoardHostV7 {
-  if (assets === null) return new CanvasBoardHostV7(document);
-  const shared = CHIBI_ART_ASSETS_V7 as ChibiArtAssetV7[];
-  if (Object.isFrozen(shared))
-    throw new Error(
-      "CHIBI_ART_ASSETS_V7 is frozen; the grass swap needs another way in",
+      }),
     );
-  const saved = shared.slice();
-  shared.splice(0, shared.length, ...assets);
-  try {
-    return new CanvasBoardHostV7(document);
-  } finally {
-    shared.splice(0, shared.length, ...saved);
-  }
+  const tiles = swap("TERRAIN:UNDEAD:GRASS", grass.tiles);
+  const forests = swap("TERRAIN:UNDEAD:FOREST", grass.forests);
+  return {
+    variants: (subject) =>
+      subject === "TERRAIN:UNDEAD:GRASS"
+        ? tiles
+        : subject === "TERRAIN:UNDEAD:FOREST"
+          ? forests
+          : LIVE_DIRECTION_ART_REGISTRY_V7.variants(subject),
+  };
 }
 
 /** Mounts a full-screen CHIBI board host over the page showing the scene. */
@@ -472,19 +353,19 @@ export function showFactionBuildingsSceneV7(
     background: "#173632",
   });
   document.body.append(container);
-  const scene = factionBuildingsSceneViewV7(live, options.faction);
-  const host = hostWithDefaultArt(
-    options.after && options.grass !== null
-      ? grassAssets(options.grass, scene.factionCells)
-      : null,
+  const scene = factionBuildingsSceneViewV7(
+    live,
+    options.faction,
+    options.captured === true,
   );
+  const host = new CanvasBoardHostV7(document);
   host.mount(container, {
     onSelection: () => undefined,
     onCommand: () => undefined,
   });
   const look = liveBoardLookV7("CHIBI");
   host.update({
-    matchInstanceId: `faction-buildings-${options.faction}-${options.after ? "after" : "before"}`,
+    matchInstanceId: `faction-buildings-${options.faction}-${options.after ? "after" : "before"}-${options.captured === true ? "captured" : "own"}`,
     view: scene.view,
     offeredCommands: [],
     interaction: {
@@ -499,14 +380,11 @@ export function showFactionBuildingsSceneV7(
     highContrast: false,
     artSet: "CHIBI",
     ...look,
-    ...(options.after && options.buildings.length > 0
-      ? {
-          visualDirectionArt: buildingRegistry(
-            options.buildings,
-            scene.factionCells,
-          ),
-        }
-      : {}),
+    ...(!options.after
+      ? { visualDirectionArt: registryWithoutFactionLooks() }
+      : options.grass !== null
+        ? { visualDirectionArt: registryWithGrass(options.grass) }
+        : {}),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

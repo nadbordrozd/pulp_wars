@@ -30,6 +30,7 @@ import {
 } from "./pixellab-recovery";
 import { resolveUnitFitOffset } from "./unit-fit-offset";
 import { validateChibiProduction } from "./chibi/pipeline";
+import { gloamGrassProblems } from "./faction-buildings/gloam-grass";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
 type Stage = "sample" | "batch";
@@ -682,7 +683,12 @@ async function main(): Promise<void> {
     await validateOutputs(source, generated);
     await syncRuntime(source, generated);
     // Chibi batch manifests, fragments, fixtures, records and masks (67q.2).
-    const chibiProblems = await validateChibiProduction(ROOT);
+    // The Undead territory ground is a code recolour of the Grass masters
+    // (pulp_wars-xdh.2): it must be what those masters derive today.
+    const chibiProblems = [
+      ...(await validateChibiProduction(ROOT)),
+      ...(await gloamGrassProblems(ROOT)),
+    ];
     if (chibiProblems.length > 0)
       throw new Error(
         `Chibi pipeline is invalid:\n${chibiProblems.join("\n")}`,

@@ -1,0 +1,37 @@
+{
+  "id": "frost-garden-edit-a",
+  "jobId": "10173b2c-68fc-4535-83ff-8a764abadc1b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "faction-buildings",
+    "asset": "chibi-ice-folk-frost-garden",
+    "subject": "IMPROVEMENT:FARM",
+    "faction": "TEST-FACTION-BUILDINGS",
+    "recipeClass": "crop-rows",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 97901,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same."
+      }
+    ],
+    "prompt": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same.",
+    "editInstruction": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same.",
+    "source": {
+      "batch": "direction-human",
+      "recipe": "veg-flux-a",
+      "candidate": 0,
+      "sha256": "99d23ea79dc1291fbd9d1d03b827b32aabda408c17fb0aa15bbd5adb57a331c4"
+    }
+  }
+}

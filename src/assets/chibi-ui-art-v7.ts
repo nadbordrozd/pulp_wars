@@ -7,6 +7,7 @@ import type {
   UnitRoleIdV7,
 } from "../engine/index";
 import {
+  factionHasImprovementLookV7,
   navalArtSubjectV7,
   type ArtSubjectV7,
   type DinosaurArtRoleV7,
@@ -70,18 +71,24 @@ export function improvementSubjectV7(
 }
 
 /**
- * The subject of an improvement as a faction owns it. Every faction shares
- * the improvement art today, so this is `improvementSubjectV7`; the faction
- * building looks (epic pulp_wars-xdh) return their own subjects here, and
- * the Gallery (bead pulp_wars-ic8) then shows one column per faction for
- * that building instead of one shared cell.
+ * The subject of an improvement as a faction owns it (epic pulp_wars-xdh,
+ * docs/art/FACTION_BUILDINGS.md): `IMPROVEMENT:<FACTION>:<ID>` for the few
+ * buildings a faction draws in a look of its own (the Undead Graveyard for
+ * the Farm, the Martian Solar Array for the Windmill, ...), and
+ * `improvementSubjectV7` for every other one. The board asks with the
+ * faction that owns the improvement's territory, the build buttons and the
+ * technology cards with the viewer's faction, and the Gallery (bead
+ * pulp_wars-ic8) with each faction, so its Buildings tab shows one column
+ * per faction for exactly these rows. A faction subject without a usable
+ * raster falls back to the shared building (chibiFallbackSubjectV7).
  */
 export function factionImprovementSubjectV7(
   improvement: ImprovementIdV7,
-  faction: FactionIdV7,
+  faction: FactionIdV7 | null | undefined,
 ): ArtSubjectV7 {
-  void faction;
-  return improvementSubjectV7(improvement);
+  return factionHasImprovementLookV7(improvement, faction)
+    ? `IMPROVEMENT:${faction}:${improvement}`
+    : improvementSubjectV7(improvement);
 }
 
 /**
@@ -162,6 +169,13 @@ export function technologySubjectV7(
     if (faction === "DWARF") return `UNIT:DWARF:${role}`;
     return `UNIT:GOBLIN:${role}`;
   }
+  // A technology that shows a building shows the faction's own look of it
+  // (epic pulp_wars-xdh): an Undead Farming card shows the Graveyard.
+  if (subject.startsWith("IMPROVEMENT:"))
+    return factionImprovementSubjectV7(
+      subject.slice("IMPROVEMENT:".length) as ImprovementIdV7,
+      faction,
+    );
   // Naval Engineering shows the faction's own Battleship (bead
   // pulp_wars-w5j.3).
   if (subject === "UNIT:BATTLESHIP")
@@ -235,8 +249,11 @@ export function commandSubjectV7(
   const mapped = RESOURCE_COMMANDS[command.kind];
   if (mapped !== undefined) return mapped;
   if (command.kind.startsWith("BUILD_") && command.kind !== "BUILD_ROAD")
-    return improvementSubjectV7(
+    // The viewer builds in its own territory, so the button shows its
+    // faction's look of the building (epic pulp_wars-xdh).
+    return factionImprovementSubjectV7(
       command.kind.slice("BUILD_".length) as ImprovementIdV7,
+      faction,
     );
   return `ICON:ACTION:${command.kind}`;
 }

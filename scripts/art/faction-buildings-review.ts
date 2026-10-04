@@ -1,7 +1,9 @@
 /**
- * Review evidence of the faction building study (bead pulp_wars-xdh.1,
- * docs/art/FACTION_BUILDINGS.md, exploration run
- * art/explorations/faction-buildings-2026-10/).
+ * Review evidence of the faction building looks (epic pulp_wars-xdh,
+ * docs/art/FACTION_BUILDINGS.md): the production batches `buildings-*` of
+ * bead pulp_wars-xdh.2 (imported from the exploration run
+ * art/explorations/faction-buildings-2026-10/ of bead pulp_wars-xdh.1) as
+ * the game draws them.
  *
  *   npm run art:faction-buildings-review
  *   npm run art:faction-buildings-review -- --skip-capture
@@ -9,23 +11,28 @@
  *
  * Writes art/pixellab/reviews/faction-buildings-study/:
  *
- * - `buildings-{x3,1x}.png`: one row per sampled building (the Undead
- *   Graveyard, the Martian Solar Array, the Dwarf Mushroom Farm, the
- *   Dinosaur Grinding Stone): today's shared Human building on Grass, the
- *   accepted sample on its faction's ground (a Farm also as a 3 x 3 block),
- *   and the faction's City 2. A sample with no accepted master is drawn as
- *   a "PixelLab pending" plate.
- * - `grass-x2.png`: today's three Grass tiles and Forest, each Undead grass
+ * - `buildings-{x3,1x}.png`: one row per faction building: the shared
+ *   building on Grass, the accepted production master on its faction's
+ *   ground (a Farm also as a 3 x 3 block), and the faction's City 2.
+ * - `grass-x2.png`: the three Grass tiles and Forest, each Undead grass
  *   candidate's tiles and Forest, and for each a 6 x 3 field whose left half
- *   is today's Grass and right half the candidate, as at a territory edge.
+ *   is the shared Grass and right half the candidate, as at a territory
+ *   edge. "gloam" is the production ground.
  * - `scene-<faction>-<before|after>-<desktop|phone>-zoom-<1|0.75>.png`: the
  *   scenes of scripts/art/faction-buildings/scene.ts drawn by the real board
- *   host in the live look: the studied faction's city territory beside a
- *   Human one, today ("before") and with the proposal in the studied
- *   territory ("after"). Undead and Martian are always captured; Dinosaur,
- *   Ice Folk (under its Snow) and Dwarf once they have an accepted sample.
+ *   host in the live look: the faction's city territory beside a Human one.
+ *   "after" is what the game draws; "before" hides the faction art, so it
+ *   is the board before the faction looks. Undead, Martian, Dinosaur, Ice
+ *   Folk (under its Snow) and Dwarf.
+ * - `scene-<faction>-captured-<viewport>-zoom-<step>.png`: the same scene
+ *   after the faction took the Human city: its buildings and (Undead) its
+ *   ground changed with the owner.
  * - `scene-undead-after-grass-<variant>-desktop-zoom-1.png`: the Undead
- *   scene with each other grass candidate.
+ *   scene with each rejected grass candidate.
+ * - `gallery-buildings-<desktop|phone>.png` and
+ *   `gallery-buildings-farm-<desktop|phone>.png`: the Gallery's Buildings
+ *   tab, at its top and scrolled to the Farm row, which has one cell per
+ *   faction since the faction looks.
  * - `before-after-contact.png`: every scene's before and after side by side
  *   (desktop at zoom 1 and phone at zoom 0.75), labelled.
  * - `index.json`.
@@ -33,7 +40,7 @@
  * Captures start Vite on port 6540 unless `--port` says otherwise, need
  * CHROME_PATH (and `node` on the PATH for Vite), and are written after the
  * browser closes (a file written under the project while the page is open
- * makes the dev server reload). `--copy-to DIR` copies the key outputs.
+ * makes the dev server reload). `--copy-to DIR` copies the outputs.
  * No PixelLab call.
  */
 import { spawn, type ChildProcess } from "node:child_process";
@@ -63,7 +70,7 @@ import {
   undeadForestFile,
   undeadGrassFile,
 } from "./faction-buildings/undead-grass";
-import type { SceneBuildingV7, SceneGrassV7 } from "./faction-buildings/scene";
+import type { SceneGrassV7 } from "./faction-buildings/scene";
 
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "art/pixellab/reviews/faction-buildings-study");
@@ -110,33 +117,47 @@ interface AcceptedMaster {
   readonly recipe: string;
 }
 
-/** Accepted masters of the exploration run, by asset id. */
+/** The production batches of the faction buildings (bead pulp_wars-xdh.2). */
+const PRODUCTION_BATCHES = [
+  "buildings-undead",
+  "buildings-martian",
+  "buildings-dinosaur",
+  "buildings-ice-folk",
+  "buildings-dwarf",
+] as const;
+
+/** Accepted production masters of the faction buildings, by asset id. */
 async function acceptedMasters(): Promise<Map<string, AcceptedMaster>> {
-  const file = path.join(ROOT, FACTION_BUILDINGS_RUN, "records.json");
   const result = new Map<string, AcceptedMaster>();
-  if (!existsSync(file)) return result;
-  const records = JSON.parse(await readFile(file, "utf8")) as {
-    assets?: Record<
-      string,
-      {
-        status?: string;
-        recipe?: string;
-        master?: { path?: string; width?: number; height?: number };
-      }
-    >;
-  };
-  for (const [id, record] of Object.entries(records.assets ?? {}))
-    if (
-      record.status === "ACCEPTED" &&
-      record.master?.path !== undefined &&
-      existsSync(path.join(ROOT, record.master.path))
-    )
-      result.set(id, {
-        path: record.master.path,
-        width: record.master.width ?? 0,
-        height: record.master.height ?? 0,
-        recipe: record.recipe ?? "",
-      });
+  for (const batch of PRODUCTION_BATCHES) {
+    const file = path.join(
+      ROOT,
+      `scripts/art/chibi/records/batch-${batch}.json`,
+    );
+    if (!existsSync(file)) continue;
+    const records = JSON.parse(await readFile(file, "utf8")) as {
+      assets?: Record<
+        string,
+        {
+          status?: string;
+          recipe?: string;
+          master?: { path?: string; width?: number; height?: number };
+        }
+      >;
+    };
+    for (const [id, record] of Object.entries(records.assets ?? {}))
+      if (
+        record.status === "ACCEPTED" &&
+        record.master?.path !== undefined &&
+        existsSync(path.join(ROOT, record.master.path))
+      )
+        result.set(id, {
+          path: record.master.path,
+          width: record.master.width ?? 0,
+          height: record.master.height ?? 0,
+          recipe: record.recipe ?? "",
+        });
+  }
   return result;
 }
 
@@ -144,26 +165,6 @@ function sampled(): readonly FactionBuildingChangeV7[] {
   return FACTION_BUILDING_CHANGES_V7.filter(
     (change) => change.stage === "sample",
   );
-}
-
-/** The scene's proposed rasters of one faction (accepted samples only). */
-function sceneBuildings(
-  faction: FactionIdV7,
-  masters: ReadonlyMap<string, AcceptedMaster>,
-): SceneBuildingV7[] {
-  const result: SceneBuildingV7[] = [];
-  for (const change of sampled()) {
-    if (change.faction !== faction || change.asset === undefined) continue;
-    const master = masters.get(change.asset);
-    if (master === undefined) continue;
-    result.push({
-      improvement: change.improvement,
-      url: `/${master.path}`,
-      width: master.width,
-      height: master.height,
-    });
-  }
-  return result;
 }
 
 function sceneGrass(variant: string): SceneGrassV7 {
@@ -598,45 +599,109 @@ interface SceneCapture {
   readonly name: string;
   readonly faction: FactionIdV7;
   readonly after: boolean;
-  readonly buildings: readonly SceneBuildingV7[];
+  /** Another Undead ground candidate; null is the production ground. */
   readonly grass: SceneGrassV7 | null;
+  /** The Human city and its territory were taken by the faction. */
+  readonly captured: boolean;
   readonly viewports: readonly string[];
   readonly zooms: readonly string[];
 }
 
-function sceneCaptures(
-  masters: ReadonlyMap<string, AcceptedMaster>,
-): SceneCapture[] {
+function sceneCaptures(): SceneCapture[] {
   const captures: SceneCapture[] = [];
-  const factions: FactionIdV7[] = ["UNDEAD", "MARTIAN"];
-  for (const extra of ["DINOSAUR", "ICE_FOLK", "DWARF"] as const)
-    if (sceneBuildings(extra, masters).length > 0) factions.push(extra);
-  for (const faction of factions)
+  const factions: FactionIdV7[] = [
+    "UNDEAD",
+    "MARTIAN",
+    "DINOSAUR",
+    "ICE_FOLK",
+    "DWARF",
+  ];
+  const everywhere = {
+    viewports: VIEWPORTS.map((viewport) => viewport.name),
+    zooms: ZOOMS,
+  };
+  for (const faction of factions) {
     for (const after of [false, true])
       captures.push({
         name: `scene-${faction.toLowerCase()}-${after ? "after" : "before"}`,
         faction,
         after,
-        buildings: after ? sceneBuildings(faction, masters) : [],
-        grass:
-          after && faction === "UNDEAD"
-            ? sceneGrass(RECOMMENDED_UNDEAD_GRASS)
-            : null,
-        viewports: VIEWPORTS.map((viewport) => viewport.name),
-        zooms: ZOOMS,
+        grass: null,
+        captured: false,
+        ...everywhere,
       });
+    // The city changes hands: the Human half becomes the faction's.
+    captures.push({
+      name: `scene-${faction.toLowerCase()}-captured`,
+      faction,
+      after: true,
+      grass: null,
+      captured: true,
+      ...(faction === "UNDEAD"
+        ? everywhere
+        : { viewports: ["desktop"], zooms: ["1"] }),
+    });
+  }
   for (const spec of UNDEAD_GRASS_VARIANTS)
     if (spec.id !== RECOMMENDED_UNDEAD_GRASS)
       captures.push({
         name: `scene-undead-after-grass-${spec.id}`,
         faction: "UNDEAD",
         after: true,
-        buildings: sceneBuildings("UNDEAD", masters),
         grass: sceneGrass(spec.id),
+        captured: false,
         viewports: ["desktop"],
         zooms: ["1"],
       });
   return captures;
+}
+
+/** The Gallery's Buildings tab, at its top and scrolled to the Farm row. */
+async function captureGallery(
+  connection: Connection,
+  viewport: string,
+  shots: { name: string; png: Buffer }[],
+): Promise<void> {
+  const ready = `[...document.querySelectorAll('.v7-gallery-tile')].every((tile) => tile.dataset.state === 'ready')`;
+  await evaluate(
+    connection,
+    `(() => { document.querySelector('[data-action="gallery"]').click(); return true; })()`,
+  );
+  await waitFor(
+    connection,
+    `document.querySelector('[data-v7-gallery] .v7-gallery-table') !== null`,
+  );
+  await evaluate(
+    connection,
+    `(() => { document.querySelector('[data-action="gallery-tab-buildings"]').click(); return true; })()`,
+  );
+  await waitFor(
+    connection,
+    `document.querySelector('[data-action="gallery-open-building"]') !== null && ${ready}`,
+    300,
+  );
+  shots.push({
+    name: `gallery-buildings-${viewport}.png`,
+    png: await settledScreenshot(connection),
+  });
+  await evaluate(
+    connection,
+    `(() => { document.querySelector('[data-action="gallery-open-building"][data-row="FARM"]').scrollIntoView({ block: 'center' }); return true; })()`,
+  );
+  await waitFor(connection, ready, 300);
+  shots.push({
+    name: `gallery-buildings-farm-${viewport}.png`,
+    png: await settledScreenshot(connection),
+  });
+  console.log(`captured gallery-buildings-${viewport}.png and its Farm row`);
+  await evaluate(
+    connection,
+    `(() => { document.querySelector('[data-action="gallery-back"]').click(); return true; })()`,
+  );
+  await waitFor(
+    connection,
+    `document.querySelector('[data-action="launch"]') !== null`,
+  );
 }
 
 async function captureAll(
@@ -714,6 +779,7 @@ async function captureAll(
         connection,
         `globalThis.__FB_OLD__ !== true && document.readyState === 'complete' && document.querySelector('[data-action="launch"]') !== null && globalThis.__PULP_WARS_APP__?.controller.snapshot().phase === 'EMPTY'`,
       );
+      await captureGallery(connection, viewport.name, shots);
       // The fixed 16 x 16 Showcase board: the scenes rewrite an 8 x 6 patch
       // around the capital.
       await evaluate(
@@ -729,8 +795,8 @@ async function captureAll(
         const options = {
           faction: capture.faction,
           after: capture.after,
-          buildings: capture.buildings,
           grass: capture.grass,
+          captured: capture.captured,
         };
         await evaluate(
           connection,
@@ -849,7 +915,7 @@ async function contactSheet(
           .png()
           .toBuffer();
       pairs.push({
-        label: `${FACTION_LABEL[faction] ?? faction} territory (left) beside Human (right), ${viewport} zoom ${zoom}: today | proposal`,
+        label: `${FACTION_LABEL[faction] ?? faction} territory (left) beside Human (right), ${viewport} zoom ${zoom}: before | the game`,
         before: await shrink(before),
         after: await shrink(after),
       });
@@ -945,7 +1011,7 @@ async function main(): Promise<void> {
   await buildingsSheet(3, "buildings-x3.png", masters);
   await buildingsSheet(1, "buildings-1x.png", masters);
   await grassSheet();
-  const captures = sceneCaptures(masters);
+  const captures = sceneCaptures();
   if (!process.argv.includes("--skip-capture")) {
     const port = Number.parseInt(option("--port") ?? "6540", 10);
     const given = option("--url");
@@ -969,14 +1035,15 @@ async function main(): Promise<void> {
     path.join(OUT, "index.json"),
     `${JSON.stringify(
       {
-        bead: "pulp_wars-xdh.1",
+        bead: "pulp_wars-xdh.2",
         run: FACTION_BUILDINGS_RUN,
+        batches: PRODUCTION_BATCHES,
         command: "npm run art:faction-buildings-review",
-        note: "A study: nothing is wired into the game. The scene-* captures draw the live look with the proposal applied per cell to the studied faction's territory only (scripts/art/faction-buildings/scene.ts). A sample without an accepted master is drawn as today's building in the scenes and as a 'PixelLab pending' plate in the sheets.",
-        samples: Object.fromEntries(
+        note: "The faction building looks as the game draws them (bead pulp_wars-xdh.2). The scene-*-after and scene-*-captured captures are the live look of the real board host; scene-*-before hides the faction art from the direction registry, so it is the board before the faction looks (scripts/art/faction-buildings/scene.ts). The masters are the production batches' accepted recipes.",
+        masters: Object.fromEntries(
           sampled().map((change) => [
             change.asset ?? change.name,
-            masters.get(change.asset ?? "")?.recipe ?? "PixelLab pending",
+            masters.get(change.asset ?? "")?.recipe ?? "not accepted",
           ]),
         ),
         undeadGrass: Object.fromEntries(
@@ -999,13 +1066,7 @@ async function main(): Promise<void> {
   const copyTo = option("--copy-to");
   if (copyTo !== undefined && !copyTo.startsWith("--")) {
     await mkdir(copyTo, { recursive: true });
-    for (const file of files.filter(
-      (name) =>
-        !name.endsWith(".json") &&
-        (!name.startsWith("scene-") ||
-          name.includes("zoom-1") ||
-          name.includes("phone-zoom-0.75")),
-    ))
+    for (const file of files.filter((name) => !name.endsWith(".json")))
       await copyFile(path.join(OUT, file), path.join(copyTo, file));
     await copyFile(
       path.join(OUT, "index.json"),

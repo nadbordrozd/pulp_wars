@@ -161,6 +161,10 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dinosaur-presentation-v7.ts::layEggUnavailableTextV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::dinosaurUnitInfoLinesV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::dinosaurRecruitNotesV7": "SEAT",
+  // Faction building looks (bead pulp_wars-xdh.2): the faction of the seat
+  // that owns a territory, never a unit's.
+  "src/render/faction-buildings-v7.ts::territoryFactionV7": "SEAT",
+  "src/render/faction-buildings-v7.ts::matchHasFactionBuildingsV7": "SEAT",
   "src/render/dinosaur-presentation-v7.ts::dinosaurFieldDefenseBlockedV7":
     "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dock": "KIND",

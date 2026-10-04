@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-ice-folk",
+  "recipes": {
+    "frost-garden-edit-a": {
+      "id": "frost-garden-edit-a",
+      "asset": "chibi-ice-folk-frost-garden",
+      "jobId": "10173b2c-68fc-4535-83ff-8a764abadc1b",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-ice-folk-frost-garden",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "crop-rows",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 97901,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same."
+          }
+        ],
+        "prompt": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same.",
+        "editInstruction": "Turn each of the three raised beds of soil into a long bank of white snow with pale blue shadows (no brown soil left), and turn every vegetable plant into a round hardy cabbage in a cold blue-green (#5fa39a) with pale frosted leaf edges. Keep the three rows, the size and place of every plant, the empty transparent gaps between the rows, the outline and the art style exactly the same.",
+        "source": {
+          "batch": "direction-human",
+          "recipe": "veg-flux-a",
+          "candidate": 0,
+          "sha256": "99d23ea79dc1291fbd9d1d03b827b32aabda408c17fb0aa15bbd5adb57a331c4"
+        }
+      },
+      "submittedAt": "2026-10-04T08:50:48.993Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-ice-folk/frost-garden-edit-a.png",
+      "rawSheetSha256": "afd3970fd0903ab7eb539caa005769d414b2463b365197fade40982b52fe8e15",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0658,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0658,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T08:51:32.148Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "frost-garden-edit-a"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Blue-green frost cabbages on thin banks of snow, no soil; the top row is stamped on every row, five cabbages to a tile. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+        "reviewedAt": "2026-10-04T09:12:37.303Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-ice-folk-frost-garden": {
+      "id": "chibi-ice-folk-frost-garden",
+      "subject": "IMPROVEMENT:ICE_FOLK:FARM",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "frost-garden-edit-a",
+      "candidate": 0,
+      "candidateSha256": "c2ce043ac28fcf9b11ab5a13e49b3eb63e9c6015f885f08ab9b0a8f61d03ee99",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-ice-folk-frost-garden.png",
+        "sha256": "0a2dd108fb2c259579098dc68f7fc8db402f729c12dad917638365ef2b8964aa",
+        "pixelSha256": "c4369cc4c5193fe6957e37f9caaae823a5e3859c713be89a333dd5e4a9a899c7",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "crop-rows",
+        "cropRows": {
+          "rows": 3,
+          "band": 0,
+          "period": 80,
+          "stamps": [
+            {
+              "left": 8,
+              "width": 16,
+              "at": 0
+            },
+            {
+              "left": 24,
+              "width": 16,
+              "at": 16
+            },
+            {
+              "left": 40,
+              "width": 16,
+              "at": 32
+            },
+            {
+              "left": 56,
+              "width": 16,
+              "at": 48
+            },
+            {
+              "left": 24,
+              "width": 16,
+              "at": 64
+            }
+          ],
+          "rowOffsets": [0, 8, 0],
+          "phase": 0.5,
+          "saturation": 1,
+          "strawMix": 0
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Blue-green frost cabbages on thin banks of snow, no soil; the top row is stamped on every row, five cabbages to a tile. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+      "acceptedAt": "2026-10-04T09:12:37.303Z"
+    }
+  }
+}

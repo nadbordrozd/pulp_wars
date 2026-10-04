@@ -1,0 +1,504 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-undead",
+  "recipes": {
+    "bone-mill-edit-a": {
+      "id": "bone-mill-edit-a",
+      "asset": "chibi-undead-bone-mill",
+      "jobId": "2e90a216-e7bf-4b03-bf38-9e6f5c68db38",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-undead-bone-mill",
+        "subject": "IMPROVEMENT:WINDMILL",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 64,
+          "height": 72
+        },
+        "seed": 97601,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours and the sail cloth of this windmill: the tower becomes dark slate-grey stone (#5a5f6b), the cone roof near-black charcoal (#2b2b31), the four sails become ragged torn charcoal-grey cloth with holes and tattered edges on dark wooden arms, and the small window glows violet (#a221ee). Nothing is red, cream or terracotta any more. Keep the windmill's shape, size, the X of four sails, the door, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colours and the sail cloth of this windmill: the tower becomes dark slate-grey stone (#5a5f6b), the cone roof near-black charcoal (#2b2b31), the four sails become ragged torn charcoal-grey cloth with holes and tattered edges on dark wooden arms, and the small window glows violet (#a221ee). Nothing is red, cream or terracotta any more. Keep the windmill's shape, size, the X of four sails, the door, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colours and the sail cloth of this windmill: the tower becomes dark slate-grey stone (#5a5f6b), the cone roof near-black charcoal (#2b2b31), the four sails become ragged torn charcoal-grey cloth with holes and tattered edges on dark wooden arms, and the small window glows violet (#a221ee). Nothing is red, cream or terracotta any more. Keep the windmill's shape, size, the X of four sails, the door, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colours and the sail cloth of this windmill: the tower becomes dark slate-grey stone (#5a5f6b), the cone roof near-black charcoal (#2b2b31), the four sails become ragged torn charcoal-grey cloth with holes and tattered edges on dark wooden arms, and the small window glows violet (#a221ee). Nothing is red, cream or terracotta any more. Keep the windmill's shape, size, the X of four sails, the door, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "direction-human",
+          "recipe": "windmill-flat-a",
+          "candidate": 0,
+          "sha256": "71336955820367d67c3aad1aae3b9b0051ce987ee3ae94939a5cef8001ce49bf"
+        }
+      },
+      "submittedAt": "2026-10-04T08:47:07.154Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 64,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/bone-mill-edit-a.png",
+      "rawSheetSha256": "def35d57e59c5513f59666efb0e57658c9fa47cc971dbc9d23b80c956acb5e4c",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0977,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0977,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T08:47:39.507Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "bone-mill-edit-a"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Kept its terracotta-red roofs; the source of bone-mill-edit-b and bone-mill-edit-d.",
+        "reviewedAt": "2026-10-04T09:14:08.661Z"
+      }
+    },
+    "bone-mill-edit-b": {
+      "id": "bone-mill-edit-b",
+      "asset": "chibi-undead-bone-mill",
+      "jobId": "a2d5da48-d991-40c5-a76e-b2c253218748",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-undead-bone-mill",
+        "subject": "IMPROVEMENT:WINDMILL",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 64,
+          "height": 72
+        },
+        "seed": 97602,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: the red roofs. The cone roof on top and the small roof over the door become near-black charcoal slate (#2b2b31) with a dark grey edge (#44454d), with no red, no orange and no brown left on them. Do not redraw anything else: the dark stone tower, the four dark ragged sails, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: the red roofs. The cone roof on top and the small roof over the door become near-black charcoal slate (#2b2b31) with a dark grey edge (#44454d), with no red, no orange and no brown left on them. Do not redraw anything else: the dark stone tower, the four dark ragged sails, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: the red roofs. The cone roof on top and the small roof over the door become near-black charcoal slate (#2b2b31) with a dark grey edge (#44454d), with no red, no orange and no brown left on them. Do not redraw anything else: the dark stone tower, the four dark ragged sails, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: the red roofs. The cone roof on top and the small roof over the door become near-black charcoal slate (#2b2b31) with a dark grey edge (#44454d), with no red, no orange and no brown left on them. Do not redraw anything else: the dark stone tower, the four dark ragged sails, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "bone-mill-edit-a",
+          "candidate": 0,
+          "sha256": "aca4aeb2e9ab280b814dde1d5069e2a147ae15536fa4e4eeb165ce8c0b53efd6"
+        }
+      },
+      "submittedAt": "2026-10-04T08:54:08.389Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 64,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/bone-mill-edit-b.png",
+      "rawSheetSha256": "dc00607920e5b972b6f038047674ec64b565ae6e2852ef28c45bdb00d7b98d2e",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0977,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0977,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T08:54:40.671Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "bone-mill-edit-b"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The exploration's accepted Bone Mill: tower, roofs and sails are one dark tone, a black windmill shape at zoom 0.75 (FACTION_BUILDINGS.md, weak spots). Replaced by bone-mill-edit-d.",
+        "reviewedAt": "2026-10-04T09:14:06.622Z"
+      }
+    },
+    "bone-mill-edit-c": {
+      "id": "bone-mill-edit-c",
+      "asset": "chibi-undead-bone-mill",
+      "jobId": "ff5b87e3-47c3-4f54-a290-68bc32c258ab",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-bone-mill",
+        "subject": "IMPROVEMENT:UNDEAD:WINDMILL",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 64,
+          "height": 72
+        },
+        "seed": 97603,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: the stone of the round tower. The tower walls become a lighter slate blue-grey stone (#8b92a3) with a mid-grey shade (#6a7082) and a few darker stone joints, clearly lighter than the roofs and the sails. Do not redraw anything else: the near-black charcoal roofs, the four dark ragged sails on their wooden arms, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: the stone of the round tower. The tower walls become a lighter slate blue-grey stone (#8b92a3) with a mid-grey shade (#6a7082) and a few darker stone joints, clearly lighter than the roofs and the sails. Do not redraw anything else: the near-black charcoal roofs, the four dark ragged sails on their wooden arms, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: the stone of the round tower. The tower walls become a lighter slate blue-grey stone (#8b92a3) with a mid-grey shade (#6a7082) and a few darker stone joints, clearly lighter than the roofs and the sails. Do not redraw anything else: the near-black charcoal roofs, the four dark ragged sails on their wooden arms, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: the stone of the round tower. The tower walls become a lighter slate blue-grey stone (#8b92a3) with a mid-grey shade (#6a7082) and a few darker stone joints, clearly lighter than the roofs and the sails. Do not redraw anything else: the near-black charcoal roofs, the four dark ragged sails on their wooden arms, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "bone-mill-edit-b",
+          "candidate": 0,
+          "sha256": "2828c6ade815dc27ae0c1808ffa714628065f27b1090521ec8bf74b809bc8f22"
+        }
+      },
+      "submittedAt": "2026-10-04T09:11:58.979Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 64,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/bone-mill-edit-c.png",
+      "rawSheetSha256": "0d6f04979c7deaae96fa2f92e8e420cc20dd6954fee0458b5b578d8d4fd32865",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0927,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0927,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T09:12:39.481Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The tower is a light slate and separates, but the near-black sails still merge with the near-black roofs. bone-mill-edit-d keeps the mid-grey sails of edit-a.",
+        "reviewedAt": "2026-10-04T09:14:07.655Z"
+      }
+    },
+    "bone-mill-edit-d": {
+      "id": "bone-mill-edit-d",
+      "asset": "chibi-undead-bone-mill",
+      "jobId": "8dec160d-227f-4bad-b20b-af21390ea5ea",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-bone-mill",
+        "subject": "IMPROVEMENT:UNDEAD:WINDMILL",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 64,
+          "height": 72
+        },
+        "seed": 97604,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only two things. The red roofs (the cone roof and the small roof over the door) become near-black charcoal slate (#2b2b31), with no red or brown left. The stone walls of the round tower become a lighter slate blue-grey (#8b92a3) with a mid-grey shade (#6a7082), clearly lighter than the roofs and sails. Keep the four ragged grey sails, the violet windows, the door, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only two things. The red roofs (the cone roof and the small roof over the door) become near-black charcoal slate (#2b2b31), with no red or brown left. The stone walls of the round tower become a lighter slate blue-grey (#8b92a3) with a mid-grey shade (#6a7082), clearly lighter than the roofs and sails. Keep the four ragged grey sails, the violet windows, the door, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only two things. The red roofs (the cone roof and the small roof over the door) become near-black charcoal slate (#2b2b31), with no red or brown left. The stone walls of the round tower become a lighter slate blue-grey (#8b92a3) with a mid-grey shade (#6a7082), clearly lighter than the roofs and sails. Keep the four ragged grey sails, the violet windows, the door, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only two things. The red roofs (the cone roof and the small roof over the door) become near-black charcoal slate (#2b2b31), with no red or brown left. The stone walls of the round tower become a lighter slate blue-grey (#8b92a3) with a mid-grey shade (#6a7082), clearly lighter than the roofs and sails. Keep the four ragged grey sails, the violet windows, the door, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "bone-mill-edit-a",
+          "candidate": 0,
+          "sha256": "aca4aeb2e9ab280b814dde1d5069e2a147ae15536fa4e4eeb165ce8c0b53efd6"
+        }
+      },
+      "submittedAt": "2026-10-04T09:12:39.486Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 64,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/bone-mill-edit-d.png",
+      "rawSheetSha256": "3c23b851d26f86c046e35c3cd3bffed0d947ef5e9812ae9ec200dd92dc724840",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0977,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0977,
+          "footprintWidthShare": 0.6604,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T09:13:26.746Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The shared Windmill's shape with a light slate tower, near-black charcoal roofs, ragged mid-grey sails and violet windows: three tones, so tower, roofs and sails separate at 1:1 and at zoom 0.75. Candidate 1 is the same with a paler tower. Reviewed at 1:1 and x5.",
+        "reviewedAt": "2026-10-04T09:14:09.993Z"
+      }
+    },
+    "graveyard-pixen-a": {
+      "id": "graveyard-pixen-a",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "sync-17d283a8-dc16-4af5-beb2-ada5f710bf88",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:FARM",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "crop-rows",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 97111,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "high top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-crop.txt + scripts/art/chibi/fragments/style-crop.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "art/explorations/faction-buildings-2026-10/fragments/camera-crop-pattern.txt",
+            "text": "Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/faction-buildings-2026-10/fragments/class-crop-rows.txt + art/explorations/faction-buildings-2026-10/fragments/class-crop-rows.negative.txt",
+            "text": "Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent.",
+            "negative": "pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/faction-buildings-2026-10/subjects.json",
+            "text": "Subject: a small old graveyard: three straight horizontal strips of dark grey-brown earth, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip stands one row of five small dark slate-grey stone gravestones side by side, each a simple upright slab with a pointed top and a tiny carved cross, with a low mound of dark earth in front of it, and a few tiny pale violet flowers; dark slate grey, charcoal and dusty grey-brown only. Gravestones and earth only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "",
+            "negative": "skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages, tree stumps, logs, pink, grass"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent. Subject: a small old graveyard: three straight horizontal strips of dark grey-brown earth, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip stands one row of five small dark slate-grey stone gravestones side by side, each a simple upright slab with a pointed top and a tiny carved cross, with a low mound of dark earth in front of it, and a few tiny pale violet flowers; dark slate grey, charcoal and dusty grey-brown only. Gravestones and earth only.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages, tree stumps, logs, pink",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game map: chunky simple rounded shapes, flat colours with one shadow tone, low detail, soft slightly desaturated colours, light from the top left, clean edges. Camera: seen from the front and slightly above, like a garden plot on a strategy game map; drawn on a fully transparent background; nothing is cropped at the top or the bottom. Class: a repeating field pattern for a square farm tile of a strategy game map: big plump simple shapes standing in straight horizontal rows, each row on its own long narrow strip of ground; a dark outline in a darker tone of each colour (never black), no box, no border and no frame. Everything that is not a row or its strip of ground is empty and transparent. Subject: a small old graveyard: three straight horizontal strips of dark grey-brown earth, one above the other, each running from the left edge to the right edge of the image, with clear empty transparent gaps between the strips; on each strip stands one row of five small dark slate-grey stone gravestones side by side, each a simple upright slab with a pointed top and a tiny carved cross, with a low mound of dark earth in front of it, and a few tiny pale violet flowers; dark slate grey, charcoal and dusty grey-brown only. Gravestones and earth only. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, disc, platform, isometric block, isometric diamond, grass, lawn, background, chequerboard, building, house, barn, fence, people, character, farmer, animal, unit, scarecrow, skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages, tree stumps, logs, pink."
+      },
+      "submittedAt": "2026-10-04T08:39:57.240Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-pixen-a.png",
+      "rawSheetSha256": "bbc7472ec223bfafbeb889ae7dca9ea0a5e323305515579990c0a3f44ae919f8",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.012,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T08:40:53.841Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "graveyard-pixen-a"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Three rows of dark slate gravestones with moss and violet flowers; the top row is stamped on every row (the middle row has a stray brown stump). Dark stones, so they do not read as the pale Grave marker. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+        "reviewedAt": "2026-10-04T09:12:31.186Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-undead-bone-mill": {
+      "id": "chibi-undead-bone-mill",
+      "subject": "IMPROVEMENT:UNDEAD:WINDMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "bone-mill-edit-d",
+      "candidate": 0,
+      "candidateSha256": "fc786e837346323c9091169112ce9432792891ec2f218a6feb0393917f80b105",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-bone-mill.png",
+        "sha256": "fc786e837346323c9091169112ce9432792891ec2f218a6feb0393917f80b105",
+        "pixelSha256": "11eff52ce919fbac73f9cbcc5efd11c901188a1bb99d2f5a78577aca5e80d7d3",
+        "width": 64,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 32,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The shared Windmill's shape with a light slate tower, near-black charcoal roofs, ragged mid-grey sails and violet windows: three tones, so tower, roofs and sails separate at 1:1 and at zoom 0.75. Candidate 1 is the same with a paler tower. Reviewed at 1:1 and x5.",
+      "acceptedAt": "2026-10-04T09:14:09.993Z"
+    },
+    "chibi-undead-graveyard": {
+      "id": "chibi-undead-graveyard",
+      "subject": "IMPROVEMENT:UNDEAD:FARM",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "graveyard-pixen-a",
+      "candidate": 0,
+      "candidateSha256": "bbc7472ec223bfafbeb889ae7dca9ea0a5e323305515579990c0a3f44ae919f8",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-undead-graveyard.png",
+        "sha256": "0849245dbec80cb3ca26bd35b87b0898eb39ed48ea1a91b114030cea0fc3fb24",
+        "pixelSha256": "aabc6ed2251e1a08b690be09ae24ef21345bdacfbec20d56f65154811812ccb3",
+        "width": 80,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "crop-rows",
+        "cropRows": {
+          "rows": 3,
+          "band": 0,
+          "period": 80,
+          "stamps": [
+            {
+              "left": 2,
+              "width": 16,
+              "at": 0
+            },
+            {
+              "left": 18,
+              "width": 15,
+              "at": 16
+            },
+            {
+              "left": 17,
+              "width": 1,
+              "at": 31
+            },
+            {
+              "left": 33,
+              "width": 16,
+              "at": 32
+            },
+            {
+              "left": 49,
+              "width": 14,
+              "at": 48
+            },
+            {
+              "left": 48,
+              "width": 1,
+              "at": 62
+            },
+            {
+              "left": 48,
+              "width": 1,
+              "at": 63
+            },
+            {
+              "left": 63,
+              "width": 15,
+              "at": 64
+            },
+            {
+              "left": 62,
+              "width": 1,
+              "at": 79
+            }
+          ],
+          "rowOffsets": [0, 8, 0],
+          "phase": 0.5,
+          "saturation": 1,
+          "strawMix": 0
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Three rows of dark slate gravestones with moss and violet flowers; the top row is stamped on every row (the middle row has a stray brown stump). Dark stones, so they do not read as the pale Grave marker. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+      "acceptedAt": "2026-10-04T09:12:31.186Z"
+    }
+  }
+}

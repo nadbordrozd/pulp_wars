@@ -1,0 +1,36 @@
+{
+  "id": "bone-mill-edit-c",
+  "jobId": "ff5b87e3-47c3-4f54-a290-68bc32c258ab",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "buildings-undead",
+    "asset": "chibi-undead-bone-mill",
+    "subject": "IMPROVEMENT:UNDEAD:WINDMILL",
+    "faction": "UNDEAD",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 64,
+      "height": 72
+    },
+    "seed": 97603,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the stone of the round tower. The tower walls become a lighter slate blue-grey stone (#8b92a3) with a mid-grey shade (#6a7082) and a few darker stone joints, clearly lighter than the roofs and the sails. Do not redraw anything else: the near-black charcoal roofs, the four dark ragged sails on their wooden arms, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the stone of the round tower. The tower walls become a lighter slate blue-grey stone (#8b92a3) with a mid-grey shade (#6a7082) and a few darker stone joints, clearly lighter than the roofs and the sails. Do not redraw anything else: the near-black charcoal roofs, the four dark ragged sails on their wooden arms, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the stone of the round tower. The tower walls become a lighter slate blue-grey stone (#8b92a3) with a mid-grey shade (#6a7082) and a few darker stone joints, clearly lighter than the roofs and the sails. Do not redraw anything else: the near-black charcoal roofs, the four dark ragged sails on their wooden arms, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the stone of the round tower. The tower walls become a lighter slate blue-grey stone (#8b92a3) with a mid-grey shade (#6a7082) and a few darker stone joints, clearly lighter than the roofs and the sails. Do not redraw anything else: the near-black charcoal roofs, the four dark ragged sails on their wooden arms, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "bone-mill-edit-b",
+      "candidate": 0,
+      "sha256": "2828c6ade815dc27ae0c1808ffa714628065f27b1090521ec8bf74b809bc8f22"
+    }
+  }
+}

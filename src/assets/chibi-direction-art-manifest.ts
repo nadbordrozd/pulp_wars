@@ -9,6 +9,10 @@ import { CHIBI_DIRECTION_DWARF_ART_ASSETS_V7 } from "./chibi-direction-dwarf-art
 import { CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7 } from "./chibi-direction-ice-folk-art-manifest";
 import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "./chibi-direction-martian-art-manifest";
 import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "./chibi-direction-undead-art-manifest";
+import {
+  CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
+  CHIBI_UNDEAD_GROUND_ART_ASSETS_V7,
+} from "./chibi-faction-buildings-art-manifest";
 import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "./chibi-naval-faction-art-manifest";
 
 /**
@@ -556,6 +560,10 @@ export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
     // --- Naval, every faction (pulp_wars-w5j.2 art, wired in by
     // pulp_wars-w5j.3): the Human entries take the shared ship subjects.
     ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
+    // --- Faction building looks and the Undead territory ground
+    // (pulp_wars-xdh.2) ---
+    ...CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
+    ...CHIBI_UNDEAD_GROUND_ART_ASSETS_V7,
   ]);
   if (built.problems.length > 0) throw new Error(built.problems.join("; "));
   return built.registry;

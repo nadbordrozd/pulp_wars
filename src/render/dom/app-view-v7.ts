@@ -110,17 +110,26 @@ import {
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
 import {
   cityArtSubjectV7,
+  territoryGroundV7,
+  territoryTerrainSubjectV7,
   unitArtSubjectV7,
   type ArtSetV7,
   type ArtSubjectV7,
 } from "../../assets/chibi-art-v7";
 import {
   commandSubjectV7,
-  improvementSubjectV7,
+  factionImprovementSubjectV7,
   portraitSubjectV7,
   rewardSubjectV7,
   technologySubjectV7,
 } from "../../assets/chibi-ui-art-v7";
+import {
+  FACTION_BUILDINGS_HELP_V7,
+  factionBuildCommandV7,
+  factionBuildingV7,
+  matchHasFactionBuildingsV7,
+  territoryFactionV7,
+} from "../faction-buildings-v7";
 import {
   CHIBI_DOM_BOXES_V7,
   browserChibiDomEnvironmentV7,
@@ -3044,14 +3053,23 @@ export class Ruleset7DomAppView {
               ? resourceMapArtIdV7(tile.resource, tile.at)
               : RULESET7_TERRAIN_ART_IDS[tile.terrain]
             : RULESET7_IMPROVEMENT_ART_IDS[tile.improvement];
-        const name = title(
-          tile.improvement ??
-            (tile.resource !== "UNKNOWN_RESOURCE" ? tile.resource : null) ??
-            (tile.road ? "ROAD" : tile.terrain),
-        );
+        // Faction building looks (epic pulp_wars-xdh): the improvement is
+        // named and drawn as the faction that owns its territory has it.
+        const tileFaction = territoryFactionV7(view, tile.territoryOwnerId);
+        const factionBuilding =
+          tile.improvement === null
+            ? null
+            : factionBuildingV7(tile.improvement, tileFaction);
+        const name =
+          factionBuilding?.name ??
+          title(
+            tile.improvement ??
+              (tile.resource !== "UNKNOWN_RESOURCE" ? tile.resource : null) ??
+              (tile.road ? "ROAD" : tile.terrain),
+          );
         const tileSubject: ArtSubjectV7 =
           tile.improvement !== null
-            ? improvementSubjectV7(tile.improvement)
+            ? factionImprovementSubjectV7(tile.improvement, tileFaction)
             : tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
               ? `RESOURCE:${tile.resource}`
               : tile.terrain === "RIFT"
@@ -3065,7 +3083,11 @@ export class Ruleset7DomAppView {
                         ? near.terrain === "RIFT"
                         : null;
                   })}`
-                : `TERRAIN:${tile.terrain}`;
+                : // The Undead territory ground (bead pulp_wars-xdh.2).
+                  territoryTerrainSubjectV7(
+                    `TERRAIN:${tile.terrain}`,
+                    territoryGroundV7(tileFaction),
+                  );
         const summary = el(this.#document, "div", "v7-selection-summary");
         summary.append(
           identity(
@@ -3085,6 +3107,18 @@ export class Ruleset7DomAppView {
           ),
         );
         const details = el(this.#document, "div", "v7-selection-details");
+        // One flavour line; it ends "Counts as a Farm." so the generic
+        // building of every rules text stays learnable.
+        if (factionBuilding !== null) {
+          const flavour = text(
+            this.#document,
+            "p",
+            factionBuilding.flavour,
+            "v7-building-flavour",
+          );
+          flavour.dataset.factionBuilding = `${tileFaction ?? ""}:${tile.improvement ?? ""}`;
+          details.append(flavour);
+        }
         if (tile.road && name !== "Road")
           details.append(text(this.#document, "p", "Road", "v7-chip"));
         // The Rift (bead pulp_wars-9s0.5): who may stand on it.
@@ -3331,6 +3365,16 @@ export class Ruleset7DomAppView {
       );
       action.append(text(this.#document, "span", label, "v7-action-label"));
       action.title = label;
+      // Faction building looks (epic pulp_wars-xdh): the tooltip says what
+      // the faction's building counts as ("Counts as a Farm.").
+      const factionBuilding = factionBuildCommandV7(
+        command.kind,
+        this.#viewerFaction(),
+      );
+      if (factionBuilding !== null) {
+        action.title = `${label} · ${factionBuilding.flavour}`;
+        action.dataset.factionBuilding = "true";
+      }
       // The Dwarf revision (section 16.1): a Dwarf Tend Wounded is Repair.
       if (
         command.kind === "TEND_WOUNDED" &&
@@ -3840,6 +3884,11 @@ export class Ruleset7DomAppView {
       ACHIEVEMENT_HELP_TIP_V7,
       "Capture every enemy city to win.",
       "Move a land unit onto your port to put it to sea.",
+      // Faction building looks (epic pulp_wars-xdh), in a match with a
+      // faction that has one.
+      ...(view !== null && matchHasFactionBuildingsV7(view)
+        ? [FACTION_BUILDINGS_HELP_V7]
+        : []),
       // The Rift (bead pulp_wars-9s0.5), once the viewer has seen one.
       ...(view !== null &&
       view.board.tiles.some((tile) => tile.explored && tile.terrain === "RIFT")
@@ -7796,6 +7845,9 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   const dwarf = dwarfCommandLabelV7(command.kind, faction);
   if (dwarf !== null) return dwarf;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
+  // Faction building looks (epic pulp_wars-xdh): an Undead "Graveyard".
+  const building = factionBuildCommandV7(command.kind, faction);
+  if (building !== null) return building.name;
   return COMMAND_LABELS[command.kind] ?? title(command.kind);
 }
 function economicPreviewLabelV7(preview: EconomicPreviewV7): string {

@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-undead",
+  "title": "Undead building looks: the Graveyard (Farm) and the Bone Mill (Windmill)",
+  "bead": "pulp_wars-xdh.2",
+  "faction": "UNDEAD",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-undead-graveyard",
+      "subject": "IMPROVEMENT:UNDEAD:FARM",
+      "assetClass": "BUILDING",
+      "recipeClass": "crop-rows",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "ownerColour": false,
+      "cropRows": {
+        "rows": 3,
+        "band": 0,
+        "period": 80,
+        "stamps": [
+          {
+            "left": 2,
+            "width": 16,
+            "at": 0
+          },
+          {
+            "left": 18,
+            "width": 15,
+            "at": 16
+          },
+          {
+            "left": 17,
+            "width": 1,
+            "at": 31
+          },
+          {
+            "left": 33,
+            "width": 16,
+            "at": 32
+          },
+          {
+            "left": 49,
+            "width": 14,
+            "at": 48
+          },
+          {
+            "left": 48,
+            "width": 1,
+            "at": 62
+          },
+          {
+            "left": 48,
+            "width": 1,
+            "at": 63
+          },
+          {
+            "left": 63,
+            "width": 15,
+            "at": 64
+          },
+          {
+            "left": 62,
+            "width": 1,
+            "at": 79
+          }
+        ],
+        "rowOffsets": [0, 8, 0],
+        "phase": 0.5,
+        "saturation": 1,
+        "strawMix": 0
+      }
+    },
+    {
+      "id": "chibi-undead-bone-mill",
+      "subject": "IMPROVEMENT:UNDEAD:WINDMILL",
+      "assetClass": "BUILDING",
+      "recipeClass": "calm-building",
+      "canvas": {
+        "width": 64,
+        "height": 72
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "graveyard-pixen-a",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 97111,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "options": {
+        "direction": null
+      },
+      "negativeAddendum": "skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages, tree stumps, logs, pink, grass",
+      "notes": "Pixflux drew pink slabs on grass (flux-a) and stumps and pumpkins (flux-b). Pixen, with a subject of dark pointed slate gravestones instead of crosses on mounds."
+    },
+    {
+      "id": "bone-mill-edit-a",
+      "asset": "chibi-undead-bone-mill",
+      "endpoint": "edit-image-pixen",
+      "seed": 97601,
+      "requestSize": {
+        "width": 64,
+        "height": 72
+      },
+      "source": {
+        "batch": "direction-human",
+        "recipe": "windmill-flat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours and the sail cloth of this windmill: the tower becomes dark slate-grey stone (#5a5f6b), the cone roof near-black charcoal (#2b2b31), the four sails become ragged torn charcoal-grey cloth with holes and tattered edges on dark wooden arms, and the small window glows violet (#a221ee). Nothing is red, cream or terracotta any more. Keep the windmill's shape, size, the X of four sails, the door, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "The Undead Windmill as an edit of the accepted shared Windmill, so the canvas, footprint and silhouette stay."
+    },
+    {
+      "id": "bone-mill-edit-b",
+      "asset": "chibi-undead-bone-mill",
+      "endpoint": "edit-image-pixen",
+      "seed": 97602,
+      "requestSize": {
+        "width": 64,
+        "height": 72
+      },
+      "source": {
+        "recipe": "bone-mill-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the red roofs. The cone roof on top and the small roof over the door become near-black charcoal slate (#2b2b31) with a dark grey edge (#44454d), with no red, no orange and no brown left on them. Do not redraw anything else: the dark stone tower, the four dark ragged sails, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+      "notes": "bone-mill-edit-a has the dark tower, the ragged sails and the violet windows, but kept its terracotta-red roofs."
+    },
+    {
+      "id": "bone-mill-edit-c",
+      "asset": "chibi-undead-bone-mill",
+      "endpoint": "edit-image-pixen",
+      "seed": 97603,
+      "requestSize": {
+        "width": 64,
+        "height": 72
+      },
+      "source": {
+        "recipe": "bone-mill-edit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the stone of the round tower. The tower walls become a lighter slate blue-grey stone (#8b92a3) with a mid-grey shade (#6a7082) and a few darker stone joints, clearly lighter than the roofs and the sails. Do not redraw anything else: the near-black charcoal roofs, the four dark ragged sails on their wooden arms, the violet windows, the door, the outline and the art style stay exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-xdh.2: bone-mill-edit-b is a black windmill shape at zoom 0.75 (tower, roofs and sails are one tone). A lighter slate tower separates the three."
+    },
+    {
+      "id": "bone-mill-edit-d",
+      "asset": "chibi-undead-bone-mill",
+      "endpoint": "edit-image-pixen",
+      "seed": 97604,
+      "requestSize": {
+        "width": 64,
+        "height": 72
+      },
+      "source": {
+        "recipe": "bone-mill-edit-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things. The red roofs (the cone roof and the small roof over the door) become near-black charcoal slate (#2b2b31), with no red or brown left. The stone walls of the round tower become a lighter slate blue-grey (#8b92a3) with a mid-grey shade (#6a7082), clearly lighter than the roofs and sails. Keep the four ragged grey sails, the violet windows, the door, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "Bead pulp_wars-xdh.2: the alternative to bone-mill-edit-c, from bone-mill-edit-a, whose sails are a lighter grey than edit-b's: charcoal roofs, mid-grey sails and a light slate tower are three tones."
+    }
+  ]
+}

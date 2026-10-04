@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "batch": "buildings-dinosaur",
+  "recipes": {
+    "chopping-block-b": {
+      "id": "chopping-block-b",
+      "asset": "chibi-dinosaur-chopping-block",
+      "jobId": "sync-7295c480-0678-4aa2-86b6-59d9e49ca8fe",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-dinosaur-chopping-block",
+        "subject": "IMPROVEMENT:SAWMILL",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 97802,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/faction-buildings-2026-10/fragments/class-calm-building.txt + art/explorations/faction-buildings-2026-10/fragments/class-calm-building.negative.txt",
+            "text": "Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/faction-buildings-2026-10/subjects.json",
+            "text": "Subject: a stone-age wood chopping camp: one huge stone axe with a grey flint head lashed to a thick wooden handle, stuck upright in a wide tree stump, as tall as the image and the biggest thing in it; beside it a neat pile of pale split logs showing their round pale ends, and behind it a small lean-to of tawny hide on pale bone poles; wide and low; no metal and no saw blade anywhere. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The stone axe in the stump is drawn large and fills most of the image, touching neither edge.",
+            "negative": "saw blade, circular saw, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, water wheel"
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a stone-age wood chopping camp: one huge stone axe with a grey flint head lashed to a thick wooden handle, stuck upright in a wide tree stump, as tall as the image and the biggest thing in it; beside it a neat pile of pale split logs showing their round pale ends, and behind it a small lean-to of tawny hide on pale bone poles; wide and low; no metal and no saw blade anywhere. Buildings only. The stone axe in the stump is drawn large and fills most of the image, touching neither edge.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, saw blade, circular saw, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, water wheel",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a stone-age wood chopping camp: one huge stone axe with a grey flint head lashed to a thick wooden handle, stuck upright in a wide tree stump, as tall as the image and the biggest thing in it; beside it a neat pile of pale split logs showing their round pale ends, and behind it a small lean-to of tawny hide on pale bone poles; wide and low; no metal and no saw blade anywhere. Buildings only. The stone axe in the stump is drawn large and fills most of the image, touching neither edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, saw blade, circular saw, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, water wheel."
+      },
+      "submittedAt": "2026-10-04T08:50:07.287Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dinosaur/chopping-block-b.png",
+      "rawSheetSha256": "1c959c1f023bc3b8218076538f71807ba0d18bf8056cdb926341a662f037518d",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.4394,
+          "footprintWidthShare": 0.803,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T08:50:48.942Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "chopping-block-b"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A huge axe in a stump, a pile of split logs and a hide lean-to; no slab. The axe head is grey and reads as stone at map size, though it is drawn smooth. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+        "reviewedAt": "2026-10-04T09:12:36.147Z"
+      }
+    },
+    "grindstone-a": {
+      "id": "grindstone-a",
+      "asset": "chibi-dinosaur-grinding-stone",
+      "jobId": "sync-a2605dd3-01a4-4bab-8019-5ba0d04cb17e",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "faction-buildings",
+        "asset": "chibi-dinosaur-grinding-stone",
+        "subject": "IMPROVEMENT:WINDMILL",
+        "faction": "TEST-FACTION-BUILDINGS",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 97401,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "art/explorations/faction-buildings-2026-10/fragments/class-calm-building.txt + art/explorations/faction-buildings-2026-10/fragments/class-calm-building.negative.txt",
+            "text": "Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/faction-buildings-2026-10/subjects.json",
+            "text": "Subject: a stone-age grinding mill: one huge round flat grey millstone with a hole in its centre resting flat on three squat dark basalt stones, a thick rough wooden pole through its hole as a lever, and a small lean-to shelter of tawny hide stretched over curved pale bone poles behind it, with a woven basket of grain beside the stone; wide and low; no metal anywhere. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The millstone is drawn large and fills most of the image, touching neither edge.",
+            "negative": "windmill, sails, blades, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, spoked wheel, cart"
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a stone-age grinding mill: one huge round flat grey millstone with a hole in its centre resting flat on three squat dark basalt stones, a thick rough wooden pole through its hole as a lever, and a small lean-to shelter of tawny hide stretched over curved pale bone poles behind it, with a woven basket of grain beside the stone; wide and low; no metal anywhere. Buildings only. The millstone is drawn large and fills most of the image, touching neither edge.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, windmill, sails, blades, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, spoked wheel, cart",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Its materials and colours are the ones the subject names; every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a stone-age grinding mill: one huge round flat grey millstone with a hole in its centre resting flat on three squat dark basalt stones, a thick rough wooden pole through its hole as a lever, and a small lean-to shelter of tawny hide stretched over curved pale bone poles behind it, with a woven basket of grain beside the stone; wide and low; no metal anywhere. Buildings only. The millstone is drawn large and fills most of the image, touching neither edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, windmill, sails, blades, metal, iron, steel, gears, cogwheel, brick, plaster, roof tiles, house, spoked wheel, cart."
+      },
+      "submittedAt": "2026-10-04T08:36:07.297Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dinosaur/grindstone-a.png",
+      "rawSheetSha256": "1aba02fc632fc2f951379679be656805b54391d5e3c0884c077b1ee6a733e9a6",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.82,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T08:36:49.761Z",
+      "importedFrom": {
+        "exploration": "art/explorations/faction-buildings-2026-10",
+        "batch": "faction-buildings",
+        "recipe": "grindstone-a"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "An upright grindstone with a wooden lever on a big flat millstone resting on boulders, a hide lean-to on bone poles and a basket; no metal. The flat stone is the subject's millstone, not a ground plate. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+        "reviewedAt": "2026-10-04T09:12:34.927Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-dinosaur-chopping-block": {
+      "id": "chibi-dinosaur-chopping-block",
+      "subject": "IMPROVEMENT:DINOSAUR:SAWMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "chopping-block-b",
+      "candidate": 0,
+      "candidateSha256": "1c959c1f023bc3b8218076538f71807ba0d18bf8056cdb926341a662f037518d",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-chopping-block.png",
+        "sha256": "ff7df2bad208b1118fbc8a1a3c1f25d8df1c216e04b862c24988ba684f078a29",
+        "pixelSha256": "4ac1a979bee5089e3ca4ffee034eabff34479eaaad514bceaf93226969abc315",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A huge axe in a stump, a pile of split logs and a hide lean-to; no slab. The axe head is grey and reads as stone at map size, though it is drawn smooth. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+      "acceptedAt": "2026-10-04T09:12:36.146Z"
+    },
+    "chibi-dinosaur-grinding-stone": {
+      "id": "chibi-dinosaur-grinding-stone",
+      "subject": "IMPROVEMENT:DINOSAUR:WINDMILL",
+      "assetClass": "BUILDING",
+      "status": "ACCEPTED",
+      "recipe": "grindstone-a",
+      "candidate": 0,
+      "candidateSha256": "1aba02fc632fc2f951379679be656805b54391d5e3c0884c077b1ee6a733e9a6",
+      "master": {
+        "path": "public/assets/chibi/buildings/chibi-dinosaur-grinding-stone.png",
+        "sha256": "6f21bab97d8e620c8e18f195b14ef89f9f874abdc178d869d703e3281b30219f",
+        "pixelSha256": "1122a4ec8f76134b606f0f07b95d759d3d1b54a9fb5fa6c4eccac3b845384f4d",
+        "width": 72,
+        "height": 72
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 36,
+        "y": 32
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "An upright grindstone with a wooden lever on a big flat millstone resting on boulders, a hide lean-to on bone poles and a basket; no metal. The flat stone is the subject's millstone, not a ground plate. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
+      "acceptedAt": "2026-10-04T09:12:34.927Z"
+    }
+  }
+}

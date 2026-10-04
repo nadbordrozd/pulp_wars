@@ -10,6 +10,8 @@ import {
   GALLERY_FACTIONS_V7,
   GALLERY_UNIT_ROWS_V7,
   galleryBuildingDetailsV7,
+  galleryBuildingGroundV7,
+  galleryBuildingNameV7,
   galleryBuildingPerFactionV7,
   galleryBuildingSubjectV7,
   galleryUnitCellV7,
@@ -105,11 +107,81 @@ describe("Gallery presentation", () => {
       "CITY:MARTIAN:2",
     );
     expect(galleryBuildingSubjectV7("CITY_3", "ORIGINAL")).toBe("CITY:3");
+    // Faction building looks (bead pulp_wars-xdh.2): the Farm, the Windmill
+    // and the Sawmill have a faction's own look, so their rows split; every
+    // other improvement stays one shared cell.
+    const split = ["FARM", "WINDMILL", "SAWMILL"];
     for (const row of GALLERY_BUILDING_ROWS_V7.slice(3))
-      expect(galleryBuildingPerFactionV7(row)).toBe(false);
+      expect(galleryBuildingPerFactionV7(row), row).toBe(split.includes(row));
     expect(galleryBuildingSubjectV7("MINE", "DWARF")).toBe(
       "TERRAIN:MINED_MOUNTAIN",
     );
+    expect(
+      GALLERY_FACTIONS_V7.map((faction) =>
+        galleryBuildingSubjectV7("FARM", faction),
+      ),
+    ).toEqual([
+      "IMPROVEMENT:FARM",
+      "IMPROVEMENT:UNDEAD:FARM",
+      "IMPROVEMENT:FARM",
+      "IMPROVEMENT:FARM",
+      "IMPROVEMENT:MARTIAN:FARM",
+      "IMPROVEMENT:ICE_FOLK:FARM",
+      "IMPROVEMENT:DWARF:FARM",
+    ]);
+    expect(
+      GALLERY_FACTIONS_V7.map((faction) =>
+        galleryBuildingNameV7("WINDMILL", faction),
+      ),
+    ).toEqual([
+      "Windmill",
+      "Bone Mill",
+      "Windmill",
+      "Grinding Stone",
+      "Solar Array",
+      "Windmill",
+      "Steam Pump",
+    ]);
+    expect(galleryBuildingNameV7("SAWMILL", "DINOSAUR")).toBe("Chopping Block");
+    expect(galleryBuildingNameV7("FORGE", null)).toBe("Forge");
+    expect(galleryBuildingNameV7("CITY_2", "UNDEAD")).toBe("City 2");
+    // An Undead cell stands on the Undead ground.
+    expect(galleryBuildingGroundV7("FARM", "UNDEAD")).toBe(
+      "TERRAIN:UNDEAD:GRASS",
+    );
+    expect(galleryBuildingGroundV7("FARM", "MARTIAN")).toBe("TERRAIN:GRASS");
+    expect(galleryBuildingGroundV7("FORGE")).toBe("TERRAIN:GRASS");
+    expect(galleryBuildingGroundV7("PORT", "UNDEAD")).toBe(
+      "TERRAIN:SHALLOW_WATER",
+    );
+    expect(galleryBuildingGroundV7("MINE", "UNDEAD")).toBeNull();
+  });
+
+  it("names a faction's own building and keeps the generic rules", () => {
+    const graveyard = galleryBuildingDetailsV7("FARM", "UNDEAD");
+    expect(graveyard).toMatchObject({
+      name: "Graveyard",
+      factionName: "Undead",
+      description:
+        "Quiet plots, tended for later. Counts as a Farm. Built on Fertile Ground.",
+      cost: 5,
+      effects: ["+2 population"],
+      technology: { id: "FARMING" },
+    });
+    // The numbers are the Farm's, whoever owns it.
+    const farm = galleryBuildingDetailsV7("FARM", "GOBLIN");
+    expect(farm.name).toBe("Farm");
+    expect(farm.description).toBe("Built on Fertile Ground.");
+    expect([graveyard.cost, graveyard.effects]).toEqual([
+      farm.cost,
+      farm.effects,
+    ]);
+    expect(galleryBuildingDetailsV7("WINDMILL", "MARTIAN")).toMatchObject({
+      name: "Solar Array",
+      effects: [
+        "+1 per adjacent farm; heals adjacent owner units for 6 HP at Start Turn",
+      ],
+    });
   });
 
   it("describes buildings from the engine's rule tables", () => {

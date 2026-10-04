@@ -3320,3 +3320,47 @@ the owner.
 
 `npm run art:faction-colours-review -- --out DIR` (see
 [FACTION_COLOURS.md](FACTION_COLOURS.md#evidence)).
+
+## 22. Faction building looks
+
+**Status:** live (bead `pulp_wars-xdh.2`, epic `pulp_wars-xdh`). The
+proposal, the art and its weak spots are in
+[FACTION_BUILDINGS.md](FACTION_BUILDINGS.md); what the player sees is in
+[the screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-faction-buildings-overlay).
+
+The shared calm improvement set stays the look of the board. A faction
+replaces only its one or two most jarring buildings (nine in all: the
+Undead Graveyard and Bone Mill, the Martian Hydroponic Farm and Solar
+Array, the Dinosaur Grinding Stone and Chopping Block, the Ice Folk Frost
+Garden, the Dwarf Mushroom Farm and Steam Pump), and Undead territory has
+a cooler, duller Grass. The rules of the direction hold for them:
+
+- **Calm, no player colour.** They are `calm-building` and `crop-rows`
+  masters with no owner area and no mask, drawn as authored like the
+  shared set (no building tone, no pennant). The faction's border is still
+  the only owner colour.
+- **Same footprint, same role.** A replacement keeps its improvement's
+  canvas, anchor and placement, so Roads, units and neighbours read as
+  before; a Farm replacement is a seamless 80 x 80 field.
+- **Who decides the look: the territory owner**, the rule the faction
+  cities already follow. `factionImprovementSubjectV7(improvement,
+faction)` gives `IMPROVEMENT:<FACTION>:<ID>`; the plan asks with the
+  faction that owns the cell's territory, so a captured city's buildings
+  change with it. The ground is a plan field (`territoryGround`) that the
+  renderer turns into `TERRAIN:UNDEAD:GRASS` or `TERRAIN:UNDEAD:FOREST`
+  when it resolves the tile; the terrain subject itself is unchanged, so
+  the Mountain fringe, Roads under trees and Snow work as before.
+- **Terrain tone.** The Undead ground is toned like every Grass tile, at
+  contrast 65% around the shared Grass pivot, as the study judged it.
+- **Fallbacks.** Both kinds of subject are registered in the direction
+  registry only and fall back to the shared subject
+  (`chibiFallbackSubjectV7`), so the classic look, the LEGACY art set and
+  a raster that fails to load draw the shared building and Grass.
+- **No redraw machinery.** The board is drawn from the plan each frame, so
+  a territory change costs nothing extra: only the plan entries of the
+  cells that changed owner differ, the art registry and every raster cache
+  are kept, and the new rasters are loaded once.
+
+Evidence: `npm run art:faction-buildings-review` (the scenes of each
+faction's territory beside a Human one, a captured city, the Gallery's
+Buildings tab).

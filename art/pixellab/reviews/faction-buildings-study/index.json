@@ -1,11 +1,18 @@
 {
-  "bead": "pulp_wars-xdh.1",
+  "bead": "pulp_wars-xdh.2",
   "run": "art/explorations/faction-buildings-2026-10",
+  "batches": [
+    "buildings-undead",
+    "buildings-martian",
+    "buildings-dinosaur",
+    "buildings-ice-folk",
+    "buildings-dwarf"
+  ],
   "command": "npm run art:faction-buildings-review",
-  "note": "A study: nothing is wired into the game. The scene-* captures draw the live look with the proposal applied per cell to the studied faction's territory only (scripts/art/faction-buildings/scene.ts). A sample without an accepted master is drawn as today's building in the scenes and as a 'PixelLab pending' plate in the sheets.",
-  "samples": {
+  "note": "The faction building looks as the game draws them (bead pulp_wars-xdh.2). The scene-*-after and scene-*-captured captures are the live look of the real board host; scene-*-before hides the faction art from the direction registry, so it is the board before the faction looks (scripts/art/faction-buildings/scene.ts). The masters are the production batches' accepted recipes.",
+  "masters": {
     "chibi-undead-graveyard": "graveyard-pixen-a",
-    "chibi-undead-bone-mill": "bone-mill-edit-b",
+    "chibi-undead-bone-mill": "bone-mill-edit-d",
     "chibi-martian-solar-array": "solar-b-edit-c",
     "chibi-martian-hydroponic-farm": "hydroponic-edit-a",
     "chibi-dinosaur-grinding-stone": "grindstone-a",
@@ -64,6 +71,10 @@
     "before-after-contact.png",
     "buildings-1x.png",
     "buildings-x3.png",
+    "gallery-buildings-desktop.png",
+    "gallery-buildings-farm-desktop.png",
+    "gallery-buildings-farm-phone.png",
+    "gallery-buildings-phone.png",
     "grass-x2.png",
     "scene-dinosaur-after-desktop-zoom-0.75.png",
     "scene-dinosaur-after-desktop-zoom-1.png",
@@ -73,6 +84,7 @@
     "scene-dinosaur-before-desktop-zoom-1.png",
     "scene-dinosaur-before-phone-zoom-0.75.png",
     "scene-dinosaur-before-phone-zoom-1.png",
+    "scene-dinosaur-captured-desktop-zoom-1.png",
     "scene-dwarf-after-desktop-zoom-0.75.png",
     "scene-dwarf-after-desktop-zoom-1.png",
     "scene-dwarf-after-phone-zoom-0.75.png",
@@ -81,6 +93,7 @@
     "scene-dwarf-before-desktop-zoom-1.png",
     "scene-dwarf-before-phone-zoom-0.75.png",
     "scene-dwarf-before-phone-zoom-1.png",
+    "scene-dwarf-captured-desktop-zoom-1.png",
     "scene-ice_folk-after-desktop-zoom-0.75.png",
     "scene-ice_folk-after-desktop-zoom-1.png",
     "scene-ice_folk-after-phone-zoom-0.75.png",
@@ -89,6 +102,7 @@
     "scene-ice_folk-before-desktop-zoom-1.png",
     "scene-ice_folk-before-phone-zoom-0.75.png",
     "scene-ice_folk-before-phone-zoom-1.png",
+    "scene-ice_folk-captured-desktop-zoom-1.png",
     "scene-martian-after-desktop-zoom-0.75.png",
     "scene-martian-after-desktop-zoom-1.png",
     "scene-martian-after-phone-zoom-0.75.png",
@@ -97,6 +111,7 @@
     "scene-martian-before-desktop-zoom-1.png",
     "scene-martian-before-phone-zoom-0.75.png",
     "scene-martian-before-phone-zoom-1.png",
+    "scene-martian-captured-desktop-zoom-1.png",
     "scene-undead-after-desktop-zoom-0.75.png",
     "scene-undead-after-desktop-zoom-1.png",
     "scene-undead-after-grass-cool-desktop-zoom-1.png",
@@ -107,6 +122,10 @@
     "scene-undead-before-desktop-zoom-0.75.png",
     "scene-undead-before-desktop-zoom-1.png",
     "scene-undead-before-phone-zoom-0.75.png",
-    "scene-undead-before-phone-zoom-1.png"
+    "scene-undead-before-phone-zoom-1.png",
+    "scene-undead-captured-desktop-zoom-0.75.png",
+    "scene-undead-captured-desktop-zoom-1.png",
+    "scene-undead-captured-phone-zoom-0.75.png",
+    "scene-undead-captured-phone-zoom-1.png"
   ]
 }

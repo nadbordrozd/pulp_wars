@@ -1,12 +1,13 @@
-# Faction building looks: proposal and sample study
+# Faction building looks
 
-**Status:** bead `pulp_wars-xdh.1` (epic `pulp_wars-xdh`). The root accepted
-the proposal table, the naming rule and the "gloam" Undead grass
-(2026-10-04), and the user asked for all of it to be made. **Every proposed
-building now has an accepted PixelLab sample** in the exploration run (25
-PixelLab calls, see [Sample study](#5-sample-study)). **Nothing here is
-wired into the game**: the runtime lookup, the names and the import of the
-samples into production batches are the next bead.
+**Status: in the game** (bead `pulp_wars-xdh.2`, epic `pulp_wars-xdh`). The
+nine buildings are production batches (`buildings-undead`, `-martian`,
+`-dinosaur`, `-ice-folk`, `-dwarf`), the Undead "gloam" ground is baked as
+masters, and the board, the tile dock, the build buttons, the technology
+cards and the Gallery draw and name them by the territory owner: see
+[In the game](#8-in-the-game). Sections 1 to 7 are the proposal and sample
+study of bead `pulp_wars-xdh.1` as the root accepted them (2026-10-04);
+where production changed something (the Bone Mill), section 8 says so.
 
 The user's request (2026-10-03): some, not all, building sprites and
 descriptions become faction specific. When the Undead take a city, the
@@ -250,12 +251,13 @@ Undead, Martian, Dinosaur, Ice Folk (under its Snow) and Dwarf,
 The scenes ([`scene.ts`](../../scripts/art/faction-buildings/scene.ts)) are
 drawn by the real board host in the live look: an 8 x 6 patch with the
 studied faction's city territory on the left and a Human territory with the
-same buildings in the same places on the right. The "after" frame applies
-the proposal **per cell** without touching the game's code: on the 16 x 16
-Showcase board `31x + 17y` differs for every cell, so a registry with 721
-variants of a subject picks one entry per cell (`chibiVariantV7`), and the
-studied territory's cells get the proposed raster. That is what a
-per-territory lookup would draw.
+same buildings in the same places on the right. In the study the "after"
+frame applied the proposal per cell without touching the game's code (a
+721-variant registry, one entry per cell of the 16 x 16 Showcase board).
+Since bead `pulp_wars-xdh.2` the game draws the looks itself: "after" is
+the plain live look, "before" hides the faction art from the direction
+registry, and `scene-<faction>-captured-*` gives the Human half to the
+faction (see [In the game](#8-in-the-game)).
 
 ![Each faction's territory beside a Human one, today and proposed](../../art/pixellab/reviews/faction-buildings-study/before-after-contact.png)
 
@@ -266,6 +268,8 @@ per-territory lookup would draw.
 - **The Bone Mill is very dark.** Roofs, sails and tower are close in tone;
   at zoom 0.75 it is a black windmill shape with violet dots. It reads as
   "the Undead windmill", but a lighter slate tower would separate the sails.
+  _Redone in production (`bone-mill-edit-d`, section 8): a light slate
+  tower, near-black roofs and mid-grey sails._
 - **The Graveyard's stones are round-topped**, like the Grave marker, but
   dark slate where the marker is pale. If the two are confused in play, the
   pointed-stone runner-up (`graveyard-pixen-b`) is in the run.
@@ -288,6 +292,8 @@ per-territory lookup would draw.
 
 ## 7. Production breakdown (proposed beads)
 
+_All three were done as one bead, `pulp_wars-xdh.2`: see section 8._
+
 1. **Runtime: faction building resolution** (`ui/presentation`): an
    improvement subject per faction (`IMPROVEMENT:<FACTION>:<ID>`, falling
    back to `IMPROVEMENT:<ID>`), resolved from the territory owner's faction
@@ -305,3 +311,105 @@ per-territory lookup would draw.
    and bake the three gloam Grass tiles and two Forest composites as
    masters; `art:validate` then re-derives every crop-rows and seated
    master. Any redo from section 6 (a lighter Bone Mill) belongs here.
+
+## 8. In the game
+
+Bead `pulp_wars-xdh.2`. Purely visual: no engine rule, number, command,
+save or identity changed.
+
+### Production art
+
+| Batch                | Faction  | Assets (subject)                                                                                                           | Recipes                                                                |
+| -------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `buildings-undead`   | UNDEAD   | `chibi-undead-graveyard` (`IMPROVEMENT:UNDEAD:FARM`), `chibi-undead-bone-mill` (`IMPROVEMENT:UNDEAD:WINDMILL`)             | `graveyard-pixen-a`; `bone-mill-edit-a` → **`bone-mill-edit-d`** (new) |
+| `buildings-martian`  | MARTIAN  | `chibi-martian-hydroponic-farm` (`IMPROVEMENT:MARTIAN:FARM`), `chibi-martian-solar-array` (`IMPROVEMENT:MARTIAN:WINDMILL`) | `hydroponic-edit-a`; `solar-b` → `solar-b-edit-c`                      |
+| `buildings-dinosaur` | DINOSAUR | `chibi-dinosaur-grinding-stone` (`IMPROVEMENT:DINOSAUR:WINDMILL`), `chibi-dinosaur-chopping-block` (`…:SAWMILL`)           | `grindstone-a`; `chopping-block-b`                                     |
+| `buildings-ice-folk` | ICE_FOLK | `chibi-ice-folk-frost-garden` (`IMPROVEMENT:ICE_FOLK:FARM`)                                                                | `frost-garden-edit-a`                                                  |
+| `buildings-dwarf`    | DWARF    | `chibi-dwarf-mushroom-farm` (`IMPROVEMENT:DWARF:FARM`), `chibi-dwarf-steam-pump` (`IMPROVEMENT:DWARF:WINDMILL`)            | `mushroom-flux-b` → `mushroom-flux-b-edit`; `steam-pump-b`             |
+
+- The accepted recipe chains were brought in with `art:chibi -- import`
+  (the record, the raw sheet and the receipt of each, no PixelLab call) and
+  accepted again after a review at 1:1 and x4. The subject lines moved to
+  `scripts/art/chibi/subjects/<FACTION>.json` under the new subjects. The
+  imported records keep the prompt the exploration sent (its own
+  `class-calm-building` and `class-crop-rows` fragments); a new recipe in
+  these batches uses the production fragments.
+- **The Bone Mill was redone** (2 PixelLab calls, 4 candidates). The
+  exploration's `bone-mill-edit-b` was one dark tone. `bone-mill-edit-c`
+  (from edit-b: a light slate tower) separated the tower, but its near-black
+  sails still merged with the near-black roofs: rejected. `bone-mill-edit-d`
+  (from edit-a, whose sails are a mid grey: "the red roofs become near-black
+  charcoal slate (#2b2b31) … the stone walls become a lighter slate
+  blue-grey (#8b92a3) with a mid-grey shade (#6a7082)") has three tones,
+  near-black roofs, mid-grey ragged sails and a light slate tower, and is
+  the accepted master (candidate 0).
+- **The Undead ground** is baked by
+  [`gloam-grass.ts`](../../scripts/art/faction-buildings/gloam-grass.ts)
+  (`npx tsx scripts/art/faction-buildings/gloam-grass.ts bake`):
+  `chibi-undead-grass-1..3` (the colour swap of `chibi-grass-1..3`) and
+  `chibi-undead-forest-1..2` (the Forest bodies over `chibi-undead-grass-1`),
+  with
+  [`gloam-grass.json`](../../scripts/art/faction-buildings/gloam-grass.json)
+  recording the swap and the hash of every source and output.
+  `art:validate` re-derives them and fails if a Grass or Forest master
+  changed without a new bake. The Mountain fringe needs no master: it draws
+  the cell's Grass under the rocky ground.
+- The registry is
+  [`chibi-faction-buildings-art-manifest.ts`](../../src/assets/chibi-faction-buildings-art-manifest.ts),
+  part of the direction registry.
+
+### Runtime
+
+- **Buildings.** `factionImprovementSubjectV7(improvement, faction)`
+  ([`chibi-ui-art-v7.ts`](../../src/assets/chibi-ui-art-v7.ts)) returns
+  `IMPROVEMENT:<FACTION>:<ID>` for the pairs of
+  `FACTION_IMPROVEMENT_LOOKS_V7` and the shared subject otherwise. The
+  board plan asks with the faction that owns the tile's territory
+  (`tile.territoryOwnerId`), the tile dock too; the build buttons and the
+  technology cards ask with the viewer's faction; the Gallery with each
+  faction. A plan entry of a faction or building without a look is exactly
+  the entry it was before.
+- **Ground.** A terrain plan entry of a Grass, Forest or Mountain cell in
+  Undead territory carries `territoryGround: "UNDEAD"`; its `artSubject`
+  stays the terrain's. When the renderer resolves the tile it asks for
+  `TERRAIN:UNDEAD:GRASS` or `TERRAIN:UNDEAD:FOREST`
+  (`territoryTerrainSubjectV7`), and for the Undead Grass under a Mountain
+  fringe. The direction's resolver takes these from the direction registry
+  and tones them like every Grass tile.
+- **Territory changes.** The board host builds its art registry and its
+  resolver once and draws from the plan; nothing is rebuilt when a border
+  moves. After a capture only the plan entries of the cells that changed
+  owner differ, and the rasters they need are loaded once and cached.
+- **Names.** [`faction-buildings-v7.ts`](../../src/render/faction-buildings-v7.ts):
+  the name and the one flavour line of each building (the table of section
+  3). The board label, the tile dock title, the viewer's build button and
+  the Gallery cell use the name; the dock, the button's tooltip and the
+  Gallery description show the flavour line, which ends "Counts as a
+  Farm."; every rules text keeps the generic building.
+- **Fallbacks.** The classic look and the LEGACY art set have no such
+  rasters and draw the shared building and Grass; the names still follow
+  the faction there.
+
+### Evidence
+
+`npm run art:faction-buildings-review` writes
+[`art/pixellab/reviews/faction-buildings-study/`](../../art/pixellab/reviews/faction-buildings-study/):
+the "after" scenes are now the game's own drawing, "before" hides the
+faction art, `scene-<faction>-captured-*` is the frame after the faction
+took the Human city, and `gallery-buildings-*` is the Gallery's Buildings
+tab. Tests: `tests/unit/faction-buildings-render-v7.test.ts`,
+`tests/unit/chibi-faction-buildings-assets.test.ts`,
+`tests/integration/ruleset7-faction-buildings-dom.test.ts` and the Gallery
+tests.
+
+### Weak spots left
+
+- The weak spots of section 6 stand, except the Bone Mill's tone. Its new
+  tower is a pale slate blue, lighter than the Undead cities' dark stone;
+  the sails still cover most of it at zoom 0.75.
+- **The Rift** inside Undead territory keeps its green Grass (its art
+  carries the ground); a gloam Rift would be new masters.
+- **Snow, the Blizzard and Forest canopies** are unchanged over the Undead
+  ground.
+- In the classic look and the LEGACY art set a Graveyard is named
+  "Graveyard" and drawn as the shared Farm.

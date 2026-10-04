@@ -9,6 +9,7 @@ import {
 import type {
   CommandV7,
   CoordV7,
+  FactionIdV7,
   ImprovementIdV7,
   PlayerViewV7,
   UnitRoleIdV7,
@@ -190,8 +191,13 @@ import type {
 import {
   chibiOverflowV7,
   cityArtSubjectV7,
+  territoryGroundV7,
+  territoryTerrainSubjectV7,
   unitArtSubjectV7,
+  type TerritoryGroundV7,
 } from "../../assets/chibi-art-v7";
+import { factionImprovementSubjectV7 } from "../../assets/chibi-ui-art-v7";
+import { factionBuildingV7 } from "../faction-buildings-v7";
 import {
   resolveChibiWithFallbackV7,
   type ChibiBoardArtV7,
@@ -476,6 +482,16 @@ export interface BoardRenderPlanEntryV7 {
     readonly height: number;
   };
   readonly farmPartner?: CoordV7;
+  /**
+   * TERRAIN only (bead pulp_wars-xdh.2): the ground of the faction that
+   * owns the cell's territory, where it differs from the shared ground (the
+   * Undead "gloam" Grass under Grass, Forest and the Mountain fringe). The
+   * CHIBI art set resolves `artSubject` through territoryTerrainSubjectV7;
+   * `artSubject` itself stays the terrain's, so every terrain rule (the
+   * fringe, Roads under trees, Snow) reads it as before. Absent outside
+   * such territory.
+   */
+  readonly territoryGround?: TerritoryGroundV7;
   readonly label?: string;
   readonly ownerId?: number | null;
   readonly hp?: number;
@@ -609,6 +625,15 @@ export function buildBoardRenderPlanV7(
     const near = view.board.tiles[at.y * view.board.width + at.x];
     return near?.explored === true ? near.terrain === "RIFT" : null;
   };
+  // Faction building looks (epic pulp_wars-xdh): the faction that owns a
+  // tile's territory decides the look of its improvement and its ground.
+  const factionById = new Map(
+    view.players.map((player) => [player.id, player.faction] as const),
+  );
+  const territoryFaction = (
+    ownerId: (typeof view.players)[number]["id"] | null,
+  ): FactionIdV7 | null =>
+    ownerId === null ? null : (factionById.get(ownerId) ?? null);
   for (const tile of view.board.tiles) {
     if (!tile.explored) {
       entries.push({
@@ -621,6 +646,15 @@ export function buildBoardRenderPlanV7(
     }
     const riftPiece =
       tile.terrain === "RIFT" ? riftPieceV7(tile.at, riftAt) : undefined;
+    const tileFaction = territoryFaction(tile.territoryOwnerId);
+    // The Undead territory ground: under Grass, Forest trees and the
+    // Mountain fringe. Water and the Rift keep their own art.
+    const territoryGround =
+      tile.terrain === "GRASS" ||
+      tile.terrain === "FOREST" ||
+      tile.terrain === "MOUNTAIN"
+        ? territoryGroundV7(tileFaction)
+        : null;
     entries.push({
       key: `terrain:${tile.at.x},${tile.at.y}`,
       kind: "TERRAIN",
@@ -648,6 +682,7 @@ export function buildBoardRenderPlanV7(
               ? "TERRAIN:MINED_MOUNTAIN"
               : `TERRAIN:${tile.terrain}`,
       ...(riftPiece === undefined ? {} : { riftPiece }),
+      ...(territoryGround === null ? {} : { territoryGround }),
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
       ...(winter === null
@@ -715,14 +750,19 @@ export function buildBoardRenderPlanV7(
         at: tile.at,
         assetId:
           farm?.assetId ?? RULESET7_IMPROVEMENT_ART_IDS[tile.improvement],
-        artSubject: `IMPROVEMENT:${tile.improvement}`,
+        // The look of the faction that owns the territory (epic
+        // pulp_wars-xdh): it changes when the city changes hands. A faction
+        // subject without a raster falls back to the shared building.
+        artSubject: factionImprovementSubjectV7(tile.improvement, tileFaction),
         ownerId: tile.territoryOwnerId,
         ...ownerPresentation(view, tile.territoryOwnerId),
         ...(farm?.sourceCrop === undefined
           ? {}
           : { sourceCrop: farm.sourceCrop }),
         ...(farm?.partner === undefined ? {} : { farmPartner: farm.partner }),
-        label: title(tile.improvement),
+        label:
+          factionBuildingV7(tile.improvement, tileFaction)?.name ??
+          title(tile.improvement),
       });
     }
     if (tile.site === "VILLAGE")
@@ -1472,7 +1512,16 @@ export function drawBoardV7(input: {
     chibiArt === undefined || entry.artSubject === undefined
       ? null
       : resolveChibiWithFallbackV7(chibiArt, {
-          subject: entry.artSubject,
+          // Terrain inside a faction's territory draws that faction's
+          // ground (the Undead gloam Grass, bead pulp_wars-xdh.2); without
+          // its raster it falls back to the shared tile.
+          subject:
+            entry.kind === "TERRAIN"
+              ? territoryTerrainSubjectV7(
+                  entry.artSubject,
+                  entry.territoryGround,
+                )
+              : entry.artSubject,
           at: entry.at,
           ownerColor: entry.ownerColor,
           deviceScale: chibiMasterScale(camera) * devicePixelRatio,
@@ -1796,11 +1845,19 @@ export function drawBoardV7(input: {
             chibi.layers !== undefined
           ) {
             const part = { centre: { x, y }, camera, devicePixelRatio };
-            const grass = chibiArt?.resolve({
-              subject: "TERRAIN:GRASS",
-              at: entry.at,
-              deviceScale: chibiMasterScale(camera) * devicePixelRatio,
-            });
+            // The Grass of the cell's territory (the Undead gloam Grass
+            // inside Undead borders, bead pulp_wars-xdh.2).
+            const grass =
+              chibiArt === undefined
+                ? undefined
+                : resolveChibiWithFallbackV7(chibiArt, {
+                    subject: territoryTerrainSubjectV7(
+                      "TERRAIN:GRASS",
+                      entry.territoryGround,
+                    ),
+                    at: entry.at,
+                    deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+                  }).resolution;
             if (grass?.kind === "READY")
               drawChibiTerrainV7(context, grass, {
                 ...part,
