@@ -1,10 +1,17 @@
 /**
  * Review sheets of the Goblin redesign direction study (bead
  * pulp_wars-wrn.1, docs/art/factions/GOBLIN_REDESIGN.md). No PixelLab call
- * and no production asset is touched: the sheets measure the current Goblin
- * roster against the six other factions and show recolour mockups of the
- * current sprites in the three palette directions of
+ * and no production asset is touched: the sheets measure the Goblin roster
+ * the study diagnosed against the six other factions and show recolour
+ * mockups of those sprites in the three palette directions of
  * scripts/art/goblin-redesign/directions.ts.
+ *
+ * Since bead pulp_wars-wrn.2 the live masters are the redesigned art
+ * (direction A, fresh PixelLab creations). "Before" is therefore read from
+ * the superseded recipes' recorded candidates (goblin-redesign/before.ts),
+ * and every sheet gains the live roster as the look "Redesign (live)";
+ * result-x3.png and the `result` block of index.json put before and after
+ * side by side with the study's acceptance numbers.
  *
  *   npm run art:goblin-redesign-study-review [-- --out DIR]
  *
@@ -22,6 +29,8 @@
  * - extras-x2.png: portraits, cities and ships in each look;
  * - classes-x3.png: how the recolour classified each pixel (evidence that
  *   the mockups are recolours of the old shapes);
+ * - result-x3.png: before and after per unit, in colour and greyscale,
+ *   with mean L*, lit and dark shares and the faction-colour share;
  * - index.json: every measurement.
  */
 import { copyFile, mkdir, writeFile } from "node:fs/promises";
@@ -64,6 +73,7 @@ import {
   type ValueMetricsV7,
 } from "./goblin-redesign/measure";
 import { classMap, recolourGoblinSpriteV7 } from "./goblin-redesign/recolour";
+import { loadGoblinBeforeV7 } from "./goblin-redesign/before";
 
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "art/pixellab/reviews/goblin-redesign-study");
@@ -287,7 +297,12 @@ async function main(): Promise<void> {
     Ground,
     Ground,
   ];
+  // The roster the study diagnosed (superseded by bead pulp_wars-wrn.2)
+  // and the live, redesigned roster.
   const current = await Promise.all(
+    GOBLIN_ROSTER_V7.map((unit) => loadGoblinBeforeV7(ROOT, unit)),
+  );
+  const live = await Promise.all(
     GOBLIN_ROSTER_V7.map((unit) => load(unit.file)),
   );
   const references = Object.fromEntries(
@@ -305,7 +320,7 @@ async function main(): Promise<void> {
   const looks: Look[] = [
     {
       id: "current",
-      title: "Current (live)",
+      title: "Before (retired)",
       subtitle: "olive, brown leather, gunmetal",
       units: current,
       faction: FACTION_COLOURS_V7.GOBLIN,
@@ -318,6 +333,13 @@ async function main(): Promise<void> {
       direction,
       faction: FACTION_COLOURS_V7.GOBLIN,
     })),
+    {
+      id: "live",
+      title: "Redesign (live)",
+      subtitle: "direction A redrawn by PixelLab (pulp_wars-wrn.2)",
+      units: live,
+      faction: FACTION_COLOURS_V7.GOBLIN,
+    },
   ];
   const refLooks: Look[] = [
     {
@@ -392,7 +414,7 @@ async function main(): Promise<void> {
     const canvas = blank(width, height, SHEET_BG);
     const labels: Label[] = [
       {
-        text: "Goblin redesign study (pulp_wars-wrn.1): current roster, three palette directions as recolours of the OLD shapes, two reference factions",
+        text: "Goblin redesign study (pulp_wars-wrn.1): the roster before, three palette directions as recolours of the OLD shapes, the redesigned live roster (pulp_wars-wrn.2), two reference factions",
         left: 12,
         top: 8,
         size: 16,
@@ -459,14 +481,14 @@ async function main(): Promise<void> {
       names: readonly string[];
     }[] = [
       {
-        title: "Goblin, current",
+        title: "Goblin, before the redesign",
         units: current,
         grey: false,
         id: "current",
         names,
       },
       {
-        title: "Goblin, current, greyscale (L*)",
+        title: "Goblin, before the redesign, greyscale (L*)",
         units: current,
         grey: true,
         id: "current",
@@ -548,7 +570,7 @@ async function main(): Promise<void> {
       );
     };
     entries.push({
-      title: "Goblin current",
+      title: "Goblin before",
       histogram: meanHistogram("current"),
       colour: [138, 149, 47],
     });
@@ -562,7 +584,7 @@ async function main(): Promise<void> {
       });
     for (const name of ["Orc Brute", "Orc Warboss", "Troll"])
       entries.push({
-        title: `${name} (current)`,
+        title: `${name} (before)`,
         histogram: measured.current?.units[name]?.histogram ?? [],
         colour: [74, 88, 48],
       });
@@ -571,6 +593,17 @@ async function main(): Promise<void> {
         title: `Goblin ${direction.letter} mockup`,
         histogram: meanHistogram(direction.id),
         colour: rgbOf(direction.swatches[0]?.hex ?? "#888888"),
+      });
+    entries.push({
+      title: "Goblin redesign (live)",
+      histogram: meanHistogram("live"),
+      colour: [134, 194, 50],
+    });
+    for (const name of ["Orc Brute", "Orc Warboss", "Troll"])
+      entries.push({
+        title: `${name} (live)`,
+        histogram: measured.live?.units[name]?.histogram ?? [],
+        colour: [134, 194, 50],
       });
     const w = 230;
     const h = 150;
@@ -635,24 +668,32 @@ async function main(): Promise<void> {
 
   // ----------------------------------------------------- portraits, cities, ships
   {
-    const portraits = await Promise.all(
-      GOBLIN_PORTRAITS_V7.map((p) => load(p.file)),
-    );
-    const cities = await Promise.all(GOBLIN_CITIES_V7.map((c) => load(c.file)));
-    const ships = await Promise.all(GOBLIN_SHIPS_V7.map((s) => load(s.file)));
+    const before = (sprites: readonly GoblinSpriteV7[]): Promise<Raster[]> =>
+      Promise.all(sprites.map((sprite) => loadGoblinBeforeV7(ROOT, sprite)));
+    const now = (sprites: readonly GoblinSpriteV7[]): Promise<Raster[]> =>
+      Promise.all(sprites.map((sprite) => load(sprite.file)));
+    const portraits = await before(GOBLIN_PORTRAITS_V7);
+    const cities = await before(GOBLIN_CITIES_V7);
+    const ships = await before(GOBLIN_SHIPS_V7);
     const variants: {
       title: string;
       portraits: Raster[];
       cities: Raster[];
       ships: Raster[];
     }[] = [
-      { title: "Current", portraits, cities, ships },
+      { title: "Before (retired)", portraits, cities, ships },
       ...GOBLIN_DIRECTIONS_V7.map((direction) => ({
         title: `${direction.letter}: ${direction.name}`,
         portraits: recolourAll(portraits, GOBLIN_PORTRAITS_V7, direction),
         cities: recolourAll(cities, GOBLIN_CITIES_V7, direction),
         ships: recolourAll(ships, GOBLIN_SHIPS_V7, direction),
       })),
+      {
+        title: "Redesign (live)",
+        portraits: await now(GOBLIN_PORTRAITS_V7),
+        cities: await now(GOBLIN_CITIES_V7),
+        ships: await now(GOBLIN_SHIPS_V7),
+      },
     ];
     const scale = 2;
     const rowHeight = 110 * scale + 24;
@@ -713,7 +754,7 @@ async function main(): Promise<void> {
     const rowHeight = ROW * scale + 26;
     const canvas = blank(CELL * 8 * scale, 2 * rowHeight, SHEET_BG);
     const labels: Label[] = [
-      { text: "Current sprites", left: 6, top: 4, size: 16 },
+      { text: "The sprites before the redesign", left: 6, top: 4, size: 16 },
       {
         text: "Pixel classes: ink black, skin green, leather tan, wood dark brown, rust red, metal blue-grey, cream, hazard yellow, kept (fireworks, tongues) magenta",
         left: 6,
@@ -732,6 +773,90 @@ async function main(): Promise<void> {
     );
     await save("classes-x3.png", canvas, labels);
   }
+
+  // ----------------------------------------------------- result
+  const share = (m: ValueMetricsV7 | undefined): string =>
+    m === undefined
+      ? ""
+      : `L* ${m.meanLightness}  lit ${Math.round((m.light + m.bright) * 100)}%  dark ${Math.round(m.dark * 100)}%  yellow ${Math.round(m.factionColour * 1000) / 10}%`;
+  {
+    const scale = 3;
+    const rows: {
+      title: string;
+      units: Raster[];
+      grey: boolean;
+      id: string;
+    }[] = [
+      { title: "Before", units: current, grey: false, id: "current" },
+      { title: "Redesign (live)", units: live, grey: false, id: "live" },
+      {
+        title: "Before, greyscale (L*)",
+        units: current,
+        grey: true,
+        id: "current",
+      },
+      {
+        title: "Redesign, greyscale (L*)",
+        units: live,
+        grey: true,
+        id: "live",
+      },
+    ];
+    const rowHeight = ROW * scale + 44;
+    const canvas = blank(CELL * 8 * scale, rows.length * rowHeight, SHEET_BG);
+    const labels: Label[] = [];
+    rows.forEach((row, index) => {
+      const top = index * rowHeight;
+      labels.push({ text: row.title, left: 8, top: top + 4, size: 16 });
+      drawRow(
+        canvas,
+        row.units,
+        row.grey ? grey : grass,
+        0,
+        top + 26,
+        scale,
+        row.grey,
+      );
+      if (!row.grey)
+        names.forEach((name, i) =>
+          labels.push({
+            text: share(measured[row.id]?.units[name]),
+            left: i * CELL * scale + 6,
+            top: top + 28 + ROW * scale,
+            size: 11,
+            fill: MUTED,
+          }),
+        );
+    });
+    await save("result-x3.png", canvas, labels);
+  }
+  const lit = (m: ValueMetricsV7 | undefined): number =>
+    m === undefined ? 0 : Math.round((m.light + m.bright) * 1000) / 1000;
+  const result = {
+    bead: "pulp_wars-wrn.2",
+    note: "Before: the superseded recipes' recorded candidates. After: the live masters. The study's acceptance: mean L* 50 or more, lit 45% or more, the faction colour on the sprite.",
+    units: names.map((name) => {
+      const before = measured.current?.units[name];
+      const after = measured.live?.units[name];
+      return {
+        unit: name,
+        before: {
+          meanLightness: before?.meanLightness,
+          lit: lit(before),
+          dark: before?.dark,
+          p90: before?.p90,
+          factionColour: before?.factionColour,
+        },
+        after: {
+          meanLightness: after?.meanLightness,
+          lit: lit(after),
+          dark: after?.dark,
+          p90: after?.p90,
+          factionColour: after?.factionColour,
+        },
+      };
+    }),
+  };
 
   // ----------------------------------------------------- index
   const recolourStats = GOBLIN_DIRECTIONS_V7.map((direction) => ({
@@ -784,7 +909,7 @@ async function main(): Promise<void> {
   }));
   const index = {
     bead: "pulp_wars-wrn.1",
-    note: "Recolour mockups of the CURRENT Goblin shapes; no PixelLab call, no production asset changed.",
+    note: "Recolour mockups of the Goblin shapes before the redesign ('current' in metrics); 'live' is the redesigned roster of bead pulp_wars-wrn.2. No PixelLab call, no production asset changed.",
     grounds: ground.map((g) => ({
       id: g.id,
       mean: g.mean.map(Math.round),
@@ -793,6 +918,7 @@ async function main(): Promise<void> {
     directions: GOBLIN_DIRECTIONS_V7,
     collisions,
     metrics: measured,
+    result,
     recolour: recolourStats,
     files: [...written, "index.json"],
   };

@@ -1,0 +1,36 @@
+{
+  "id": "city-1-a-edit",
+  "jobId": "48875cba-ba1d-464e-972f-c1ee4a9e8160",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-city-1",
+    "subject": "CITY:GOBLIN:1",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 93314,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents and the hut stand directly on a transparent background with nothing at all under them. Remove the three small red flags. Recolour the round hide tents to pale sand-buff, colour #d0b073, with lighter #e6cc95 tops, and the hut's door to hazard yellow, colour #fdd20f. Keep the shapes of the tents, the tin hut, the lookout pole, the outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents and the hut stand directly on a transparent background with nothing at all under them. Remove the three small red flags. Recolour the round hide tents to pale sand-buff, colour #d0b073, with lighter #e6cc95 tops, and the hut's door to hazard yellow, colour #fdd20f. Keep the shapes of the tents, the tin hut, the lookout pole, the outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents and the hut stand directly on a transparent background with nothing at all under them. Remove the three small red flags. Recolour the round hide tents to pale sand-buff, colour #d0b073, with lighter #e6cc95 tops, and the hut's door to hazard yellow, colour #fdd20f. Keep the shapes of the tents, the tin hut, the lookout pole, the outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents and the hut stand directly on a transparent background with nothing at all under them. Remove the three small red flags. Recolour the round hide tents to pale sand-buff, colour #d0b073, with lighter #e6cc95 tops, and the hut's door to hazard yellow, colour #fdd20f. Keep the shapes of the tents, the tin hut, the lookout pole, the outline and art style exactly the same.",
+    "source": {
+      "recipe": "city-1-a",
+      "candidate": 0,
+      "sha256": "5c13f5af085c519b44c954f26e10f61b3cb40215e5b5d83b4d71dc8800ac59fb"
+    }
+  }
+}

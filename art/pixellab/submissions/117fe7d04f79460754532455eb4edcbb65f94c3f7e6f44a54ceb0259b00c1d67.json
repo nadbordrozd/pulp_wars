@@ -1,0 +1,36 @@
+{
+  "id": "battleship-a-edit-2",
+  "jobId": "720fbde9-1ab5-4e14-8b29-45fa819fdc02",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-battleship",
+    "subject": "UNIT:GOBLIN:BATTLESHIP",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 93322,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only two small parts: the pink inside of the goblin's big ear becomes pale lime green, colour #acdc55, with no pink and no red left on the goblin; and the small blue flag on top of the lookout tower becomes hazard yellow, colour #fdd20f. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the yellow rag, the goblin's face, the colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only two small parts: the pink inside of the goblin's big ear becomes pale lime green, colour #acdc55, with no pink and no red left on the goblin; and the small blue flag on top of the lookout tower becomes hazard yellow, colour #fdd20f. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the yellow rag, the goblin's face, the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only two small parts: the pink inside of the goblin's big ear becomes pale lime green, colour #acdc55, with no pink and no red left on the goblin; and the small blue flag on top of the lookout tower becomes hazard yellow, colour #fdd20f. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the yellow rag, the goblin's face, the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only two small parts: the pink inside of the goblin's big ear becomes pale lime green, colour #acdc55, with no pink and no red left on the goblin; and the small blue flag on top of the lookout tower becomes hazard yellow, colour #fdd20f. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the yellow rag, the goblin's face, the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "battleship-a-edit",
+      "candidate": 0,
+      "sha256": "dca92644f54787d398575702c9b006288d76dbcd3c8453a46da269c42931ae8b"
+    }
+  }
+}

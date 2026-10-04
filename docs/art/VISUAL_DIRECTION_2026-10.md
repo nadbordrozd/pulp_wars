@@ -1874,6 +1874,15 @@ Evidence in
 
 ## 16. Goblin production
 
+> **Retired on 2026-10-04.** The user found this look too dark and asked
+> for a redesign from scratch; bead `pulp_wars-wrn.2` redrew every Goblin
+> piece in place (lime skin, sand leather, light tin, hazard yellow paint).
+> See [GOBLIN.md](factions/GOBLIN.md#redesign-october-2026-lime-sand-and-hazard-paint)
+> and [GOBLIN_REDESIGN.md](factions/GOBLIN_REDESIGN.md). This section and
+> the study in section 14 are kept as the record of the retired look; the
+> evidence files they name under `chibi-batch-direction-goblin/` now show
+> the redesigned art in their "new" columns.
+
 **Status:** bead `pulp_wars-3tq.9`. The user reviewed pass 2 of the
 [Goblin study](#14-goblin-study) on 2026-10-02: "let's go with olive skin,
 make leather browner, try a pot helmet on the bomb chucker, make the cart

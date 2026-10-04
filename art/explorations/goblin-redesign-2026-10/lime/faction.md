@@ -1,13 +1,15 @@
 # Faction fragment: TEST-GOBLIN-LIME (exploration)
 
-**Status:** TEST ONLY, not yet generated. Direction A, "Lime, sand and
-hazard paint", of the Goblin redesign study (bead `pulp_wars-wrn.1`, see
-[GOBLIN_REDESIGN.md](../../../../docs/art/factions/GOBLIN_REDESIGN.md)). It
-is the recommended direction: a fresh creation of every Goblin piece, not
-an edit of the current sprites. It is not a faction and never registers
-production art; the accepted look moves into
-[GOBLIN.md](../../../../docs/art/factions/GOBLIN.md) and a production batch
-afterwards.
+**Status:** generated and adopted (bead `pulp_wars-wrn.2`). Direction A,
+"Lime, sand and hazard paint", of the Goblin redesign study (bead
+`pulp_wars-wrn.1`, see
+[GOBLIN_REDESIGN.md](../../../../docs/art/factions/GOBLIN_REDESIGN.md)): a
+fresh creation of every Goblin piece, not an edit of the old sprites. The
+run holds 49 jobs with their verdicts; the accepted chains were imported
+into batches `direction-goblin` and `naval-goblin`, and this fragment is
+now the live one in
+[GOBLIN.md](../../../../docs/art/factions/GOBLIN.md). The run itself is not
+a faction and registers nothing.
 
 Like every faction layer it names only a mood, materials, colours and
 small motifs: no figure, no skin and no building (skin colours are in the

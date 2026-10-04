@@ -1,0 +1,36 @@
+{
+  "id": "orc-brute-b-nobeard",
+  "jobId": "074dc9c4-0d42-49da-a168-f093946a8947",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-orc-brute",
+    "subject": "UNIT:GOBLIN:GUARD",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 93301,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: remove the brown beard and the brown hair completely, so his big chin, heavy jaw and cheeks are bare green skin, colour #4a8a3a, with a lighter green #6faa55 chin and jaw; keep the two cream tusks and the grumpy mouth. Do not redraw anything else: keep the eyes, nose, ears, tin cap, round shield with its yellow rim, cleaver, straps, kilt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: remove the brown beard and the brown hair completely, so his big chin, heavy jaw and cheeks are bare green skin, colour #4a8a3a, with a lighter green #6faa55 chin and jaw; keep the two cream tusks and the grumpy mouth. Do not redraw anything else: keep the eyes, nose, ears, tin cap, round shield with its yellow rim, cleaver, straps, kilt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: remove the brown beard and the brown hair completely, so his big chin, heavy jaw and cheeks are bare green skin, colour #4a8a3a, with a lighter green #6faa55 chin and jaw; keep the two cream tusks and the grumpy mouth. Do not redraw anything else: keep the eyes, nose, ears, tin cap, round shield with its yellow rim, cleaver, straps, kilt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: remove the brown beard and the brown hair completely, so his big chin, heavy jaw and cheeks are bare green skin, colour #4a8a3a, with a lighter green #6faa55 chin and jaw; keep the two cream tusks and the grumpy mouth. Do not redraw anything else: keep the eyes, nose, ears, tin cap, round shield with its yellow rim, cleaver, straps, kilt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "orc-brute-b",
+      "candidate": 0,
+      "sha256": "a6ffe694950892a84ebd200411890f2b4566f6e738bafdf9fbba26c7b4d9f667"
+    }
+  }
+}

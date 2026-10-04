@@ -1,0 +1,36 @@
+{
+  "id": "orc-warboss-a-sand-leaf",
+  "jobId": "77172ab9-0b63-4bef-a240-5b8a142f3e68",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-goblin",
+    "asset": "chibi-direction-goblin-orc-warboss",
+    "subject": "UNIT:GOBLIN:CAPTAIN",
+    "faction": "GOBLIN",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 93324,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his dull olive skin (face, ears, arms, hands) to a fresh bright leaf green, not olive and not yellow: colour #5aa546, with light green #98d975 on the face, nose and cheeks and #3f8232 only as thin shading. Keep everything else exactly the same: the open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, straps, pale sand trousers, yellow flap, boots, pose, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his dull olive skin (face, ears, arms, hands) to a fresh bright leaf green, not olive and not yellow: colour #5aa546, with light green #98d975 on the face, nose and cheeks and #3f8232 only as thin shading. Keep everything else exactly the same: the open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, straps, pale sand trousers, yellow flap, boots, pose, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his dull olive skin (face, ears, arms, hands) to a fresh bright leaf green, not olive and not yellow: colour #5aa546, with light green #98d975 on the face, nose and cheeks and #3f8232 only as thin shading. Keep everything else exactly the same: the open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, straps, pale sand trousers, yellow flap, boots, pose, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only his dull olive skin (face, ears, arms, hands) to a fresh bright leaf green, not olive and not yellow: colour #5aa546, with light green #98d975 on the face, nose and cheeks and #3f8232 only as thin shading. Keep everything else exactly the same: the open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, straps, pale sand trousers, yellow flap, boots, pose, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "orc-warboss-a-sand",
+      "candidate": 0,
+      "sha256": "bacf38d3d7aa67073ba6aef695ca9db20a1ac1ca46d628397676a058fb0e48a8"
+    }
+  }
+}

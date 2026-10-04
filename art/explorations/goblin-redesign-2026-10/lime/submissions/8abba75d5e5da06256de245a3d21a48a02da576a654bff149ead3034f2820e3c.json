@@ -1,0 +1,36 @@
+{
+  "id": "patrol-boat-a-edit",
+  "jobId": "7e7a6e94-2741-4a4a-bedc-b12b1d88a733",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-patrol-boat",
+    "subject": "UNIT:GOBLIN:PATROL_BOAT",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 93317,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the white and blue water, waves and foam under the hull, so the boat floats alone on a transparent background with nothing under it. Do not redraw anything else: keep the hull, the tin patches, the sail with its yellow patch, the firework rocket, the goblin, the colours, thick black outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Change only one thing: erase the white and blue water, waves and foam under the hull, so the boat floats alone on a transparent background with nothing under it. Do not redraw anything else: keep the hull, the tin patches, the sail with its yellow patch, the firework rocket, the goblin, the colours, thick black outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the white and blue water, waves and foam under the hull, so the boat floats alone on a transparent background with nothing under it. Do not redraw anything else: keep the hull, the tin patches, the sail with its yellow patch, the firework rocket, the goblin, the colours, thick black outline and art style exactly the same.",
+    "editInstruction": "Change only one thing: erase the white and blue water, waves and foam under the hull, so the boat floats alone on a transparent background with nothing under it. Do not redraw anything else: keep the hull, the tin patches, the sail with its yellow patch, the firework rocket, the goblin, the colours, thick black outline and art style exactly the same.",
+    "source": {
+      "recipe": "patrol-boat-a",
+      "candidate": 0,
+      "sha256": "42ee25ea40acd8174b52b70843cc149b0f0774f01c7dbf16d828401c68a2a4c7"
+    }
+  }
+}

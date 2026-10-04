@@ -316,11 +316,15 @@ export const CHIBI_DIRECTION_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
  * Goblin production art of the new visual direction (bead pulp_wars-3tq.9,
  * batch `direction-goblin`; see docs/art/VISUAL_DIRECTION_2026-10.md, "Goblin
  * production"): every Goblin unit and portrait and the scrap camp City 1-3
- * in the faction's fixed colours (olive skin, brown leather, rust and
- * gunmetal scrap, the fireworks cart). The entries use the Goblin faction
+ * in the faction's fixed colours. Bead pulp_wars-wrn.2 redrew every piece
+ * in place, under the same asset ids, for the redesign the user asked for
+ * (docs/art/factions/GOBLIN_REDESIGN.md, direction A): lime goblins, leaf
+ * green Orcs and a pale mossy Troll in sand leather and light tin, with the
+ * faction's hazard yellow as paint. The entries use the Goblin faction
  * subjects of chibi-art-manifest.ts, on the same canvases and anchors as
- * the classic sprites, and have no owner area. Goblin boats are the shared
- * ships and are not converted.
+ * the classic sprites, and have no owner area. The Goblin boats are in the
+ * naval list (chibi-naval-faction-art-manifest.ts), redrawn by the same
+ * bead.
  */
 export const CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
   [

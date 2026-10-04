@@ -1,0 +1,36 @@
+{
+  "id": "city-2-a-edit",
+  "jobId": "36070dac-a7a6-4158-943e-9bea9e85d28c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-city-2",
+    "subject": "CITY:GOBLIN:2",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 100
+    },
+    "seed": 93315,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents, the hut and the tower stand directly on a transparent background with nothing at all under them. Keep the pale patched tents, the tin hut with its yellow windows, the lookout tower, the smoke, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents, the hut and the tower stand directly on a transparent background with nothing at all under them. Keep the pale patched tents, the tin hut with its yellow windows, the lookout tower, the smoke, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents, the hut and the tower stand directly on a transparent background with nothing at all under them. Keep the pale patched tents, the tin hut with its yellow windows, the lookout tower, the smoke, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents, the hut and the tower stand directly on a transparent background with nothing at all under them. Keep the pale patched tents, the tin hut with its yellow windows, the lookout tower, the smoke, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "city-2-a",
+      "candidate": 0,
+      "sha256": "77dea6bca3da42ee973eb52206716b53aff956379ea55c27d6563f57a0707fe3"
+    }
+  }
+}

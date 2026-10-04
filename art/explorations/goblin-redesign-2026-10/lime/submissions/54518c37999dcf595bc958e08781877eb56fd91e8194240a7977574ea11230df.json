@@ -1,0 +1,36 @@
+{
+  "id": "troll-b-sage",
+  "jobId": "029c606c-338d-4eaa-ad3a-46b44fb26998",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-troll",
+    "subject": "UNIT:GOBLIN:JUGGERNAUT",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 93303,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin, much lighter: arms, hands, shoulders, legs, feet and head become light sage green, colour #739a59, with lighter #9dbf80 on top and darker #4c6c3c only as thin shading; his whole face, chest and big round belly become pale cream-green, colour #cde0b4. No dark green skin. The orange paint splashes become hazard yellow, colour #fdd20f. Keep the face, tusks, stone club, straps, belt, loincloth, pose, thick black outline and art style exactly the same, transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin, much lighter: arms, hands, shoulders, legs, feet and head become light sage green, colour #739a59, with lighter #9dbf80 on top and darker #4c6c3c only as thin shading; his whole face, chest and big round belly become pale cream-green, colour #cde0b4. No dark green skin. The orange paint splashes become hazard yellow, colour #fdd20f. Keep the face, tusks, stone club, straps, belt, loincloth, pose, thick black outline and art style exactly the same, transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin, much lighter: arms, hands, shoulders, legs, feet and head become light sage green, colour #739a59, with lighter #9dbf80 on top and darker #4c6c3c only as thin shading; his whole face, chest and big round belly become pale cream-green, colour #cde0b4. No dark green skin. The orange paint splashes become hazard yellow, colour #fdd20f. Keep the face, tusks, stone club, straps, belt, loincloth, pose, thick black outline and art style exactly the same, transparent background.",
+    "editInstruction": "Recolour only his skin, much lighter: arms, hands, shoulders, legs, feet and head become light sage green, colour #739a59, with lighter #9dbf80 on top and darker #4c6c3c only as thin shading; his whole face, chest and big round belly become pale cream-green, colour #cde0b4. No dark green skin. The orange paint splashes become hazard yellow, colour #fdd20f. Keep the face, tusks, stone club, straps, belt, loincloth, pose, thick black outline and art style exactly the same, transparent background.",
+    "source": {
+      "recipe": "troll-b",
+      "candidate": 0,
+      "sha256": "10d2652eb2ac9182a618fc87d7bfaaaf2f9a34b6123f8fd40eb930e09fea7ad8"
+    }
+  }
+}

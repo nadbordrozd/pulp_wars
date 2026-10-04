@@ -1,0 +1,58 @@
+{
+  "id": "portrait-goblin-a",
+  "jobId": "sync-6966159f-1912-49d6-b3aa-ef671bbd6e49",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-portrait-goblin",
+    "subject": "PORTRAIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93081,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-portrait.txt",
+        "text": "Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/goblin-redesign-2026-10/lime/faction.md#prompt-fragment + art/explorations/goblin-redesign-2026-10/lime/faction.md#negative-fragment",
+        "text": "Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-portrait.txt + scripts/art/chibi/fragments/class-portrait.negative.txt",
+        "text": "Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels.",
+        "negative": "full body, legs, feet, standing figure, pedestal, base, plinth, frame, border, circle background, badge, medallion, vignette, background scenery, second character, crowd, text"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/goblin-redesign-2026-10/lime/subjects.json",
+        "text": "Subject: Goblin portrait, head and shoulders of a chunky cute scrappy little goblin raider: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways, a long pointy nose, big cream eyes and a wide toothy grin, a small pale sand-buff leather cap, bare lime green shoulders with a sand-buff strap, the tip of a jagged light grey tin cleaver with a hazard yellow handle; simple shapes and very few details."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Goblin portrait, head and shoulders of a chunky cute scrappy little goblin raider: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways, a long pointy nose, big cream eyes and a wide toothy grin, a small pale sand-buff leather cap, bare lime green shoulders with a sand-buff strap, the tip of a jagged light grey tin cleaver with a hazard yellow handle; simple shapes and very few details.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: head-and-shoulders bust portrait for a game interface, level three-quarter view, the character turned slightly to the right (south-east) and looking at the viewer, head and upper chest filling most of the square, centred on a transparent background. The bust ends cleanly at the chest; nothing else is in the image. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute character portrait with a huge round head and big friendly eyes, the same chunky body language as the map piece, thick single-colour black outline, big simple shapes and flat colours with one shadow tone; it must read at a glance at 48 pixels. Subject: Goblin portrait, head and shoulders of a chunky cute scrappy little goblin raider: a huge round head with bright lime green skin, colour #86c232, lighter #acdc55 on the face and darker #5a9424 shading, two huge pointed ears sticking straight out sideways, a long pointy nose, big cream eyes and a wide toothy grin, a small pale sand-buff leather cap, bare lime green shoulders with a sand-buff strap, the tip of a jagged light grey tin cleaver with a hazard yellow handle; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, full body, legs, feet, standing figure, pedestal, base, plinth, border, circle background, badge, medallion, vignette, background scenery, second character, crowd."
+  }
+}

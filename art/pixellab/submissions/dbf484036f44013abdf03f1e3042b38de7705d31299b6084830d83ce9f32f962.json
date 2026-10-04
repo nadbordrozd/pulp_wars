@@ -1,0 +1,36 @@
+{
+  "id": "portrait-troll-a-zoom",
+  "jobId": "90b8eac6-991a-4fcc-9bc9-76c66bb7a60c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-portrait-troll",
+    "subject": "PORTRAIT:GOBLIN:JUGGERNAUT",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93313,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Zoom in to a close-up portrait: redraw it as only the head and the top of the shoulders, twice as big, filling the image. A big round head with a pale cream-green face, colour #cde0b4, framed by shaggy olive green mossy hair and a mossy olive beard, a big nose, tiny eyes, two cream tusks, pale cream-green bare shoulders, no helmet and no spike. Keep the thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Zoom in to a close-up portrait: redraw it as only the head and the top of the shoulders, twice as big, filling the image. A big round head with a pale cream-green face, colour #cde0b4, framed by shaggy olive green mossy hair and a mossy olive beard, a big nose, tiny eyes, two cream tusks, pale cream-green bare shoulders, no helmet and no spike. Keep the thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Zoom in to a close-up portrait: redraw it as only the head and the top of the shoulders, twice as big, filling the image. A big round head with a pale cream-green face, colour #cde0b4, framed by shaggy olive green mossy hair and a mossy olive beard, a big nose, tiny eyes, two cream tusks, pale cream-green bare shoulders, no helmet and no spike. Keep the thick black outline and art style, on a transparent background.",
+    "editInstruction": "Zoom in to a close-up portrait: redraw it as only the head and the top of the shoulders, twice as big, filling the image. A big round head with a pale cream-green face, colour #cde0b4, framed by shaggy olive green mossy hair and a mossy olive beard, a big nose, tiny eyes, two cream tusks, pale cream-green bare shoulders, no helmet and no spike. Keep the thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "portrait-troll-a",
+      "candidate": 0,
+      "sha256": "b1507f89b7388cfbef58283a06af31d60a639cb605057518307419060814eee6"
+    }
+  }
+}

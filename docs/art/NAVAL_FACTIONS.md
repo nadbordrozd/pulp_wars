@@ -51,14 +51,14 @@ replaces (a test checks them, and that each hull's lowest row is within 4
 rows of the shared hull's waterline). No piece has an owner area or a mask:
 they register with `fixedColours`, like the land units of the new direction.
 
-| Faction  | Patrol Boat                                                                                                      | Battleship                                                                                                    | Transport                                                                                             | Tell at a glance                                |
-| -------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| Human    | the cog, pale polished hull with a gold rail trim; a deep crimson sail with a gold border and a big gold cross   | the carrack: three crimson sails with gold crosses, crimson pennants with gold tips, the grey stone castle    | the rowing barge with a crimson tarp, gold border and gold cross                                      | crimson and gold crosses                        |
-| Undead   | a ghost ship: near-black hull, ivory bone rail, a big skull figurehead, tattered charcoal sail, violet lantern   | a black ghost galleon: tattered charcoal sails, black rags, bone studs, a skull figurehead, violet lanterns   | a black funeral barge, bone rail, skull prow, cargo under a tattered warm-grey shroud, violet lantern | black hull, bone, small violet lights           |
-| Goblin   | a scrap junk-boat: dark planks, gunmetal patches, a patched brown leather sail, an olive goblin waving           | a scrap warship with brown leather sails and a big olive goblin shouting at the bow                           | a dark plank raft with barrels and an olive goblin sitting on the cargo                               | an olive goblin with sideways ears; dark brown  |
-| Dinosaur | a dugout canoe with a spotted sandy hide sail and a carved blue plesiosaur-head prow with orange stripes         | a log war raft with three spotted hide sails, bone fittings, orange feathers and a big plesiosaur prow        | a log boat with a tall blue plesiosaur neck at the bow and the cargo under spotted hide               | spotted hide, the blue-and-orange plesiosaur    |
-| Martian  | a chrome hover-boat: glass dome, gunmetal underside, fins, magenta rim lights, an antenna with a magenta orb     | a chrome hover-cruiser: glass-domed bridge on a lattice tower, magenta portholes and turret emitters          | a chrome saucer-barge with gunmetal crates and magenta lights under a glass canopy                    | chrome, glass and magenta; no sail              |
-| Ice Folk | a hide longship: dark hull, white fur rail with ice-blue icicles, a big ice-crystal figurehead, cream-white sail | a war longship: dark hull with a row of ice-blue shields, three cream sails, fur pennants, crystal figurehead | a dark hide boat with the cargo under heaped cream fur and an ice crystal on the pole                 | white sails over a dark hull, ice-blue crystals |
+| Faction  | Patrol Boat                                                                                                       | Battleship                                                                                                    | Transport                                                                                             | Tell at a glance                                |
+| -------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Human    | the cog, pale polished hull with a gold rail trim; a deep crimson sail with a gold border and a big gold cross    | the carrack: three crimson sails with gold crosses, crimson pennants with gold tips, the grey stone castle    | the rowing barge with a crimson tarp, gold border and gold cross                                      | crimson and gold crosses                        |
+| Undead   | a ghost ship: near-black hull, ivory bone rail, a big skull figurehead, tattered charcoal sail, violet lantern    | a black ghost galleon: tattered charcoal sails, black rags, bone studs, a skull figurehead, violet lanterns   | a black funeral barge, bone rail, skull prow, cargo under a tattered warm-grey shroud, violet lantern | black hull, bone, small violet lights           |
+| Goblin   | a scrap junk-boat: brown hull with tin patches, a pale sand sail with a hazard yellow patch, a firework, a goblin | a scrap warship with pale sand sails, tin plates, hazard stripes, a tin lookout tower and two yellow rags     | a low rowing raft with oars, tin patches, a hazard yellow rag and a goblin in a sand hat              | a lime goblin; tin, pale sails, hazard yellow   |
+| Dinosaur | a dugout canoe with a spotted sandy hide sail and a carved blue plesiosaur-head prow with orange stripes          | a log war raft with three spotted hide sails, bone fittings, orange feathers and a big plesiosaur prow        | a log boat with a tall blue plesiosaur neck at the bow and the cargo under spotted hide               | spotted hide, the blue-and-orange plesiosaur    |
+| Martian  | a chrome hover-boat: glass dome, gunmetal underside, fins, magenta rim lights, an antenna with a magenta orb      | a chrome hover-cruiser: glass-domed bridge on a lattice tower, magenta portholes and turret emitters          | a chrome saucer-barge with gunmetal crates and magenta lights under a glass canopy                    | chrome, glass and magenta; no sail              |
+| Ice Folk | a hide longship: dark hull, white fur rail with ice-blue icicles, a big ice-crystal figurehead, cream-white sail  | a war longship: dark hull with a row of ice-blue shields, three cream sails, fur pennants, crystal figurehead | a dark hide boat with the cargo under heaped cream fur and an ice crystal on the pole                 | white sails over a dark hull, ice-blue crystals |
 
 Decisions taken in this bead (the brief's design intent, refined):
 
@@ -99,14 +99,14 @@ The largest colour bins of each map sprite's body (opaque, brighter than
 value 0.14), from
 [`readability.json`](../../art/pixellab/reviews/chibi-batch-naval-factions/readability.json):
 
-| Faction  | Main colours                                                                                    | Outline share |
-| -------- | ----------------------------------------------------------------------------------------------- | ------------- |
-| Human    | crimson `#c50d25`, `#850621` (Battleship `#6b021b`); gold `#fddb21`, `#ffdb6a`; hull `#aa6b27`  | 14% to 17%    |
-| Undead   | charcoal `#737473`, `#535353`, `#4f5352`; near-black `#272525`; shroud `#827c6b`; violet lights | 42% to 51%    |
-| Goblin   | leather `#80573f`, `#9c5224`; planks `#351611`, `#3c2111`; goblin olive `#736935`               | 34% to 52%    |
-| Dinosaur | hide `#cda461`, `#debb78`; wood `#ab8344`, `#5d351b`; plesiosaur blue `#2c4b66`; orange         | 10% to 22%    |
-| Martian  | chrome `#ccd8e0`, `#b6c9da`; gunmetal `#3d4c61`, `#222f45`; glass `#acf1ec`; magenta lights     | 15% to 26%    |
-| Ice Folk | cream-white `#feffe6`, `#fef5d1`, `#dcd4b6`; hide `#3a2a2a`, `#554040`; ice blue `#0da8fa`      | 20% to 30%    |
+| Faction  | Main colours                                                                                      | Outline share |
+| -------- | ------------------------------------------------------------------------------------------------- | ------------- |
+| Human    | crimson `#c50d25`, `#850621` (Battleship `#6b021b`); gold `#fddb21`, `#ffdb6a`; hull `#aa6b27`    | 14% to 17%    |
+| Undead   | charcoal `#737473`, `#535353`, `#4f5352`; near-black `#272525`; shroud `#827c6b`; violet lights   | 42% to 51%    |
+| Goblin   | sails `#f3e3c8`, `#e2c892`; tin `#899a9c`, `#7d8b91`; hull `#ac6f41`, `#6b381b`; hazard `#fcd701` | 22% to 33%    |
+| Dinosaur | hide `#cda461`, `#debb78`; wood `#ab8344`, `#5d351b`; plesiosaur blue `#2c4b66`; orange           | 10% to 22%    |
+| Martian  | chrome `#ccd8e0`, `#b6c9da`; gunmetal `#3d4c61`, `#222f45`; glass `#acf1ec`; magenta lights       | 15% to 26%    |
+| Ice Folk | cream-white `#feffe6`, `#fef5d1`, `#dcd4b6`; hide `#3a2a2a`, `#554040`; ice blue `#0da8fa`        | 20% to 30%    |
 
 No piece of the five non-Human factions has more than 1% of its pixels in
 the owner key's band (hue 340 to 5, saturated); a test holds it. The Human
@@ -128,7 +128,7 @@ the body within 12 of the water):
 | -------- | ------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | Human    | 67 to 72 (2.4 to 3.0); 0%       | 67 to 75 (1.0 to 1.2); 0%       | the warm hull is the water's complement; on Deep Water it reads by hue, not by lightness                                                 |
 | Undead   | 48 to 55 (3.5 to 5.5); 0%       | 35 to 39 (1.2 to 1.9); 0%       | the darkest fleet; half outline and near-black, clearly darker than both waters                                                          |
-| Goblin   | 64 to 73 (5.5 to 6.8); 0%       | 48 to 61 (1.9 to 2.4); 0%       | dark and warm on both waters                                                                                                             |
+| Goblin   | 49 to 60 (2.4 to 3.3); 0%       | 55 to 63 (1.1 to 1.2); 0%       | since the redesign a warm mid-value fleet like the Humans': it reads by hue on Deep Water                                                |
 | Dinosaur | 61 to 68 (2.7 to 3.0); 0%       | 63 to 68 (1.0 to 1.1); 0%       | as the Humans: a warm hull reads by hue on Deep Water                                                                                    |
 | Martian  | 27 to 38 (1.8 to 2.8); 3% to 7% | 20 to 25 (1.0 to 1.6); 0%       | **the weakest**: chrome and glass are cool and close to both waters; the outline, the gunmetal underside and the magenta lights carry it |
 | Ice Folk | 23 to 45 (1.6 to 2.8); 0%       | 34 to 46 (1.0 to 1.8); 0% to 3% | the cream sails against Shallow Water are light on light (23 for the Patrol Boat); the dark hull and the outline separate them           |
@@ -142,8 +142,7 @@ deuteranopia in brackets). The full 6 x 6 matrices are in
 | ------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------- |
 | Ice Folk / Undead (transport)  | 10.4 (9.3) | both dark hulls; cream fur heap against a grey shroud, ice crystal against violet lantern                 |
 | Dinosaur / Human (transport)   | 11.2 (6.1) | the same barge hull; the blue plesiosaur neck and spotted hide against the crimson tarp with a gold cross |
-| Goblin / Undead (Patrol Boat)  | 11.5 (9.1) | brown sail and the olive goblin against a charcoal sail, bone and skull                                   |
-| Goblin / Dinosaur (Battleship) | 11.6 (8.6) | dark planks and the goblin against light tawny logs and the blue prow                                     |
+| Goblin / Ice Folk (Battleship) | 10.1 (8.4) | both pale sails over a dark hull; tin plates, a tin tower, yellow rags and a goblin against ice crystals  |
 | Undead / Ice Folk (Battleship) | 12.4 (9.9) | black against cream sails over similar dark hulls                                                         |
 | all other pairs                | 13 to 44   |                                                                                                           |
 
@@ -152,11 +151,15 @@ understates the pairs that share a dark hull but differ in their sails or
 crew: Undead and Ice Folk battleships are black against cream sails. Seen
 in the sheet at native size and at zoom 0.75 and in the captures, all six
 fleets are told apart ship by ship; the weakest by eye are the Goblin and
-Undead Patrol Boats (both dark; the goblin and the skull decide) and the
-Human and Dinosaur transports (same barge; before the plesiosaur neck it was
+Ice Folk Battleships (both pale sails; the tin tower with its yellow rags
+and the ice-blue crystals decide) and the Human and Dinosaur transports (same barge; before the plesiosaur neck it was
 the closest pair, 9.9 and 4.8 for a deuteranope).
 
 ![The six factions' ships beside their coastal cities as the live look draws them: no plates or rings, the Human (viewer's) ships with the ready ring, Patrol Boats docked](../../art/pixellab/reviews/chibi-batch-naval-factions/scene-coast-desktop-zoom-1.png)
+
+The Goblin row is the fleet as **redrawn by bead `pulp_wars-wrn.2`** (see
+[the Goblin fleet redrawn](#the-goblin-fleet-redrawn-bead-pulp_wars-wrn2));
+the sheets and captures linked here show it.
 
 ![The six fleets mixed on Shallow and Deep Water at zoom 0.75](../../art/pixellab/reviews/chibi-batch-naval-factions/scene-mixed-desktop-zoom-0.75.png)
 
@@ -222,15 +225,42 @@ art was registered under three land subjects of each faction and drawn
 without the ready cue). `npm run art:faction-looks-review` captures the
 same scenes beside the land armies.
 
+## The Goblin fleet redrawn (bead `pulp_wars-wrn.2`)
+
+The Goblin ships above were the darkest pieces of the faction (mean L\* 22
+to 27, the Battleship with no lit pixel) and went with the land roster when
+the user asked for the [Goblin redesign](factions/GOBLIN.md#redesign-october-2026-lime-sand-and-hazard-paint).
+The five assets keep their ids, subjects, canvases and anchors; their new
+recipes are **fresh creations** (`create-image-pixen` with the `ship` class,
+the portraits with the `icon` class) from the study's lime run, followed by
+edits of those creations: water removed under the Patrol Boat, a red and a
+blue flag turned into hazard yellow rags, the mast and sail removed from the
+transport, and the Battleship goblin's salmon ear (13 pixels of the Coral
+player colour, caught by the asset test) made lime. 10 recipes, 11 PixelLab
+jobs (one failed and was retried). The fourteen recipes of the first fleet
+stay in the batch as history.
+
+- **Waterline.** A fresh creation floats where Pixen draws it (the Patrol
+  Boat came 5 px high). The three ship assets name a `bottomMargin` (8, 11
+  and 13, the shared ships' margins), which seats the sprite by whole
+  pixels; the test's 4-row tolerance is met exactly.
+- **Accent.** Every piece names the `goblin-hazard` preset, which pins the
+  yellow paint to the faction colour.
+- **Values.** Mean L\* 49 (Patrol Boat), 53 (Battleship) and 42 (transport),
+  from 27, 23 and 22; the outline share fell from 34 to 52% to 22 to 33%.
+
 ## Weak spots
+
+- **Goblin and Ice Folk Battleships** both carry pale sails over a dark
+  hull since the Goblin redesign (palette distance 10.1, 8.4 for a
+  deuteranope: the closest pair); the tin tower, the yellow rags and the
+  goblin against the ice crystals tell them apart.
+- **The Goblin Battleship portrait** has a few teal and green lights along
+  its rail, and the transport's hull is the darkest piece of the new fleet.
 
 - **Martian chrome on water** is the lowest contrast (20 to 38); the
   outline, gunmetal and magenta carry it. The Martian Patrol Boat is small
   and low (an antenna in place of a sail).
-- **The Goblin goblins are large**, the Battleship's most of all; the
-  transport's goblin hides most of the tarp.
-- **Undead and Goblin Patrol Boats** are the two darkest; at zoom 0.75 the
-  skull and the goblin decide.
 - **The Ice Folk Battleship keeps the carrack's grey stone castle**, and its
   sails are cream cloth, not shaggy fur.
 - **Human and Dinosaur transports** share the barge's silhouette; the

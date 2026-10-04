@@ -413,49 +413,49 @@
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "7de4ef3c1dd90b47f71e98e14416da59fa7eb77a4d3ba8138c41b7940880e16f"
+      "sha256": "ab38186f4c736bf35884bbcaec37f01a60c75bbf60ae84982b115dcdfcf432e8"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "6870818b5d3fc832bd3ff3f138a6617ae8b2aad4c43f38e153bfc515d34b6ec6"
+      "sha256": "bfdd43a84614d72b42a3e559f5d51aae02fcb685d3ffc8ee73cb5173f769886d"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "c7bf6037975566ac500cf6d39aaa8d5ee1126a9c864e8eadcf567dd4193a88d6"
+      "sha256": "fafaab07e58a096e57cad3879aecd01b0060ac77de2f38fbf199a59a5e6ace31"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "30c585f160e2765617f910ecfd634f30768333e1e2fb284d9fa1e4396676f76b"
+      "sha256": "dccadd32e2b90ea6253f345a45ba6804c911e0a47b0d43aec0ee49af012d8e16"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "943e851ab80df360eec5341e3365ab37d6811785445e2ef333c30b32825a275e"
+      "sha256": "30723e1fdc71ac0411b68a2d913987550a2e8af4cbceb155c955110543ce1ed4"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "67117d5dc63b15b64ae2c94a386b9653d8505fa06b40e91b99ec700b01996e31"
+      "sha256": "3dd731d9083dfad441cb196848db9730783b314e25c1290aad1f37a151a5d811"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "758f83b05a24ae8a1557afc3366ac2d40eaa3043d9cdd68b59e21daa364497ed"
+      "sha256": "6771d2b091d6c5b776059f580ab98e0423afd802ec312c6b39116e9efb91ea34"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/ingame-scene-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "667ee21ec45faa5dc763c44930e9a1699aea8f52d5f4207d1ff645272f5d331f"
+      "sha256": "8b26cb21893d33f1458a15010f91b99ad2ca2585cda7c101261701bd85c1e22f"
     }
   ],
   "captures": {

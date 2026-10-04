@@ -1,0 +1,36 @@
+{
+  "id": "troll-b-sage-limbs",
+  "jobId": "bb2c553f-ba0e-42a3-a4ef-617f647e398a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-troll",
+    "subject": "UNIT:GOBLIN:JUGGERNAUT",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 93305,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the skin of his arms, shoulders, hands, legs and feet: from pale cream to a light sage green, colour #8fb571, with #739a59 as shading. His face, chest and round belly stay pale cream-green. The orange paint splashes become bright hazard yellow, colour #fdd20f. Keep everything else exactly the same: the mossy hair and beard, tusks, stone club, straps, belt, loincloth, wrist bands, pose, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the skin of his arms, shoulders, hands, legs and feet: from pale cream to a light sage green, colour #8fb571, with #739a59 as shading. His face, chest and round belly stay pale cream-green. The orange paint splashes become bright hazard yellow, colour #fdd20f. Keep everything else exactly the same: the mossy hair and beard, tusks, stone club, straps, belt, loincloth, wrist bands, pose, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the skin of his arms, shoulders, hands, legs and feet: from pale cream to a light sage green, colour #8fb571, with #739a59 as shading. His face, chest and round belly stay pale cream-green. The orange paint splashes become bright hazard yellow, colour #fdd20f. Keep everything else exactly the same: the mossy hair and beard, tusks, stone club, straps, belt, loincloth, wrist bands, pose, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the skin of his arms, shoulders, hands, legs and feet: from pale cream to a light sage green, colour #8fb571, with #739a59 as shading. His face, chest and round belly stay pale cream-green. The orange paint splashes become bright hazard yellow, colour #fdd20f. Keep everything else exactly the same: the mossy hair and beard, tusks, stone club, straps, belt, loincloth, wrist bands, pose, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "troll-b-sage",
+      "candidate": 0,
+      "sha256": "7d957a6483848c5579b20829862e7b0c86d56da841d90aced59638856152b466"
+    }
+  }
+}

@@ -16,7 +16,10 @@
         "width": 72,
         "height": 88
       },
-      "ownerColour": false
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:PATROL_BOAT/LIME",
+      "accent": "goblin-hazard",
+      "bottomMargin": 8
     },
     {
       "id": "chibi-naval-goblin-battleship",
@@ -27,7 +30,10 @@
         "width": 88,
         "height": 96
       },
-      "ownerColour": false
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:BATTLESHIP/LIME",
+      "accent": "goblin-hazard",
+      "bottomMargin": 11
     },
     {
       "id": "chibi-naval-goblin-transport",
@@ -38,29 +44,36 @@
         "width": 72,
         "height": 72
       },
-      "ownerColour": false
+      "ownerColour": false,
+      "subjectKey": "UNIT:GOBLIN:EMBARKED_TRANSPORT/LIME",
+      "accent": "goblin-hazard",
+      "bottomMargin": 13
     },
     {
       "id": "chibi-naval-goblin-portrait-patrol-boat",
       "subject": "PORTRAIT:GOBLIN:PATROL_BOAT",
       "assetClass": "PORTRAIT",
-      "recipeClass": "portrait",
+      "recipeClass": "icon",
       "canvas": {
         "width": 48,
         "height": 48
       },
-      "ownerColour": false
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:PATROL_BOAT/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-naval-goblin-portrait-battleship",
       "subject": "PORTRAIT:GOBLIN:BATTLESHIP",
       "assetClass": "PORTRAIT",
-      "recipeClass": "portrait",
+      "recipeClass": "icon",
       "canvas": {
         "width": 48,
         "height": 48
       },
-      "ownerColour": false
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:GOBLIN:BATTLESHIP/LIME",
+      "accent": "goblin-hazard"
     }
   ],
   "recipes": [
@@ -290,6 +303,141 @@
       "editInstruction": "Recolour only the dark maroon red hull planks and oars: they become dark brown wood, colour #4a2c14 with #2a1608 shadows, not red and not maroon. Keep the olive goblin, the barrels, the scrap plates, the pennant, boat shape, size, thick black outline and art style exactly the same, with nothing under the hull.",
       "notes": "goblin-transport-crew-edit-a is right, but its hull is a dark maroon (hue 350): 6.8% of its pixels fall in the owner key's band (hue 340 to 5, saturated).",
       "asset": "chibi-naval-goblin-transport"
+    },
+    {
+      "id": "patrol-boat-a",
+      "asset": "chibi-naval-goblin-patrol-boat",
+      "endpoint": "create-image-pixen",
+      "seed": 93191,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the patrol boat in direction A."
+    },
+    {
+      "id": "patrol-boat-a-edit-2",
+      "asset": "chibi-naval-goblin-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 93321,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the white and blue water, waves and foam under the hull, so the boat floats alone on a transparent background with nothing under it. Do not redraw anything else: keep the hull, the tin patches, the sail with its yellow patch, the firework rocket, the goblin, the colours, thick black outline and art style exactly the same.",
+      "notes": "Retry of patrol-boat-a-edit, whose job failed at PixelLab (its recipe stays recorded as submitted)."
+    },
+    {
+      "id": "battleship-a",
+      "asset": "chibi-naval-goblin-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 93201,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the battleship in direction A."
+    },
+    {
+      "id": "battleship-a-edit",
+      "asset": "chibi-naval-goblin-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 93318,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "battleship-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the two flags: the blue flag on top of the lookout tower and the red flag on the mast both become hazard yellow rags, colour #fdd20f. Nothing blue and nothing red is left on the flags. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the goblin, the colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Batch iteration 2 (bead pulp_wars-wrn.2): a red and a blue flag read as player colours (the pennant shows the owner)."
+    },
+    {
+      "id": "transport-a",
+      "asset": "chibi-naval-goblin-transport",
+      "endpoint": "create-image-pixen",
+      "seed": 93211,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the transport in direction A."
+    },
+    {
+      "id": "transport-a-edit",
+      "asset": "chibi-naval-goblin-transport",
+      "endpoint": "edit-image-pixen",
+      "seed": 93319,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "transport-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove the mast, the sail and the knob on top of the mast completely, so it is a low open rowing raft with no mast and no sail; where the sail was there is only transparent background. The goblin's red bandana becomes a pale sand-buff leather cap. Keep the hull, the tin patches, the oars, the cargo, the small yellow rag, the goblin's green face, the colours, thick black outline and art style exactly the same.",
+      "notes": "Batch iteration 2 (bead pulp_wars-wrn.2): the embarked transport has no mast and no sail in any faction, so it never reads as a warship; red cloth is excluded."
+    },
+    {
+      "id": "portrait-patrol-boat-a",
+      "asset": "chibi-naval-goblin-portrait-patrol-boat",
+      "endpoint": "create-image-pixen",
+      "seed": 93221,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait patrol boat in direction A."
+    },
+    {
+      "id": "portrait-battleship-a",
+      "asset": "chibi-naval-goblin-portrait-battleship",
+      "endpoint": "create-image-pixen",
+      "seed": 93231,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait battleship in direction A."
+    },
+    {
+      "id": "battleship-a-edit-2",
+      "asset": "chibi-naval-goblin-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 93322,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "battleship-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only two small parts: the pink inside of the goblin's big ear becomes pale lime green, colour #acdc55, with no pink and no red left on the goblin; and the small blue flag on top of the lookout tower becomes hazard yellow, colour #fdd20f. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the yellow rag, the goblin's face, the colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Production fix (bead pulp_wars-wrn.2): the goblin's ear was salmon pink (#f96a68, 13 pixels within 12 of the Coral player colour, caught by the naval asset test), and the top flag stayed teal."
+    },
+    {
+      "id": "battleship-a-edit-3",
+      "asset": "chibi-naval-goblin-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 93323,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "battleship-a-edit-2",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Production fix 2 (bead pulp_wars-wrn.2): battleship-a-edit-2 made both flags yellow and the ear green, but turned the goblin's face pink."
     }
   ]
 }

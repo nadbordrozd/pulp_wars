@@ -153,6 +153,30 @@ export const ACCENT_PRESETS = {
     hue: 13,
     hueSpread: 0.25,
   },
+  /**
+   * The Goblin hazard paint (bead pulp_wars-wrn.2, GOBLIN.md): the faction
+   * colour `#fdd20f` (hue 49). PixelLab draws "hazard yellow paint" anywhere
+   * from a lemon yellow (hue 55) to an orange gold (the Orc Brute's shield
+   * rim was `#f8af13`, hue 41, 4 from the Human gold `#f1b21b`). The step
+   * finds the saturated orange-yellows (hue 26 to 47, saturation at least
+   * 0.8, value at least 0.7) and moves them to hue 46 to 52. Sand leather
+   * and hide (saturation below 0.6), brown leather and its orange shading
+   * (value below 0.7), skin, tin and planks lie outside the band and are
+   * never touched; yellows from hue 48 up are already hazard yellow. The
+   * Rocket Cart and its portrait do not name the preset: their orange paper
+   * rocket would turn yellow.
+   */
+  "goblin-hazard": {
+    band: {
+      hueFrom: 26,
+      hueTo: 47,
+      saturationMin: 0.8,
+      valueMin: 0.7,
+      hueCentre: 40,
+    },
+    hue: 49,
+    hueSpread: 0.35,
+  },
 } as const satisfies Readonly<Record<string, AccentSpec>>;
 
 export type AccentPresetName = keyof typeof ACCENT_PRESETS;

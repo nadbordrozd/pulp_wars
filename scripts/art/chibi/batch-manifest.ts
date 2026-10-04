@@ -616,7 +616,12 @@ export interface ChibiAssetSpec {
    */
   readonly fieldRecipe?: string;
   readonly maskOverride?: MaskOverrideSpec;
-  /** seated only: transparent rows kept under the art (default 3). */
+  /**
+   * seated: transparent rows kept under the art (default 3). On an as-is
+   * class (bead pulp_wars-wrn.2) it asks for the seated derivation instead:
+   * a fresh creation of a ship floats wherever Pixen drew it, and the
+   * margin puts its hull on the shared ship's waterline by whole pixels.
+   */
   readonly bottomMargin?: number;
   /** crop-rows only: how the candidate's crop row becomes the tile. */
   readonly cropRows?: CropRowsSpec;
@@ -1233,8 +1238,15 @@ export function batchManifestProblems(
     }))
       problems.push(`${at}: ${problem}`);
     if (asset.bottomMargin !== undefined) {
-      if (classRecipe.derivation !== "seated")
-        problems.push(`${label}: bottomMargin is only for seated classes`);
+      if (
+        classRecipe.derivation !== "seated" &&
+        classRecipe.derivation !== "as-is"
+      )
+        problems.push(
+          `${label}: bottomMargin is only for seated and as-is classes`,
+        );
+      if (owned)
+        problems.push(`${label}: bottomMargin is only for unowned assets`);
       if (!Number.isInteger(asset.bottomMargin) || asset.bottomMargin < 0)
         problems.push(`${label}: bottomMargin must be a non-negative integer`);
     }

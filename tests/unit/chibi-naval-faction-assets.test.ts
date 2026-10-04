@@ -26,8 +26,10 @@ import {
   extractOwnerMask,
   type RgbaRaster,
 } from "../../scripts/art/chibi/owner-mask";
+import { batchManifestProblems } from "../../scripts/art/chibi/batch-manifest";
 import {
   loadBatchManifest,
+  loadFragments,
   loadRecords,
   productionLayout,
   readRaster,
@@ -41,7 +43,9 @@ const ROOT = process.cwd();
 const FACTIONS: readonly (readonly [FactionIdV7, string, string | null])[] = [
   ["ORIGINAL", "human", null],
   ["UNDEAD", "undead", "undead-violet"],
-  ["GOBLIN", "goblin", null],
+  // Redrawn by the Goblin redesign (bead pulp_wars-wrn.2): fresh creations
+  // with the hazard paint pinned to the faction colour.
+  ["GOBLIN", "goblin", "goblin-hazard"],
   ["DINOSAUR", "dinosaur", null],
   ["MARTIAN", "martian", "martian-magenta"],
   ["ICE_FOLK", "ice-folk", "ice-folk-blue"],
@@ -209,8 +213,15 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
           throw new Error(`${entry.id}: not in batch ${batch}`);
         expect(asset.subject, entry.id).toBe(entry.subject);
         expect(asset.ownerColour, entry.id).toBe(false);
+        // A ship portrait shows the whole ship: the Goblin ones are fresh
+        // creations with the item-sprite class, the others edits of the
+        // shared portraits.
         expect(asset.recipeClass, entry.id).toBe(
-          entry.assetClass === "PORTRAIT" ? "portrait" : "ship",
+          entry.assetClass !== "PORTRAIT"
+            ? "ship"
+            : faction === "GOBLIN"
+              ? "icon"
+              : "portrait",
         );
         expect(asset.accent ?? null, entry.id).toBe(accent);
         expect(record.derivation.accent?.preset ?? null, entry.id).toBe(accent);
@@ -268,6 +279,54 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
         ).toBeLessThanOrEqual(4);
       }
     }
+  });
+
+  it("seats the redrawn Goblin ships on the shared waterline (bottomMargin on an as-is class)", async () => {
+    // Bead pulp_wars-wrn.2: fresh creations float where Pixen draws them;
+    // the asset's bottomMargin asks an as-is class for the seated
+    // derivation, by whole pixels.
+    const manifest = await loadBatchManifest(ROOT, "naval-goblin");
+    const records = await loadRecords(
+      productionLayout(ROOT, "naval-goblin"),
+      "naval-goblin",
+    );
+    for (const [kind, , suffix, today] of SPRITES) {
+      if (kind !== "UNIT") continue;
+      const id = `chibi-naval-goblin-${suffix}`;
+      const asset = manifest.assets.find((spec) => spec.id === id);
+      const record = records.assets[id];
+      const shared = CHIBI_ART_ASSETS_V7.find((entry) => entry.id === today);
+      if (asset === undefined || record === undefined || shared === undefined)
+        throw new Error(`${id}: not in the batch`);
+      expect(asset.recipeClass, id).toBe("ship");
+      expect(record.derivation.kind, id).toBe("seated");
+      expect(record.derivation.seat?.bottomMargin, id).toBe(asset.bottomMargin);
+      const master = await readRaster(path.join(ROOT, record.master.path));
+      expect(opaqueBottom(master), id).toBe(
+        opaqueBottom(await readRaster(masterFile(shared))),
+      );
+      expect(master.height - 1 - opaqueBottom(master), id).toBe(
+        asset.bottomMargin,
+      );
+    }
+    // The rule is refused on an owned asset and on a class that derives
+    // its master another way.
+    const fragments = await loadFragments(ROOT);
+    expect(batchManifestProblems(manifest, fragments, "naval-goblin")).toEqual(
+      [],
+    );
+    const owned = {
+      ...manifest,
+      fixedFactionColours: false,
+      assets: manifest.assets.map((spec) =>
+        spec.id === "chibi-naval-goblin-patrol-boat"
+          ? { ...spec, ownerColour: true }
+          : spec,
+      ),
+    };
+    expect(
+      batchManifestProblems(owned, fragments, "naval-goblin").join("\n"),
+    ).toContain("bottomMargin is only for unowned assets");
   });
 
   it("carries no player colour and no key-colour area for a mask to find", async () => {

@@ -369,12 +369,13 @@ export const DIRECTION_FLAG_ANCHORS_V7: Readonly<
   // The same masters as the demo's Port and Shipyard.
   "chibi-direction-port": { x: 49.5, y: 22, pole: 0 },
   "chibi-direction-shipyard": { x: 21, y: 4, pole: 11 },
-  // The Goblin scrap camps (bead pulp_wars-3tq.9, batch `direction-goblin`):
-  // beside the knob of the lookout pole; on a short pole over the tower's
-  // own stub; beside the top of the big tent's pole.
-  "chibi-direction-goblin-city-1": { x: 62, y: 10, pole: 0 },
-  "chibi-direction-goblin-city-2": { x: 48.5, y: 0, pole: 6 },
-  "chibi-direction-goblin-city-3": { x: 50, y: 5, pole: 0 },
+  // The Goblin scrap camps (batch `direction-goblin`; redrawn by bead
+  // pulp_wars-wrn.2, seated at the bottom of the same canvases): beside the
+  // top of the lookout pole; on a pole over the peak of the middle tent,
+  // left of the tower's smoke; on a pole over the peak of the big tent.
+  "chibi-direction-goblin-city-1": { x: 71, y: 31, pole: 0 },
+  "chibi-direction-goblin-city-2": { x: 57.5, y: 33, pole: 11 },
+  "chibi-direction-goblin-city-3": { x: 60.5, y: 29, pole: 10 },
   // --- Dinosaur (bead pulp_wars-3tq.13, batch `direction-dinosaur`) ---
   // A pole over the skull of the bone totem; the top of the camp's own
   // bare pole; a pole on the right shoulder of the giant rib-cage, where

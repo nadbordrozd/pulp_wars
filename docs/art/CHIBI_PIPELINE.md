@@ -307,7 +307,9 @@ pipeline pieces:
 
 Batch `direction-goblin` is the second fixed-colour batch: faction `GOBLIN`,
 `fixedFactionColours`, 19 assets (8 units, 8 portraits, City 1 to 3), all
-`ownerColour: false`. It added no pipeline piece; it uses what
+`ownerColour: false`. Its first art, described here, was retired by
+[the redesign](#the-goblin-redesign-bead-pulp_wars-wrn2); these recipes
+stay in the batch as history. It added no pipeline piece; it used what
 `direction-human` built:
 
 - **Every recipe is an `edit-image-pixen` edit.** Fourteen were imported
@@ -330,6 +332,56 @@ Batch `direction-goblin` is the second fixed-colour batch: faction `GOBLIN`,
   as submitted with its receipt (two here); give the retry a new recipe id.
 - PixelLab's tier allows eight jobs at once: more concurrent `generate`
   runs are refused with HTTP 429 before a job is created, and can be rerun.
+
+### The Goblin redesign (bead `pulp_wars-wrn.2`)
+
+The art of the batch above was retired as too dark and **redrawn in place**
+([GOBLIN.md](factions/GOBLIN.md#redesign-october-2026-lime-sand-and-hazard-paint),
+[the study](factions/GOBLIN_REDESIGN.md)): the same 19 asset ids in
+`direction-goblin` and the five of `naval-goblin`, accepted from new
+recipes whose `accept` supersedes the earlier one (as for the three Martian
+aliens). The old recipes, raw sheets and receipts stay as history;
+[`before.ts`](../../scripts/art/goblin-redesign/before.ts) reads the retired
+sprites from them, so no copy of the old masters is kept. It added these
+pipeline pieces:
+
+- **Fresh creations imported from the study's run.** 33 recipes of
+  `art/explorations/goblin-redesign-2026-10/lime` (19 creations and 14 edits
+  of them) went into `direction-goblin` and 8 into `naval-goblin` with
+  `import`; three more edits were generated in the production batches. The
+  assets now name the `<subject>/LIME` subject lines, the Rocket Cart and
+  the Scrap Buggy use the `machine` class, the vehicle and ship portraits
+  the `icon` class, and the cities the `calm-settlement` class (`seated`,
+  on the classic canvases, so anchors and overflow are unchanged).
+- **`goblin-hazard` accent preset**
+  ([`accent.ts`](../../scripts/art/chibi/accent.ts)): the band hue 26 to 47,
+  saturation at least 0.8, value at least 0.7; target hue 49 with 0.35 of
+  the hue spread. PixelLab drew "hazard yellow paint" from lemon (hue 55) to
+  orange gold (hue 34 to 41, 4 from the Human gold); the masters measure
+  hue 46 to 58. Every Goblin asset names it except the Rocket Cart and its
+  portrait, whose orange paper rocket would turn yellow. The other presets
+  are unchanged (the preset-name test lists five).
+- **`bottomMargin` on an as-is class** asks for the `seated` derivation: the
+  art is moved by whole pixels until it is centred and its lowest opaque row
+  sits that many pixels above the canvas bottom. A fresh creation of a ship
+  floats wherever Pixen draws it (the Patrol Boat came 5 px above the
+  waterline); the three Goblin ships name the shared ships' margins (8, 11
+  and 13). Only for unowned assets (a mask is cut from the candidate as
+  drawn). `art:validate` re-derives such a master like any seated one.
+- **[`candidates.ts`](../../scripts/art/goblin-redesign/candidates.ts)**
+  lays any PNGs (or the candidates of a raw sheet, `file.png#2`) out at x4
+  on Grass, at 1x on Grass, Snow and Mountain ground and in greyscale, with
+  mean L\*, the dark and lit shares, the outline share and the hazard-yellow
+  share under each: the review of a candidate before `accept`.
+
+What worked is in
+[GOBLIN.md](factions/GOBLIN.md#how-it-was-made): name the colour PixelLab
+already drew when recolouring skin, remove a beard with "Change only one
+thing", never ask for "yellow-lime", and name one small part per edit.
+
+`npm run art:chibi-direction-review -- --goblin-only` still writes
+`art/pixellab/reviews/chibi-batch-direction-goblin/`; its "new" columns and
+captures now show the redesign beside the classic sprites.
 
 ### The accent step and the palette swap (bead `pulp_wars-3tq.12`)
 

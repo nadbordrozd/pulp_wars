@@ -1,0 +1,36 @@
+{
+  "id": "transport-a-edit",
+  "jobId": "2f693e37-e9ab-4e58-bfb3-c379152552f5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-transport",
+    "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 93319,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove the mast, the sail and the knob on top of the mast completely, so it is a low open rowing raft with no mast and no sail; where the sail was there is only transparent background. The goblin's red bandana becomes a pale sand-buff leather cap. Keep the hull, the tin patches, the oars, the cargo, the small yellow rag, the goblin's green face, the colours, thick black outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove the mast, the sail and the knob on top of the mast completely, so it is a low open rowing raft with no mast and no sail; where the sail was there is only transparent background. The goblin's red bandana becomes a pale sand-buff leather cap. Keep the hull, the tin patches, the oars, the cargo, the small yellow rag, the goblin's green face, the colours, thick black outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove the mast, the sail and the knob on top of the mast completely, so it is a low open rowing raft with no mast and no sail; where the sail was there is only transparent background. The goblin's red bandana becomes a pale sand-buff leather cap. Keep the hull, the tin patches, the oars, the cargo, the small yellow rag, the goblin's green face, the colours, thick black outline and art style exactly the same.",
+    "editInstruction": "Remove the mast, the sail and the knob on top of the mast completely, so it is a low open rowing raft with no mast and no sail; where the sail was there is only transparent background. The goblin's red bandana becomes a pale sand-buff leather cap. Keep the hull, the tin patches, the oars, the cargo, the small yellow rag, the goblin's green face, the colours, thick black outline and art style exactly the same.",
+    "source": {
+      "recipe": "transport-a",
+      "candidate": 0,
+      "sha256": "a11b208d0780eb55a1421cca21943304dd70e972e41ca45cbce5e76edd6220e8"
+    }
+  }
+}

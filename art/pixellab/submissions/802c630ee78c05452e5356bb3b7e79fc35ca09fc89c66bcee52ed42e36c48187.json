@@ -1,0 +1,36 @@
+{
+  "id": "bomb-chucker-a-lime-2",
+  "jobId": "4fa7d15b-1399-4376-ab6e-e0d41102a754",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-bomb-chucker",
+    "subject": "UNIT:GOBLIN:MARKSMAN",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 93310,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin (face, ears, arms, hands, chest and legs): a bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; green skin, never yellow skin. Keep everything else exactly the same: the yellow pot helmet with its black stripe and goggles, the black bomb with its spark, the grin, straps, satchel, loincloth, boots, pose, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin (face, ears, arms, hands, chest and legs): a bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; green skin, never yellow skin. Keep everything else exactly the same: the yellow pot helmet with its black stripe and goggles, the black bomb with its spark, the grin, straps, satchel, loincloth, boots, pose, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin (face, ears, arms, hands, chest and legs): a bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; green skin, never yellow skin. Keep everything else exactly the same: the yellow pot helmet with its black stripe and goggles, the black bomb with its spark, the grin, straps, satchel, loincloth, boots, pose, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only his skin (face, ears, arms, hands, chest and legs): a bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; green skin, never yellow skin. Keep everything else exactly the same: the yellow pot helmet with its black stripe and goggles, the black bomb with its spark, the grin, straps, satchel, loincloth, boots, pose, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "bomb-chucker-a",
+      "candidate": 0,
+      "sha256": "66f42b6d737b757904e61271a671739810462c088abe923f18ea027c8ba74224"
+    }
+  }
+}

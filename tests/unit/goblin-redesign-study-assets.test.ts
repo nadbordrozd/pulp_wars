@@ -4,11 +4,18 @@ import { batchManifestProblems } from "../../scripts/art/chibi/batch-manifest";
 import { loadExploration, readRaster } from "../../scripts/art/chibi/pipeline";
 import { deltaE, rgbOf } from "../../scripts/art/ice-folk-direction/colour";
 import {
+  GOBLIN_CITIES_V7,
   GOBLIN_DIRECTIONS_V7,
+  GOBLIN_PORTRAITS_V7,
   GOBLIN_ROSTER_V7,
+  GOBLIN_SHIPS_V7,
   goblinDirectionV7,
 } from "../../scripts/art/goblin-redesign/directions";
-import { valueMetricsV7 } from "../../scripts/art/goblin-redesign/measure";
+import { loadGoblinBeforeV7 } from "../../scripts/art/goblin-redesign/before";
+import {
+  valueMetricsV7,
+  type ValueMetricsV7,
+} from "../../scripts/art/goblin-redesign/measure";
 import {
   classifyGoblinPixelV7,
   recolourGoblinSpriteV7,
@@ -86,10 +93,12 @@ describe("Goblin redesign study (bead pulp_wars-wrn.1)", () => {
     }
   });
 
-  it("lifts the dark units of the current roster in the recommended direction", async () => {
+  it("lifts the dark units of the roster it diagnosed in the recommended direction", async () => {
     const lime = goblinDirectionV7("lime");
     for (const unit of GOBLIN_ROSTER_V7) {
-      const source = await readRaster(path.join(ROOT, unit.file));
+      // The sprites before the redesign: the superseded recipes' recorded
+      // candidates (the live masters are the redesigned art).
+      const source = await loadGoblinBeforeV7(ROOT, unit);
       const result = recolourGoblinSpriteV7(source, lime, unit);
       // Shape and transparency are unchanged: a recolour, not a redraw.
       for (let index = 0; index < source.width * source.height; index += 1)
@@ -169,11 +178,18 @@ describe("Goblin redesign study (bead pulp_wars-wrn.1)", () => {
         manifest.assets.every((asset) => asset.ownerColour === false),
       ).toBe(true);
       // Fresh creations only: the redesign does not edit the old sprites.
+      // The lime run's later recipes (bead pulp_wars-wrn.2) edit its own
+      // creations, never another batch.
       expect(
-        manifest.recipes.every(
-          (recipe) => recipe.endpoint === "create-image-pixen",
-        ),
+        manifest.recipes
+          .slice(0, 28)
+          .every((recipe) => recipe.endpoint === "create-image-pixen"),
       ).toBe(true);
+      for (const recipe of manifest.recipes.slice(28)) {
+        expect(id, recipe.id).toBe("lime");
+        expect(recipe.endpoint, recipe.id).toBe("edit-image-pixen");
+        expect(recipe.source?.batch, recipe.id).toBeUndefined();
+      }
       const seeds = manifest.recipes.map((recipe) => recipe.seed);
       expect(new Set(seeds).size).toBe(seeds.length);
       expect(manifest.recipes.slice(0, 8).map((recipe) => recipe.id)).toEqual([
@@ -186,6 +202,86 @@ describe("Goblin redesign study (bead pulp_wars-wrn.1)", () => {
         "troll-a",
         "troll-b",
       ]);
+    }
+  });
+});
+
+describe("Goblin redesign production art (bead pulp_wars-wrn.2)", () => {
+  const measure = async (file: string) =>
+    valueMetricsV7(
+      await readRaster(path.join(ROOT, file)),
+      FACTION_COLOURS_V7.GOBLIN,
+      GRASS,
+    );
+
+  it("meets the study's value rules on every live unit", async () => {
+    const metrics: ValueMetricsV7[] = [];
+    for (const unit of GOBLIN_ROSTER_V7) {
+      const before = valueMetricsV7(
+        await loadGoblinBeforeV7(ROOT, unit),
+        FACTION_COLOURS_V7.GOBLIN,
+        GRASS,
+      );
+      const after = await measure(unit.file);
+      metrics.push(after);
+      // The study's acceptance: mean L* 50 or more and the faction colour
+      // on the sprite; a real light end and no dark mass.
+      expect(after.meanLightness, unit.name).toBeGreaterThanOrEqual(50);
+      expect(after.meanLightness, unit.name).toBeGreaterThan(
+        before.meanLightness + 12,
+      );
+      expect(after.dark, unit.name).toBeLessThan(0.3);
+      expect(after.p90, unit.name).toBeGreaterThanOrEqual(80);
+      expect(after.factionColour, unit.name).toBeGreaterThanOrEqual(0.02);
+      expect(after.factionColour, unit.name).toBeLessThanOrEqual(0.1);
+      // Lit share 45% or more, except the Wolf Rider, whose mid-grey wolf
+      // sits just under the L* 55 line (38%; it was 12%).
+      expect(after.light + after.bright, unit.name).toBeGreaterThanOrEqual(
+        unit.role === "RAIDER" ? 0.35 : 0.45,
+      );
+    }
+    // The roster as a whole sits with the Martians and the Ice Folk.
+    const mean = (pick: (m: ValueMetricsV7) => number): number =>
+      metrics.reduce((sum, m) => sum + pick(m), 0) / metrics.length;
+    expect(mean((m) => m.meanLightness)).toBeGreaterThan(53);
+    expect(mean((m) => m.dark)).toBeLessThan(0.25);
+    expect(mean((m) => m.light + m.bright)).toBeGreaterThan(0.48);
+  });
+
+  it("lifts the portraits, cities and ships too", async () => {
+    for (const sprite of [
+      ...GOBLIN_PORTRAITS_V7,
+      ...GOBLIN_CITIES_V7,
+      ...GOBLIN_SHIPS_V7,
+    ]) {
+      const before = valueMetricsV7(
+        await loadGoblinBeforeV7(ROOT, sprite),
+        FACTION_COLOURS_V7.GOBLIN,
+        GRASS,
+      );
+      const after = await measure(sprite.file);
+      const label = `${sprite.kind} ${sprite.name}`;
+      expect(after.meanLightness, label).toBeGreaterThan(
+        before.meanLightness + 8,
+      );
+      expect(after.meanLightness, label).toBeGreaterThanOrEqual(41);
+      expect(after.dark, label).toBeLessThan(before.dark);
+    }
+  });
+
+  it("reads the retired sprites from the superseded recipes, pixel for pixel", async () => {
+    // The old masters were their recorded candidates as generated; the
+    // live masters are different images of the same size.
+    for (const sprite of [...GOBLIN_ROSTER_V7, ...GOBLIN_SHIPS_V7]) {
+      const before = await loadGoblinBeforeV7(ROOT, sprite);
+      const live = await readRaster(path.join(ROOT, sprite.file));
+      expect([before.width, before.height], sprite.name).toEqual([
+        live.width,
+        live.height,
+      ]);
+      expect(Buffer.from(before.data).equals(Buffer.from(live.data))).toBe(
+        false,
+      );
     }
   });
 });

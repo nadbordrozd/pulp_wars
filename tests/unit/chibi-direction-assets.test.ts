@@ -830,7 +830,9 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
       ).rejects.toThrow();
       // The master is the size it registers with and has no owner area: a
       // classic owned sprite carries the key red on 15% or more of its
-      // pixels; here only tongues, rust and one paper rocket are red.
+      // pixels; here only tongues and the fireworks' paper are red (two
+      // red rockets are 8% of the Rocket Cart's portrait since the
+      // redesign of bead pulp_wars-wrn.2).
       const master = await readRaster(
         await readFile(path.join(ROOT, record.master.path)),
       );
@@ -838,7 +840,7 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
         entry.width,
         entry.height,
       ]);
-      expect(ownerKeyShare(master), entry.id).toBeLessThan(0.06);
+      expect(ownerKeyShare(master), entry.id).toBeLessThan(0.1);
       expect(opaqueBounds(master), entry.id).not.toBeNull();
     }
     // The study's recipes were imported with no new PixelLab call, and
@@ -846,11 +848,22 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
     const imported = Object.values(records.recipes).filter(
       (recipe) => recipe.importedFrom !== undefined,
     );
-    expect(imported).toHaveLength(14);
-    for (const recipe of imported)
-      expect(recipe.importedFrom?.exploration).toBe(
-        "art/explorations/goblin-direction-2026-10",
-      );
+    const importedFrom = (run: string): number =>
+      imported.filter((recipe) => recipe.importedFrom?.exploration === run)
+        .length;
+    expect(importedFrom("art/explorations/goblin-direction-2026-10")).toBe(14);
+    // The redesign (bead pulp_wars-wrn.2) was generated in the lime run of
+    // the redesign study and imported: the 33 recipes of the accepted
+    // chains, whose last steps are the accepted sprites.
+    expect(importedFrom("art/explorations/goblin-redesign-2026-10/lime")).toBe(
+      33,
+    );
+    expect(imported).toHaveLength(14 + 33);
+    for (const asset of Object.values(records.assets))
+      expect(
+        records.recipes[asset.recipe]?.importedFrom?.exploration,
+        asset.id,
+      ).toBe("art/explorations/goblin-redesign-2026-10/lime");
     for (const recipe of Object.values(records.recipes)) {
       const receipt = await loadSubmissionReceipt(
         layout.submissions,
@@ -863,19 +876,42 @@ describe("Goblin production art of the new visual direction (pulp_wars-3tq.9)", 
     }
   });
 
-  it("describes the look in /SCRAP subject lines with no owner layer, and edits every piece", async () => {
+  it("describes the look in /LIME subject lines with no owner layer; fresh creations and edits of them", async () => {
     const manifest = await loadBatchManifest(ROOT, GOBLIN_BATCH);
     const fragments = await loadFragments(ROOT);
     for (const asset of manifest.assets) {
-      expect(asset.subjectKey, asset.id).toBe(`${asset.subject}/SCRAP`);
+      // The redesign's look (bead pulp_wars-wrn.2); the /SCRAP lines of the
+      // retired look stay in GOBLIN.json as history.
+      expect(asset.subjectKey, asset.id).toBe(`${asset.subject}/LIME`);
+      // Hazard paint is pinned to the faction colour; the Rocket Cart keeps
+      // its orange paper rocket.
+      expect(asset.accent, asset.id).toBe(
+        asset.id.includes("rocket-cart") ? undefined : "goblin-hazard",
+      );
       const prompt = layeredPrompt(fragments, manifest, asset, {});
       expect(prompt.layers.map((layer) => layer.layer)).not.toContain("owner");
       expect(prompt.description, asset.id).not.toMatch(
         /bright red (patched|bandana|tunic|cloth|flag)/,
       );
     }
+    // The retired look was edits of the classic sprites (seeds below
+    // 93000); the redesign is fresh creations and edits of those creations
+    // only, so no old shape survives.
+    const redesign = manifest.recipes.filter((recipe) => recipe.seed >= 93000);
+    // 33 imported from the lime run and one generated here (a rejected
+    // skin edit of the Warboss).
+    expect(redesign).toHaveLength(34);
+    for (const recipe of redesign)
+      if (recipe.endpoint === "edit-image-pixen") {
+        expect(recipe.source?.batch, recipe.id).toBeUndefined();
+        expect(
+          redesign.some((other) => other.id === recipe.source?.recipe),
+          recipe.id,
+        ).toBe(true);
+      } else expect(recipe.endpoint, recipe.id).toBe("create-image-pixen");
     for (const recipe of manifest.recipes) {
-      expect(recipe.endpoint, recipe.id).toBe("edit-image-pixen");
+      if (recipe.seed < 93000)
+        expect(recipe.endpoint, recipe.id).toBe("edit-image-pixen");
       expect(
         (recipe.editInstruction ?? "").length,
         recipe.id,

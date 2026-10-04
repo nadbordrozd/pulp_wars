@@ -1561,7 +1561,13 @@ async function deriveClassMaster(
   asset: ChibiAssetSpec,
   candidate: RgbaRaster,
 ): Promise<DerivedMaster> {
-  const kind = CHIBI_CLASS_RECIPES[asset.recipeClass].derivation;
+  const classKind = CHIBI_CLASS_RECIPES[asset.recipeClass].derivation;
+  // An as-is asset that names a bottom margin is seated (bead
+  // pulp_wars-wrn.2): moved by whole pixels onto that margin.
+  const kind =
+    classKind === "as-is" && asset.bottomMargin !== undefined
+      ? "seated"
+      : classKind;
   if (kind === "seamless-crop") {
     const region = asset.cropRegion ?? {
       left: 0,

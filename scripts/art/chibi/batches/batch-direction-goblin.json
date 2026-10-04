@@ -17,7 +17,8 @@
         "height": 80
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:GOBLIN:FIGHTER/SCRAP"
+      "subjectKey": "UNIT:GOBLIN:FIGHTER/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-goblin-wolf-rider",
@@ -29,7 +30,8 @@
         "height": 88
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:GOBLIN:RAIDER/SCRAP"
+      "subjectKey": "UNIT:GOBLIN:RAIDER/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-goblin-bomb-chucker",
@@ -41,7 +43,8 @@
         "height": 80
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:GOBLIN:MARKSMAN/SCRAP"
+      "subjectKey": "UNIT:GOBLIN:MARKSMAN/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-goblin-orc-brute",
@@ -53,7 +56,8 @@
         "height": 80
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:GOBLIN:GUARD/SCRAP"
+      "subjectKey": "UNIT:GOBLIN:GUARD/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-goblin-orc-warboss",
@@ -69,13 +73,14 @@
         "y": 40
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:GOBLIN:CAPTAIN/SCRAP"
+      "subjectKey": "UNIT:GOBLIN:CAPTAIN/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-goblin-rocket-cart",
       "subject": "UNIT:GOBLIN:CATAPULT",
       "assetClass": "LARGE_UNIT",
-      "recipeClass": "unit",
+      "recipeClass": "machine",
       "canvas": {
         "width": 72,
         "height": 88
@@ -85,13 +90,13 @@
         "y": 48
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:GOBLIN:CATAPULT/SCRAP"
+      "subjectKey": "UNIT:GOBLIN:CATAPULT/LIME"
     },
     {
       "id": "chibi-direction-goblin-scrap-buggy",
       "subject": "UNIT:GOBLIN:KNIGHT",
       "assetClass": "LARGE_UNIT",
-      "recipeClass": "unit",
+      "recipeClass": "machine",
       "canvas": {
         "width": 72,
         "height": 88
@@ -101,7 +106,8 @@
         "y": 48
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:GOBLIN:KNIGHT/SCRAP"
+      "subjectKey": "UNIT:GOBLIN:KNIGHT/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-goblin-troll",
@@ -113,7 +119,8 @@
         "height": 104
       },
       "ownerColour": false,
-      "subjectKey": "UNIT:GOBLIN:JUGGERNAUT/SCRAP"
+      "subjectKey": "UNIT:GOBLIN:JUGGERNAUT/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-portrait-goblin-goblin",
@@ -125,7 +132,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "subjectKey": "PORTRAIT:GOBLIN:FIGHTER/SCRAP"
+      "subjectKey": "PORTRAIT:GOBLIN:FIGHTER/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-portrait-goblin-wolf-rider",
@@ -137,7 +145,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "subjectKey": "PORTRAIT:GOBLIN:RAIDER/SCRAP"
+      "subjectKey": "PORTRAIT:GOBLIN:RAIDER/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-portrait-goblin-bomb-chucker",
@@ -149,7 +158,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "subjectKey": "PORTRAIT:GOBLIN:MARKSMAN/SCRAP"
+      "subjectKey": "PORTRAIT:GOBLIN:MARKSMAN/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-portrait-goblin-orc-brute",
@@ -161,7 +171,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "subjectKey": "PORTRAIT:GOBLIN:GUARD/SCRAP"
+      "subjectKey": "PORTRAIT:GOBLIN:GUARD/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-portrait-goblin-orc-warboss",
@@ -173,7 +184,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "subjectKey": "PORTRAIT:GOBLIN:CAPTAIN/SCRAP"
+      "subjectKey": "PORTRAIT:GOBLIN:CAPTAIN/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-portrait-goblin-rocket-cart",
@@ -185,19 +197,20 @@
         "height": 48
       },
       "ownerColour": false,
-      "subjectKey": "PORTRAIT:GOBLIN:CATAPULT/SCRAP"
+      "subjectKey": "PORTRAIT:GOBLIN:CATAPULT/LIME"
     },
     {
       "id": "chibi-direction-portrait-goblin-scrap-buggy",
       "subject": "PORTRAIT:GOBLIN:KNIGHT",
       "assetClass": "PORTRAIT",
-      "recipeClass": "portrait",
+      "recipeClass": "icon",
       "canvas": {
         "width": 48,
         "height": 48
       },
       "ownerColour": false,
-      "subjectKey": "PORTRAIT:GOBLIN:KNIGHT/SCRAP"
+      "subjectKey": "PORTRAIT:GOBLIN:KNIGHT/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-portrait-goblin-troll",
@@ -209,43 +222,47 @@
         "height": 48
       },
       "ownerColour": false,
-      "subjectKey": "PORTRAIT:GOBLIN:JUGGERNAUT/SCRAP"
+      "subjectKey": "PORTRAIT:GOBLIN:JUGGERNAUT/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-goblin-city-1",
       "subject": "CITY:GOBLIN:1",
       "assetClass": "SETTLEMENT",
-      "recipeClass": "settlement",
+      "recipeClass": "calm-settlement",
       "canvas": {
         "width": 88,
         "height": 96
       },
       "ownerColour": false,
-      "subjectKey": "CITY:GOBLIN:1/SCRAP"
+      "subjectKey": "CITY:GOBLIN:1/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-goblin-city-2",
       "subject": "CITY:GOBLIN:2",
       "assetClass": "SETTLEMENT",
-      "recipeClass": "settlement",
+      "recipeClass": "calm-settlement",
       "canvas": {
         "width": 96,
         "height": 100
       },
       "ownerColour": false,
-      "subjectKey": "CITY:GOBLIN:2/SCRAP"
+      "subjectKey": "CITY:GOBLIN:2/LIME",
+      "accent": "goblin-hazard"
     },
     {
       "id": "chibi-direction-goblin-city-3",
       "subject": "CITY:GOBLIN:3",
       "assetClass": "SETTLEMENT",
-      "recipeClass": "settlement",
+      "recipeClass": "calm-settlement",
       "canvas": {
         "width": 96,
         "height": 104
       },
       "ownerColour": false,
-      "subjectKey": "CITY:GOBLIN:3/SCRAP"
+      "subjectKey": "CITY:GOBLIN:3/LIME",
+      "accent": "goblin-hazard"
     }
   ],
   "recipes": [
@@ -1406,6 +1423,466 @@
       },
       "editInstruction": "Recolour only the cloth of the three pale cream tents: the cream becomes tan-brown hide, colour #8f6e41 with #634b2b shadows; their darker brown patches stay. Add nothing: no ground, no floor, no shadow and no pale rim under the tents. Do not redraw anything: the rusted iron hut, the dark iron lookout pole with its basket platform, the grey stones, every shape and place, the size, thick black outline and art style stay exactly the same, on a transparent background.",
       "notes": "tent-edit-a got the tan right but added a pale grey rim of ground under the tents."
+    },
+    {
+      "id": "goblin-a",
+      "asset": "chibi-direction-goblin-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 93001,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "notes": "Sample stage (run first): a fresh creation of the goblin in direction A, seed a; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "goblin-a-lime",
+      "asset": "chibi-direction-goblin-goblin",
+      "endpoint": "edit-image-pixen",
+      "seed": 93308,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "goblin-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin (head, ears, arms, hands, belly, legs and feet): a bright lime green, colour #86c232, with lighter #acdc55 on the face, nose and belly and #5a9424 as shading; no dark teal and no dark green shadows on the skin. Keep everything else exactly the same: the big eyes, open mouth, sand leather cap, straps, loincloth, belt, shoulder plates, tin cleaver with yellow paint, pose, thick black outline and art style, on a transparent background.",
+      "notes": "Batch iteration (bead pulp_wars-wrn.2): goblin-a passes the value rules, but its skin is shaded with dark teal (#1f5d48, 9% of the sprite); one lime for every goblin."
+    },
+    {
+      "id": "wolf-rider-a",
+      "asset": "chibi-direction-goblin-wolf-rider",
+      "endpoint": "create-image-pixen",
+      "seed": 93011,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The figure is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "horse, black wolf, dark wolf",
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the wolf rider in direction A."
+    },
+    {
+      "id": "wolf-rider-a-lime",
+      "asset": "chibi-direction-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 93307,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "wolf-rider-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the rider's skin: his face, his two big pointed ears, his arms and hands become bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; no yellow skin and no orange ears. Keep everything else exactly the same: the grey wolf with its cream belly and muzzle, the sand hat, straps, saddle blanket, spear, pose, thick black outline and art style, on a transparent background.",
+      "notes": "Batch iteration (bead pulp_wars-wrn.2): the wolf is right (light grey, cream belly and muzzle, four legs) but the rider's skin and ears came out yellow."
+    },
+    {
+      "id": "wolf-rider-a-rag-2",
+      "asset": "chibi-direction-goblin-wolf-rider",
+      "endpoint": "edit-image-pixen",
+      "seed": 93320,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "wolf-rider-a-lime",
+        "candidate": 0
+      },
+      "editInstruction": "Add only one detail: a small bright hazard yellow rag, colour #fdd20f, tied round the spear just below its blade, and recolour the band of the rider's hat to the same hazard yellow. Do not redraw anything else: keep the lime green rider, the sand hat, the grey wolf with its cream belly and muzzle, the straps, saddle blanket, spear, pose, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Retry of wolf-rider-a-rag, whose job failed at PixelLab (its recipe stays recorded as submitted)."
+    },
+    {
+      "id": "bomb-chucker-a",
+      "asset": "chibi-direction-goblin-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 93021,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the bomb chucker in direction A."
+    },
+    {
+      "id": "bomb-chucker-a-lime-2",
+      "asset": "chibi-direction-goblin-bomb-chucker",
+      "endpoint": "edit-image-pixen",
+      "seed": 93310,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "bomb-chucker-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin (face, ears, arms, hands, chest and legs): a bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; green skin, never yellow skin. Keep everything else exactly the same: the yellow pot helmet with its black stripe and goggles, the black bomb with its spark, the grin, straps, satchel, loincloth, boots, pose, thick black outline and art style, on a transparent background.",
+      "notes": "Batch iteration 2 (bead pulp_wars-wrn.2): bomb-chucker-a-lime asked for 'yellow-lime' and got a pure yellow goblin; the wording of the goblin edit that worked."
+    },
+    {
+      "id": "orc-brute-b",
+      "asset": "chibi-direction-goblin-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 93032,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "helmet covering the face, visor, face guard, dark skin",
+      "notes": "Sample stage (run first): a fresh creation of the orc brute in direction A, seed b; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "orc-brute-b-nobeard",
+      "asset": "chibi-direction-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 93301,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-brute-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: remove the brown beard and the brown hair completely, so his big chin, heavy jaw and cheeks are bare green skin, colour #4a8a3a, with a lighter green #6faa55 chin and jaw; keep the two cream tusks and the grumpy mouth. Do not redraw anything else: keep the eyes, nose, ears, tin cap, round shield with its yellow rim, cleaver, straps, kilt, boots, pose, proportions, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "Sample iteration (bead pulp_wars-wrn.2): both brute creations drew a big brown beard, a dark mass over the jaw the study wants as a light plane."
+    },
+    {
+      "id": "orc-warboss-a",
+      "asset": "chibi-direction-goblin-orc-warboss",
+      "endpoint": "create-image-pixen",
+      "seed": 93041,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "negativeAddendum": "visor, face guard, helmet covering the face, long cape, cloak covering the body, megaphone covering the face, dark skin",
+      "notes": "Sample stage (run first): a fresh creation of the orc warboss in direction A, seed a; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "orc-warboss-a-fresh",
+      "asset": "chibi-direction-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 93304,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-warboss-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his yellow-olive skin (face, ears, arms, hands) to a fresh bright leaf green, not olive and not yellow: colour #5aa546, with light green #98d975 on the face, nose and cheeks and #3f8232 only as thin shading. Keep everything else exactly the same: the open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, straps, kilt, boots, pose, thick black outline and art style, on a transparent background.",
+      "notes": "Sample iteration 2 (bead pulp_wars-wrn.2): the first skin edit (orc-warboss-a-green) drew a darker olive. The hex values are the skin PixelLab drew on the accepted Orc Brute."
+    },
+    {
+      "id": "orc-warboss-a-sand",
+      "asset": "chibi-direction-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 93306,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-warboss-a-fresh",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the dark brown leather: his two big gauntlets, the shoulder straps, the belt and the trousers become pale sand-buff leather, colour #d0b073, shaded #9a7a46, not dark and not orange; the boots become mid brown, colour #8a5a30. Keep everything else exactly the same: the green skin, open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, pose, thick black outline and art style, on a transparent background.",
+      "notes": "Sample iteration 3 (bead pulp_wars-wrn.2): orc-warboss-a-fresh has the Brute's green and the face of the brief, but dark brown gauntlets, trousers and boots hold the lit share at 43% (dark 33%)."
+    },
+    {
+      "id": "rocket-cart-a",
+      "asset": "chibi-direction-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 93051,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The machine is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "catapult, missile, steel rocket, dark planks",
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the rocket cart in direction A."
+    },
+    {
+      "id": "scrap-buggy-a",
+      "asset": "chibi-direction-goblin-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 93061,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The machine is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "horse, cart, wooden planks, modern car",
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the scrap buggy in direction A."
+    },
+    {
+      "id": "troll-b",
+      "asset": "chibi-direction-goblin-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 93072,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The figure is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "smock, apron, overalls, dark green skin, blue skin, grey skin, dark skin",
+      "notes": "Sample stage (run first): a fresh creation of the troll in direction A, seed b; inspect at 1x and x4 against GOBLIN_REDESIGN.md before batching."
+    },
+    {
+      "id": "troll-b-sage",
+      "asset": "chibi-direction-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 93303,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "troll-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his skin, much lighter: arms, hands, shoulders, legs, feet and head become light sage green, colour #739a59, with lighter #9dbf80 on top and darker #4c6c3c only as thin shading; his whole face, chest and big round belly become pale cream-green, colour #cde0b4. No dark green skin. The orange paint splashes become hazard yellow, colour #fdd20f. Keep the face, tusks, stone club, straps, belt, loincloth, pose, thick black outline and art style exactly the same, transparent background.",
+      "notes": "Sample iteration (bead pulp_wars-wrn.2): candidate b has the shape (face visible, belly, loincloth) but a mid-dark green skin, lit share 36%; the study asks for sage with a pale belly, chest and face."
+    },
+    {
+      "id": "troll-b-sage-limbs",
+      "asset": "chibi-direction-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 93305,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "troll-b-sage",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the skin of his arms, shoulders, hands, legs and feet: from pale cream to a light sage green, colour #8fb571, with #739a59 as shading. His face, chest and round belly stay pale cream-green. The orange paint splashes become bright hazard yellow, colour #fdd20f. Keep everything else exactly the same: the mossy hair and beard, tusks, stone club, straps, belt, loincloth, wrist bands, pose, thick black outline and art style, on a transparent background.",
+      "notes": "Sample iteration 2 (bead pulp_wars-wrn.2): troll-b-sage reads well (lit 57%) but is pale all over; try sage limbs with the pale belly, chest and face of the study."
+    },
+    {
+      "id": "portrait-goblin-a",
+      "asset": "chibi-direction-portrait-goblin-goblin",
+      "endpoint": "create-image-pixen",
+      "seed": 93081,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait goblin in direction A."
+    },
+    {
+      "id": "portrait-wolf-rider-a",
+      "asset": "chibi-direction-portrait-goblin-wolf-rider",
+      "endpoint": "create-image-pixen",
+      "seed": 93091,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait wolf rider in direction A."
+    },
+    {
+      "id": "portrait-bomb-chucker-a",
+      "asset": "chibi-direction-portrait-goblin-bomb-chucker",
+      "endpoint": "create-image-pixen",
+      "seed": 93101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait bomb chucker in direction A."
+    },
+    {
+      "id": "portrait-orc-brute-a",
+      "asset": "chibi-direction-portrait-goblin-orc-brute",
+      "endpoint": "create-image-pixen",
+      "seed": 93111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait orc brute in direction A."
+    },
+    {
+      "id": "portrait-orc-brute-a-zoom",
+      "asset": "chibi-direction-portrait-goblin-orc-brute",
+      "endpoint": "edit-image-pixen",
+      "seed": 93312,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-orc-brute-a",
+        "candidate": 0
+      },
+      "editInstruction": "Zoom in to a close-up portrait: redraw it as only the head and the top of the shoulders, twice as big, filling the image. A huge round bald head with bright leaf green skin, colour #5aa546, with a lighter #98d975 face and jaw, a heavy bare jaw with no beard, two cream tusks, small grumpy eyes, an orange nose, a small round light grey tin cap on top of the head with no nose guard. Keep the thick black outline and art style, on a transparent background.",
+      "notes": "Batch iteration 2 (bead pulp_wars-wrn.2): the creation drew a small whole bust with a dark green face under a helmet with a nose guard; the accepted Brute is bald and leaf green."
+    },
+    {
+      "id": "portrait-orc-warboss-a",
+      "asset": "chibi-direction-portrait-goblin-orc-warboss",
+      "endpoint": "create-image-pixen",
+      "seed": 93121,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "visor, face guard, helmet covering the face",
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait orc warboss in direction A."
+    },
+    {
+      "id": "portrait-rocket-cart-a",
+      "asset": "chibi-direction-portrait-goblin-rocket-cart",
+      "endpoint": "create-image-pixen",
+      "seed": 93131,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait rocket cart in direction A."
+    },
+    {
+      "id": "portrait-scrap-buggy-a",
+      "asset": "chibi-direction-portrait-goblin-scrap-buggy",
+      "endpoint": "create-image-pixen",
+      "seed": 93141,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait scrap buggy in direction A."
+    },
+    {
+      "id": "portrait-troll-a",
+      "asset": "chibi-direction-portrait-goblin-troll",
+      "endpoint": "create-image-pixen",
+      "seed": 93151,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the portrait troll in direction A."
+    },
+    {
+      "id": "portrait-troll-a-zoom",
+      "asset": "chibi-direction-portrait-goblin-troll",
+      "endpoint": "edit-image-pixen",
+      "seed": 93313,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-troll-a",
+        "candidate": 0
+      },
+      "editInstruction": "Zoom in to a close-up portrait: redraw it as only the head and the top of the shoulders, twice as big, filling the image. A big round head with a pale cream-green face, colour #cde0b4, framed by shaggy olive green mossy hair and a mossy olive beard, a big nose, tiny eyes, two cream tusks, pale cream-green bare shoulders, no helmet and no spike. Keep the thick black outline and art style, on a transparent background.",
+      "notes": "Batch iteration 2 (bead pulp_wars-wrn.2): the creation drew a small green figure with a spiked helmet; the accepted Troll has a pale face in mossy olive hair."
+    },
+    {
+      "id": "city-1-a",
+      "asset": "chibi-direction-goblin-city-1",
+      "endpoint": "create-image-pixen",
+      "seed": 93161,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the city 1 in direction A."
+    },
+    {
+      "id": "city-1-a-edit",
+      "asset": "chibi-direction-goblin-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 93314,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "city-1-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents and the hut stand directly on a transparent background with nothing at all under them. Remove the three small red flags. Recolour the round hide tents to pale sand-buff, colour #d0b073, with lighter #e6cc95 tops, and the hut's door to hazard yellow, colour #fdd20f. Keep the shapes of the tents, the tin hut, the lookout pole, the outline and art style exactly the same.",
+      "notes": "Batch iteration 2 (bead pulp_wars-wrn.2): Pixen drew the camp on a slab with red flags and mid-brown tents (lit 34%)."
+    },
+    {
+      "id": "city-2-a",
+      "asset": "chibi-direction-goblin-city-2",
+      "endpoint": "create-image-pixen",
+      "seed": 93171,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the city 2 in direction A."
+    },
+    {
+      "id": "city-2-a-edit",
+      "asset": "chibi-direction-goblin-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 93315,
+      "requestSize": {
+        "width": 96,
+        "height": 100
+      },
+      "source": {
+        "recipe": "city-2-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass plate and the soil slab under the camp, so the tents, the hut and the tower stand directly on a transparent background with nothing at all under them. Keep the pale patched tents, the tin hut with its yellow windows, the lookout tower, the smoke, the colours, outline and art style exactly the same.",
+      "notes": "Batch iteration 2 (bead pulp_wars-wrn.2): ground removal."
+    },
+    {
+      "id": "city-3-a",
+      "asset": "chibi-direction-goblin-city-3",
+      "endpoint": "create-image-pixen",
+      "seed": 93181,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "notes": "Batch stage (only after the sample passes review): a fresh creation of the city 3 in direction A."
+    },
+    {
+      "id": "city-3-a-edit",
+      "asset": "chibi-direction-goblin-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 93316,
+      "requestSize": {
+        "width": 96,
+        "height": 104
+      },
+      "source": {
+        "recipe": "city-3-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass plate, the dirt and the dark soil slab under the camp, so the big tent and the huts stand directly on a transparent background with nothing at all under them. Keep the big patched sand tent, the tin huts with their yellow roofs, the chimney pipes with smoke, the fence, the colours, outline and art style exactly the same.",
+      "notes": "Batch iteration 2 (bead pulp_wars-wrn.2): ground removal."
+    },
+    {
+      "id": "orc-warboss-a-sand-leaf",
+      "asset": "chibi-direction-goblin-orc-warboss",
+      "endpoint": "edit-image-pixen",
+      "seed": 93324,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "orc-warboss-a-sand",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only his dull olive skin (face, ears, arms, hands) to a fresh bright leaf green, not olive and not yellow: colour #5aa546, with light green #98d975 on the face, nose and cheeks and #3f8232 only as thin shading. Keep everything else exactly the same: the open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, straps, pale sand trousers, yellow flap, boots, pose, thick black outline and art style, on a transparent background.",
+      "notes": "Production fix (bead pulp_wars-wrn.2): the leather edit (orc-warboss-a-sand) drifted the skin back to a dull olive (#667515, L* 46); the Orcs share the Brute's leaf green."
     }
   ]
 }

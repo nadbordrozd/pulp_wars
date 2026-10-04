@@ -2,8 +2,8 @@
 
 **Status:** approved by the root on 2026-09-30 (bead `pulp_wars-0ao.10`),
 under the user's delegation of art judgement for epic `pulp_wars-0ao`. The
-prompt and negative fragments were rewritten to the palette of the new
-direction in bead `pulp_wars-3tq.9` (see the next section).
+live look is the **redesign of October 2026** (bead `pulp_wars-wrn.2`, the
+next section); its prompt and negative fragments are the ones below.
 Written from
 [FACTION_TEMPLATE.md](FACTION_TEMPLATE.md) under the rules in the
 [README](README.md) and the precedent of [UNDEAD.md](UNDEAD.md).
@@ -21,23 +21,143 @@ lines were rewritten in bead `pulp_wars-6gd.5` (see
 
 The roster and rules come from the
 [revision-17 Goblin spec](../../product/RULESET_7_REVISION_17_GOBLINS.md)
-(sections 2.3, 3, 6, 7 and 11.4). Patrol Boat and Battleship reuse the Human
-art ([section 3](../../product/RULESET_7_REVISION_17_GOBLINS.md#3-goblin-roster)).
+(sections 2.3, 3, 6, 7 and 11.4). The Goblin ships are in batch
+`naval-goblin` ([NAVAL_FACTIONS.md](../NAVAL_FACTIONS.md)).
 
-**Redesign under way (epic `pulp_wars-wrn`):** the user found the live
-look too dark (2026-10-04) and asked for a redesign from scratch. The
-direction study, with three palettes, recoloured mockups and ready
-PixelLab recipes, is [GOBLIN_REDESIGN.md](GOBLIN_REDESIGN.md). Until a
-direction is chosen and generated, the sections below still describe the
-live art.
+## Redesign (October 2026): lime, sand and hazard paint
 
-## New direction (October 2026): scrap raiders in fixed colours
+**Status:** live. The user found the previous look too dark on 2026-10-04
+("especially the orc and troll are way too dark. warboss is unreadable.
+redesign the goblin sprites from scratch") and the root chose direction A of
+the [direction study](GOBLIN_REDESIGN.md), with the Troll in a loincloth and
+the Warboss keeping small horns with the face visible. Bead
+`pulp_wars-wrn.2` redrew every Goblin piece in place: the same asset ids,
+subjects, canvases and anchors in batches `direction-goblin` (8 units, 8
+portraits, City 1 to 3) and `naval-goblin` (3 ships, 2 ship portraits), so
+the game draws them with no code change beyond the cities' pennant anchors.
 
-**Status:** the user chose this look on 2026-10-02 after two study passes
-(recorded on bead `pulp_wars-3tq.9`); that bead produced the art (batch
-`direction-goblin`) and made it the default look. The sections from
-[Palette](#palette) down describe the previous art, which the game still
-draws with Settings > Developer tools > Classic look. See
+![Before and after, in colour and in greyscale, with the study's measurements](../../../art/pixellab/reviews/goblin-redesign-study/result-x3.png)
+
+- **Identity:** unchanged. Scrappy pulp goblins, big orcs and one enormous
+  troll; loud, cheeky and ramshackle; funny, never grim.
+- **Value rules** (from the study): a light or saturated dominant material,
+  light faces and bellies, dark only as small anchors (boots, belts, the
+  bomb, tyres), and the faction's hazard yellow on every unit.
+- **Faction colours, fixed for every player** (measured on the masters):
+
+| Role          | Colour                                               | Used for                                                                  |
+| ------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
+| Goblin lime   | `#9aca1d`, light `#c4ea0f`, shade `#74ad25`          | the skin of every goblin, the crews of the vehicles and ships             |
+| Orc green     | `#5aa546`, light `#98d975`, shade `#3f8232`          | the Orc Brute; the Warboss is a yellower `#9fc424` on `#667515`           |
+| Troll pale    | `#def59b`, shade `#c1d781`; moss `#839418`/`#647421` | the Troll's whole body, belly and face; mossy olive hair and beard        |
+| Sand leather  | `#f2c685`, `#e1ab5f`, shade `#b37d43`                | caps and hats, straps, loincloths, trousers, hides, tents, sails          |
+| Light tin     | `#cbd7e3`, `#92a8b3`, shade `#657284`                | blades, caps and helmets, the shield, the buggy, hut walls, hull plates   |
+| Hazard yellow | `#fbd200` (the faction colour `#fdd20f`)             | paint: helmet, shield rim, megaphone, buggy panels, rags, doors and roofs |
+| Wolf grey     | `#7a8484`, shade `#59666a`, cream `#f6eccb`          | the Wolf Rider's wolf, with a cream belly and muzzle                      |
+| Rocket paper  | red, orange, yellow, blue, green with cream cones    | the fireworks cart only                                                   |
+| Dark anchors  | brown `#74341a`, black tyres, the black bomb         | boots, belts, a few straps, the buggy's tyres, the bomb                   |
+
+- **Hazard yellow is paint, 2 to 7% of every unit**, pinned to the faction
+  colour by the `goblin-hazard` accent step of the pipeline (PixelLab drew
+  the Brute's shield rim as an orange gold, 4 from the Human gold). The
+  Rocket Cart and its portrait skip the step so the orange rocket stays
+  orange.
+- **No garment recolour**, as before: no owner area, no mask
+  (`fixedColours`). The player is read from the pennant on a city, the
+  territory border and the interface.
+
+| Role                      | Look                                                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Goblin (`FIGHTER`)        | huge head and huge ears straight out sideways, big eyes, a sand cap and straps, a tin cleaver splashed with hazard paint                          |
+| Wolf Rider (`RAIDER`)     | a light grey wolf on four legs with a cream belly and muzzle; a small lime rider in a sand hat with a hazard band, a spear rag                    |
+| Bomb Chucker (`MARKSMAN`) | a hazard yellow pot helmet with a black stripe and goggles; the black bomb held overhead is the one large dark shape                              |
+| Orc Brute (`GUARD`)       | a huge bald leaf green head, the whole face visible, bare jaw with tusks, a small tin cap on top, a tin shield with a hazard rim                  |
+| Orc Warboss (`CAPTAIN`)   | the face fully visible and shouting under a small horned tin helmet, a cream fur mantle over the shoulders, the hazard megaphone held to the side |
+| Rocket Cart (`CATAPULT`)  | five paper fireworks on a pale plank cart with brown wheels, a lime goblin with a lit match                                                       |
+| Scrap Buggy (`KNIGHT`)    | a light tin body with two hazard yellow panels with black stripes, black tyres, a puff of smoke, a lime driver in goggles                         |
+| Troll (`JUGGERNAUT`)      | a pale cream-green body with a big belly, a pale face in mossy olive hair and beard, a loincloth, a light stone club                              |
+| City 1 to 3               | pale sand hide tents and light tin huts with hazard yellow doors and roofs; a lookout pole, a tower, a big tent; no ground, no flag               |
+| Ships                     | brown hulls patched with tin and hazard stripes, pale sand sails, lime crews; the raft has oars and no mast                                       |
+
+Measured with `npm run art:goblin-redesign-study-review` (CIE L\* of the
+non-outline pixels; lit is L\* 55 and above, dark below 35):
+
+| Unit         | Mean L\* before |    after | Lit before |   after | Dark before |   after | Hazard yellow |
+| ------------ | --------------: | -------: | ---------: | ------: | ----------: | ------: | ------------: |
+| Goblin       |            38.4 |     63.6 |        21% |     65% |         53% |     12% |          4.0% |
+| Wolf Rider   |            30.1 |     53.7 |        12% |     38% |         71% |     27% |          2.1% |
+| Bomb Chucker |            28.4 |     56.8 |        12% |     60% |         68% |     17% |          7.3% |
+| Orc Brute    |            23.5 |     56.7 |         1% |     52% |         88% |     20% |          5.5% |
+| Orc Warboss  |            37.7 |     50.4 |        21% |     47% |         59% |     28% |          4.7% |
+| Rocket Cart  |            35.0 |     53.5 |        26% |     48% |         55% |     22% |          3.6% |
+| Scrap Buggy  |            27.8 |     50.5 |         9% |     46% |         68% |     29% |          7.3% |
+| Troll        |            26.6 |     60.6 |         3% |     57% |         83% |     19% |          3.2% |
+| **Roster**   |        **30.9** | **55.7** |    **13%** | **52%** |     **68%** | **22%** |      **4.7%** |
+
+The roster now sits between the Martians (53.5) and the Ice Folk (57.8); the
+Humans measure 49.2. The Wolf Rider's lit share is under the study's 45%
+because the wolf's mid grey (L\* 54) sits just under the line.
+
+### How it was made
+
+Every piece is a **fresh creation** (`create-image-pixen`) from the prompt
+fragment below and the `<subject>/LIME` lines of
+[`GOBLIN.json`](../../../scripts/art/chibi/subjects/GOBLIN.json), followed
+where needed by `edit-image-pixen` edits of that creation; no old sprite
+was edited. The work ran in the study's exploration run
+(`art/explorations/goblin-redesign-2026-10/lime`, 49 PixelLab jobs) and the
+33 recipes of the accepted chains were imported into `direction-goblin` and
+the 8 of the fleet into `naval-goblin` with `art:chibi -- import`; three
+more edits ran in the production batches (52 jobs in all, two of which
+failed at PixelLab and were retried under new recipe ids).
+
+What the sample taught:
+
+- **The fragment and subject lines of the study worked first time for the
+  values**: all eight sample creations measured L\* 48 to 60 (the old
+  roster: 31). Fresh creations hold the chibi proportions.
+- **PixelLab adds a big brown beard to an orc** (both Brutes, one Warboss):
+  "Change only one thing: remove the brown beard and the brown hair
+  completely, so his big chin, heavy jaw and cheeks are bare green skin"
+  gave the Brute its light jaw.
+- **A skin recolour needs the colour PixelLab already drew.** Asking for the
+  study's `#4a8a3a` darkened the Warboss to olive; naming the green measured
+  on the accepted Brute (`#5aa546`, light `#98d975`) and "not olive and not
+  yellow" worked. A later leather edit drifted it back towards olive and a
+  second skin edit changed nothing, so the Warboss is a yellower green than
+  the Brute.
+- **"Yellow-lime" draws a yellow goblin.** "A bright lime green … green
+  skin, never yellow skin" kept the green.
+- **"Recolour only his skin, much lighter"** with the pale belly colour
+  named for face, chest and belly made the whole Troll pale; the root's
+  "pale belly visible" became a pale troll with mossy hair, which reads best
+  of the roster (lit 3% to 57%).
+- **Cities come on a grass slab** as for every faction (the ground-removal
+  edit works), and with red flags unless the edit removes them.
+- **Ships as fresh creations float where Pixen draws them.** The three ship
+  assets name a `bottomMargin`, which seats an as-is sprite on the shared
+  ship's waterline by whole pixels (a pipeline piece of this bead).
+- **Portraits of the Brute and the Troll came out as small whole figures**;
+  "Zoom in to a close-up portrait: redraw it as only the head and the top of
+  the shoulders, twice as big" (the Ice Folk finding) fixed both and let the
+  instruction restate the accepted look.
+- **An edit that names two small parts may swap them**: "the pink inside of
+  the ear becomes lime; the blue flag becomes yellow" turned the goblin's
+  face pink. A second edit naming only the face fixed it.
+
+Not redrawn: the Kaboom! and WAAAGH! command icons (a black bomb and a grey
+megaphone, palette-neutral; the megaphone on the Warboss is now hazard
+yellow) and the explosion effects (code-drawn, neutral palette).
+
+## Retired look (October 2026): scrap raiders in olive and brown
+
+**Status:** retired by the redesign above on 2026-10-04 (too dark: mean
+L\* 31). The user chose it on 2026-10-02 after two study passes (bead
+`pulp_wars-3tq.9`); its recipes, raw sheets and receipts stay in batch
+`direction-goblin` as history, and the redesign study reads its sprites
+from them. The sections from
+[Palette](#palette) down describe the classic, player-coloured art, which
+the game still draws with Settings > Developer tools > Classic look. See
 [VISUAL_DIRECTION_2026-10.md](../VISUAL_DIRECTION_2026-10.md#16-goblin-production)
 for the decisions, the measured palette and the evidence.
 
@@ -67,7 +187,7 @@ for the decisions, the measured palette and the evidence.
 - **Hazard stripes are rare.** None on the basic Goblin, the Wolf Rider, the
   Orcs or the Troll; one band on the Bomb Chucker's bomb and one small panel
   on the Scrap Buggy. Hazard yellow is close to the Human gold (difference 14) and to the Gold player colour (20), so it is never a filled area.
-- **Ships** are shared by every faction and are not converted.
+- **Ships** were the shared ships then (converted by bead `pulp_wars-w5j.2`).
 
 | Role                      | New look (silhouette, canvas and anchor unchanged)                                                                    |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------- |
@@ -103,15 +223,48 @@ explosions that hit friend and foe alike.
 
 ## Prompt fragment
 
-The fragment of the new direction (bead `pulp_wars-3tq.9`), 60 words. Like
-the one it replaces it names only a mood, materials, surfaces, colours and
+The fragment of the redesign (direction A of the study, bead
+`pulp_wars-wrn.2`), 62 words; every live unit, portrait and ship was created
+with it (cities use the calm class, which skips the faction layer). Like the
+ones it replaces it names only a mood, materials, surfaces, colours and
 small motifs: no figure (not even "goblin", "orc" or "troll"), no skin, no
 bombs and no place or building. Skin colours and bombs belong in the
 subject lines, because layer 3 also reaches portraits and icons, and Pixen
-draws every noun it is given. It applies to recipes generated from now on;
-no accepted asset was generated with it (the production art is edits, which
-send only their instruction), so treat it as unproven until a fresh
-creation uses it.
+draws every noun it is given. The hex values are the study's; PixelLab
+follows them better than colour words.
+
+```text
+Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim.
+Bright sunny colours with clear light and dark: pale sand-buff leather
+straps and patched hide, colour #d0b073; light grey tin scrap with rivets,
+colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour
+#fdd20f, daubed on plates, rims and anything that explodes; dark brown only
+for belts and boots.
+```
+
+## Negative fragment
+
+Firearms and modern vehicle parts keep the era: Goblin bangs come only from
+round bombs and fireworks. Skulls and bones belong to the Undead. Lime green
+is no longer excluded: it is the goblins' skin (the user: "don't worry too
+much about contrast vs grass"). The dark materials of the retired look are
+excluded by name (black and dark brown leather, dark gunmetal), red cloth
+because Pixen still reaches for the classic look's key red, orange leather,
+copper and brass because they are the Dinosaurs' and the Dwarves', and grey
+skin because every "grey" in a prompt reaches the skin.
+
+```text
+gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome,
+headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones,
+blood, gore, horror, dark gloomy colours, black leather, dark brown leather,
+dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour,
+grey skin
+```
+
+## Previous fragments
+
+The fragment of the retired olive and brown look (bead `pulp_wars-3tq.9`;
+no accepted asset was generated with it, since that look was edits):
 
 ```text
 Faction: rowdy, ramshackle scrap-heap raiders, loud and silly, never grim.
@@ -122,29 +275,10 @@ yellow-and-black stripes on things that explode; leather is shaded dark
 brown, iron with darker blue-grey.
 ```
 
-## Negative fragment
-
-Firearms and modern vehicle parts keep the era: Goblin bangs come only from
-round bombs and fireworks. Skulls and bones belong to the Undead. Glows and
-lime green sit close to the Teal and Violet player colours or to the grass.
-Wood, brown and rust are no longer excluded: they are the palette. Red
-cloth is, because the previous look wore the key red and Pixen still
-reaches for it; bright orange leather and big yellow areas are what the two
-study passes had to be steered away from.
-
-```text
-gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome,
-headlights, neon, glowing green, lime green, cyan glow, purple magic glow,
-skull, bones, blood, gore, horror, red cloth, red flag, bright orange
-leather, yellow cloth, maroon
-```
-
-## Previous fragments (classic look)
-
 The classic batches `goblin`, `5-goblin` and `cities-goblin` were generated
-with these; their records and receipts keep the text as sent. A new recipe
-in one of those batches (owner colour on a mask) would need them back: the
-fragment above has no red garment and allows brown.
+with the ones below; their records and receipts keep the text as sent. A new
+recipe in one of those batches (owner colour on a mask) would need them
+back: the live fragment has no red garment.
 
 ```text
 Faction: rowdy, ramshackle scrap-heap storybook, loud and silly, never grim.

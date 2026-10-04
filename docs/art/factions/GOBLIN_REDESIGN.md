@@ -1,12 +1,16 @@
 # Goblin redesign: direction study
 
-**Status:** study for bead `pulp_wars-wrn.1` (epic `pulp_wars-wrn`), for the
-user to choose a direction. Nothing in the game changed: no production
-sprite, registry entry or fragment of [GOBLIN.md](GOBLIN.md) was touched.
-The mockups below are **recolours of the current sprites**, made in code
-with no PixelLab call; the redesign also changes the shapes, and the
-recipes for that are checked in and ready to run once the PixelLab key is
-available to the generating worker.
+**Status:** decided and produced. The root chose **direction A** (lime,
+sand and hazard paint; the Troll in a loincloth with the pale belly
+visible; the Warboss keeps small horns with the face fully visible), and
+bead `pulp_wars-wrn.2` generated it and replaced the Goblin art in place:
+see [the outcome](#8-outcome-bead-pulp_wars-wrn2) and
+[GOBLIN.md](GOBLIN.md#redesign-october-2026-lime-sand-and-hazard-paint).
+Sections 1 to 7 are the study of bead `pulp_wars-wrn.1` as written for
+that choice; "current" in them means the roster **before** the redesign,
+which the review script now reads from the superseded recipes' recorded
+candidates. The mockups are **recolours of those sprites**, made in code
+with no PixelLab call.
 
 The brief, from the user (2026-10-04): "the goblin sprites came out too
 dark. this palette doesn't work. especially the orc and troll are way too
@@ -311,13 +315,66 @@ fragment and subject lines move into [GOBLIN.md](GOBLIN.md) and
   pale belly), and should the Warboss keep horns (the most readable part of
   the current sprite)?
 
+## 8. Outcome (bead `pulp_wars-wrn.2`)
+
+![Before and after, in colour and in greyscale](../../../art/pixellab/reviews/goblin-redesign-study/result-x3.png)
+
+Direction A was generated with the lime run's recipes: the eight sample
+creations first, then the rest, 52 PixelLab jobs in all (28 creations and
+24 edits of those creations; two jobs failed at PixelLab and were retried).
+The accepted chains were imported into batches `direction-goblin` and
+`naval-goblin` under the existing asset ids, so the game draws the new art
+with no registry change.
+
+| Look              | Mean L\* | Dark | Lit | 90th pct | Faction colour |
+| ----------------- | -------: | ---: | --: | -------: | -------------: |
+| Before            |     30.9 |  68% | 13% |       57 |           0.5% |
+| A mockup          |     57.2 |  23% | 57% |       86 |           3.5% |
+| **A as produced** | **55.7** |  22% | 52% |       86 |           4.7% |
+
+Per unit, mean L\* and lit share (before in brackets): Goblin 63.6 and 65%
+(38.4, 21%), Wolf Rider 53.7 and 38% (30.1, 12%), Bomb Chucker 56.8 and 60%
+(28.4, 12%), Orc Brute 56.7 and 52% (23.5, 1%), Orc Warboss 50.4 and 47%
+(37.7, 21%), Rocket Cart 53.5 and 48% (35.0, 26%), Scrap Buggy 50.5 and 46%
+(27.8, 9%), Troll 60.6 and 57% (26.6, 3%). Every unit meets the study's
+mean L\* 50 and carries the faction colour (2 to 7%); the Wolf Rider's lit
+share is under 45% because its mid-grey wolf (L\* 54) sits just under the
+L\* 55 line.
+
+What differs from the study's plan:
+
+- **The Troll is pale all over**, not sage with a pale belly: the skin edit
+  that named the belly colour made the whole body cream-green with mossy
+  olive hair and beard. It is the most readable piece of the roster and was
+  kept.
+- **The Orcs' green is the one PixelLab drew** (`#5aa546`, light `#98d975`),
+  brighter than the study's `#4a8a3a`; the Warboss stayed a yellower green.
+- **Black inner lines stayed.** The outline share fell from 28% to 22% with
+  the lighter materials; the study's deterministic inner-line step was not
+  needed and was not built.
+- **Hazard yellow needed a pin**: the `goblin-hazard` accent step moves the
+  orange-gold PixelLab drew on the Brute's shield rim, the megaphone and the
+  buggy's panels to the faction colour.
+- **Ships and cities were redrawn too** (the recipes were ready); the
+  command icons and the explosion effects were not (palette-neutral).
+
+Review sheets beyond this script: `npm run art:chibi-direction-review --
+--goblin-only`, `npm run art:chibi-goblin-review`,
+`npm run art:faction-looks-review` and
+`npm run art:chibi-naval-faction-review`. Candidates were inspected with
+`npx tsx scripts/art/goblin-redesign/candidates.ts --out FILE label=png …`
+(x4 on Grass, 1x on Grass, Snow and Mountain ground, greyscale, and the
+measurements under each sprite).
+
 ## Evidence
 
 `npm run art:goblin-redesign-study-review` writes
 [`art/pixellab/reviews/goblin-redesign-study/`](../../../art/pixellab/reviews/goblin-redesign-study/):
 `overview.png`, `diagnosis-x3.png`, `histograms.png`,
 `directions-{grass,snow,mountain}-{1x,x3}.png`, `extras-x2.png`,
-`classes-x3.png` and `index.json` (every measurement, the palettes and the
-collision table). `--out DIR` copies them. The palette, classification and
-the two runs are pinned in
+`classes-x3.png`, `result-x3.png` (before and after) and `index.json`
+(every measurement, the palettes, the collision table and the `result`
+block). Every sheet has a "Redesign (live)" row beside the mockups.
+`--out DIR` copies them. The palette, classification, the two runs and the
+value rules on the live roster are pinned in
 [`goblin-redesign-study-assets.test.ts`](../../../tests/unit/goblin-redesign-study-assets.test.ts).

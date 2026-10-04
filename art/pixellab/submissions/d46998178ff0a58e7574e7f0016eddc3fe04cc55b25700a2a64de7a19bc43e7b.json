@@ -1,0 +1,57 @@
+{
+  "id": "portrait-patrol-boat-a",
+  "jobId": "sync-9024da76-8cec-42c3-bbf9-f40135b8c1d2",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-portrait-patrol-boat",
+    "subject": "PORTRAIT:GOBLIN:PATROL_BOAT",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 93221,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-icon.txt",
+        "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/goblin-redesign-2026-10/lime/faction.md#prompt-fragment + art/explorations/goblin-redesign-2026-10/lime/faction.md#negative-fragment",
+        "text": "Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+        "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+        "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/goblin-redesign-2026-10/lime/subjects.json",
+        "text": "Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat shown whole from the front-right: weathered grey-tan planks patched with light grey tin, one big patched pale sand-buff sail with a hazard yellow patch, a little bright lime green goblin with huge pointed ears; no water; simple shapes and very few details."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat shown whole from the front-right: weathered grey-tan planks patched with light grey tin, one big patched pale sand-buff sail with a hazard yellow patch, a little bright lime green goblin with huge pointed ears; no water; simple shapes and very few details.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat shown whole from the front-right: weathered grey-tan planks patched with light grey tin, one big patched pale sand-buff sail with a hazard yellow patch, a little bright lime green goblin with huge pointed ears; no water; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+  }
+}

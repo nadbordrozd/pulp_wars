@@ -1,0 +1,36 @@
+{
+  "id": "battleship-a-edit-3",
+  "jobId": "4fed9440-619c-4def-8c4b-a0cbb453e408",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-battleship",
+    "subject": "UNIT:GOBLIN:BATTLESHIP",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 93323,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "battleship-a-edit-2",
+      "candidate": 0,
+      "sha256": "c8ab631e50ed5b472c6249fe452e980df1f427dde312e9b82e4f7c41022b7ff9"
+    }
+  }
+}

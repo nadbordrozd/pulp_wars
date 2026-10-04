@@ -1,0 +1,58 @@
+{
+  "id": "patrol-boat-a",
+  "jobId": "sync-74a492aa-b1ea-4033-a63c-3ef09bb06095",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-patrol-boat",
+    "subject": "UNIT:GOBLIN:PATROL_BOAT",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 93191,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/goblin-redesign-2026-10/lime/faction.md#prompt-fragment + art/explorations/goblin-redesign-2026-10/lime/faction.md#negative-fragment",
+        "text": "Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots.",
+        "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-ship.txt + scripts/art/chibi/fragments/class-ship.negative.txt",
+        "text": "Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image.",
+        "negative": "water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/goblin-redesign-2026-10/lime/subjects.json",
+        "text": "Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat seen from the front-right: a lopsided hull of weathered grey-tan planks patched with riveted light grey tin plates, one crooked mast with one big patched pale sand-buff sail with one hazard yellow patch, a small barrel on deck and one paper firework rocket tied to the mast, and a little bright lime green goblin with huge pointed ears peeking over the rail; simple shapes and very few details; silly, never grim."
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat seen from the front-right: a lopsided hull of weathered grey-tan planks patched with riveted light grey tin plates, one crooked mast with one big patched pale sand-buff sail with one hazard yellow patch, a small barrel on deck and one paper firework rocket tied to the mast, and a little bright lime green goblin with huge pointed ears peeking over the rail; simple shapes and very few details; silly, never grim.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat seen from the front-right: a lopsided hull of weathered grey-tan planks patched with riveted light grey tin plates, one crooked mast with one big patched pale sand-buff sail with one hazard yellow patch, a small barrel on deck and one paper firework rocket tied to the mast, and a little bright lime green goblin with huge pointed ears peeking over the rail; simple shapes and very few details; silly, never grim. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd."
+  }
+}

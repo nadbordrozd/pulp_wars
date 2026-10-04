@@ -1,0 +1,36 @@
+{
+  "id": "battleship-a-edit",
+  "jobId": "cedc0eda-9d39-4c54-841b-c17b84a44978",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-battleship",
+    "subject": "UNIT:GOBLIN:BATTLESHIP",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 93318,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the two flags: the blue flag on top of the lookout tower and the red flag on the mast both become hazard yellow rags, colour #fdd20f. Nothing blue and nothing red is left on the flags. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the goblin, the colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the two flags: the blue flag on top of the lookout tower and the red flag on the mast both become hazard yellow rags, colour #fdd20f. Nothing blue and nothing red is left on the flags. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the goblin, the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the two flags: the blue flag on top of the lookout tower and the red flag on the mast both become hazard yellow rags, colour #fdd20f. Nothing blue and nothing red is left on the flags. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the goblin, the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Recolour only the two flags: the blue flag on top of the lookout tower and the red flag on the mast both become hazard yellow rags, colour #fdd20f. Nothing blue and nothing red is left on the flags. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the goblin, the colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "battleship-a",
+      "candidate": 0,
+      "sha256": "6ebe6a92c88f794ca543c56b6504623e61af703d993616a3486d4dd819437ec4"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "goblin-a-lime",
+  "jobId": "e8355220-b10c-4d7a-94fe-2239273d6377",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-goblin",
+    "subject": "UNIT:GOBLIN:FIGHTER",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 93308,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only his skin (head, ears, arms, hands, belly, legs and feet): a bright lime green, colour #86c232, with lighter #acdc55 on the face, nose and belly and #5a9424 as shading; no dark teal and no dark green shadows on the skin. Keep everything else exactly the same: the big eyes, open mouth, sand leather cap, straps, loincloth, belt, shoulder plates, tin cleaver with yellow paint, pose, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only his skin (head, ears, arms, hands, belly, legs and feet): a bright lime green, colour #86c232, with lighter #acdc55 on the face, nose and belly and #5a9424 as shading; no dark teal and no dark green shadows on the skin. Keep everything else exactly the same: the big eyes, open mouth, sand leather cap, straps, loincloth, belt, shoulder plates, tin cleaver with yellow paint, pose, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only his skin (head, ears, arms, hands, belly, legs and feet): a bright lime green, colour #86c232, with lighter #acdc55 on the face, nose and belly and #5a9424 as shading; no dark teal and no dark green shadows on the skin. Keep everything else exactly the same: the big eyes, open mouth, sand leather cap, straps, loincloth, belt, shoulder plates, tin cleaver with yellow paint, pose, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only his skin (head, ears, arms, hands, belly, legs and feet): a bright lime green, colour #86c232, with lighter #acdc55 on the face, nose and belly and #5a9424 as shading; no dark teal and no dark green shadows on the skin. Keep everything else exactly the same: the big eyes, open mouth, sand leather cap, straps, loincloth, belt, shoulder plates, tin cleaver with yellow paint, pose, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "goblin-a",
+      "candidate": 0,
+      "sha256": "d41e11984f797615c5e297401cc9f5f0a7377bdb2422dc7ae581d6f233aa819e"
+    }
+  }
+}

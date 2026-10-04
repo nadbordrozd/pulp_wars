@@ -19,67 +19,67 @@
       "file": "art/pixellab/reviews/chibi-batch-goblin/faction-units-1x.png",
       "width": 886,
       "height": 1164,
-      "sha256": "04ef9d3b9f9716b580d5dd3839ea05129f6fb6b6c9e8b46ee051c25f7905dd35"
+      "sha256": "00f5f1bdc354955f4c42916255c52941bf15a660d4bb79f26b8dfeea6e691cfe"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/faction-portraits-1x.png",
       "width": 630,
       "height": 844,
-      "sha256": "dcbed8fca797f5cab550b5b56fb8cb1f95aec19c9a87ed2353091ff8312e13a1"
+      "sha256": "c0d7cd819a88539ef9b768165959260295040ea23b43de06bf58c756f85fcb6a"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/faction-units-x4.png",
       "width": 3804,
       "height": 3852,
-      "sha256": "d7a8664ace90ba4a92b02c41807197fb1057d6ae4f9b8eef3f287956c0944062"
+      "sha256": "6cfae3398090691daea5af0c66782cee5534fc2a4ce2633c429a77964c46b66a"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/faction-portraits-x4.png",
       "width": 2652,
       "height": 2572,
-      "sha256": "0e15b1267bdb69d0da18507ffcb17def22317d6d47195e8d733795d9ac08a4f4"
+      "sha256": "3936f64a7d4f798c3115659059168e66f3609ac95849874d5b656706b31cf261"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-desktop-zoom-1.png",
       "width": 1440,
       "height": 900,
-      "sha256": "17b0ea7e0071e45ef5664b56460f43486abbeadeff583f25d9c22ededf3712df"
+      "sha256": "a0bcb90b514c270fe6e5f42dba39c8004bcf740e7c7a36c53ce748f49aa73721"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-desktop-zoom-0.75.png",
       "width": 1440,
       "height": 900,
-      "sha256": "36bad5da90bbe049144d820ed3c1251f96847af5117d65ea2f5097c21b921dbe"
+      "sha256": "494be78b31439572e5c84ac270d4bb9b98e720cae3acc3e785dbb58600cafa16"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-unit-dock-desktop.png",
       "width": 1440,
       "height": 900,
-      "sha256": "7c7646bc0c641c9036190359d5faf7d225754cb77fdcff81327c4daf5089d842"
+      "sha256": "8cb3c181ea71432df2a68d5b66ecd85c49cc36c7cb381b2e51cbea7eafa7566d"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-city-dock-desktop.png",
       "width": 1440,
       "height": 900,
-      "sha256": "ad108c1ac60fce9e9df51f39143c8cc2f5b9c0c544dbe2018ed2f870964eae0a"
+      "sha256": "6dd1faf18755a5f0df5ac0088de2b5fec17e09b4af0fc0608aa6167a234d155f"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-tech-desktop.png",
       "width": 1440,
       "height": 900,
-      "sha256": "868ea7326b9652445525ba7fb2605be6239a19cddabdd3bc2caa809124a6850d"
+      "sha256": "5f316fb48fd93b9095e4f610868a4a1cde4e0d946f8e4e66c1b22cbcf7f84d84"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-phone-zoom-1.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "3567900e01e1bbfa46e7ea9cb289b18ae23a3ca55d3809998f70aebaf59d379e"
+      "sha256": "87702a42c2d4e155db9d4dcff7ce591355a82b055d30baeebce2ff8210f66a4b"
     },
     {
       "file": "art/pixellab/reviews/chibi-batch-goblin/goblin-match-phone-zoom-0.75.png",
       "width": 1170,
       "height": 2532,
-      "sha256": "84829154332d194f91fbaa70e0a1f73a3354d3c6ba8568540bd5944f6a4dc56b"
+      "sha256": "f1bfac7b08cc8045cadad02c38a2aeac54975fc66e47736fb11a009205d0d8df"
     }
   ]
 }

@@ -2,6 +2,296 @@
   "schemaVersion": 1,
   "batch": "naval-goblin",
   "recipes": {
+    "battleship-a": {
+      "id": "battleship-a",
+      "asset": "chibi-naval-goblin-battleship",
+      "jobId": "sync-2744e47b-3c25-47d1-ac06-5f3f2c9c5d38",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "goblin-redesign-lime",
+        "asset": "chibi-redesign-lime-battleship",
+        "subject": "UNIT:GOBLIN:BATTLESHIP",
+        "faction": "TEST-GOBLIN-LIME",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 93201,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/faction.md#prompt-fragment + art/explorations/goblin-redesign-2026-10/lime/faction.md#negative-fragment",
+            "text": "Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-ship.txt + scripts/art/chibi/fragments/class-ship.negative.txt",
+            "text": "Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image.",
+            "negative": "water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/subjects.json",
+            "text": "Subject: Battleship of the Goblins, a chunky cute big ramshackle scrap warship seen from the front-right: a tall lopsided hull of weathered grey-tan planks and riveted light grey tin plates with hazard yellow painted stripes, a tin lookout tower, two crooked masts with big patched pale sand-buff sails, barrels on deck and a rack of paper firework rockets, and a little bright lime green goblin with huge pointed ears; simple shapes and very few details."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Battleship of the Goblins, a chunky cute big ramshackle scrap warship seen from the front-right: a tall lopsided hull of weathered grey-tan planks and riveted light grey tin plates with hazard yellow painted stripes, a tin lookout tower, two crooked masts with big patched pale sand-buff sails, barrels on deck and a rack of paper firework rockets, and a little bright lime green goblin with huge pointed ears; simple shapes and very few details.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Battleship of the Goblins, a chunky cute big ramshackle scrap warship seen from the front-right: a tall lopsided hull of weathered grey-tan planks and riveted light grey tin plates with hazard yellow painted stripes, a tin lookout tower, two crooked masts with big patched pale sand-buff sails, barrels on deck and a rack of paper firework rockets, and a little bright lime green goblin with huge pointed ears; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd."
+      },
+      "submittedAt": "2026-10-04T08:55:35.703Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/battleship-a.png",
+      "rawSheetSha256": "6ebe6a92c88f794ca543c56b6504623e61af703d993616a3486d4dd819437ec4",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.4963,
+          "footprintWidthShare": 0.7534,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T08:56:23.972Z",
+      "importedFrom": {
+        "exploration": "art/explorations/goblin-redesign-2026-10/lime",
+        "batch": "goblin-redesign-lime",
+        "recipe": "battleship-a"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Step of the chain: a red and a blue flag.",
+        "reviewedAt": "2026-10-04T09:09:40.738Z"
+      }
+    },
+    "battleship-a-edit": {
+      "id": "battleship-a-edit",
+      "asset": "chibi-naval-goblin-battleship",
+      "jobId": "cedc0eda-9d39-4c54-841b-c17b84a44978",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "goblin-redesign-lime",
+        "asset": "chibi-redesign-lime-battleship",
+        "subject": "UNIT:GOBLIN:BATTLESHIP",
+        "faction": "TEST-GOBLIN-LIME",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 93318,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the two flags: the blue flag on top of the lookout tower and the red flag on the mast both become hazard yellow rags, colour #fdd20f. Nothing blue and nothing red is left on the flags. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the goblin, the colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the two flags: the blue flag on top of the lookout tower and the red flag on the mast both become hazard yellow rags, colour #fdd20f. Nothing blue and nothing red is left on the flags. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the goblin, the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the two flags: the blue flag on top of the lookout tower and the red flag on the mast both become hazard yellow rags, colour #fdd20f. Nothing blue and nothing red is left on the flags. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the goblin, the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only the two flags: the blue flag on top of the lookout tower and the red flag on the mast both become hazard yellow rags, colour #fdd20f. Nothing blue and nothing red is left on the flags. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the goblin, the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "battleship-a",
+          "candidate": 0,
+          "sha256": "6ebe6a92c88f794ca543c56b6504623e61af703d993616a3486d4dd819437ec4"
+        }
+      },
+      "submittedAt": "2026-10-04T09:05:17.185Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/battleship-a-edit.png",
+      "rawSheetSha256": "2c94bb6d6946c4fa05a5883863bdfe66a1f0ec9a15b10b9ac6c93522c860c61a",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.4978,
+          "footprintWidthShare": 0.7534,
+          "suspect": true
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.4978,
+          "footprintWidthShare": 0.7534,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T09:06:05.770Z",
+      "importedFrom": {
+        "exploration": "art/explorations/goblin-redesign-2026-10/lime",
+        "batch": "goblin-redesign-lime",
+        "recipe": "battleship-a-edit"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Redesign, direction A: scrap warship with pale sand sails, tin plates, hazard stripes, a tin lookout tower and a lime goblin; the red flag is now a hazard yellow rag (the small top flag stayed teal); seated on the shared Battleship's waterline. L* 53.7, lit 52%. Superseded by battleship-a-edit-3.",
+        "reviewedAt": "2026-10-04T09:20:59.671Z"
+      }
+    },
+    "battleship-a-edit-2": {
+      "id": "battleship-a-edit-2",
+      "asset": "chibi-naval-goblin-battleship",
+      "jobId": "720fbde9-1ab5-4e14-8b29-45fa819fdc02",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-battleship",
+        "subject": "UNIT:GOBLIN:BATTLESHIP",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 93322,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only two small parts: the pink inside of the goblin's big ear becomes pale lime green, colour #acdc55, with no pink and no red left on the goblin; and the small blue flag on top of the lookout tower becomes hazard yellow, colour #fdd20f. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the yellow rag, the goblin's face, the colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only two small parts: the pink inside of the goblin's big ear becomes pale lime green, colour #acdc55, with no pink and no red left on the goblin; and the small blue flag on top of the lookout tower becomes hazard yellow, colour #fdd20f. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the yellow rag, the goblin's face, the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only two small parts: the pink inside of the goblin's big ear becomes pale lime green, colour #acdc55, with no pink and no red left on the goblin; and the small blue flag on top of the lookout tower becomes hazard yellow, colour #fdd20f. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the yellow rag, the goblin's face, the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only two small parts: the pink inside of the goblin's big ear becomes pale lime green, colour #acdc55, with no pink and no red left on the goblin; and the small blue flag on top of the lookout tower becomes hazard yellow, colour #fdd20f. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the barrels, the firework spark, the yellow rag, the goblin's face, the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "battleship-a-edit",
+          "candidate": 0,
+          "sha256": "dca92644f54787d398575702c9b006288d76dbcd3c8453a46da269c42931ae8b"
+        }
+      },
+      "submittedAt": "2026-10-04T09:21:44.659Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/battleship-a-edit-2.png",
+      "rawSheetSha256": "a9bae1c1b2242e6351e5b0614999973dc9b4612819abd50754885ac7a990c3ef",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.4993,
+          "footprintWidthShare": 0.7534,
+          "suspect": true
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.4993,
+          "footprintWidthShare": 0.7534,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T09:22:24.570Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Step of the chain: both flags yellow and the ear green, but the goblin's face turned pink.",
+        "reviewedAt": "2026-10-04T09:24:51.332Z"
+      }
+    },
+    "battleship-a-edit-3": {
+      "id": "battleship-a-edit-3",
+      "asset": "chibi-naval-goblin-battleship",
+      "jobId": "4fed9440-619c-4def-8c4b-a0cbb453e408",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-battleship",
+        "subject": "UNIT:GOBLIN:BATTLESHIP",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 93323,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "battleship-a-edit-2",
+          "candidate": 0,
+          "sha256": "c8ab631e50ed5b472c6249fe452e980df1f427dde312e9b82e4f7c41022b7ff9"
+        }
+      },
+      "submittedAt": "2026-10-04T09:22:56.461Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/battleship-a-edit-3.png",
+      "rawSheetSha256": "4f97597750c25e4532ef134e0e0e89dfbe657ab34a318ba98cd7ecc1d082af1e",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.4993,
+          "footprintWidthShare": 0.7534,
+          "suspect": true
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.4993,
+          "footprintWidthShare": 0.7534,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T09:23:36.666Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Redesign, direction A: scrap warship with pale sand sails, tin plates, hazard stripes, a tin lookout tower with two hazard yellow rags and an all-lime goblin (the pink ear of battleship-a-edit was 13 pixels of the Coral player colour); seated on the shared Battleship's waterline. L* 52.6, lit 53%.",
+        "reviewedAt": "2026-10-04T09:24:52.150Z"
+      }
+    },
     "goblin-battleship-crew-edit-a": {
       "id": "goblin-battleship-crew-edit-a",
       "asset": "chibi-naval-goblin-battleship",
@@ -62,9 +352,9 @@
       ],
       "completedAt": "2026-10-03T08:11:01.210Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The scrap warship: dark planks and gunmetal scrap, the brown leather sails of the Goblin leather (#9d5629), rag pennants, and a big olive goblin with sideways ears shouting at the bow. The goblin is large for the ship; it reads at native size.",
+        "notes": "The scrap warship: dark planks and gunmetal scrap, the brown leather sails of the Goblin leather (#9d5629), rag pennants, and a big olive goblin with sideways ears shouting at the bow. The goblin is large for the ship; it reads at native size. Superseded by battleship-a-edit.",
         "reviewedAt": "2026-10-03T08:12:43.268Z"
       }
     },
@@ -261,9 +551,9 @@
       ],
       "completedAt": "2026-10-03T08:10:08.866Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The junk-boat: dark planks with gunmetal scrap plates, a dull brown leather sail with patches, a brown rag pennant, and an olive goblin with sideways ears waving over the rail. The goblin is what says Goblin at native size.",
+        "notes": "The junk-boat: dark planks with gunmetal scrap plates, a dull brown leather sail with patches, a brown rag pennant, and an olive goblin with sideways ears waving over the rail. The goblin is what says Goblin at native size. Superseded by patrol-boat-a-edit-2.",
         "reviewedAt": "2026-10-03T08:12:42.003Z"
       }
     },
@@ -460,9 +750,9 @@
       ],
       "completedAt": "2026-10-03T08:09:00.699Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The scrap warship portrait: two dull brown leather sails with patches, brown rag pennants, a hull of dark planks and gunmetal scrap. The orange of the first edit is gone.",
+        "notes": "The scrap warship portrait: two dull brown leather sails with patches, brown rag pennants, a hull of dark planks and gunmetal scrap. The orange of the first edit is gone. Superseded by portrait-battleship-a.",
         "reviewedAt": "2026-10-03T08:09:40.073Z"
       }
     },
@@ -593,9 +883,9 @@
       ],
       "completedAt": "2026-10-03T08:08:12.595Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The junk-boat portrait: dark planks with a gunmetal patch, a dull brown leather sail with pale hide patches, a brown rag pennant. The orange of the first edit is gone.",
+        "notes": "The junk-boat portrait: dark planks with a gunmetal patch, a dull brown leather sail with pale hide patches, a brown rag pennant. The orange of the first edit is gone. Superseded by portrait-patrol-boat-a.",
         "reviewedAt": "2026-10-03T08:09:05.027Z"
       }
     },
@@ -792,9 +1082,9 @@
       ],
       "completedAt": "2026-10-03T08:17:40.083Z",
       "review": {
-        "verdict": "ACCEPTED",
+        "verdict": "REJECTED",
         "candidate": 0,
-        "notes": "The raft with the olive goblin on the cargo, barrels, scrap plates and oars; the hull is now dark brown wood, so no pixel is in the owner key's band (was 6.8%).",
+        "notes": "The raft with the olive goblin on the cargo, barrels, scrap plates and oars; the hull is now dark brown wood, so no pixel is in the owner key's band (was 6.8%). Superseded by transport-a-edit.",
         "reviewedAt": "2026-10-03T08:18:33.108Z"
       }
     },
@@ -930,6 +1220,494 @@
         "notes": "Right raft with barrels but an ochre-orange tarp; recoloured by goblin-transport-saddle-edit-a.",
         "reviewedAt": "2026-10-03T08:13:08.876Z"
       }
+    },
+    "patrol-boat-a": {
+      "id": "patrol-boat-a",
+      "asset": "chibi-naval-goblin-patrol-boat",
+      "jobId": "sync-74a492aa-b1ea-4033-a63c-3ef09bb06095",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "goblin-redesign-lime",
+        "asset": "chibi-redesign-lime-patrol-boat",
+        "subject": "UNIT:GOBLIN:PATROL_BOAT",
+        "faction": "TEST-GOBLIN-LIME",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 93191,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/faction.md#prompt-fragment + art/explorations/goblin-redesign-2026-10/lime/faction.md#negative-fragment",
+            "text": "Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-ship.txt + scripts/art/chibi/fragments/class-ship.negative.txt",
+            "text": "Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image.",
+            "negative": "water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/subjects.json",
+            "text": "Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat seen from the front-right: a lopsided hull of weathered grey-tan planks patched with riveted light grey tin plates, one crooked mast with one big patched pale sand-buff sail with one hazard yellow patch, a small barrel on deck and one paper firework rocket tied to the mast, and a little bright lime green goblin with huge pointed ears peeking over the rail; simple shapes and very few details; silly, never grim."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat seen from the front-right: a lopsided hull of weathered grey-tan planks patched with riveted light grey tin plates, one crooked mast with one big patched pale sand-buff sail with one hazard yellow patch, a small barrel on deck and one paper firework rocket tied to the mast, and a little bright lime green goblin with huge pointed ears peeking over the rail; simple shapes and very few details; silly, never grim.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat seen from the front-right: a lopsided hull of weathered grey-tan planks patched with riveted light grey tin plates, one crooked mast with one big patched pale sand-buff sail with one hazard yellow patch, a small barrel on deck and one paper firework rocket tied to the mast, and a little bright lime green goblin with huge pointed ears peeking over the rail; simple shapes and very few details; silly, never grim. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd."
+      },
+      "submittedAt": "2026-10-04T08:54:43.689Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/patrol-boat-a.png",
+      "rawSheetSha256": "42ee25ea40acd8174b52b70843cc149b0f0774f01c7dbf16d828401c68a2a4c7",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.3865,
+          "footprintWidthShare": 0.7818,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T08:55:35.699Z",
+      "importedFrom": {
+        "exploration": "art/explorations/goblin-redesign-2026-10/lime",
+        "batch": "goblin-redesign-lime",
+        "recipe": "patrol-boat-a"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Step of the chain: water and foam under the hull.",
+        "reviewedAt": "2026-10-04T09:09:39.786Z"
+      }
+    },
+    "patrol-boat-a-edit-2": {
+      "id": "patrol-boat-a-edit-2",
+      "asset": "chibi-naval-goblin-patrol-boat",
+      "jobId": "3c51fa02-c9fa-4188-8509-0ece3596cc4e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "goblin-redesign-lime",
+        "asset": "chibi-redesign-lime-patrol-boat",
+        "subject": "UNIT:GOBLIN:PATROL_BOAT",
+        "faction": "TEST-GOBLIN-LIME",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 93321,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the white and blue water, waves and foam under the hull, so the boat floats alone on a transparent background with nothing under it. Do not redraw anything else: keep the hull, the tin patches, the sail with its yellow patch, the firework rocket, the goblin, the colours, thick black outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Change only one thing: erase the white and blue water, waves and foam under the hull, so the boat floats alone on a transparent background with nothing under it. Do not redraw anything else: keep the hull, the tin patches, the sail with its yellow patch, the firework rocket, the goblin, the colours, thick black outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the white and blue water, waves and foam under the hull, so the boat floats alone on a transparent background with nothing under it. Do not redraw anything else: keep the hull, the tin patches, the sail with its yellow patch, the firework rocket, the goblin, the colours, thick black outline and art style exactly the same.",
+        "editInstruction": "Change only one thing: erase the white and blue water, waves and foam under the hull, so the boat floats alone on a transparent background with nothing under it. Do not redraw anything else: keep the hull, the tin patches, the sail with its yellow patch, the firework rocket, the goblin, the colours, thick black outline and art style exactly the same.",
+        "source": {
+          "recipe": "patrol-boat-a",
+          "candidate": 0,
+          "sha256": "42ee25ea40acd8174b52b70843cc149b0f0774f01c7dbf16d828401c68a2a4c7"
+        }
+      },
+      "submittedAt": "2026-10-04T09:04:38.426Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/patrol-boat-a-edit-2.png",
+      "rawSheetSha256": "b75997469fac0543a1f3c49ed4e573219ce86d7b891cb3c0259b4367257e482f",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.3694,
+          "footprintWidthShare": 0.7818,
+          "suspect": true
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.3694,
+          "footprintWidthShare": 0.7818,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T09:05:17.175Z",
+      "importedFrom": {
+        "exploration": "art/explorations/goblin-redesign-2026-10/lime",
+        "batch": "goblin-redesign-lime",
+        "recipe": "patrol-boat-a-edit-2"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Redesign, direction A: junk-boat with tin patches, a pale sand sail with a hazard yellow patch, a firework and a lime goblin; seated on the shared Patrol Boat's waterline. L* 49.4, lit 42% (before: 26.5 and 6%).",
+        "reviewedAt": "2026-10-04T09:20:59.106Z"
+      }
+    },
+    "portrait-battleship-a": {
+      "id": "portrait-battleship-a",
+      "asset": "chibi-naval-goblin-portrait-battleship",
+      "jobId": "sync-02ef801e-4d4a-4c04-b4da-d451ca5f6a12",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "goblin-redesign-lime",
+        "asset": "chibi-redesign-lime-portrait-battleship",
+        "subject": "PORTRAIT:GOBLIN:BATTLESHIP",
+        "faction": "TEST-GOBLIN-LIME",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 93231,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/faction.md#prompt-fragment + art/explorations/goblin-redesign-2026-10/lime/faction.md#negative-fragment",
+            "text": "Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/subjects.json",
+            "text": "Subject: Battleship of the Goblins, a chunky cute big ramshackle scrap warship shown whole from the front-right: grey-tan planks and light grey tin plates with hazard yellow stripes, two patched pale sand-buff sails, a tin lookout tower and paper firework rockets; no water; simple shapes and very few details."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Battleship of the Goblins, a chunky cute big ramshackle scrap warship shown whole from the front-right: grey-tan planks and light grey tin plates with hazard yellow stripes, two patched pale sand-buff sails, a tin lookout tower and paper firework rockets; no water; simple shapes and very few details.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Battleship of the Goblins, a chunky cute big ramshackle scrap warship shown whole from the front-right: grey-tan planks and light grey tin plates with hazard yellow stripes, two patched pale sand-buff sails, a tin lookout tower and paper firework rockets; no water; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+      },
+      "submittedAt": "2026-10-04T08:57:24.395Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/portrait-battleship-a.png",
+      "rawSheetSha256": "0a3cebdf7f5c3de980c20fac7480107c169f0db0f2306c89553e5ede6c10ac8d",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.1752,
+          "footprintWidthShare": 0.878,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T08:58:04.136Z",
+      "importedFrom": {
+        "exploration": "art/explorations/goblin-redesign-2026-10/lime",
+        "batch": "goblin-redesign-lime",
+        "recipe": "portrait-battleship-a"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Redesign, direction A: the battleship shown whole, pale sails, tin plates.",
+        "reviewedAt": "2026-10-04T09:09:43.207Z"
+      }
+    },
+    "portrait-patrol-boat-a": {
+      "id": "portrait-patrol-boat-a",
+      "asset": "chibi-naval-goblin-portrait-patrol-boat",
+      "jobId": "sync-9024da76-8cec-42c3-bbf9-f40135b8c1d2",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "goblin-redesign-lime",
+        "asset": "chibi-redesign-lime-portrait-patrol-boat",
+        "subject": "PORTRAIT:GOBLIN:PATROL_BOAT",
+        "faction": "TEST-GOBLIN-LIME",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 93221,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-icon.txt",
+            "text": "Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/faction.md#prompt-fragment + art/explorations/goblin-redesign-2026-10/lime/faction.md#negative-fragment",
+            "text": "Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-icon.txt + scripts/art/chibi/fragments/class-icon.negative.txt",
+            "text": "Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it.",
+            "negative": "icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects, text, letters, numbers"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/subjects.json",
+            "text": "Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat shown whole from the front-right: weathered grey-tan planks patched with light grey tin, one big patched pale sand-buff sail with a hazard yellow patch, a little bright lime green goblin with huge pointed ears; no water; simple shapes and very few details."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat shown whole from the front-right: weathered grey-tan planks patched with light grey tin, one big patched pale sand-buff sail with a hazard yellow patch, a little bright lime green goblin with huge pointed ears; no water; simple shapes and very few details.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: a single item sprite shown whole and centred on a transparent background, a slight three-quarter angle looking a little down, filling most of the square with a small margin, nothing cropped. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one bold chunky item sprite with a single clear subject and a big simple silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 48 pixels. The item floats alone on the empty transparent background: nothing at all is drawn behind or under it. Subject: Patrol Boat of the Goblins, a chunky cute small ramshackle junk-boat shown whole from the front-right: weathered grey-tan planks patched with light grey tin, one big patched pale sand-buff sail with a hazard yellow patch, a little bright lime green goblin with huge pointed ears; no water; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, icon frame, round badge, medallion, emblem, coin-shaped backdrop, button, border, circular background, square background, vignette, background scenery, ground tile, grass square, pedestal, many small objects."
+      },
+      "submittedAt": "2026-10-04T08:56:55.504Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/portrait-patrol-boat-a.png",
+      "rawSheetSha256": "6ff9ad028ea262377841723ceecec4f34352d4bb28ac62f8f1118b0d286ca1ad",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.2695,
+          "footprintWidthShare": 0.9231,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T08:57:24.391Z",
+      "importedFrom": {
+        "exploration": "art/explorations/goblin-redesign-2026-10/lime",
+        "batch": "goblin-redesign-lime",
+        "recipe": "portrait-patrol-boat-a"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Redesign, direction A: the patrol boat shown whole, tin hull patches, pale sail, lime goblin.",
+        "reviewedAt": "2026-10-04T09:09:42.713Z"
+      }
+    },
+    "transport-a": {
+      "id": "transport-a",
+      "asset": "chibi-naval-goblin-transport",
+      "jobId": "sync-34b2300e-2aaa-485a-bfc1-dd5928ca2aeb",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "goblin-redesign-lime",
+        "asset": "chibi-redesign-lime-transport",
+        "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+        "faction": "TEST-GOBLIN-LIME",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 93211,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/faction.md#prompt-fragment + art/explorations/goblin-redesign-2026-10/lime/faction.md#negative-fragment",
+            "text": "Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-ship.txt + scripts/art/chibi/fragments/class-ship.negative.txt",
+            "text": "Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image.",
+            "negative": "water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "art/explorations/goblin-redesign-2026-10/lime/subjects.json",
+            "text": "Subject: Embarked transport of the Goblins, a chunky cute wide ramshackle raft seen from the front-right, no mast and no sail: grey-tan logs and planks lashed together with rope, patched with light grey tin plates, two crooked oars, a heap of cargo and barrels under a patched pale sand-buff tarp, a short pole with a hazard yellow rag; simple shapes and very few details."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Embarked transport of the Goblins, a chunky cute wide ramshackle raft seen from the front-right, no mast and no sail: grey-tan logs and planks lashed together with rope, patched with light grey tin plates, two crooked oars, a heap of cargo and barrels under a patched pale sand-buff tarp, a short pole with a hazard yellow rag; simple shapes and very few details.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Embarked transport of the Goblins, a chunky cute wide ramshackle raft seen from the front-right, no mast and no sail: grey-tan logs and planks lashed together with rope, patched with light grey tin plates, two crooked oars, a heap of cargo and barrels under a patched pale sand-buff tarp, a short pole with a hazard yellow rag; simple shapes and very few details. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd."
+      },
+      "submittedAt": "2026-10-04T08:56:23.975Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/transport-a.png",
+      "rawSheetSha256": "a11b208d0780eb55a1421cca21943304dd70e972e41ca45cbce5e76edd6220e8",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.4886,
+          "footprintWidthShare": 0.9107,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T08:56:55.499Z",
+      "importedFrom": {
+        "exploration": "art/explorations/goblin-redesign-2026-10/lime",
+        "batch": "goblin-redesign-lime",
+        "recipe": "transport-a"
+      },
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Step of the chain: a mast and a sail (no faction's transport has one) and a red bandana.",
+        "reviewedAt": "2026-10-04T09:09:41.749Z"
+      }
+    },
+    "transport-a-edit": {
+      "id": "transport-a-edit",
+      "asset": "chibi-naval-goblin-transport",
+      "jobId": "2f693e37-e9ab-4e58-bfb3-c379152552f5",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "goblin-redesign-lime",
+        "asset": "chibi-redesign-lime-transport",
+        "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
+        "faction": "TEST-GOBLIN-LIME",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 93319,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove the mast, the sail and the knob on top of the mast completely, so it is a low open rowing raft with no mast and no sail; where the sail was there is only transparent background. The goblin's red bandana becomes a pale sand-buff leather cap. Keep the hull, the tin patches, the oars, the cargo, the small yellow rag, the goblin's green face, the colours, thick black outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Remove the mast, the sail and the knob on top of the mast completely, so it is a low open rowing raft with no mast and no sail; where the sail was there is only transparent background. The goblin's red bandana becomes a pale sand-buff leather cap. Keep the hull, the tin patches, the oars, the cargo, the small yellow rag, the goblin's green face, the colours, thick black outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove the mast, the sail and the knob on top of the mast completely, so it is a low open rowing raft with no mast and no sail; where the sail was there is only transparent background. The goblin's red bandana becomes a pale sand-buff leather cap. Keep the hull, the tin patches, the oars, the cargo, the small yellow rag, the goblin's green face, the colours, thick black outline and art style exactly the same.",
+        "editInstruction": "Remove the mast, the sail and the knob on top of the mast completely, so it is a low open rowing raft with no mast and no sail; where the sail was there is only transparent background. The goblin's red bandana becomes a pale sand-buff leather cap. Keep the hull, the tin patches, the oars, the cargo, the small yellow rag, the goblin's green face, the colours, thick black outline and art style exactly the same.",
+        "source": {
+          "recipe": "transport-a",
+          "candidate": 0,
+          "sha256": "a11b208d0780eb55a1421cca21943304dd70e972e41ca45cbce5e76edd6220e8"
+        }
+      },
+      "submittedAt": "2026-10-04T09:06:05.777Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/transport-a-edit.png",
+      "rawSheetSha256": "b163f76fd408f82eb9c96f0b815a87edee653b7fa02e254bcbb019b9cc7b3387",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.4742,
+          "footprintWidthShare": 0.8571,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.4742,
+          "footprintWidthShare": 0.8571,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T09:07:05.582Z",
+      "importedFrom": {
+        "exploration": "art/explorations/goblin-redesign-2026-10/lime",
+        "batch": "goblin-redesign-lime",
+        "recipe": "transport-a-edit"
+      },
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Redesign, direction A: low rowing raft with oars, tin patches, a hazard yellow rag and a goblin in a sand hat; no mast, no sail; seated on the shared transport's waterline. L* 41.9 (before: 21.8).",
+        "reviewedAt": "2026-10-04T09:21:00.142Z"
+      }
     }
   },
   "assets": {
@@ -938,18 +1716,37 @@
       "subject": "UNIT:GOBLIN:BATTLESHIP",
       "assetClass": "GIANT_UNIT",
       "status": "ACCEPTED",
-      "recipe": "goblin-battleship-crew-edit-a",
+      "recipe": "battleship-a-edit-3",
       "candidate": 0,
-      "candidateSha256": "8dd839c860916490f3ba963e0aafed6aa1c56b47018e844a72956fa846b46249",
+      "candidateSha256": "bf6c824db982c30226f99066b24e0d08421e732a2c035246967fec443b9450b0",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-goblin-battleship.png",
-        "sha256": "8dd839c860916490f3ba963e0aafed6aa1c56b47018e844a72956fa846b46249",
-        "pixelSha256": "adc5d27cd2cb398c7aeb8a3422990642d9cff5398bcf76060b385a45a9376085",
+        "sha256": "e60d55095d80ab933a9ae9e82369381ad48729667a865df98d5a27782914df45",
+        "pixelSha256": "c3139bd2da6999ca6723849e8fe67f3b3e5eef33841ff266df04aacfd306172f",
         "width": 88,
         "height": 96
       },
       "derivation": {
-        "kind": "as-is"
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 11
+        },
+        "accent": {
+          "preset": "goblin-hazard",
+          "spec": {
+            "band": {
+              "hueFrom": 26,
+              "hueTo": 47,
+              "saturationMin": 0.8,
+              "valueMin": 0.7,
+              "hueCentre": 40
+            },
+            "hue": 49,
+            "hueSpread": 0.35
+          },
+          "accentPixels": 157,
+          "trimPixels": 0
+        }
       },
       "anchor": {
         "x": 44,
@@ -961,12 +1758,6 @@
         "up": 16,
         "down": 0
       },
-      "plateCheck": {
-        "bandRows": 16,
-        "groundShare": 0.0476,
-        "footprintWidthShare": 0.75,
-        "suspect": false
-      },
       "reviewChecks": {
         "native": true,
         "enlarged": true,
@@ -974,26 +1765,45 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The scrap warship: dark planks and gunmetal scrap, the brown leather sails of the Goblin leather (#9d5629), rag pennants, and a big olive goblin with sideways ears shouting at the bow. The goblin is large for the ship; it reads at native size.",
-      "acceptedAt": "2026-10-03T08:12:43.268Z"
+      "notes": "Redesign, direction A: scrap warship with pale sand sails, tin plates, hazard stripes, a tin lookout tower with two hazard yellow rags and an all-lime goblin (the pink ear of battleship-a-edit was 13 pixels of the Coral player colour); seated on the shared Battleship's waterline. L* 52.6, lit 53%.",
+      "acceptedAt": "2026-10-04T09:24:52.150Z"
     },
     "chibi-naval-goblin-patrol-boat": {
       "id": "chibi-naval-goblin-patrol-boat",
       "subject": "UNIT:GOBLIN:PATROL_BOAT",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "goblin-patrol-boat-crew-edit-a",
+      "recipe": "patrol-boat-a-edit-2",
       "candidate": 0,
-      "candidateSha256": "74aa9931ef2d2c100919fdf57305dd4b3f24dd6191ce2a5a4d9457caccc4435b",
+      "candidateSha256": "90eac39a2b8d623278a61d8326eb472fee83b3544abff2b23b3d214d4f2c431d",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-goblin-patrol-boat.png",
-        "sha256": "74aa9931ef2d2c100919fdf57305dd4b3f24dd6191ce2a5a4d9457caccc4435b",
-        "pixelSha256": "04cfc625fee31a9a50f3ed0215f25a3b9c3ec514a1f8e128074092d1ace3b57a",
+        "sha256": "86dbf3668d6bf5d45cf98186573563b8b3c78a1c55de8e921e6069470ee1612c",
+        "pixelSha256": "39f54a6e570654104e29a492239f7ef280309e414c25329c50f834c7ba21282a",
         "width": 72,
         "height": 88
       },
       "derivation": {
-        "kind": "as-is"
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 8
+        },
+        "accent": {
+          "preset": "goblin-hazard",
+          "spec": {
+            "band": {
+              "hueFrom": 26,
+              "hueTo": 47,
+              "saturationMin": 0.8,
+              "valueMin": 0.7,
+              "hueCentre": 40
+            },
+            "hue": 49,
+            "hueSpread": 0.35
+          },
+          "accentPixels": 125,
+          "trimPixels": 0
+        }
       },
       "anchor": {
         "x": 36,
@@ -1005,12 +1815,6 @@
         "up": 8,
         "down": 0
       },
-      "plateCheck": {
-        "bandRows": 15,
-        "groundShare": 0.013,
-        "footprintWidthShare": 0.8214,
-        "suspect": false
-      },
       "reviewChecks": {
         "native": true,
         "enlarged": true,
@@ -1018,26 +1822,42 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The junk-boat: dark planks with gunmetal scrap plates, a dull brown leather sail with patches, a brown rag pennant, and an olive goblin with sideways ears waving over the rail. The goblin is what says Goblin at native size.",
-      "acceptedAt": "2026-10-03T08:12:42.003Z"
+      "notes": "Redesign, direction A: junk-boat with tin patches, a pale sand sail with a hazard yellow patch, a firework and a lime goblin; seated on the shared Patrol Boat's waterline. L* 49.4, lit 42% (before: 26.5 and 6%).",
+      "acceptedAt": "2026-10-04T09:20:59.105Z"
     },
     "chibi-naval-goblin-portrait-battleship": {
       "id": "chibi-naval-goblin-portrait-battleship",
       "subject": "PORTRAIT:GOBLIN:BATTLESHIP",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "goblin-portrait-battleship-saddle-edit-a",
+      "recipe": "portrait-battleship-a",
       "candidate": 0,
-      "candidateSha256": "86ac0329cc3b260ef38a1fb141486e276798db99673ef15970631535e26d9e33",
+      "candidateSha256": "0a3cebdf7f5c3de980c20fac7480107c169f0db0f2306c89553e5ede6c10ac8d",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-goblin-portrait-battleship.png",
-        "sha256": "86ac0329cc3b260ef38a1fb141486e276798db99673ef15970631535e26d9e33",
-        "pixelSha256": "670f96baa312632ba8f70d905aa8e7d0937b1e3ec327f30b3215c6ccd6e0bac4",
+        "sha256": "a43cdcf6b20df3953a93c13676ee7d9b58358d0da41a0eb2dbe89c5d9b570282",
+        "pixelSha256": "6f36689f3e1e12716aa1b2ea03d362fbbd323893091d61887d7b31d953655c41",
         "width": 48,
         "height": 48
       },
       "derivation": {
-        "kind": "as-is"
+        "kind": "as-is",
+        "accent": {
+          "preset": "goblin-hazard",
+          "spec": {
+            "band": {
+              "hueFrom": 26,
+              "hueTo": 47,
+              "saturationMin": 0.8,
+              "valueMin": 0.7,
+              "hueCentre": 40
+            },
+            "hue": 49,
+            "hueSpread": 0.35
+          },
+          "accentPixels": 22,
+          "trimPixels": 0
+        }
       },
       "anchor": {
         "x": 24,
@@ -1051,8 +1871,8 @@
       },
       "plateCheck": {
         "bandRows": 9,
-        "groundShare": 0.0526,
-        "footprintWidthShare": 0.8235,
+        "groundShare": 0.1752,
+        "footprintWidthShare": 0.878,
         "suspect": false
       },
       "reviewChecks": {
@@ -1062,26 +1882,42 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The scrap warship portrait: two dull brown leather sails with patches, brown rag pennants, a hull of dark planks and gunmetal scrap. The orange of the first edit is gone.",
-      "acceptedAt": "2026-10-03T08:09:40.073Z"
+      "notes": "Redesign, direction A: the battleship shown whole, pale sails, tin plates.",
+      "acceptedAt": "2026-10-04T09:09:43.207Z"
     },
     "chibi-naval-goblin-portrait-patrol-boat": {
       "id": "chibi-naval-goblin-portrait-patrol-boat",
       "subject": "PORTRAIT:GOBLIN:PATROL_BOAT",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "goblin-portrait-patrol-boat-saddle-edit-a",
+      "recipe": "portrait-patrol-boat-a",
       "candidate": 0,
-      "candidateSha256": "7f5d707da9673f26e4ff43e75e93af4c297b21aeb8ce0c7e66564319b68e46d4",
+      "candidateSha256": "6ff9ad028ea262377841723ceecec4f34352d4bb28ac62f8f1118b0d286ca1ad",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-naval-goblin-portrait-patrol-boat.png",
-        "sha256": "7f5d707da9673f26e4ff43e75e93af4c297b21aeb8ce0c7e66564319b68e46d4",
-        "pixelSha256": "962ef77af56989e0e919cbeb55df837ede62f8b2bec7eae771bed4ff0f15c54a",
+        "sha256": "6ff9ad028ea262377841723ceecec4f34352d4bb28ac62f8f1118b0d286ca1ad",
+        "pixelSha256": "63da5ba97601bf94e3b1d4eab48c9067362b7c1786c71d5930ff0ae78499d314",
         "width": 48,
         "height": 48
       },
       "derivation": {
-        "kind": "as-is"
+        "kind": "as-is",
+        "accent": {
+          "preset": "goblin-hazard",
+          "spec": {
+            "band": {
+              "hueFrom": 26,
+              "hueTo": 47,
+              "saturationMin": 0.8,
+              "valueMin": 0.7,
+              "hueCentre": 40
+            },
+            "hue": 49,
+            "hueSpread": 0.35
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
       },
       "anchor": {
         "x": 24,
@@ -1094,9 +1930,9 @@
         "down": 0
       },
       "plateCheck": {
-        "bandRows": 9,
-        "groundShare": 0.3023,
-        "footprintWidthShare": 0.9355,
+        "bandRows": 8,
+        "groundShare": 0.2695,
+        "footprintWidthShare": 0.9231,
         "suspect": true
       },
       "reviewChecks": {
@@ -1106,26 +1942,45 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The junk-boat portrait: dark planks with a gunmetal patch, a dull brown leather sail with pale hide patches, a brown rag pennant. The orange of the first edit is gone.",
-      "acceptedAt": "2026-10-03T08:09:05.027Z"
+      "notes": "Redesign, direction A: the patrol boat shown whole, tin hull patches, pale sail, lime goblin.",
+      "acceptedAt": "2026-10-04T09:09:42.713Z"
     },
     "chibi-naval-goblin-transport": {
       "id": "chibi-naval-goblin-transport",
       "subject": "UNIT:GOBLIN:EMBARKED_TRANSPORT",
       "assetClass": "LARGE_UNIT",
       "status": "ACCEPTED",
-      "recipe": "goblin-transport-plank-edit-a",
+      "recipe": "transport-a-edit",
       "candidate": 0,
-      "candidateSha256": "48d6bfee0e292231d5bc96d8380450fee207ae9001db2d648e6cfd5603c4e63a",
+      "candidateSha256": "034dde0533dda88546e5d2fdad26d9b280a107ce41f4c3f227105e69f6bccb29",
       "master": {
         "path": "public/assets/chibi/units/chibi-naval-goblin-transport.png",
-        "sha256": "48d6bfee0e292231d5bc96d8380450fee207ae9001db2d648e6cfd5603c4e63a",
-        "pixelSha256": "d98ae06505acafe6a465093e83c5b500fe230ee6adf86df89e9b42ba83867e12",
+        "sha256": "ce5f2b42f7b1d7d74760f15a0eb673066bf8e499042ee427282325799e6cb479",
+        "pixelSha256": "e8d7d7c1381657263e8bcae3e72a54940e028c620972cd4789086b4d2e760cf6",
         "width": 72,
         "height": 72
       },
       "derivation": {
-        "kind": "as-is"
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 13
+        },
+        "accent": {
+          "preset": "goblin-hazard",
+          "spec": {
+            "band": {
+              "hueFrom": 26,
+              "hueTo": 47,
+              "saturationMin": 0.8,
+              "valueMin": 0.7,
+              "hueCentre": 40
+            },
+            "hue": 49,
+            "hueSpread": 0.35
+          },
+          "accentPixels": 75,
+          "trimPixels": 0
+        }
       },
       "anchor": {
         "x": 36,
@@ -1137,12 +1992,6 @@
         "up": 0,
         "down": 0
       },
-      "plateCheck": {
-        "bandRows": 10,
-        "groundShare": 0.0033,
-        "footprintWidthShare": 0.85,
-        "suspect": false
-      },
       "reviewChecks": {
         "native": true,
         "enlarged": true,
@@ -1150,8 +1999,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The raft with the olive goblin on the cargo, barrels, scrap plates and oars; the hull is now dark brown wood, so no pixel is in the owner key's band (was 6.8%).",
-      "acceptedAt": "2026-10-03T08:18:33.108Z"
+      "notes": "Redesign, direction A: low rowing raft with oars, tin patches, a hazard yellow rag and a goblin in a sand hat; no mast, no sail; seated on the shared transport's waterline. L* 41.9 (before: 21.8).",
+      "acceptedAt": "2026-10-04T09:21:00.142Z"
     }
   }
 }

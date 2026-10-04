@@ -1,0 +1,36 @@
+{
+  "id": "orc-warboss-a-sand",
+  "jobId": "e29a22c1-0a75-45bf-956b-c88ecee9b3b8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-orc-warboss",
+    "subject": "UNIT:GOBLIN:CAPTAIN",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 93306,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the dark brown leather: his two big gauntlets, the shoulder straps, the belt and the trousers become pale sand-buff leather, colour #d0b073, shaded #9a7a46, not dark and not orange; the boots become mid brown, colour #8a5a30. Keep everything else exactly the same: the green skin, open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, pose, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the dark brown leather: his two big gauntlets, the shoulder straps, the belt and the trousers become pale sand-buff leather, colour #d0b073, shaded #9a7a46, not dark and not orange; the boots become mid brown, colour #8a5a30. Keep everything else exactly the same: the green skin, open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, pose, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the dark brown leather: his two big gauntlets, the shoulder straps, the belt and the trousers become pale sand-buff leather, colour #d0b073, shaded #9a7a46, not dark and not orange; the boots become mid brown, colour #8a5a30. Keep everything else exactly the same: the green skin, open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, pose, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the dark brown leather: his two big gauntlets, the shoulder straps, the belt and the trousers become pale sand-buff leather, colour #d0b073, shaded #9a7a46, not dark and not orange; the boots become mid brown, colour #8a5a30. Keep everything else exactly the same: the green skin, open shouting mouth, tusks, eyes, beard, horned tin helmet, cream fur mantle, yellow megaphone, pose, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "orc-warboss-a-fresh",
+      "candidate": 0,
+      "sha256": "1a8938c9530c7f703eae10ef4bca2ee974ef677bf51949168dc754f89a38b0d7"
+    }
+  }
+}

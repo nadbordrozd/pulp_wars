@@ -197,11 +197,18 @@ export function goblinDirectionV7(id: GoblinDirectionIdV7): GoblinDirectionV7 {
   return direction;
 }
 
-/** A sprite of the current roster and how the mockup reads its colours. */
+/**
+ * A sprite of the roster the study diagnosed, and how the mockup reads its
+ * colours. `file` is the live master, which bead pulp_wars-wrn.2 replaced
+ * with the redesigned art; `before` names the superseded recipe whose
+ * recorded candidate is the dark sprite the study measured (read it with
+ * `loadGoblinBeforeV7` in before.ts: no copy of the old masters is kept).
+ */
 export interface GoblinSpriteV7 {
   readonly role: string;
   readonly name: string;
   readonly file: string;
+  readonly before: { readonly batch: string; readonly recipe: string };
   readonly skin: GoblinSkinKindV7;
   readonly kind: "unit" | "portrait" | "city" | "ship";
   /** Very dark browns are planks ("wood") or leather shadows. */
@@ -210,70 +217,88 @@ export interface GoblinSpriteV7 {
   readonly rust: "rust" | "leather";
 }
 
-/** The current production roster, with the skin ramp each sprite takes. */
-export const GOBLIN_ROSTER_V7: readonly GoblinSpriteV7[] = (
-  [
-    ["FIGHTER", "Goblin", "goblin-goblin", "goblin", "leather", "leather"],
-    [
-      "RAIDER",
-      "Wolf Rider",
-      "goblin-wolf-rider",
-      "goblin",
-      "leather",
-      "leather",
-    ],
-    [
-      "MARKSMAN",
-      "Bomb Chucker",
-      "goblin-bomb-chucker",
-      "goblin",
-      "leather",
-      "rust",
-    ],
-    ["GUARD", "Orc Brute", "goblin-orc-brute", "orc", "wood", "leather"],
-    [
-      "CAPTAIN",
-      "Orc Warboss",
-      "goblin-orc-warboss",
-      "orc",
-      "leather",
-      "leather",
-    ],
-    ["CATAPULT", "Rocket Cart", "goblin-rocket-cart", "goblin", "wood", "rust"],
-    [
-      "KNIGHT",
-      "Scrap Buggy",
-      "goblin-scrap-buggy",
-      "goblin",
-      "leather",
-      "rust",
-    ],
-    ["JUGGERNAUT", "Troll", "goblin-troll", "troll", "leather", "leather"],
-  ] as const
-).map(([role, name, file, skin, darkBrown, rust]) => ({
-  role,
-  name,
-  file: `public/assets/chibi/units/chibi-direction-${file}.png`,
-  skin,
-  kind: "unit" as const,
-  darkBrown,
-  rust,
-}));
+const UNITS = [
+  ["FIGHTER", "Goblin", "goblin", "goblin", "leather", "leather"],
+  ["RAIDER", "Wolf Rider", "wolf-rider", "goblin", "leather", "leather"],
+  ["MARKSMAN", "Bomb Chucker", "bomb-chucker", "goblin", "leather", "rust"],
+  ["GUARD", "Orc Brute", "orc-brute", "orc", "wood", "leather"],
+  ["CAPTAIN", "Orc Warboss", "orc-warboss", "orc", "leather", "leather"],
+  ["CATAPULT", "Rocket Cart", "rocket-cart", "goblin", "wood", "rust"],
+  ["KNIGHT", "Scrap Buggy", "scrap-buggy", "goblin", "leather", "rust"],
+  ["JUGGERNAUT", "Troll", "troll", "troll", "leather", "leather"],
+] as const;
 
-export const GOBLIN_PORTRAITS_V7: readonly GoblinSpriteV7[] =
-  GOBLIN_ROSTER_V7.map((unit) => ({
-    ...unit,
-    file: unit.file
-      .replace("/units/", "/portraits/")
-      .replace("chibi-direction-goblin-", "chibi-direction-portrait-goblin-"),
+/** The accepted recipes of batch `direction-goblin` before the redesign. */
+const BEFORE_UNIT_RECIPES: Readonly<Record<string, string>> = {
+  goblin: "goblin-brown-edit-c",
+  "wolf-rider": "wolf-rider-skin-edit-b",
+  "bomb-chucker": "bomb-chucker-brown-edit-b",
+  "orc-brute": "orc-brute-skin-edit-d",
+  "orc-warboss": "orc-warboss-skin-edit-c",
+  "rocket-cart": "fireworks-cart-crew-edit-d",
+  "scrap-buggy": "scrap-buggy-hub-edit-a",
+  troll: "troll-scrap-edit-b",
+};
+
+const BEFORE_PORTRAIT_RECIPES: Readonly<Record<string, string>> = {
+  goblin: "portrait-goblin-skin-edit-a",
+  "wolf-rider": "portrait-wolf-rider-skin-edit-a",
+  "bomb-chucker": "portrait-bomb-chucker-skin-edit-b",
+  "orc-brute": "portrait-orc-brute-skin-edit-a",
+  "orc-warboss": "portrait-orc-warboss-skin-edit-b",
+  "rocket-cart": "portrait-rocket-cart-scrap-edit-b",
+  "scrap-buggy": "portrait-scrap-buggy-skin-edit-b",
+  troll: "portrait-troll-smock-edit-a",
+};
+
+const BEFORE_CITY_RECIPES = [
+  "goblin-city-1-scrap-edit-b",
+  "goblin-city-2-scrap-edit-a",
+  "goblin-city-3-scrap-edit-a",
+] as const;
+
+/** The production roster, with the skin ramp each sprite takes. */
+export const GOBLIN_ROSTER_V7: readonly GoblinSpriteV7[] = UNITS.map(
+  ([role, name, file, skin, darkBrown, rust]) => ({
+    role,
+    name,
+    file: `public/assets/chibi/units/chibi-direction-goblin-${file}.png`,
+    before: {
+      batch: "direction-goblin",
+      recipe: BEFORE_UNIT_RECIPES[file] ?? "",
+    },
+    skin,
+    kind: "unit" as const,
+    darkBrown,
+    rust,
+  }),
+);
+
+export const GOBLIN_PORTRAITS_V7: readonly GoblinSpriteV7[] = UNITS.map(
+  ([role, name, file, skin, darkBrown, rust]) => ({
+    role,
+    name,
+    file: `public/assets/chibi/portraits/chibi-direction-portrait-goblin-${file}.png`,
+    before: {
+      batch: "direction-goblin",
+      recipe: BEFORE_PORTRAIT_RECIPES[file] ?? "",
+    },
+    skin,
     kind: "portrait" as const,
-  }));
+    darkBrown,
+    rust,
+  }),
+);
 
 export const GOBLIN_CITIES_V7: readonly GoblinSpriteV7[] = [1, 2, 3].map(
   (level) => ({
     role: `CITY_${level}`,
     name: `City ${level}`,
     file: `public/assets/chibi/settlements/chibi-direction-goblin-city-${level}.png`,
+    before: {
+      batch: "direction-goblin",
+      recipe: BEFORE_CITY_RECIPES[level - 1] ?? "",
+    },
     skin: "goblin" as const,
     kind: "city" as const,
     darkBrown: "wood" as const,
@@ -283,14 +308,15 @@ export const GOBLIN_CITIES_V7: readonly GoblinSpriteV7[] = [1, 2, 3].map(
 
 export const GOBLIN_SHIPS_V7: readonly GoblinSpriteV7[] = (
   [
-    ["PATROL_BOAT", "Patrol Boat", "patrol-boat"],
-    ["BATTLESHIP", "Battleship", "battleship"],
-    ["EMBARKED_TRANSPORT", "Transport", "transport"],
+    ["PATROL_BOAT", "Patrol Boat", "patrol-boat", "patrol-boat-crew-edit-a"],
+    ["BATTLESHIP", "Battleship", "battleship", "battleship-crew-edit-a"],
+    ["EMBARKED_TRANSPORT", "Transport", "transport", "transport-plank-edit-a"],
   ] as const
-).map(([role, name, file]) => ({
+).map(([role, name, file, recipe]) => ({
   role,
   name,
   file: `public/assets/chibi/units/chibi-naval-goblin-${file}.png`,
+  before: { batch: "naval-goblin", recipe: `goblin-${recipe}` },
   skin: "goblin" as const,
   kind: "ship" as const,
   darkBrown: "wood" as const,

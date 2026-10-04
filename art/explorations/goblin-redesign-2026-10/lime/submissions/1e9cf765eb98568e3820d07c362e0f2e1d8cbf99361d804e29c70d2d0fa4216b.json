@@ -1,0 +1,36 @@
+{
+  "id": "city-3-a-edit",
+  "jobId": "b7d69357-c9dc-4139-961e-fe6ad282db11",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-city-3",
+    "subject": "CITY:GOBLIN:3",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 104
+    },
+    "seed": 93316,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass plate, the dirt and the dark soil slab under the camp, so the big tent and the huts stand directly on a transparent background with nothing at all under them. Keep the big patched sand tent, the tin huts with their yellow roofs, the chimney pipes with smoke, the fence, the colours, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass plate, the dirt and the dark soil slab under the camp, so the big tent and the huts stand directly on a transparent background with nothing at all under them. Keep the big patched sand tent, the tin huts with their yellow roofs, the chimney pipes with smoke, the fence, the colours, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass plate, the dirt and the dark soil slab under the camp, so the big tent and the huts stand directly on a transparent background with nothing at all under them. Keep the big patched sand tent, the tin huts with their yellow roofs, the chimney pipes with smoke, the fence, the colours, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass plate, the dirt and the dark soil slab under the camp, so the big tent and the huts stand directly on a transparent background with nothing at all under them. Keep the big patched sand tent, the tin huts with their yellow roofs, the chimney pipes with smoke, the fence, the colours, outline and art style exactly the same.",
+    "source": {
+      "recipe": "city-3-a",
+      "candidate": 0,
+      "sha256": "f953679a118420b6c990a285bfa52ef0247edbe04ec562571fe7e44f91a4e31d"
+    }
+  }
+}

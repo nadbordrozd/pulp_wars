@@ -1,0 +1,36 @@
+{
+  "id": "wolf-rider-a-lime",
+  "jobId": "3eb726e3-88ce-4f3d-8592-a9f738c860b3",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "goblin-redesign-lime",
+    "asset": "chibi-redesign-lime-wolf-rider",
+    "subject": "UNIT:GOBLIN:RAIDER",
+    "faction": "TEST-GOBLIN-LIME",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 93307,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the rider's skin: his face, his two big pointed ears, his arms and hands become bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; no yellow skin and no orange ears. Keep everything else exactly the same: the grey wolf with its cream belly and muzzle, the sand hat, straps, saddle blanket, spear, pose, thick black outline and art style, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the rider's skin: his face, his two big pointed ears, his arms and hands become bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; no yellow skin and no orange ears. Keep everything else exactly the same: the grey wolf with its cream belly and muzzle, the sand hat, straps, saddle blanket, spear, pose, thick black outline and art style, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the rider's skin: his face, his two big pointed ears, his arms and hands become bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; no yellow skin and no orange ears. Keep everything else exactly the same: the grey wolf with its cream belly and muzzle, the sand hat, straps, saddle blanket, spear, pose, thick black outline and art style, on a transparent background.",
+    "editInstruction": "Recolour only the rider's skin: his face, his two big pointed ears, his arms and hands become bright lime green, colour #86c232, with lighter #acdc55 on the face and #5a9424 as shading; no yellow skin and no orange ears. Keep everything else exactly the same: the grey wolf with its cream belly and muzzle, the sand hat, straps, saddle blanket, spear, pose, thick black outline and art style, on a transparent background.",
+    "source": {
+      "recipe": "wolf-rider-a",
+      "candidate": 0,
+      "sha256": "8f1293222395b18025f3c2d1cbfba25854159622fb48d128a424aba4d1a6682e"
+    }
+  }
+}
