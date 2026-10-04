@@ -31,6 +31,7 @@ import {
 import { resolveUnitFitOffset } from "./unit-fit-offset";
 import { validateChibiProduction } from "./chibi/pipeline";
 import { gloamGrassProblems } from "./faction-buildings/gloam-grass";
+import { forestPieceProblems } from "./chibi-forest-pieces";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
 type Stage = "sample" | "batch";
@@ -688,6 +689,9 @@ async function main(): Promise<void> {
     const chibiProblems = [
       ...(await validateChibiProduction(ROOT)),
       ...(await gloamGrassProblems(ROOT)),
+      // The composed forest pieces (pulp_wars-maw.3) are derived from the
+      // accepted Forest clumps the same way.
+      ...(await forestPieceProblems(ROOT)),
     ];
     if (chibiProblems.length > 0)
       throw new Error(

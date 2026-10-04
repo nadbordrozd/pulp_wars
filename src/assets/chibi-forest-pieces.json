@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 1,
+  "bead": "pulp_wars-maw.3",
+  "cellPx": 80,
+  "overflowPx": 24,
+  "lattice": {
+    "firstLine": 38,
+    "lineStep": 40,
+    "stampStep": 52,
+    "seedBase": 9100
+  },
+  "soften": {
+    "gapSkip": 0.18,
+    "outlineBlend": 0.6,
+    "tonePull": 0.2,
+    "lift": 0.16
+  },
+  "clumps": [
+    {
+      "id": "chibi-forest-1",
+      "path": "public/assets/chibi/terrain/chibi-forest-1.body.png",
+      "sha256": "ae5e1c17c031bbadb023fc081a89eaff5efc2fbd4104bc141f00e7e91017197c",
+      "trim": {
+        "x": 8,
+        "y": 19,
+        "w": 63,
+        "h": 63
+      },
+      "up": 5,
+      "seam": {
+        "path": "public/assets/chibi/forest/chibi-forest-seam-1.png",
+        "width": 63,
+        "height": 63,
+        "sha256": "864be7388b2af1f25d3b336cf9f3a42d7b865f9e12d182cf9c936157b64c3ef8",
+        "pixelSha256": "3694227828ccd7f45f87011f57a7303e4177341b31301ffed652dbfb1613a8f6"
+      }
+    },
+    {
+      "id": "chibi-forest-2",
+      "path": "public/assets/chibi/terrain/chibi-forest-2.body.png",
+      "sha256": "3befc771cd8f86153b01b36e135b5e89f56e372b92084b9fee2d8967fcc04799",
+      "trim": {
+        "x": 9,
+        "y": 6,
+        "w": 59,
+        "h": 79
+      },
+      "up": 18,
+      "seam": {
+        "path": "public/assets/chibi/forest/chibi-forest-seam-2.png",
+        "width": 59,
+        "height": 79,
+        "sha256": "3f274ecb48a5e6b59e86e8cf5154104f96c958993a34e7d8c30c5d57788d527a",
+        "pixelSha256": "fd5a66ba71236494d8f57accc8463f0ffb8057735579e4c3ddbe24a38eaf4bcc"
+      }
+    },
+    {
+      "id": "chibi-forest-4",
+      "path": "public/assets/chibi/terrain/chibi-forest-4.body.png",
+      "sha256": "1181054bc2fe602837a4270c2ab2c7c354db461112684974508c487980a531cf",
+      "trim": {
+        "x": 9,
+        "y": 5,
+        "w": 62,
+        "h": 81
+      },
+      "up": 19,
+      "seam": {
+        "path": "public/assets/chibi/forest/chibi-forest-seam-4.png",
+        "width": 62,
+        "height": 81,
+        "sha256": "752e2fc851fb87fee0f06aeeaac75570f2216bade2362a0c90a0b87565058c99",
+        "pixelSha256": "dd8a614a98f669c18f15681995ded2212eb228b402b3d46dac05ca87a64b2256"
+      }
+    },
+    {
+      "id": "chibi-forest-5",
+      "path": "public/assets/chibi/terrain/chibi-forest-5.body.png",
+      "sha256": "08391243438222bd077ce7d357a1051b04a0fe221cb11657caaf1d03f1f5079f",
+      "trim": {
+        "x": 6,
+        "y": 14,
+        "w": 63,
+        "h": 72
+      },
+      "up": 10,
+      "seam": {
+        "path": "public/assets/chibi/forest/chibi-forest-seam-5.png",
+        "width": 63,
+        "height": 72,
+        "sha256": "0312ecfeb6cfdab914fffbbb24a178ef1137dd1409f4d7aa176f42decb010db3",
+        "pixelSha256": "7bf4e83227f576a7d8778caff1a16b4ab4d778d67abacdd177c0ba7532f75609"
+      }
+    }
+  ],
+  "pieces": [
+    {
+      "id": "chibi-forest-piece-1x1-a",
+      "shape": "1x1",
+      "variant": 0,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-1x1-a.png",
+      "width": 80,
+      "height": 104,
+      "seed": 9100,
+      "sha256": "958d045a5943904dfa2ebe9150c5a5b708228c15c9d407c44fc7a2789a7815d3",
+      "pixelSha256": "1a85246ea9becca9b36ab97e2fec452f2a4933f0fa946705e6608a3a9185053b"
+    },
+    {
+      "id": "chibi-forest-piece-1x1-b",
+      "shape": "1x1",
+      "variant": 1,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-1x1-b.png",
+      "width": 80,
+      "height": 104,
+      "seed": 9107,
+      "sha256": "0713b8d0afef1274f7c8c4de2534a0a95cfb08aaf7b432c52c5e156ea641c159",
+      "pixelSha256": "54a3e80a9649dd1c671812abd5bccfa59ece251c77490cb89123d27a17d8a78a"
+    },
+    {
+      "id": "chibi-forest-piece-1x1-c",
+      "shape": "1x1",
+      "variant": 2,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-1x1-c.png",
+      "width": 80,
+      "height": 104,
+      "seed": 9114,
+      "sha256": "190333e5658f1d306dbc3da98cbcd48e041400b1164f1e15ed1f5aaf4974334a",
+      "pixelSha256": "63e07459e2debb63d1c7c49cbf17d7ef86bd7d566d0d56de5a7bef430fb90ab7"
+    },
+    {
+      "id": "chibi-forest-piece-2x1-a",
+      "shape": "2x1",
+      "variant": 0,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-2x1-a.png",
+      "width": 160,
+      "height": 104,
+      "seed": 9121,
+      "sha256": "b7ec05773cf37d95cf789e5d5af1814abfadd289657d42f874cfd52f4bf1d44e",
+      "pixelSha256": "89572d8d1e6c4b021594c759c4cd838cb6f95beb8fb252da785bfc3153e19356"
+    },
+    {
+      "id": "chibi-forest-piece-2x1-b",
+      "shape": "2x1",
+      "variant": 1,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-2x1-b.png",
+      "width": 160,
+      "height": 104,
+      "seed": 9128,
+      "sha256": "a0e664749fd797acd54ebdfdde6d4fa68deedef9aa8432531904f9be217c9127",
+      "pixelSha256": "a98e97e2b2177f8d5fbf8640ad1cbdf70ac6b71060afb528dff6fc35afe922e4"
+    },
+    {
+      "id": "chibi-forest-piece-2x1-c",
+      "shape": "2x1",
+      "variant": 2,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-2x1-c.png",
+      "width": 160,
+      "height": 104,
+      "seed": 9135,
+      "sha256": "be983090def131a10599787ee47d5d53e45b2985de6ea24239e84897f8506c04",
+      "pixelSha256": "aa3b8cfe55c219bce021cef792904b827f0390220a3a0b83097f57f9159461bd"
+    },
+    {
+      "id": "chibi-forest-piece-1x2-a",
+      "shape": "1x2",
+      "variant": 0,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-1x2-a.png",
+      "width": 80,
+      "height": 184,
+      "seed": 9142,
+      "sha256": "6a354f818e6a3015cb741283fff6b22c6f407dc189d6d46f85a8716a9407e5a7",
+      "pixelSha256": "9d94105433d9f2cd0eb09ff30c88e9a40a0eb9a1d52cd4f99f9095f4c25ab5f8"
+    },
+    {
+      "id": "chibi-forest-piece-1x2-b",
+      "shape": "1x2",
+      "variant": 1,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-1x2-b.png",
+      "width": 80,
+      "height": 184,
+      "seed": 9149,
+      "sha256": "39d711d7ba66dcd70dc0b7e4865296e41de612d21dd88dafbd8ff4c6205c7744",
+      "pixelSha256": "8b93d157266b1e895a34622ddeffdd79a572665c5a3716506281eca32ae4008d"
+    },
+    {
+      "id": "chibi-forest-piece-1x2-c",
+      "shape": "1x2",
+      "variant": 2,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-1x2-c.png",
+      "width": 80,
+      "height": 184,
+      "seed": 9156,
+      "sha256": "6d14ce03d0f1bb108e08a6414dacf23420229ac5c3ae3a9063a2b13d5ffce22f",
+      "pixelSha256": "8df416b0b3ba0f1029744ca56535b7727725f3086f2eb8f728e3c7e701ea08dc"
+    },
+    {
+      "id": "chibi-forest-piece-2x2-a",
+      "shape": "2x2",
+      "variant": 0,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-2x2-a.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9163,
+      "sha256": "9ffd36515533c787a16b900a03810f508dcb28cf60a61f834a0fc52a47a013ff",
+      "pixelSha256": "fb68056d5ab34067f12f916b25c0790502a1d9f5fcefd44820b7b1fa1bffefea"
+    },
+    {
+      "id": "chibi-forest-piece-2x2-b",
+      "shape": "2x2",
+      "variant": 1,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-2x2-b.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9170,
+      "sha256": "0a8b155ed8e3ab279ac4bf4fb34041884db8424ba8a7556dae181779429fe556",
+      "pixelSha256": "e19a1114961d2491f856458d64d59ea3f8ce6e07fd4f8430ae5cae6e6898ff6f"
+    },
+    {
+      "id": "chibi-forest-piece-2x2-c",
+      "shape": "2x2",
+      "variant": 2,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-2x2-c.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9177,
+      "sha256": "6dfe75c32ffa7f32fa7d5250845285085d70e738c72a694cc60c1f14faf410d3",
+      "pixelSha256": "d352a19a1efcb9641f1037e61e270b4914701c9d09533884cb23e811b82be084"
+    },
+    {
+      "id": "chibi-forest-piece-l-nw-a",
+      "shape": "L-NW",
+      "variant": 0,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-l-nw-a.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9184,
+      "sha256": "e24944f90aa9fdaf0b40ad32e3c3615e67a7e3475d73c82a1baca94c806fad2d",
+      "pixelSha256": "fcb8512a3a848fc35cb036cfd07c8fb43fb5dd7a19435940765ecd4596ed20ac"
+    },
+    {
+      "id": "chibi-forest-piece-l-nw-b",
+      "shape": "L-NW",
+      "variant": 1,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-l-nw-b.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9191,
+      "sha256": "40106077ec241fd956dc55b5d291d62a4e32c06cd6b698f33d3f17bcfb2a2142",
+      "pixelSha256": "ff3e92e95372929722fb4b5559b9bfec8068adb1adaab038a6dc195013c779eb"
+    },
+    {
+      "id": "chibi-forest-piece-l-ne-a",
+      "shape": "L-NE",
+      "variant": 0,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-l-ne-a.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9198,
+      "sha256": "04d691f06d10a332a50a89e69802e32d20b5135624d49d454c7cc436511770e4",
+      "pixelSha256": "1255689ba57fae7847688408c68efd32c01dbcd1c0a8a77dc8afc8f8e6ad7ca4"
+    },
+    {
+      "id": "chibi-forest-piece-l-ne-b",
+      "shape": "L-NE",
+      "variant": 1,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-l-ne-b.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9205,
+      "sha256": "99d26c7c716fdf23f41480a6a5d3e7794008ef38708ca4f7c2a1ec6d8d31eb57",
+      "pixelSha256": "6473f794147f5c840203c5a41c7b2dbe96488d5b03c29dba9e7608f011322d01"
+    },
+    {
+      "id": "chibi-forest-piece-l-sw-a",
+      "shape": "L-SW",
+      "variant": 0,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-l-sw-a.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9212,
+      "sha256": "600a9982e1884f47494ba1d5ab1385ab96014d4acc8281b9babce4b1608bb87c",
+      "pixelSha256": "440a535d6b09a8539bf291ef84278926fa0662204da2ce559f5bacd43f578600"
+    },
+    {
+      "id": "chibi-forest-piece-l-sw-b",
+      "shape": "L-SW",
+      "variant": 1,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-l-sw-b.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9219,
+      "sha256": "59ca7b0763cd8af914c7ce1ca4e01817c5a978a8584b5ae9481f16919e04eeb2",
+      "pixelSha256": "4ce27463834e7c9bd90948c2885ac4089dcce5aa9e3b6a8008fdb8d9762b3444"
+    },
+    {
+      "id": "chibi-forest-piece-l-se-a",
+      "shape": "L-SE",
+      "variant": 0,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-l-se-a.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9226,
+      "sha256": "e6ca61b94bc5d31989bf8a70241d70140dd163a1bd2fad9d99cefdf641c363d7",
+      "pixelSha256": "bee98246e181458b6156b97bce94e8f227a5fb0872a2dd8211b015d69866a710"
+    },
+    {
+      "id": "chibi-forest-piece-l-se-b",
+      "shape": "L-SE",
+      "variant": 1,
+      "path": "public/assets/chibi/forest/chibi-forest-piece-l-se-b.png",
+      "width": 160,
+      "height": 184,
+      "seed": 9233,
+      "sha256": "7b298d50d6eb6ccb77421240558c85c3828e1cbcd8e9b0a8287cfadd7b01c68f",
+      "pixelSha256": "ebf3dda5f048317bf60522d9cf86ac53ef11e79cc4f37e17584959182da67f8b"
+    }
+  ]
+}

@@ -262,6 +262,16 @@ import {
   snapCameraToDevicePixels,
 } from "./chibi-geometry-v7";
 import { chibiMountainFringeEdgesV7 } from "./chibi-terrain-fringe-v7";
+import {
+  chibiForestCellsV7,
+  drawChibiForestBandsV7,
+  drawChibiForestBodiesV7,
+  drawChibiForestFloorV7,
+  drawChibiForestGladeV7,
+  type ChibiForestArtV7,
+  type ChibiForestCellV7,
+  type ChibiForestSnowV7,
+} from "./chibi-forest-v7";
 import { drawLegacyRiftV7, riftPieceV7 } from "./rift-presentation-v7";
 import { factionColourV7 } from "./faction-colours-v7";
 import {
@@ -1652,6 +1662,13 @@ export function drawBoardV7(input: {
    */
   readonly dwarfArt?: DwarfBoardArtV7;
   /**
+   * Composed CHIBI forests (bead pulp_wars-maw.3,
+   * docs/art/COMPOSED_FORESTS.md): the multi-tile piece set. Omitted, or
+   * while it loads, every Forest cell draws its single clump as before.
+   * LEGACY never uses it.
+   */
+  readonly forestArt?: { resolve(): ChibiForestArtV7 | null };
+  /**
    * The Mind Control revision: the control halo's pulse clock in ms (0, the
    * default, and reduced motion draw it static in the faction colour).
    */
@@ -1894,7 +1911,30 @@ export function drawBoardV7(input: {
     for (const entry of input.plan.entries)
       if (entry.kind === "TERRAIN" && entry.snow !== undefined)
         splitCells.add(coordKey(entry.at));
+  // Composed forests (pulp_wars-maw.3): every explored Forest cell with a
+  // canopy draws its ground now and its trees after the Roads, so pieces
+  // and seam clumps can cross cell borders over finished ground.
+  const forestArt =
+    chibiArt === undefined ? null : (input.forestArt?.resolve() ?? null);
+  const forestCells =
+    forestArt === null ? null : forestCellsOf(input.plan, forestArt);
+  if (forestCells !== null)
+    for (const key of forestCells.keys()) splitCells.add(key);
   const iceFolkArt = input.iceFolkArt;
+  // Composed forests on Snow: caps go on cell by cell, so a piece that
+  // spans a Snow border is capped only over its Snow cells.
+  const forestSnowCells = new Set<string>();
+  if (forestCells !== null)
+    for (const entry of input.plan.entries)
+      if (entry.kind === "TERRAIN" && entry.snow !== undefined)
+        forestSnowCells.add(coordKey(entry.at));
+  const forestSnow: ChibiForestSnowV7 | null =
+    forestSnowCells.size === 0
+      ? null
+      : {
+          caps: (image) => iceFolkArt?.caps(image, "SNOW") ?? null,
+          snowAt: (x, y) => forestSnowCells.has(`${x},${y}`),
+        };
   const blizzardTime =
     input.reducedMotion === true ? 0 : (input.blizzardTimeMs ?? 0);
   /** The Snow overlay and the Blizzard of a terrain cell (ground pass). */
@@ -2018,6 +2058,65 @@ export function drawBoardV7(input: {
           chibi?.kind === "READY" && splitCells.has(coordKey(entry.at))
             ? chibi.layers
             : undefined;
+        // A composed Forest cell (pulp_wars-maw.3). A clearing (a cell with
+        // a resource, a village, a treasure...) keeps the single clump and
+        // only gains the shade on its ground.
+        const forestCell: ChibiForestCellV7 | null =
+          forestArt !== null && layers !== undefined
+            ? (forestCells?.get(coordKey(entry.at)) ?? null)
+            : null;
+        const forestFrame = { camera, devicePixelRatio, sceneAlpha };
+        if (
+          forestArt !== null &&
+          forestCell !== null &&
+          !forestCell.clearing &&
+          pass !== "GROUND"
+        ) {
+          if (pass === "TALL_BODY")
+            drawChibiForestBodiesV7(
+              context,
+              forestFrame,
+              forestArt,
+              entry.at,
+              forestCell,
+              forestSnow,
+            );
+          else {
+            if (forestCell.glade && layers !== undefined) {
+              drawChibiForestGladeV7(
+                context,
+                forestFrame,
+                forestArt,
+                entry.at,
+                layers.ground,
+              );
+              // On Snow the open ground of the glade is snowy too.
+              const snowTile =
+                entry.snow === undefined
+                  ? null
+                  : (iceFolkArt?.snowTile(
+                      entry.snow.edges,
+                      entry.snow.variant,
+                    ) ?? null);
+              if (snowTile !== null)
+                drawChibiForestGladeV7(
+                  context,
+                  forestFrame,
+                  forestArt,
+                  entry.at,
+                  snowTile,
+                );
+            }
+            drawChibiForestBandsV7(
+              context,
+              forestFrame,
+              forestArt,
+              forestCell,
+              forestSnow,
+            );
+          }
+          continue;
+        }
         if (pass === "TALL_BODY") {
           if (chibi?.kind === "READY" && layers !== undefined) {
             drawChibiTerrainV7(context, chibi, {
@@ -2123,6 +2222,15 @@ export function drawBoardV7(input: {
                   ? { part: "CELL" }
                   : { part: "GROUND", image: layers.ground }),
             });
+          // The shade under a composed forest, over its ground.
+          if (pass === "GROUND" && forestArt !== null && forestCell !== null)
+            drawChibiForestFloorV7(
+              context,
+              forestFrame,
+              forestArt,
+              entry.at,
+              forestCell,
+            );
           // The Ice Folk revision: Snow and the Blizzard over the ground;
           // the snow caps of the body's overflow over the overflow.
           if (pass === "GROUND") drawWinterGround(entry, x, y);
@@ -5788,6 +5896,33 @@ export function farmPresentationV7(
     }
   }
   return result;
+}
+
+/**
+ * The composed-forest roles of a plan's cells, packed once per plan and
+ * piece set (a plan is drawn many times: every animation frame redraws it).
+ */
+const forestCellsByPlan = new WeakMap<
+  BoardRenderPlanV7,
+  {
+    readonly art: ChibiForestArtV7;
+    readonly cells: ReadonlyMap<string, ChibiForestCellV7>;
+  }
+>();
+
+function forestCellsOf(
+  plan: BoardRenderPlanV7,
+  art: ChibiForestArtV7,
+): ReadonlyMap<string, ChibiForestCellV7> {
+  const cached = forestCellsByPlan.get(plan);
+  if (cached?.art === art) return cached.cells;
+  const cells = chibiForestCellsV7(
+    plan.entries,
+    art.variants,
+    art.clumps.length,
+  );
+  forestCellsByPlan.set(plan, { art, cells });
+  return cells;
 }
 
 function coordKey(at: CoordV7): string {

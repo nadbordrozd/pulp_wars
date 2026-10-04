@@ -58,6 +58,8 @@
     "art:style-exploration-review": "tsx scripts/art/style-exploration-review.ts",
     "art:tile80-study-review": "tsx scripts/art/tile80-study-review.ts",
     "art:chibi": "tsx scripts/art/chibi-pipeline.ts",
+    "art:chibi-forest-pieces": "tsx scripts/art/chibi-forest-pieces.ts",
+    "art:chibi-forest-review": "tsx scripts/art/chibi-forest-review.ts",
     "art:chibi-batch-review": "tsx scripts/art/chibi-batch-review.ts",
     "art:chibi-faction-dry-run-review": "tsx scripts/art/chibi-faction-dry-run-review.ts",
     "art:chibi-goblin-review": "tsx scripts/art/chibi-goblin-review.ts",

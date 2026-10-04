@@ -1,0 +1,36 @@
+{
+  "id": "forest-5-a-edit",
+  "jobId": "fed17507-ea9e-4110-985f-efe38d739f94",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "forest-clumps",
+    "asset": "chibi-forest-5",
+    "subject": "TERRAIN:FOREST",
+    "faction": "ORIGINAL",
+    "recipeClass": "tall-terrain",
+    "requestSize": {
+      "width": 80,
+      "height": 104
+    },
+    "seed": 67365,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+    "editInstruction": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+    "source": {
+      "recipe": "forest-5-a",
+      "candidate": 0,
+      "sha256": "bb062f2b1d9743e1d103a81aa51ccfce456874126ddabb8adeca7b7a86e0a421"
+    }
+  }
+}

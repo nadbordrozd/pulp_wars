@@ -155,6 +155,18 @@ naming a level four-legged body gave the Brontosaurus and the Triceratops.
   where it would become a flat Mountain variant; the runtime reaches it
   only as the `groundUrl` of the Mountain layers.
 
+### Composed forests
+
+A group of Forest cells is drawn as one forest of multi-tile pieces (bead
+`pulp_wars-maw.3`). The pieces are derived, not generated:
+`scripts/art/chibi-forest-pieces.ts` stamps the accepted Forest clump bodies
+(`chibi-forest-1`, `-2`, and `-4`, `-5` of batch `forest-clumps`) into 20
+masters under `public/assets/chibi/forest/`, and `art:validate` re-derives
+them. `chibi-forest-4` and `-5` are pipeline-only stamp sources, like
+`chibi-mountain-ground-1`: they are accepted and validated but not listed in
+`src/assets/chibi-art-manifest.ts`. See
+[COMPOSED_FORESTS.md](COMPOSED_FORESTS.md).
+
 ### Runtime ground fringe
 
 The rocky Mountain ground is a square tile. Bead `pulp_wars-6gd.7` softens

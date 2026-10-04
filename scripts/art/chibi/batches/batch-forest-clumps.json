@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "batch": "forest-clumps",
+  "title": "Chibi Forest: two more tree clumps (chibi-forest-4 and -5), stamp sources of the composed forest pieces",
+  "bead": "pulp_wars-maw.3",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-forest-3",
+      "subject": "TERRAIN:FOREST",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    },
+    {
+      "id": "chibi-forest-4",
+      "subject": "TERRAIN:FOREST",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    },
+    {
+      "id": "chibi-forest-5",
+      "subject": "TERRAIN:FOREST",
+      "assetClass": "TALL_TERRAIN",
+      "recipeClass": "tall-terrain",
+      "canvas": {
+        "width": 80,
+        "height": 104
+      },
+      "groundAsset": "chibi-grass-1"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "forest-3-a",
+      "asset": "chibi-forest-3",
+      "endpoint": "create-image-pixen",
+      "seed": 67361,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      }
+    },
+    {
+      "id": "forest-4-a",
+      "asset": "chibi-forest-4",
+      "endpoint": "create-image-pixen",
+      "seed": 67362,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "promptAddendum": "This clump has two pines standing at the back and two round-crowned trees in front."
+    },
+    {
+      "id": "forest-5-a",
+      "asset": "chibi-forest-5",
+      "endpoint": "create-image-pixen",
+      "seed": 67363,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "promptAddendum": "This clump is four round-crowned trees of slightly different heights and no pine."
+    },
+    {
+      "id": "forest-4-a-edit",
+      "asset": "chibi-forest-4",
+      "endpoint": "edit-image-pixen",
+      "seed": 67364,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "source": {
+        "recipe": "forest-4-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of forest-4-a (good trees on an isometric slab)."
+    },
+    {
+      "id": "forest-5-a-edit",
+      "asset": "chibi-forest-5",
+      "endpoint": "edit-image-pixen",
+      "seed": 67365,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "source": {
+        "recipe": "forest-5-a",
+        "candidate": 0
+      },
+      "editInstruction": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+      "notes": "Ground-removal edit of forest-5-a (trees on a slab with stones)."
+    },
+    {
+      "id": "forest-3-b",
+      "asset": "chibi-forest-3",
+      "endpoint": "create-image-pixen",
+      "seed": 67366,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "promptAddendum": "This clump is three round-crowned trees with one pine standing at the left.",
+      "notes": "Re-roll of forest-3-a, which came back as a noisy scene."
+    },
+    {
+      "id": "forest-3-c",
+      "asset": "chibi-forest-3",
+      "endpoint": "create-image-pixen",
+      "seed": 67367,
+      "requestSize": {
+        "width": 80,
+        "height": 104
+      },
+      "promptAddendum": "This clump is one pine in the middle with a round-crowned tree on each side and a smaller one in front, each tree about a third of the image wide.",
+      "notes": "Second re-roll of forest-3."
+    }
+  ]
+}

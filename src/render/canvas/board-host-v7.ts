@@ -156,6 +156,11 @@ import {
   type BoardVisualDirectionV7,
 } from "./visual-direction-v7";
 import type { ChibiArtRegistryV7 } from "../../assets/chibi-art-v7";
+import { CHIBI_FOREST_ART_SET_V7 } from "../../assets/chibi-forest-pieces-manifest";
+import {
+  createChibiForestArtV7,
+  type ChibiForestArtV7,
+} from "./chibi-forest-v7";
 import {
   CURIOSITY_LABELS_V7,
   CURIOSITY_RULES_V7,
@@ -296,6 +301,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #pinnedIceFolkFeedback: readonly IceFolkFeedbackV7[] = [];
   /** The Ice Folk Snow tiles, snow caps, rime and casings, built once. */
   readonly #iceFolkArt: IceFolkBoardArtV7;
+  readonly #forestArt: { resolve(): ChibiForestArtV7 | null };
   /** The Blizzard's slow ambient redraw (a timer, not every frame). */
   #blizzardTimer: number | null = null;
   /** The unit being shattered on the board, cased in ice until it bursts. */
@@ -366,7 +372,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #kaboomFramedKey: string | null = null;
   #cameraPanFrame: number | null = null;
 
-  constructor(documentRoot: Document) {
+  /**
+   * `composedForests: false` draws every Forest cell as its single clump
+   * (the look before bead pulp_wars-maw.3); only the forest art review uses
+   * it, for its "before" captures.
+   */
+  constructor(
+    documentRoot: Document,
+    options: { readonly composedForests?: boolean } = {},
+  ) {
     this.#document = documentRoot;
     this.#glowCache = new BoardGlowCacheV7(documentRoot);
     this.#images = createBoardImageResolverV7(documentRoot, () => {
@@ -392,6 +406,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#draw();
       },
     });
+    // Composed forests (pulp_wars-maw.3): the multi-tile Forest pieces of
+    // the CHIBI art set.
+    this.#forestArt =
+      options.composedForests === false
+        ? { resolve: () => null }
+        : createChibiForestArtV7({
+            environment: browserChibiRasterEnvironmentV7(documentRoot),
+            redraw: () => this.#draw(),
+            set: CHIBI_FOREST_ART_SET_V7,
+          });
   }
 
   mount(container: HTMLElement, callbacks: BoardHostCallbacksV7): void {
@@ -1473,6 +1497,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         iceFolkShatter: this.#iceFolkShatter,
         // The Dwarf revision: the Dig In earthwork rasters.
         dwarfArt: this.#dwarfArt,
+        forestArt: this.#forestArt,
         // The Candy revision: a Crashed unit's faded sprite.
         candyDroop: (image) =>
           this.#candyDroopCache.resolve(image, CRASHED_SPRITE_SATURATION_V7),

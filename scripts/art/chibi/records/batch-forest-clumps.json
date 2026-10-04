@@ -1,0 +1,626 @@
+{
+  "schemaVersion": 1,
+  "batch": "forest-clumps",
+  "recipes": {
+    "forest-3-a": {
+      "id": "forest-3-a",
+      "asset": "chibi-forest-3",
+      "jobId": "sync-dba5a7da-b53c-4736-b541-2afdd5972130",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "forest-clumps",
+        "asset": "chibi-forest-3",
+        "subject": "TERRAIN:FOREST",
+        "faction": "ORIGINAL",
+        "recipeClass": "tall-terrain",
+        "requestSize": {
+          "width": 80,
+          "height": 104
+        },
+        "seed": 67361,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-tall-terrain.txt + scripts/art/chibi/fragments/class-tall-terrain.negative.txt",
+            "text": "Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards.",
+            "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red."
+      },
+      "submittedAt": "2026-10-04T19:50:06.332Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-forest-clumps/forest-3-a.png",
+      "rawSheetSha256": "975314beaf20fb1f2001735410cc59b8f18f0d89e3445f7621f1c1e9248e7e7f",
+      "plateHints": [
+        {
+          "bandRows": 21,
+          "groundShare": 0.1777,
+          "footprintWidthShare": 0.65,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T19:51:02.162Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A noisy isometric scene, not a clump.",
+        "reviewedAt": "2026-10-04T19:58:33.846Z"
+      }
+    },
+    "forest-3-b": {
+      "id": "forest-3-b",
+      "asset": "chibi-forest-3",
+      "jobId": "sync-4e8791f3-c105-437f-bbe5-9b31c6108318",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "forest-clumps",
+        "asset": "chibi-forest-3",
+        "subject": "TERRAIN:FOREST",
+        "faction": "ORIGINAL",
+        "recipeClass": "tall-terrain",
+        "requestSize": {
+          "width": 80,
+          "height": 104
+        },
+        "seed": 67366,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-tall-terrain.txt + scripts/art/chibi/fragments/class-tall-terrain.negative.txt",
+            "text": "Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards.",
+            "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This clump is three round-crowned trees with one pine standing at the left."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them. This clump is three round-crowned trees with one pine standing at the left.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them. This clump is three round-crowned trees with one pine standing at the left. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red."
+      },
+      "submittedAt": "2026-10-04T19:56:32.664Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-forest-clumps/forest-3-b.png",
+      "rawSheetSha256": "2edd1471b1c5ccaccd44c8c13263d4327a7b5731f38dc56defe15719ee8f94a6",
+      "plateHints": [
+        {
+          "bandRows": 20,
+          "groundShare": 0.6935,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T19:57:50.185Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Trees twice the live size on a slab.",
+        "reviewedAt": "2026-10-04T19:58:34.249Z"
+      }
+    },
+    "forest-3-c": {
+      "id": "forest-3-c",
+      "asset": "chibi-forest-3",
+      "jobId": "sync-af9a5451-d3d4-4599-acf9-ddf11fc881ec",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "forest-clumps",
+        "asset": "chibi-forest-3",
+        "subject": "TERRAIN:FOREST",
+        "faction": "ORIGINAL",
+        "recipeClass": "tall-terrain",
+        "requestSize": {
+          "width": 80,
+          "height": 104
+        },
+        "seed": 67367,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-tall-terrain.txt + scripts/art/chibi/fragments/class-tall-terrain.negative.txt",
+            "text": "Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards.",
+            "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This clump is one pine in the middle with a round-crowned tree on each side and a smaller one in front, each tree about a third of the image wide."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them. This clump is one pine in the middle with a round-crowned tree on each side and a smaller one in front, each tree about a third of the image wide.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them. This clump is one pine in the middle with a round-crowned tree on each side and a smaller one in front, each tree about a third of the image wide. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red."
+      },
+      "submittedAt": "2026-10-04T19:58:52.000Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-forest-clumps/forest-3-c.png",
+      "rawSheetSha256": "691f8fd4af4bfbf482c44ec7575cf55b6d5fb04721f970b39d8b9813586fac2e",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.7407,
+          "footprintWidthShare": 0.8696,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T20:00:10.894Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Thin, sparse trees on a slab; not the live clump style.",
+        "reviewedAt": "2026-10-04T20:00:48.655Z"
+      }
+    },
+    "forest-4-a": {
+      "id": "forest-4-a",
+      "asset": "chibi-forest-4",
+      "jobId": "sync-bb50f773-c8a9-4581-a0b2-2ea87f63cf24",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "forest-clumps",
+        "asset": "chibi-forest-4",
+        "subject": "TERRAIN:FOREST",
+        "faction": "ORIGINAL",
+        "recipeClass": "tall-terrain",
+        "requestSize": {
+          "width": 80,
+          "height": 104
+        },
+        "seed": 67362,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-tall-terrain.txt + scripts/art/chibi/fragments/class-tall-terrain.negative.txt",
+            "text": "Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards.",
+            "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This clump has two pines standing at the back and two round-crowned trees in front."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them. This clump has two pines standing at the back and two round-crowned trees in front.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them. This clump has two pines standing at the back and two round-crowned trees in front. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red."
+      },
+      "submittedAt": "2026-10-04T19:51:02.168Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-forest-clumps/forest-4-a.png",
+      "rawSheetSha256": "470ea7d60105ba59573424c1d80766293bcfe7d1be25ac5090b203dd14cb1ce4",
+      "plateHints": [
+        {
+          "bandRows": 18,
+          "groundShare": 0.5816,
+          "footprintWidthShare": 0.9032,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T19:52:53.168Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Good trees on an isometric slab; see forest-4-a-edit.",
+        "reviewedAt": "2026-10-04T19:58:34.634Z"
+      }
+    },
+    "forest-4-a-edit": {
+      "id": "forest-4-a-edit",
+      "asset": "chibi-forest-4",
+      "jobId": "b272e942-c928-4bb4-b85a-bfbbb5b8eb2a",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "forest-clumps",
+        "asset": "chibi-forest-4",
+        "subject": "TERRAIN:FOREST",
+        "faction": "ORIGINAL",
+        "recipeClass": "tall-terrain",
+        "requestSize": {
+          "width": 80,
+          "height": 104
+        },
+        "seed": 67364,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+        "editInstruction": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+        "source": {
+          "recipe": "forest-4-a",
+          "candidate": 0,
+          "sha256": "470ea7d60105ba59573424c1d80766293bcfe7d1be25ac5090b203dd14cb1ce4"
+        }
+      },
+      "submittedAt": "2026-10-04T19:55:24.188Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-forest-clumps/forest-4-a-edit.png",
+      "rawSheetSha256": "b1d130e1f83626c383dc22a3d7d4d89d4f5e3ed5ec88e5e423c4b32c802e1c31",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0699,
+          "footprintWidthShare": 0.5484,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0.0699,
+          "footprintWidthShare": 0.5484,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T19:55:55.645Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Two pines behind three round crowns, clean cut-out, live outline and palette range; a stamp source and 1x1 variant.",
+        "reviewedAt": "2026-10-04T19:58:33.061Z"
+      }
+    },
+    "forest-5-a": {
+      "id": "forest-5-a",
+      "asset": "chibi-forest-5",
+      "jobId": "sync-c8858b03-130c-402c-9b8d-09fed5640c2f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "forest-clumps",
+        "asset": "chibi-forest-5",
+        "subject": "TERRAIN:FOREST",
+        "faction": "ORIGINAL",
+        "recipeClass": "tall-terrain",
+        "requestSize": {
+          "width": 80,
+          "height": 104
+        },
+        "seed": 67363,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-tall-terrain.txt + scripts/art/chibi/fragments/class-tall-terrain.negative.txt",
+            "text": "Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards.",
+            "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "This clump is four round-crowned trees of slightly different heights and no pine."
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them. This clump is four round-crowned trees of slightly different heights and no pine.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one raised terrain feature (trees or rocks) drawn as a free-standing cut-out cluster, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform; it is composited onto its ground tile afterwards. Subject: a dense clump of three or four chunky round-crowned trees and one pine packed tightly together, muted deep green and olive leaves in big simple blobs, short dark grey-brown trunks, the clump as wide as the image; the tree trunks are the lowest thing in the image, with no ground, no grass patch, no soil and no shadow under them. This clump is four round-crowned trees of slightly different heights and no pine. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red."
+      },
+      "submittedAt": "2026-10-04T19:52:53.169Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-forest-clumps/forest-5-a.png",
+      "rawSheetSha256": "bb062f2b1d9743e1d103a81aa51ccfce456874126ddabb8adeca7b7a86e0a421",
+      "plateHints": [
+        {
+          "bandRows": 15,
+          "groundShare": 0.5269,
+          "footprintWidthShare": 0.8125,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-04T19:54:18.421Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Good trees on a slab with stones; see forest-5-a-edit.",
+        "reviewedAt": "2026-10-04T19:58:35.017Z"
+      }
+    },
+    "forest-5-a-edit": {
+      "id": "forest-5-a-edit",
+      "asset": "chibi-forest-5",
+      "jobId": "fed17507-ea9e-4110-985f-efe38d739f94",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "forest-clumps",
+        "asset": "chibi-forest-5",
+        "subject": "TERRAIN:FOREST",
+        "faction": "ORIGINAL",
+        "recipeClass": "tall-terrain",
+        "requestSize": {
+          "width": 80,
+          "height": 104
+        },
+        "seed": 67365,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+        "editInstruction": "Remove all ground: erase the grass and soil slab and the stones under the trees, so the trees stand directly on a transparent background with nothing at all under them. Keep the trees, leaves, trunks, outline and art style exactly the same.",
+        "source": {
+          "recipe": "forest-5-a",
+          "candidate": 0,
+          "sha256": "bb062f2b1d9743e1d103a81aa51ccfce456874126ddabb8adeca7b7a86e0a421"
+        }
+      },
+      "submittedAt": "2026-10-04T19:55:55.648Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-forest-clumps/forest-5-a-edit.png",
+      "rawSheetSha256": "21700155495bd7787a86dbd98a2ae4d44023e719e77743ebbbbbd4472dcd4f78",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.4,
+          "footprintWidthShare": 0.4921,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.4,
+          "footprintWidthShare": 0.4921,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-04T19:56:32.663Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Round crowns of three sizes and one pine, clean cut-out; a stamp source and 1x1 variant.",
+        "reviewedAt": "2026-10-04T19:58:33.453Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-forest-4": {
+      "id": "chibi-forest-4",
+      "subject": "TERRAIN:FOREST",
+      "assetClass": "TALL_TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "forest-4-a-edit",
+      "candidate": 0,
+      "candidateSha256": "1181054bc2fe602837a4270c2ab2c7c354db461112684974508c487980a531cf",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-forest-4.png",
+        "sha256": "04d29f11d539aa2e3b07ef0b51a7e03b068d95e421b845f935d28747be31f273",
+        "pixelSha256": "15e5cf7ea338a83f5a43de689236f1da4051d232daf11bd8e2e76ee14eb0171a",
+        "width": 80,
+        "height": 104
+      },
+      "derivation": {
+        "kind": "ground-composite",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 24,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Two pines behind three round crowns, clean cut-out, live outline and palette range; a stamp source and 1x1 variant.",
+      "acceptedAt": "2026-10-04T19:58:33.061Z"
+    },
+    "chibi-forest-5": {
+      "id": "chibi-forest-5",
+      "subject": "TERRAIN:FOREST",
+      "assetClass": "TALL_TERRAIN",
+      "status": "ACCEPTED",
+      "recipe": "forest-5-a-edit",
+      "candidate": 0,
+      "candidateSha256": "08391243438222bd077ce7d357a1051b04a0fe221cb11657caaf1d03f1f5079f",
+      "master": {
+        "path": "public/assets/chibi/terrain/chibi-forest-5.png",
+        "sha256": "ce4a00ebbf69bad2d84233d726d7555ae9e5cf3afadcb29066b57c54cdd83f4b",
+        "pixelSha256": "0bb4998ac423abd3939c1e8f6924b4782de467aa484b482122d34192b36128b8",
+        "width": 80,
+        "height": 104
+      },
+      "derivation": {
+        "kind": "ground-composite",
+        "ground": {
+          "asset": "chibi-grass-1",
+          "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0",
+          "batch": "1"
+        }
+      },
+      "anchor": {
+        "x": 40,
+        "y": 64
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 24,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Round crowns of three sizes and one pine, clean cut-out; a stamp source and 1x1 variant.",
+      "acceptedAt": "2026-10-04T19:58:33.453Z"
+    }
+  }
+}
