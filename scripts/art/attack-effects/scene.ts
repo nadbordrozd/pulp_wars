@@ -70,6 +70,19 @@ export const ATTACK_EFFECTS_SCENE_SHOOTERS_V7: Readonly<
     range: 2,
     label: "Snow Hunter",
   },
+  // The Candy revision (bead pulp_wars-jdb.6).
+  PIE_THROW: {
+    faction: "CANDY",
+    role: "CATAPULT",
+    range: 3,
+    label: "Pie Launcher",
+  },
+  GUMBALL_SHOT: {
+    faction: "CANDY",
+    role: "MARKSMAN",
+    range: 2,
+    label: "Gumball Gunner",
+  },
 };
 
 const ROW = 2;

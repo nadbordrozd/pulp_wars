@@ -32,6 +32,11 @@ import {
   dwarfAbilityNameV7,
   dwarfRecruitNotesV7,
 } from "./dwarf-presentation-v7";
+import {
+  candyAbilityDescriptionV7,
+  candyAbilityNameV7,
+  candyRecruitNotesV7,
+} from "./candy-presentation-v7";
 
 /**
  * Role-level unit presentation of Ruleset 7: a faction role's base stats,
@@ -90,6 +95,9 @@ export function recruitmentRolePresentationV7(
   // The Dwarf revision: clockwork, flight, machines and the Field Defense
   // restriction from the Dwarf registration.
   restrictions.push(...dwarfRecruitNotesV7(roleId, faction));
+  // The Candy revision: the Rush perks, Crumbs and the Field Defense
+  // restriction from the Candy registration.
+  restrictions.push(...candyRecruitNotesV7(roleId, faction));
   return {
     label: role.label,
     stats: [
@@ -154,6 +162,8 @@ export function roleAbilityDescriptionV7(
   if (iceFolk !== null) return iceFolk;
   const dwarf = dwarfAbilityDescriptionV7(ability, faction);
   if (dwarf !== null) return dwarf;
+  const candy = candyAbilityDescriptionV7(ability, faction);
+  if (candy !== null) return candy;
   switch (ability) {
     case "ATTACK":
       return minimum > 1
@@ -195,6 +205,8 @@ export function roleAbilityNameV7(
   if (iceFolk !== null) return iceFolk;
   const dwarf = dwarfAbilityNameV7(ability, faction);
   if (dwarf !== null) return dwarf;
+  const candy = candyAbilityNameV7(ability, faction);
+  if (candy !== null) return candy;
   if (ability === "TEND_WOUNDED") return "Tend";
   return title(ability);
 }

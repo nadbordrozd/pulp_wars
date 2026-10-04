@@ -130,6 +130,20 @@ the shot near its target with its trail behind it, the gatling with one
 round landed), before the cues the attack causes, like the other faction
 cues.
 
+## The Candy cues (bead `pulp_wars-jdb.6`)
+
+The Candy faction came after the review. Its two shooters have a cue each,
+on the same timeline rules:
+
+| Cue            | Who            | Flight                                               | Burst                                          | ms  |
+| -------------- | -------------- | ---------------------------------------------------- | ---------------------------------------------- | --- |
+| `PIE_THROW`    | Pie Launcher   | a cream pie lobbed in a high arc, shedding cream     | cream over the target: the Splat               | 460 |
+| `GUMBALL_SHOT` | Gumball Gunner | one glossy pink gumball with a short trail, straight | a white sugar star and pink and mint sprinkles | 380 |
+
+Unlike the six cues above they draw the Candy art's own sprites where the
+look has them (`EFFECT:PIE`, `EFFECT:SPLAT`, `EFFECT:GUMBALL_SHOT`), and the
+same shapes in code in the Classic look and LEGACY.
+
 ## Evidence
 
 `npm run art:attack-effects-review` (with `CHROME_PATH` set) draws each cue

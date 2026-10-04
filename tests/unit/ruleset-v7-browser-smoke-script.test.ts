@@ -618,6 +618,31 @@ describe("Ruleset 7 browser smoke script", () => {
     ])
       expect(probe).toContain(`await driver.capture("${name}")`);
   });
+  it("probes the Candy UI on its fixture: the markers, a Sugar Rush before its Move, and a Re-bake", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = readFileSync("scripts/browser-smoke-v7-candy.ts", "utf8");
+
+    // Dev server only (the fixture is a test fixture), after the map
+    // curiosities and before the Showcase probe's fresh front screen.
+    const call = source.indexOf("await probeCandyV7({");
+    expect(call).toBeGreaterThan(source.indexOf("await probeCuriositiesV7({"));
+    expect(call).toBeLessThan(
+      source.indexOf("await probeShowcaseMatch(connection)"),
+    );
+    expect(source).toContain("Gallery ${gallery}. Candy ${candy}. Curiosities");
+    expect(probe).toContain('module: "/tests/fixtures/v7-candy-ui.ts"');
+    expect(probe).toContain('fixture: "candyUiFixtureV7"');
+    expect(probe).toContain('"crashed,frenzy,rushed-home,splatted"');
+    expect(probe).toContain(`pointerClick('[data-action="candy-sugar-rush"]')`);
+    expect(probe).toContain("kinds[0] === 'SUGAR_RUSH' && kinds[1] === 'MOVE'");
+    expect(probe).toContain(`[data-unit-status="rushed"]`);
+    expect(probe).toContain(`pointerClick('[data-action="candy-rebake"]')`);
+    expect(probe).toContain("trace.eventKinds.includes('UNIT_REBAKED')");
+    // The dock never names a tile.
+    expect(probe).toContain("The Candy dock names a tile");
+    for (const name of ["candy-sugar-rush-armed.png", "candy-rebake-aimed.png"])
+      expect(probe).toContain(`await driver.capture("${name}")`);
+  });
   it("waits for a fresh complete document and installed controller after reload", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
 

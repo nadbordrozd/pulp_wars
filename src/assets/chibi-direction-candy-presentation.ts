@@ -5,8 +5,9 @@
  * Crashed, Rushed, Splatted).
  *
  * It imports nothing, so the review script and the tests run it in Node and
- * the game can run it in the browser. Nothing in the game reads it until the
- * Candy UI bead (pulp_wars-jdb.6) wires the art in.
+ * the game can run it in the browser. The Candy UI (bead pulp_wars-jdb.6)
+ * reads it for its board markers, its cues and its two attack cues
+ * (`candy-canvas-v7`, `candy-effects-v7`, `attack-effects-v7`).
  */
 
 /** The faction's colours for code-drawn markers, chips and effects. */

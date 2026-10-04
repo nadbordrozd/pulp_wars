@@ -18,6 +18,10 @@ import {
   DWARF_EFFECT_DURATIONS_V7,
   type DwarfFeedbackEffectV7,
 } from "./dwarf-effects-v7";
+import {
+  CANDY_EFFECT_DURATIONS_V7,
+  type CandyFeedbackEffectV7,
+} from "./candy-effects-v7";
 import { attackEffectForV7, type AttackEffectIdV7 } from "./attack-effects-v7";
 
 export type CorePresentationStepV7 =
@@ -98,6 +102,23 @@ export type CorePresentationStepV7 =
       readonly cells: readonly CoordV7[];
       readonly from?: CoordV7;
       readonly unitId?: number;
+      readonly durationMs: number;
+      /** Another player's cue: the camera frames it, like enemy moves. */
+      readonly followCamera?: true;
+    }
+  | {
+      /**
+       * The Candy cues (bead pulp_wars-jdb.6, candy-effects-v7): a Sugar
+       * Rush starting, the Crash starting and ending, a Re-bake, a Sugar
+       * Toss, a Splat, a Bounce, and Crumbs eaten (with the Peppermint
+       * Surprise).
+       */
+      readonly kind: "CANDY";
+      readonly effect: CandyFeedbackEffectV7;
+      readonly cells: readonly CoordV7[];
+      readonly from?: CoordV7;
+      /** SUGAR_TOSS: the HP healed; PEPPERMINT: the damage. */
+      readonly amount?: number;
       readonly durationMs: number;
       /** Another player's cue: the camera frames it, like enemy moves. */
       readonly followCamera?: true;
@@ -396,6 +417,29 @@ export function corePresentationPlanV7(
       ...(enemyTurn ? { followCamera: true as const } : {}),
     });
   };
+  /** Adds a Candy cue at its CANDY_EFFECT_DURATIONS_V7 duration. */
+  const pushCandy = (
+    step: Omit<
+      Extract<CorePresentationStepV7, { readonly kind: "CANDY" }>,
+      "kind" | "followCamera" | "durationMs"
+    >,
+  ): void => {
+    steps.push({
+      kind: "CANDY",
+      ...step,
+      durationMs: CANDY_EFFECT_DURATIONS_V7[step.effect],
+      ...(enemyTurn ? { followCamera: true as const } : {}),
+    });
+  };
+  // The Candy revision: the attackers a Marshmallow or a Golem bounces back
+  // in this boundary (the Bounce is a `UNIT_PUSHED` of the attacker).
+  const bouncedAttackers = new Set(
+    envelope.events.flatMap((event) =>
+      event.kind === "COMBAT_RESOLVED" && event.preview.bounce === "WILL_BOUNCE"
+        ? [event.preview.attackerId]
+        : [],
+    ),
+  );
   // The Dwarf revision: a Steam Cannon's Knockback slides its target back
   // like a Charge! push (the target waits where its slide starts).
   const knockbackSources = new Set(
@@ -555,6 +599,66 @@ export function corePresentationPlanV7(
         pushDwarf({ effect: "KNOCKBACK", cells: [event.to] });
       }
       origins.set(event.targetUnitId, event.to);
+    } else if (
+      event.kind === "UNIT_PUSHED" &&
+      bouncedAttackers.has(event.targetUnitId)
+    ) {
+      // The Candy revision: a bounced attacker springs one tile back, with
+      // a spring where it lands.
+      if (isExplored(event.from) && isExplored(event.to)) {
+        steps.push({
+          kind: "MOVE",
+          unitId: event.targetUnitId,
+          path: [event.from, event.to],
+          durationMs: 160,
+          pushSlide: true,
+          ...(enemyTurn ? { followCamera: true as const } : {}),
+        });
+        pushCandy({ effect: "BOUNCE", cells: [event.to] });
+      }
+      origins.set(event.targetUnitId, event.to);
+    } else if (event.kind === "UNIT_SUGAR_RUSHED") {
+      // The Candy revision: sparkles burst round the unit as it Rushes.
+      const unit = unitAnywhere(event.unitId);
+      if (unit !== undefined && isExplored(unit.at))
+        pushCandy({ effect: "RUSH", cells: [unit.at] });
+    } else if (event.kind === "UNITS_CRASHED") {
+      // The Crash starts: a dizzy swirl settles over each crashed unit.
+      const cells = event.crashedUnitIds.flatMap((unitId) => {
+        const unit = unitAnywhere(unitId);
+        return unit === undefined || !isExplored(unit.at) ? [] : [unit.at];
+      });
+      if (cells.length > 0) pushCandy({ effect: "CRASH", cells });
+    } else if (event.kind === "UNIT_REBAKED") {
+      // A whisk, an oven puff, and the unit pops out of its Crumbs.
+      const confectioner = unitAnywhere(event.unitId);
+      if (isExplored(event.at))
+        pushCandy({
+          effect: "REBAKE",
+          cells: [event.at],
+          ...(confectioner === undefined ? {} : { from: confectioner.at }),
+        });
+    } else if (event.kind === "SUGAR_TOSSED") {
+      // A sweet thrown in an arc from the Gunner, and a rising "+n".
+      const gunner = unitAnywhere(event.unitId);
+      const target = unitAnywhere(event.targetUnitId);
+      if (target !== undefined && isExplored(target.at))
+        pushCandy({
+          effect: "SUGAR_TOSS",
+          cells: [target.at],
+          ...(gunner === undefined ? {} : { from: gunner.at }),
+          amount: event.amount,
+        });
+    } else if (event.kind === "CRUMBS_EATEN") {
+      // The pile scatters; with Peppermint Surprise it pops under the eater.
+      if (isExplored(event.at)) {
+        const damage = (event.damage ?? 0) + (event.shieldDamage ?? 0);
+        pushCandy(
+          damage > 0
+            ? { effect: "PEPPERMINT", cells: [event.at], amount: damage }
+            : { effect: "CRUMBS_EATEN", cells: [event.at] },
+        );
+      }
     } else if (event.kind === "UNIT_PUSHED") {
       // Revision 20: the survivor of a Charge! slides one tile back before
       // the Triceratops follows. Other pushes keep their revision-18 cut.
@@ -908,6 +1012,14 @@ export function corePresentationPlanV7(
           cells: [defender.at],
           unitId: defender.id,
         });
+      // The Candy revision: a Pie Launcher's hit leaves its target Splatted
+      // (the pie's own flight and burst are its attack cue).
+      if (
+        event.preview.splatApplied &&
+        attackEffect !== "PIE_THROW" &&
+        isExplored(defender.at)
+      )
+        pushCandy({ effect: "SPLAT", cells: [defender.at] });
       // The Martian revision: a Shield that absorbed part of a hit flares,
       // turned toward the blow.
       if (event.preview.defenderShieldDamage > 0 && isExplored(defender.at))
@@ -1265,6 +1377,22 @@ export function corePresentationPlanV7(
         visibilityCrossfadeAdded = true;
       }
     }
+  }
+  // The Candy revision: the Crash has no ending event; a unit that was
+  // Crashed before the boundary and is not after it shakes the swirl off.
+  if (before.sugarRush.length > 0) {
+    const woke = before.sugarRush.flatMap((entry) => {
+      if (
+        entry.phase !== "CRASHED" ||
+        after.sugarRush.some((later) => later.unitId === entry.unitId)
+      )
+        return [];
+      const unit = after.units.find(
+        (candidate) => candidate.id === entry.unitId,
+      );
+      return unit === undefined || !isExplored(unit.at) ? [] : [unit.at];
+    });
+    if (woke.length > 0) pushCandy({ effect: "WAKE", cells: woke });
   }
   return steps;
 }

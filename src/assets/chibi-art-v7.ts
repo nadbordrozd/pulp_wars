@@ -596,7 +596,10 @@ export function chibiFallbackSubjectV7(
     return "ICON:TECH:FORTIFICATION";
   if (
     subject === "ICON:TECH:ICE_FOLK:EXPLOSIVES" ||
-    subject === "ICON:TECH:DWARF:EXPLOSIVES"
+    subject === "ICON:TECH:DWARF:EXPLOSIVES" ||
+    // The Candy Peppermint Surprise (bead pulp_wars-jdb.6); Home Sweet Home
+    // and Frosting fall back by the faction rule below.
+    subject === "ICON:TECH:CANDY:EXPLOSIVES"
   )
     return "ICON:ACTION:BLAST_MOUNTAIN";
   for (const faction of [

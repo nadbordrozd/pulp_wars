@@ -107,7 +107,7 @@ function attackSteps(
 }
 
 describe("Attack cues: which attacks get one (bead pulp_wars-b5f.5)", () => {
-  it("maps only the six chosen shooters, and the Yeti's Rockfall", () => {
+  it("maps only the chosen shooters, and the Yeti's Rockfall", () => {
     const chosen = new Map<string, AttackEffectIdV7>([
       ["UNDEAD:CATAPULT", "NECRO_BOLT"],
       ["GOBLIN:CATAPULT", "FIREWORK_ROCKET"],
@@ -115,6 +115,9 @@ describe("Attack cues: which attacks get one (bead pulp_wars-b5f.5)", () => {
       ["DWARF:CATAPULT", "CANNON_BLAST"],
       ["ICE_FOLK:CATAPULT", "ICE_BOULDER"],
       ["ICE_FOLK:MARKSMAN", "HARPOON"],
+      // The Candy UI (bead pulp_wars-jdb.6): the pie and the gumball.
+      ["CANDY:CATAPULT", "PIE_THROW"],
+      ["CANDY:MARKSMAN", "GUMBALL_SHOT"],
     ]);
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7)

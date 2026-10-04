@@ -72,7 +72,11 @@ export type GalleryDemoCueV7 =
   | "COLD_SNAP"
   | "TUNNEL"
   | "BOMB_RUN"
-  | "ASSEMBLE";
+  | "ASSEMBLE"
+  // The Candy revision (bead pulp_wars-jdb.6).
+  | "SUGAR_RUSH"
+  | "REBAKE"
+  | "SUGAR_TOSS";
 
 /** The command-backed abilities and the cue that shows each. */
 const ABILITY_CUES_V7: Partial<Record<UnitRoleAbilityV7, GalleryDemoCueV7>> = {
@@ -91,6 +95,9 @@ const ABILITY_CUES_V7: Partial<Record<UnitRoleAbilityV7, GalleryDemoCueV7>> = {
   TUNNEL: "TUNNEL",
   BOMB_RUN: "BOMB_RUN",
   ASSEMBLE: "ASSEMBLE",
+  SUGAR_RUSH: "SUGAR_RUSH",
+  REBAKE: "REBAKE",
+  SUGAR_TOSS: "SUGAR_TOSS",
 };
 
 /** The ability whose name labels a cue's button. */
@@ -112,6 +119,9 @@ export const GALLERY_DEMO_CUE_ABILITIES_V7: Readonly<
   TUNNEL: "TUNNEL",
   BOMB_RUN: "BOMB_RUN",
   ASSEMBLE: "ASSEMBLE",
+  SUGAR_RUSH: "SUGAR_RUSH",
+  REBAKE: "REBAKE",
+  SUGAR_TOSS: "SUGAR_TOSS",
 };
 
 /** One command of a scene and the boundary the board host plays for it. */
@@ -309,22 +319,39 @@ function setupFor(faction: FactionIdV7): MatchSetupV7 {
 
 /**
  * Wounds the units a cue needs wounded: Mind Control takes only a wounded
- * unit, and Tend and Repair heal only one.
+ * unit, and Tend, Repair and a Sugar Toss heal only one. A Re-bake's scene
+ * gets the Crumbs it bakes back.
  */
 function wounded(
   state: GameStateV7,
   cue: GalleryDemoCueV7,
   unitId: number,
 ): GameStateV7 {
-  if (cue !== "MIND_CONTROL" && cue !== "TEND_WOUNDED") return state;
   const viewerId = state.players[0]?.id;
+  // The Candy revision: a Re-bake needs Crumbs next to the Confectioner (a
+  // fallen Gumdrop's, one tile west of it).
+  if (cue === "REBAKE" && viewerId !== undefined)
+    return {
+      ...state,
+      crumbs: [
+        {
+          at: { x: UNIT.x - 1, y: UNIT.y },
+          role: "FIGHTER",
+          ownerId: viewerId,
+          turnsLeft: 3,
+        },
+      ],
+    };
+  if (cue !== "MIND_CONTROL" && cue !== "TEND_WOUNDED" && cue !== "SUGAR_TOSS")
+    return state;
   return {
     ...state,
     units: state.units.map((unit) => {
       const enemy = unit.ownerId !== viewerId;
       const companion = unit.ownerId === viewerId && unit.id !== unitId;
       if (cue === "MIND_CONTROL" && enemy) return { ...unit, hp: 5 };
-      if (cue === "TEND_WOUNDED" && companion)
+      // A Sugar Toss heals only a wounded unit, like Tend and Repair.
+      if ((cue === "TEND_WOUNDED" || cue === "SUGAR_TOSS") && companion)
         return { ...unit, hp: Math.max(1, unit.maxHp - 4) };
       return unit;
     }),

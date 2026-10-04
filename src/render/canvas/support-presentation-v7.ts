@@ -1,4 +1,5 @@
 import type {
+  CandyEffectIdV7,
   ChibiEffectIdV7,
   CuriosityEffectIdV7,
   DwarfEffectIdV7,
@@ -46,6 +47,8 @@ export type SupportEffectSubjectV7 =
   | `EFFECT:${IceFolkEffectIdV7}`
   /** The Dwarf effect sprites (bead pulp_wars-78i.6, dwarf-effects-v7). */
   | `EFFECT:${DwarfEffectIdV7}`
+  /** The Candy effect sprites (bead pulp_wars-jdb.6, candy-effects-v7). */
+  | `EFFECT:${CandyEffectIdV7}`
   /** The map curiosity effect sprites (bead pulp_wars-737.6). */
   | `EFFECT:${CuriosityEffectIdV7}`;
 

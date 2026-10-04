@@ -1,8 +1,10 @@
 import type { CoordV7, FactionIdV7, UnitRoleIdV7 } from "../../engine/index";
 import { DWARF_PALETTE_V7 } from "../../assets/chibi-direction-dwarf-presentation";
 import { ICE_FOLK_PALETTE_V7 } from "../../assets/chibi-direction-ice-folk-presentation";
+import { CANDY_PALETTE_V7 } from "../../assets/chibi-direction-candy-presentation";
 import { GOBLIN_BLAST_PALETTE_V7 } from "./goblin-explosion-v7";
 import { projectGrid, worldToScreen, type CameraState } from "./geometry";
+import type { SupportEffectArtV7 } from "./support-presentation-v7";
 
 /**
  * Attack cues on the board's effects overlay (bead pulp_wars-b5f.5,
@@ -18,7 +20,9 @@ import { projectGrid, worldToScreen, type CameraState } from "./geometry";
  * (`attackReducedMotionProgressV7`) where the shot and its trail read. The
  * cues are code only, so they draw the same in the live look, the Classic
  * look and LEGACY; the Lich's bolt takes the Undead violet of the live look
- * and the classic pale blue elsewhere, as the other Undead cues do.
+ * and the classic pale blue elsewhere, as the other Undead cues do. The
+ * two Candy cues (bead pulp_wars-jdb.6) draw the pie, splat and gumball
+ * sprites of the Candy art where the look has them, and code elsewhere.
  */
 export type AttackEffectIdV7 =
   /** The Lich (Undead CATAPULT): a necromantic orb with a wisp tail. */
@@ -32,7 +36,11 @@ export type AttackEffectIdV7 =
   /** The Boulder Yeti and a Yeti's Rockfall: an ice-crusted boulder. */
   | "ICE_BOULDER"
   /** The Snow Hunter (Ice Folk MARKSMAN): an ice-tipped harpoon on a line. */
-  | "HARPOON";
+  | "HARPOON"
+  /** The Pie Launcher (Candy CATAPULT): a cream pie, lobbed, and its splat. */
+  | "PIE_THROW"
+  /** The Gumball Gunner (Candy MARKSMAN): a gumball and a sugar pop. */
+  | "GUMBALL_SHOT";
 
 export const ATTACK_EFFECT_IDS_V7: readonly AttackEffectIdV7[] = [
   "NECRO_BOLT",
@@ -41,6 +49,8 @@ export const ATTACK_EFFECT_IDS_V7: readonly AttackEffectIdV7[] = [
   "CANNON_BLAST",
   "ICE_BOULDER",
   "HARPOON",
+  "PIE_THROW",
+  "GUMBALL_SHOT",
 ];
 
 export interface AttackFeedbackV7 {
@@ -70,6 +80,8 @@ export const ATTACK_EFFECT_DURATIONS_V7: Readonly<
   CANNON_BLAST: 460,
   ICE_BOULDER: 460,
   HARPOON: 380,
+  PIE_THROW: 460,
+  GUMBALL_SHOT: 380,
 };
 
 /**
@@ -84,6 +96,8 @@ export const ATTACK_EFFECT_HIT_V7: Readonly<Record<AttackEffectIdV7, number>> =
     CANNON_BLAST: 0.56,
     ICE_BOULDER: 0.58,
     HARPOON: 0.5,
+    PIE_THROW: 0.58,
+    GUMBALL_SHOT: 0.52,
   };
 
 /** Flight windows (share of the cue): the shot leaves, then lands. */
@@ -97,6 +111,8 @@ const FLIGHT: Readonly<
   CANNON_BLAST: { from: 0.06, to: ATTACK_EFFECT_HIT_V7.CANNON_BLAST },
   ICE_BOULDER: { from: 0, to: ATTACK_EFFECT_HIT_V7.ICE_BOULDER },
   HARPOON: { from: 0, to: ATTACK_EFFECT_HIT_V7.HARPOON },
+  PIE_THROW: { from: 0, to: ATTACK_EFFECT_HIT_V7.PIE_THROW },
+  GUMBALL_SHOT: { from: 0, to: ATTACK_EFFECT_HIT_V7.GUMBALL_SHOT },
 };
 
 /** The gatling's rounds leave this far apart (share of the cue). */
@@ -110,6 +126,8 @@ const ARC: Readonly<Record<AttackEffectIdV7, number>> = {
   CANNON_BLAST: 52,
   ICE_BOULDER: 72,
   HARPOON: 14,
+  PIE_THROW: 64,
+  GUMBALL_SHOT: 10,
 };
 
 /**
@@ -140,6 +158,9 @@ export function attackEffectForV7(
   if (faction === "ICE_FOLK" && role === "CATAPULT") return "ICE_BOULDER";
   if (faction === "ICE_FOLK" && options.rockfall === true) return "ICE_BOULDER";
   if (faction === "ICE_FOLK" && role === "MARKSMAN") return "HARPOON";
+  // The Candy revision (bead pulp_wars-jdb.6): the pie and the gumball.
+  if (faction === "CANDY" && role === "CATAPULT") return "PIE_THROW";
+  if (faction === "CANDY" && role === "MARKSMAN") return "GUMBALL_SHOT";
   return null;
 }
 
@@ -320,7 +341,13 @@ export function attackEffectPlanV7(
           source,
           target,
           effect === "FIREWORK_ROCKET" ? 0.07 : 0.06,
-          effect === "HARPOON" ? 0 : effect === "FIREWORK_ROCKET" ? 8 : 6,
+          effect === "HARPOON"
+            ? 0
+            : effect === "FIREWORK_ROCKET"
+              ? 8
+              : effect === "PIE_THROW"
+                ? 3
+                : 6,
         ),
       );
     const impact = phase(progress, window.to, 1);
@@ -397,11 +424,16 @@ const IVORY = "#efe6c8";
 /** The muzzle flash's hot core and the gatling tracer. */
 const MUZZLE_HOT = "#fff3b0";
 
-/** Draws one frame of an attack cue on the effects overlay. */
+/**
+ * Draws one frame of an attack cue on the effects overlay. `art` is read by
+ * the Candy cues only (their pie, splat and gumball sprites, bead
+ * pulp_wars-jdb.6); without it, and for every other cue, the frame is code.
+ */
 export function drawAttackFeedbackV7(
   context: CanvasRenderingContext2D,
   camera: CameraState,
   feedback: AttackFeedbackV7,
+  art: SupportEffectArtV7 | null = null,
 ): void {
   const plan = attackEffectPlanV7(feedback, camera);
   context.save();
@@ -431,6 +463,12 @@ export function drawAttackFeedbackV7(
       break;
     case "HARPOON":
       drawHarpoon(context, plan);
+      break;
+    case "PIE_THROW":
+      drawPieThrow(context, plan, art);
+      break;
+    case "GUMBALL_SHOT":
+      drawGumballShot(context, plan, art);
       break;
   }
   context.restore();
@@ -1177,6 +1215,179 @@ function drawHarpoon(
         size,
         size,
       );
+    }
+    context.globalAlpha = 1;
+  }
+}
+
+const CANDY = CANDY_PALETTE_V7;
+
+/**
+ * A Candy effect sprite centred on a point, `size` CSS pixels wide; false
+ * without a loaded sprite (the cue is then code-drawn).
+ */
+function candySprite(
+  context: CanvasRenderingContext2D,
+  art: SupportEffectArtV7 | null,
+  subject: "EFFECT:PIE" | "EFFECT:SPLAT" | "EFFECT:GUMBALL_SHOT",
+  x: number,
+  y: number,
+  size: number,
+  angle = 0,
+): boolean {
+  const image = art?.image(subject) ?? null;
+  if (image === null) return false;
+  context.save();
+  context.translate(x, y);
+  context.rotate(angle);
+  context.imageSmoothingEnabled = true;
+  context.drawImage(image.image, -size / 2, -size / 2, size, size);
+  context.restore();
+  return true;
+}
+
+/** The Pie Launcher's cream pie: a lobbed pie, then cream over the target. */
+function drawPieThrow(
+  context: CanvasRenderingContext2D,
+  plan: AttackEffectPlanV7,
+  art: SupportEffectArtV7 | null,
+): void {
+  const zoom = plan.zoom * plan.scale;
+  for (const shot of plan.shots) {
+    // Flecks of cream fall behind the pie.
+    shot.trail.forEach((point, index) => {
+      const age = (index + 1) / (shot.trail.length + 1);
+      context.globalAlpha = 0.9 * (1 - age);
+      circle(context, point.x, point.y + age * 8 * zoom, (3 - age) * zoom);
+      context.fillStyle = CANDY.white;
+      context.fill();
+    });
+    context.globalAlpha = 1;
+    const spin = shot.flight * Math.PI * 1.5;
+    if (
+      !candySprite(
+        context,
+        art,
+        "EFFECT:PIE",
+        shot.at.x,
+        shot.at.y,
+        30 * zoom,
+        spin,
+      )
+    ) {
+      // A biscuit crust seen from the side, a dome of whipped cream.
+      context.save();
+      context.translate(shot.at.x, shot.at.y);
+      context.rotate(spin);
+      context.lineWidth = Math.max(1, 2.2 * zoom);
+      context.strokeStyle = CANDY.outline;
+      context.beginPath();
+      context.ellipse(0, 3 * zoom, 12 * zoom, 5 * zoom, 0, 0, Math.PI * 2);
+      context.fillStyle = CANDY.biscuit;
+      context.fill();
+      context.stroke();
+      circle(context, 0, -2 * zoom, 8 * zoom);
+      context.fillStyle = CANDY.white;
+      context.fill();
+      context.stroke();
+      circle(context, -2 * zoom, -5 * zoom, 2.6 * zoom);
+      context.fillStyle = CANDY.pink;
+      context.fill();
+      context.restore();
+    }
+  }
+  for (const impact of plan.impacts) {
+    const local = impact.local;
+    const { x, y } = impact.at;
+    context.globalAlpha = local < 0.6 ? 1 : (1 - local) / 0.4;
+    const size = (34 + 20 * easeOut(local)) * zoom;
+    if (!candySprite(context, art, "EFFECT:SPLAT", x, y, size)) {
+      puff(
+        context,
+        x,
+        y,
+        (12 + 8 * easeOut(local)) * zoom,
+        CANDY.white,
+        "#ffffff",
+        CANDY.outline,
+        zoom,
+      );
+      context.fillStyle = CANDY.cream;
+      for (let drop = 0; drop < 6; drop += 1) {
+        const angle = (drop / 6) * Math.PI * 2 + 0.5;
+        const distance = (12 + 18 * easeOut(local)) * zoom;
+        circle(
+          context,
+          x + Math.cos(angle) * distance,
+          y + Math.sin(angle) * distance * 0.8,
+          2.6 * zoom,
+        );
+        context.fill();
+      }
+    }
+    context.globalAlpha = 1;
+  }
+}
+
+/** The Gumball Gunner's shot: one glossy gumball and a sugar pop. */
+function drawGumballShot(
+  context: CanvasRenderingContext2D,
+  plan: AttackEffectPlanV7,
+  art: SupportEffectArtV7 | null,
+): void {
+  const zoom = plan.zoom * plan.scale;
+  for (const shot of plan.shots) {
+    shot.trail.forEach((point, index) => {
+      const age = (index + 1) / (shot.trail.length + 1);
+      context.globalAlpha = 0.7 * (1 - age);
+      circle(context, point.x, point.y, (4 - 2.5 * age) * zoom);
+      context.fillStyle = CANDY.pink;
+      context.fill();
+    });
+    context.globalAlpha = 1;
+    if (
+      !candySprite(
+        context,
+        art,
+        "EFFECT:GUMBALL_SHOT",
+        shot.at.x,
+        shot.at.y,
+        24 * zoom,
+        shot.angle,
+      )
+    ) {
+      circle(context, shot.at.x, shot.at.y, 6.5 * zoom);
+      context.fillStyle = CANDY.pink;
+      context.fill();
+      context.strokeStyle = CANDY.outline;
+      context.lineWidth = Math.max(1, 2 * zoom);
+      context.stroke();
+      circle(context, shot.at.x - 2 * zoom, shot.at.y - 2.4 * zoom, 2 * zoom);
+      context.fillStyle = CANDY.white;
+      context.fill();
+    }
+  }
+  for (const impact of plan.impacts) {
+    const local = impact.local;
+    const { x, y } = impact.at;
+    context.globalAlpha = 1 - local;
+    starPath(context, x, y, (14 - 5 * local) * zoom, 5 * zoom, 6, local);
+    context.fillStyle = CANDY.white;
+    context.fill();
+    context.strokeStyle = CANDY.pinkDark;
+    context.lineWidth = Math.max(1, 2 * zoom);
+    context.stroke();
+    for (let spark = 0; spark < 6; spark += 1) {
+      const angle = (spark / 6) * Math.PI * 2 + 0.3;
+      const distance = (9 + 15 * easeOut(local)) * zoom;
+      circle(
+        context,
+        x + Math.cos(angle) * distance,
+        y + Math.sin(angle) * distance,
+        2.2 * zoom,
+      );
+      context.fillStyle = spark % 2 === 0 ? CANDY.pink : CANDY.mint;
+      context.fill();
     }
     context.globalAlpha = 1;
   }

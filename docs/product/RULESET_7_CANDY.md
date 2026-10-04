@@ -2674,6 +2674,63 @@ kind's ordinal by three, which changes four pinned Normal-decision hashes
 through the `-ordinal` tie-break only (their revision-12-ordinal hashes are
 unchanged).
 
+## 24. Implementation notes (`pulp_wars-jdb.6`)
+
+The UI bead implements [section 15](#15-ui-requirements) at `7r38`. It
+changes no rule, no identity, and no AI: every number and every legal
+choice on the screen comes from the public view, the offered commands, and
+the public previews of [section 13](#13-commands-events-errors-state-and-queries).
+
+**Where it lives.** `src/render/candy-presentation-v7.ts` (the texts of
+[section 15.2](#152-labels-and-text) and [15.3](#153-help-text), the chips,
+the unavailable reasons, the log lines), `src/render/canvas/candy-board-plan-v7.ts`
+(the markers, the Crumbs, the three aiming modes, the attack lines),
+`candy-canvas-v7.ts` (the marker drawing) and `candy-effects-v7.ts` (the
+cues). `npm run review:ruleset7-candy-ui` captures them on the fixtures of
+`tests/fixtures/v7-candy-ui.ts`; the browser smoke has a Candy step
+(`scripts/browser-smoke-v7-candy.ts`).
+
+**Readings and deviations.**
+
+1. **The armed Rush has no second button.** While a Sugar Rush is armed the
+   dock shows the aiming panel in place of the actions (as for every aimed
+   ability), so "pressing it again" is not available: Back, Escape, or
+   another selection disarm it and send nothing.
+2. **Two reasons the contract does not list.** A unit that used its action
+   without moving reads "Already acted" (the contract lists "Already moved"
+   only), and a Confectioner whose every adjacent Crumbs tile is occupied
+   reads "The Crumbs are covered".
+3. **The Re-bake reason mirrors the engine's order.** The engine has no
+   public "why not" query for a Re-bake, so `rebakeUnavailableTextV7` reads
+   the home city, the adjacent own Crumbs, the used slots, and the Coins
+   from the view with the engine's own helpers. Legality is never decided
+   there: the button is offered exactly when a `REBAKE` is.
+4. **Crumbs show the fallen unit's head**, cut from its own board sprite
+   into a small token (LEGACY and the Classic look: the first letter of its
+   name), instead of a code-drawn role icon; the pips are the turns left,
+   and a peppermint dot marks Crumbs that bite.
+5. **Sugar Frenzy's cap is two pips** (the continuations left) on the
+   board and in the dock chip; neither writes the number.
+6. **Markers are still.** The Rushed chip, the Crashed swirl, the Splatted
+   pie, and the Home Sweet Home house do not animate (no sparkle trail);
+   the Crash starting and ending, a Rush, a Re-bake, a Sugar Toss, a
+   Bounce, and eaten Crumbs each play a short cue, of which reduced motion
+   holds one still frame. A Crashed unit's sprite is drawn in a faded copy.
+7. **The Crash ending has no event**, so its cue is read from the two views
+   of the boundary: a unit that was Crashed before it and is not after it.
+8. **The Pie Launcher and the Gumball Gunner have attack cues**
+   (`PIE_THROW`, `GUMBALL_SHOT`, [attack effects](../art/ATTACK_EFFECTS.md));
+   the pie's burst is the Splat.
+9. **The Gallery** plays Sugar Rush, Re-bake, and Sugar Toss on its demo
+   board, with the Candy ability names.
+
+**Not done here.** The faction emblem (`ICON:HUD:CANDY:EMBLEM`) is not
+drawn: like every faction, the emblem on the mission screens is the
+Fighter's portrait. LEGACY and the Classic look draw Candy units as Human
+sprites without a Candy badge, as since `jdb.3`. The public `Move` stat of
+a Rushed unit does not include the Rush's +1 (the board's reach does); that
+is the engine's stat breakdown.
+
 ## Appendix A: the first draft and its critique
 
 ### A.1 The first draft, in brief

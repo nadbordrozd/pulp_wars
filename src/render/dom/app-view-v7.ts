@@ -405,6 +405,35 @@ import {
 } from "../dwarf-tunnel-v7";
 import type { DwarfPickV7 } from "../canvas/dwarf-board-plan-v7";
 import {
+  CANDY_FIELD_DEFENSE_EXPLANATION_V7,
+  CANDY_HELP_RULES_V7,
+  CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7,
+  FROSTING_TOOLTIP_V7,
+  HOME_SWEET_HOME_UNLOCK_TEXT_V7,
+  PEPPERMINT_SURPRISE_UNLOCK_TEXT_V7,
+  REBAKE_LABEL_V7,
+  REBAKE_TOOLTIP_V7,
+  SUGAR_RUSH_LABEL_V7,
+  SUGAR_RUSH_TOOLTIP_V7,
+  SUGAR_TOSS_LABEL_V7,
+  SUGAR_TOSS_TOOLTIP_V7,
+  candyBoundaryNoticeV7,
+  candyChipsV7,
+  candyCommandNameV7,
+  candyFieldDefenseBlockedV7,
+  candyRoleUnlockTextV7,
+  candyUnitInfoLinesV7,
+  crumbsTileLinesV7,
+  matchHasCandySeatV7,
+  rebakeBoardLabelV7,
+  rebakeTargetNameV7,
+  rebakeUnavailableTextV7,
+  sugarRushUnavailableTextV7,
+  sugarTossTargetNameV7,
+  sugarTossUnavailableTextV7,
+} from "../candy-presentation-v7";
+import type { CandyPickV7 } from "../canvas/candy-board-plan-v7";
+import {
   AT_SEA_MOVE_TEXT_V7,
   recruitmentRolePresentationV7,
   roleAbilityDescriptionV7,
@@ -554,6 +583,12 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "TUNNEL",
   "BOMB_RUN",
   "ASSEMBLE",
+  // The Candy revision: Sugar Rush, Re-bake and Sugar Toss have one button
+  // per unit each; the Rushed reach, the Crumbs and the unit to heal are
+  // picked on the board.
+  "SUGAR_RUSH",
+  "REBAKE",
+  "SUGAR_TOSS",
 ]);
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
 export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
@@ -721,6 +756,12 @@ export class Ruleset7DomAppView {
    * or the landing; Cancel or another selection leaves).
    */
   #dwarfPick: DwarfPickV7 | null = null;
+  /**
+   * The Candy revision: the armed Sugar Rush, or the Re-bake or Sugar Toss
+   * the selected unit is aiming on the board (Escape, Back, Cancel or
+   * another selection leaves it and sends nothing).
+   */
+  #candyPick: CandyPickV7 | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   #compactMenuOpen = false;
@@ -964,6 +1005,10 @@ export class Ruleset7DomAppView {
       } else if (this.#dwarfPick !== null) {
         // The Dwarf revision: Escape first steps back out of the aiming.
         this.#cancelDwarfPick(true);
+        return;
+      } else if (this.#candyPick !== null) {
+        // The Candy revision: Escape first disarms the Rush or the aiming.
+        this.#cancelCandyPick();
         return;
       } else this.#selection = null;
       this.#render();
@@ -1984,6 +2029,7 @@ export class Ruleset7DomAppView {
           this.#martianPick = null;
           this.#iceFolkPick = null;
           this.#dwarfPick = null;
+          this.#candyPick = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -2331,6 +2377,12 @@ export class Ruleset7DomAppView {
         this.#dwarfPick.unitId === selectedUnitId
           ? { dwarfPick: this.#dwarfPick }
           : {}),
+        // The Candy revision: the armed Rush, or the Re-bake or Sugar Toss
+        // being aimed.
+        ...(this.#candyPick !== null &&
+        this.#candyPick.unitId === selectedUnitId
+          ? { candyPick: this.#candyPick }
+          : {}),
       },
     };
   }
@@ -2349,6 +2401,7 @@ export class Ruleset7DomAppView {
       this.#martianPick = null;
       this.#iceFolkPick = null;
       this.#dwarfPick = null;
+      this.#candyPick = null;
       this.#render();
       this.#queueBoardFocus();
     };
@@ -2799,6 +2852,38 @@ export class Ruleset7DomAppView {
           unitDetails.append(state);
         }
       }
+      // The Candy revision (section 15.2): Rushed (by its perk, a Gummy
+      // Bear's Sugar Frenzy with its continuations as pips), Home Sweet
+      // Home, Crashed and Splatted on a unit of any owner, each an icon and
+      // a name with its one sentence as the tooltip.
+      if (matchHasCandySeatV7(view))
+        for (const chip of candyChipsV7(view, unit)) {
+          const cue = el(this.#document, "span", "v7-chip v7-candy-chip");
+          const glyph = this.#chibiArt(
+            chip.icon,
+            CHIBI_DOM_BOXES_V7.leaderboard,
+          )?.element;
+          if (glyph !== undefined) {
+            glyph.classList.add("v7-candy-chip-icon");
+            cue.append(glyph);
+          }
+          cue.append(text(this.#document, "span", chip.label));
+          if (chip.pips !== undefined) {
+            const pips = el(this.#document, "span", "v7-candy-pips");
+            pips.dataset.pipsLeft = String(chip.pips.left);
+            pips.dataset.pipsOf = String(chip.pips.of);
+            for (let index = 0; index < chip.pips.of; index += 1) {
+              const pip = el(this.#document, "span", "v7-candy-pip");
+              pip.dataset.filled = String(index < chip.pips.left);
+              pips.append(pip);
+            }
+            cue.append(pips);
+          }
+          cue.dataset.unitStatus = chip.id;
+          cue.title = chip.status;
+          cue.setAttribute("aria-label", chip.status);
+          identityColumn?.append(cue);
+        }
       // The Dwarf revision (section 16.1): Dig In, the clockwork status, the
       // Gunner's shots, Plated, the rider's surfacing brake and "bombed this
       // turn", from `stats.dwarf` and the per-turn flags.
@@ -3075,6 +3160,18 @@ export class Ruleset7DomAppView {
             );
             abilities.append(entry);
           }
+        // The Candy revision: Rushed, Crashed and Splatted (any owner), and
+        // what a Candy unit's Crumbs cost to Re-bake.
+        if (matchHasCandySeatV7(view))
+          for (const line of candyUnitInfoLinesV7(view, unit)) {
+            const entry = el(this.#document, "p", "v7-unit-ability");
+            entry.dataset.candyInfo = line.id;
+            entry.append(
+              text(this.#document, "strong", line.name),
+              text(this.#document, "span", line.description),
+            );
+            abilities.append(entry);
+          }
         // The Dwarf revision: Dig In, clockwork, the Gunner's shots,
         // Plated, the rider's brake, the bomb and the eruption.
         if (matchHasDwarfSeatV7(view))
@@ -3195,6 +3292,15 @@ export class Ruleset7DomAppView {
           explanation: DWARF_FIELD_DEFENSE_EXPLANATION_V7,
           icon: null,
         });
+      // The Candy revision (section 15.2): Candy has Home Sweet Home.
+      if (candyFieldDefenseBlockedV7(view, unit.id))
+        dinosaurBlocked.push({
+          action: "candy-field-defense",
+          label: "Fortify",
+          reason: "candy-field-defense",
+          explanation: CANDY_FIELD_DEFENSE_EXPLANATION_V7,
+          icon: null,
+        });
       for (const entry of dinosaurBlocked) {
         const blocked = button(
           this.#document,
@@ -3244,6 +3350,8 @@ export class Ruleset7DomAppView {
         ...this.#martianActionButtons(view, unit.id),
         ...this.#iceFolkActionButtons(view, unit.id),
         ...this.#dwarfActionButtons(view, unit.id),
+        // The Candy revision: Sugar Rush, Re-bake and Sugar Toss likewise.
+        ...this.#candyActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
@@ -3352,7 +3460,8 @@ export class Ruleset7DomAppView {
       const martianPanel =
         this.#martianPickPanel(view, unit.id) ??
         this.#iceFolkPickPanel(view, unit.id) ??
-        this.#dwarfPickPanel(view, unit.id);
+        this.#dwarfPickPanel(view, unit.id) ??
+        this.#candyPickPanel(view, unit.id);
       if (martianPanel !== null) {
         dock.dataset.hasActions = "true";
         dock.append(martianPanel);
@@ -3785,6 +3894,25 @@ export class Ruleset7DomAppView {
           grave.title = "A Necromancer can raise it; a Ghoul can devour it.";
           details.append(grave);
         }
+        // The Candy revision (section 15.2): the tile's Crumbs, whose they
+        // are by their unit, their turns left, and their Peppermint bite.
+        const crumbsLines = crumbsTileLinesV7(view, tile.at);
+        if (crumbsLines.length > 0) {
+          const crumbs = el(this.#document, "p", "v7-chip v7-candy-chip");
+          crumbs.dataset.crumbs = "true";
+          const pile = this.#chibiArt(
+            "CRUMBS",
+            CHIBI_DOM_BOXES_V7.leaderboard,
+          )?.element;
+          if (pile !== undefined) {
+            pile.classList.add("v7-candy-chip-icon");
+            crumbs.append(pile);
+          }
+          crumbs.append(text(this.#document, "span", crumbsLines[0] ?? ""));
+          crumbs.title = crumbsLines.join(". ");
+          crumbs.setAttribute("aria-label", crumbsLines.join(". "));
+          details.append(crumbs);
+        }
         // The Dwarf revision (section 16.1): a mound is selectable for
         // information only: its unit, HP, when it surfaces, and its
         // eruption. It has no actions and is never in the orders cycle.
@@ -3973,9 +4101,8 @@ export class Ruleset7DomAppView {
               (unit) => unit.id === command.unitId && unit.form === "EGG",
             )
           : undefined;
-      // The Candy revision (minimal UI of `pulp_wars-jdb.3`; the aiming
-      // panels are the UI bead's): one plain button per offered Re-bake and
-      // Sugar Toss, named by its unit, price, and heal.
+      // The Candy revision (section 15.1): a Confectioner's Tend Wounded
+      // is Frosting, by the unit's kind.
       const candyLabel = candyCommandLabelV7(this.#snapshot.view, command);
       const label =
         candyLabel ??
@@ -3990,15 +4117,7 @@ export class Ruleset7DomAppView {
           : // Revision 19: one button per hatchable Egg.
             command.kind === "HATCH"
             ? `command-hatch-${command.eggUnitId}`
-            : command.kind === "SUGAR_TOSS"
-              ? `command-sugar_toss-${command.targetUnitId}`
-              : command.kind === "REBAKE"
-                ? `command-rebake-${
-                    this.#snapshot.view?.crumbs.findIndex((entry) =>
-                      same(entry.at, command.at),
-                    ) ?? 0
-                  }`
-                : `command-${command.kind.toLowerCase()}`,
+            : `command-${command.kind.toLowerCase()}`,
         command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL"
           ? "v7-train-action"
           : "v7-context-action",
@@ -4026,6 +4145,12 @@ export class Ruleset7DomAppView {
         action.append(
           text(this.#document, "span", REPAIR_CHIP_V7, "v7-dwarf-repair-chip"),
         );
+      }
+      // The Candy revision (section 15.2): the Frosting tooltip.
+      if (command.kind === "TEND_WOUNDED" && candyLabel !== null) {
+        action.title = FROSTING_TOOLTIP_V7;
+        action.setAttribute("aria-description", `${FROSTING_TOOLTIP_V7}.`);
+        action.dataset.candyFrosting = "true";
       }
       if (command.kind === "CULTIVATE_FOREST") {
         action.title =
@@ -4337,6 +4462,29 @@ export class Ruleset7DomAppView {
       this.#queueBoardFocus();
       return;
     }
+    // The Candy revision (section 15.1): a target of the armed Sugar Rush
+    // sends `SUGAR_RUSH` and then the Move to that tile or the Attack, each
+    // only while it is offered.
+    if (target.sugarRush !== undefined) {
+      const unitId =
+        command.kind === "SUGAR_RUSH" || command.kind === "ATTACK"
+          ? command.unitId
+          : null;
+      if (unitId === null) return;
+      const rushed = await this.#dispatch({ kind: "SUGAR_RUSH", unitId });
+      if (!rushed || this.#destroyed) return;
+      const next = this.#snapshot.offeredCommands.find((offered) =>
+        command.kind === "ATTACK"
+          ? offered.kind === "ATTACK" &&
+            offered.unitId === unitId &&
+            offered.targetUnitId === command.targetUnitId
+          : offered.kind === "MOVE" &&
+            offered.unitId === unitId &&
+            same(offered.path.at(-1) ?? { x: -1, y: -1 }, target.at),
+      );
+      if (next !== undefined) await this.#dispatch(next);
+      return;
+    }
     const moved = await this.#dispatch(command);
     // Revision 16 two-step landing: land only when the one-cell Move reached
     // its water cell and the landing is still offered there.
@@ -4646,6 +4794,18 @@ export class Ruleset7DomAppView {
         rules.append(item);
       }
       section.append(text(this.#document, "h3", "Dwarves"), rules);
+    }
+    // The Candy revision (section 15.3): one sentence per Candy rule, for
+    // every viewer of a match with a Candy seat.
+    if (view !== null && matchHasCandySeatV7(view)) {
+      const rules = this.#document.createElement("ul");
+      rules.className = "v7-help-tips v7-help-goblin v7-help-candy";
+      for (const [name, sentence] of CANDY_HELP_RULES_V7) {
+        const item = el(this.#document, "li", "v7-help-rule");
+        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
+        rules.append(item);
+      }
+      section.append(text(this.#document, "h3", "Candy"), rules);
     }
     // Map curiosities (section 12.1): the four sentences, the bounty and
     // the setup option, each with its legend icon, in a match that was
@@ -5791,6 +5951,7 @@ export class Ruleset7DomAppView {
     this.#martianPick = null;
     this.#iceFolkPick = null;
     this.#dwarfPick = null;
+    this.#candyPick = null;
     const restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -7304,6 +7465,277 @@ export class Ruleset7DomAppView {
   }
 
   /**
+   * The Candy revision (section 15.1): the Sugar Rush button of an own
+   * Candy land unit, the Re-bake button of an own Confectioner and the
+   * Sugar Toss button of an own Gunner. With a legal choice it arms the
+   * Rush or aims the ability on the board (pressed while armed); without
+   * one it is disabled and names the reason ("Crashed", "Already moved",
+   * "No Crumbs next to it", "Not enough Coins", ...).
+   */
+  #candyActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "LAND" ||
+      unitFactionV7(view, unit) !== "CANDY" ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const abilities = unitRoleRuleV7(view, unit).abilities as readonly string[];
+    const entries: readonly {
+      readonly kind: CandyPickV7["kind"];
+      readonly label: string;
+      readonly tooltip: string;
+      readonly icon: UiIconIdV7;
+    }[] = [
+      {
+        kind: "SUGAR_RUSH",
+        label: SUGAR_RUSH_LABEL_V7,
+        tooltip: SUGAR_RUSH_TOOLTIP_V7,
+        icon: "move",
+      },
+      {
+        kind: "REBAKE",
+        label: REBAKE_LABEL_V7,
+        tooltip: REBAKE_TOOLTIP_V7,
+        icon: "units",
+      },
+      {
+        kind: "SUGAR_TOSS",
+        label: SUGAR_TOSS_LABEL_V7,
+        tooltip: SUGAR_TOSS_TOOLTIP_V7,
+        icon: "hp",
+      },
+    ];
+    const buttons: HTMLButtonElement[] = [];
+    for (const entry of entries) {
+      if (!abilities.includes(entry.kind)) continue;
+      const offered = this.#snapshot.offeredCommands.some(
+        (command) => command.kind === entry.kind && command.unitId === unit.id,
+      );
+      const reason =
+        entry.kind === "SUGAR_RUSH"
+          ? sugarRushUnavailableTextV7(view, unit, offered)
+          : entry.kind === "REBAKE"
+            ? rebakeUnavailableTextV7(view, unit, offered, (cityId) =>
+                dwarfCityNameV7(view, cityId),
+              )
+            : sugarTossUnavailableTextV7(view, unit, offered);
+      if (!offered && reason === null) continue;
+      const slug = entry.kind.toLowerCase().replaceAll("_", "-");
+      const action = button(
+        this.#document,
+        "",
+        `candy-${slug}`,
+        "v7-context-action",
+      );
+      action.append(
+        this.#chibiArt(`ICON:ACTION:${entry.kind}`, CHIBI_DOM_BOXES_V7.action)
+          ?.element ??
+          uiIconV7(this.#document, entry.icon, "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", entry.label, "v7-action-label"),
+      );
+      action.dataset.candyAbility = slug;
+      if (reason === null) {
+        const aiming = this.#candyPick?.kind === entry.kind;
+        action.title = entry.tooltip;
+        action.setAttribute("aria-label", `${entry.label}. ${entry.tooltip}`);
+        action.setAttribute("aria-pressed", String(aiming));
+        action.disabled = this.#localBusy();
+        action.onclick = () =>
+          aiming
+            ? this.#cancelCandyPick()
+            : this.#startCandyPick(entry.kind, unit.id);
+      } else {
+        // aria-disabled keeps the reason reachable by keyboard and touch.
+        action.setAttribute("aria-disabled", "true");
+        action.dataset.disabledReason = reason;
+        action.title = reason;
+        action.setAttribute(
+          "aria-label",
+          `${entry.label} unavailable. ${reason}`,
+        );
+        action.onclick = () => {
+          this.#notice = `${reason}.`;
+          this.#showToast(`${reason}.`);
+          this.#pendingFocusAction = action.dataset.action ?? null;
+          this.#render();
+        };
+      }
+      buttons.push(action);
+    }
+    return buttons;
+  }
+
+  /** Arms the Sugar Rush, or aims a Re-bake or a Sugar Toss. */
+  #startCandyPick(kind: CandyPickV7["kind"], unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    this.#candyPick = { kind, unitId };
+    this.#notice = `${
+      kind === "SUGAR_RUSH"
+        ? SUGAR_RUSH_TOOLTIP_V7
+        : kind === "REBAKE"
+          ? REBAKE_TOOLTIP_V7
+          : SUGAR_TOSS_TOOLTIP_V7
+    }.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so the arrow keys and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /** Disarms or leaves the aiming (nothing is sent); focus returns. */
+  #cancelCandyPick(): void {
+    const pick = this.#candyPick;
+    this.#candyPick = null;
+    this.#pendingFocusAction =
+      pick === null
+        ? null
+        : `candy-${pick.kind.toLowerCase().replaceAll("_", "-")}`;
+    this.#render();
+  }
+
+  /**
+   * The Candy aiming panel in the dock (section 15.1, under the
+   * no-coordinates rule): the ability's icon and name with its "?", one
+   * button per unit a Re-bake would bake back or a Sugar Toss would heal
+   * (a portrait and its numbers), and Back. Every tile is chosen on the
+   * board. Null (and the aiming ends) when nothing is offered any more.
+   */
+  #candyPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    const pick = this.#candyPick;
+    if (pick === null || pick.unitId !== unitId) return null;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === pick.kind && command.unitId === unitId,
+    );
+    if (commands.length === 0) {
+      this.#candyPick = null;
+      return null;
+    }
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-candy-pick",
+    );
+    panel.dataset.v7CandyPick = pick.kind.toLowerCase();
+    const lines = el(this.#document, "div", "v7-dwarf-passengers");
+    const choice = (
+      action: string,
+      role: UnitRoleIdV7,
+      caption: string,
+      name: string,
+      command: CommandV7,
+    ): void => {
+      const control = button(
+        this.#document,
+        "",
+        action,
+        "v7-dwarf-passenger v7-candy-choice",
+      );
+      control.append(
+        this.#chibiArt(
+          portraitSubjectV7(role, "CANDY"),
+          CHIBI_DOM_BOXES_V7.passenger,
+          this.#viewerColour(),
+        )?.element ??
+          uiIconV7(this.#document, "units", "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", caption, "v7-dwarf-passenger-hp"),
+      );
+      control.setAttribute("aria-label", name);
+      control.title = name;
+      control.disabled = this.#localBusy();
+      control.onclick = () => void this.#dispatch(command);
+      lines.append(control);
+    };
+    let title: string;
+    let info: string;
+    if (pick.kind === "SUGAR_RUSH") {
+      title = SUGAR_RUSH_LABEL_V7;
+      info = SUGAR_RUSH_TOOLTIP_V7;
+    } else if (pick.kind === "REBAKE") {
+      title = REBAKE_LABEL_V7;
+      info = REBAKE_TOOLTIP_V7;
+      const preview = previewRebakeV7(view, unitId);
+      for (const [index, option] of (preview?.options ?? []).entries()) {
+        const command = commands.find(
+          (candidate) =>
+            candidate.kind === "REBAKE" && same(candidate.at, option.at),
+        );
+        if (command === undefined) continue;
+        choice(
+          `rebake-${index}`,
+          option.role,
+          rebakeBoardLabelV7(option.cost, option.hp),
+          rebakeTargetNameV7(option.role, option.cost, option.hp),
+          command,
+        );
+      }
+    } else {
+      title = SUGAR_TOSS_LABEL_V7;
+      info = SUGAR_TOSS_TOOLTIP_V7;
+      const preview = previewSugarTossV7(view, unitId);
+      for (const target of preview?.targets ?? []) {
+        const unit = view.units.find(
+          (candidate) => candidate.id === target.unitId,
+        );
+        const command = commands.find(
+          (candidate) =>
+            candidate.kind === "SUGAR_TOSS" &&
+            candidate.targetUnitId === target.unitId,
+        );
+        if (unit === undefined || command === undefined) continue;
+        choice(
+          `sugar-toss-${target.unitId}`,
+          unit.role,
+          `+${target.amount}`,
+          sugarTossTargetNameV7(
+            unitRoleRuleV7(view, unit).label,
+            target.amount,
+          ),
+          command,
+        );
+      }
+    }
+    panel.setAttribute("aria-label", info);
+    panel.append(
+      this.#pickHead(
+        pick.kind === "SUGAR_RUSH"
+          ? "ICON:ACTION:SUGAR_RUSH"
+          : pick.kind === "REBAKE"
+            ? "ICON:ACTION:REBAKE"
+            : "ICON:ACTION:SUGAR_TOSS",
+        pick.kind === "SUGAR_RUSH"
+          ? "move"
+          : pick.kind === "REBAKE"
+            ? "units"
+            : "hp",
+        title,
+        info,
+      ),
+    );
+    if (lines.childElementCount > 0) {
+      lines.setAttribute("role", "group");
+      lines.setAttribute("aria-label", title);
+      panel.append(lines);
+    }
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const back = button(
+      this.#document,
+      "Back",
+      "candy-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    back.onclick = () => this.#cancelCandyPick();
+    buttons.append(back);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /**
    * The Dwarf revision (section 16.1): the Tunnel button of an own Steam
    * Mole, the Bomb Run button of an own Gyrocopter and the Assemble button
    * of an own Engineer. With a legal choice it aims the ability on the
@@ -8399,14 +8831,13 @@ function effectDescription(
       return DIG_IN_UNLOCK_TEXT_V7;
     case "BLASTING_CHARGES":
       return BLASTING_CHARGES_UNLOCK_TEXT_V7;
-    // The Candy revision (docs/product/RULESET_7_CANDY.md section 4); the
-    // full Candy tree text is the UI bead's (`pulp_wars-jdb.6`).
+    // The Candy revision (docs/product/RULESET_7_CANDY.md section 4).
     case "CONFECTIONER_SUPPORT":
-      return "Confectioners Frost nearby troops or Re-bake a fallen unit from its Crumbs";
+      return CONFECTIONER_SUPPORT_UNLOCK_TEXT_V7;
     case "HOME_SWEET_HOME":
-      return "Rushed units that end the turn on or next to your city centers don't Crash";
+      return HOME_SWEET_HOME_UNLOCK_TEXT_V7;
     case "PEPPERMINT_SURPRISE":
-      return "Enemies that eat your Crumbs take 3";
+      return PEPPERMINT_SURPRISE_UNLOCK_TEXT_V7;
     case "OVERRUN":
       // Revision 17: the Goblin Overrun is Ram; revision 19: the Dinosaur
       // Overrun is Rampage.
@@ -8507,6 +8938,8 @@ function technologyRoleDescriptionsV7(
   if (faction === "ICE_FOLK") return [iceFolkRoleUnlockTextV7(roleId)];
   // The Dwarf revision (section 4): "Steam Cannon (Knockback)".
   if (faction === "DWARF") return [dwarfRoleUnlockTextV7(roleId)];
+  // The Candy revision (section 4): "Confectioner (Frosting, Re-bake)".
+  if (faction === "CANDY") return [candyRoleUnlockTextV7(roleId)];
   // Revision 19 (section 4): a Dinosaur egg-laid role is laid, not trained:
   // "Raptor Egg", "Triceratops Egg (Charge!)" (revision 20).
   if (isEggLaidRoleV7(roleId, faction))
@@ -8658,6 +9091,9 @@ function boundaryNoticeV7(
   // The Dwarf revision: a tunnel, an eruption, a bomb, an Assemble, a
   // Repair, a Knockback, Undermined Field Defense.
   const dwarf = dwarfBoundaryNoticeV7(events, before, after);
+  // The Candy revision: a Rush, the Crash, a Re-bake, Crumbs eaten or gone
+  // stale, a Sugar Toss, a Splat, a Bounce.
+  const candy = candyBoundaryNoticeV7(events, before, after);
   // Map curiosities: a Fountain heal, a Shrine claim, a salvaged Wreck, the
   // Spider's death and bounty, and the neutral turn.
   const curiosity = curiosityBoundaryNoticeV7(events, before, after);
@@ -8669,6 +9105,7 @@ function boundaryNoticeV7(
     martian?.text ?? null,
     iceFolk?.text ?? null,
     dwarf?.text ?? null,
+    candy?.text ?? null,
     special,
   ].filter((part): part is string => part !== null);
   if (
@@ -8678,6 +9115,7 @@ function boundaryNoticeV7(
     martian === null &&
     iceFolk === null &&
     dwarf === null &&
+    candy === null &&
     curiosity === null
   )
     return { text: special, toast: special !== null };
@@ -8691,6 +9129,7 @@ function boundaryNoticeV7(
       martian?.toast === true ||
       iceFolk?.toast === true ||
       dwarf?.toast === true ||
+      candy?.toast === true ||
       curiosity?.toast === true,
   };
 }
@@ -8771,40 +9210,19 @@ const COMMAND_LABELS: Partial<Record<CommandV7["kind"], string>> = {
 };
 /**
  * The Candy revision (docs/product/RULESET_7_CANDY.md section 15.2): the
- * label of a Candy command button, or null for any other command: "Sugar
- * Rush", "Re-bake {unit}: {n} Coins, {n} HP", "Toss to {unit}: +{n}", and
- * the Confectioner's Tend Wounded as "Frosting". No text names a tile.
+ * label of a Candy command button, or null for any other command: the
+ * Tend Wounded of a unit of the Candy kind is "Frosting" (Sugar Rush,
+ * Re-bake and Sugar Toss are aimed from their own buttons).
  */
 function candyCommandLabelV7(
   view: PlayerViewV7 | null,
   command: CommandV7,
 ): string | null {
-  if (command.kind === "SUGAR_RUSH") return "Sugar Rush";
-  if (view === null) return null;
-  if (command.kind === "REBAKE") {
-    const option = previewRebakeV7(view, command.unitId)?.options.find(
-      (entry) => same(entry.at, command.at),
-    );
-    return option === undefined
-      ? "Re-bake"
-      : `Re-bake ${effectiveRoleRuleV7(option.role, "CANDY").label}: ${option.cost} ${option.cost === 1 ? "Coin" : "Coins"}, ${option.hp} HP`;
-  }
-  if (command.kind === "SUGAR_TOSS") {
-    const target = view.units.find((unit) => unit.id === command.targetUnitId);
-    const heal = previewSugarTossV7(view, command.unitId)?.targets.find(
-      (entry) => entry.unitId === command.targetUnitId,
-    );
-    return target === undefined || heal === undefined
-      ? "Sugar Toss"
-      : `Toss to ${unitRoleRuleV7(view, target).label}: +${heal.amount}`;
-  }
-  if (command.kind === "TEND_WOUNDED") {
-    const unit = view.units.find((entry) => entry.id === command.unitId);
-    return unit !== undefined && unitFactionV7(view, unit) === "CANDY"
-      ? "Frosting"
-      : null;
-  }
-  return null;
+  if (view === null || command.kind !== "TEND_WOUNDED") return null;
+  const unit = view.units.find((entry) => entry.id === command.unitId);
+  return unit === undefined
+    ? null
+    : candyCommandNameV7(command.kind, presentedUnitFactionV7(view, unit));
 }
 function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL")
@@ -8821,6 +9239,8 @@ function commandLabel(command: CommandV7, faction: FactionIdV7): string {
   if (iceFolk !== null) return iceFolk;
   const dwarf = dwarfCommandLabelV7(command.kind, faction);
   if (dwarf !== null) return dwarf;
+  const candy = candyCommandNameV7(command.kind, faction);
+  if (candy !== null) return candy;
   if (command.kind === "BUILD_MONUMENT") return "Monument";
   // Faction building looks (epic pulp_wars-xdh): an Undead "Graveyard".
   const building = factionBuildCommandV7(command.kind, faction);

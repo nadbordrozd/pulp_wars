@@ -386,7 +386,11 @@ imports. The subjects exist (`CandyArtSubjectV7` in
    canvas bottom).
 5. **Markers and effects.** Crumbs (`CRUMBS`) on the tile with the
    code-drawn role icon and pips; the status icons at the sizes and places
-   of `CANDY_MARKERS_V7`; the seven effect sprites on their cues.
+   of `CANDY_MARKERS_V7`; the seven effect sprites on their cues. **Done
+   by the UI bead** (`pulp_wars-jdb.6`,
+   [its notes](../../product/RULESET_7_CANDY.md#24-implementation-notes-pulp_wars-jdb6)):
+   the Crumbs token shows the fallen unit's head from its own sprite
+   instead of a code-drawn role icon, and the emblem is not drawn.
 6. **Tests to update:** `tests/unit/chibi-candy-direction-assets.test.ts`
    ("is not wired in") turned round with the engine bead, as the Dwarf test
    did.

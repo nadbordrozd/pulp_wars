@@ -478,6 +478,16 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/state-schema.ts::candyListsValid": "BOARD",
     "src/headless/candy-telemetry-v7.ts::recordCandyV7": "BOARD",
     "src/render/dom/app-view-v7.ts::candyCommandLabelV7": "BOARD",
+    // The Candy UI (`pulp_wars-jdb.6`): the dock, the board plan and the
+    // log read the view's units (what stands on the board); a Re-bake's
+    // "city is full" reason counts slots through `allOwnedUnitsV7`.
+    "src/render/candy-presentation-v7.ts::candyBoundaryNoticeV7": "BOARD",
+    "src/render/candy-presentation-v7.ts::candyFieldDefenseBlockedV7": "BOARD",
+    "src/render/canvas/candy-board-plan-v7.ts::candyAttackTargetExtrasV7":
+      "BOARD",
+    "src/render/canvas/candy-board-plan-v7.ts::candyConfectionerSelectedV7":
+      "BOARD",
+    "src/render/canvas/candy-board-plan-v7.ts::candyPickTargetsV7": "BOARD",
   };
 
 /**

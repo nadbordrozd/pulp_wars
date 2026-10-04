@@ -164,6 +164,26 @@ import {
 } from "./dwarf-canvas-v7";
 import { STAYS_BEHIND_V7, matchHasDwarfSeatV7 } from "../dwarf-presentation-v7";
 import {
+  candyAttackTargetExtrasV7,
+  candyConfectionerSelectedV7,
+  candyCrumbsEntriesV7,
+  candyPickTargetsV7,
+  candyUnitMarkersV7,
+  crumbsEatLabelV7,
+  type CandyCrumbsMarkerV7,
+  type CandyPickV7,
+  type CandyUnitMarkersV7,
+} from "./candy-board-plan-v7";
+import {
+  CRASHED_SPRITE_ALPHA_V7,
+  drawCandyBounceArrowV7,
+  drawCandyCrumbsV7,
+  drawCandyRushSparklesV7,
+  drawCandyUnitMarkersV7,
+  type CandyUnitAnchorV7,
+} from "./candy-canvas-v7";
+import { candyLabelV7, matchHasCandySeatV7 } from "../candy-presentation-v7";
+import {
   GLIDE_MOVE_LABEL_V7,
   SHATTERS_PREVIEW_V7,
   matchHasIceFolkSeatV7,
@@ -298,6 +318,12 @@ export interface BoardRenderInteractionV7 {
    * map targets; null or omitted aims none.
    */
   readonly dwarfPick?: DwarfPickV7 | null;
+  /**
+   * The Candy revision (bead pulp_wars-jdb.6): the armed Sugar Rush, or the
+   * Re-bake or Sugar Toss being aimed by the selected unit. Its targets
+   * become the only map targets; null or omitted aims none.
+   */
+  readonly candyPick?: CandyPickV7 | null;
 }
 
 /** Revision 19: the ID of the legacy code-drawn Egg (no raster exists). */
@@ -353,7 +379,15 @@ export interface MapCommandTargetV7 {
     | "TUNNEL_RIDER"
     | "BOMB_TARGET"
     | "BOMB_RUN"
-    | "ASSEMBLE";
+    | "ASSEMBLE"
+    /**
+     * The Candy revision: a tile of an armed Sugar Rush's reach (`command`
+     * is the `SUGAR_RUSH`; the Move is sent after it), a Crumbs tile a
+     * Confectioner may Re-bake, and a unit a Gunner may toss sugar to.
+     */
+    | "SUGAR_RUSH"
+    | "REBAKE"
+    | "SUGAR_TOSS";
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -470,6 +504,33 @@ export interface MapCommandTargetV7 {
    * (or that the push is blocked), shown while the target is focused.
    */
   readonly knockback?: { readonly to: CoordV7; readonly blocked: boolean };
+  /**
+   * The Candy revision: a target of an armed Sugar Rush. The UI sends
+   * `SUGAR_RUSH` first, then the Move to `at` (family `SUGAR_RUSH`) or the
+   * target's own `ATTACK`. `newReach` marks a tile only the Rush reaches
+   * (the sparkle tint).
+   */
+  readonly sugarRush?: { readonly newReach: boolean };
+  /**
+   * The Candy revision: the ghost of the unit a Re-bake tile would bake
+   * back (its sprite at half strength; the label has its price and HP).
+   */
+  readonly rebake?: {
+    readonly role: UnitRoleIdV7;
+    readonly assetId: string;
+    readonly artSubject: ArtSubjectV7;
+    readonly ownerColor?: string;
+  };
+  /**
+   * The Candy revision: where a melee attacker is bounced back to by a
+   * Marshmallow or a Golem (or that the Bounce is blocked), shown while the
+   * target is focused: an arrow from the attacker's tile.
+   */
+  readonly bounce?: {
+    readonly from: CoordV7;
+    readonly to: CoordV7 | null;
+    readonly blocked: boolean;
+  };
   /** Revision 13: public splash entries of this attack (Undead matches only). */
   readonly splash?: readonly {
     readonly at: CoordV7;
@@ -509,6 +570,8 @@ export interface BoardRenderPlanEntryV7 {
     | "SELECTION"
     | "CURSOR"
     | "GRAVE"
+    /** The Candy revision: the Crumbs of a tile. */
+    | "CRUMBS"
     | "ABILITY_AREA"
     | "ABILITY_TARGET";
   readonly assetId?: string;
@@ -624,6 +687,13 @@ export interface BoardRenderPlanEntryV7 {
    * burrowed Mole or its rider, drawn where the unit would stand.
    */
   readonly dwarfMound?: DwarfMoundMarkerV7;
+  /**
+   * UNIT only, the Candy revision: the Rushed, Crashed, Splatted and Home
+   * Sweet Home markers and the Sugar Frenzy pips of a visible unit.
+   */
+  readonly candy?: CandyUnitMarkersV7;
+  /** CRUMBS only, the Candy revision: the role, the turns left, the bite. */
+  readonly crumbs?: CandyCrumbsMarkerV7;
   /** CURIOSITY only (bead pulp_wars-737.6): which tile overlay this is. */
   readonly curiosity?: CuriosityOverlayIdV7;
   /** UNIT only: the neutral Giant Spider and its provoked marker. */
@@ -901,6 +971,10 @@ export function buildBoardRenderPlanV7(
   );
   const martianMatch = matchHasMartianV7(view);
   const dwarfMatch = matchHasDwarfSeatV7(view);
+  // The Candy revision: the Crumbs of every tile (a match without a Candy
+  // seat has none) and the Candy markers of each unit.
+  const candyMatch = matchHasCandySeatV7(view);
+  if (candyMatch) entries.push(...candyCrumbsEntriesV7(view));
   const ringWitch = iceFolkMatch
     ? selectedWitchV7(view, interaction.selectedUnitId)
     : undefined;
@@ -920,6 +994,8 @@ export function buildBoardRenderPlanV7(
     const dwarf = dwarfMatch ? dwarfUnitMarkersV7(view, unit) : undefined;
     // The Ice Folk revision: Chill markers on units of any owner.
     const iceFolk = iceFolkMatch ? iceFolkUnitMarkersV7(view, unit) : undefined;
+    // The Candy revision: Rushed, Crashed and Splatted on units of any owner.
+    const candy = candyMatch ? candyUnitMarkersV7(view, unit) : undefined;
     // The Martian revision: a machine afloat is drawn as itself (never as
     // the transport); the Mind Control revision: a controlled unit keeps its
     // own name and sprite and carries the control halo and brain chip.
@@ -979,6 +1055,7 @@ export function buildBoardRenderPlanV7(
       ...(iceFolk === undefined ? {} : { iceFolk }),
       ...(ringWitch?.id === unit.id ? { blizzardRing: true as const } : {}),
       ...(dwarf === undefined ? {} : { dwarf }),
+      ...(candy === undefined ? {} : { candy }),
       ...(monster
         ? { monster: { provoked: monsterProvokedV7(view, unit.id) } }
         : {}),
@@ -1104,10 +1181,14 @@ export function buildBoardRenderPlanV7(
   if (selectedUnitId !== null) {
     // The Dwarf revision: while an ability is aimed, the selected unit's
     // other previews (an Engineer's Repair targets) step aside.
+    // The Candy revision: likewise while a Candy ability is aimed.
     if (
-      interaction.dwarfPick === undefined ||
-      interaction.dwarfPick === null ||
-      interaction.dwarfPick.unitId !== selectedUnitId
+      (interaction.dwarfPick === undefined ||
+        interaction.dwarfPick === null ||
+        interaction.dwarfPick.unitId !== selectedUnitId) &&
+      (interaction.candyPick === undefined ||
+        interaction.candyPick === null ||
+        interaction.candyPick.unitId !== selectedUnitId)
     )
       addAbilityPreviews(entries, view, commands, selectedUnitId);
     // The Martian revision: the Force Field of a selected Shield Projector
@@ -1157,6 +1238,14 @@ export function buildBoardRenderPlanV7(
     interaction.dwarfPick.unitId === interaction.selectedUnitId
       ? interaction.dwarfPick
       : null;
+  // The Candy revision: likewise while a Sugar Rush is armed or a Re-bake
+  // or Sugar Toss is aimed.
+  const candyPick =
+    interaction.candyPick !== undefined &&
+    interaction.candyPick !== null &&
+    interaction.candyPick.unitId === interaction.selectedUnitId
+      ? interaction.candyPick
+      : null;
   const targets = kaboomPreview
     ? []
     : layEgg !== null
@@ -1167,9 +1256,35 @@ export function buildBoardRenderPlanV7(
           ? iceFolkPickTargetsV7(view, commands, iceFolkPick)
           : dwarfPick !== null
             ? dwarfPickTargetsV7(view, commands, dwarfPick)
-            : dedupeMapTargets(
-                mapTargets(view, commands, interaction.selectedUnitId),
-              );
+            : candyPick !== null
+              ? candyPickTargetsV7(
+                  view,
+                  commands,
+                  candyPick,
+                  // An armed Rush shows the unit's attacks with the bonus.
+                  candyPick.kind === "SUGAR_RUSH"
+                    ? commandMapTargets(
+                        view,
+                        commands.filter((command) => command.kind === "ATTACK"),
+                        candyPick.unitId,
+                        { assumeSugarRush: true },
+                      )
+                    : [],
+                  (role) => ({
+                    role,
+                    assetId: RULESET7_UNIT_ART_IDS[role],
+                    artSubject: unitArtSubjectV7({
+                      role,
+                      form: "LAND",
+                      faction: "CANDY",
+                      machine: false,
+                    }),
+                    ...ownerPresentation(view, view.viewer.id),
+                  }),
+                )
+              : dedupeMapTargets(
+                  mapTargets(view, commands, interaction.selectedUnitId),
+                );
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
@@ -1541,6 +1656,12 @@ export function drawBoardV7(input: {
    * default, and reduced motion draw it static in the faction colour).
    */
   readonly controlPulseTimeMs?: number;
+  /**
+   * The Candy revision (bead pulp_wars-jdb.6): the faded copy of a Crashed
+   * unit's sprite (the host's sprite saturation cache). Omitted, a Crashed
+   * unit's sprite is drawn a little fainter instead.
+   */
+  readonly candyDroop?: (image: CanvasImageSource) => CanvasImageSource;
 }): void {
   const { context, viewport, devicePixelRatio } = input;
   const saturationOf = (entry: BoardRenderPlanEntryV7): number => {
@@ -1675,6 +1796,51 @@ export function drawBoardV7(input: {
           placer,
         );
       });
+    }
+  };
+  /**
+   * The Candy revision (section 15.1): the ghost of the unit each offered
+   * Re-bake tile would bake back, drawn from that role's own art.
+   */
+  const drawRebakeGhosts = (): void => {
+    for (const target of input.plan.targets) {
+      const ghost = target.rebake;
+      if (ghost === undefined) continue;
+      const x = camera.offsetX + target.at.x * TILE_WIDTH * camera.zoom;
+      const y = camera.offsetY + target.at.y * TILE_HEIGHT * camera.zoom;
+      const source: BoardRenderPlanEntryV7 = {
+        key: `rebake-ghost:${target.at.x},${target.at.y}`,
+        kind: "UNIT",
+        layer: 5,
+        at: target.at,
+        assetId: ghost.assetId,
+        artSubject: ghost.artSubject,
+        ...(ghost.ownerColor === undefined
+          ? {}
+          : { ownerColor: ghost.ownerColor }),
+      };
+      const chibi = resolveChibiEntry(source)?.resolution ?? null;
+      const ready = chibi?.kind === "READY" ? chibi : null;
+      const image =
+        ready?.image ??
+        (chibi === null || chibi.kind === "MISSING"
+          ? input.images.resolve(ghost.assetId)
+          : null);
+      if (image === null || image === undefined) continue;
+      const rect =
+        ready === null
+          ? anchoredDestinationRect({ x, y }, camera.zoom, geometryFor(source))
+          : chibiDestinationRect(
+              { x, y },
+              camera,
+              ready.asset,
+              devicePixelRatio,
+            );
+      context.save();
+      context.globalAlpha = TUNNEL_GHOST_ALPHA_V7 * sceneAlpha;
+      context.imageSmoothingEnabled = ready?.smoothing ?? true;
+      context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+      context.restore();
     }
   };
   context.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
@@ -2122,6 +2288,43 @@ export function drawBoardV7(input: {
         }
         continue;
       }
+      if (entry.kind === "CRUMBS") {
+        // The Candy revision (section 15.1): the pile on its tile, its
+        // pips, and the unit it would bake back (its portrait in a token).
+        if (entry.crumbs !== undefined) {
+          const crumbsRaster = (
+            subject: ArtSubjectV7,
+          ): CanvasImageSource | null => {
+            if (chibiArt === undefined) return null;
+            const resolved = chibiArt.resolve({
+              subject,
+              at: entry.at,
+              deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+            });
+            return resolved.kind === "READY" ? resolved.image : null;
+          };
+          const fallen = crumbsRaster(
+            unitArtSubjectV7({
+              role: entry.crumbs.role,
+              form: "LAND",
+              faction: "CANDY",
+              machine: false,
+            }),
+          );
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawCandyCrumbsV7(context, x, y, camera.zoom, entry.crumbs, {
+            pile: crumbsRaster("CRUMBS"),
+            unit: fallen,
+            unitHead: fallen === null ? null : spriteHeadAnchorV7(fallen),
+            initial: candyLabelV7(entry.crumbs.role).charAt(0),
+            highContrast: input.highContrast ?? false,
+            devicePixelRatio,
+          });
+          context.restore();
+        }
+        continue;
+      }
       if (entry.kind === "GRAVE") {
         const chibi = chibiArt !== undefined;
         const slot = entry.attachmentSlot ?? 0;
@@ -2233,6 +2436,9 @@ export function drawBoardV7(input: {
       // The Mind Control revision: the top of a controlled unit's head as
       // drawn this frame (lifted, jumping, garrisoned), for its halo.
       let controlHead: { readonly x: number; readonly y: number } | null = null;
+      // The Candy revision: the head and the foot of a unit's sprite as
+      // drawn this frame, for its Rushed, Crashed and Splatted markers.
+      let candyAnchor: CandyUnitAnchorV7 | null = null;
       // The Ice Folk revision: this frame of a Shatter on this unit, if any.
       const shatterCue =
         entry.kind === "UNIT" &&
@@ -2445,6 +2651,17 @@ export function drawBoardV7(input: {
             );
           context.save();
           context.globalAlpha = alpha * sceneAlpha;
+          // The Candy revision (section 15.1): a Crashed unit's sprite
+          // droops: its colour fades (a cached copy, never a filter), or
+          // where no copy can be made it is drawn a little fainter.
+          const crashed =
+            entry.kind === "UNIT" && entry.candy?.crashed === true;
+          const drooped =
+            crashed && input.candyDroop !== undefined
+              ? input.candyDroop(image)
+              : image;
+          if (crashed && drooped === image)
+            context.globalAlpha *= CRASHED_SPRITE_ALPHA_V7;
           if (chibiReady !== null) {
             // A garrisoned unit is smoothed unless its reduced scale still
             // lands on whole raster pixels (zoom 2 on a DPR 2 screen).
@@ -2458,9 +2675,9 @@ export function drawBoardV7(input: {
                     (chibiMasterScale(camera) * drawnScale * devicePixelRatio) /
                       chibiReady.density,
                   );
-            context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+            context.drawImage(drooped, rect.x, rect.y, rect.width, rect.height);
           } else if (entry.sourceCrop === undefined)
-            context.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+            context.drawImage(drooped, rect.x, rect.y, rect.width, rect.height);
           else
             context.drawImage(
               image,
@@ -2479,6 +2696,14 @@ export function drawBoardV7(input: {
             controlHead = {
               x: rect.x + rect.width * (anchor?.centre ?? 0.5),
               y: rect.y + rect.height * (anchor?.top ?? 0.12),
+            };
+          }
+          if (entry.kind === "UNIT" && entry.candy !== undefined) {
+            const anchor = spriteHeadAnchorV7(image);
+            candyAnchor = {
+              x: rect.x + rect.width * (anchor?.centre ?? 0.5),
+              top: rect.y + rect.height * (anchor?.top ?? 0.12),
+              bottom: rect.y + rect.height,
             };
           }
           // The Dwarf revision: the sandbags in front of a dug-in unit.
@@ -2711,6 +2936,51 @@ export function drawBoardV7(input: {
               devicePixelRatio,
             });
           }
+        // The Candy revision (section 15.1): the Crashed swirl over the
+        // head, the Rushed chip beside it (with the Home Sweet Home house
+        // or the Sugar Frenzy pips) and the Splatted pie on the face.
+        if (entry.kind === "UNIT" && entry.candy !== undefined) {
+          const candyRaster = (
+            subject: ArtSubjectV7,
+          ): CanvasImageSource | null => {
+            if (!chibiPiece || chibiArt === undefined) return null;
+            const resolved = chibiArt.resolve({
+              subject,
+              at: entry.at,
+              deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+            });
+            return resolved.kind === "READY" ? resolved.image : null;
+          };
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawCandyUnitMarkersV7(
+            context,
+            entry.candy,
+            candyAnchor ?? {
+              x,
+              top: y - 44 * camera.zoom,
+              bottom: y + 36 * camera.zoom,
+            },
+            camera.zoom,
+            {
+              rushed: entry.candy.rushed
+                ? candyRaster("ICON:STATUS:RUSHED")
+                : null,
+              crashed: entry.candy.crashed
+                ? candyRaster("ICON:STATUS:CRASHED")
+                : null,
+              splatted: entry.candy.splatted
+                ? candyRaster("ICON:STATUS:SPLATTED")
+                : null,
+              home: entry.candy.home
+                ? candyRaster("ICON:TECH:CANDY:FORTIFICATION")
+                : null,
+              highContrast: input.highContrast ?? false,
+              devicePixelRatio,
+            },
+          );
+          context.restore();
+        }
         // The Ice Folk revision: a Frosted unit's frost glyph in the next
         // status slot after its afflictions.
         if (entry.kind === "UNIT" && entry.iceFolk?.chill === "FROSTED") {
@@ -3252,6 +3522,13 @@ export function drawBoardV7(input: {
       placer,
       defer,
     );
+    drawCandyFocusPreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      input.highContrast ?? false,
+    );
   };
   if (goblinAreaFirst) drawAreaPreviews();
   // The Martian revision: the shooter's note goes on the focused target,
@@ -3313,6 +3590,7 @@ export function drawBoardV7(input: {
     );
   }
   drawTunnelGhosts(placer, defer);
+  drawRebakeGhosts();
   for (const draw of labels) draw();
   for (const paint of paints) paint();
   const statusPulse = input.statusPulse;
@@ -3463,7 +3741,9 @@ function targetPriority(family: MapCommandTargetV7["family"]): number {
     family === "BEAM_DOWN" ||
     family === "BEAM_DOWN_PASSENGER" ||
     family === "THROW_BOLAS" ||
-    family === "COLD_SNAP"
+    family === "COLD_SNAP" ||
+    family === "SUGAR_TOSS" ||
+    family === "REBAKE"
   )
     return 5;
   if (family === "HATCH") return 4;
@@ -3514,6 +3794,11 @@ function targetStroke(
     return "#d8b58a";
   if (family === "BOMB_TARGET" || family === "BOMB_RUN") return "#f2a46a";
   if (family === "ASSEMBLE") return "#f0f1ee";
+  // The Candy revision: the faction's cotton-candy pink for the Rush, cream
+  // for the Re-bake tiles, mint for the Sugar Toss (CANDY_PALETTE_V7).
+  if (family === "SUGAR_RUSH") return "#ffb8d8";
+  if (family === "REBAKE") return "#f0d7ba";
+  if (family === "SUGAR_TOSS") return "#8ddab3";
   return "#64e6cf";
 }
 
@@ -3564,6 +3849,9 @@ function drawMapTarget(
   const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
   const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
   const family = entry.target?.family;
+  // The Candy revision: a tile only the armed Rush reaches sparkles.
+  if (entry.target?.sugarRush?.newReach === true)
+    drawCandyRushSparklesV7(context, x, y, camera.zoom);
   context.save();
   context.lineWidth = 4 * camera.zoom;
   // The Martian revision: a Launch tile is dotted in the pale glass blue.
@@ -3923,6 +4211,54 @@ function drawIceFolkFocusPreviewV7(
       placer,
       defer,
     );
+}
+
+/**
+ * The Candy revision (section 15.1): the focused (or only) attack target's
+ * Bounce: a springy arrow from the attacker to the tile it is bounced back
+ * to (outlined), or a short one ending in a cross when the Bounce is
+ * blocked.
+ */
+function drawCandyFocusPreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  highContrast: boolean,
+): void {
+  const bouncing = plan.targets.filter(
+    (target) => target.family === "ATTACK" && target.bounce !== undefined,
+  );
+  const target =
+    (focus === null
+      ? undefined
+      : bouncing.find((candidate) => same(candidate.at, focus))) ??
+    (bouncing.length === 1 ? bouncing[0] : undefined);
+  const bounce = target?.bounce;
+  if (target === undefined || bounce === undefined) return;
+  const point = (at: CoordV7): { readonly x: number; readonly y: number } => ({
+    x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
+    y: camera.offsetY + at.y * TILE_HEIGHT * camera.zoom,
+  });
+  const from = point(bounce.from);
+  const defender = point(target.at);
+  if (bounce.to !== null) {
+    context.save();
+    context.strokeStyle = targetStroke("SUGAR_RUSH");
+    context.lineWidth = 3 * camera.zoom;
+    context.setLineDash([6 * camera.zoom, 4 * camera.zoom]);
+    for (const edge of TILE_EDGES)
+      strokeTileEdge(context, camera, bounce.to, edge);
+    context.restore();
+  }
+  drawCandyBounceArrowV7(
+    context,
+    from,
+    bounce.to === null ? null : point(bounce.to),
+    { x: from.x - defender.x, y: from.y - defender.y },
+    camera.zoom,
+    highContrast,
+  );
 }
 
 /**
@@ -4490,7 +4826,10 @@ function addAbilityPreviews(
   // machines, +2 on the others).
   if (
     offered("TEND_WOUNDED") &&
-    (matchHasUndeadV7(view) || dwarfEngineerSelectedV7(view, unitId))
+    (matchHasUndeadV7(view) ||
+      dwarfEngineerSelectedV7(view, unitId) ||
+      // The Candy revision: a Confectioner's Frosting shows its targets.
+      candyConfectionerSelectedV7(view, unitId))
   ) {
     const preview = previewTendWoundedV7(view, unitId);
     for (const result of preview?.results ?? []) {
@@ -4645,7 +4984,13 @@ function commandMapTargets(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
   selectedUnitId: number | null,
+  /**
+   * The Candy revision: an armed Sugar Rush previews each attack as if the
+   * unit were Rushed (the engine's `assumeSugarRush` estimate).
+   */
+  options: { readonly assumeSugarRush?: boolean } = {},
 ): MapCommandTargetV7[] {
+  const candyMatch = matchHasCandySeatV7(view);
   const undeadMatch = matchHasUndeadV7(view);
   const goblinMatch = matchHasGoblinV7(view);
   const dinosaurMatch = matchHasDinosaurV7(view);
@@ -4681,6 +5026,11 @@ function commandMapTargets(
         launch === null && iceFolkMatch && moveIsGlideV7(view, command);
       // Map curiosities: a Move that ends on a Spider's provoke tiles.
       const provokes = monsterMatch && moveProvokesMonsterV7(view, command);
+      // The Candy revision: a Move that ends on hostile Crumbs eats them.
+      const eats =
+        candyMatch && at !== undefined
+          ? crumbsEatLabelV7(view, command.unitId, at)
+          : null;
       return at === undefined
         ? []
         : [
@@ -4710,6 +5060,21 @@ function commandMapTargets(
                           : PROVOKE_MOVE_WARNING_V7,
                   }
                 : {}),
+              ...(eats === null
+                ? {}
+                : {
+                    previewLabel: eats.label,
+                    semanticLabel: [
+                      launch === null
+                        ? null
+                        : `${launch}. Ends this unit's turn afloat`,
+                      glide ? GLIDE_MOVE_LABEL_V7 : null,
+                      provokes ? PROVOKE_MOVE_WARNING_V7 : null,
+                      eats.label,
+                    ]
+                      .filter((part): part is string => part !== null)
+                      .join(". "),
+                  }),
             },
           ];
     }
@@ -4718,11 +5083,12 @@ function commandMapTargets(
         (unit) => unit.id === command.targetUnitId,
       );
       if (target === undefined) return [];
-      const preview = queryCombatPreviewV7(
-        view,
-        command.unitId,
-        command.targetUnitId,
-      );
+      const preview =
+        options.assumeSugarRush === true
+          ? queryCombatPreviewV7(view, command.unitId, command.targetUnitId, {
+              assumeSugarRush: true,
+            })
+          : queryCombatPreviewV7(view, command.unitId, command.targetUnitId);
       const undeadNote =
         undeadMatch && preview !== null ? combatPreviewNoteV7(preview) : null;
       const undeadSemanticNote =
@@ -4776,6 +5142,11 @@ function commandMapTargets(
       const dwarf = dwarfMatch
         ? dwarfAttackTargetExtrasV7(view, preview)
         : null;
+      // The Candy revision (Candy matches only): the Rush bonus, Splat,
+      // "No strike-back: Splatted" and the Bounce.
+      const candy = candyMatch
+        ? candyAttackTargetExtrasV7(view, preview)
+        : null;
       // Map curiosities (section 10.4): whether the Spider strikes back.
       const monsterNote =
         preview?.monsterRetaliates === undefined
@@ -4793,6 +5164,7 @@ function commandMapTargets(
         ...(martian?.notes ?? []),
         ...(iceFolk?.notes ?? []),
         ...(dwarf?.notes ?? []),
+        ...(candy?.notes ?? []),
       ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [
@@ -4839,7 +5211,7 @@ function commandMapTargets(
           ...(preview === null
             ? {}
             : {
-                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined && iceFolk?.sweep === undefined ? splashSentence : martian?.pierce === undefined ? "" : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}${iceFolk === null || iceFolk.semantic === null ? "" : ` ${iceFolk.semantic}`}${dwarf === null || dwarf.semantic === null ? "" : ` ${dwarf.semantic}`}`,
+                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined && iceFolk?.sweep === undefined ? splashSentence : martian?.pierce === undefined ? "" : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}${iceFolk === null || iceFolk.semantic === null ? "" : ` ${iceFolk.semantic}`}${dwarf === null || dwarf.semantic === null ? "" : ` ${dwarf.semantic}`}${candy === null || candy.semantic === null ? "" : ` ${candy.semantic}`}`,
               }),
           ...(note === null ? {} : { previewNote: note }),
           // The Dwarf revision: the Gunner's and a construct's shooter
@@ -4863,6 +5235,7 @@ function commandMapTargets(
           ...(dwarf?.knockback === undefined
             ? {}
             : { knockback: dwarf.knockback }),
+          ...(candy?.bounce === undefined ? {} : { bounce: candy.bounce }),
           ...((undeadMatch || goblinMatch) &&
           martian?.pierce === undefined &&
           iceFolk?.sweep === undefined &&
@@ -4885,17 +5258,22 @@ function commandMapTargets(
         },
       ];
     }
-    if (command.kind === "DISEMBARK" && command.unitId === selectedUnitId)
+    if (command.kind === "DISEMBARK" && command.unitId === selectedUnitId) {
+      // The Candy revision: a landing on hostile Crumbs eats them.
+      const eats = candyMatch
+        ? crumbsEatLabelV7(view, command.unitId, command.at)
+        : null;
       return [
         {
           at: command.at,
           command,
           family: "DISEMBARK",
           previewLabel: LANDING_NOW_LABEL_V7,
-          semanticLabel:
-            "Legal landing tile: land now. Landing ends this unit's activation; capture is available after the ordinary wait.",
+          ...(eats === null ? {} : { previewNote: eats.label }),
+          semanticLabel: `Legal landing tile: land now. Landing ends this unit's activation; capture is available after the ordinary wait.${eats === null ? "" : ` ${eats.label}.`}`,
         },
       ];
+    }
     return [];
   });
 }

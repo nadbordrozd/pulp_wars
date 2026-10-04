@@ -157,6 +157,12 @@ export function technologySubjectV7(
     (tech === "FORTIFICATION" || tech === "EXPLOSIVES")
   )
     return `ICON:TECH:DWARF:${tech}`;
+  // The Candy Home Sweet Home and Peppermint Surprise (bead pulp_wars-jdb.6).
+  if (
+    faction === "CANDY" &&
+    (tech === "FORTIFICATION" || tech === "EXPLOSIVES")
+  )
+    return `ICON:TECH:CANDY:${tech}`;
   if (subject.startsWith("PORTRAIT:"))
     return portraitSubjectV7(
       subject.slice("PORTRAIT:".length) as UnitRoleIdV7,
@@ -243,9 +249,12 @@ export function commandSubjectV7(
       if (faction === "MARTIAN") return "ICON:ACTION:MARTIAN:RALLY";
       return "ICON:ACTION:RALLY";
     case "TEND_WOUNDED":
+      // The Candy Tend Wounded is Frosting (bead pulp_wars-jdb.6).
       return faction === "DWARF"
         ? "ICON:ACTION:DWARF:TEND_WOUNDED"
-        : "ICON:ACTION:TEND_WOUNDED";
+        : faction === "CANDY"
+          ? "ICON:ACTION:CANDY:TEND_WOUNDED"
+          : "ICON:ACTION:TEND_WOUNDED";
     default:
       break;
   }

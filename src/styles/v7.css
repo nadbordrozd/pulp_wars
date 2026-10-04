@@ -3535,6 +3535,74 @@
   opacity: 0.55;
 }
 
+/* ---------- Candy (bead pulp_wars-jdb.6) ---------- */
+
+.v7-candy-chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  border: 1px solid #ffb8d866;
+  background: #33202a;
+  color: #ffe6f1;
+  white-space: nowrap;
+}
+
+.v7-candy-chip .v7-candy-chip-icon {
+  flex: none;
+  min-width: 0;
+  min-height: 0;
+}
+
+.v7-candy-chip[data-unit-status="crashed"],
+.v7-candy-chip[data-unit-status="splatted"] {
+  border-color: #c9b7c066;
+  color: #dccfd5;
+}
+
+.v7-candy-chip[data-unit-status="home-sweet-home"] {
+  border-color: #8ddab388;
+}
+
+/* Sugar Frenzy: the continuations left, as pips. */
+.v7-candy-pips {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.v7-candy-pip {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #ffb8d8;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.v7-candy-pip[data-filled="true"] {
+  background: #ffb8d8;
+}
+
+.v7-candy-pick {
+  border-color: #ffb8d866;
+}
+
+.v7-dwarf-passenger.v7-candy-choice {
+  border-color: #ffb8d8;
+  background: #33202a;
+  color: #ffe6f1;
+}
+
+.v7-context-action[data-disabled-reason="candy-field-defense"],
+.v7-context-action[data-candy-ability][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.v7-context-action[data-candy-ability][aria-pressed="true"] {
+  border-color: #ffb8d8;
+  box-shadow: inset 0 0 0 1px #ffb8d8;
+}
+
 /* ---------- Gallery (bead pulp_wars-ic8) ---------- */
 
 .v7-gallery-entry {

@@ -66,6 +66,18 @@ import {
 } from "./attack-effects-v7";
 import { moundAtV7, moundInfoLinesV7 } from "../dwarf-presentation-v7";
 import {
+  CANDY_EFFECT_SUBJECTS_V7,
+  candyReducedMotionProgressV7,
+  drawCandyFeedbackV7,
+  type CandyFeedbackV7,
+} from "./candy-effects-v7";
+import { CRASHED_SPRITE_SATURATION_V7 } from "./candy-canvas-v7";
+import { candyCursorCueV7 } from "./candy-board-plan-v7";
+import {
+  crumbsTileLinesV7,
+  matchHasCandySeatV7,
+} from "../candy-presentation-v7";
+import {
   MAX_ZOOM,
   MIN_ZOOM,
   boardWorldBounds,
@@ -297,6 +309,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   #pinnedDwarfFeedback: readonly DwarfFeedbackV7[] = [];
   /** The Dig In earthwork rasters, built once per width. */
   readonly #dwarfArt: DwarfBoardArtV7;
+  /** The Candy cue playing on the effects overlay (bead pulp_wars-jdb.6). */
+  #candyFeedback: CandyFeedbackV7 | null = null;
+  /** Review tooling only (pinCandyFeedback): cues frozen mid-animation. */
+  #pinnedCandyFeedback: readonly CandyFeedbackV7[] = [];
+  /** The faded copies of Crashed units' sprites, built once per sprite. */
+  readonly #candyDroopCache: SpriteSaturationCacheV7;
   /** Revision 19: this frame's unit sprite cues (growth, Egg, hatchling). */
   #unitPulses: readonly UnitPulseV7[] = [];
   /**
@@ -362,6 +380,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       browserChibiRasterEnvironmentV7(documentRoot),
     );
     this.#dwarfArt = createDwarfBoardArtV7(
+      browserChibiRasterEnvironmentV7(documentRoot),
+    );
+    this.#candyDroopCache = createSpriteSaturationCacheV7(
       browserChibiRasterEnvironmentV7(documentRoot),
     );
     this.#chibiArt = createChibiArtResolverV7({
@@ -519,6 +540,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // The Dwarf revision: an aimed Tunnel, Bomb Run or Assemble likewise,
     // once per stage.
     const dwarfPick = model.interaction.dwarfPick ?? null;
+    // The Candy revision: an armed Sugar Rush, a Re-bake or a Sugar Toss
+    // likewise.
+    const candyPick = model.interaction.candyPick ?? null;
     const subject =
       unitId !== null
         ? String(unitId)
@@ -530,7 +554,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
               ? `ice-folk:${iceFolkPick.kind}:${iceFolkPick.unitId}`
               : dwarfPick !== null
                 ? `dwarf:${dwarfPick.kind}:${dwarfPick.unitId}:${dwarfPick.kind === "TUNNEL" ? (dwarfPick.to === null ? "" : `${dwarfPick.to.x},${dwarfPick.to.y}`) : dwarfPick.kind === "BOMB_RUN" ? String(dwarfPick.targetUnitId) : ""}`
-                : null;
+                : candyPick !== null
+                  ? `candy:${candyPick.kind}:${candyPick.unitId}`
+                  : null;
     if (subject === null) {
       this.#kaboomFramedKey = null;
       return;
@@ -541,13 +567,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#kaboomFramedKey = key;
     const framed = this.#planFor(model.view, model.offeredCommands);
     const pickUnitId =
-      martianPick?.unitId ?? iceFolkPick?.unitId ?? dwarfPick?.unitId ?? null;
+      martianPick?.unitId ??
+      iceFolkPick?.unitId ??
+      dwarfPick?.unitId ??
+      candyPick?.unitId ??
+      null;
     const pickUnit =
       pickUnitId === null
         ? undefined
         : model.view.units.find((unit) => unit.id === pickUnitId);
     const area = cellWorldBounds(
-      (martianPick !== null || iceFolkPick !== null || dwarfPick !== null) &&
+      (martianPick !== null ||
+        iceFolkPick !== null ||
+        dwarfPick !== null ||
+        candyPick !== null) &&
         unitId === null &&
         layEgg === null
         ? [
@@ -674,6 +707,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     this.#iceFolkShatter = null;
     this.#dwarfFeedback = null;
     this.#pinnedDwarfFeedback = [];
+    this.#candyFeedback = null;
+    this.#pinnedCandyFeedback = [];
     this.#unitPulses = [];
     this.#heldUnits = new Map();
     this.#drawSupportOverlay();
@@ -726,6 +761,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       const martianSteps = steps.filter((step) => step.kind === "MARTIAN");
       const iceFolkSteps = steps.filter((step) => step.kind === "ICE_FOLK");
       const dwarfSteps = steps.filter((step) => step.kind === "DWARF");
+      const candySteps = steps.filter((step) => step.kind === "CANDY");
       const attackSteps = steps.filter(
         (step): step is ShotStepV7 => attackEffectOf(step) !== null,
       );
@@ -737,7 +773,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         dinosaurSteps.length > 0 ||
         martianSteps.length > 0 ||
         iceFolkSteps.length > 0 ||
-        dwarfSteps.length > 0
+        dwarfSteps.length > 0 ||
+        candySteps.length > 0
       ) {
         this.#presentedView = after;
         this.#draw();
@@ -817,6 +854,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
           this.#dwarfFeedback = null;
           this.#drawSupportOverlay();
         }
+        // The Candy revision: each Candy cue holds one still frame where it
+        // reads (a Sugar Toss its "+n", the swirl settled).
+        for (const step of candySteps) {
+          if (step.followCamera === true && step.cells[0] !== undefined)
+            this.#followCamera(step.cells[0]);
+          this.#candyFeedback = candyFeedbackOf(
+            step,
+            candyReducedMotionProgressV7(step.effect),
+          );
+          this.#drawSupportOverlay();
+          await this.#animate(240 * durationScale, () => undefined);
+          if (token !== this.#presentationToken) return;
+          this.#candyFeedback = null;
+          this.#drawSupportOverlay();
+        }
         // Revision 17: each explosion wave holds its midpoint burst, in
         // wave order, long enough to read.
         for (const step of explosionSteps) {
@@ -883,7 +935,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             dinosaurSteps.length +
             martianSteps.length +
             iceFolkSteps.length +
-            dwarfSteps.length ===
+            dwarfSteps.length +
+            candySteps.length ===
           steps.length
         ) {
           this.#presentedView = null;
@@ -1043,6 +1096,21 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         this.#dwarfFeedback = null;
         this.#presentedView = after;
         this.#draw();
+        this.#drawSupportOverlay();
+      } else if (step.kind === "CANDY") {
+        // The Candy revision: every Candy cue plays over the result (the
+        // new marker, the re-baked unit, the healed HP).
+        const first = step.cells[0];
+        if (first !== undefined && step.followCamera === true)
+          this.#followCamera(first);
+        this.#presentedView = after;
+        this.#draw();
+        await this.#animate(step.durationMs * durationScale, (progress) => {
+          this.#candyFeedback = candyFeedbackOf(step, progress);
+          this.#drawSupportOverlay();
+        });
+        if (token !== this.#presentationToken) return;
+        this.#candyFeedback = null;
         this.#drawSupportOverlay();
       } else if (step.kind === "BUILD") {
         this.#followCamera(step.at);
@@ -1405,6 +1473,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         iceFolkShatter: this.#iceFolkShatter,
         // The Dwarf revision: the Dig In earthwork rasters.
         dwarfArt: this.#dwarfArt,
+        // The Candy revision: a Crashed unit's faded sprite.
+        candyDroop: (image) =>
+          this.#candyDroopCache.resolve(image, CRASHED_SPRITE_SATURATION_V7),
         // The Mind Control revision: the control halo's pulse (static for
         // reduced motion).
         controlPulseTimeMs: model.motion === "REDUCED" ? 0 : now,
@@ -1554,6 +1625,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     for (const subject of MARTIAN_EFFECT_SUBJECTS_V7) art?.image(subject);
     for (const subject of ICE_FOLK_EFFECT_SUBJECTS_V7) art?.image(subject);
     for (const subject of DWARF_EFFECT_SUBJECTS_V7) art?.image(subject);
+    // The Candy revision: only a match with a Candy seat loads its cues.
+    if (this.#model !== null && matchHasCandySeatV7(this.#model.view))
+      for (const subject of CANDY_EFFECT_SUBJECTS_V7) art?.image(subject);
   }
 
   /**
@@ -1642,6 +1716,20 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   }
 
   /**
+   * Review tooling and tests: draws the given Candy cues at their fixed
+   * progress on the effects canvas until cleared with an empty list. The
+   * game never calls it; presentations clear it.
+   */
+  pinCandyFeedback(feedback: readonly CandyFeedbackV7[]): void {
+    this.#pinnedCandyFeedback = feedback;
+    this.#requestEffectArt();
+    // A match that started without a Candy seat loaded no Candy cue.
+    const art = this.#supportEffectArt();
+    for (const subject of CANDY_EFFECT_SUBJECTS_V7) art?.image(subject);
+    this.#drawSupportOverlay();
+  }
+
+  /**
    * Review tooling and tests: draws the given Dwarf cues at their fixed
    * progress on the effects canvas until cleared with an empty list. A
    * pinned eruption before its surfacing frame shows the view with the
@@ -1715,7 +1803,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     context.clearRect(0, 0, this.#viewport.width, this.#viewport.height);
     const effectArt = this.#supportEffectArt();
     for (const pinned of this.#pinnedAttackFeedback)
-      drawAttackFeedbackV7(context, this.#camera, pinned);
+      drawAttackFeedbackV7(context, this.#camera, pinned, effectArt);
     const attack = this.#attackFeedback;
     if (attack === null) {
       delete canvas.dataset.attackEffect;
@@ -1723,7 +1811,18 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     } else {
       canvas.dataset.attackEffect = attack.effect;
       canvas.dataset.attackProgress = attack.progress.toFixed(3);
-      drawAttackFeedbackV7(context, this.#camera, attack);
+      drawAttackFeedbackV7(context, this.#camera, attack, effectArt);
+    }
+    for (const pinned of this.#pinnedCandyFeedback)
+      drawCandyFeedbackV7(context, this.#camera, pinned, effectArt);
+    const candy = this.#candyFeedback;
+    if (candy === null) {
+      delete canvas.dataset.candyEffect;
+      delete canvas.dataset.candyProgress;
+    } else {
+      canvas.dataset.candyEffect = candy.effect;
+      canvas.dataset.candyProgress = candy.progress.toFixed(3);
+      drawCandyFeedbackV7(context, this.#camera, candy, effectArt);
     }
     for (const pinned of this.#pinnedDwarfFeedback)
       drawDwarfFeedbackV7(context, this.#camera, pinned, effectArt);
@@ -1907,6 +2006,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const aimed =
       actions.length > 0 &&
       ((interaction.dwarfPick ?? null) !== null ||
+        (interaction.candyPick ?? null) !== null ||
         (interaction.martianPick ?? null) !== null ||
         (interaction.iceFolkPick ?? null) !== null ||
         (interaction.layEgg ?? null) !== null);
@@ -1921,6 +2021,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         : "",
       tile.improvement === null ? "" : title(tile.improvement),
       model.view.graves.some((grave) => same(grave, at)) ? "Grave" : "",
+      // The Candy revision: the tile's Crumbs, their turns and their bite.
+      ...crumbsTileLinesV7(model.view, at),
       // Map curiosities: the tile's curiosity and its one sentence.
       ...(() => {
         const curiosity = curiosityOverlayOnTileV7(model.view, at);
@@ -1950,6 +2052,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         : [
             `${unitName(model.view, unit)}, ${unit.hp} of ${unit.maxHp} HP`,
             afflictionCursorCueV7(model.view, unit.id),
+            // The Candy revision: Rushed, Crashed and Splatted, said.
+            candyCursorCueV7(model.view, unit),
             // The Mind Control revision: the halo, said.
             mindControlledInfoV7(model.view, unit)?.byLine ?? "",
           ]
@@ -2152,6 +2256,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     const interaction = model.interaction;
     if (
       (interaction.dwarfPick ?? null) === null &&
+      (interaction.candyPick ?? null) === null &&
       (interaction.martianPick ?? null) === null &&
       (interaction.iceFolkPick ?? null) === null &&
       (interaction.layEgg ?? null) === null
@@ -2627,6 +2732,20 @@ function attackEffectOf(step: CorePresentationStepV7): AttackEffectIdV7 | null {
     step.attackEffect !== undefined
     ? step.attackEffect
     : null;
+}
+
+/** The effects-overlay cue of a Candy presentation step at `progress`. */
+function candyFeedbackOf(
+  step: Extract<CorePresentationStepV7, { readonly kind: "CANDY" }>,
+  progress: number,
+): CandyFeedbackV7 {
+  return {
+    effect: step.effect,
+    cells: step.cells,
+    ...(step.from === undefined ? {} : { from: step.from }),
+    ...(step.amount === undefined ? {} : { amount: step.amount }),
+    progress,
+  };
 }
 
 /** The effects-overlay cue of a Dwarf presentation step at `progress`. */

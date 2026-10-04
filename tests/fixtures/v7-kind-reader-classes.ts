@@ -292,12 +292,21 @@ export const KIND_READER_CLASSES_V7: Readonly<
   // resource: a death leaves them only for a unit owned by a Candy seat (a
   // mind-controlled Candy unit, owned by its controller, leaves none), and
   // their bite is their owner's research. A Re-bake builds a unit of the
-  // acting seat's registration (the unit does not exist yet), and its
-  // button names that role under the Candy registration.
+  // acting seat's registration (the unit does not exist yet).
   "src/engine/v7/candy.ts::crumbsBiteV7": "SEAT",
   "src/engine/v7/candy.ts::deathLeavesCrumbsV7": "SEAT",
   "src/engine/v7/query.ts::publicRebakeFactsV7": "SEAT",
-  "src/render/dom/app-view-v7.ts::candyCommandLabelV7": "SEAT",
+  // The Candy UI (`pulp_wars-jdb.6`): the match gate, the labels and
+  // technology text of the Candy registration, the viewer's own city slots
+  // and Coins behind a Re-bake's reason, and the viewer's missing Field
+  // Defense. A unit's own Candy state is read from its public stats, which
+  // follow its kind.
+  "src/render/candy-presentation-v7.ts::matchHasCandySeatV7": "SEAT",
+  "src/render/candy-presentation-v7.ts::candyLabelV7": "SEAT",
+  "src/render/candy-presentation-v7.ts::rebakeUnavailableTextV7": "SEAT",
+  "src/render/candy-presentation-v7.ts::candyFieldDefenseBlockedV7": "SEAT",
+  "src/render/candy-presentation-v7.ts::candyRoleUnlockTextV7": "SEAT",
+  "src/render/candy-presentation-v7.ts::candyRecruitNotesV7": "SEAT",
   // A `sugarRush` entry and a Rush perk follow the unit's kind (`kindOf`);
   // a Crumbs owner is a Candy seat.
   "src/engine/v7/state-schema.ts::candyListsValid": "KIND",

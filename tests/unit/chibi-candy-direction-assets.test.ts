@@ -292,18 +292,29 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
         entry.subject,
       ).toEqual([entry.id]);
     }
-    // Only the two live registries import the manifest.
+    // Only the two live registries import the manifest. The Candy UI (bead
+    // pulp_wars-jdb.6) reads the presentation data (the palette and the
+    // marker sizes and places) from its marker, cue and attack-cue modules.
     const files = (await readdir(path.join(ROOT, "src"), { recursive: true }))
       .filter((file) => /\.tsx?$/.test(file))
       .filter((file) => !/chibi-direction-candy-/.test(file));
     const importers: string[] = [];
+    const presentationReaders: string[] = [];
     for (const file of files) {
       const text = await readFile(path.join(ROOT, "src", file), "utf8");
-      if (/from "[^"]*chibi-direction-candy-/.test(text)) importers.push(file);
+      if (/from "[^"]*chibi-direction-candy-art-manifest/.test(text))
+        importers.push(file);
+      if (/from "[^"]*chibi-direction-candy-presentation/.test(text))
+        presentationReaders.push(file);
     }
     expect(importers.sort()).toEqual([
       "assets/chibi-direction-art-manifest.ts",
       "assets/chibi-naval-faction-art-manifest.ts",
+    ]);
+    expect(presentationReaders.sort()).toEqual([
+      "render/canvas/attack-effects-v7.ts",
+      "render/canvas/candy-canvas-v7.ts",
+      "render/canvas/candy-effects-v7.ts",
     ]);
     // It does not import the other factions' naval manifest either.
     const own = await readFile(
