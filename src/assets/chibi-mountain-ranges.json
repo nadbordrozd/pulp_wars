@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "bead": "pulp_wars-e9f",
+  "cellPx": 80,
+  "overflowPx": 24,
+  "derive": {
+    "bandLimit": 13,
+    "baseInset": 3,
+    "outlineBlend": 0.45
+  },
+  "sources": [
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s01-2x1-v2-0.png",
+      "sha256": "2e69a90a4519428194a5d533dfc65180188ea17f3e863f97f700123db6269d89"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s01-2x1-v2-2.png",
+      "sha256": "4fca761b22373bee3d6b6b41e1edee18cf1785a84ca14f03fc48956f0a5c3bb9"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s07-1x2-v2-0.png",
+      "sha256": "8ae0b859ec9447d5127ca5084edfeff59ea7f6a1377bde206510f0bf209bba5d"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s14-1x1-v2-4.png",
+      "sha256": "55e7382191e3c8f55cfedb3b4e48d12fe7761a0a4dd1f7d3d9b1e483257fee80"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s14-1x1-v2-7.png",
+      "sha256": "c2ca2831029d17d4cfacd188e43ba8dcffb9b91f3b0ad01c7bd35e82da900f71"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s15-2x1-v2-0.png",
+      "sha256": "5abc1fbacc075d937c47d6c4265bf782642345741de6a176456d3ec594d7e65e"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s15-2x1-v2-1.png",
+      "sha256": "339847f99e158c909553c9762f5f18a6d44d0845cfd2e0a64bac2e51f22b037f"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s15-2x1-v2-2.png",
+      "sha256": "a1cffb4408018bbe8f29f4b349a48c513c98c90009fdaea0e208fc168916cff0"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s15-2x1-v2-3.png",
+      "sha256": "2842644e72e4d6d6cf6c16a4ebf455aa2a99356e0b25f27d32b900a38d72cbce"
+    }
+  ],
+  "seams": [],
+  "pieces": [
+    {
+      "id": "chibi-mountain-range-1x1-a",
+      "shape": "1x1",
+      "variant": 0,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-1x1-a.png",
+      "width": 80,
+      "height": 104,
+      "parts": [
+        {
+          "recipe": "s14-1x1-v2",
+          "candidate": 4
+        }
+      ],
+      "sha256": "645870b4627822aa8cbc97e9e5e1bf02c8886107349ac0f94d244076d74c5a31",
+      "pixelSha256": "cff85df5e9f055645c760d23729909bbb5fc4fceae014cfbd88807fa22154070"
+    },
+    {
+      "id": "chibi-mountain-range-1x1-b",
+      "shape": "1x1",
+      "variant": 1,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-1x1-b.png",
+      "width": 80,
+      "height": 104,
+      "parts": [
+        {
+          "recipe": "s14-1x1-v2",
+          "candidate": 7
+        }
+      ],
+      "sha256": "4f16718ec50f11d1bfc1ac210985224f4f1eccc582db168d909880acf4db2b46",
+      "pixelSha256": "4476c0e817d2a8372a6f77a7f1802563f95fb5903428561a39b556c96a9a292f"
+    },
+    {
+      "id": "chibi-mountain-range-2x1-a",
+      "shape": "2x1",
+      "variant": 0,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-2x1-a.png",
+      "width": 160,
+      "height": 104,
+      "parts": [
+        {
+          "recipe": "s15-2x1-v2",
+          "candidate": 0
+        }
+      ],
+      "sha256": "bcbcf4561230eb7712851c07c3919a2e48ddb3062e34a83219e1775654e2d1af",
+      "pixelSha256": "6dcc41e0a7df49c3d07fcab1809baa7581f309d968585b66ecb00e401b1b4b8a"
+    },
+    {
+      "id": "chibi-mountain-range-2x1-b",
+      "shape": "2x1",
+      "variant": 1,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-2x1-b.png",
+      "width": 160,
+      "height": 104,
+      "parts": [
+        {
+          "recipe": "s15-2x1-v2",
+          "candidate": 1
+        }
+      ],
+      "sha256": "8299093fc070a131f32c248f6eeeb8fc21ae1d5d46189e311e55dde1a096635a",
+      "pixelSha256": "1c57dd050af123673296ea7fd1da2a4e7761b628bf7279dcd259019d40814b4b"
+    },
+    {
+      "id": "chibi-mountain-range-2x1-c",
+      "shape": "2x1",
+      "variant": 2,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-2x1-c.png",
+      "width": 160,
+      "height": 104,
+      "parts": [
+        {
+          "recipe": "s15-2x1-v2",
+          "candidate": 3
+        }
+      ],
+      "sha256": "fc2c91c4401b5018c8a7e6d0d547994c9551bcd582ea7e3c786855329297f555",
+      "pixelSha256": "ecf7a531e23d6f67f8634c31f5ffff7f5f23e4e197c613bfedba9c015ce2c9b7"
+    },
+    {
+      "id": "chibi-mountain-range-2x1-d",
+      "shape": "2x1",
+      "variant": 3,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-2x1-d.png",
+      "width": 160,
+      "height": 104,
+      "parts": [
+        {
+          "recipe": "s01-2x1-v2",
+          "candidate": 0
+        }
+      ],
+      "sha256": "f0af6363559fec23d3d15cfb60e3de611580bdeb9bb7b896a70994c2549d83e3",
+      "pixelSha256": "aec192e655204aa98f010b41780c952713c7366cb1edb1eeaa90d547d1407551"
+    },
+    {
+      "id": "chibi-mountain-range-1x2-a",
+      "shape": "1x2",
+      "variant": 0,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-1x2-a.png",
+      "width": 80,
+      "height": 184,
+      "parts": [
+        {
+          "recipe": "s07-1x2-v2",
+          "candidate": 0,
+          "dy": -28
+        }
+      ],
+      "sha256": "9043ad73da070d50db0d6f7ac711fade795928a8505bbc595543d451f32c5c04",
+      "pixelSha256": "e728c2d490331345d8d114fd694da9a2c331fe10581f4eacb344586ca78180e5"
+    },
+    {
+      "id": "chibi-mountain-range-1x2-b",
+      "shape": "1x2",
+      "variant": 1,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-1x2-b.png",
+      "width": 80,
+      "height": 184,
+      "parts": [
+        {
+          "recipe": "s07-1x2-v2",
+          "candidate": 0,
+          "dy": -28,
+          "flip": true
+        }
+      ],
+      "sha256": "b6ef4f4157896526f9bc1c267259606ca52eb6014788c3a87149dd7aa3b93748",
+      "pixelSha256": "0c2747fe3b199d2403535aa89fa4153354221360ad7deec7d028934be2374e19"
+    },
+    {
+      "id": "chibi-mountain-range-2x2-a",
+      "shape": "2x2",
+      "variant": 0,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-2x2-a.png",
+      "width": 160,
+      "height": 184,
+      "parts": [
+        {
+          "recipe": "s15-2x1-v2",
+          "candidate": 1,
+          "row": 0,
+          "dy": 38,
+          "dx": 4
+        },
+        {
+          "recipe": "s15-2x1-v2",
+          "candidate": 0,
+          "dx": -4,
+          "dy": -12
+        }
+      ],
+      "sha256": "57799f7c4aa1396e0ea6efe8f2050972a0ce50f11cb3b34bd3816a339f858ccf",
+      "pixelSha256": "677d0e9ee9c768bd5ec0e4f63645e916347b21f4075a8eaa250d3e0510884df8"
+    },
+    {
+      "id": "chibi-mountain-range-2x2-b",
+      "shape": "2x2",
+      "variant": 1,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-2x2-b.png",
+      "width": 160,
+      "height": 184,
+      "parts": [
+        {
+          "recipe": "s01-2x1-v2",
+          "candidate": 0,
+          "row": 0,
+          "dy": 38,
+          "dx": -4
+        },
+        {
+          "recipe": "s15-2x1-v2",
+          "candidate": 3,
+          "dx": 4,
+          "dy": -12
+        }
+      ],
+      "sha256": "a33d314eb0a3fdf673490af0385e0c66997dda9516ee57f8bcbcd95c692742c5",
+      "pixelSha256": "9445c601a4f13abd6b19a6c59ccbfeb1ea701bc56fcd1cec0a08f86ec2329e3a"
+    },
+    {
+      "id": "chibi-mountain-range-2x2-c",
+      "shape": "2x2",
+      "variant": 2,
+      "path": "public/assets/chibi/mountains/chibi-mountain-range-2x2-c.png",
+      "width": 160,
+      "height": 184,
+      "parts": [
+        {
+          "recipe": "s15-2x1-v2",
+          "candidate": 2,
+          "row": 0,
+          "dy": 38,
+          "dx": 4
+        },
+        {
+          "recipe": "s01-2x1-v2",
+          "candidate": 2,
+          "dx": -4,
+          "dy": -12
+        }
+      ],
+      "sha256": "f18b07850daf3e8e4c6d5536b19a07e786d52a9277f7de0a71e336ff6ae3d8d0",
+      "pixelSha256": "b10ae8bdb3dda2befd859b78eb43b0fabdf89fd41faec3d1d0f48d3faee4b6fe"
+    }
+  ]
+}

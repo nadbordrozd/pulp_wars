@@ -7,6 +7,7 @@
  *
  *   npx vite --port 6191 --strictPort &
  *   CHROME_PATH=... npx tsx scripts/art/chibi-forest-review.ts <out-dir>
+ *   CHROME_PATH=... npx tsx scripts/art/chibi-forest-review.ts <out-dir> mountains
  *
  * Writes pairN-before.png, pairN-after.png and pairN-side-by-side.png for
  * the six scenes of scripts/art/chibi/forest-review-scenes.ts. No PixelLab
@@ -19,14 +20,15 @@ import path from "node:path";
 import sharp from "sharp";
 
 const OUT = path.resolve(process.argv[2] ?? "forest-review");
+/** `mountains` as the second argument reviews the mountain ranges. */
+const MOUNTAINS = process.argv[3] === "mountains";
 const BASE = process.env.FOREST_GAME_URL ?? "http://localhost:6191/";
 const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 interface Scene {
   readonly pair: number;
-  readonly fixture:
-    "sceneA" | "sceneB" | "sceneC" | "sceneD" | "sceneE" | "sceneF";
+  readonly fixture: string;
   /**
    * Zoom-in steps from the camera the host frames the explored area with
    * (step 0.75 on this board and viewport): 1 gives zoom 1, 2 gives 1.5.
@@ -36,7 +38,16 @@ interface Scene {
   readonly drag?: readonly [number, number];
 }
 
-const SCENES: readonly Scene[] = [
+/** The mountain-range scenes (bead pulp_wars-e9f). */
+const MOUNTAIN_SCENES: readonly Scene[] = [
+  { pair: 1, fixture: "sceneM1", zoomIn: 1 },
+  { pair: 2, fixture: "sceneM2", zoomIn: 1 },
+  { pair: 3, fixture: "sceneM3", zoomIn: 1, drag: [0, 60] },
+  { pair: 4, fixture: "sceneM4", zoomIn: 0 },
+  { pair: 5, fixture: "sceneM5", zoomIn: 1, drag: [0, 60] },
+];
+
+const FOREST_SCENES: readonly Scene[] = [
   { pair: 1, fixture: "sceneA", zoomIn: 2, drag: [190, 280] },
   { pair: 2, fixture: "sceneB", zoomIn: 1 },
   { pair: 3, fixture: "sceneC", zoomIn: 2, drag: [60, 250] },
@@ -49,7 +60,13 @@ const SCENES: readonly Scene[] = [
  * Replaces the running app with the real Ruleset 7 app view over a fixed
  * state (a read-only controller), with or without the composed forests.
  */
-function mountExpression(fixture: string, composedForests: boolean): string {
+function mountExpression(fixture: string, composed: boolean): string {
+  // The forest review compares the single clumps with the composed forests
+  // (mountains as they are); the mountain review compares the single
+  // mountains with the ranges (forests composed in both).
+  const options = MOUNTAINS
+    ? `{ composedMountains: ${composed} }`
+    : `{ composedForests: ${composed} }`;
   return `(async () => {
       const engine = await import('/src/engine/index.ts');
       const scenes = await import('/scripts/art/chibi/forest-review-scenes.ts');
@@ -77,7 +94,7 @@ function mountExpression(fixture: string, composedForests: boolean): string {
         exportSafeLog() { return null; },
         exportDebugBundle() { return { ok: false, reason: 'NO_ACTIVE_MATCH' }; },
       };
-      const boardHost = new CanvasBoardHostV7(document, { composedForests: ${composedForests} });
+      const boardHost = new CanvasBoardHostV7(document, ${options});
       const view = new Ruleset7DomAppView(document, document.querySelector('#app'), controller, { boardHost, settingsStorage: null, artSet: 'CHIBI' });
       globalThis.__FOREST_REVIEW__ = { boardHost, view };
     })()`;
@@ -302,7 +319,7 @@ async function main(): Promise<void> {
       mobile: false,
     });
     const only = process.env.FOREST_PAIRS?.split(",").map(Number);
-    for (const scene of SCENES) {
+    for (const scene of MOUNTAINS ? MOUNTAIN_SCENES : FOREST_SCENES) {
       if (only !== undefined && !only.includes(scene.pair)) continue;
       const before = path.join(OUT, `pair${scene.pair}-before.png`);
       const after = path.join(OUT, `pair${scene.pair}-after.png`);

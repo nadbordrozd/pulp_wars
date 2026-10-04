@@ -61,6 +61,13 @@ export function revealedV7(state: GameStateV7, window?: Window): GameStateV7 {
     .filter(
       (at) =>
         window === undefined ||
+        // A seat always sees its own cities.
+        state.cities.some(
+          (city) =>
+            city.ownerId === state.humanPlayerId &&
+            city.at.x === at.x &&
+            city.at.y === at.y,
+        ) ||
         (at.x >= window.x0 &&
           at.x <= window.x1 &&
           at.y >= window.y0 &&
@@ -202,3 +209,86 @@ export const sceneE = (): GameStateV7 =>
 /** F: an Undead capital, for the gloam territory ground under the trees. */
 export const sceneF = (): GameStateV7 =>
   aroundCapital(startStateV7(FOREST_SCENE_SEEDS_V7.a, "UNDEAD"), 3);
+
+// ----------------------------------------- mountain ranges (pulp_wars-e9f)
+
+/**
+ * The human capital's surroundings with Mines on two Mountains of its
+ * territory and copies of the starting unit standing on Mountains.
+ */
+export function minedV7(state: GameStateV7): GameStateV7 {
+  const capital = humanCapitalV7(state);
+  const city = state.cities.find((item) => same(item.at, capital));
+  const near = (tile: { at: CoordV7 }): number =>
+    Math.max(Math.abs(tile.at.x - capital.x), Math.abs(tile.at.y - capital.y));
+  const order = (a: { at: CoordV7 }, b: { at: CoordV7 }): number =>
+    near(a) - near(b) || a.at.y - b.at.y || a.at.x - b.at.x;
+  const mountains = state.board.tiles
+    .filter((tile) => tile.terrain === "MOUNTAIN" && tile.site === null)
+    .sort(order);
+  const mines = new Set(
+    mountains
+      .filter((tile) => tile.territoryCityId === city?.id)
+      .slice(0, 2)
+      .map((tile) => `${tile.at.x},${tile.at.y}`),
+  );
+  const standing = mountains.filter(
+    (tile) => !mines.has(`${tile.at.x},${tile.at.y}`),
+  );
+  const template = state.units.find(
+    (unit) => unit.ownerId === state.humanPlayerId,
+  );
+  const spots = [standing[1], standing[4], standing[8]].filter(
+    (tile) => tile !== undefined,
+  );
+  let nextId = Math.max(...state.units.map((unit) => Number(unit.id))) + 1;
+  return {
+    ...state,
+    units:
+      template === undefined
+        ? state.units
+        : [
+            ...state.units,
+            ...spots.map((tile) => ({
+              ...template,
+              id: nextId++ as typeof template.id,
+              at: tile.at,
+            })),
+          ],
+    board: {
+      ...state.board,
+      tiles: state.board.tiles.map((tile) =>
+        mines.has(`${tile.at.x},${tile.at.y}`)
+          ? { ...tile, improvement: "MINE" as const }
+          : tile,
+      ),
+    },
+  };
+}
+
+/**
+ * Seeds for the mountain scenes: seed 7 has the densest 12 x 8 window of
+ * Mountains of the first 80 seeds (58 cells); seed 77 has the most
+ * Mountains around the human capital (14 within two cells).
+ */
+export const MOUNTAIN_SCENE_SEEDS_V7 = { heavy: 7, capital: 77 };
+
+/** M1: a mountain-heavy 12 x 8 window. */
+export const sceneM1 = (): GameStateV7 =>
+  revealedV7(startStateV7(MOUNTAIN_SCENE_SEEDS_V7.heavy), {
+    x0: 4,
+    y0: 2,
+    x1: 15,
+    y1: 9,
+  });
+/** M2: Forest against Mountains (scene B). */
+export const sceneM2 = sceneB;
+/** M3: a capital among Mountains, with Mines and units on Mountains. */
+export const sceneM3 = (): GameStateV7 =>
+  aroundCapital(minedV7(startStateV7(MOUNTAIN_SCENE_SEEDS_V7.capital)), 3);
+/** M4: the whole map of the most mountainous seed. */
+export const sceneM4 = (): GameStateV7 =>
+  revealedV7(startStateV7(MOUNTAIN_SCENE_SEEDS_V7.heavy));
+/** M5: an Ice Folk capital among Mountains, for Snow. */
+export const sceneM5 = (): GameStateV7 =>
+  aroundCapital(startStateV7(MOUNTAIN_SCENE_SEEDS_V7.capital, "ICE_FOLK"), 3);

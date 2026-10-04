@@ -157,6 +157,7 @@ import {
 } from "./visual-direction-v7";
 import type { ChibiArtRegistryV7 } from "../../assets/chibi-art-v7";
 import { CHIBI_FOREST_ART_SET_V7 } from "../../assets/chibi-forest-pieces-manifest";
+import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../assets/chibi-mountain-ranges-manifest";
 import {
   createChibiForestArtV7,
   type ChibiForestArtV7,
@@ -302,6 +303,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /** The Ice Folk Snow tiles, snow caps, rime and casings, built once. */
   readonly #iceFolkArt: IceFolkBoardArtV7;
   readonly #forestArt: { resolve(): ChibiForestArtV7 | null };
+  readonly #mountainArt: { resolve(): ChibiForestArtV7 | null };
   /** The Blizzard's slow ambient redraw (a timer, not every frame). */
   #blizzardTimer: number | null = null;
   /** The unit being shattered on the board, cased in ice until it bursts. */
@@ -374,12 +376,16 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
 
   /**
    * `composedForests: false` draws every Forest cell as its single clump
-   * (the look before bead pulp_wars-maw.3); only the forest art review uses
-   * it, for its "before" captures.
+   * (the look before bead pulp_wars-maw.3) and `composedMountains: false`
+   * every Mountain cell as its single mountain (before bead pulp_wars-e9f);
+   * only the art reviews use them, for their "before" captures.
    */
   constructor(
     documentRoot: Document,
-    options: { readonly composedForests?: boolean } = {},
+    options: {
+      readonly composedForests?: boolean;
+      readonly composedMountains?: boolean;
+    } = {},
   ) {
     this.#document = documentRoot;
     this.#glowCache = new BoardGlowCacheV7(documentRoot);
@@ -415,6 +421,15 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             environment: browserChibiRasterEnvironmentV7(documentRoot),
             redraw: () => this.#draw(),
             set: CHIBI_FOREST_ART_SET_V7,
+          });
+    // Composed mountain ranges (pulp_wars-e9f): the multi-tile range pieces.
+    this.#mountainArt =
+      options.composedMountains === false
+        ? { resolve: () => null }
+        : createChibiForestArtV7({
+            environment: browserChibiRasterEnvironmentV7(documentRoot),
+            redraw: () => this.#draw(),
+            set: CHIBI_MOUNTAIN_ART_SET_V7,
           });
   }
 
@@ -1498,6 +1513,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         // The Dwarf revision: the Dig In earthwork rasters.
         dwarfArt: this.#dwarfArt,
         forestArt: this.#forestArt,
+        mountainArt: this.#mountainArt,
         // The Candy revision: a Crashed unit's faded sprite.
         candyDroop: (image) =>
           this.#candyDroopCache.resolve(image, CRASHED_SPRITE_SATURATION_V7),

@@ -32,6 +32,7 @@ import { resolveUnitFitOffset } from "./unit-fit-offset";
 import { validateChibiProduction } from "./chibi/pipeline";
 import { gloamGrassProblems } from "./faction-buildings/gloam-grass";
 import { forestPieceProblems } from "./chibi-forest-pieces";
+import { mountainRangeProblems } from "./chibi-mountain-ranges";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
 type Stage = "sample" | "batch";
@@ -692,6 +693,9 @@ async function main(): Promise<void> {
       // The composed forest pieces (pulp_wars-maw.3) are derived from the
       // accepted Forest clumps the same way.
       ...(await forestPieceProblems(ROOT)),
+      // The composed mountain ranges (pulp_wars-e9f): derived from the
+      // recorded PixelLab candidates.
+      ...(await mountainRangeProblems(ROOT)),
     ];
     if (chibiProblems.length > 0)
       throw new Error(

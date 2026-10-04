@@ -5,6 +5,9 @@ design on 2026-10-04 after before/after screenshots, with two conditions: the
 forest must keep the softer, background look of the old Forest sprite, and
 there must be a few more piece variants.
 
+Mountains use the same packing and drawing for ranges: see
+[COMPOSED_TERRAIN.md](COMPOSED_TERRAIN.md).
+
 In the CHIBI art set a group of Forest cells is drawn as one forest. Before,
 every Forest cell drew its own clump of trees, so a wood read as a grid of
 clumps. The LEGACY art set is unchanged. No rule and no map generation

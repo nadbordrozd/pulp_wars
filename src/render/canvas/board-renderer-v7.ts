@@ -269,6 +269,7 @@ import {
   drawChibiForestFloorV7,
   drawChibiForestGladeV7,
   type ChibiForestArtV7,
+  type ChibiComposedTerrainV7,
   type ChibiForestCellV7,
   type ChibiForestSnowV7,
 } from "./chibi-forest-v7";
@@ -1669,6 +1670,13 @@ export function drawBoardV7(input: {
    */
   readonly forestArt?: { resolve(): ChibiForestArtV7 | null };
   /**
+   * Composed CHIBI mountain ranges (bead pulp_wars-e9f,
+   * docs/art/COMPOSED_TERRAIN.md): the multi-tile range pieces, drawn with
+   * the machinery of the composed forests. Omitted, or while it loads,
+   * every Mountain cell draws its single mountain as before.
+   */
+  readonly mountainArt?: { resolve(): ChibiForestArtV7 | null };
+  /**
    * The Mind Control revision: the control halo's pulse clock in ms (0, the
    * default, and reduced motion draw it static in the faction colour).
    */
@@ -1917,14 +1925,23 @@ export function drawBoardV7(input: {
   const forestArt =
     chibiArt === undefined ? null : (input.forestArt?.resolve() ?? null);
   const forestCells =
-    forestArt === null ? null : forestCellsOf(input.plan, forestArt);
+    forestArt === null ? null : forestCellsOf(input.plan, forestArt, "FOREST");
   if (forestCells !== null)
     for (const key of forestCells.keys()) splitCells.add(key);
+  // Composed mountain ranges (pulp_wars-e9f), the same way.
+  const mountainArt =
+    chibiArt === undefined ? null : (input.mountainArt?.resolve() ?? null);
+  const mountainCells =
+    mountainArt === null
+      ? null
+      : forestCellsOf(input.plan, mountainArt, "MOUNTAIN");
+  if (mountainCells !== null)
+    for (const key of mountainCells.keys()) splitCells.add(key);
   const iceFolkArt = input.iceFolkArt;
   // Composed forests on Snow: caps go on cell by cell, so a piece that
   // spans a Snow border is capped only over its Snow cells.
   const forestSnowCells = new Set<string>();
-  if (forestCells !== null)
+  if (forestCells !== null || mountainCells !== null)
     for (const entry of input.plan.entries)
       if (entry.kind === "TERRAIN" && entry.snow !== undefined)
         forestSnowCells.add(coordKey(entry.at));
@@ -2065,6 +2082,37 @@ export function drawBoardV7(input: {
           forestArt !== null && layers !== undefined
             ? (forestCells?.get(coordKey(entry.at)) ?? null)
             : null;
+        // A composed Mountain cell (pulp_wars-e9f): its ground is drawn as
+        // before; a range piece replaces the single mountain's body.
+        const mountainCell: ChibiForestCellV7 | null =
+          mountainArt !== null && layers !== undefined
+            ? (mountainCells?.get(coordKey(entry.at)) ?? null)
+            : null;
+        if (
+          mountainArt !== null &&
+          mountainCell !== null &&
+          !mountainCell.clearing &&
+          pass !== "GROUND"
+        ) {
+          if (pass === "TALL_BODY")
+            drawChibiForestBodiesV7(
+              context,
+              { camera, devicePixelRatio, sceneAlpha },
+              mountainArt,
+              entry.at,
+              mountainCell,
+              forestSnow,
+            );
+          else
+            drawChibiForestBandsV7(
+              context,
+              { camera, devicePixelRatio, sceneAlpha },
+              mountainArt,
+              mountainCell,
+              forestSnow,
+            );
+          continue;
+        }
         const forestFrame = { camera, devicePixelRatio, sceneAlpha };
         if (
           forestArt !== null &&
@@ -5902,26 +5950,36 @@ export function farmPresentationV7(
  * The composed-forest roles of a plan's cells, packed once per plan and
  * piece set (a plan is drawn many times: every animation frame redraws it).
  */
-const forestCellsByPlan = new WeakMap<
+const composedCellsByPlan = new WeakMap<
   BoardRenderPlanV7,
-  {
-    readonly art: ChibiForestArtV7;
-    readonly cells: ReadonlyMap<string, ChibiForestCellV7>;
-  }
+  Map<
+    ChibiComposedTerrainV7,
+    {
+      readonly art: ChibiForestArtV7;
+      readonly cells: ReadonlyMap<string, ChibiForestCellV7>;
+    }
+  >
 >();
 
 function forestCellsOf(
   plan: BoardRenderPlanV7,
   art: ChibiForestArtV7,
+  terrain: ChibiComposedTerrainV7,
 ): ReadonlyMap<string, ChibiForestCellV7> {
-  const cached = forestCellsByPlan.get(plan);
+  let byTerrain = composedCellsByPlan.get(plan);
+  if (byTerrain === undefined) {
+    byTerrain = new Map();
+    composedCellsByPlan.set(plan, byTerrain);
+  }
+  const cached = byTerrain.get(terrain);
   if (cached?.art === art) return cached.cells;
   const cells = chibiForestCellsV7(
     plan.entries,
     art.variants,
     art.clumps.length,
+    terrain,
   );
-  forestCellsByPlan.set(plan, { art, cells });
+  byTerrain.set(terrain, { art, cells });
   return cells;
 }
 

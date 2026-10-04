@@ -167,6 +167,16 @@ them. `chibi-forest-4` and `-5` are pipeline-only stamp sources, like
 `src/assets/chibi-art-manifest.ts`. See
 [COMPOSED_FORESTS.md](COMPOSED_FORESTS.md).
 
+### Composed mountain ranges
+
+A group of Mountain cells is drawn as ranges of multi-tile pieces (bead
+`pulp_wars-e9f`), packed and drawn like the composed forests. The range art
+is generated: `scripts/art/chibi-mountain-ranges.ts` has its own recipes and
+records (`scripts/art/chibi/mountain-ranges/`), because the batch pipeline
+generates at a class canvas and has no style-image endpoint. It derives 11
+masters under `public/assets/chibi/mountains/`, and `art:validate`
+re-derives them. See [COMPOSED_TERRAIN.md](COMPOSED_TERRAIN.md).
+
 ### Runtime ground fringe
 
 The rocky Mountain ground is a square tile. Bead `pulp_wars-6gd.7` softens

@@ -9,6 +9,7 @@ import {
   forestPlacementCellsV7,
   forestShapeRectsV7,
   packForestBlockV7,
+  packRangeCoverV7,
   type ForestPlacementV7,
   type ForestShapeV7,
   type ForestVariantCountsV7,
@@ -60,6 +61,13 @@ const CLEARING_KINDS: ReadonlySet<string> = new Set([
   "FIELD_DEFENSE",
 ]);
 
+/**
+ * The terrains drawn as composed pieces: Forest (bead pulp_wars-maw.3) and
+ * Mountain ranges (bead pulp_wars-e9f). A Mined Mountain is its own terrain
+ * subject, so a Mine's cell is never part of a range.
+ */
+export type ChibiComposedTerrainV7 = "FOREST" | "MOUNTAIN";
+
 interface ForestPlanEntry {
   readonly kind: string;
   readonly at: { readonly x: number; readonly y: number };
@@ -105,15 +113,21 @@ export function chibiForestCellsV7(
   entries: readonly ForestPlanEntry[],
   variants: ForestVariantCountsV7,
   clumpCount: number,
+  terrain: ChibiComposedTerrainV7 = "FOREST",
 ): ReadonlyMap<string, ChibiForestCellV7> {
+  const subject = `TERRAIN:${terrain}`;
   const forest = new Set<string>();
   const featured = new Set<string>();
   const resources = new Set<string>();
   for (const entry of entries) {
-    if (entry.kind === "RESOURCE") resources.add(key(entry.at.x, entry.at.y));
+    // A resource opens a glade in a Forest; on a Mountain (Ore) the cell
+    // keeps its single mountain, like any other feature.
+    if (entry.kind === "RESOURCE")
+      (terrain === "FOREST" ? resources : featured).add(
+        key(entry.at.x, entry.at.y),
+      );
     if (entry.kind === "TERRAIN") {
-      if (entry.artSubject === "TERRAIN:FOREST")
-        forest.add(key(entry.at.x, entry.at.y));
+      if (entry.artSubject === subject) forest.add(key(entry.at.x, entry.at.y));
     } else if (CLEARING_KINDS.has(entry.kind))
       featured.add(key(entry.at.x, entry.at.y));
   }
@@ -126,14 +140,31 @@ export function chibiForestCellsV7(
   const pieceOf = new Map<string, ForestPlacementV7>();
   const bodies = new Map<string, ForestPlacementV7[]>();
   const bands = new Map<string, ChibiForestBandV7[]>();
-  const blocks = new Set<string>();
-  for (const at of forest) {
-    const [x = 0, y = 0] = at.split(",").map(Number);
-    const bx = Math.floor(x / 2);
-    const by = Math.floor(y / 2);
-    if (blocks.has(key(bx, by))) continue;
-    blocks.add(key(bx, by));
-    for (const piece of packForestBlockV7(packable, bx, by, variants)) {
+  // Forests pack per 2 x 2 block (local); mountain ranges take a
+  // region-wide cover, so ridges line up into long ranges.
+  const placements: ForestPlacementV7[] = [];
+  if (terrain === "MOUNTAIN")
+    placements.push(
+      ...packRangeCoverV7(
+        [...forest]
+          .map((at) => at.split(",").map(Number) as [number, number])
+          .filter(([x, y]) => packable(x, y)),
+        variants,
+      ),
+    );
+  else {
+    const blocks = new Set<string>();
+    for (const at of forest) {
+      const [x = 0, y = 0] = at.split(",").map(Number);
+      const bx = Math.floor(x / 2);
+      const by = Math.floor(y / 2);
+      if (blocks.has(key(bx, by))) continue;
+      blocks.add(key(bx, by));
+      placements.push(...packForestBlockV7(packable, bx, by, variants));
+    }
+  }
+  {
+    for (const piece of placements) {
       const cells = forestPlacementCellsV7(piece);
       for (const [cx, cy] of cells) pieceOf.set(key(cx, cy), piece);
       const last = cells[cells.length - 1];
@@ -161,6 +192,8 @@ export function chibiForestCellsV7(
       }
     }
   }
+  const ridge = (piece: ForestPlacementV7): boolean =>
+    piece.shape === "2x1" || piece.shape === "2x2";
   const pick = (x: number, y: number, salt: number): number =>
     clumpCount <= 0 ? 0 : forestHashV7(x, y, salt, 0x3d) % clumpCount;
   for (const at of forest) {
@@ -181,10 +214,15 @@ export function chibiForestCellsV7(
         clumpCount > 0 &&
         own !== undefined &&
         east !== undefined &&
-        east !== own
+        east !== own &&
+        // A range joins only where two ridges meet end to end.
+        (terrain === "FOREST" || (ridge(own) && ridge(east)))
           ? pick(x, y, 1)
           : null,
+      // Ranges join along a row only: a foothill between two rows would
+      // stand in front of the northern range's foot.
       northSeam:
+        terrain === "FOREST" &&
         clumpCount > 0 &&
         own !== undefined &&
         north !== undefined &&
