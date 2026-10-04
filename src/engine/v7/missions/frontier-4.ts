@@ -9,10 +9,14 @@ import type { MissionDefinitionV7 } from "./types";
  * Naval branch is forbidden, so the isthmus is the only way in. The Undead
  * `GUARD` the gate with a garrison of four while the rest of their army
  * plays `NORMAL`. The choice is Human or Goblin only: a Martian flyer or a
- * Dwarf Mole would bypass the isthmus. These are the design's numbers (the
- * capital's level-4 reward is Boom: its footprint cannot hold the nine
- * harvest records Treasury would need); the headless proxy never breaches
- * the isthmus, so its band is argued in CAMPAIGN.md section 8.3.
+ * Dwarf Mole would bypass the isthmus.
+ *
+ * Revision 2 (`pulp_wars-68k.6`, CAMPAIGN.md section 8.5) is the design's
+ * layout and economy (the capital's level-4 reward is Boom: its footprint
+ * cannot hold the nine harvest records Treasury would need) with a siege
+ * the headless proxy can win: Sawmilling is forbidden, so neither side
+ * builds siege units; you start with two (Catapults, or Rocket Carts), and
+ * the gate's fifth defender is a Skeleton, not a Lich.
  *
  * ```text
  *      x 0123456789ABCDEF
@@ -36,7 +40,7 @@ import type { MissionDefinitionV7 } from "./types";
  */
 export const FRONTIER_4_V7: MissionDefinitionV7 = {
   id: "FRONTIER_4",
-  revision: 1,
+  revision: 2,
   size: 16,
   seed: 20261104,
   terrain: [
@@ -106,6 +110,9 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 4, y: 8 } },
         { role: "RAIDER", at: { x: 4, y: 7 } },
         { role: "FIGHTER", at: { x: 3, y: 3 }, home: 1 },
+        // The siege train: the only siege units of the mission.
+        { role: "CATAPULT", at: { x: 2, y: 8 } },
+        { role: "CATAPULT", at: { x: 3, y: 7 } },
       ],
       // The gate, seen across the water.
       reveal: { radius: 2, rects: [{ x0: 7, y0: 6, x1: 12, y1: 10 }] },
@@ -117,7 +124,6 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
         "GATHERING",
         "HUNTING",
         "FORESTRY",
-        "SAWMILLING",
         "DRILL",
         "FORTIFICATION",
         "ADMINISTRATION",
@@ -133,7 +139,7 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
         { role: "GUARD", at: { x: 10, y: 7 }, home: 1 },
         { role: "GUARD", at: { x: 10, y: 8 }, home: 1 },
         { role: "GUARD", at: { x: 10, y: 9 }, home: 1 },
-        { role: "CATAPULT", at: { x: 11, y: 7 }, home: 1 },
+        { role: "FIGHTER", at: { x: 11, y: 7 }, home: 1 },
         { role: "FIGHTER", at: { x: 11, y: 8 }, home: 1 },
         { role: "RAIDER", at: { x: 12, y: 12 }, home: 2 },
       ],
@@ -146,6 +152,13 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
       },
     },
   ],
-  forbiddenTechnologies: ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"],
+  // The Naval branch (the isthmus is the only way in) and Sawmilling (no
+  // Catapult, Rocket Cart, or Lich is trained; the Sawmill goes with it).
+  forbiddenTechnologies: [
+    "SHORECRAFT",
+    "NAVIGATION",
+    "NAVAL_ENGINEERING",
+    "SAWMILLING",
+  ],
   objective: { kind: "DOMINATION" },
 };

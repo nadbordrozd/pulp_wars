@@ -266,6 +266,8 @@ describe("source audits", () => {
       "src/ai/v7-endgame.ts": 1,
       // Campaign route map (seat-level).
       "src/ai/v7-campaign.ts": 1,
+      // `pulp_wars-68k.6`: the chokepoint plan's land (the campaign map).
+      "src/ai/v7-chokepoint.ts": 1,
       // Road corridor, naval-plan land components, Sight gain.
       "src/ai/v7.ts": 3,
       // BUILD_MINE's technology.

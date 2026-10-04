@@ -354,7 +354,10 @@ An AI seat of a mission plays its directive (`RUSH`, `HOLD`, `GUARD`;
 headless matches exactly as in the browser: the directive is read from the
 public view inside the Normal policy, so `runAiMatchV7`, the CLI, and the
 browser controller need no switch. The hidden fixtures `TEST_RUSH`,
-`TEST_HOLD`, and `TEST_GUARD` are runnable like `TEST_GROUNDS`:
+`TEST_HOLD`, and `TEST_GUARD`, and the siege fixture `TEST_NECK`
+(`pulp_wars-68k.6`,
+[Greedy Normal AI](NORMAL_AI.md#siege-of-a-single-file-front-pulp_wars-68k6)),
+are runnable like `TEST_GROUNDS`:
 
 ```bash
 npm run headless -- match --ruleset pulp-wars-poc-7r38 --map-type mission --mission TEST_HOLD --max-rounds 20

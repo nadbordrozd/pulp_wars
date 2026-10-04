@@ -58,7 +58,14 @@ enemy city) and walks the land route to it, in every match. The second pass
 [summarized below](#second-pass-savings-hunts-and-sieges-pulp_wars-9s08):
 savings for the Chivalry-tier unit and Chivalry, Spitters, hunts of
 high-value units, sieges of a defended center, the Tractor Beam, and the
-Mammoth.
+Mammoth. The siege of a single-file front (`pulp_wars-68k.6`,
+`src/ai/v7-chokepoint.ts`) is
+[summarized below](#siege-of-a-single-file-front-pulp_wars-68k6): where the
+only land route to the nearest enemy city is a one-tile corridor under a
+fortified position, one melee unit holds its head, the siege units fire
+from tiles that do not block the lane, all fire goes to one defender, and
+the seat commits at odds it otherwise refuses once the defender is wounded
+or its own Coins pile up; a board without such a front decides as before.
 Revision 12 adds a free opening research
 choice (`src/ai/v7-opening.ts`: a deterministic score of the explored tiles
 within Chebyshev 2 of the original capital, researched first on the opening
@@ -2416,6 +2423,183 @@ directive disabled (`NORMAL`); no run had a policy error or a stall.
 
 A garrison that dies is replaced by the next unit in the choice order, which
 has to walk in; a replacement cannot enter tiles the enemy holds.
+
+## Siege of a single-file front (`pulp_wars-68k.6`)
+
+On the campaign mission "Bone Neck" (a one-tile isthmus three tiles long
+under a fortified gate) the policy never breached
+([campaign design](../product/CAMPAIGN.md) section 8.3): it attacks only at
+favourable odds, so Guards and Zombies facing each other across a one-tile
+front never engaged, and an own Catapult or Guard parked on the isthmus
+corked the only path for the rest of the army. The policy now besieges such
+a position (`src/ai/v7-chokepoint.ts` and the `chokepoint` helpers of
+`src/ai/v7.ts`), for every faction and in every match. It reads only public
+facts (explored tiles and their territory owner, cities on explored tiles,
+visible units, the viewer's Coins) and adds no PRNG use, elapsed-time input,
+or work units.
+
+**The front.** A chokepoint front exists for a viewer when
+
+- every explored land route from every own city center to its nearest known
+  hostile city (by land-route steps, then city ID) passes through the same
+  run of at least two consecutive tiles, each of which alone separates the
+  cities (the **corridor**; the land is the campaign plan's, units are not
+  walls);
+- the corridor's far end is at least two tiles from that city's center (a
+  corridor that opens onto the center itself is a city assault, which the
+  ordinary policy plays); and
+- a fortified position holds it: visible hostile land units stand on the
+  corridor or within three tiles of its far end on the target's side (the
+  **garrison**), and at least one of them stands in its owner's territory.
+
+The corridor is ordered from the home side. Its **head** is the last
+corridor tile with no hostile unit on it or behind it. The **holders** are
+the garrison units on the corridor or next to its far end (the **mouth**);
+with no holder left the mouth is **open**. The **apron** is the home-side
+land next to the entrance, the **yard** the home-side land within two tiles
+of it, and the **lane's tail** the apron tile nearest the own cities
+(straight behind the entrance before a diagonal one). With several such
+corridors on the way, the one nearest the target that is held is the front.
+The plan is null without a front, every rule below is gated on it, and so a
+position without one keeps its decision exactly.
+
+**Unit classes.** A melee unit with Defense 2 or more is durable (`HEAD`),
+any other melee unit `MELEE`, a unit that hits from distance 2 or more
+`RANGED` (a Catapult, a Marksman), and a support unit (a Captain) or a unit
+that does not attack `OTHER`. A unit is fit at half its HP or more.
+
+**The lane.** These refuse a Move (it is no candidate):
+
+- A support unit stays off the corridor until the column is through the
+  open mouth.
+- A siege unit takes a corridor tile only behind a screen: an own melee
+  unit ahead of it on the corridor, or the column beyond the mouth. Nothing
+  has to pass it there, so it does not block the lane. It never takes the
+  lane's tail.
+- A melee unit below half its HP does not enter or advance while the mouth
+  is held.
+- A melee unit takes a tile with no own melee unit ahead of it (it holds or
+  takes the head) at any time. It follows the column only when the lane is
+  not needed by the siege (the mouth is open, or no own siege unit stands
+  on the corridor or within four steps of the entrance) and the unit ahead
+  is not a wounded head on its way out. With the siege on, one melee unit
+  holds the head and the lane behind it is the siege units'.
+- The apron (when it has more than one tile): the lane's tail is for melee
+  units only, and with the siege on and the mouth held melee units stay off
+  the other apron tiles, which are the siege units' way in and firing
+  tiles. Then also at most three melee units form up in the yard; the rest
+  of the army waits behind, so that a siege unit and a unit leaving the
+  corridor can move.
+- No other unit ends a Move on the firing tile a siege unit walks to.
+
+**Lane moves**, priority 1105 (above routine moves at 700–850, below the
+fire) unless stated:
+
+- **Rotation.** A wounded head (below half its HP, no fit melee unit ahead)
+  withdraws toward home at 945, just above an urgent Recover (930), while
+  the mouth is held. In single file it can only do so while the tile behind
+  it is free: a column behind it holds it in place, and its relief does not
+  step into its way out.
+- A siege unit with no melee unit ahead of it leaves the corridor once a
+  fit durable unit is staged behind it (until then it fires); a support
+  unit leaves it. A unit on an apron tile the lane rule does not give it
+  makes room. At 945 so do a unit on the apron when the unit on the
+  entrance has to leave and every apron tile is taken (the weakest goes),
+  and a melee unit on the firing tile a siege unit walks to.
+- **Firing tiles.** A siege unit walks to the tile within four tiles of it
+  that the lane rule gives it, outside visible lethal reach, with the most
+  targets in range (the holders, or the garrison through an open mouth), a
+  tile off the corridor before a corridor tile, then the nearest. The walk
+  goes round the lane's tail. A tile with two more targets in range than
+  its own is taken before this turn's shot (1113).
+- **The column.** A melee unit steps onto the corridor, along it, and from
+  its far end into the mouth, the strongest first (HP times the sum of
+  Attack and Defense): outside visible lethal reach while the mouth is
+  held, at once through the open mouth (wounded units too) or once the
+  attrition clock has struck.
+
+**Fire and commitment.**
+
+- **Focus.** Among the holders an own unit can attack this turn, the focus
+  is the one the unanswered own attacks on offer leave with the least HP
+  (then the least HP, then the lowest ID). A unit that has the focus on
+  offer does not attack another holder, except to kill it. An unanswered
+  attack on the focus takes priority 1112, so the shots come first.
+- **Commitment.** A melee attack on the focus that the policy refuses as
+  harmful is made (priority 1108) when the attacker survives, no unanswered
+  own attack on the target is still on offer, and either the target has at
+  most half its HP (the siege fire has done its work) or the attrition
+  clock has struck and this turn's surviving attackers together out-damage
+  the target's idle recovery.
+- **The attrition clock.** The policy has no memory, so it cannot count the
+  turns of a stalemate. It reads the treasury instead: a seat that still
+  has something to buy spends its Coins every turn, and a seat stuck at a
+  front fills its unit capacity and its Coins pile up. With 30 unspent
+  Coins the siege turns into an assault: the head advances into lethal
+  reach, siege units take firing tiles in lethal reach, and the commitment
+  above applies. The Coins replace what the assault loses.
+
+**Production.** At a front the seat's savings goal
+([second pass](#second-pass-savings-hunts-and-sieges-pulp_wars-9s08)) is
+its siege unit (`CATAPULT` role), or the technology one step away, while it
+has fewer than three siege units and the match does not forbid that
+technology; siege roles get +24 in the city's production choice while the
+seat is short of them, and every melee role +3 per half-unit of Attack (a
+breach needs units that hit: Guards do 2 damage to a fortified Zombie and
+take 9).
+
+**Switch.** `setChokepointPolicyOptionsV7({ siege, offSeats })` (tests and
+headless harnesses only) turns the siege off for every seat or for the
+listed seats: the policy before this change, for the head-to-head.
+
+**Tests.** `tests/unit/ruleset-v7-chokepoint-ai.test.ts` plays the hidden
+fixture mission `TEST_NECK` (`src/engine/v7/missions/test-neck.ts`: two
+shores joined by a neck two tiles long, the mouth fortified and in the
+Undead capital's territory): the detection (the corridor, the head, the
+holders, the open mouth, no front for a skirmish on the neck, on an open
+board, or with the switch off, and the isthmus of Bone Neck), the lane (a
+siege unit out of the corridor until screened and off the tail, the lane
+and the apron kept for the siege units, the strongest unit first), the
+rotation, the focus, the commitment, an open-board match decided exactly as
+without the siege, and a match on the neck without a policy error or stall.
+
+### Siege measurements
+
+Scratch harnesses, not checked in; every match is deterministic.
+
+**Ordinary boards decide exactly as before.** 31 headless matches at
+`pulp-wars-poc-7r37` (before the Candy revision; the mission playtest was rerun at `7r38` with the same results), each played with the siege on and with the switch off
+(up to 60 rounds): Dry Land, Pangea, Continents, Lakes, and Archipelago at
+11 x 11 with five faction pairings each (Human/Undead, Goblin/Dinosaur,
+Martian/Ice Folk, Dwarf/Human, Undead/Goblin; seeds 1–5), a three-seat
+14 x 14 match per map type (Human, Goblin, Undead; seed 7), and a
+Cooperative three-seat Continents match (Human, Martian, Dwarf; seed 9).
+All 31 have equal command, event, and final-state hashes, and a replay of
+each match found a front at none of its decisions. So a head-to-head of the
+new policy against the old one on these boards is the old policy against
+itself: the 24 head-to-head matches on Lakes and Archipelago (each board
+with the siege on for one seat only, both ways) are the old matches, move
+for move. The campaign missions 1–3 have no front either: their 30
+playtest runs (10 proxy seeds each) end in the same final-state hash with
+the siege on and off.
+
+Two earlier definitions of the front did change ordinary boards and were
+dropped. Without the "garrison in its own territory" and "not onto the
+target center" conditions, three of the same 31 matches had a front (at 25,
+31, and 306 decisions) and differed; in one (Lakes, Dwarf against Human,
+seed 4) a mid-map skirmish on a mountain pass that opens onto the Dwarf
+capital counted as a front for five rounds, the Human army formed up
+instead of storming the capital, and the seat that had won in round 39 had
+not won by round 80. With the two conditions that match is identical again.
+
+**Bone Neck.** [Campaign design section 8.5](../product/CAMPAIGN.md#85-68k6-normal-ai-siege-of-a-single-file-front)
+has the playtest of mission 4 before and after and the mission's revision 2.
+In short: on the design's numbers the siege alone does not breach (0 of 20:
+a Lich behind the gate shoots first at every siege tile); on revision 2
+(no Lich, two starting siege units) the Human proxy wins 3 of 10 runs with
+the siege and none without it, and the Goblin proxy 4 of 10 with it and 5
+of 10 without it (the Goblin swarm does not need the siege; the difference
+is within the noise of ten runs).
 
 ## Map curiosities (`pulp_wars-737.4`)
 

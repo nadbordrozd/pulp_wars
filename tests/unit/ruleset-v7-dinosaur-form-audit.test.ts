@@ -571,8 +571,12 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // embarked unit is not), the Engineer's target value, the Dwarf attack
     // and Move rules, and the mound and bomb danger take land-form units (an
     // Egg's nest tile too, so Eggs are not laid in an eruption ring).
+    // `pulp_wars-68k.6`: the siege of a single-file front plays land-form
+    // units only: the unit class (an Egg and an embarked unit are `OTHER`
+    // and stay off the lane) and the lane Moves take a land-form mover.
     "src/ai/v7-dwarf.ts": 4,
     "src/ai/v7-campaign.ts": 1,
+    "src/ai/v7-chokepoint.ts": 1,
     // `pulp_wars-737.4`: a sole city defender is a land-form unit (an Egg
     // lies next to a center, never on one, and an embarked unit or a boat
     // defends no center).
@@ -582,7 +586,7 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/ai/v7-ice-folk.ts": 7,
     "src/ai/v7-martian.ts": 2,
     "src/ai/v7-undead.ts": 1,
-    "src/ai/v7.ts": 21,
+    "src/ai/v7.ts": 22,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

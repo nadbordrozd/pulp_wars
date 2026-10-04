@@ -12,6 +12,7 @@ import { FRONTIER_3_V7 } from "./frontier-3";
 import { FRONTIER_4_V7 } from "./frontier-4";
 import { TEST_GROUNDS_V7 } from "./test-grounds";
 import { TEST_GUARD_V7, TEST_HOLD_V7, TEST_RUSH_V7 } from "./test-directives";
+import { TEST_NECK_V7 } from "./test-neck";
 import type { MissionDefinitionV7, MissionSeatV7 } from "./types";
 
 export type * from "./types";
@@ -28,6 +29,8 @@ export const MISSION_REGISTRY_V7: readonly MissionDefinitionV7[] = deepFreeze([
   TEST_RUSH_V7,
   TEST_HOLD_V7,
   TEST_GUARD_V7,
+  // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
+  TEST_NECK_V7,
   // Chapter One, "The Hollow Frontier" (`pulp_wars-68k.4`, section 6).
   FRONTIER_1_V7,
   FRONTIER_2_V7,

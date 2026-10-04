@@ -16,6 +16,19 @@
 export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
   {
     "src/ai/v7-campaign.ts::campaignPlanForPolicyV7": "BOARD",
+    // `pulp_wars-68k.6`: the siege of a single-file front reads the board:
+    // who stands on the corridor, the apron, the yard, and the mouth. A
+    // burrowed unit stands on none of them and takes no command.
+    "src/ai/v7-chokepoint.ts::chokepointApronJammedV7": "BOARD",
+    "src/ai/v7-chokepoint.ts::chokepointColumnBeyondV7": "BOARD",
+    "src/ai/v7-chokepoint.ts::chokepointOwnUnitAtV7": "BOARD",
+    "src/ai/v7-chokepoint.ts::chokepointPlanForPolicyV7": "BOARD",
+    "src/ai/v7-chokepoint.ts::chokepointReplacementStagedV7": "BOARD",
+    "src/ai/v7-chokepoint.ts::chokepointSiegeStagedV7": "BOARD",
+    "src/ai/v7-chokepoint.ts::chokepointYardFullV7": "BOARD",
+    "src/ai/v7.ts::chokepointClaimedSlotsV7": "BOARD",
+    "src/ai/v7.ts::chokepointSiegeShortfallV7": "BOARD",
+    "src/ai/v7.ts::chokepointSlotV7": "BOARD",
     // Bead pulp_wars-ic8: the Gallery's demo board, a fresh authored
     // state on which nothing is burrowed before its cue plays.
     "src/render/gallery-demo-v7.ts::buildGalleryDemoSceneV7": "BOARD",

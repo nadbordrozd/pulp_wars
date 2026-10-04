@@ -143,9 +143,10 @@ describe("Chapter One data", () => {
         want.directive,
       );
       expect(() => validateMissionDirectivesV7(definition)).not.toThrow();
-      // The whole Naval branch is forbidden everywhere; nothing else.
+      // The whole Naval branch is forbidden everywhere; nothing else, except
+      // Sawmilling in mission 4 (`pulp_wars-68k.6`: no siege unit is built).
       expect([...definition.forbiddenTechnologies].sort()).toEqual(
-        [...NAVAL].sort(),
+        [...NAVAL, ...(id === "FRONTIER_4" ? ["SAWMILLING"] : [])].sort(),
       );
     }
     // Mission 3 holds the north to the ridge until the new moon.

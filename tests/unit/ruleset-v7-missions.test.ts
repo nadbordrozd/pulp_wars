@@ -89,10 +89,15 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "521f989c0cf7c0513e6c506103d7a5b34b2cb0c23ee5e61b9e86a714605ab76d",
   "FRONTIER_3@1:GOBLIN":
     "88df5acb386704a039494aa57ed41a63b3e03ece60479bcac595853b867b4f94",
-  "FRONTIER_4@1:ORIGINAL":
-    "f4663ed1c325ed8660a8de1ee0dac655b36b65e5b4dfe7fcddabab2f7251bbe0",
-  "FRONTIER_4@1:GOBLIN":
-    "20e77d0b87274ff9e53cd5493f14ae24f4459d4fc4d6221a654e836fd0c2d114",
+  // Revision 2 (`pulp_wars-68k.6`): Sawmilling forbidden, two starting siege
+  // units for you, a Skeleton in the Lich's place.
+  "FRONTIER_4@2:ORIGINAL":
+    "d4f54e0518201630107bb31217a250be10b4f48b236470454be5679d2538e1cb",
+  "FRONTIER_4@2:GOBLIN":
+    "bd8061605fc50d4ef4f8450993dbf9cacade241949b9d1644874828f0c42adfe",
+  // The siege fixture of the Normal AI (`pulp_wars-68k.6`).
+  "TEST_NECK@1:ORIGINAL":
+    "12888fadf662936bf1658b22795874f9ec6d27caa67d6dcee32a8fe4fa5083e4",
 };
 
 function missionStateHash(state: GameStateV7): string {
@@ -154,10 +159,12 @@ const PRE_CURIOSITY_MISSION_HASHES: Readonly<Record<string, string>> = {
     "97eaffcff5ad0bd5bec8a59ebf2f38b6cf2819d243b5dc325d2956b85c146d30",
   "FRONTIER_3@1:GOBLIN":
     "0e4d7ec0d44c70139bf1dd4b840dea8c25e70704219fb6e836c1b8b2e7775217",
-  "FRONTIER_4@1:ORIGINAL":
-    "e3b81c5eab12579c52d9d3bd5fd3601b1f79f2ba6ac0303363a51e91c248c934",
-  "FRONTIER_4@1:GOBLIN":
-    "f348bd3d951384837b8ba084709964030bf07b7aeb49c6b9ae21b7357a41925c",
+  "FRONTIER_4@2:ORIGINAL":
+    "83afb63b639d24c9eeb001181d65515a62ba632f00aa8bdaa45845f54fe966e0",
+  "FRONTIER_4@2:GOBLIN":
+    "8086b3eaccd3ed40218d8f022356072bf09368a9c54d594f94792deb425fee8c",
+  "TEST_NECK@1:ORIGINAL":
+    "2f66fa9637b24763b0193cd54cad72170fcf4912f8cf21d950c532a9da88bd02",
 };
 
 function preCuriosityMissionStateHash(state: GameStateV7): string {

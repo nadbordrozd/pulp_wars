@@ -111,7 +111,7 @@ export const CHAPTER_ONE_V7: CampaignChapterV7 = Object.freeze({
       hints: Object.freeze([
         "One way in: the isthmus.",
         "Catapults or Rocket Carts outrange the gate.",
-        "A Lich punishes a crowd on the isthmus.",
+        "Nobody builds siege engines here: keep yours alive.",
       ]),
       closing:
         "The tower falls. From its ashes a dry voice offers terms: 'Every army needs soldiers who never tire, Captain.'",

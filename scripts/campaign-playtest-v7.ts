@@ -24,6 +24,10 @@
  *   units)` stand in the zone. A dead garrison unit is replaced by one that
  *   has to walk in, and an enemy army in the zone keeps it out, so this is
  *   reported as the share of compliant End Turns (CAMPAIGN.md section 8.2).
+ *   An End Turn with a unit of yours in the zone is the breach itself, not
+ *   a failure of the directive (`pulp_wars-68k.6`: the proxy now breaches);
+ *   of the other End Turns at most 2% may fall short (a replacement on its
+ *   way in).
  *
  * Every run is independent and deterministic, so the results do not depend
  * on `--jobs`; wall-clock time goes to stderr only.
@@ -32,14 +36,18 @@
  *   npm run playtest:campaign -- [--seeds 20] [--first-seed 1] [--rate 0.15]
  *     [--max-rounds 80] [--missions FRONTIER_1,FRONTIER_2]
  *     [--factions ORIGINAL,GOBLIN] [--jobs N]
- *     [--output-dir docs/validation] [--no-write] [--strict] [--runs]
+ *     [--output-dir docs/validation] [--no-write] [--write] [--strict]
+ *     [--runs]
  *
  * Without `--no-write` it writes `CAMPAIGN_TEASER_PLAYTEST.json` and
  * `CAMPAIGN_TEASER_PLAYTEST.md` to the output directory (only for the
  * default full run of every chapter mission; a `--missions`, `--factions`,
- * or other parameter subset prints the summary instead). `--strict` exits non-zero when a band is missed or a
- * run ends in a policy error, stall, or exception. `--runs` lists every run
- * on stderr.
+ * or other parameter subset prints the summary instead). `--write` also
+ * writes them for a run of every chapter mission and faction with another
+ * `--seeds` or `--first-seed` (a smaller evidence run; the files state the
+ * parameters). `--strict` exits non-zero when a band is missed or a run
+ * ends in a policy error, stall, or exception. `--runs` lists every run on
+ * stderr.
  */
 import { spawn } from "node:child_process";
 import { writeFileSync } from "node:fs";
@@ -93,6 +101,11 @@ const RUSH_ARRIVAL_ROUND_V7 = 5;
 const NORMAL_PRESSURE_SHARE_V7 = 0.2;
 /** `HOLD`: a unit leaves the zone after `untilRound` in this share. */
 const HOLD_RELEASE_SHARE_V7 = 0.5;
+/**
+ * `GUARD`: the share of AI End Turns without a unit of yours in the zone
+ * that may fall short of the garrison (a replacement walking in).
+ */
+const GUARD_TRANSIENT_SHARE_V7 = 0.02;
 
 interface PlaytestCell {
   readonly mission: string;
@@ -537,7 +550,7 @@ function directiveSummary(group: readonly PlaytestEntry[]): {
   );
   return {
     check: {
-      rule: "at every AI End Turn at least min(garrison, AI land units) stand in the zone (transient shortfalls expected after a garrison death or with the enemy in the zone)",
+      rule: `at every AI End Turn at least min(garrison, AI land units) stand in the zone; an End Turn with a unit of yours in the zone does not count (the breach), and of the others at most ${String(GUARD_TRANSIENT_SHARE_V7 * 100)}% may fall short (a replacement walking in after a garrison death)`,
       endTurns,
       shortEndTurns: short,
       shortWithEnemyInZone: shortWithEnemy,
@@ -546,7 +559,9 @@ function directiveSummary(group: readonly PlaytestEntry[]): {
         (item) => (item.guardShortEndTurns ?? 0) === 0,
       ).length,
     },
-    ok: short === 0,
+    ok:
+      short - shortWithEnemy <=
+      GUARD_TRANSIENT_SHARE_V7 * (endTurns - shortWithEnemy),
   };
 }
 
@@ -630,6 +645,8 @@ function buildCells(): {
   readonly cells: readonly PlaytestCell[];
   readonly parameters: Record<string, unknown>;
   readonly full: boolean;
+  /** Every chapter mission and faction at the standard rate and cap. */
+  readonly chapter: boolean;
 } {
   const seeds = nonNegativeInteger("--seeds", 20);
   const firstSeed = nonNegativeInteger("--first-seed", 1);
@@ -673,6 +690,12 @@ function buildCells(): {
       factions === undefined &&
       seeds === 20 &&
       firstSeed === 1 &&
+      rate === 0.15 &&
+      maxRounds === 80 &&
+      selected.length === all.length,
+    chapter:
+      factions === undefined &&
+      seeds > 0 &&
       rate === 0.15 &&
       maxRounds === 80 &&
       selected.length === all.length,
@@ -753,7 +776,7 @@ async function runParallel(
 }
 
 async function runMain(): Promise<void> {
-  const { cells, parameters, full } = buildCells();
+  const { cells, parameters, full, chapter } = buildCells();
   const jobs = Math.max(
     1,
     nonNegativeInteger("--jobs", Math.max(1, availableParallelism() - 2)),
@@ -778,7 +801,9 @@ async function runMain(): Promise<void> {
         `${cellKey(entry)} ${entry.result} round ${String(entry.rounds)} proxy+${String(entry.proxyCaptures)} ai+${String(entry.aiCaptures)} ${JSON.stringify(entry.check)}\n`,
       );
   const text = markdown(summaries, parameters);
-  const write = full && !args.includes("--no-write");
+  const write =
+    (full || (chapter && args.includes("--write"))) &&
+    !args.includes("--no-write");
   if (write) {
     const directory = resolve(valueAfter("--output-dir") ?? "docs/validation");
     writeFileSync(

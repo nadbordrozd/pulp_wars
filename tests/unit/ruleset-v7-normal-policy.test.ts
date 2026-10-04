@@ -90,6 +90,8 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       "../engine/v7/view",
       "./v7-campaign",
       "./v7-endgame",
+      // pulp_wars-68k.6: the siege of a single-file front (public view only).
+      "./v7-chokepoint",
       "./v7-goblin",
       "./v7-dinosaur",
       "./v7-martian",

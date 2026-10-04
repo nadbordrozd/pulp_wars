@@ -10,7 +10,11 @@ content bead `68k.4` (the four Chapter One missions, `src/campaign/chapter-1.ts`
 and `npm run playtest:campaign`; its final numbers and tuning record are in
 [section 8.3](#83-68k4-content-the-four-teaser-missions-and-their-playtest)),
 and the campaign UI and progress bead `68k.5` (its notes are in
-[section 8.4](#84-68k5-campaign-ui-and-progress)) are implemented. The
+[section 8.4](#84-68k5-campaign-ui-and-progress)), and the siege bead
+`68k.6` (the Normal AI's siege of a single-file front and mission 4's
+revision 2; its notes are in
+[section 8.5](#85-68k6-normal-ai-siege-of-a-single-file-front)) are
+implemented. The
 implementation beads in
 [section 8](#8-implementation-beads) follow this document; where an
 implementation bead finds that this design and the code disagree, it stops
@@ -702,11 +706,21 @@ choice is limited to Human and Goblin: Martian flyers would cross the water
 and make the mission moot, so the choice list is part of the design, not
 only of the unlocks.
 
+**Revision 2** (`68k.6`,
+[section 8.5](#85-68k6-normal-ai-siege-of-a-single-file-front)) differs
+from this sketch in three numbers: **Sawmilling is forbidden too** (and the
+Undead do not start with it), so nobody trains a Catapult, Rocket Cart, or
+Lich; **you start with two siege units** (Catapults, or Rocket Carts for the
+Goblins) at `(2,8)` and `(3,7)`; and the gate's unit at `(11,7)` is a
+**Skeleton, not a Lich**. The layout, the cities, the Coins, the garrison
+of four, and the Field Defenses are the sketch's.
+
 **Briefing.** "The Ashen Marquis waits on the far shore of Bone Neck, a strip
 of land one road wide. No boat will cross those waters. Who leads the
 charge: Steele's Rangers or Grubnak's horde?" Hints: "One way in: the
-isthmus." "Catapults or Rocket Carts outrange the gate." "A Lich punishes a
-crowd on the isthmus."
+isthmus." "Catapults or Rocket Carts outrange the gate." "Nobody builds
+siege engines here: keep yours alive." (the third hint was "A Lich punishes
+a crowd on the isthmus." until revision 2 took the Lich out).
 
 **Close.** "The tower falls. From its ashes a dry voice offers terms: 'Every
 army needs soldiers who never tire, Captain.' To be continued…"
@@ -747,17 +761,20 @@ the player's side:
   mission 4) for 20 variation seeds at `rate` 0.15, up to 80 rounds, and
   writes `docs/validation/CAMPAIGN_TEASER_PLAYTEST.json` plus a short `.md`
   summary: win rate, median and range of winning rounds, AI cities captured
-  from the proxy, and the directive compliance checks below.
+  from the proxy, and the directive compliance checks below. `--write` with
+  another `--seeds` writes the same files for a smaller run of every
+  mission (the files state their parameters); the checked-in evidence is
+  such a run of 10 seeds (`68k.6`, at the user's request for a small run).
 
 Acceptance bands (the Normal AI is a weaker player than an attentive human,
 so the proxy's win rate is a floor on what a person will see):
 
-| Mission | Proxy win rate | Median winning round | Directive check (every run)                                                                                                                                                                   |
-| ------- | -------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1       | 70–100%        | ≥ 8                  | a Goblin land unit enters your territory by round 5                                                                                                                                           |
-| 2       | 35–90%         | ≥ 15                 | none (NORMAL); the Goblins capture or besiege a city of yours in ≥ 20% of runs (it must not be a walkover)                                                                                    |
-| 3       | 30–90%         | ≥ 15                 | before round 16 no Undead land unit ends an Undead turn more than one tile outside the zone; after round 16 an Undead unit leaves the zone in ≥ 50% of runs where the Undead still have units |
-| 4       | 20–80% each    | ≥ 20                 | at every Undead End Turn, at least `min(4, Undead land units)` stand in the gate zone                                                                                                         |
+| Mission | Proxy win rate | Median winning round | Directive check (every run)                                                                                                                                                                                                                                                                             |
+| ------- | -------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1       | 70–100%        | ≥ 8                  | a Goblin land unit enters your territory by round 5                                                                                                                                                                                                                                                     |
+| 2       | 35–90%         | ≥ 15                 | none (NORMAL); the Goblins capture or besiege a city of yours in ≥ 20% of runs (it must not be a walkover)                                                                                                                                                                                              |
+| 3       | 30–90%         | ≥ 15                 | before round 16 no Undead land unit ends an Undead turn more than one tile outside the zone; after round 16 an Undead unit leaves the zone in ≥ 50% of runs where the Undead still have units                                                                                                           |
+| 4       | 20–80% each    | ≥ 20                 | at every Undead End Turn without a unit of yours in the gate zone, at least `min(4, Undead land units)` stand in it; at most 2% of those End Turns may fall short (a replacement walking in after a garrison death). An End Turn with your units in the zone is the breach and is not counted (`68k.6`) |
 
 "Not trivially won" is the upper bound and the round floor; "not hopeless" is
 the lower bound. A mission outside its band is tuned (numbers first, layout
@@ -1011,6 +1028,9 @@ _Tuning history._
   gate (Catapults from the isthmus, the Lich first). Making the band
   measurable needs either a Normal AI siege behaviour for a single-file
   front (an AI change, outside content) or a different mission shape.
+  `68k.6` did the first and then tuned the mission to revision 2:
+  [section 8.5](#85-68k6-normal-ai-siege-of-a-single-file-front). The
+  mission 4 rows of the two tables above are revision 1.
 - **Directive compliance** held everywhere: every `RUSH` run reached your
   territory by round 3, no `HOLD` unit strayed more than one tile before
   round 16, and the `GUARD` garrison was full at every Undead End Turn
@@ -1057,6 +1077,111 @@ Where sections 4 and 5 left a detail open, the UI decided:
   turns on the other (mission 1 is won in 15 rounds, mission 2 in 15, and
   mission 1 is lost in 5). Mission 4 is not won this way even against an
   AI that only ends its turns, which agrees with the tuning record above.
+
+### 8.5 `68k.6` Normal AI: siege of a single-file front
+
+Follows from the mission 4 finding of
+[section 8.3](#83-68k4-content-the-four-teaser-missions-and-their-playtest).
+Scope: a general siege behaviour of the Normal AI for a single-file front
+(`src/ai/v7-chokepoint.ts` and its hooks in `src/ai/v7.ts`), the hidden
+fixture mission `TEST_NECK`, mission 4's revision 2, the playtest's `GUARD`
+check and `--write`, the evidence files, and the NORMAL_AI section. No rule
+changes and no identity bump.
+
+```text
+Validation profile: ai/map/persistence
+Worker focused checks: npx vitest run tests/unit/ruleset-v7-chokepoint-ai.test.ts tests/unit/ruleset-v7-mission-directives.test.ts tests/unit/ruleset-v7-campaign-ai.test.ts tests/unit/ruleset-v7-missions.test.ts tests/unit/campaign-chapter-v7.test.ts and the AI and source-audit tests ; npm run playtest:campaign -- --seeds 10 --write ; npm run typecheck ; npm run lint
+Conditional final gates: npm run check ; npm run validate:ruleset6-release ; npm run validate:ruleset7-release ; npm run smoke:browser (mission 4's starting position changed)
+```
+
+**The siege** is described in
+[Greedy Normal AI](../architecture/NORMAL_AI.md#siege-of-a-single-file-front-pulp_wars-68k6).
+In short: where every land route from the seat's cities to its nearest
+known enemy city runs through a one-tile corridor that ends, before that
+city, at a position hostile units hold in their own territory, one melee
+unit holds the head of the corridor and a wounded head withdraws when the
+tile behind it is free; siege units fire from tiles that hit the defenders
+and never block the corridor; all fire goes to one defender a turn; a melee
+attack at odds the policy otherwise refuses is made on a defender at half
+its HP or less, or once the seat's unspent Coins reach 30 (the policy has
+no memory, so the treasury is its attrition clock); and when the defenders
+are gone the column goes through. A board without such a front decides
+exactly as before: 31 headless matches on the five generated map types
+have equal hashes with the siege on and off, and missions 1–3 have the
+same final-state hash in all 30 runs.
+
+**Mission 4, revision 2.** The siege alone does not make the design's
+mission winnable for the proxy, so the mission's numbers changed, as little
+as the band allowed:
+
+| Revision 2 differs from the section 6.4 sketch in | Why                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sawmilling forbidden (and not an Undead start)    | With Sawmilling the Undead hold five or six Liches by round 15. A Lich and a Catapult have the same range and neither attacks after moving, so the one already in place shoots first, and a Lich kills a Catapult in one shot. The besieger's siege units never get to fire. |
+| Two starting siege units for you                  | Nobody can train one. Catapults for the Humans, Rocket Carts for the Goblins, at `(2,8)` and `(3,7)`.                                                                                                                                                                        |
+| A Skeleton at `(11,7)` instead of the Lich        | One Lich behind the mouth reaches the isthmus and cannot be reached from your shore. Its kills promote it to 15 HP, which survives a Catapult shot (12); with it kept, 0 of 8 runs were won, and in the traced run both starting Catapults were dead by round 16.            |
+
+The layout (the isthmus three tiles long), both economies, the Coins, the
+garrison of four, and the three Field Defenses are the sketch's. The third
+hint, "A Lich punishes a crowd on the isthmus.", became "Nobody builds siege
+engines here: keep yours alive." These are content decisions made to reach
+the band; the user's own playtest remains the final word on them.
+
+_Results_ (10 variation seeds from 1, rate 0.15, up to 80 rounds; the
+siege is switched off with `setChokepointPolicyOptionsV7`):
+
+| Mission 4                         | Human                                      | Goblin                                     |
+| --------------------------------- | ------------------------------------------ | ------------------------------------------ |
+| Revision 1, policy before `68k.6` | 0% (9 unfinished, 1 loss)                  | 0% (10 unfinished)                         |
+| Revision 1, with the siege        | 0% (10 unfinished)                         | 0% (10 unfinished)                         |
+| Revision 2, siege switched off    | 0% (10 unfinished)                         | 50% (winning rounds 43–73)                 |
+| Revision 2, with the siege        | **30%** (winning rounds 56–71, median 60)  | **40%** (winning rounds 54–77, median 68)  |
+| Band                              | 20–80%, median winning round ≥ 20: in band | 20–80%, median winning round ≥ 20: in band |
+
+So the Humans needed both: revision 2 without the siege is still 0%
+(a Guard does 2 damage to a Zombie on a Field Defense and takes 9), and
+the siege on revision 1 is 0%. The Goblins win revision 2 with or without
+the siege (five and four of ten: the difference is within the noise of ten
+runs). With the siege every win takes more than fifty rounds, so the
+mission stays the chapter's long, hard one. Missions 1–3 are unchanged
+(100%, 60%, and 50% on the same ten seeds, each run with the same final-state
+hash as without the siege).
+
+_Tuning history_ (eight seeds each, Human; the siege was still changing
+between these runs, so they are a record of the search, not a comparison).
+The first four had the isthmus shortened to two tiles, so that three tiles
+of your shore reach the mouth, and a small Undead realm (capital level 2,
+no third city, 0 Coins, no Administration):
+
+- the Undead start without Sawmilling (they research it) and keep the
+  starting Lich: 0 of 8;
+- the same without the starting Lich: 0 of 8;
+- Sawmilling forbidden, two starting Catapults, the starting Lich kept:
+  0 of 8;
+- Sawmilling forbidden, two starting Catapults, no Lich: 5 of 8, won in
+  rounds 26–36.
+
+Then the design's layout and economy came back with only the three changes
+of the table above: in band, which is revision 2.
+
+**Decided here.**
+
+- **The `GUARD` check counts the breach apart.** The proxy now enters the
+  gate zone, and an Undead End Turn with a unit of yours in the zone falls
+  short of the garrison because the garrison is being killed or kept out.
+  Such End Turns are not counted; of the others at most 2% may fall short
+  (a replacement walking in). On the ten seeds: 34 short End Turns of 744
+  (Human) and 41 of 743 (Goblin), all but one with your units in the zone.
+- **The evidence is a run of 10 seeds** (the user asked for a small run),
+  written with the playtest's `--seeds 10 --write`; the files state their
+  parameters. The default run of 20 seeds still writes them.
+- **`TEST_NECK`** (revision 1, `src/engine/v7/missions/test-neck.ts`) is
+  pinned in the mission hash test like the other fixtures.
+- **Open.** The siege is measured on one real front. Revision 2 has no
+  Lich and no trainable siege unit, so the savings goal and the siege
+  training bias of the policy are exercised only by tests and by revision
+  1, where they work (the Human proxy researches Sawmilling by round 4 and
+  fields two Catapults by round 6) but the Liches still win. A mission
+  with a Lich behind a single-file gate stays beyond the proxy.
 
 ## Appendix A: critique of the first draft
 

@@ -900,8 +900,8 @@ mission. The only objective is `DOMINATION`, which is the ordinary outcome
 rule of [section 3](#3-players-turns-and-victory). The registered missions
 are the four Chapter One missions `FRONTIER_1`–`FRONTIER_4`
 ([campaign design](CAMPAIGN.md) section 6, `pulp_wars-68k.4`) and the hidden
-test fixtures `TEST_GROUNDS`, `TEST_RUSH`, `TEST_HOLD`, and `TEST_GUARD`,
-which belong to no campaign chapter. Adding a mission is content: it
+test fixtures `TEST_GROUNDS`, `TEST_RUSH`, `TEST_HOLD`, `TEST_GUARD`, and
+`TEST_NECK`, which belong to no campaign chapter. Adding a mission is content: it
 changes no rule and no ruleset identity.
 
 | Setup field              | `MISSION` rule                                                                                                             |
@@ -3675,6 +3675,20 @@ Disintegrator ([section 21.5](#215-snow)).
   or away from an own city, and a Mammoth steps where its Sweep hits a
   flank. Details and measurements:
   [Normal AI second pass](../architecture/NORMAL_AI.md#second-pass-savings-hunts-and-sieges-pulp_wars-9s08).
+- **Single-file front** (`pulp_wars-68k.6`): where every land route from
+  the seat's cities to its nearest known enemy city runs through a corridor
+  of at least two one-tile-wide tiles that ends, two or more tiles before
+  that city, at a position hostile units hold in their own territory,
+  Normal besieges it: one melee unit holds the head of the corridor and a
+  wounded head withdraws when the tile behind it is free; siege and ranged
+  units fire from tiles that hit the defenders and enter the corridor only
+  behind that unit, never the queue tile behind the entrance; all fire goes
+  to one defender a turn; a melee attack the policy otherwise refuses is
+  made on a defender at half its HP or less, or once the seat holds 30
+  unspent Coins; and when the defenders are gone the column goes through.
+  At such a front the seat saves for and trains siege units. A board
+  without such a front decides exactly as before. Details and measurements:
+  [Normal AI siege of a single-file front](../architecture/NORMAL_AI.md#siege-of-a-single-file-front-pulp_wars-68k6).
 - **Opening research:** on its first turn Normal researches its free tier-1
   technology before other work, chosen deterministically from its own public
   view of explored tiles within Chebyshev 2 of its original capital: Gathering

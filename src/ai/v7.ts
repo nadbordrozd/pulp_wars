@@ -104,6 +104,28 @@ import {
   type EndgamePlanV7,
 } from "./v7-endgame";
 import {
+  CHOKEPOINT_ATTACK_BIAS_V7,
+  CHOKEPOINT_COMMIT_PRIORITY_V7,
+  CHOKEPOINT_FIRE_PRIORITY_V7,
+  CHOKEPOINT_LANE_PRIORITY_V7,
+  CHOKEPOINT_ROTATE_PRIORITY_V7,
+  CHOKEPOINT_SIEGE_TARGET_V7,
+  CHOKEPOINT_TRAINING_BIAS_V7,
+  chokepointApronBlockerV7,
+  chokepointApronJammedV7,
+  chokepointApronV7,
+  chokepointAssaultV7,
+  chokepointStrengthV7,
+  chokepointFitV7,
+  chokepointFocusV7,
+  chokepointTargetsInRangeV7,
+  chokepointPlaceAllowedV7,
+  chokepointPlanForPolicyV7,
+  chokepointShouldVacateV7,
+  chokepointUnitClassV7,
+  type ChokepointPlanV7,
+} from "./v7-chokepoint";
+import {
   CLEAN_BOMB_STRIKE_PRIORITY_V7,
   COIN_STRATEGIC_VALUE_V7,
   FRIENDLY_FIRE_TRADE_FACTOR_V7,
@@ -500,6 +522,22 @@ interface PolicyContextV7 {
   dwarfCache: DwarfContextCacheV7 | null;
   /** `pulp_wars-1mc`: public endgame siege targets, or null outside it. */
   readonly endgame: EndgamePlanV7 | null;
+  /**
+   * `pulp_wars-68k.6`: the single-file front the seat besieges
+   * (`src/ai/v7-chokepoint.ts`), or null on every board without one.
+   */
+  readonly chokepoint: ChokepointPlanV7 | null;
+  /** `pulp_wars-68k.6`: the focus of this turn's fire (cached). */
+  chokepointFocus: PublicUnitV7 | null | undefined;
+  /** `pulp_wars-68k.6`: the firing tiles the siege units claim (cached). */
+  chokepointClaims: ReadonlySet<string> | null;
+  /** `pulp_wars-68k.6`: the walks to the firing tiles (cached). */
+  readonly chokepointSlotSteps: Map<string, Map<string, number>>;
+  /** `pulp_wars-68k.6`: the firing tile of each own siege unit (cached). */
+  readonly chokepointSlots: Map<
+    UnitId,
+    { readonly at: CoordV7; readonly gain: number } | null
+  >;
   /**
    * Map curiosities (`pulp_wars-737.4`): the public curiosity facts, or null
    * when the view has no curiosity and no Monster; every curiosity
@@ -1467,6 +1505,14 @@ function bareContext(
     dwarf: dwarfMatchForPolicyV7(view),
     dwarfCache: null,
     endgame: endgamePlanForPolicyV7(view, (owner) => isHostile(view, owner)),
+    chokepoint: chokepointPlanForPolicyV7(view, {
+      isHostile: (owner) => isHostile(view, owner),
+      isAllied: (owner) => publicPlayersAllied(view, view.viewer.id, owner),
+    }),
+    chokepointFocus: undefined,
+    chokepointSlots: new Map(),
+    chokepointClaims: null,
+    chokepointSlotSteps: new Map(),
     curiosities: curiosityFactsV7(view),
     curiosityErrands: undefined,
     curiosityOtherTargets: undefined,
@@ -2823,6 +2869,8 @@ function warTrainingFirstV7(context: PolicyContextV7): boolean {
  */
 const SAVINGS_GOAL_ROLE_V7: UnitRoleIdV7 = "KNIGHT";
 const SAVINGS_GOAL_MAXIMUM_V7 = 2;
+/** `pulp_wars-68k.6`: the role a seat at a single-file front saves for. */
+const CHOKEPOINT_SIEGE_ROLE_V7: UnitRoleIdV7 = "CATAPULT";
 const SAVINGS_ARMY_MINIMUM_V7 = 3;
 const SAVINGS_TURNS_V7 = 2;
 const SAVINGS_BUY_PRIORITY_V7 = 1206;
@@ -2855,13 +2903,25 @@ function computeSavingsPlanV7(context: PolicyContextV7): SavingsPlanV7 | null {
   )
     return null;
   const faction = view.viewer.faction;
-  const rule = effectiveRoleRuleV7(SAVINGS_GOAL_ROLE_V7, faction);
+  // pulp_wars-68k.6: at a single-file front the seat saves for its siege
+  // unit (or the technology one step away) instead of the Chivalry tier.
+  const siegeRule = effectiveRoleRuleV7(CHOKEPOINT_SIEGE_ROLE_V7, faction);
+  const goalRole: UnitRoleIdV7 =
+    chokepointSiegeShortfallV7(context) &&
+    policySiegeRuleV7(siegeRule) &&
+    // A siege unit the match forbids (a mission) is no goal.
+    (siegeRule.technology === null ||
+      view.viewer.researchedTechs.includes(siegeRule.technology) ||
+      !forbiddenTechnologiesV7(view.setup).has(siegeRule.technology))
+      ? CHOKEPOINT_SIEGE_ROLE_V7
+      : SAVINGS_GOAL_ROLE_V7;
+  const rule = effectiveRoleRuleV7(goalRole, faction);
   if (rule.cost === null) return null;
   let army = 0;
   let goals = 0;
   for (const unit of view.units) {
     if (unit.ownerId !== view.viewer.id) continue;
-    if (unit.role === SAVINGS_GOAL_ROLE_V7) goals += 1;
+    if (unit.role === goalRole) goals += 1;
     else if (unit.form === "LAND") {
       const own = unitRoleRuleV7(view, unit);
       if (own.abilities.includes("ATTACK") && own.attack2 > 0) army += 1;
@@ -2878,13 +2938,13 @@ function computeSavingsPlanV7(context: PolicyContextV7): SavingsPlanV7 | null {
     rule.technology === null ||
     view.viewer.researchedTechs.includes(rule.technology)
   ) {
-    const slots = roleMechanicsV7(SAVINGS_GOAL_ROLE_V7, faction).capacitySlots;
+    const slots = roleMechanicsV7(goalRole, faction).capacitySlots;
     if (
       goals >= SAVINGS_GOAL_MAXIMUM_V7 ||
       !ownCities.some((city) => freeCapacity(view, city.id) >= slots)
     )
       return null;
-    role = SAVINGS_GOAL_ROLE_V7;
+    role = goalRole;
     cost = rule.cost;
   } else {
     if (researchChain(view, rule.technology).length !== 1) return null;
@@ -3265,10 +3325,16 @@ function isPolicyCandidate(
       distance(to, objective) >= 2 &&
       distance(to, objective) <= 3 &&
       !hasReachableScreenAtV7(context, actor, to) &&
-      !endgameSiegeTileV7(context, actor, to)
+      !endgameSiegeTileV7(context, actor, to) &&
+      !chokepointSiegeSlotV7(context, actor, to)
     )
       return false;
+    // pulp_wars-68k.6: the corridor of a single-file front.
+    if (chokepointMoveRejectedV7(context, command)) return false;
   }
+  // pulp_wars-68k.6: the fire on a single-file front goes to one holder.
+  if (command.kind === "ATTACK" && chokepointOffFocusV7(context, command))
+    return false;
   if (
     command.kind === "ATTACK" &&
     isLowValueAttackV7(context, command) &&
@@ -3559,6 +3625,8 @@ function isLowValueAttackV7(
   if (!harmful) return false;
   if (attackPurposeExceptionV7(context, command, preview)) return false;
   if (endgameCombinedKillV7(context, command, preview)) return false;
+  // pulp_wars-68k.6: the head of a single-file front commits.
+  if (chokepointCommitV7(context, command, preview)) return false;
   // The Martian revision: a hit that this turn's attacks complete into a
   // kill through the target's Shield.
   if (
@@ -4145,6 +4213,7 @@ function* sharedCityContextWorkV7(
       (unit) =>
         unit.form === "LAND" && policySiegeRuleV7(unitRoleRuleV7(view, unit)),
     ) < ENDGAME_SIEGE_TARGET_V7;
+  const chokepointSiegeShortfall = chokepointSiegeShortfallV7(context);
   const threatenedCityIds = new Set<CityId>();
   for (const threat of context.threats) {
     threatenedCityIds.add(threat.cityId);
@@ -4252,6 +4321,14 @@ function* sharedCityContextWorkV7(
         ((endgameCaptureShortfall && rule.abilities.includes("CAPTURE")) ||
           (endgameSiegeShortfall && policySiegeRuleV7(rule)))
           ? ENDGAME_TRAINING_BIAS_V7
+          : 0) +
+        // pulp_wars-68k.6: a single-file front is breached by siege fire.
+        (chokepointSiegeShortfall && policySiegeRuleV7(rule)
+          ? CHOKEPOINT_TRAINING_BIAS_V7
+          : 0) +
+        // A breach needs units that hit: Attack counts at such a front.
+        (context.chokepoint !== null && rule.range <= 1
+          ? CHOKEPOINT_ATTACK_BIAS_V7 * rule.attack2
           : 0)
       );
     };
@@ -5228,6 +5305,13 @@ function scoreCommandWithContext(
       }
       // pulp_wars-9s0.8: the hunters' attacks on a hunted high-value unit.
       priority = huntAttackPriorityV7(context, command, preview, priority);
+      // pulp_wars-68k.6: focused fire, then the committed melee attack.
+      priority = chokepointAttackPriorityV7(
+        context,
+        command,
+        preview,
+        priority,
+      );
       // Map curiosities (`pulp_wars-737.4`): the kill of a Monster is worth
       // its bounty on top of the ordinary kill value.
       if (
@@ -5614,6 +5698,17 @@ function scoreCommandWithContext(
       const endgame = endgameMoveValueV7(context, actor, resultAt, priority);
       priority = endgame.priority;
       strategicValue += endgame.strategic;
+    }
+    if (context.chokepoint !== null && resultAt !== null && !autoembark) {
+      // pulp_wars-68k.6: the head, the siege slots, and the way out.
+      const siegeMove = chokepointMoveValueV7(
+        context,
+        actor,
+        resultAt,
+        priority,
+      );
+      priority = siegeMove.priority;
+      strategicValue += siegeMove.strategic;
     }
     if (context.undead && resultAt !== null) {
       const undead = undeadMoveValueV7(
@@ -7266,6 +7361,510 @@ function endgameMoveValueV7(
     priority: Math.max(basePriority, ENDGAME_APPROACH_PRIORITY_V7),
     strategic: 2 * Math.max(0, Math.min(3, progress)) + (ring ? 8 : 0),
   };
+}
+
+// ---------------------------------------------------------------------------
+// `pulp_wars-68k.6` siege of a single-file front (`src/ai/v7-chokepoint.ts`).
+// Every helper returns the ordinary behavior (false / unchanged) when
+// `context.chokepoint` is null, so a position without a chokepoint front
+// keeps its decision. They read only the public view, the offered commands,
+// and the public previews, and add no PRNG use, elapsed-time input, or work
+// units: each is a bounded scan inside an existing scoring step.
+
+/** The viewer's own land unit a placement rule applies to, or undefined. */
+function chokepointActorV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+): PublicUnitV7 | undefined {
+  const actor = context.lookup.unitsById.get(unitId);
+  return actor !== undefined &&
+    actor.form === "LAND" &&
+    actor.ownerId === context.view.viewer.id
+    ? actor
+    : undefined;
+}
+
+/** A Move the placement rule refuses (`chokepointPlaceAllowedV7`). */
+function chokepointMoveRejectedV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "MOVE" }>,
+): boolean {
+  const plan = context.chokepoint;
+  if (plan === null) return false;
+  const actor = chokepointActorV7(context, command.unitId);
+  const to = command.path.at(-1);
+  if (actor === undefined || to === undefined) return false;
+  if (!chokepointPlaceAllowedV7(context.view, plan, actor, to)) return true;
+  // Every other unit stays off the firing tiles the siege units walk to.
+  return (
+    plan.indexOf(to) === undefined &&
+    chokepointUnitClassV7(context.view, actor) !== "RANGED" &&
+    chokepointClaimedSlotsV7(context, plan).has(coordKey(to))
+  );
+}
+
+/**
+ * A siege unit may stand on a tile the placement rule gives it (behind the
+ * column, or off the corridor) with a target in range: the column is its
+ * screen, so the ordinary "a siege tile needs a durable screen" rule does
+ * not refuse it.
+ */
+function chokepointSiegeSlotV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+): boolean {
+  const plan = context.chokepoint;
+  if (plan === null || actor.ownerId !== context.view.viewer.id) return false;
+  return (
+    chokepointUnitClassV7(context.view, actor) === "RANGED" &&
+    chokepointTargetsInRangeV7(context.view, plan, actor, to) > 0 &&
+    chokepointPlaceAllowedV7(context.view, plan, actor, to) &&
+    (chokepointAssaultV7(context.view) ||
+      visibleImmediateDamage(context.view, actor, to, context) < actor.hp)
+  );
+}
+
+/** The holder `unitId`, if it holds the front. */
+function chokepointHolderV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+): PublicUnitV7 | undefined {
+  return context.chokepoint?.holders.find((holder) => holder.id === unitId);
+}
+
+/**
+ * The focus of this turn's fire: the holder left with the least HP by the
+ * unanswered own attacks still on offer (`chokepointFocusV7`).
+ */
+function chokepointFocusForContextV7(
+  context: PolicyContextV7,
+): PublicUnitV7 | null {
+  if (context.chokepointFocus !== undefined) return context.chokepointFocus;
+  const plan = context.chokepoint;
+  let focus: PublicUnitV7 | null = null;
+  if (plan !== null) {
+    // Only a holder some own unit can attack this turn is a focus.
+    const damage = new Map<UnitId, number>();
+    for (const candidate of context.commands) {
+      if (
+        candidate.kind !== "ATTACK" ||
+        chokepointHolderV7(context, candidate.targetUnitId) === undefined
+      )
+        continue;
+      const shot = queryCombatPreviewV7(
+        context.view,
+        candidate.unitId,
+        candidate.targetUnitId,
+      );
+      if (shot === null) continue;
+      damage.set(
+        candidate.targetUnitId,
+        (damage.get(candidate.targetUnitId) ?? 0) +
+          (shot.damageToAttacker > 0 || shot.attackerDies
+            ? 0
+            : shot.damageToDefender),
+      );
+    }
+    focus = chokepointFocusV7(plan, (holder) => damage.get(holder.id) ?? null);
+  }
+  context.chokepointFocus = focus;
+  return focus;
+}
+
+/**
+ * An attack on a holder other than the focus by a unit that has the focus
+ * on offer: it fires at the focus instead. A kill is always taken.
+ */
+function chokepointOffFocusV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+): boolean {
+  if (context.chokepoint === null) return false;
+  const focus = chokepointFocusForContextV7(context);
+  if (
+    focus === null ||
+    focus.id === command.targetUnitId ||
+    chokepointHolderV7(context, command.targetUnitId) === undefined ||
+    !context.commands.some(
+      (candidate) =>
+        candidate.kind === "ATTACK" &&
+        candidate.unitId === command.unitId &&
+        candidate.targetUnitId === focus.id,
+    )
+  )
+    return false;
+  return (
+    queryCombatPreviewV7(context.view, command.unitId, command.targetUnitId)
+      ?.defenderDies !== true
+  );
+}
+
+/**
+ * The committed attack: a melee attack on the focus that the policy
+ * otherwise refuses as harmful is taken when the attacker survives, no
+ * unanswered own attack on the target is still on offer (the fire comes
+ * first), and either the target is wounded (at most half its HP: the siege
+ * fire has done its work) or the attrition clock has struck
+ * (`chokepointAssaultV7`) and this turn's surviving attackers together
+ * out-damage the target's idle recovery.
+ */
+function chokepointCommitV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  preview: CombatPreviewV7,
+): boolean {
+  const plan = context.chokepoint;
+  if (plan === null || preview.attackerDies || preview.damageToDefender <= 0)
+    return false;
+  const view = context.view;
+  const actor = chokepointActorV7(context, command.unitId);
+  const target = chokepointHolderV7(context, command.targetUnitId);
+  if (
+    actor === undefined ||
+    target === undefined ||
+    chokepointUnitClassV7(view, actor) === "RANGED" ||
+    chokepointUnitClassV7(view, actor) === "OTHER"
+  )
+    return false;
+  const focus = chokepointFocusForContextV7(context);
+  if (focus !== null && focus.id !== target.id) return false;
+  for (const candidate of context.commands) {
+    if (
+      candidate.kind !== "ATTACK" ||
+      candidate.targetUnitId !== target.id ||
+      candidate.unitId === command.unitId
+    )
+      continue;
+    const shot = queryCombatPreviewV7(view, candidate.unitId, target.id);
+    if (
+      shot !== null &&
+      shot.damageToAttacker === 0 &&
+      !shot.attackerDies &&
+      shot.damageToDefender > 0
+    )
+      return false;
+  }
+  if (target.hp * 2 <= target.maxHp) return true;
+  if (!chokepointAssaultV7(view)) return false;
+  // The assault: this turn's surviving attackers together out-damage the
+  // target's idle recovery.
+  const tile = findPublicTileV7(view, target.at);
+  const recovery = context.undead
+    ? publicIdleRecoveryV7(view, target.ownerId, target.at)
+    : tile?.explored === true && tile.territoryOwnerId === target.ownerId
+      ? 4
+      : 2;
+  let combined = 0;
+  for (const candidate of context.commands) {
+    if (candidate.kind !== "ATTACK" || candidate.targetUnitId !== target.id)
+      continue;
+    const hit = queryCombatPreviewV7(view, candidate.unitId, target.id);
+    if (hit !== null && !hit.attackerDies) combined += hit.damageToDefender;
+  }
+  return combined > recovery;
+}
+
+/** Focused fire first, then the committed attack, then the column moves. */
+function chokepointAttackPriorityV7(
+  context: PolicyContextV7,
+  command: Extract<CommandV7, { kind: "ATTACK" }>,
+  preview: CombatPreviewV7,
+  priority: number,
+): number {
+  if (
+    context.chokepoint === null ||
+    chokepointActorV7(context, command.unitId) === undefined ||
+    chokepointHolderV7(context, command.targetUnitId) === undefined
+  )
+    return priority;
+  const focus = chokepointFocusForContextV7(context);
+  if (focus !== null && focus.id !== command.targetUnitId) return priority;
+  if (preview.damageToAttacker === 0 && !preview.attackerDies)
+    return Math.max(priority, CHOKEPOINT_FIRE_PRIORITY_V7);
+  return chokepointCommitV7(context, command, preview)
+    ? Math.max(priority, CHOKEPOINT_COMMIT_PRIORITY_V7)
+    : priority;
+}
+
+/**
+ * Column moves, in this order:
+ *
+ * 1. A unit that is out of place on the corridor leaves toward home
+ *    (`chokepointShouldVacateV7`): a wounded head rotates out just above an
+ *    urgent Recover, a siege or support unit after its shots.
+ * 2. A unit on an apron tile the placement rule does not give it makes room, and
+ *    so does a unit on the jammed apron or on a tile a siege unit walks to.
+ * 3. A siege unit walks to its firing tile (`chokepointSlotV7`).
+ * 4. A melee unit steps onto the corridor, along it, and from its far end
+ *    into the mouth, the strongest first: outside visible lethal reach
+ *    while the mouth is held, at once through the open mouth or when the
+ *    attrition clock has struck.
+ */
+function chokepointMoveValueV7(
+  context: PolicyContextV7,
+  actor: PublicUnitV7,
+  to: CoordV7,
+  basePriority: number,
+): { readonly priority: number; readonly strategic: number } {
+  const plan = context.chokepoint;
+  const unchanged = { priority: basePriority, strategic: 0 };
+  const view = context.view;
+  if (
+    plan === null ||
+    actor.form !== "LAND" ||
+    actor.ownerId !== view.viewer.id
+  )
+    return unchanged;
+  const from = plan.indexOf(actor.at);
+  const toIndex = plan.indexOf(to);
+  const unitClass = chokepointUnitClassV7(view, actor);
+  if (from !== undefined && chokepointShouldVacateV7(view, plan, actor)) {
+    const back = toIndex === undefined ? plan.homeSide(to) : toIndex < from;
+    if (!back) return unchanged;
+    return {
+      priority: Math.max(
+        basePriority,
+        unitClass === "HEAD" || unitClass === "MELEE"
+          ? CHOKEPOINT_ROTATE_PRIORITY_V7
+          : CHOKEPOINT_LANE_PRIORITY_V7,
+      ),
+      strategic: -visibleImmediateDamage(view, actor, to, context),
+    };
+  }
+  // A unit on an apron tile the placement rule does not give it makes room (a
+  // siege unit on the queue tile, a melee unit on the siege's side).
+  if (
+    from === undefined &&
+    toIndex === undefined &&
+    chokepointApronBlockerV7(view, plan, actor) &&
+    plan.homeSide(to)
+  )
+    return {
+      priority: Math.max(basePriority, CHOKEPOINT_LANE_PRIORITY_V7),
+      strategic: -visibleImmediateDamage(view, actor, to, context),
+    };
+  // A unit on the jammed apron makes room for the unit leaving the corridor
+  // (the weakest goes: the staged replacement is the strongest).
+  if (
+    from === undefined &&
+    toIndex === undefined &&
+    chokepointApronV7(plan, actor.at) &&
+    !chokepointApronV7(plan, to) &&
+    plan.homeSide(to) &&
+    chokepointApronJammedV7(view, plan)
+  )
+    return {
+      priority: Math.max(basePriority, CHOKEPOINT_ROTATE_PRIORITY_V7),
+      strategic: -Math.floor(chokepointStrengthV7(view, actor) / 16),
+    };
+  // A unit on a tile the staged siege units need makes room.
+  if (
+    unitClass !== "RANGED" &&
+    from === undefined &&
+    toIndex === undefined &&
+    plan.homeSide(to) &&
+    chokepointClaimedSlotsV7(context, plan).has(coordKey(actor.at)) &&
+    !chokepointClaimedSlotsV7(context, plan).has(coordKey(to))
+  )
+    return {
+      priority: Math.max(basePriority, CHOKEPOINT_ROTATE_PRIORITY_V7),
+      strategic: 0,
+    };
+  if (unitClass === "RANGED") {
+    const slot = chokepointSlotV7(context, plan, actor);
+    if (
+      slot === null ||
+      chokepointSlotStepsV7(context, plan, actor, slot.at, to) >=
+        chokepointSlotStepsV7(context, plan, actor, slot.at, actor.at) ||
+      (!chokepointAssaultV7(view) &&
+        visibleImmediateDamage(view, actor, to, context) >= actor.hp)
+    )
+      return unchanged;
+    // A tile with two more targets in range is worth this turn's shot.
+    return {
+      priority: Math.max(
+        basePriority,
+        slot.gain >= 2
+          ? CHOKEPOINT_FIRE_PRIORITY_V7 + 1
+          : CHOKEPOINT_LANE_PRIORITY_V7,
+      ),
+      strategic: 8 + (same(to, slot.at) ? 4 : 0),
+    };
+  }
+  if (unitClass === "OTHER" || (!plan.open && !chokepointFitV7(actor)))
+    return unchanged;
+  // The column: a fit melee unit steps onto the corridor, along it, and
+  // from its far end into the mouth. The strongest unit goes first.
+  const far = plan.corridor.length - 1;
+  const forward =
+    toIndex !== undefined
+      ? from === undefined || toIndex > from
+      : from === far &&
+        !plan.homeSide(to) &&
+        (plan.stepsToTarget(to) ?? Number.POSITIVE_INFINITY) <
+          (plan.stepsToTarget(actor.at) ?? 0);
+  if (!forward) return unchanged;
+  // Outside visible lethal reach, unless the mouth is open (the siege fire
+  // cleared it: the column goes through) or the attrition clock has struck.
+  if (
+    !plan.open &&
+    !chokepointAssaultV7(view) &&
+    visibleImmediateDamage(view, actor, to, context) >= actor.hp
+  )
+    return unchanged;
+  return {
+    priority: Math.max(basePriority, CHOKEPOINT_LANE_PRIORITY_V7),
+    strategic: 2 + Math.floor(chokepointStrengthV7(view, actor) / 64),
+  };
+}
+
+/**
+ * The firing tiles the own siege units walk to (`chokepointSlotV7`). Every
+ * other own unit stays off them, and one standing on such a tile makes
+ * room: the siege units fire from where they hit the holders, and the corridor
+ * stays free.
+ */
+function chokepointClaimedSlotsV7(
+  context: PolicyContextV7,
+  plan: ChokepointPlanV7,
+): ReadonlySet<string> {
+  if (context.chokepointClaims !== null) return context.chokepointClaims;
+  const view = context.view;
+  const claims = new Set<string>();
+  for (const unit of view.units) {
+    if (
+      unit.ownerId !== view.viewer.id ||
+      chokepointUnitClassV7(view, unit) !== "RANGED"
+    )
+      continue;
+    const slot = chokepointSlotV7(context, plan, unit);
+    if (slot !== null) claims.add(coordKey(slot.at));
+  }
+  context.chokepointClaims = claims;
+  return claims;
+}
+
+/** A siege unit looks this far (Chebyshev) for a better firing tile. */
+const CHOKEPOINT_SLOT_RADIUS_V7 = 4;
+
+/**
+ * The firing tile a siege unit walks to: the explored land tile within
+ * `CHOKEPOINT_SLOT_RADIUS_V7` that the placement rule gives it (on the home
+ * side, or on the corridor behind the column), not held by a hostile or
+ * another siege unit (an own melee unit on it makes room), outside visible
+ * lethal reach (unless the attrition clock has struck), with the most
+ * targets in range (`chokepointTargetsInRangeV7`), off the corridor first,
+ * then the nearest, then the first by (y, x). Null when no tile has more
+ * targets in range than the unit's own.
+ */
+function chokepointSlotV7(
+  context: PolicyContextV7,
+  plan: ChokepointPlanV7,
+  actor: PublicUnitV7,
+): { readonly at: CoordV7; readonly gain: number } | null {
+  const cached = context.chokepointSlots.get(actor.id);
+  if (cached !== undefined) return cached;
+  const view = context.view;
+  const here = chokepointTargetsInRangeV7(view, plan, actor, actor.at);
+  const occupied = new Set<string>();
+  for (const unit of view.units)
+    if (
+      unit.id !== actor.id &&
+      !(
+        unit.ownerId === view.viewer.id &&
+        chokepointUnitClassV7(view, unit) !== "RANGED"
+      )
+    )
+      occupied.add(coordKey(unit.at));
+  let best: { at: CoordV7; score: number; count: number } | null = null;
+  const radius = CHOKEPOINT_SLOT_RADIUS_V7;
+  for (let dy = -radius; dy <= radius; dy += 1)
+    for (let dx = -radius; dx <= radius; dx += 1) {
+      const at = { x: actor.at.x + dx, y: actor.at.y + dy };
+      if (plan.stepsToTarget(at) === undefined || occupied.has(coordKey(at)))
+        continue;
+      const onCorridor = plan.indexOf(at) !== undefined;
+      if (
+        (!onCorridor && !plan.homeSide(at)) ||
+        !chokepointPlaceAllowedV7(view, plan, actor, at)
+      )
+        continue;
+      const count = chokepointTargetsInRangeV7(view, plan, actor, at);
+      if (count <= here) continue;
+      const score =
+        10 * count +
+        (onCorridor ? 0 : 3) -
+        Math.max(Math.abs(dx), Math.abs(dy));
+      if (best !== null && score <= best.score) continue;
+      if (
+        !chokepointAssaultV7(view) &&
+        visibleImmediateDamage(view, actor, at, context) >= actor.hp
+      )
+        continue;
+      best = { at, score, count };
+    }
+  const slot = best === null ? null : { at: best.at, gain: best.count - here };
+  context.chokepointSlots.set(actor.id, slot);
+  return slot;
+}
+
+/**
+ * Steps from `at` to a siege unit's firing tile over the tiles the
+ * placement rule gives the unit (the queue tile is not one, so the walk
+ * goes round it), units not counted as walls; infinite when there is no
+ * such walk within `2 * CHOKEPOINT_SLOT_RADIUS_V7` steps.
+ */
+function chokepointSlotStepsV7(
+  context: PolicyContextV7,
+  plan: ChokepointPlanV7,
+  actor: PublicUnitV7,
+  slot: CoordV7,
+  at: CoordV7,
+): number {
+  const cacheKey = `${String(actor.id)}:${coordKey(slot)}`;
+  let steps = context.chokepointSlotSteps.get(cacheKey);
+  if (steps === undefined) {
+    steps = new Map<string, number>([[coordKey(slot), 0]]);
+    const queue: CoordV7[] = [slot];
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const current = queue[cursor];
+      if (current === undefined) break;
+      const next = (steps.get(coordKey(current)) ?? 0) + 1;
+      if (next > 2 * CHOKEPOINT_SLOT_RADIUS_V7) continue;
+      for (let dy = -1; dy <= 1; dy += 1)
+        for (let dx = -1; dx <= 1; dx += 1) {
+          const tile = { x: current.x + dx, y: current.y + dy };
+          if (
+            steps.has(coordKey(tile)) ||
+            plan.stepsToTarget(tile) === undefined ||
+            (plan.indexOf(tile) === undefined && !plan.homeSide(tile)) ||
+            // The unit's own tile is walkable wherever it stands.
+            (!same(tile, actor.at) &&
+              !chokepointPlaceAllowedV7(context.view, plan, actor, tile))
+          )
+            continue;
+          steps.set(coordKey(tile), next);
+          queue.push(tile);
+        }
+    }
+    context.chokepointSlotSteps.set(cacheKey, steps);
+  }
+  return steps.get(coordKey(at)) ?? Number.POSITIVE_INFINITY;
+}
+
+/** The seat besieges a single-file front with fewer siege units than wanted. */
+function chokepointSiegeShortfallV7(context: PolicyContextV7): boolean {
+  if (context.chokepoint === null) return false;
+  const view = context.view;
+  return (
+    view.units.filter(
+      (unit) =>
+        unit.ownerId === view.viewer.id &&
+        unit.form === "LAND" &&
+        policySiegeRuleV7(unitRoleRuleV7(view, unit)),
+    ).length < CHOKEPOINT_SIEGE_TARGET_V7
+  );
 }
 
 // ---------------------------------------------------------------------------
