@@ -102,7 +102,14 @@ pins still hold with it removed); with it on, the Monster's weight changes
 which curiosities a board draws. Its contract tests are
 `tests/unit/ruleset-v7-monster.test.ts` and
 `tests/unit/ruleset-v7-owner-readers.test.ts`, and the curiosity-map
-validator checks the Monster's lair rules independently.
+validator checks the Monster's lair rules independently. The other steps of
+the curiosities epic changed no identity: the Normal AI (`pulp_wars-737.4`),
+the art (`pulp_wars-737.5`), the UI with its smoke probe
+(`pulp_wars-737.6`), and the coarse check and fold (`pulp_wars-737.7`),
+whose evidence is the
+[curiosities check](RULESET_7_CURIOSITIES_CHECK.md): 40 headless Normal
+matches, the option on against off on the same boards, and the placement
+statistics of the validator.
 `pulp_wars-1wy.3` (`7r37`) is the engine step of the Martian and Ice Folk
 balance round
 ([balance design](../product/RULESET_7_BALANCE_MARTIAN_ICE.md)): Beam Down
@@ -135,7 +142,8 @@ later factions never had one). Balance evidence is the
 [revision-20 balance report](RULESET_7_REVISION_20_BALANCE.md), and the
 coarse [Martian](RULESET_7_MARTIAN_BALANCE.md),
 [Ice Folk](RULESET_7_ICE_FOLK_BALANCE.md), and
-[Dwarf](RULESET_7_DWARF_BALANCE.md) balance reports; the release does not
+[Dwarf](RULESET_7_DWARF_BALANCE.md) balance reports, and the small
+[curiosities check](RULESET_7_CURIOSITIES_CHECK.md); the release does not
 rerun their matrices.
 
 - `npm run validate:ruleset7-release`
@@ -167,7 +175,7 @@ rerun their matrices.
   dispatch Raise Dead and mounts the Plague and Bitten fixture; with
   `--deployed` it stops after launch and resume), a **Goblin probe**, a
   **Dinosaur probe**, a **Martian probe**, an **Ice Folk probe**, a **Dwarf
-  probe**, and a **Showcase probe**:
+  probe**, a **Curiosities probe**, and a **Showcase probe**:
   - The **Goblin probe** (`pulp_wars-0ao.5`, `0ao.7`) checks that every
     seat's select offers exactly Human, Undead, Goblin, Dinosaur, Martian,
     Ice Folk, and Dwarf, picks
@@ -227,8 +235,19 @@ rerun their matrices.
   - The **Showcase probe** (`pulp_wars-6gd.3`) launches the Showcase map
     (16 x 16 only, no seed control), checks the ten own units, three own
     cities, and every technology, ends one turn, and resumes.
+  - The **Curiosities probe** (`pulp_wars-737.6`,
+    `scripts/browser-smoke-v7-curiosities.ts`) mounts the curiosities UI
+    fixture (a 16 x 16 board with the Giant Spider on its lair, a Fountain
+    of Youth, a Shrine, and a Sunken Wreck) in the default look and checks
+    that the board plans every curiosity and the provoked Spider, that the
+    Spider's dock says "Neutral", that a Fighter stepping onto the Shrine
+    claims it and is Promoted, and that End Turn plays the neutral turn
+    (the Spider attacks the Fighter beside it) and the Fountain heals the
+    unit standing on it. It needs the development server's fixture, so
+    with `--deployed` it is skipped and reported as such.
 
-  These six probes use no fixture, so they run unchanged with
+  The Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Showcase probes use
+  no fixture, so they run unchanged with
   `--deployed`. They do not play their matches to an outcome: complete
   Goblin, Dinosaur, Martian, Ice Folk, and Dwarf matches (every pairing of
   the seven factions, and four-seat mixes; the Martian, Ice Folk, and Dwarf
@@ -241,7 +260,24 @@ rerun their matrices.
   tests and the `review:ruleset7-ice-folk-ui` captures, and the rider, the
   surfacing and its eruption, the bombing run, Assemble, Repair, Dig In,
   and Knockback by the engine, AI, and UI tests and the
-  `review:ruleset7-dwarf-ui` captures, not by the smoke.
+  `review:ruleset7-dwarf-ui` captures, not by the smoke. Complete matches
+  with curiosities were played headlessly by the
+  [curiosities check](RULESET_7_CURIOSITIES_CHECK.md), and the Spider's
+  panel, the provoke warning, the attack preview, Help, and the Gallery
+  tab are covered by the UI tests and the `review:ruleset7-curiosities-ui`
+  captures.
+
+- `npm run validate:ruleset7-curiosity-maps`
+  (`scripts/validate-ruleset7-curiosity-maps.ts`, `pulp_wars-737.2`,
+  `737.3`) generates seeds 0–31 of every generated map type, size, and AI
+  count (1,920 boards, about seven minutes) and checks that the option off
+  reproduces the generator before the curiosities, that the option on
+  changes no tile or other generated fact, that every placed curiosity and
+  lair obeys the placement rules by a checker independent of the engine,
+  and that the same setup gives the same curiosities; it prints the count
+  per map type and size and the kind totals. It keeps no checked corpus;
+  the totals of the current identity are in the
+  [curiosities check](RULESET_7_CURIOSITIES_CHECK.md#placement).
 
 - `npm run art:chibi-goblin-review` (`scripts/art/chibi-goblin-review.ts`,
   `pulp_wars-0ao.8`, `3tq.9`), `npm run art:chibi-dinosaur-review`
@@ -263,7 +299,11 @@ rerun their matrices.
   `art/pixellab/reviews/chibi-batch-direction-martian/`,
   `art/pixellab/reviews/chibi-batch-direction-ice-folk/`, and
   `art/pixellab/reviews/chibi-batch-direction-dwarf/`; inspect it with the
-  other art reviews.
+  other art reviews. `npm run art:curiosities-review`
+  (`scripts/art/curiosities-review.ts`, `pulp_wars-737.5`) does the same
+  for the Giant Spider, its lair web, the Fountain, the Shrine, the Wreck,
+  and their icons and effects, under
+  `art/pixellab/reviews/chibi-batch-curiosities/`.
 - **Gate order.** Run `npm run check` **before** the art review commands,
   then restore the checked-in review evidence with `git checkout -- art/`
   after them: on macOS Chrome the reviews rewrite tracked review evidence,
@@ -283,7 +323,8 @@ rerun their matrices.
 
 The current release gates, in the order they are run from the reviewed
 release revision (the `cross-cutting/release` profile plus the Ruleset 7,
-Goblin, Dinosaur, Martian, Ice Folk, and Dwarf additions). `npm run check`
+Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and map-curiosity additions).
+`npm run check`
 runs
 before the art
 reviews, and `git checkout -- art/` restores the evidence they rewrite
@@ -291,6 +332,7 @@ before the browser smokes (see the gate-order note above):
 
 ```bash
 npm run validate:ruleset7-release
+npm run validate:ruleset7-curiosity-maps
 npm run validate:ruleset6-release
 npm run check
 npm run art:validate
@@ -313,6 +355,7 @@ npm run art:chibi-dinosaur-review
 npm run art:chibi-martian-direction-review
 npm run art:chibi-ice-folk-direction-review
 npm run art:chibi-dwarf-direction-review
+npm run art:curiosities-review
 git checkout -- art/
 npm run smoke:browser
 npm run smoke:browser:legacy-v5
@@ -324,7 +367,8 @@ The results of a release run are recorded on its bead
 (`pulp_wars-0ao.9` for revision 17, `pulp_wars-c87.9` for the four-faction
 `7r23` fold, `pulp_wars-t6s.7` for the five-faction `7r25` fold,
 `pulp_wars-7g3.8` for the six-faction `7r30` fold, `pulp_wars-78i.8` for
-the seven-faction `7r31` fold), not in this document;
+the seven-faction `7r31` fold, `pulp_wars-737.7` for the map-curiosities
+fold at `7r37`), not in this document;
 the
 [final release gates](#final-release-gates) and
 [root verification status](#root-verification-status) below are the frozen

@@ -960,15 +960,15 @@ cannot hold its harvest records; and a result that fails the state schema.
 
 **Map curiosities** (`pulp_wars-737.2`, `pulp-wars-poc-7r35`, and
 `pulp_wars-737.3`, `pulp-wars-poc-7r36`; engine steps I and II of the
-[map curiosities spec](RULESET_7_MAP_CURIOSITIES.md), folded here as they
-landed) are rare neutral features that map generation drops on a board:
+[map curiosities spec](RULESET_7_MAP_CURIOSITIES.md), which
+`pulp_wars-737.7` folded here whole) are rare neutral features that map
+generation drops on a board:
 the **Giant Spider** (the Monster), a **Fountain of Youth**, a **Shrine**,
 and a **Sunken Wreck**. The Normal AI knows them (`pulp_wars-737.4`,
-[Normal AI: map curiosities](../architecture/NORMAL_AI.md#map-curiosities-pulp_wars-7374):
-it keeps away from the Spider unless it can kill it, walks wounded units to
-a safe Fountain, and claims Shrines and Wrecks); the browser board does not
-draw them yet (`pulp_wars-737.6`,
-[section 24](#24-known-discrepancies)).
+[section 16](#16-normal-ai-summary)), and the browser draws and explains
+them (`pulp_wars-737.6`, "Presentation" below). The coarse check of the
+option on against off is the
+[curiosities check](../validation/RULESET_7_CURIOSITIES_CHECK.md).
 
 | Curiosity             | Where                   | Rule                                                                                                                                    |
 | --------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1240,6 +1240,22 @@ visible unit with its immunities. The headless metrics gain `monsters`
 (`placed`, the damage and kills it dealt, the bounty Coins paid, and the
 round it was slain); its numbers count for no role or faction.
 
+**Presentation** (`pulp_wars-737.6`, no rule change;
+[screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-map-curiosities-overlay)).
+The board draws the Fountain, the Shrine, and the Wreck on explored tiles
+and the Spider on its lair web with no owner colour; the art is
+[the curiosity class](../art/classes/curiosities.md) in the live look and
+code-drawn markers in the Classic and legacy looks. The Spider's dock says
+"Neutral" (and "Provoked" while a visible unit provokes it) and offers no
+command; selecting it outlines its area and shades its reach. A Move target
+next to a visible Spider carries the provoked marker, and an attack preview
+on it says when it will strike back. A neutral turn in which the viewer saw
+the Spider move or attack is played back like an AI turn with the log line
+"The wilds stir" (a toast only when it attacked the viewer's unit); one the
+viewer cannot see says nothing. Help has a Curiosities section whenever the
+option is on, the event log names each claim, heal, and bounty, and the
+Gallery has a Curiosities tab.
+
 ## 3. Players, turns, and victory
 
 - Every seat starts with 5 Coins, no technology, a level-1 capital, one
@@ -1322,6 +1338,16 @@ round it was slain); its numbers count for no role or faction.
   ([section 14](#14-naval-rules)), so a blockader killed during the next
   seat's Start Turn (by Plague or a chain) emits `PORT_BLOCKADE_CHANGED` and
   `SEA_NETWORK_CHANGED` in that `END_TURN`.
+- **Neutral turn** ([section 2.7](#27-map-curiosities)): in a match with a
+  Giant Spider on the board, the `END_TURN` of the last seat of a round
+  runs the neutral turn after `TURN_ENDED` and before the next round's
+  first Start Turn: `NEUTRAL_TURN_STARTED`, each Spider's step and attack
+  (`UNIT_MOVED`, `COMBAT_RESOLVED`, deaths and their consequences),
+  `MONSTER_REGENERATED`, and `NEUTRAL_TURN_ENDED`, then the next Start
+  Turn's events; that command's blockade and sea-network events still come
+  last. The Spider is not a seat: it has no Start Turn, End Turn, income,
+  or elimination, and its turn never ends a match. A match without a Spider
+  has no neutral turn.
 - The first seat's first Start Turn runs when the match is created, so every
   seat's first turn includes ordinary income.
 - **Elimination:** a player owning zero cities is eliminated immediately.
@@ -2717,6 +2743,12 @@ General roster rules:
   the Triceratops, the Tripod, the Boulder Yeti, and the Steam Cannon are
   `SIEGE`, the Brain, the Ice Witch, and the Engineer `SUPPORT`, the
   Mammoth and the Steam Mole `DEFENDER`, and the Gyrocopter `SKIRMISHER`.
+- **The Giant Spider** is in no faction's roster: it is the one unit of
+  the neutral registration (mechanical role `JUGGERNAUT`; 24 HP, Attack 3,
+  Defense 2, Move 1, range 1, no Sight, no cost, `ATTACK` only, 4 HP of
+  regeneration in its own turn, a 10-Coin bounty), owned by nobody, never
+  trained, rewarded, or commanded
+  ([section 2.7](#27-map-curiosities)).
 
 ## 12. Movement and unit actions
 
@@ -2958,6 +2990,14 @@ General roster rules:
   its own retaliation range stays 1.
 - Land units may attack afloat units from shore and naval units may attack
   coastal land units.
+- The Giant Spider is hostile to every player in both modes, so a visible
+  Spider is a legal target like any hostile unit. The combat preview of an
+  attack on it carries `monsterRetaliates` (true when neither side dies and
+  the attacker stands in the Spider's reach for its next turn; the field is
+  absent for every other target) and its `push` is `BLOCKED`. The Spider's
+  own attacks happen only in the neutral turn, by the same `ATTACK`
+  exchange with no advance and no Push
+  ([section 2.7](#27-map-curiosities)).
 
 ### 13.2 Damage
 
@@ -3346,6 +3386,16 @@ Disintegrator ([section 21.5](#215-snow)).
   can see it. Faction and tree of every player are public.
 - Owner-private facts (city action flags, trade graphs, research, Coins, and
   achievement progress) are never shown to opponents.
+- Curiosities ([section 2.7](#27-map-curiosities)) are shown on every
+  explored tile (the treasure-chest rule), and the Giant Spider is visible
+  like any unit, on a tile the viewer has explored, with its lair and the
+  provokers the viewer can see. The Spider explores nothing and its choices
+  read the canonical board, so it may attack a unit a viewer cannot see;
+  the projection hides that as for any hidden attack.
+  `NEUTRAL_TURN_STARTED` and `NEUTRAL_TURN_ENDED` reach every viewer,
+  `WRECK_SALVAGED` and `MONSTER_BOUNTY_AWARDED` only the player paid, and
+  `previewMonsterV7` is exact unless an unexplored tile lies within 2 of
+  the Spider (`exact: false`).
 - The browser UI and Normal AI read only the player's public view, public
   command queries, and public previews. Viewer-projected events never reveal
   hidden units, sources, or HP.
@@ -3711,6 +3761,22 @@ Disintegrator ([section 21.5](#215-snow)).
   of a land unit with Move 2 or more crosses the viewer's own units, while a
   Move-1 unit, which cannot pay for a second step, keeps the field in which
   every unit is a wall.
+- **Map curiosities** (`pulp_wars-737.4`,
+  [section 2.7](#27-map-curiosities)), read from the public view and
+  previews only and run only when the view has a curiosity or a Spider (a
+  match without one keeps its decisions and hashes). A routine Move never
+  ends next to a visible Spider, and a unit already there with no other
+  target steps away. Normal attacks the Spider only when this turn's hits,
+  counting the units that can move in and attack, kill it, or from outside
+  its reach with more than its regeneration (4) by a unit with no better
+  target; never with a sole city defender. A land unit at half HP or less
+  (not a construct or a sole defender) within two turns of a free Fountain
+  that no visible enemy threatens walks there and stands until healed. A
+  visible Shrine is an errand for the nearest eligible unit within 4 route
+  steps and a visible Wreck for the nearest afloat unit within 4 water
+  steps. Normal never lures anyone to the Spider. Details and
+  measurements:
+  [Normal AI: map curiosities](../architecture/NORMAL_AI.md#map-curiosities-pulp_wars-7374).
 - One city action is compared across land training, every dock, and Land
   Grant. Roads are built only along one corridor of at most eight missing tiles
   from the original capital to a chosen city; the corridor still includes the
@@ -7255,6 +7321,21 @@ revision history gains its missing `7r31` row and the Dwarf rows replace
 the "not folded" `7r30` row, and the public Wail preview reads no Snow
 cover at all (not the viewer's `snow` flags, as the Ice Folk fold wrote).
 
+**Map curiosities fold (2026-10-04, `pulp_wars-737.7`, no ruleset or
+identity change):** the [map curiosities spec](RULESET_7_MAP_CURIOSITIES.md)
+(`7r35` and `7r36`, with the Normal AI of `pulp_wars-737.4`, the art of
+`pulp_wars-737.5`, and the UI of `pulp_wars-737.6`) is folded.
+[Section 2.7](#27-map-curiosities) already stated its engine rules as they
+landed; the fold adds the presentation there, the neutral turn in
+[section 3](#3-players-turns-and-victory), the Giant Spider beside the
+[rosters](#11-unit-roster), its attack preview in
+[section 13.1](#131-legality), its visibility in
+[section 15](#15-fog-and-observation), and the Normal AI's play in
+[section 16](#16-normal-ai-summary), and lists the spec's differences from
+the code in [section 24](#24-known-discrepancies). The coarse
+[curiosities check](../validation/RULESET_7_CURIOSITIES_CHECK.md) changed
+no rule or number.
+
 ## 24. Known discrepancies
 
 As of `pulp-wars-poc-7r37` the rules in this document match the code for
@@ -7264,8 +7345,8 @@ Martian overlay with the engine of the Mind Control overlay, the Ice Folk
 faction of the Ice Folk overlay, the Dwarf faction of the Dwarf overlay,
 the mission setup of [section 2.6](#26-mission-setup), the map
 curiosities of [section 2.7](#27-map-curiosities), and the Martian and Ice
-Folk balance round of `7r37`, with two open items: the pending
-map-curiosity steps and the pending balance steps below.
+Folk balance round of `7r37`, with one open item: the pending balance
+steps below.
 
 **Open.**
 
@@ -7291,21 +7372,76 @@ map-curiosity steps and the pending balance steps below.
   row, and the Glide tiles in the movement range
   ([screen flow](../ui/SCREEN_FLOW.md#current-ruleset-7-martian-overlay)).
 
-- **Map curiosities: the board pending.** Engine steps I and II
-  of the [map curiosities spec](RULESET_7_MAP_CURIOSITIES.md)
-  (`pulp_wars-737.2`, `7r35`, and `pulp_wars-737.3`, `7r36`) implement the
-  option, placement, the Fountain, Shrine, and Wreck, and the Giant Spider
-  with its neutral turn ([section 2.7](#27-map-curiosities)), and the
-  Normal AI plays them (`pulp_wars-737.4`). The art (`pulp_wars-737.5`) and
-  the UI (`pulp_wars-737.6`: board drawing, the Spider's own sprite and
-  panel, the tile panel's sentence, the move warning, the neutral-turn
-  playback, Help, and the checkbox's hint) are not done. Until then the browser
-  offers the "Curiosities" checkbox (on by default) but **draws no
-  curiosity marker**: a match with the option on has them in its state and
-  public view, invisible on the board, and their events have no log text;
-  the Spider is drawn as an ordinary unit with no owner colour and the base
-  (Human) art of its mechanical role, the Juggernaut, and its neutral turn
-  plays with no banner.
+**Resolved by implementation** (`pulp_wars-737.6`, `pulp_wars-737.7`):
+
+- **Map curiosities: the board (resolved).** Engine steps I and II of the
+  [map curiosities spec](RULESET_7_MAP_CURIOSITIES.md) (`7r35`, `7r36`)
+  landed before their art and UI, so for a while the browser offered the
+  "Curiosities" checkbox but drew no curiosity marker and showed the Spider
+  with the Juggernaut's art. The art (`pulp_wars-737.5`) and the UI
+  (`pulp_wars-737.6`) are now live with no identity change
+  ([section 2.7](#27-map-curiosities) "Presentation"), the Normal AI plays
+  the curiosities (`pulp_wars-737.4`), and `pulp_wars-737.7` ran the coarse
+  check and folded the spec.
+
+**Map curiosities spec against the code** (`pulp_wars-737.7`; resolved by
+stating the code's behavior):
+
+- **Event order of the neutral turn.** The spec's section 8.5 step 4 puts
+  the naval blockade and sea-network events of a blockader the Spider
+  killed before `NEUTRAL_TURN_ENDED`. The code reports them where every
+  `END_TURN` reports them, at the end of the command, after
+  `NEUTRAL_TURN_ENDED` and the next seat's Start Turn events
+  ([section 3](#3-players-turns-and-victory)).
+- **Claims.** A Shrine or Wreck is claimed only by a `MOVE` that steps
+  onto its tile (a unit already standing there, for example after a Push,
+  claims nothing until it leaves and returns). The spec's "not a Thrall" is
+  moot since `7r33`: a mind-controlled unit may claim a Shrine. A Shrine
+  veteran may have fewer than three kills, which the state schema allows
+  only with the option on.
+- **Missions.** The `MISSION` map type postdates the spec: a mission setup
+  must carry `curiosities: false` and the headless CLI refuses the flag
+  with `--map-type mission`.
+- **Wail credit.** A Wail credits no kill; a Spider it kills pays its
+  bounty to the Banshee's owner and counts for no unit.
+- **Previews.** `monsterRetaliates` is an optional field, present only
+  when the target is a visible Spider, and true when neither side dies and
+  the attacker stands in the Spider's reach. `queryThreatenedTilesV7` is a
+  per-unit query, so the provoke tiles are the answer for a Spider unit,
+  not an addition to every answer. `previewMonsterV7`'s area ignores
+  occupancy, and its reach counts an unexplored tile of the area as a
+  possible step.
+- **UI text.** The Spider's dock chip is "Neutral" (the spec's "Owned by
+  nobody"), the provoke warning is a marker with its sentence as the tile's
+  cursor description, and "The wilds stir" is a log line (a toast only when
+  the Spider attacked the viewer's unit), under the standing "minimal text,
+  no coordinates" rule.
+- **Normal AI.** The spec's rule (a), "this turn's offered attacks", also
+  counts the units that can move in and attack this turn; "with no attack"
+  and "no better target" mean no offered attack on a unit that is not a
+  Spider; a capturer within 2 of a center it can take runs no Shrine
+  errand; the Fountain "counts as recovery" as a priority over `RECOVER`
+  (the campaign has no retreat by HP); and incidental damage to the Spider
+  (splash, Wail, Kaboom, a Bomb Run, an eruption) is not filtered (spec
+  section 20; [section 16](#16-normal-ai-summary)).
+- **Acceptance criterion 7** of the spec asked for a win-rate and
+  match-length comparison on a larger matrix and for the Spider to be slain
+  in most of its matches by round 60. At the user's direction the coarse
+  check stayed small (40 matches), so it is a sanity check, not a
+  measurement at that precision, and it changed no rule or number: no
+  error or stall, the same winner in 19 of 20 pairs, and a Spider that the
+  Normal AI mostly leaves alone (slain in 1 of its 8 matches, which the
+  criterion did not foresee). Its findings and the rarity recommendation
+  are in the
+  [curiosities check](../validation/RULESET_7_CURIOSITIES_CHECK.md).
+- **Superseded spec text:** its former status ("design spec", an overlay at
+  `7r31` with the Dwarf and Mind Control overlays pending), the `7rNN`
+  identities (`7r35` and `7r36`), the weights without the Monster of its
+  section 17 (`7r35` only), the "LEGACY markers first" plan of its section
+  12.2 (the production art is wired into the live look; the code markers
+  remain in the Classic and legacy looks), its open questions (the root's
+  defaults stand: 12 HP, a Giant Spider, the count table as written), and
+  its tuning bounds, which the check did not use.
 
 **Resolved by implementation** (`pulp_wars-b5f.3`):
 

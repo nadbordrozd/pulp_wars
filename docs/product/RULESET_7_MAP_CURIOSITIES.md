@@ -1,6 +1,18 @@
 # Ruleset 7: map curiosities
 
-**Status:** design spec (`pulp_wars-737.1`, epic `pulp_wars-737`). Engine
+**Status:** folded (`pulp_wars-737.7`). Every step of this spec is
+implemented, and the rules, the Normal AI, and the presentation are
+described as current rules in
+[current rules section 2.7](RULESET_7_CURRENT.md#27-map-curiosities) and the
+sections it names; where this document and the code differ, the code's
+behavior is the rule and each difference is listed in
+[current rules section 24](RULESET_7_CURRENT.md#24-known-discrepancies).
+This document stays as design history (its values, tuning bounds, and
+appendix are not maintained). The coarse check of bead 7 is the
+[curiosities check](../validation/RULESET_7_CURIOSITIES_CHECK.md); it
+changed no rule ([section 21](#21-coarse-check-and-fold-pulp_wars-7377)).
+
+**History.** Design spec (`pulp_wars-737.1`, epic `pulp_wars-737`). Engine
 step I (bead 2 of section 15: the option, placement, the Fountain, the
 Shrine, and the Wreck) is implemented at `pulp-wars-poc-7r35`
 (`pulp_wars-737.2`) and engine step II (bead 3: the Monster, its neutral
@@ -969,6 +981,33 @@ rules as follows:
   short games; the coarse check of bead 7 should measure the errands on
   larger boards and may widen their bounds (4 steps; half HP within two
   turns).
+
+## 21. Coarse check and fold (`pulp_wars-737.7`)
+
+Bead 7 ran small, at the user's direction (no extensive balance testing at
+this stage), with no identity change and no tuning:
+
+- **The check** is the
+  [curiosities check](../validation/RULESET_7_CURIOSITIES_CHECK.md): 40
+  headless Normal matches (ten boards of 16 x 16 and 20 x 20 on Pangea,
+  Lakes, and Continents, both seat orders, the option on and off on the
+  same seeds) and the placement validator. No error or stall; 19 of 20
+  pairs have the same winner; half of the pairs play command for command
+  the same; the Spider fought in 2 of its 8 matches (2 units killed) and
+  was slain once; 2 Fountain heals, 2 Shrine claims, and no Wreck salvaged
+  in 10 matches.
+- **Acceptance criterion 7** (section 14) is not decided at that size, and
+  its "slain in a majority" predates the Normal AI's avoidance of the
+  Spider (section 20); the check records this instead of tuning inside the
+  bounds of section 15.
+- **Rarity** (open question 3): the measured counts are at or below the
+  table of section 4.2 and are kept. The check proposes, as follow-ups
+  only, a lone Wreck placed half the time (water maps always have a
+  curiosity from 16 x 16 up, nearly always a Wreck) and a wider Wreck
+  errand for the Normal AI.
+- **The fold:** current rules sections 2.7, 3, 11, 13.1, 15, 16, 23, and
+  24, and the gates of the
+  [release validation](../validation/RULESET_7_RELEASE.md).
 
 ## Appendix A. Draft, critique, and changes
 
