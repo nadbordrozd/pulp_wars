@@ -1,11 +1,11 @@
 import {
-  createPlayableGameV7,
   parseGameStateV7,
   type GameStateV7,
   type MapTypeV7,
   type PlayerId,
 } from "../../src/engine/index";
 import { setupV7 } from "./v7-builders";
+import { revision39PlayableGameV7 } from "./v7-revision13-map";
 
 const READY = {
   moved: false,
@@ -31,9 +31,10 @@ export function isolatedNavalScenarioV7(
   defendedTarget = false,
 ): { readonly state: GameStateV7; readonly subjectId: PlayerId } {
   const setup = { ...setupV7(seed, 1), mapType };
-  const created = createPlayableGameV7(setup);
-  if (!created.ok) throw new Error(created.error.code);
-  const source = created.state;
+  // The scenarios were laid out on the 7r39 board of each seed (its turn
+  // order and capitals); the village density (`pulp_wars-ykw.2`) regenerates
+  // the boards, so the parity rules hold them.
+  const source = revision39PlayableGameV7(setup).state;
   const subjectId = source.turnOrder[0];
   const targetId = source.turnOrder[1];
   if (subjectId === undefined || targetId === undefined)

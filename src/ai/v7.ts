@@ -2220,9 +2220,47 @@ function* navalPlanWorkV7(
     (unit) => unit.ownerId === view.viewer.id && unit.form === "EMBARKED",
   );
   const target = overseas[0]?.at ?? reachable[0]?.at ?? null;
+  // pulp_wars-ykw.7: a landmass takes no more landings than it has work.
+  // When the target is a neutral village on a landmass that already holds
+  // as many of the viewer's and its allies' capturers as it has known
+  // objectives (its uncaptured villages), the transports hold instead of
+  // landing: on the
+  // village-dense boards a whole army used to land for two or three
+  // villages and re-embark, having done nothing, once the first units had
+  // taken them.
+  const targetComponentId =
+    target === null ? undefined : componentByKey.get(coordKey(target));
+  const targetIsVillage =
+    target !== null && !view.cities.some((city) => same(city.at, target));
+  const targetLandmassWork =
+    targetComponentId === undefined
+      ? 0
+      : objectives.filter(
+          (objective) =>
+            componentByKey.get(coordKey(objective.at)) === targetComponentId,
+        ).length;
+  const targetLandmassClaimants =
+    targetComponentId === undefined
+      ? 0
+      : visibleObjectiveClaimants.filter(
+          (unit) => componentByKey.get(coordKey(unit.at)) === targetComponentId,
+        ).length;
+  const targetLandmassHasHostileCity =
+    targetComponentId !== undefined &&
+    view.cities.some(
+      (city) =>
+        isHostile(view, city.ownerId) &&
+        componentByKey.get(coordKey(city.at)) === targetComponentId,
+    );
+  const targetLandmassSaturated =
+    targetIsVillage &&
+    !targetLandmassHasHostileCity &&
+    targetLandmassClaimants > 0 &&
+    targetLandmassClaimants >= targetLandmassWork;
   const targetHasCaptureUnit =
     target !== null &&
-    visibleObjectiveClaimants.some((unit) => same(unit.at, target));
+    (targetLandmassSaturated ||
+      visibleObjectiveClaimants.some((unit) => same(unit.at, target)));
   const starts = [
     ...view.naval.ownedPorts
       .filter((port) => port.status === "ACTIVE")
@@ -3385,6 +3423,11 @@ function isPolicyCandidate(
     return false;
   const autoembark = isAutoembarkMoveV7(context, command);
   if (autoembark && !context.naval.active) return false;
+  // pulp_wars-ykw.7: the mirror of the endgame landing below: a capturer
+  // that can walk to an endgame target does not board. Without it a unit
+  // boarded to explore, was landed again for the endgame beside the tile it
+  // had left, and boarded again, turn after turn.
+  if (autoembark && endgameKeepsAshoreV7(context, command.unitId)) return false;
   // pulp_wars-9s0.1: a unit with a job it can walk to does not board.
   if (
     autoembark &&
@@ -7368,10 +7411,45 @@ function endgameLandingValueV7(
     return 0;
   const route = plan.routeDistanceByKey.get(coordKey(command.at));
   if (route === undefined || route > 3) return 0;
+  // pulp_wars-ykw.7: the route must lead to a target city. While the plan
+  // only searches (its routes end on unexplored tiles), a transport keeps
+  // exploring by sea: landed for the search, a unit walked a step, boarded
+  // to explore, and was landed again.
+  if (!plan.targets.some((city) => distance(city.at, command.at) <= route))
+    return 0;
   const landed: PublicUnitV7 = { ...actor, form: "LAND", at: command.at };
   if (visibleImmediateDamage(view, landed, command.at, context) >= actor.hp)
     return 0;
   return 10 - 2 * route;
+}
+
+/**
+ * `pulp_wars-ykw.7`: whether this capturer can walk to an endgame target
+ * (the plan has a public land route from its tile), so it stays ashore: the
+ * plan lands embarked capturers near its targets
+ * ({@link endgameLandingValueV7}).
+ */
+function endgameKeepsAshoreV7(
+  context: PolicyContextV7,
+  unitId: UnitId,
+): boolean {
+  const plan = context.endgame;
+  const actor = context.lookup.unitsById.get(unitId);
+  if (
+    plan === null ||
+    actor === undefined ||
+    actor.form !== "LAND" ||
+    !unitRoleRuleV7(context.view, actor).abilities.includes("CAPTURE")
+  )
+    return false;
+  return Number.isFinite(
+    endgameRouteDistanceV7(
+      plan,
+      context.view,
+      actor.at,
+      passesOwnUnitsV7(context.view, actor),
+    ),
+  );
 }
 
 /** A capturer that has not moved and can still route closer to a target. */

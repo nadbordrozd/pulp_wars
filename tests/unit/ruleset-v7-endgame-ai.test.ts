@@ -245,7 +245,7 @@ function setupWith(seed = 2): MatchSetupV7 {
     factions: ["ORIGINAL", "ORIGINAL"],
     allowDuplicateFactions: true,
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

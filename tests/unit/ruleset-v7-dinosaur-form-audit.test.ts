@@ -593,7 +593,10 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // an embarked unit never attack); the Candy Move rules take a land-form
     // mover.
     "src/ai/v7-candy.ts": 4,
-    "src/ai/v7.ts": 23,
+    // `pulp_wars-ykw.7`: the capturer that stays ashore because it can walk
+    // to an endgame target is a land-form unit (an Egg never boards, and an
+    // embarked unit is already afloat).
+    "src/ai/v7.ts": 24,
   };
 
   it("has no unaudited not-LAND form test in the engine or the Normal AI", () => {

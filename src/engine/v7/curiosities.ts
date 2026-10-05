@@ -101,8 +101,20 @@ export const MONSTER_REGENERATION_V7 = 4;
 export const MONSTER_BOUNTY_V7 = 10;
 /** Section 4.4: the smallest board width that may have a Monster. */
 export const MONSTER_MINIMUM_WIDTH_V7 = 16;
-/** Section 4.4: minimum Chebyshev distance from home to every center. */
+/**
+ * Section 4.4: minimum Chebyshev distance from home to every capital
+ * center.
+ */
 export const MONSTER_CENTER_DISTANCE_V7 = 5;
+/**
+ * Minimum Chebyshev distance from home to every village center
+ * (`pulp_wars-ykw.7`, `pulp-wars-poc-7r40`; 5 before, like a capital). On
+ * the village-density boards almost no tile is 5 from every village, so the
+ * lair may stand 4 from one: the Monster still never stands within 2 of a
+ * center ({@link monsterStandableV7}), so it stays out of every territory,
+ * and the part of its area nearer a village is simply closed to it.
+ */
+export const MONSTER_VILLAGE_DISTANCE_V7 = 4;
 /**
  * Section 4.4: of the 24 tiles around home, at least this many are Grass,
  * Forest, or Mountain.
@@ -369,14 +381,19 @@ function siteLegalV7(
   )
     return false;
   // Rule 3: 3 or more from every settlement center; section 4.4: the
-  // Monster's home 5 or more (its whole area stays 3 or more away).
-  const centerDistance =
-    kind === "MONSTER"
-      ? MONSTER_CENTER_DISTANCE_V7
-      : CURIOSITY_CENTER_DISTANCE_V7;
+  // Monster's home 5 or more from every capital and 4 or more from every
+  // village (5 from every center before `pulp_wars-ykw.7`).
+  const monster = kind === "MONSTER";
   if (
-    [...context.capitals, ...context.villages].some(
-      (center) => chebyshevV7(center, at) < centerDistance,
+    context.capitals.some(
+      (center) =>
+        chebyshevV7(center, at) <
+        (monster ? MONSTER_CENTER_DISTANCE_V7 : CURIOSITY_CENTER_DISTANCE_V7),
+    ) ||
+    context.villages.some(
+      (center) =>
+        chebyshevV7(center, at) <
+        (monster ? MONSTER_VILLAGE_DISTANCE_V7 : CURIOSITY_CENTER_DISTANCE_V7),
     )
   )
     return false;

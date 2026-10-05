@@ -28,7 +28,9 @@ import {
 
 const setup: MatchSetupV7 = {
   rulesetId: RULESET_7_ID,
-  seed: 42,
+  // pulp_wars-ykw.2: seed 40 on the village-density boards (42 before): its
+  // human capital has a natural farm tile with a mill site beside it.
+  seed: 40,
   width: 11,
   height: 11,
   aiCount: 1,
@@ -39,7 +41,7 @@ const setup: MatchSetupV7 = {
   // pulp_wars-w5j.1: a Human mirror through the test only option.
   allowDuplicateFactions: true,
   mapType: "DRY_LAND",
-  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
   curiosities: false,
 };
 /** A one-city tier-3 technology (revision 16: 12 Coins, was 9). */
@@ -47,7 +49,7 @@ const TIER_3_COST = technologyResearchCostV7(3, 1);
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r39.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -479,8 +481,9 @@ describe("ruleset-7 save and replay foundation", () => {
   it("naturally replays Muster unlock and its command-bearing Monument placement", () => {
     // pulp_wars-wwc: revision-16 maps differ (the growth floor accepts an
     // earlier candidate); seed 42 leaves no open Monument tile after the
-    // scripted Muster turns, seed 46 does.
-    const musterSetup = { ...setup, seed: 46 };
+    // scripted Muster turns, seed 46 does. On the village-density boards
+    // (`pulp_wars-ykw.2`) seed 40 does.
+    const musterSetup = { ...setup, seed: 40 };
     const created = createPlayableGameV7(musterSetup);
     if (!created.ok) throw new Error(created.error.code);
     let state: GameStateV7 = created.state;

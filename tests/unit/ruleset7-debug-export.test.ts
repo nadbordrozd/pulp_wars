@@ -77,8 +77,9 @@ describe("Ruleset 7 safe and omniscient exports", () => {
 function setup(): MatchSetupV7 {
   return {
     rulesetId: RULESET_7_ID,
-    // The human moves first on this seed's revision-14 map.
-    seed: 43,
+    // The human moves first on this seed's village-density map (seed 43 did
+    // on revision 14).
+    seed: 44,
     width: 11,
     height: 11,
     aiCount: 1,
@@ -88,7 +89,7 @@ function setup(): MatchSetupV7 {
     // pulp_wars-w5j.1: the browser launches only distinct factions.
     factions: ["ORIGINAL", "UNDEAD"],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

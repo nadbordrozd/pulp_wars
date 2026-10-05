@@ -1,5 +1,6 @@
 import {
   FACTION_IDS_V7,
+  MAP_GENERATION_REVISION_V7,
   RULESET_7_ID,
   type AiCountV7,
   type BoardSizeV7,
@@ -155,7 +156,7 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
   if (
     (mirror && input.allowDuplicateFactions !== true) ||
     input.rulesetId !== RULESET_7_ID ||
-    input.mapGenerationRevision !== "REGIONAL_BIOMES_NAVAL_V2" ||
+    input.mapGenerationRevision !== MAP_GENERATION_REVISION_V7 ||
     !isMapType(input.mapType) ||
     !isUint32V7(input.seed) ||
     !isBoardSize(input.width) ||
@@ -198,7 +199,7 @@ export function validateMatchSetupV7(input: unknown): MatchSetupValidationV7 {
       humanColor: input.humanColor,
       factions,
       mapType: input.mapType,
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: MAP_GENERATION_REVISION_V7,
       curiosities: input.curiosities,
       ...(mirror ? { allowDuplicateFactions: true as const } : {}),
     },
@@ -226,7 +227,7 @@ function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
     !Number.isSafeInteger(input.mission.revision) ||
     input.mission.revision < 1 ||
     input.rulesetId !== RULESET_7_ID ||
-    input.mapGenerationRevision !== "REGIONAL_BIOMES_NAVAL_V2" ||
+    input.mapGenerationRevision !== MAP_GENERATION_REVISION_V7 ||
     !isUint32V7(input.seed) ||
     !isBoardSize(input.width) ||
     input.height !== input.width ||
@@ -282,7 +283,7 @@ function validateMissionSetupV7(input: unknown): MatchSetupValidationV7 {
       humanColor: input.humanColor,
       factions,
       mapType: "MISSION",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: MAP_GENERATION_REVISION_V7,
       mission: ref,
       curiosities: false,
     },

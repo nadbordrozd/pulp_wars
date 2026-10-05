@@ -433,7 +433,7 @@ describe("Dwarf seats under the unique-factions rule (section 13.14)", () => {
       humanColor: "CORAL",
       factions: [...factions],
       mapType: "DRY_LAND",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: false,
     };
   };
@@ -1178,7 +1178,7 @@ const showcase = (factions: readonly FactionIdV7[]): MatchSetupV7 => ({
   factions: [...factions],
   ...mirrorOptionV7(factions),
   mapType: "SHOWCASE",
-  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+  mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
   curiosities: false,
 });
 

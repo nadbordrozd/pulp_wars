@@ -424,9 +424,9 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("returns a real accepted match boundary to Main menu and resumes it", async () => {
     const app = bootstrapRuleset7App(document);
-    // pulp_wars-wwc: seed 4 opens with the human seat on revision-16 maps
-    // (seed 1 now opens with the AI).
-    requiredInput("v7-seed").value = "4";
+    // pulp_wars-ykw.2: seed 3 opens with the human seat on village-density
+    // maps (seed 4 did on revision-16 maps).
+    requiredInput("v7-seed").value = "3";
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
@@ -512,8 +512,9 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("researches only inside Tech, preserves card focus, and shows exact formulas", async () => {
     const app = bootstrapRuleset7App(document, { storage: null });
-    // pulp_wars-wwc: a human-first seed on revision-16 maps (was 1).
-    requiredInput("v7-seed").value = "4";
+    // pulp_wars-ykw.2: a human-first seed on village-density maps (4 on
+    // revision-16 maps).
+    requiredInput("v7-seed").value = "3";
     chooseSeed();
     requiredButton('[data-action="launch"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
@@ -1257,7 +1258,7 @@ describe("Ruleset 7 DOM shell", () => {
 
   it("uses only public Monument provenance and places an unlocked entitlement in one map activation", async () => {
     const source = new Ruleset7BrowserController();
-    const launched = await source.launch(browserSetupV7(1540));
+    const launched = await source.launch(browserSetupV7(1546));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const initial = source.snapshot();
     if (initial.view === null) throw new Error("public view missing");

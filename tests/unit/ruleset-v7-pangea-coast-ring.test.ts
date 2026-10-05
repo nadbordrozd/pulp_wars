@@ -6,7 +6,7 @@ import {
   generateInitialMapWithVillageCountV7,
   pangeaCoastRingV7,
   pangeaLandCountV7,
-  villageCountV7,
+  revision14VillageCountV7,
   type AiCountV7,
   type BoardSizeV7,
   type BoardStateV7,
@@ -48,7 +48,7 @@ function setup(
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
     allowDuplicateFactions: true,
     mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3" as const,
     curiosities: false,
   };
 }
@@ -115,7 +115,7 @@ describe("Pangea coast ring", () => {
   it("rejects the pre-ring Pangea and a broken coast", () => {
     const old = generateInitialMapWithVillageCountV7(
       setup("PANGEA", 16, 3, 5),
-      villageCountV7(setup("PANGEA", 16, 3, 5)),
+      revision14VillageCountV7(setup("PANGEA", 16, 3, 5)),
       "REVISION_16",
     );
     expect(old.ok).toBe(true);
@@ -173,7 +173,7 @@ describe("Pangea coast ring", () => {
       const input = setup("PANGEA", width, aiCount, seed);
       const old = generateInitialMapWithVillageCountV7(
         input,
-        villageCountV7(input),
+        revision14VillageCountV7(input),
         "REVISION_16",
       );
       expect(old.ok && canonicalMapRandomHashV7(old.map)).toBe(hash);
@@ -199,13 +199,13 @@ describe("Pangea coast ring", () => {
           expect(
             generateInitialMapWithVillageCountV7(
               input,
-              villageCountV7(input),
+              revision14VillageCountV7(input),
               "PANGEA_COAST_RING",
             ),
           ).toEqual(
             generateInitialMapWithVillageCountV7(
               input,
-              villageCountV7(input),
+              revision14VillageCountV7(input),
               "REVISION_16",
             ),
           );

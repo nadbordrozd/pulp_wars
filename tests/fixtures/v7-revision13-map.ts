@@ -1,7 +1,7 @@
 import {
   createInitialMapStateWithVillageCountV7,
   createPlayableGameFromMapStateV7,
-  villageCountV7,
+  revision14VillageCountV7,
   type CreateInitialMapStateResultV7,
   type DomainEventV7,
   type GameStateV7,
@@ -75,11 +75,41 @@ export function revision15PlayableGameV7(setup: MatchSetupV7): {
   const created = createPlayableGameFromMapStateV7(
     createInitialMapStateWithVillageCountV7(
       setup,
-      villageCountV7(setup),
+      revision14VillageCountV7(setup),
       "REVISION_15",
     ),
   );
   if (!created.ok)
     throw new Error(`revision-15 game failed: ${created.error.code}`);
+  return { state: created.state, events: created.events };
+}
+
+/**
+ * `pulp_wars-ykw.2`: `createInitialMapStateV7` on the `pulp-wars-poc-7r39`
+ * board of `setup` (the fixed village table on the lattice 2 from the edge,
+ * with Rifts and, with the option on, curiosities: the `CURIOSITIES`
+ * generation rules), for rule tests written against a generated layout from
+ * before the village density. A replay or a headless match of the setup
+ * generates the current board, not this one.
+ */
+export function createRevision39MapStateV7(
+  setup: MatchSetupV7,
+): CreateInitialMapStateResultV7 {
+  return createInitialMapStateWithVillageCountV7(
+    setup,
+    revision14VillageCountV7(setup),
+    "CURIOSITIES",
+  );
+}
+
+/** The playable first turn of `setup` on its `7r39` board. */
+export function revision39PlayableGameV7(setup: MatchSetupV7): {
+  readonly state: GameStateV7;
+  readonly events: readonly DomainEventV7[];
+} {
+  const created = createPlayableGameFromMapStateV7(
+    createRevision39MapStateV7(setup),
+  );
+  if (!created.ok) throw new Error(`7r39 game failed: ${created.error.code}`);
   return { state: created.state, events: created.events };
 }

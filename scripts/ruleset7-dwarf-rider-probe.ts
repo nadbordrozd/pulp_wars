@@ -310,7 +310,7 @@ for (const size of SIZES)
     ] as const) {
       const setup: MatchSetupV7 = {
         rulesetId: RULESET_7_ID,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
         curiosities: false,
         seed,
         width: size,

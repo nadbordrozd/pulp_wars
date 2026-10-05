@@ -879,17 +879,23 @@ describe("Ruleset 7 deterministic public naval Normal policy", () => {
       expect(result.metrics.commandsByKind[kind]).toBe(0);
   });
 
-  it("avoids redundant landing and reboarding on the cooperative seed-7 Continents map", () => {
+  it("avoids redundant landing and reboarding on the cooperative seed-8 Continents map", () => {
     const result = runAiMatchV7(
       {
-        ...setupV7(7, 3),
+        ...setupV7(8, 3),
         aiMode: "COOPERATIVE",
         mapType: "CONTINENTS",
       },
       // Revision 16 (`pulp_wars-zsa`): 2-tile boats slow the seed-0 invasion
       // past this window (no landed capture by accepted command 800, nor by
-      // 1,200), so the natural-play seed is 7 (was 0); its first landed
-      // capture is accepted command 345.
+      // 1,200), so the natural-play seed was 7 (was 0); its first landed
+      // capture was accepted command 345 on the 7r39 board. On the
+      // village-density boards (`pulp_wars-ykw.2`) seed 8 lands and
+      // captures inside the window (seed 7 does not), and the policy landed
+      // and reboarded on seeds 3 and 5 until `pulp_wars-ykw.7` (a landmass
+      // takes no more landings than it has villages, a capturer that can
+      // walk to an endgame target does not board, and the endgame lands a
+      // transport only by a real target city).
       { maxRounds: 30, maxCommands: 800 },
     );
     expect(result.errors).toEqual([]);

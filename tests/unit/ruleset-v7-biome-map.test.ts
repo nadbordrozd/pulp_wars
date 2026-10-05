@@ -114,12 +114,26 @@ describe("ruleset-7 revision-4 regional biome map", () => {
       canonicalMapRandomHashV7(second.map),
     );
     expect(first.map).toEqual(second.map);
-    // Revision 16 (`pulp_wars-wwc`): the capital growth floor and
-    // `CAPITAL_GROWTH` accept this map on its eleventh candidate.
+    // The village density (`pulp_wars-ykw.2`, 7r40) regenerates every
+    // board: 13 villages for four players on 16 x 16 (seven before).
     expect(canonicalMapRandomHashV7(first.map)).toBe(
+      "791c9ff7fe64e825526426def16e8e7a16ddcf4f6483f4420b0d988569baf599",
+    );
+    expect(first.map.attempt).toBe(1);
+    expect(first.map.villages).toHaveLength(13);
+    // Revision 16 (`pulp_wars-wwc`): the capital growth floor and
+    // `CAPITAL_GROWTH` accepted the map before the density on its eleventh
+    // candidate; the 7r39 parity rules reproduce it exactly.
+    const revision39 = generateInitialMapWithVillageCountV7(
+      setupV7(0, 3),
+      7,
+      "CURIOSITIES",
+    );
+    if (!revision39.ok) throw new Error(revision39.error.code);
+    expect(canonicalMapRandomHashV7(revision39.map)).toBe(
       "d2d3b0eccab1c3c957f1133f6b2445516d0f7632a30a438cf6d50fd60508a78b",
     );
-    expect(first.map.attempt).toBe(11);
+    expect(revision39.map.attempt).toBe(11);
     // Revision-15 generation rules reproduce the revision-14/15 map (seven
     // villages, accepted on candidate 25) exactly.
     const revision15 = generateInitialMapWithVillageCountV7(
@@ -143,9 +157,11 @@ describe("ruleset-7 revision-4 regional biome map", () => {
     expect(canonicalMapRandomHashV7(revision13.map)).toBe(
       "3d8bc500d57fa1281bea3dd6d0b2ab38fbcf597d57c99db92058ab80999bda46",
     );
+    // The revision-4 hash of the board without the revision-7 Field Defense
+    // flag, on the 7r39 board the parity rules keep.
     const dryLandWithoutRevision7FieldDefense = {
-      ...first.map.board,
-      tiles: first.map.board.tiles.map((tile) => {
+      ...revision39.map.board,
+      tiles: revision39.map.board.tiles.map((tile) => {
         const { fieldDefense, ...withoutFieldDefense } = tile;
         if (fieldDefense)
           throw new Error("generated Dry Land unexpectedly has field defense");
@@ -155,8 +171,8 @@ describe("ruleset-7 revision-4 regional biome map", () => {
     expect(
       canonicalHash({
         board: dryLandWithoutRevision7FieldDefense,
-        treasureChests: first.map.treasureChests,
-        random: first.map.random,
+        treasureChests: revision39.map.treasureChests,
+        random: revision39.map.random,
       }),
     ).toBe("98ae7d977bfdf2a115fed7433a362cced63e95a9f08403193204a76e5d08be65");
     expect(new Set(first.map.board.tiles.map((tile) => tile.biome))).toEqual(
@@ -169,7 +185,7 @@ describe("ruleset-7 revision-4 regional biome map", () => {
       new Set(first.map.board.tiles.flatMap((tile) => tile.resource ?? [])),
     ).toEqual(new Set(RESOURCE_IDS_V7.slice(0, 4)));
     expect(first.map.capitals).toHaveLength(4);
-    expect(first.map.villages).toHaveLength(7);
+    expect(first.map.villages).toHaveLength(13);
     expect([...first.map.turnOrderSeats].sort()).toEqual([0, 1, 2, 3]);
     const settlements = [...first.map.capitals, ...first.map.villages];
     expect(minimumChebyshevSpacing(settlements)).toBeGreaterThanOrEqual(3);
@@ -339,7 +355,36 @@ describe("ruleset-7 revision-4 regional biome map", () => {
   });
 
   it("continues the rejected PRNG stream without extra resource draws", () => {
-    const generated = generateInitialMapV7(setupV7(1, 3));
+    // The current generator (the village density, `pulp_wars-ykw.2`):
+    // every candidate continues the stream of the one before, and only the
+    // last is accepted.
+    const current = generateInitialMapV7(setupV7(1, 3));
+    expect(current.ok).toBe(true);
+    if (!current.ok) return;
+    expect(current.map.attempts).toHaveLength(current.map.attempt);
+    for (const [index, attempt] of current.map.attempts.entries()) {
+      // A candidate short of villages (`VILLAGE_DENSITY`) draws for the
+      // cells its missing villages left.
+      if (!attempt.failures.includes("VILLAGE_DENSITY"))
+        expect(attempt.resourceDrawCount).toBe(
+          current.map.board.tiles.length -
+            current.map.capitals.length -
+            current.map.villages.length,
+        );
+      if (index > 0)
+        expect(attempt.initialRandomState).toBe(
+          current.map.attempts[index - 1]?.finalRandomState,
+        );
+      expect(attempt.failures.length === 0).toBe(
+        index === current.map.attempt - 1,
+      );
+    }
+    // The 7r39 generator, held by the parity rules.
+    const generated = generateInitialMapWithVillageCountV7(
+      setupV7(1, 3),
+      7,
+      "CURIOSITIES",
+    );
     expect(generated.ok).toBe(true);
     if (!generated.ok) return;
     // Revision 16 (`pulp_wars-wwc`): the seed-1 16 x 16 three-AI map is

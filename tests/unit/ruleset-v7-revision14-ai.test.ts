@@ -361,10 +361,12 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // 12, and 15). The Pangea coast ring (`pulp_wars-9s0.2`) regenerates
     // every Pangea board: seed 8 now ends in round 24 with no Lich; seed 3
     // Pangea trains two and plagues (3 of seeds 0-23 train a Lich within 40
-    // rounds: 3, 7, and 11; 3 and 7 also plague).
+    // rounds: 3, 7, and 11; 3 and 7 also plague). The village density
+    // (`pulp_wars-ykw.2`) regenerates every board again: of seeds 0-23 only
+    // seed 21 Pangea trains a Lich and plagues within 40 rounds.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 3,
+      seed: 21,
       width: 11,
       height: 11,
       aiCount: 1,
@@ -373,7 +375,7 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
       humanColor: "CORAL",
       factions: ["UNDEAD", "ORIGINAL"],
       mapType: "PANGEA",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: false,
     };
     const first = runAiMatchV7(setup, { maxRounds: 40 });
@@ -420,7 +422,7 @@ function setupWith(factions: readonly FactionIdV7[]): MatchSetupV7 {
     humanColor: "CORAL",
     factions: [...factions],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

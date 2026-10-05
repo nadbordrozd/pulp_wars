@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r39" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r40" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -50,8 +50,17 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r36",
   "pulp-wars-poc-7r37",
   "pulp-wars-poc-7r38",
+  "pulp-wars-poc-7r39",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r39.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r40.current" as const;
+/**
+ * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
+ * section 8.8, `pulp_wars-ykw.2`): `V3` is the village-density generator
+ * (settlements per land tile, villages one tile from the edge, the wild
+ * reserve). A setup naming any other revision is invalid.
+ */
+export const MAP_GENERATION_REVISION_V7 = "REGIONAL_BIOMES_NAVAL_V3" as const;
+export type MapGenerationRevisionV7 = typeof MAP_GENERATION_REVISION_V7;
 export const FACTION_IDS_V7 = Object.freeze([
   "ORIGINAL",
   "UNDEAD",
@@ -420,7 +429,7 @@ export interface MatchSetupV7 {
   readonly humanColor: PlayerColorV7;
   readonly factions: readonly FactionIdV7[];
   readonly mapType: MapTypeV7;
-  readonly mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2";
+  readonly mapGenerationRevision: MapGenerationRevisionV7;
   /**
    * Headless and test only (docs/architecture/HEADLESS_SIMULATION.md): when
    * present (always `true`), two or more seats may play the same faction,

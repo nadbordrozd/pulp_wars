@@ -31,7 +31,7 @@ describe("ruleset-7 naval map contract", () => {
         // pulp_wars-w5j.1: a Human mirror through the test only option.
         allowDuplicateFactions: true as const,
         mapType,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3" as const,
         curiosities: false,
       };
       const first = generateInitialMapV7(setup);
@@ -74,7 +74,7 @@ describe("ruleset-7 naval map contract", () => {
           factions: ["ORIGINAL", "ORIGINAL"],
           allowDuplicateFactions: true,
           mapType,
-          mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+          mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
           curiosities: false,
         });
         expect(result.ok).toBe(true);
@@ -102,7 +102,7 @@ describe("ruleset-7 naval map contract", () => {
       factions: ["ORIGINAL", "ORIGINAL"],
       allowDuplicateFactions: true,
       mapType: "CONTINENTS",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: false,
     });
     expect(result.ok).toBe(true);

@@ -65,7 +65,7 @@ export function curiosityGeneratedSetupV7(
     humanColor: "CORAL",
     factions,
     mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities,
   };
 }
@@ -90,7 +90,7 @@ export function checkCuriosityOnOffBoardV7(
   const rifts = generateInitialMapWithVillageCountV7(
     on,
     villageCountV7(on),
-    "RIFTS",
+    "VILLAGE_DENSITY_RIFTS",
   );
   if (!mapOn.ok || !mapOff.ok || !rifts.ok) throw new Error("map");
   // Off is the generator before the curiosities.

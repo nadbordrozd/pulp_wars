@@ -312,7 +312,7 @@ function setupFor(faction: FactionIdV7): MatchSetupV7 {
     // The authored board is built directly (never through the mission
     // registry); the state stays in the Gallery.
     mapType: "CONTINENTS",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

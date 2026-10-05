@@ -77,11 +77,12 @@ describe("Ruleset 7 Curiosities setup option", () => {
 
 describe("Ruleset 7 Giant Spider in the browser controller (pulp_wars-737.3)", () => {
   it("plays Normal rounds of a match with a Spider, its neutral turns included", async () => {
-    // 16 x 16 Dry Land seed 7 with two opponents draws a Giant Spider; the
+    // 16 x 16 Dry Land seed 11 with two opponents draws a Giant Spider
+    // (seed 7 before the village density, `pulp_wars-ykw.2`); the
     // board draws it since pulp_wars-737.6.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 7,
+      seed: 11,
       width: 16,
       height: 16,
       aiCount: 2,
@@ -90,7 +91,7 @@ describe("Ruleset 7 Giant Spider in the browser controller (pulp_wars-737.3)", (
       humanColor: "CORAL",
       factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
       mapType: "DRY_LAND",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: true,
     };
     const created = createPlayableGameV7(setup);

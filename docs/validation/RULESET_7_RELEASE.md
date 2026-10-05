@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r39`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
+## Current release contract (`pulp-wars-poc-7r40`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
 
-The current runtime is `pulp-wars-poc-7r39` (autosave
-`pulpWars.save.v7r39.current`; saves and replays of `pulp-wars-poc-7r38`
+The current runtime is `pulp-wars-poc-7r40` (autosave
+`pulpWars.save.v7r40.current`; saves and replays of `pulp-wars-poc-7r39`
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -157,6 +157,19 @@ a Martian seat hold); of the two pinned curiosity matches with a Martian
 seat, the Pangea one was recomputed and the Archipelago one did not move.
 The Normal AI's threatened-city Grunt bias went from 14 to 15 so that a
 threatened city still trains Grunts.
+`pulp_wars-ykw.2` (`7r40`) is engine step I of the
+[map scale design](../product/RULESET_7_MAP_SCALE.md): the village count
+follows a density per map type instead of the fixed table, villages may
+stand one tile from the edge, Dry Land, Pangea, and Lakes get a wild
+reserve, and the map revision is `REGIONAL_BIOMES_NAVAL_V3`
+([current rules, section 2.2](../product/RULESET_7_CURRENT.md#22-settlements-and-treasures)).
+No shape changed. Every generated board changed, so every pin on a
+generated board or a headless match was recomputed; the Showcase and the
+missions did not change (their pins hold). `npm run
+validate:ruleset7-map-scale` (`scripts/validate-ruleset7-map-scale.ts`)
+generates every map type, size, and seat count on seeds 0-255 and compares
+against the `7r39` baseline in
+`scripts/ruleset7-map-scale-baseline-7r39.json`.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
 Dwarves, and the Candy are part of the default route: match setup always
 offers a
@@ -175,7 +188,8 @@ rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r39` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r40` identity (ruleset ID, autosave key, the
+  map revision `REGIONAL_BIOMES_NAVAL_V3`, the
   eight-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`/`CANDY`
   faction and tree orders of the engine, and a Human-against-Undead setup), confirms

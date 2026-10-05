@@ -69,7 +69,7 @@ for (const [mapType, size, aiCount] of cells) {
   for (let seed = 0; seed < seeds; seed += 1) {
     const generated = generateInitialMapV7({
       rulesetId: RULESET_7_ID,
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: false,
       seed,
       width: size,

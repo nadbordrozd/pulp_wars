@@ -1,0 +1,546 @@
+{
+  "description": "pulp-wars-poc-7r39 (map revision REGIONAL_BIOMES_NAVAL_V2) generation baseline for npm run validate:ruleset7-map-scale: seeds 0-255, curiosities on, per map type, width, and seats: settlements, mean and worst accepted attempt, and the seeds with a land curiosity (Fountain or Shrine), with a Giant Spider, with any of the three (a land feature), and with a Rift. Measured by pulp_wars-ykw.2 before the village density changed the generator.",
+  "seeds": 256,
+  "cells": {
+    "DRY_LAND/11/2": {
+      "settlements": 6,
+      "meanAttempts": 2.05,
+      "worstAttempt": 8,
+      "landCuriositySeeds": 71,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 71
+    },
+    "DRY_LAND/14/2": {
+      "settlements": 6,
+      "meanAttempts": 2.14,
+      "worstAttempt": 10,
+      "landCuriositySeeds": 128,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 128
+    },
+    "DRY_LAND/14/3": {
+      "settlements": 8,
+      "meanAttempts": 4.38,
+      "worstAttempt": 26,
+      "landCuriositySeeds": 116,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 116
+    },
+    "DRY_LAND/16/2": {
+      "settlements": 6,
+      "meanAttempts": 1.8,
+      "worstAttempt": 6,
+      "landCuriositySeeds": 201,
+      "riftSeeds": 123,
+      "spiderSeeds": 55,
+      "landFeatureSeeds": 256
+    },
+    "DRY_LAND/16/3": {
+      "settlements": 8,
+      "meanAttempts": 3.23,
+      "worstAttempt": 17,
+      "landCuriositySeeds": 230,
+      "riftSeeds": 123,
+      "spiderSeeds": 20,
+      "landFeatureSeeds": 250
+    },
+    "DRY_LAND/16/4": {
+      "settlements": 11,
+      "meanAttempts": 5.7,
+      "worstAttempt": 25,
+      "landCuriositySeeds": 0,
+      "riftSeeds": 123,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 0
+    },
+    "DRY_LAND/20/2": {
+      "settlements": 16,
+      "meanAttempts": 2.11,
+      "worstAttempt": 11,
+      "landCuriositySeeds": 240,
+      "riftSeeds": 256,
+      "spiderSeeds": 31,
+      "landFeatureSeeds": 256
+    },
+    "DRY_LAND/20/3": {
+      "settlements": 16,
+      "meanAttempts": 4.09,
+      "worstAttempt": 22,
+      "landCuriositySeeds": 251,
+      "riftSeeds": 256,
+      "spiderSeeds": 12,
+      "landFeatureSeeds": 256
+    },
+    "DRY_LAND/20/4": {
+      "settlements": 16,
+      "meanAttempts": 8.94,
+      "worstAttempt": 39,
+      "landCuriositySeeds": 230,
+      "riftSeeds": 256,
+      "spiderSeeds": 7,
+      "landFeatureSeeds": 237
+    },
+    "DRY_LAND/25/2": {
+      "settlements": 23,
+      "meanAttempts": 1.81,
+      "worstAttempt": 7,
+      "landCuriositySeeds": 256,
+      "riftSeeds": 256,
+      "spiderSeeds": 95,
+      "landFeatureSeeds": 256
+    },
+    "DRY_LAND/25/3": {
+      "settlements": 23,
+      "meanAttempts": 2.98,
+      "worstAttempt": 13,
+      "landCuriositySeeds": 256,
+      "riftSeeds": 256,
+      "spiderSeeds": 37,
+      "landFeatureSeeds": 256
+    },
+    "DRY_LAND/25/4": {
+      "settlements": 23,
+      "meanAttempts": 6.26,
+      "worstAttempt": 38,
+      "landCuriositySeeds": 235,
+      "riftSeeds": 256,
+      "spiderSeeds": 1,
+      "landFeatureSeeds": 236
+    },
+    "PANGEA/11/2": {
+      "settlements": 6,
+      "meanAttempts": 1.16,
+      "worstAttempt": 3,
+      "landCuriositySeeds": 48,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 48
+    },
+    "PANGEA/14/2": {
+      "settlements": 6,
+      "meanAttempts": 1.18,
+      "worstAttempt": 4,
+      "landCuriositySeeds": 88,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 88
+    },
+    "PANGEA/14/3": {
+      "settlements": 8,
+      "meanAttempts": 1.48,
+      "worstAttempt": 5,
+      "landCuriositySeeds": 50,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 50
+    },
+    "PANGEA/16/2": {
+      "settlements": 6,
+      "meanAttempts": 1.17,
+      "worstAttempt": 4,
+      "landCuriositySeeds": 132,
+      "riftSeeds": 123,
+      "spiderSeeds": 74,
+      "landFeatureSeeds": 206
+    },
+    "PANGEA/16/3": {
+      "settlements": 8,
+      "meanAttempts": 1.32,
+      "worstAttempt": 5,
+      "landCuriositySeeds": 113,
+      "riftSeeds": 123,
+      "spiderSeeds": 51,
+      "landFeatureSeeds": 164
+    },
+    "PANGEA/16/4": {
+      "settlements": 11,
+      "meanAttempts": 1.75,
+      "worstAttempt": 9,
+      "landCuriositySeeds": 107,
+      "riftSeeds": 123,
+      "spiderSeeds": 11,
+      "landFeatureSeeds": 118
+    },
+    "PANGEA/20/2": {
+      "settlements": 16,
+      "meanAttempts": 1.21,
+      "worstAttempt": 4,
+      "landCuriositySeeds": 177,
+      "riftSeeds": 256,
+      "spiderSeeds": 104,
+      "landFeatureSeeds": 231
+    },
+    "PANGEA/20/3": {
+      "settlements": 16,
+      "meanAttempts": 1.28,
+      "worstAttempt": 4,
+      "landCuriositySeeds": 167,
+      "riftSeeds": 256,
+      "spiderSeeds": 55,
+      "landFeatureSeeds": 202
+    },
+    "PANGEA/20/4": {
+      "settlements": 16,
+      "meanAttempts": 1.64,
+      "worstAttempt": 7,
+      "landCuriositySeeds": 197,
+      "riftSeeds": 256,
+      "spiderSeeds": 35,
+      "landFeatureSeeds": 231
+    },
+    "PANGEA/25/2": {
+      "settlements": 23,
+      "meanAttempts": 1.22,
+      "worstAttempt": 3,
+      "landCuriositySeeds": 221,
+      "riftSeeds": 256,
+      "spiderSeeds": 139,
+      "landFeatureSeeds": 256
+    },
+    "PANGEA/25/3": {
+      "settlements": 23,
+      "meanAttempts": 1.2,
+      "worstAttempt": 4,
+      "landCuriositySeeds": 199,
+      "riftSeeds": 256,
+      "spiderSeeds": 62,
+      "landFeatureSeeds": 230
+    },
+    "PANGEA/25/4": {
+      "settlements": 23,
+      "meanAttempts": 1.5,
+      "worstAttempt": 6,
+      "landCuriositySeeds": 184,
+      "riftSeeds": 256,
+      "spiderSeeds": 45,
+      "landFeatureSeeds": 226
+    },
+    "CONTINENTS/11/2": {
+      "settlements": 6,
+      "meanAttempts": 2.87,
+      "worstAttempt": 22,
+      "landCuriositySeeds": 0,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 0
+    },
+    "CONTINENTS/14/2": {
+      "settlements": 6,
+      "meanAttempts": 2.8,
+      "worstAttempt": 16,
+      "landCuriositySeeds": 4,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 4
+    },
+    "CONTINENTS/14/3": {
+      "settlements": 8,
+      "meanAttempts": 17.7,
+      "worstAttempt": 134,
+      "landCuriositySeeds": 5,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 5
+    },
+    "CONTINENTS/16/2": {
+      "settlements": 6,
+      "meanAttempts": 3.48,
+      "worstAttempt": 16,
+      "landCuriositySeeds": 26,
+      "riftSeeds": 114,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 26
+    },
+    "CONTINENTS/16/3": {
+      "settlements": 8,
+      "meanAttempts": 5.1,
+      "worstAttempt": 30,
+      "landCuriositySeeds": 16,
+      "riftSeeds": 63,
+      "spiderSeeds": 1,
+      "landFeatureSeeds": 17
+    },
+    "CONTINENTS/16/4": {
+      "settlements": 11,
+      "meanAttempts": 5.46,
+      "worstAttempt": 41,
+      "landCuriositySeeds": 9,
+      "riftSeeds": 37,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 9
+    },
+    "CONTINENTS/20/2": {
+      "settlements": 16,
+      "meanAttempts": 4.43,
+      "worstAttempt": 31,
+      "landCuriositySeeds": 66,
+      "riftSeeds": 222,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 66
+    },
+    "CONTINENTS/20/3": {
+      "settlements": 16,
+      "meanAttempts": 4.55,
+      "worstAttempt": 30,
+      "landCuriositySeeds": 42,
+      "riftSeeds": 223,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 42
+    },
+    "CONTINENTS/20/4": {
+      "settlements": 16,
+      "meanAttempts": 4.8,
+      "worstAttempt": 23,
+      "landCuriositySeeds": 28,
+      "riftSeeds": 195,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 28
+    },
+    "CONTINENTS/25/2": {
+      "settlements": 23,
+      "meanAttempts": 8.41,
+      "worstAttempt": 45,
+      "landCuriositySeeds": 159,
+      "riftSeeds": 255,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 159
+    },
+    "CONTINENTS/25/3": {
+      "settlements": 23,
+      "meanAttempts": 7.59,
+      "worstAttempt": 40,
+      "landCuriositySeeds": 35,
+      "riftSeeds": 255,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 35
+    },
+    "CONTINENTS/25/4": {
+      "settlements": 23,
+      "meanAttempts": 7.57,
+      "worstAttempt": 41,
+      "landCuriositySeeds": 19,
+      "riftSeeds": 255,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 19
+    },
+    "ARCHIPELAGO/11/2": {
+      "settlements": 5,
+      "meanAttempts": 10.32,
+      "worstAttempt": 78,
+      "landCuriositySeeds": 0,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 0
+    },
+    "ARCHIPELAGO/14/2": {
+      "settlements": 6,
+      "meanAttempts": 2.69,
+      "worstAttempt": 15,
+      "landCuriositySeeds": 13,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 13
+    },
+    "ARCHIPELAGO/14/3": {
+      "settlements": 8,
+      "meanAttempts": 10.28,
+      "worstAttempt": 53,
+      "landCuriositySeeds": 4,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 4
+    },
+    "ARCHIPELAGO/16/2": {
+      "settlements": 6,
+      "meanAttempts": 2.66,
+      "worstAttempt": 11,
+      "landCuriositySeeds": 57,
+      "riftSeeds": 25,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 57
+    },
+    "ARCHIPELAGO/16/3": {
+      "settlements": 8,
+      "meanAttempts": 3.61,
+      "worstAttempt": 18,
+      "landCuriositySeeds": 22,
+      "riftSeeds": 1,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 22
+    },
+    "ARCHIPELAGO/16/4": {
+      "settlements": 10,
+      "meanAttempts": 28.21,
+      "worstAttempt": 122,
+      "landCuriositySeeds": 24,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 24
+    },
+    "ARCHIPELAGO/20/2": {
+      "settlements": 16,
+      "meanAttempts": 7.6,
+      "worstAttempt": 34,
+      "landCuriositySeeds": 90,
+      "riftSeeds": 17,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 90
+    },
+    "ARCHIPELAGO/20/3": {
+      "settlements": 16,
+      "meanAttempts": 21.95,
+      "worstAttempt": 160,
+      "landCuriositySeeds": 44,
+      "riftSeeds": 12,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 44
+    },
+    "ARCHIPELAGO/20/4": {
+      "settlements": 16,
+      "meanAttempts": 33.54,
+      "worstAttempt": 223,
+      "landCuriositySeeds": 9,
+      "riftSeeds": 1,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 9
+    },
+    "ARCHIPELAGO/25/2": {
+      "settlements": 23,
+      "meanAttempts": 4.45,
+      "worstAttempt": 22,
+      "landCuriositySeeds": 95,
+      "riftSeeds": 69,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 95
+    },
+    "ARCHIPELAGO/25/3": {
+      "settlements": 23,
+      "meanAttempts": 7.53,
+      "worstAttempt": 37,
+      "landCuriositySeeds": 47,
+      "riftSeeds": 118,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 47
+    },
+    "ARCHIPELAGO/25/4": {
+      "settlements": 23,
+      "meanAttempts": 10.14,
+      "worstAttempt": 54,
+      "landCuriositySeeds": 1,
+      "riftSeeds": 92,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 1
+    },
+    "LAKES/11/2": {
+      "settlements": 6,
+      "meanAttempts": 1.21,
+      "worstAttempt": 4,
+      "landCuriositySeeds": 24,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 24
+    },
+    "LAKES/14/2": {
+      "settlements": 6,
+      "meanAttempts": 1.56,
+      "worstAttempt": 9,
+      "landCuriositySeeds": 86,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 86
+    },
+    "LAKES/14/3": {
+      "settlements": 8,
+      "meanAttempts": 2.09,
+      "worstAttempt": 10,
+      "landCuriositySeeds": 71,
+      "riftSeeds": 0,
+      "spiderSeeds": 0,
+      "landFeatureSeeds": 71
+    },
+    "LAKES/16/2": {
+      "settlements": 6,
+      "meanAttempts": 1.54,
+      "worstAttempt": 8,
+      "landCuriositySeeds": 136,
+      "riftSeeds": 123,
+      "spiderSeeds": 69,
+      "landFeatureSeeds": 205
+    },
+    "LAKES/16/3": {
+      "settlements": 8,
+      "meanAttempts": 1.78,
+      "worstAttempt": 6,
+      "landCuriositySeeds": 127,
+      "riftSeeds": 121,
+      "spiderSeeds": 51,
+      "landFeatureSeeds": 178
+    },
+    "LAKES/16/4": {
+      "settlements": 11,
+      "meanAttempts": 2.23,
+      "worstAttempt": 11,
+      "landCuriositySeeds": 113,
+      "riftSeeds": 116,
+      "spiderSeeds": 18,
+      "landFeatureSeeds": 131
+    },
+    "LAKES/20/2": {
+      "settlements": 16,
+      "meanAttempts": 1.76,
+      "worstAttempt": 8,
+      "landCuriositySeeds": 172,
+      "riftSeeds": 256,
+      "spiderSeeds": 103,
+      "landFeatureSeeds": 229
+    },
+    "LAKES/20/3": {
+      "settlements": 16,
+      "meanAttempts": 1.99,
+      "worstAttempt": 9,
+      "landCuriositySeeds": 162,
+      "riftSeeds": 256,
+      "spiderSeeds": 44,
+      "landFeatureSeeds": 192
+    },
+    "LAKES/20/4": {
+      "settlements": 16,
+      "meanAttempts": 2.44,
+      "worstAttempt": 10,
+      "landCuriositySeeds": 156,
+      "riftSeeds": 256,
+      "spiderSeeds": 16,
+      "landFeatureSeeds": 171
+    },
+    "LAKES/25/2": {
+      "settlements": 23,
+      "meanAttempts": 1.25,
+      "worstAttempt": 5,
+      "landCuriositySeeds": 227,
+      "riftSeeds": 256,
+      "spiderSeeds": 146,
+      "landFeatureSeeds": 256
+    },
+    "LAKES/25/3": {
+      "settlements": 23,
+      "meanAttempts": 1.32,
+      "worstAttempt": 4,
+      "landCuriositySeeds": 182,
+      "riftSeeds": 256,
+      "spiderSeeds": 88,
+      "landFeatureSeeds": 206
+    },
+    "LAKES/25/4": {
+      "settlements": 23,
+      "meanAttempts": 1.64,
+      "worstAttempt": 10,
+      "landCuriositySeeds": 135,
+      "riftSeeds": 256,
+      "spiderSeeds": 47,
+      "landFeatureSeeds": 174
+    }
+  }
+}

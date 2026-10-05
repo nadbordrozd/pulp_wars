@@ -246,9 +246,28 @@ runAiMatchV7(matchSetup("ARCHIPELAGO", 25, 3, "RIVAL", 0), {
   policySliceMilliseconds: 4,
   onPolicyWork: (entry) => coldDiagnostics.push(entry),
 });
+// The yield proof must not depend on the machine: a slice is wall-clock
+// time, and on a fast or idle machine every 25 x 25 decision of these two
+// rounds can finish inside the 4 ms budget measured above (it passed and
+// failed on the same tree). The same cold match with a quarter-millisecond
+// budget, far below any 25 x 25 plan, must yield and must play the same
+// commands.
+const yieldDiagnostics: { slices: number }[] = [];
+const coldSetup = matchSetup("ARCHIPELAGO", 25, 3, "RIVAL", 0);
+const coldOptions = { maxRounds: 2, maxCommands: 80 };
+const yielding = runAiMatchV7(coldSetup, {
+  ...coldOptions,
+  policySliceMilliseconds: 0.25,
+  onPolicyWork: (entry) => yieldDiagnostics.push(entry),
+});
 assert(
-  coldDiagnostics.some((entry) => entry.slices > 1),
+  yieldDiagnostics.some((entry) => entry.slices > 1),
   "25x25 planning never yielded",
+);
+assert.equal(
+  yielding.metrics.commandHash,
+  runAiMatchV7(coldSetup, coldOptions).metrics.commandHash,
+  "25x25 sliced planning changed the commands",
 );
 
 const report = {
@@ -296,7 +315,7 @@ function matchSetup(
 ): MatchSetupV7 {
   return {
     rulesetId: RULESET_7_ID,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
     seed,
     width,
@@ -453,15 +472,32 @@ function runTargeted(
     state = applied.state;
     commandsThisTurn = command.kind === "END_TURN" ? 0 : commandsThisTurn + 1;
   }
-  assert(
-    shorecraft &&
-      port &&
-      departure &&
-      frontierExploration &&
-      landing &&
-      captureWait,
-  );
-  if (deepLane) assert(navigation);
+  // pulp_wars-9s0.1 (as `tests/unit/ruleset-v7-naval-ai.test.ts` has it):
+  // where the sea shortcut needs Deep Water (and so Navigation first), the
+  // scout walks the explored land route instead and takes the capital
+  // before a transport could sail.
+  if (deepLane && geometry === "SEA_SHORTCUT") {
+    assert(
+      shorecraft && port && !departure,
+      `${mapType}/${seed}: the deep sea shortcut is walked`,
+    );
+    assert.deepEqual(
+      state.outcome,
+      { kind: "VICTORY", winnerId: fixture.subjectId },
+      `${mapType}/${seed}: the walked shortcut wins`,
+    );
+  } else {
+    assert(
+      shorecraft &&
+        port &&
+        departure &&
+        frontierExploration &&
+        landing &&
+        captureWait,
+      `${mapType}/${seed}: the naval sequence`,
+    );
+    if (deepLane) assert(navigation, `${mapType}/${seed}: Navigation`);
+  }
   return {
     mapType,
     seed,

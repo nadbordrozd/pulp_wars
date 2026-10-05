@@ -559,6 +559,12 @@ describe("ruleset-7 revision-13 Normal AI determinism and headless play", () => 
       // matches and none of the cases above Wails any more; this Dry Land
       // match Wails twelve times.
       { factions: ["ORIGINAL", "UNDEAD"], seed: 9, mapType: "DRY_LAND" },
+      // pulp_wars-ykw.2: the village density regenerates every board and
+      // none of the cases above reaches a Raise Dead or a Wail any more
+      // (they still Devour and Rally); these Dry Land matches raise 13 and
+      // 4 times, and the second Wails six times.
+      { factions: ["UNDEAD", "ORIGINAL"], seed: 15, mapType: "DRY_LAND" },
+      { factions: ["UNDEAD", "ORIGINAL"], seed: 21, mapType: "DRY_LAND" },
     ];
     const used: Record<string, number> = {
       RAISE_DEAD: 0,
@@ -616,7 +622,7 @@ function setupWith(factions: readonly FactionIdV7[], seed = 2): MatchSetupV7 {
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

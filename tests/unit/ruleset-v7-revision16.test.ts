@@ -25,7 +25,7 @@ import {
   parseReplayFileV7,
   parseReplayJsonV7,
   runReplayV7,
-  villageCountV7,
+  revision14VillageCountV7,
   viewForV7,
   type BiomeIdV7,
   type BoardStateV7,
@@ -81,10 +81,10 @@ const CELLS = [
 ] as const;
 
 describe("ruleset-7 revision-16 identity", () => {
-  it("keeps rejecting r15 after the r39 identity and cleans the r15 through r38 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r39");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r39.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-24)).toEqual([
+  it("keeps rejecting r15 after the r40 identity and cleans the r15 through r39 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r40");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-25)).toEqual([
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
       "pulpWars.save.v7r17.current",
@@ -109,6 +109,7 @@ describe("ruleset-7 revision-16 identity", () => {
       "pulpWars.save.v7r36.current",
       "pulpWars.save.v7r37.current",
       "pulpWars.save.v7r38.current",
+      "pulpWars.save.v7r39.current",
     ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const setup = setupFor("CONTINENTS", 11, 1, 3);
@@ -162,7 +163,7 @@ describe("ruleset-7 prior identities", () => {
   ];
 
   it("lists every earlier Ruleset 7 identity exactly once, in order", () => {
-    expect(revision).toBe(39);
+    expect(revision).toBe(40);
     expect([...PRIOR_RULESET_7_IDS]).toEqual(expectedPrior);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
   });
@@ -196,7 +197,7 @@ describe("ruleset-7 prior identities", () => {
   });
 
   it("still reports an unknown Ruleset 7 identity as INVALID_REPLAY", () => {
-    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r40", "other"])
+    for (const id of ["pulp-wars-poc-7r1", "pulp-wars-poc-7r41", "other"])
       expect(
         parseReplayFileV7({
           format: "pulp-wars-replay",
@@ -271,7 +272,7 @@ describe("ruleset-7 revision-16 orthogonal Shallow Water", () => {
     const current = generateInitialMapV7(setup);
     const revision15 = generateInitialMapWithVillageCountV7(
       setup,
-      villageCountV7(setup),
+      revision14VillageCountV7(setup),
       "REVISION_15",
     );
     if (!current.ok || !revision15.ok) throw new Error("generation failed");
@@ -426,8 +427,14 @@ describe("ruleset-7 revision-16 capital growth floor", () => {
   });
 
   it("rejects candidates that stay short with CAPITAL_GROWTH and continues the stream", () => {
-    // Seed 1, 16 x 16 three-AI Dry Land: four candidates fail CAPITAL_GROWTH.
-    const generated = generateInitialMapV7(setupFor("DRY_LAND", 16, 3, 1));
+    // Seed 1, 16 x 16 three-AI Dry Land on the 7r39 generator (the parity
+    // rules; the village density of `pulp_wars-ykw.2` draws other
+    // candidates): four candidates fail CAPITAL_GROWTH.
+    const generated = generateInitialMapWithVillageCountV7(
+      setupFor("DRY_LAND", 16, 3, 1),
+      7,
+      "CURIOSITIES",
+    );
     if (!generated.ok) throw new Error(generated.error.code);
     expect(
       generated.map.attempts
@@ -446,7 +453,7 @@ describe("ruleset-7 revision-16 capital growth floor", () => {
     // (the floor draws nothing), so the same candidate compares directly.
     const compare = (seed: number, attempt: number) => {
       const setup = setupFor("DRY_LAND", 16, 3, seed);
-      const count = villageCountV7(setup);
+      const count = revision14VillageCountV7(setup);
       const before = generateInitialMapWithVillageCountV7(
         setup,
         count,
@@ -709,7 +716,7 @@ function setupFor(
         Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const)),
     ],
     mapType,
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
     // pulp_wars-w5j.1: the test only mirror option for the all-Human cells.
     ...mirrorOptionV7(factions ?? ["ORIGINAL", "ORIGINAL"]),

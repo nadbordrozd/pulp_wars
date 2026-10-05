@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r39`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r40`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`, the
 engine step of the [Candy overlay](RULESET_7_CANDY.md), `pulp_wars-jdb.3`:
@@ -126,7 +126,14 @@ and its four new combat-preview fields neutral, and `pulp-wars-poc-7r39`
 (`pulp_wars-1wy.6`, the measurement of the balance design) gives the Martian
 Grunt 8 HP (was 9), the first step of the design's fallback ladder
 ([section 11](#11-unit-roster)). A match without a Martian seat plays as
-before.
+before, and `pulp-wars-poc-7r40` (`pulp_wars-ykw.2`, engine step I of the
+[map scale design](RULESET_7_MAP_SCALE.md)) replaces the fixed village
+table with a **village density** per map type: the settlements of a board
+follow its land, villages may stand one tile from the edge, and Dry Land,
+Pangea, and Lakes keep a wild reserve for curiosities and Rifts
+([section 2.2](#22-settlements-and-treasures)). Every generated board
+changed (map revision `REGIONAL_BIOMES_NAVAL_V3`); the Showcase, the
+missions, and every other rule did not.
 
 **The Candy overlay is partly pending.** Every faction the engine registers
 is described here, and the Candy engine rules are
@@ -203,7 +210,7 @@ some Help text, an identity written as `7rNN`, and a fallback-art plan; the
 values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r39`.
+resolved ones as of `pulp-wars-poc-7r40`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -292,11 +299,11 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r39`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Ruleset                                    | `pulp-wars-poc-7r40`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Browser autosave                           | `pulpWars.save.v7r39.current`                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| Map revision                               | `REGIONAL_BIOMES_NAVAL_V2`                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Browser autosave                           | `pulpWars.save.v7r40.current`                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Map revision                               | `REGIONAL_BIOMES_NAVAL_V3`                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                        |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                        |
 | Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`; `CANDY` → `CANDY_BASELINE_V1`                                                                                                                                                                                           |
@@ -307,7 +314,7 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
-  `pulp-wars-poc-7r38`) are rejected, never migrated. Revision 18 changed no
+  `pulp-wars-poc-7r39`) are rejected, never migrated. Revision 18 changed no
   setup, state, command, event, or view shape, only Move legality and cost,
   and added the `SHOWCASE` map type ([section 2.5](#25-showcase-setup)).
   Revision 19 (`7r19`) added the Dinosaur faction with the `EGG` unit form,
@@ -418,9 +425,12 @@ separate [Ruleset 6](RULESET_6.md) route.
   without a Candy seat is the `7r37` match apart from the four empty lists
   and the four neutral preview fields. The Grunt's 8 HP (`pulp_wars-1wy.6`,
   `7r39`) changed one number of the Martian registration and no shape; a
-  match without a Martian seat is the `7r38` match.
+  match without a Martian seat is the `7r38` match. The village density
+  (`pulp_wars-ykw.2`, `7r40`) changed map generation only and no shape: the
+  setup's `mapGenerationRevision` is `REGIONAL_BIOMES_NAVAL_V3`, the only
+  value a setup may carry.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r38.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r39.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -559,27 +569,85 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
 
 ### 2.2 Settlements and treasures
 
-| Board width | Legal AI counts | Neutral villages for 1/2/3 AI  | Total settlements for 1/2/3 AI | Treasure chests |
-| ----------: | --------------- | ------------------------------ | ------------------------------ | --------------: |
-|          11 | 1               | 4 (3 on `ARCHIPELAGO`) / — / — | 6 (5) / — / —                  |               2 |
-|          14 | 1–2             | 4 / 5 / —                      | 6 / 8 / —                      |               2 |
-|          16 | 1–3             | 4 / 5 / 7 (6 on `ARCHIPELAGO`) | 6 / 8 / 11 (10)                |               2 |
-|          20 | 1–3             | 14 / 13 / 12                   | 16 / 16 / 16                   |               4 |
-|          25 | 1–3             | 21 / 20 / 19                   | 23 / 23 / 23                   |               5 |
+| Board width | Legal AI counts | Settlements `S`: Dry Land / Lakes / Pangea / Continents / Archipelago | Treasure chests |
+| ----------: | --------------- | --------------------------------------------------------------------- | --------------: |
+|          11 | 1               | 8 / 7 / 6 / 6 / 4                                                     |               2 |
+|          14 | 1–2             | 13 / 12 / 11 / 9 / 7                                                  |               2 |
+|          16 | 1–3             | 17 / 16 / 15 / 12 / 9                                                 |               2 |
+|          20 | 1–3             | 27 / 25 / 24 / 19 / 15                                                |               4 |
+|          25 | 1–3             | 42 / 38 / 38 / 29 / 23                                                |               5 |
 
-- Every seat has one capital; total settlements are capitals plus villages.
-- On widths 11, 14, and 16 the village count follows the AI count, not the
-  width: an explicit 16 x 16 board with one AI has 6 settlements, and an
-  explicit 14 x 14 board with one AI also has 6. Auto size (11/14/16 for
-  1/2/3 AI) therefore gives 6, 8, or 11 settlements (5 and 10 on the two
-  Archipelago exceptions). On widths 20 and 25 the total is fixed at 16 and 23.
-- The two Archipelago exceptions (11 x 11 with one AI, 16 x 16 with three AI)
-  keep the revision-13 count because one more village fails map acceptance on
-  some seeds ([revision 14 §8](RULESET_7_REVISION_14_BALANCE.md#8-villages)).
+- **Village density** (`pulp_wars-ykw.2`, `pulp-wars-poc-7r40`,
+  [map scale design](RULESET_7_MAP_SCALE.md) section 5). A generated board
+  has `S` **settlements** (capitals plus neutral villages),
+  `S = roundHalfUp(L / LPS)`: `L` is the land tiles of the map type at that
+  width (the whole board on Dry Land; the board minus its lakes on Lakes;
+  the coast-ring count on Pangea; 56% on Continents; 40% on Archipelago) and
+  `LPS` the **land per settlement** of the map type: Dry Land 15, Lakes 13,
+  Pangea 12, Continents 12, Archipelago 11. `S` depends only on the width
+  and the map type, never on the seats. Every seat has one capital, so the
+  board has `max(0, S − seats)` villages: a 16 x 16 Dry Land board has 15,
+  14, or 13 villages for 2, 3, or 4 players. (Through `7r39` the villages
+  were a fixed table by AI count: 4/5/7 on widths 11–16, 14/13/12 on 20,
+  21/20/19 on 25. The parity generator keeps that table as
+  `revision14VillageCountV7`.)
 - The chest count is a maximum: if fewer candidate cells exist, fewer chests
-  are placed.
-- Settlements are Grass land cells at least two cells from an edge and at least
-  Chebyshev distance 3 apart; capitals are at least `floor(width / 2)` apart.
+  are placed. Chests are not part of the density.
+- Settlements are Grass land cells at least Chebyshev distance 3 apart.
+  Capitals are at least two cells from an edge on Dry Land and at least
+  `floor(width / 2)` apart; **a village may stand one cell from an edge**
+  (two before `7r40`), so its eight-cell ring is still on the board.
+- **Order.** Capitals first (on Dry Land the corners of the pitch-3 lattice,
+  as before; on a water map the land mask search, as before), then the wild
+  reserve, then the villages, then terrain and resources as before.
+- **Wild reserve** (Dry Land, Pangea, and Lakes only). After the capitals
+  and before the villages the generator reserves up to 1 (widths 11–16), 2
+  (20), or 3 (25) **wild centres**: a land tile at least 2 from the edge, at
+  least 5 from every capital with at most 4 between its farthest and
+  nearest capital (the curiosity rule of
+  [section 2.7](#27-map-curiosities)), and at least 6 from another wild
+  centre, each drawn uniformly from the legal tiles in `(y, x)` order (one
+  draw of the match stream). With no legal tile fewer are reserved, with no
+  further draw (a 16 x 16 Dry Land board with four players has none); the
+  reserve never rejects a board. Every village keeps 3 from every wild
+  centre on widths 11 and 14 and 4 on widths 16 and up (the boards that may
+  have a Giant Spider, whose lair needs 4 from every village), so a
+  curiosity and a Rift stay possible on a village-dense board.
+  The reserve is made whether or not the setup has curiosities, and no
+  tile, state, or view records it. Continents and Archipelago have no
+  reserve.
+- **Village packing on Dry Land, Pangea, and Lakes.** The candidates are
+  the land tiles (on Pangea and Lakes, land with at least four land
+  neighbours on the capitals' landmass) at least 1 from the edge, 3 from
+  every settlement, and 3 (4 on widths 16 and up) from every wild centre. The generator draws a
+  lattice phase `px`, then `py` (each 0–2), and shuffles the candidates
+  once (all from the match stream). A phase's order is the shuffled
+  candidates on its pitch-3 lattice (`x mod 3 = px`, `y mod 3 = py`), then
+  the other shuffled candidates; each is added if it still keeps 3 from
+  every settlement, until `S − seats` villages stand. The nine phases are
+  tried in turn from the drawn one (`px` advancing first, then `py`) and
+  the first that places every village wins.
+- **Village fill on Continents and Archipelago.** No draw: after the
+  coastal settlement every major landmass needs, the candidates (land with
+  at least four land neighbours, 1 from the edge, 3 from every settlement)
+  are taken in `(y, x)` order, as before `7r40`; if that leaves villages
+  unplaced the same fill runs in `(x, y)` order, then in each order
+  reversed, and the first scan that places every village wins. On
+  **Continents** only major landmasses take villages, and a landmass holds
+  at most its share of the settlements by land,
+  `ceil(S × landmass land / major land)` (two thirds of the settlements
+  before). On **Archipelago** a home island (one with a capital) takes a
+  village only while no other home island has fewer, so the home islands
+  hold the same number of villages, within 1; every other island, major or
+  minor, takes the rest (half the settlements per island before).
+- A candidate that cannot place all `S − seats` villages fails the
+  `VILLAGE_DENSITY` map invariant and the stream continues.
+- Measured on seeds 0–255 of every map type, size, and seat count
+  (`npm run validate:ruleset7-map-scale`): every board generates; the mean
+  accepted candidate is 1.2–9.8 on Dry Land, Pangea, and Lakes and up to
+  18.5 on Continents and Archipelago (14 x 14 Continents and 16 x 16
+  Archipelago with the most seats), no worse than 1.6 times the `7r39`
+  generator on any cell.
 - Every settlement's eight-cell ring has at least three economic opportunities
   from at least two families (Agriculture, Timber, Metal).
 - **Capital growth guarantee.** Every capital's eight-cell ring (its starting
@@ -1083,8 +1151,9 @@ none (a neutral island); never on one player's home island. A Wreck stands
 on Shallow or Deep Water whose eight-connected water component touches
 (orthogonally) the landmass of every capital. The Spider's lair also needs
 a board of width 16 or more, its whole **area** (every tile within 2 of the
-lair) on the board, distance **5 or more from every settlement center** (so
-its area stays 3 or more from every center), at least 12 of the 24 tiles
+lair) on the board, distance **5 or more from every capital center and 4
+or more from every village center** (5 from every center before
+`pulp_wars-ykw.7`; the Spider itself never stands within 2 of a center), at least 12 of the 24 tiles
 around it Grass, Forest, or Mountain, and **no cut tile in its area**: no
 tile within 2 of the lair splits its eight-connected land component when
 removed, in the land graph with or without Mountains (Rifts excluded), so
@@ -1103,7 +1172,21 @@ capitals. The Spider is the rarest kind: 188 Spiders, 463 Fountains, 444
 Shrines, and 765 Wrecks on the 1,920 boards; per 96 boards of a type at
 16, 20, and 25: Dry Land 9, 9, 12; Pangea 16, 35, 29; Lakes 13, 29, 36;
 Continents and Archipelago none (a lair needs 5 from every center on a
-shared or neutral landmass with no corridor nearby).
+shared or neutral landmass with no corridor nearby). Those figures are of
+`pulp-wars-poc-7r39` boards. **Since the village density** (`7r40`,
+[section 2.2](#22-settlements-and-treasures)) a board has many more
+villages, so two rules changed with it (`pulp_wars-ykw.7`, same identity):
+the Spider's lair needs **5 from every capital and 4 from every village
+center** (5 from every center before), and on widths 16 and up every
+village keeps **4** from a wild centre (3 on widths 11 and 14), so the
+reserve leaves room for a lair. The Spider still never stands within 2 of
+a center, so it stays out of every territory; the part of its area nearer
+a village is closed to it. Measured on seeds 0-255
+(`npm run validate:ruleset7-map-scale`, boards of width 16 and up, 2-4
+players): Dry Land 1,040 boards with a Spider (258 at `7r39`), Pangea 806
+(576), Lakes 690 (582), Continents and Archipelago none (one). A board with
+a land feature (a Fountain, a Shrine, or a Spider) is about as common as
+before.
 
 **The Fountain of Youth.** At its owner's Start Turn, right after Windmill
 healing and before Troll regeneration ([section 3](#3-players-turns-and-victory)),
@@ -7651,6 +7734,7 @@ has no Candy step.
 | Balance     | `pulp-wars-poc-7r37` | `pulp_wars-1wy.3` Martian and Ice Folk balance round: Beam Down after the carrier's Move, a pick-up within 2 tiles, the passenger counts as moved (it may still attack), once a turn per unit; the Tractor Beam on the Saucer; the Mothership at 8 Coins with Beam Down and the free once-a-turn Heavy Tractor Beam (reach 2–3, up to 2 tiles); the Grunt at Attack 2 and 9 HP; Glide only from Snow onto Snow; Snow cover × 1.25                                                                                 | [sections 20](#20-martian-faction-rules), [21.5](#215-snow)                                                                           |
 | Candy       | `pulp-wars-poc-7r38` | `pulp_wars-jdb.3` Candy engine: the eighth faction (roster, tree with Home Sweet Home and Peppermint Surprise), Sugar Rush and the Crash, the Donut Racer's Escape and the Gummy Bear's Sugar Frenzy (two continuations at most) while Rushed, Crumbs, going stale, eating, the Peppermint Surprise, Re-bake, Splat, Bounce, Frosting, Sugar Toss; four state lists, three commands, seven events; the setup offers the Candy with its unit, portrait, city, and ship art; matches without a Candy seat unchanged | [section 23](#23-candy-faction-rules), [Candy overlay](RULESET_7_CANDY.md)                                                            |
 | Balance     | `pulp-wars-poc-7r39` | `pulp_wars-1wy.6` measurement of the balance round: the Martian Grunt at 8 HP (was 9), the first step of the design's fallback ladder; the Normal AI's threatened-city Grunt bias 15 (was 14); matches without a Martian seat unchanged                                                                                                                                                                                                                                                                           | [section 11](#11-unit-roster), [balance design](RULESET_7_BALANCE_MARTIAN_ICE.md#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6) |
+| Map scale   | `pulp-wars-poc-7r40` | `pulp_wars-ykw.2` map scale engine I: village density per map type (`S = roundHalfUp(L / LPS)`, `LPS` 15/13/12/12/11) instead of the fixed village table; villages 1 from the edge; lattice packing with nine phases and the wild reserve on Dry Land, Pangea, and Lakes; the row-major fill with the landmass share on Continents and equal home islands on Archipelago; `VILLAGE_DENSITY` invariant; map revision `REGIONAL_BIOMES_NAVAL_V3`; every generated board changed, the Showcase and missions did not  |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -7802,8 +7886,9 @@ the code's behavior is stated:
 - the overlay's Rift rules (sections 7.4, 8.1 row 7, 8.2 row 9, 10.1, and
   the Rift parts of 7.2 and 8.4) are implemented by `pulp_wars-9s0.5`
   (`7r28`) as written, with the rest of the Rift's rules in the
-  [Rift overlay](RULESET_7_RIFT.md); the map revision stays
-  `REGIONAL_BIOMES_NAVAL_V2`;
+  [Rift overlay](RULESET_7_RIFT.md); the Rift left the map revision at
+  `REGIONAL_BIOMES_NAVAL_V2` (it is `V3` since the village density of
+  `7r40`);
 - the blockade recompute after `DISBAND` (overlay 10.7 and 19.2 note 8)
   runs after every `DISBAND` while the state has any Thrall, not only after
   one that collapsed a Thrall; the events are emitted only on a change, and
@@ -7932,9 +8017,27 @@ every ability against" sentences of sections 17 to 22 do not name the Candy
 yet; `pulp_wars-jdb.8` completes the fold with the Normal AI, UI, and
 balance steps.
 
+**Map scale fold, engine step I (2026-10-04, `pulp_wars-ykw.2`,
+`pulp-wars-poc-7r40`):** the village density of the
+[map scale design](RULESET_7_MAP_SCALE.md) (its section 5 as amended after
+measurement, section 5.5) was folded in with its identity bump: the identity
+table (map revision `REGIONAL_BIOMES_NAVAL_V3`) and
+[section 2.2](#22-settlements-and-treasures) (the settlement table by map
+type, the density rule, villages one tile from the edge, the wild reserve,
+the lattice packing, the Continents and Archipelago fill and their
+per-landmass rules, and the `VILLAGE_DENSITY` invariant). Seat counts,
+capital placement, the fairness checks, and every other rule are unchanged;
+the design's many-seats steps (`pulp_wars-ykw.3` and later) are not folded.
+The values were checked against `LAND_PER_SETTLEMENT_V7`,
+`settlementCountV7`, `landTileCountV7`, `wildReserveCountV7`, and `map.ts`,
+with `tests/unit/ruleset-v7-map-scale.test.ts` and
+`npm run validate:ruleset7-map-scale`. The curiosity and Rift frequencies
+quoted in [section 2.7](#27-map-curiosities) were measured on `7r39`
+boards; the map scale design's section 5.5 has the `7r40` counts.
+
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r39` the rules in this document match the code for
+As of `pulp-wars-poc-7r40` the rules in this document match the code for
 the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -7942,7 +8045,8 @@ faction of the Ice Folk overlay, the Dwarf faction of the Dwarf overlay,
 the Candy engine of the Candy overlay,
 the mission setup of [section 2.6](#26-mission-setup), the map
 curiosities of [section 2.7](#27-map-curiosities), and the Martian and Ice
-Folk balance round of `7r37` with the Grunt's 8 HP of `7r39`, with two
+Folk balance round of `7r37` with the Grunt's 8 HP of `7r39`, and the
+village density of `7r40`, with two
 open items: the pending Candy steps and the pending balance steps below.
 
 **Open.**

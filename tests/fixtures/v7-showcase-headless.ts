@@ -35,7 +35,7 @@ export function runShowcaseHeadlessMatchV7(
     humanColor: "CORAL",
     factions: [faction, "ORIGINAL", "UNDEAD", "GOBLIN"],
     mapType: "SHOWCASE",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
   const match = runAiMatchV7(setup, {

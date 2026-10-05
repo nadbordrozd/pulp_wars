@@ -37,10 +37,11 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // shapes (docs/product/RULESET_7_CANDY.md section 2). The Candy engine took
 // 7r38 after the Martian and Ice Folk balance round (7r37); later beads that
 // bump the identity re-pin REVISION here: the Martian Grunt's 8 HP
-// (`pulp_wars-1wy.6`) took 7r39.
+// (`pulp_wars-1wy.6`) took 7r39 and the village density (`pulp_wars-ykw.2`)
+// 7r40.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 39;
+const REVISION = 40;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -271,7 +272,8 @@ describe("Candy setup (sections 2.4 and 12.17)", () => {
     if (candy === undefined) throw new Error("no Candy seat");
     expect(candy.factionTreeId).toBe("CANDY_BASELINE_V1");
     expect(candy.researchedTechs).toEqual([]);
-    expect(candy.coins).toBe(5);
+    // 5 Coins, and its first Start Turn income of 2 when it moves first.
+    expect(candy.coins).toBe(state.turnOrder[0] === candy.id ? 7 : 5);
     const capital = state.cities.find(
       (city) => city.ownerId === candy.id && city.isCapital,
     );

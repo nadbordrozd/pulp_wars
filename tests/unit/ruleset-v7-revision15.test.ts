@@ -66,10 +66,10 @@ const READY: UnitStateV7["activation"] = {
 };
 
 describe("ruleset-7 revision-15 identity", () => {
-  it("keeps rejecting r14 after the r39 identity and cleans the r14 through r38 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r39");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r39.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-25)).toEqual([
+  it("keeps rejecting r14 after the r40 identity and cleans the r14 through r39 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r40");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-26)).toEqual([
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
       "pulpWars.save.v7r16.current",
@@ -95,6 +95,7 @@ describe("ruleset-7 revision-15 identity", () => {
       "pulpWars.save.v7r36.current",
       "pulpWars.save.v7r37.current",
       "pulpWars.save.v7r38.current",
+      "pulpWars.save.v7r39.current",
     ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const setup = setupWith(["ORIGINAL", "UNDEAD"]);
@@ -555,7 +556,7 @@ function setupWith(factions: readonly FactionIdV7[]): MatchSetupV7 {
     humanColor: "CORAL",
     factions: [...factions],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

@@ -267,22 +267,22 @@ const MOVER_BY_MOVE: Readonly<Record<1 | 2 | 3, UnitRoleIdV7>> = {
 };
 
 describe("ruleset-7 revision-18 identity", () => {
-  it("keeps r17 and r18 among the gap-free prior identities after the r39 identity and cleans their keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r39");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r39.current");
+  it("keeps r17 and r18 among the gap-free prior identities after the r40 identity and cleans their keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r40");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 37 },
+        { length: 38 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-22)).toBe("pulp-wars-poc-7r17");
-    expect(PRIOR_RULESET_7_IDS.at(-21)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-23)).toBe("pulp-wars-poc-7r17");
+    expect(PRIOR_RULESET_7_IDS.at(-22)).toBe("pulp-wars-poc-7r18");
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 37 },
+        { length: 38 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -319,7 +319,7 @@ describe("ruleset-7 revision-18 identity", () => {
     const setup = goblinSetupV7(["GOBLIN", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r39");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r40");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r17" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -1330,6 +1330,20 @@ describe("ruleset-7 revision-18 public and engine parity", () => {
                 )
               )
                 continue;
+              // The public rule may publish this destination by another path
+              // of the same cost that a unit the owner cannot see interrupts
+              // (zone of control); the engine's own path is then legal by
+              // the public rule too. Seen on the village-density Lakes board
+              // of seed 8 (`pulp_wars-ykw.2`): a Scrap Buggy reaches (7, 3)
+              // by (6, 4), and the published path by (6, 2) stops there.
+              if (
+                published.some((other) =>
+                  sameV7(other.destination, item.destination),
+                )
+              ) {
+                conservative += 1;
+                continue;
+              }
               const result = validatePlayerMovementPathV7(
                 view,
                 publicUnit,

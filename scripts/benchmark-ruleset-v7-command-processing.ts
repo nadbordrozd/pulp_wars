@@ -58,7 +58,7 @@ function setup(seed: number): MatchSetupV7 {
     // Distinct factions: this setup also launches the browser controller
     // (docs/product/RULESET_7_UNIQUE_FACTIONS.md).
     factions: ["ORIGINAL", "UNDEAD", "GOBLIN", "DINOSAUR"],
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

@@ -68,9 +68,12 @@ describe("ruleset-7 exact public query indexing", () => {
     // Martian revision (`pulp_wars-t6s.2`) the four empty lists `shields`,
     // `cooling`, `thralls`, and `mindControlCooldowns` (was 219eb2…5d03),
     // with `thralls` renamed `mindControlled` by the Mind Control revision
-    // (`pulp_wars-b5f.3`; was d8f602…f19a).
+    // (`pulp_wars-b5f.3`; was d8f602…f19a), and the setup's map revision
+    // `REGIONAL_BIOMES_NAVAL_V3` since the village density
+    // (`pulp_wars-ykw.2`; was 2fe0de…7670 with `V2`, the same view
+    // otherwise).
     expect(canonicalHash(measured.view)).toBe(
-      "2fe0de41ab502fc3e33859ee2d1d67f5a66b1dfebea87bddd0f7209687707670",
+      "36d712e19ca9bb7f1a84d4b00dd4f455859675b05a554bce18ae280ae8e700db",
     );
 
     const planned = drain(measured.view, commands, 113);
@@ -248,7 +251,7 @@ function alliedCityViews(): {
     factions: ["ORIGINAL", "ORIGINAL", "ORIGINAL", "ORIGINAL"],
     allowDuplicateFactions: true,
     mapType: "CONTINENTS",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   });
   if (!created.ok) throw new Error(created.error.code);

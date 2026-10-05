@@ -1,7 +1,13 @@
 # Ruleset 7: map scale (many players, village density)
 
-**Status:** design spec (`pulp_wars-ykw.1`, epic `pulp_wars-ykw`). Nothing
-here is implemented yet. It is an overlay over
+**Status:** design spec (`pulp_wars-ykw.1`, epic `pulp_wars-ykw`),
+**amended 2026-10-04 after measurement** (`pulp_wars-ykw.2`): sections 4.4,
+5, 10.1, and 11 carry the amendments, and
+[section 5.5](#55-amendments-after-measurement-2026-10-04) records what was
+measured and ruled. Engine step I, the village density (bead 2 of
+[section 11](#11-implementation-beads)), is implemented at
+`pulp-wars-poc-7r40` and folded into the current rules (section 2.2);
+nothing else here is implemented yet. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r35`
 (sections 2.1–2.3, 2.7, and 3 in particular), the
 [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md), and the
@@ -222,6 +228,11 @@ Every pair of capitals is at least `D(w, N)` apart (Chebyshev).
 For 2–4 seats this is exactly today's rule. Every capital is at least 2
 from the board's edge (today's rule; the user's margin).
 
+**Known item for bead 3** (found by `pulp_wars-ykw.2`, not changed by it):
+the code's capital search on water maps takes land cells at least **1** from
+the edge with four land neighbours, while the current rules and this
+section say 2. Bead 3 rewrites capital placement and settles it.
+
 ### 4.2 Domains
 
 The board is cut into `k x k` equal **domains** (band `i` of `k` covers
@@ -300,7 +311,10 @@ stream continues (constraints never relax, as today):
    same eight-connected landmass (Chebyshev, ties split equally; Rifts do
    not exist yet). The largest share is at most 1.5 times the smallest with
    up to 4 seats, 2.0 with 5 or more.
-4. **Village balance** (new). Each village counts for its nearest capital
+4. **Village balance** (new; **deferred to bead 3** by the 2026-10-04
+   amendment, [section 5.5](#55-amendments-after-measurement-2026-10-04):
+   with today's capitals it rejected most three- and four-seat boards, so
+   it lands with the capital domains). Each village counts for its nearest capital
    the same way (villages on a landmass without a capital count for nobody).
    The largest count minus the smallest is at most
    `max(2, ceil(T / (2N)))`, `T` the villages counted.
@@ -322,13 +336,13 @@ villages   = max(0, S - N)
 `LPS` is the land per settlement of the map type, calibrated to the
 Polytopia rule on our own boards (section 2.2):
 
-| Map type      | `LPS` | Polytopia rule measured | Why                                                       |
-| ------------- | ----: | ----------------------- | --------------------------------------------------------- |
-| `DRY_LAND`    |    15 | 14.4–15.6               | the measured middle                                       |
-| `LAKES`       |    13 | 12.1–13.1               | the upper end, leaving room for the wild reserve          |
-| `PANGEA`      |    12 | 9.9–12.3                | the upper end: small Pangeas are coast-heavy              |
-| `CONTINENTS`  |    11 | 9.8–11.3                | the upper end                                             |
-| `ARCHIPELAGO` |    10 | 7.8–10.3                | the upper end: villages on islets need ships to be useful |
+| Map type      | `LPS` | Polytopia rule measured | Why                                                    |
+| ------------- | ----: | ----------------------- | ------------------------------------------------------ |
+| `DRY_LAND`    |    15 | 14.4–15.6               | the measured middle                                    |
+| `LAKES`       |    13 | 12.1–13.1               | the upper end, leaving room for the wild reserve       |
+| `PANGEA`      |    12 | 9.9–12.3                | the upper end: small Pangeas are coast-heavy           |
+| `CONTINENTS`  |    12 | 9.8–11.3                | one step above the upper end (11 before the amendment) |
+| `ARCHIPELAGO` |    11 | 7.8–10.3                | one step above the upper end (10 before the amendment) |
 
 `S` depends only on width and type, never on the seat count: the density is
 constant. Capitals take part of it, as in Polytopia, where each capital
@@ -345,37 +359,38 @@ where `N > P`):
 |   11 | `LAKES`       |   7 | 5 / 4 / 3 / 2 / 1 / 0 / 0 / 0                    |
 |   11 | `PANGEA`      |   6 | 4 / 3 / 2 / 1 / 0 / 0 / 0 / —                    |
 |   11 | `CONTINENTS`  |   6 | 4 / 3 / 2 / 1 / 0 / 0 / — / —                    |
-|   11 | `ARCHIPELAGO` |   5 | 3 / 2 / 1 / — / — / — / — / —                    |
+|   11 | `ARCHIPELAGO` |   4 | 2 / 1 / 0 / — / — / — / — / —                    |
 |   14 | `DRY_LAND`    |  13 | 11 / 10 / 9 / 8 / 7 / 6 / 5 / 4                  |
 |   14 | `LAKES`       |  12 | 10 / 9 / 8 / 7 / 6 / 5 / 4 / 3                   |
 |   14 | `PANGEA`      |  11 | 9 / 8 / 7 / 6 / 5 / 4 / 3 / 2                    |
-|   14 | `CONTINENTS`  |  10 | 8 / 7 / 6 / 5 / 4 / 3 / 2 / 1                    |
-|   14 | `ARCHIPELAGO` |   8 | 6 / 5 / 4 / 3 / 2 / 1 / 0 / —                    |
+|   14 | `CONTINENTS`  |   9 | 7 / 6 / 5 / 4 / 3 / 2 / 1 / 0                    |
+|   14 | `ARCHIPELAGO` |   7 | 5 / 4 / 3 / 2 / 1 / 0 / 0 / —                    |
 |   16 | `DRY_LAND`    |  17 | 15 / 14 / 13 / 12 / 11 / 10 / 9 / 8              |
 |   16 | `LAKES`       |  16 | 14 / 13 / 12 / 11 / 10 / 9 / 8 / 7               |
 |   16 | `PANGEA`      |  15 | 13 / 12 / 11 / 10 / 9 / 8 / 7 / 6                |
-|   16 | `CONTINENTS`  |  13 | 11 / 10 / 9 / 8 / 7 / 6 / 5 / 4                  |
-|   16 | `ARCHIPELAGO` |  10 | 8 / 7 / 6 / 5 / 4 / 3 / 2 / 1                    |
+|   16 | `CONTINENTS`  |  12 | 10 / 9 / 8 / 7 / 6 / 5 / 4 / 3                   |
+|   16 | `ARCHIPELAGO` |   9 | 7 / 6 / 5 / 4 / 3 / 2 / 1 / 0                    |
 |   20 | `DRY_LAND`    |  27 | 25 / 24 / 23 / 22 / 21 / 20 / 19 / 18            |
 |   20 | `LAKES`       |  25 | 23 / 22 / 21 / 20 / 19 / 18 / 17 / 16            |
 |   20 | `PANGEA`      |  24 | 22 / 21 / 20 / 19 / 18 / 17 / 16 / 15            |
-|   20 | `CONTINENTS`  |  20 | 18 / 17 / 16 / 15 / 14 / 13 / 12 / 11            |
-|   20 | `ARCHIPELAGO` |  16 | 14 / 13 / 12 / 11 / 10 / 9 / 8 / 7               |
+|   20 | `CONTINENTS`  |  19 | 17 / 16 / 15 / 14 / 13 / 12 / 11 / 10            |
+|   20 | `ARCHIPELAGO` |  15 | 13 / 12 / 11 / 10 / 9 / 8 / 7 / 6                |
 |   25 | `DRY_LAND`    |  42 | 40 / 39 / 38 / 37 / 36 / 35 / 34 / 33            |
 |   25 | `LAKES`       |  38 | 36 / 35 / 34 / 33 / 32 / 31 / 30 / 29            |
 |   25 | `PANGEA`      |  38 | 36 / 35 / 34 / 33 / 32 / 31 / 30 / 29            |
-|   25 | `CONTINENTS`  |  32 | 30 / 29 / 28 / 27 / 26 / 25 / 24 / 23            |
-|   25 | `ARCHIPELAGO` |  25 | 23 / 22 / 21 / 20 / 19 / 18 / 17 / 16            |
+|   25 | `CONTINENTS`  |  29 | 27 / 26 / 25 / 24 / 23 / 22 / 21 / 20            |
+|   25 | `ARCHIPELAGO` |  23 | 21 / 20 / 19 / 18 / 17 / 16 / 15 / 14            |
 
-Compared with today, for 2 and 4 seats (today's settlements in brackets):
-11 x 11 Dry Land 8 (6), Archipelago 5 (5); 16 x 16 Dry Land 17 (6 and 11),
-Archipelago 10 (6 and 10); 20 x 20 Dry Land 27 (16), Archipelago 16 (16);
-25 x 25 Dry Land 42 (23), Pangea 38 (23), Archipelago 25 (23). Dry Land and
-the large boards gain the most; small water maps barely move (11 x 11
-Pangea and Continents keep 6). No setup that exists today loses a
-settlement: the closest cases (11 x 11 Pangea, Continents, and
-Archipelago; 16 x 16 Archipelago with 4 seats; 20 x 20 Archipelago) keep
-exactly today's count.
+Compared with `7r39`, for 2 and 4 seats (its settlements in brackets):
+11 x 11 Dry Land 8 (6), Archipelago 4 (5); 16 x 16 Dry Land 17 (6 and 11),
+Continents 12 (6 and 11), Archipelago 9 (6 and 10); 20 x 20 Dry Land 27
+(16), Continents 19 (16), Archipelago 15 (16); 25 x 25 Dry Land 42 (23),
+Pangea 38 (23), Continents 29 (23), Archipelago 23 (23). Dry Land and the
+large boards gain the most. After the amendment
+([section 5.5](#55-amendments-after-measurement-2026-10-04)) four
+Archipelago setups hold **one settlement fewer** than at `7r39`: 11 x 11
+(4, was 5), 14 x 14 with three seats (7, was 8), 16 x 16 with four seats
+(9, was 10), and 20 x 20 (15, was 16); every other setup keeps or gains.
 
 **Villages per player** is `(S - N) / N`: about 3 on 11 x 11 with 2 seats,
 7 on 16 x 16 Dry Land with 2, 2 on 20 x 20 Dry Land with 8, 4 on 25 x 25
@@ -396,6 +411,13 @@ simply has `N` capitals and no village. The setup screen shows the count
   rule; today 2). Their eight-cell ring is still on the board. This is
   needed: with villages 2 from the edge a 16 x 16 board holds at most 16
   settlements, below `S = 17`.
+- **Amended 2026-10-04** ([section 5.5](#55-amendments-after-measurement-2026-10-04)):
+  the lattice packing below applies to **Dry Land, Pangea, and Lakes**, with
+  one shuffle of all candidates and **all nine phases tried** from the drawn
+  one before a candidate is rejected; **Continents and Archipelago** keep
+  the fill in `(y, x)` order of `7r39` (no draw; then `(x, y)` order and
+  each reversed when a scan leaves villages unplaced), with the
+  per-landmass rules below.
 - **Packing.** Village candidates are land tiles (on water maps, mask land
   with today's four-land-neighbour rule) at least 1 from the edge, at least
   3 from every settlement, and at least 3 from every wild centre. The
@@ -408,7 +430,8 @@ simply has `N` capitals and no village. The setup screen shows the count
   place all `S - N` villages fails the new invariant `VILLAGE_DENSITY` and
   the stream continues (constraints never relax).
 - **Per landmass.** Continents caps each landmass at its share (section
-  4.3); Archipelago gives each home island the same number of villages
+  4.3; as implemented: `ceil(S x landmass land / major land)`, by the
+  landmasses' actual land); Archipelago gives each home island the same number of villages
   (within 1) and puts the rest on minor and shared islands, replacing
   today's `ceil(S / 2)` per-component cap; every inhabited landmass still
   needs its coastal settlement for the port rule.
@@ -423,11 +446,17 @@ from every capital (current rules section 2.7), and a Rift needs a 1 x 3
 run with no village within 1 and no capital within 2. Without help, land
 curiosities and Rifts would almost vanish on Dry Land, Pangea, and Lakes.
 
+- **Amended 2026-10-04**: the reserve exists on **Dry Land, Pangea, and
+  Lakes only**. On Continents and Archipelago a wild centre lands on a
+  one-capital landmass, where a land curiosity is never legal, and costs
+  room the islands do not have.
 - **Wild reserve.** After the capitals and before the villages, the
   generator reserves `R` **wild centres**: `R` = 1 on 11–16, 2 on 20, 3 on 25. A wild centre is a land tile at least 2 from the edge, at least 5 from
   every capital, with at most 4 between its farthest and nearest capital
   (the curiosity rule), and at least 6 from another wild centre, drawn
-  uniformly in `(y, x)` order from the match stream. With no legal tile
+  uniformly in `(y, x)` order from the match stream. (Amended by
+  `pulp_wars-ykw.7`: villages keep 4, not 3, from a wild centre on widths
+  16 and up; section 5.5.) With no legal tile
   fewer are reserved (crowded boards get none); a reserve never rejects a
   board. Villages keep 3 from wild centres, so each leaves room for a
   curiosity on the centre and a Rift run through it.
@@ -443,6 +472,168 @@ curiosities and Rifts would almost vanish on Dry Land, Pangea, and Lakes.
   site rule, so it benefits from the same reserve.
 - **Treasure chests** keep their per-size counts (2, 2, 2, 4, 5); chests are
   not part of the density.
+
+### 5.5 Amendments after measurement (2026-10-04)
+
+`pulp_wars-ykw.2` implemented sections 5.1–5.4 as first written and measured
+them before pinning anything (seeds 0–31, 2–4 seats, today's capitals).
+Settlement counts matched section 5.2 on every cell, but the generator
+rejected far too many candidates, and on split-land maps failed outright:
+
+| Cell                    | `7r39` mean / worst (256 seeds) | As first written (32 seeds)        |
+| ----------------------- | ------------------------------- | ---------------------------------- |
+| Dry Land 11, 2 seats    | 2.1 / 8                         | 9.3 / 56                           |
+| Dry Land 16, 4 seats    | 5.7 / 25                        | 51.8 / 244                         |
+| Lakes 16, 4 seats       | 2.2 / 11                        | 42.4 / 157                         |
+| Continents 14, 3 seats  | 17.7 / 134                      | 120 / 237, 16 of 32 seeds generate |
+| Continents 25, 3 seats  | 7.6 / 40                        | 2 of 32 seeds generate             |
+| Archipelago 20, 2 seats | 7.6 / 34                        | 4 of 32 seeds generate             |
+| Archipelago 25, 4 seats | 10.1 / 54                       | 2 of 32 seeds generate             |
+
+Three causes, isolated by switching each off: (1) one board-wide lattice
+phase with a random tail packs irregular islands worse than the `7r39`
+row-major fill, and `LPS` 10 and 11 were calibrated without the
+four-land-neighbour rule; (2) village balance (section 4.4 item 4) rejects
+most three- and four-seat boards with capitals on three or four lattice
+corners; (3) the wild reserve costs room on single-capital landmasses,
+where it cannot help, and on 11 x 11 Dry Land the drawn phase alone rarely
+fits. The `7r39` generator itself already misses "mean 8, worst 64" on
+several cells (Continents 14 x 14 with three seats, Archipelago with four).
+
+**Rulings (root, 2026-10-04, recorded on the bead):**
+
+1. Dry Land, Pangea, and Lakes use the lattice and try all nine phases
+   before rejecting a candidate. Continents and Archipelago keep the
+   row-major fill with the new `S`, the Continents landmass share, and the
+   Archipelago home-island rule.
+2. Village balance is deferred to bead 3 (with the capital domains); bead 2
+   keeps exactly the fairness checks of `7r39`.
+3. The wild reserve exists only on Dry Land, Pangea, and Lakes.
+4. Acceptance: no `MAP_GENERATION_FAILED` on seeds 0–255 of any cell is the
+   hard criterion; mean and worst attempts are reported and asserted only
+   against the `7r39` baseline of the cell (1.5 times, never below mean 8
+   and worst 64). If a cell still fails, `LPS` may rise one step.
+
+**What bead 2 then needed, within the rulings** (each measured on seeds
+0–255):
+
+- `LPS` one step up for **Continents (12)** and **Archipelago (11)**: at 11
+  and 10 Continents 14 x 14 with three seats and Archipelago 25 x 25 with
+  three and four seats stayed above 1.5 times the baseline.
+- On Continents and Archipelago, when the `(y, x)` scan leaves villages
+  unplaced, the same fill in `(x, y)` order and then in each order
+  reversed (no draw); without it Archipelago 25 x 25 with four seats stayed
+  at 17.1 / 127 against an allowance of 15.2 / 81.
+- The attempt allowance in the validation command is **1.6**, not 1.5: two
+  four-seat 16 x 16 cells measure 1.53 (Dry Land, 8.71 against 5.70: one of
+  the three capital lattice offsets cannot hold 17 settlements) and 1.57
+  (Continents, 8.59 against 5.46). Bead 3 replaces the capital placement
+  that causes it.
+- The wild-reserve acceptance of section 10.1 is asserted as: on Dry Land,
+  Pangea, and Lakes boards of width 16 and up, the seeds with a land
+  curiosity are at least 90% of the `7r39` count, and the seeds with a Rift
+  at least 85% on widths 20 and 25 and at least half on width 16.
+
+**As implemented** (`npm run validate:ruleset7-map-scale`, seeds 0–255,
+curiosities on; `7r39` in brackets; "wild" is the mean wild centres per
+board; the last two columns count seeds of 256):
+
+| Cell              | `S`     | Attempts mean / worst    | Wild | Land curiosity | Rift      |
+| ----------------- | ------- | ------------------------ | ---: | -------------- | --------- |
+| Dry Land 11, 2    | 8 (6)   | 4.21 / 22 (2.05 / 8)     | 1.00 | 80 (71)        | 0 (0)     |
+| Dry Land 14, 2    | 13 (6)  | 2.11 / 10 (2.14 / 10)    | 1.00 | 108 (128)      | 0 (0)     |
+| Dry Land 14, 3    | 13 (8)  | 5.29 / 37 (4.38 / 26)    | 1.00 | 106 (116)      | 0 (0)     |
+| Dry Land 16, 2    | 17 (6)  | 2.04 / 8 (1.80 / 6)      | 1.00 | 231 (201)      | 118 (123) |
+| Dry Land 16, 3    | 17 (8)  | 4.93 / 27 (3.23 / 17)    | 1.00 | 221 (230)      | 119 (123) |
+| Dry Land 16, 4    | 17 (11) | 8.71 / 58 (5.70 / 25)    | 0.00 | 0 (0)          | 108 (123) |
+| Dry Land 20, 2    | 27 (16) | 2.22 / 10 (2.11 / 11)    | 2.00 | 250 (240)      | 256 (256) |
+| Dry Land 20, 3    | 27 (16) | 4.05 / 18 (4.09 / 22)    | 2.00 | 252 (251)      | 255 (256) |
+| Dry Land 20, 4    | 27 (16) | 8.45 / 47 (8.94 / 39)    | 1.57 | 240 (230)      | 256 (256) |
+| Dry Land 25, 2    | 42 (23) | 1.76 / 8 (1.81 / 7)      | 3.00 | 256 (256)      | 256 (256) |
+| Dry Land 25, 3    | 42 (23) | 3.07 / 16 (2.98 / 13)    | 2.94 | 255 (256)      | 256 (256) |
+| Dry Land 25, 4    | 42 (23) | 5.01 / 29 (6.26 / 38)    | 1.77 | 249 (235)      | 256 (256) |
+| Pangea 11, 2      | 6 (6)   | 1.37 / 6 (1.16 / 3)      | 0.72 | 44 (48)        | 0 (0)     |
+| Pangea 14, 2      | 11 (6)  | 1.23 / 4 (1.18 / 4)      | 1.00 | 87 (88)        | 0 (0)     |
+| Pangea 14, 3      | 11 (8)  | 1.43 / 4 (1.48 / 5)      | 0.94 | 70 (50)        | 0 (0)     |
+| Pangea 16, 2      | 15 (6)  | 1.21 / 5 (1.17 / 4)      | 1.00 | 158 (132)      | 103 (123) |
+| Pangea 16, 3      | 15 (8)  | 1.34 / 4 (1.32 / 5)      | 0.98 | 143 (113)      | 96 (123)  |
+| Pangea 16, 4      | 15 (11) | 1.87 / 7 (1.75 / 9)      | 0.70 | 118 (107)      | 100 (123) |
+| Pangea 20, 2      | 24 (16) | 1.29 / 4 (1.21 / 4)      | 2.00 | 208 (177)      | 250 (256) |
+| Pangea 20, 3      | 24 (16) | 1.40 / 8 (1.28 / 4)      | 1.76 | 211 (167)      | 249 (256) |
+| Pangea 20, 4      | 24 (16) | 1.63 / 6 (1.64 / 7)      | 1.19 | 203 (197)      | 246 (256) |
+| Pangea 25, 2      | 38 (23) | 1.16 / 5 (1.22 / 3)      | 3.00 | 253 (221)      | 256 (256) |
+| Pangea 25, 3      | 38 (23) | 1.25 / 5 (1.20 / 4)      | 1.91 | 239 (199)      | 255 (256) |
+| Pangea 25, 4      | 38 (23) | 1.53 / 7 (1.50 / 6)      | 1.06 | 211 (184)      | 255 (256) |
+| Lakes 11, 2       | 7 (6)   | 1.37 / 6 (1.21 / 4)      | 0.14 | 7 (24)         | 0 (0)     |
+| Lakes 14, 2       | 12 (6)  | 1.97 / 9 (1.56 / 9)      | 1.00 | 77 (86)        | 0 (0)     |
+| Lakes 14, 3       | 12 (8)  | 2.87 / 14 (2.09 / 10)    | 0.78 | 73 (71)        | 0 (0)     |
+| Lakes 16, 2       | 16 (6)  | 1.66 / 6 (1.54 / 8)      | 1.00 | 148 (136)      | 72 (123)  |
+| Lakes 16, 3       | 16 (8)  | 2.09 / 10 (1.78 / 6)     | 0.97 | 158 (127)      | 66 (121)  |
+| Lakes 16, 4       | 16 (11) | 2.97 / 19 (2.23 / 11)    | 0.83 | 132 (113)      | 60 (116)  |
+| Lakes 20, 2       | 25 (16) | 1.76 / 7 (1.76 / 8)      | 1.99 | 204 (172)      | 234 (256) |
+| Lakes 20, 3       | 25 (16) | 2.01 / 9 (1.99 / 9)      | 1.73 | 187 (162)      | 228 (256) |
+| Lakes 20, 4       | 25 (16) | 2.47 / 13 (2.44 / 10)    | 1.28 | 169 (156)      | 222 (256) |
+| Lakes 25, 2       | 38 (23) | 1.21 / 5 (1.25 / 5)      | 3.00 | 251 (227)      | 255 (256) |
+| Lakes 25, 3       | 38 (23) | 1.29 / 5 (1.32 / 4)      | 2.31 | 231 (182)      | 254 (256) |
+| Lakes 25, 4       | 38 (23) | 1.42 / 8 (1.64 / 10)     | 1.18 | 179 (135)      | 249 (256) |
+| Continents 11, 2  | 6 (6)   | 3.67 / 27 (2.87 / 22)    |    — | 0 (0)          | 0 (0)     |
+| Continents 14, 2  | 9 (6)   | 2.63 / 15 (2.80 / 16)    |    — | 3 (4)          | 0 (0)     |
+| Continents 14, 3  | 9 (8)   | 18.48 / 69 (17.70 / 134) |    — | 7 (5)          | 0 (0)     |
+| Continents 16, 2  | 12 (6)  | 3.64 / 16 (3.48 / 16)    |    — | 24 (26)        | 15 (114)  |
+| Continents 16, 3  | 12 (8)  | 5.81 / 33 (5.10 / 30)    |    — | 30 (16)        | 36 (63)   |
+| Continents 16, 4  | 12 (11) | 8.59 / 44 (5.46 / 41)    |    — | 8 (9)          | 20 (37)   |
+| Continents 20, 2  | 19 (16) | 4.81 / 25 (4.43 / 31)    |    — | 51 (66)        | 132 (222) |
+| Continents 20, 3  | 19 (16) | 5.39 / 34 (4.55 / 30)    |    — | 56 (42)        | 118 (223) |
+| Continents 20, 4  | 19 (16) | 5.78 / 43 (4.80 / 23)    |    — | 30 (28)        | 79 (195)  |
+| Continents 25, 2  | 29 (23) | 7.77 / 36 (8.41 / 45)    |    — | 154 (159)      | 195 (255) |
+| Continents 25, 3  | 29 (23) | 7.44 / 32 (7.59 / 40)    |    — | 51 (35)        | 238 (255) |
+| Continents 25, 4  | 29 (23) | 7.49 / 33 (7.57 / 41)    |    — | 13 (19)        | 219 (255) |
+| Archipelago 11, 2 | 4 (5)   | 2.98 / 14 (10.32 / 78)   |    — | 3 (0)          | 0 (0)     |
+| Archipelago 14, 2 | 7 (6)   | 2.82 / 17 (2.69 / 15)    |    — | 20 (13)        | 0 (0)     |
+| Archipelago 14, 3 | 7 (8)   | 6.48 / 35 (10.28 / 53)   |    — | 8 (4)          | 0 (0)     |
+| Archipelago 16, 2 | 9 (6)   | 2.85 / 19 (2.66 / 11)    |    — | 33 (57)        | 5 (25)    |
+| Archipelago 16, 3 | 9 (8)   | 5.54 / 45 (3.61 / 18)    |    — | 32 (22)        | 0 (1)     |
+| Archipelago 16, 4 | 9 (10)  | 18.24 / 82 (28.21 / 122) |    — | 28 (24)        | 0 (0)     |
+| Archipelago 20, 2 | 15 (16) | 4.29 / 25 (7.60 / 34)    |    — | 95 (90)        | 26 (17)   |
+| Archipelago 20, 3 | 15 (16) | 13.59 / 63 (21.95 / 160) |    — | 38 (44)        | 16 (12)   |
+| Archipelago 20, 4 | 15 (16) | 9.77 / 65 (33.54 / 223)  |    — | 12 (9)         | 8 (1)     |
+| Archipelago 25, 2 | 23 (23) | 3.94 / 17 (4.45 / 22)    |    — | 108 (95)       | 63 (69)   |
+| Archipelago 25, 3 | 23 (23) | 6.97 / 60 (7.53 / 37)    |    — | 30 (47)        | 99 (118)  |
+| Archipelago 25, 4 | 23 (23) | 11.84 / 60 (10.14 / 54)  |    — | 6 (1)          | 56 (92)   |
+
+Two things the table shows beyond the rulings: 16 x 16 boards have a Rift
+on fewer seeds than at `7r39` (Lakes about half as often, Pangea about 80%,
+Dry Land about 93%), and Continents boards of 16 and 20 on far fewer (they
+have no reserve): a denser board has fewer legal 1 x 3 runs. And a
+16 x 16 Dry Land board with four players never gets a wild centre (no tile
+is 5 from all four lattice-corner capitals), as it never had a land
+curiosity at `7r39`.
+
+**The Giant Spider** (`pulp_wars-ykw.7`, ruled 2026-10-04, same identity
+`7r40`). Section 5.4 expected the lair to benefit from the reserve, but a
+lair needed 5 from every settlement center and a wild centre kept villages
+only 3 away, so as first implemented the Spider nearly vanished (Pangea
+25 x 25 with two players: 8 of 256 seeds, 139 at `7r39`). Two changes:
+
+- The lair needs **5 from every capital center and 4 from every village
+  center** (current rules section 2.7). Alone this gave, on the cells
+  measured, Dry Land 165% of the `7r39` Spider boards but Pangea 53% and
+  Lakes 38%.
+- So on **widths 16 and up every village keeps 4 from a wild centre** (3
+  on widths 11 and 14), which leaves a lair site on the centre.
+
+Result, boards of width 16 and up with a Spider on seeds 0-255, 2-4 players
+(`7r39` in brackets): Dry Land 1,040 (258), Pangea 806 (576), Lakes 690
+(582). The cost in attempts: the worst cells are Lakes 20 x 20 with two
+players, mean 6.64 (1.76 at `7r39`, 1.76 with the reserve at 3), and Lakes
+16 x 16 with four, 5.52 (2.23; 2.97); every cell stays inside the
+validator's allowance. A Spider takes the kind draw from a Fountain or a
+Shrine, so the validator counts **land features** (any of the three): at
+least 90% of the `7r39` count per cell, and Spider boards at least 60% per
+reserve map type. Rifts gain from the wider reserve too (Lakes 16 x 16:
+76-89 of 256 seeds, 60-72 with the reserve at 3, 116-123 at `7r39`). The
+table above was measured with the reserve at 3; `npm run
+validate:ruleset7-map-scale` prints the current one.
 
 ## 6. Setup rules
 
@@ -682,6 +873,13 @@ versions stay 7.
   capital in the central zone with 8 seats or fewer; room and village
   balance hold; the Continents landmass counts and capitals per landmass
   match section 4.3; one capital per Archipelago island.
+- **Amended 2026-10-04** ([section 5.5](#55-amendments-after-measurement-2026-10-04)):
+  the hard criterion is that generation succeeds on every seed; mean and
+  worst attempts are asserted only against the `7r39` baseline of the cell
+  (at most 1.6 times it, never below mean 8 and worst 64); room and
+  village balance are bead 3's; and the wild-reserve bullet below is
+  asserted as land curiosities at least 90% of the `7r39` count and Rifts at
+  least 85% (widths 20 and 25) or half (width 16).
 - Mean attempts per board at most 8 and worst at most 64 (the cap stays
   256), so generation stays fast.
 - Neutrality: setups that differ only in `factions` give identical boards;
@@ -731,14 +929,14 @@ versions stay 7.
 
 Ordered; each is independently releasable. Profiles follow `CLAUDE.md`.
 
-| #   | Bead                                                                                                                                                                                                                                                           | Profile                                                                    | Worker focused checks                                                                                                                                                                                                                                          | Conditional final gates                                                                                                   |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| 1   | This design (`ykw.1`)                                                                                                                                                                                                                                          | `docs/tracker`                                                             | `npx prettier --check docs/product/RULESET_7_MAP_SCALE.md`                                                                                                                                                                                                     | none                                                                                                                      |
-| 2   | **Engine: village density** (identity bump). `S` and `LPS`, lattice-first packing, villages 1 from the edge, wild reserve, per-landmass shares, village balance, `VILLAGE_DENSITY` invariant, the validation command, current rules 2.2 folded; 2–4 seats only | `ai/map/persistence`                                                       | `npm test -- tests/unit/ruleset-v7-map.test.ts tests/unit/ruleset-v7-naval-map.test.ts tests/unit/ruleset-v7-biome-map.test.ts tests/unit/ruleset-v7-curiosities.test.ts tests/unit/ruleset-v7-rift-generation.test.ts`; `npm run validate:ruleset7-map-scale` | `npm run validate:ruleset7-release` (identity pins updated, diff reviewed); `npm run smoke:browser` (autosave key change) |
-| 3   | **Engine: many seats** (identity bump). `aiCount` to `F - 1`, `P` table, domains, `D(w, N)`, central zone, room balance, Continents 2–4 masses, Archipelago domain islands, nine seat colours, headless CLI ranges, current rules 2.1–2.3 and 3 folded         | `ai/map/persistence`                                                       | bead 2's tests plus `tests/unit/ruleset-v7-unique-factions.test.ts tests/unit/ruleset-v7-headless-cli.test.ts`; `npm run validate:ruleset7-map-scale`                                                                                                          | `npm run validate:ruleset7-release` (identity pins updated); `npm run smoke:browser` (autosave key change)                |
-| 4   | **Normal AI for many seats**: per-turn deterministic work budget, shared per-turn context, nearest-two targeting; the 8.1 time targets with a checked-in timing script                                                                                         | `ai/map/persistence`                                                       | `npm test -- tests/unit/ruleset-v7-ai-headless.test.ts`; the timing script on 25 x 25 8 seats                                                                                                                                                                  | `npm run smoke:browser` (AI-turn lifecycle)                                                                               |
-| 5   | **UI for many seats**: setup (opponents, sizes per type, village line, Crowded label, Showcase gating, Cooperative label), turn-order strip, leaderboard scroll, turn status "(3 of 7)", faction-colour distinctness test                                      | `ui/presentation`                                                          | `npm test -- tests/unit/faction-colours-render-v7.test.ts tests/integration/ruleset7-browser-controller.test.ts tests/integration/ruleset7-faction-colours-dom.test.ts`                                                                                        | `npm run smoke:browser`                                                                                                   |
-| 6   | **Coarse check**: headless matrix (2, 4, 6, 8 seats; 11, 16, 20, 25; every type; seeds 0–7): win rate by turn position, match length, villages per seat, achievement rates, save size; evidence document; files balance beads                                  | `docs/tracker` (evidence only) or `ai/map/persistence` if it adds a script | the headless batch commands it records                                                                                                                                                                                                                         | none, or `npm run check` with a new script                                                                                |
+| #   | Bead                                                                                                                                                                                                                                                                                                                                                                                                                               | Profile                                                                    | Worker focused checks                                                                                                                                                                                                                                          | Conditional final gates                                                                                                   |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| 1   | This design (`ykw.1`)                                                                                                                                                                                                                                                                                                                                                                                                              | `docs/tracker`                                                             | `npx prettier --check docs/product/RULESET_7_MAP_SCALE.md`                                                                                                                                                                                                     | none                                                                                                                      |
+| 2   | **Engine: village density** (identity bump; done, `pulp-wars-poc-7r40`, as amended in section 5.5). `S` and `LPS`, lattice packing with nine phases on Dry Land, Pangea, and Lakes and the row-major fill on Continents and Archipelago, villages 1 from the edge, wild reserve on Dry Land, Pangea, and Lakes, per-landmass shares, `VILLAGE_DENSITY` invariant, the validation command, current rules 2.2 folded; 2–4 seats only | `ai/map/persistence`                                                       | `npm test -- tests/unit/ruleset-v7-map.test.ts tests/unit/ruleset-v7-naval-map.test.ts tests/unit/ruleset-v7-biome-map.test.ts tests/unit/ruleset-v7-curiosities.test.ts tests/unit/ruleset-v7-rift-generation.test.ts`; `npm run validate:ruleset7-map-scale` | `npm run validate:ruleset7-release` (identity pins updated, diff reviewed); `npm run smoke:browser` (autosave key change) |
+| 3   | **Engine: many seats** (identity bump). `aiCount` to `F - 1`, `P` table, domains, `D(w, N)`, central zone, room balance, village balance (moved here from bead 2), the water-map capital edge margin (section 4.1), Continents 2–4 masses, Archipelago domain islands, nine seat colours, headless CLI ranges, current rules 2.1–2.3 and 3 folded                                                                                  | `ai/map/persistence`                                                       | bead 2's tests plus `tests/unit/ruleset-v7-unique-factions.test.ts tests/unit/ruleset-v7-headless-cli.test.ts`; `npm run validate:ruleset7-map-scale`                                                                                                          | `npm run validate:ruleset7-release` (identity pins updated); `npm run smoke:browser` (autosave key change)                |
+| 4   | **Normal AI for many seats**: per-turn deterministic work budget, shared per-turn context, nearest-two targeting; the 8.1 time targets with a checked-in timing script                                                                                                                                                                                                                                                             | `ai/map/persistence`                                                       | `npm test -- tests/unit/ruleset-v7-ai-headless.test.ts`; the timing script on 25 x 25 8 seats                                                                                                                                                                  | `npm run smoke:browser` (AI-turn lifecycle)                                                                               |
+| 5   | **UI for many seats**: setup (opponents, sizes per type, village line, Crowded label, Showcase gating, Cooperative label), turn-order strip, leaderboard scroll, turn status "(3 of 7)", faction-colour distinctness test                                                                                                                                                                                                          | `ui/presentation`                                                          | `npm test -- tests/unit/faction-colours-render-v7.test.ts tests/integration/ruleset7-browser-controller.test.ts tests/integration/ruleset7-faction-colours-dom.test.ts`                                                                                        | `npm run smoke:browser`                                                                                                   |
+| 6   | **Coarse check**: headless matrix (2, 4, 6, 8 seats; 11, 16, 20, 25; every type; seeds 0–7): win rate by turn position, match length, villages per seat, achievement rates, save size; evidence document; files balance beads                                                                                                                                                                                                      | `docs/tracker` (evidence only) or `ai/map/persistence` if it adds a script | the headless batch commands it records                                                                                                                                                                                                                         | none, or `npm run check` with a new script                                                                                |
 
 Beads 2 and 3 can land in either order; 4 needs 3; 5 needs 3 and 4 (the
 browser must not offer 8 seats before the AI meets its time targets); 6

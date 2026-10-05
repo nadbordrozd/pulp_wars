@@ -623,10 +623,11 @@ describe("parsing, saves, and replays (sections 10.2 and 8.9)", () => {
   });
 
   it("round-trips a generated match with a Monster through the replay and the save", () => {
-    // 16 x 16 Dry Land seed 7 with three seats draws a Monster.
+    // 16 x 16 Dry Land seed 11 with three seats draws a Monster (seed 7
+    // before the village density, `pulp_wars-ykw.2`).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 7,
+      seed: 11,
       width: 16,
       height: 16,
       aiCount: 2,
@@ -635,7 +636,7 @@ describe("parsing, saves, and replays (sections 10.2 and 8.9)", () => {
       humanColor: "CORAL",
       factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
       mapType: "DRY_LAND",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: true,
     };
     const created = createPlayableGameV7(setup);

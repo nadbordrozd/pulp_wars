@@ -70,7 +70,7 @@ for (const mapType of mapTypes)
           // (docs/architecture/HEADLESS_SIMULATION.md).
           allowDuplicateFactions: true as const,
           mapType,
-          mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+          mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3" as const,
           curiosities: false,
         };
         const first = generateInitialMapV7(setup);
@@ -145,7 +145,7 @@ for (const [width, aiCount] of setups)
       factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL" as const),
       allowDuplicateFactions: true,
       mapType: "PANGEA" as const,
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3" as const,
       curiosities: false,
     });
     assert(generated.ok, `PANGEA/${width}/${aiCount}/${seed} failed`);
@@ -178,14 +178,14 @@ for (const mapType of mapTypes)
         // (docs/architecture/HEADLESS_SIMULATION.md).
         allowDuplicateFactions: true as const,
         mapType,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" as const,
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3" as const,
         curiosities: false,
       };
       const current = generateInitialMapV7(setup);
       const base = generateInitialMapWithVillageCountV7(
         setup,
         villageCountV7(setup),
-        "PANGEA_COAST_RING",
+        "VILLAGE_DENSITY",
       );
       assert(current.ok && base.ok, `${mapType}/${width}/${seed} failed`);
       const count = validateRifts(current.map, base.map, width);

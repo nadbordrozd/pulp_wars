@@ -9,6 +9,7 @@
  * here is part of the game build.
  */
 import {
+  MAP_GENERATION_REVISION_V7,
   RULESET_7_ID,
   createPlayableGameV7,
   type CoordV7,
@@ -33,7 +34,7 @@ export function forestSetupV7(
     humanColor: "CORAL",
     factions: [human, "GOBLIN"],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: MAP_GENERATION_REVISION_V7,
     curiosities: true,
   };
 }

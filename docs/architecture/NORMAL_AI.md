@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r39`. Role facts resolve through the unit's
+previews under `pulp-wars-poc-7r40`. Role facts resolve through the unit's
 kind (`unitFactionV7`: its owner's faction registration, or its original
 owner's while it is mind-controlled,
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14
@@ -280,6 +280,28 @@ units the seat trains only the naval role its plan asks for, in every match
 (the revision-14 rule for Undead matches). The plan still becomes active
 only as before, so a seat with objectives on its own land does not start an
 invasion across the water; see the limits below.
+
+**Landing discipline** (`pulp_wars-ykw.7`). On the village-dense boards of
+`pulp-wars-poc-7r40` a seat landed a whole army for two or three villages
+and re-embarked the units that found nothing to do, and a unit could board,
+be landed beside the tile it had left, and board again. Three rules, all
+read from the public view:
+
+- **A landmass takes no more landings than it has work.** When the plan's
+  target is a neutral village on a landmass without a hostile city, and
+  the viewer's and its allies' land capturers on that landmass are already
+  as many as its known uncaptured villages, the plan holds its transports
+  (as it does while a capturer stands on the target) instead of landing
+  more.
+- **A capturer that can walk to an endgame target does not board**: the
+  endgame plan has a public land route from its tile.
+- **The endgame lands a transport only by a real target city**: the
+  landing tile's route (three steps at most) must end on a visible target
+  city. While the endgame plan only searches (its routes end on unexplored
+  tiles) a transport keeps exploring by sea.
+
+The naval plan is inactive on Dry Land, so a Dry Land match plays exactly
+as before (20 matches on 11 x 11 and 14 x 14 compared hash for hash).
 
 A Raider pickets its richest city only while a threat to an own city is
 visible, and a screen does not step back from its job to stand next to a

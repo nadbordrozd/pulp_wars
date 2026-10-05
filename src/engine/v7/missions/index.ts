@@ -99,7 +99,7 @@ export function missionMatchSetupV7(
     humanColor,
     factions,
     mapType: "MISSION",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     mission: { id: mission.id, revision: mission.revision },
     // RULESET_7_MAP_CURIOSITIES.md section 3: never on an authored board.
     curiosities: false,

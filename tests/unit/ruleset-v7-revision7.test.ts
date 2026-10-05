@@ -46,6 +46,7 @@ import {
   setupV7,
 } from "../fixtures/v7-builders";
 import { withPortV7 } from "../fixtures/v7-naval-builders";
+import { createRevision39MapStateV7 } from "../fixtures/v7-revision13-map";
 
 const READY: UnitStateV7["activation"] = {
   moved: false,
@@ -64,8 +65,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r39");
-    expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V2");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r40");
+    expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V3");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
     expect(UNIT_ROLE_IDS_V7).not.toContain("SABOTEUR");
@@ -408,7 +409,9 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
   });
 
   it("applies deterministic Battleship splash and gives a hidden victim owner redacted damage", () => {
-    const created = createInitialMapStateV7({
+    // The 7r39 board (`pulp_wars-ykw.2`): the splash positions below were
+    // found on it.
+    const created = createRevision39MapStateV7({
       ...setupV7(59, 2),
       mapType: "ARCHIPELAGO",
     });

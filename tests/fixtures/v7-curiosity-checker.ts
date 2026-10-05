@@ -206,14 +206,16 @@ export function curiositySiteCheckerV7(
             : ["SHALLOW_WATER", "DEEP_WATER"];
     if (!terrains.includes(tile.terrain)) return `is on ${tile.terrain}`;
     if (kind === "WRECK" && mapType === "DRY_LAND") return "is on Dry Land";
-    // Rule 3; section 4.4: the Monster 5 or more from every center.
+    // Rule 3; section 4.4: the Monster 5 or more from every capital and
+    // (`pulp_wars-ykw.7`) 4 or more from every village.
     if (centers.some((center) => chebyshev(center, at) < 3))
       return "is within 2 of a settlement center";
     if (
       kind === "MONSTER" &&
-      centers.some((center) => chebyshev(center, at) < 5)
+      (map.capitals.some((center) => chebyshev(center, at) < 5) ||
+        map.villages.some((center) => chebyshev(center, at) < 4))
     )
-      return "is within 4 of a settlement center";
+      return "is within 4 of a capital or 3 of a village center";
     // Rule 4.
     const distances = map.capitals.map((capital) => chebyshev(capital, at));
     if (Math.min(...distances) < 5) return "is within 4 of a capital";

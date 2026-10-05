@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r39 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r39");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r39");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r39.current");
+  it("keeps r18 among the gap-free prior identities after the r40 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r40");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r40");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 37 },
+        { length: 38 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-21)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-22)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 37 },
+        { length: 38 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r39");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r40");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -1385,7 +1385,7 @@ describe("ruleset-7 Dinosaur Showcase", () => {
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "SHOWCASE",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   });
 
@@ -1860,8 +1860,10 @@ describe("ruleset-7 Dinosaur persistence and headless play", () => {
   it("round-trips Dinosaur seats through save, replay, and checkpoint hashes", () => {
     const setup: MatchSetupV7 = {
       // Seed 6 (was 7): since pulp_wars-c87.8 the 12-HP Cavemen of seed 7
-      // win in ten rounds, before any Egg is laid.
-      ...goblinSetupV7(["DINOSAUR", "UNDEAD"], 6),
+      // win in ten rounds, before any Egg is laid. Seed 5 since the village
+      // density (`pulp_wars-ykw.2`): on seed 6's new board no Egg hatches
+      // within the 25 rounds.
+      ...goblinSetupV7(["DINOSAUR", "UNDEAD"], 5),
       mapType: "PANGEA",
     };
     const match = runAiMatchV7(setup, { maxRounds: 25 });

@@ -257,7 +257,7 @@ describe("ruleset-7 revision-20 Nesting city slot", () => {
       humanColor: "CORAL",
       factions: ["DINOSAUR", "ORIGINAL", "GOBLIN", "UNDEAD"],
       mapType: "SHOWCASE",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: false,
     };
     const created = createInitialMapStateV7(setup);

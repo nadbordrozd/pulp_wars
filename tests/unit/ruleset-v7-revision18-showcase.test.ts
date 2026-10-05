@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { endgamePlanForPolicyV7 } from "../../src/ai/v7-endgame";
 import {
   FACTION_IDS_V7,
+  MAP_GENERATION_REVISION_V7,
   RULESET_7_ID,
   SHOWCASE_UNIT_TEMPLATES_V7,
   TECHNOLOGY_IDS_V7,
@@ -30,7 +31,7 @@ import {
   roadPopulationForCityV7,
   runReplayV7,
   showcaseStripCenterXV7,
-  villageCountV7,
+  revision14VillageCountV7,
   spatialContributionAtV7,
   viewForV7,
   type AiCountV7,
@@ -43,6 +44,7 @@ import {
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/v7";
 import { mirrorOptionV7 } from "../fixtures/v7-builders";
+import { revision39PlayableGameV7 } from "../fixtures/v7-revision13-map";
 
 /**
  * Revision 18 section 5 (`pulp_wars-6gd.3`): the fixed `SHOWCASE` setup.
@@ -65,7 +67,7 @@ function showcaseSetup(
     humanColor: "CORAL",
     factions,
     mapType: "SHOWCASE",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
     // pulp_wars-w5j.1: the test only mirror option for repeated factions.
     ...mirrorOptionV7(factions),
@@ -149,6 +151,10 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
     // board into Rift tiles and changes nothing else; the hashes return once
     // each Rift tile gets back the terrain the generator without Rifts
     // (`PANGEA_COAST_RING`) gives it.
+    // The village density (`pulp_wars-ykw.2`, 7r40) regenerates every board
+    // and renames the map revision a setup names; the hashes return on the
+    // 7r39 board that the parity rules keep (`CURIOSITIES` with the 7r39
+    // village table) once the revision name is put back as well.
     const pinned = {
       DRY_LAND:
         "82f66f98a5ee995551537573fd5644730860105cd5da95ce14774e1abd2659af",
@@ -161,10 +167,9 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       LAKES: "9f0352ed83f648af05dd101fe7634f4848646e1cf87b2dfe62417a82e59c42c2",
     } as const;
     for (const [mapType, hash] of Object.entries(pinned)) {
-      const created = createPlayableGameV7(
+      const created = revision39PlayableGameV7(
         showcaseSetup(THREE, { mapType: mapType as MatchSetupV7["mapType"] }),
       );
-      if (!created.ok) throw new Error(`${mapType} rejected`);
       const {
         eggs,
         shields,
@@ -215,7 +220,7 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       });
       const withoutRifts = generateInitialMapWithVillageCountV7(
         setupOf,
-        villageCountV7(setupOf),
+        revision14VillageCountV7(setupOf),
         "PANGEA_COAST_RING",
       );
       if (!withoutRifts.ok) throw new Error(`${mapType} base rejected`);
@@ -267,10 +272,12 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
       expect(
         canonicalHash(
           JSON.parse(
-            JSON.stringify(revision18State).replaceAll(
-              RULESET_7_ID,
-              "pulp-wars-poc-7r18",
-            ),
+            JSON.stringify(revision18State)
+              .replaceAll(RULESET_7_ID, "pulp-wars-poc-7r18")
+              .replaceAll(
+                MAP_GENERATION_REVISION_V7,
+                "REGIONAL_BIOMES_NAVAL_V2",
+              ),
           ),
         ),
         mapType,

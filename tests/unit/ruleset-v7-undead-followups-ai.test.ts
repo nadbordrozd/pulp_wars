@@ -264,16 +264,18 @@ describe("vkq.21 Normal AI: living seats hunt a plaguing Lich", () => {
 });
 
 describe("vkq.21 Normal AI: Liches and Vampires stay ashore", () => {
-  it("boards other units but never a Lich or Vampire (HU Archipelago 14, seed 29)", () => {
+  it("boards other units but never a Lich or Vampire (HU Archipelago 14, seed 22)", () => {
     // The pre-vkq.21 policy embarked a Vampire in round 7 of seed 1 on
     // revision-15 maps. pulp_wars-wwc: revision-16 maps and the growth-first
     // opening delay seed 1's first Undead embarkation past round 12; seed 29
-    // embarks three Undead units within 12 rounds.
+    // embarked three Undead units within 12 rounds. On the village-density
+    // boards (`pulp_wars-ykw.2`) seed 22 embarks Undead units within 12
+    // rounds (8 of seeds 0-32 do).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: false,
-      seed: 29,
+      seed: 22,
       width: 14,
       height: 14,
       aiCount: 1,
@@ -344,7 +346,7 @@ function setupWith(factions: readonly FactionIdV7[]): MatchSetupV7 {
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

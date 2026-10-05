@@ -13,7 +13,6 @@ import {
   canonicalHash,
   cityIncomeV7,
   cityLevelIncomeV7,
-  createInitialMapStateV7,
   createInitialMapStateWithVillageCountV7,
   createPlayableGameV7,
   createReplayV7,
@@ -32,7 +31,7 @@ import {
   queryPlayerCommandsV7,
   runReplayV7,
   unitId,
-  villageCountV7,
+  revision14VillageCountV7,
   viewForV7,
   type CombatPreviewV7,
   type CommandV7,
@@ -102,10 +101,10 @@ interface ArenaOptions {
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("keeps rejecting r13 after the r39 identity and cleans the r13 through r38 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r39");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r39.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-26)).toEqual([
+  it("keeps rejecting r13 after the r40 identity and cleans the r13 through r39 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r40");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-27)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -132,6 +131,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "pulpWars.save.v7r36.current",
       "pulpWars.save.v7r37.current",
       "pulpWars.save.v7r38.current",
+      "pulpWars.save.v7r39.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
@@ -1039,9 +1039,15 @@ describe("ruleset-7 revision-14 villages and economy", () => {
         4,
         { width, mapType },
       );
-      expect(villageCountV7(setup)).toBe(villages);
+      // The fixed table of revision 14 through 7r39; the village density
+      // (`pulp_wars-ykw.2`) replaced it, and the parity rules keep it.
+      expect(revision14VillageCountV7(setup)).toBe(villages);
       if (width > 16) continue;
-      const created = createInitialMapStateV7(setup);
+      const created = createInitialMapStateWithVillageCountV7(
+        setup,
+        villages,
+        "CURIOSITIES",
+      );
       if (!created.ok) throw new Error(created.error.code);
       expect(
         created.state.board.tiles.filter((tile) => tile.site === "VILLAGE"),
@@ -1057,8 +1063,12 @@ describe("ruleset-7 revision-14 villages and economy", () => {
       218,
       { mapType: "ARCHIPELAGO" },
     );
-    expect(createInitialMapStateV7(crowded).ok).toBe(true);
-    expect(createInitialMapStateWithVillageCountV7(crowded, 7)).toMatchObject({
+    expect(
+      createInitialMapStateWithVillageCountV7(crowded, 6, "CURIOSITIES").ok,
+    ).toBe(true);
+    expect(
+      createInitialMapStateWithVillageCountV7(crowded, 7, "CURIOSITIES"),
+    ).toMatchObject({
       ok: false,
       error: { code: "MAP_GENERATION_FAILED" },
     });
@@ -1179,7 +1189,7 @@ function setupWith(
     factions: [...factions],
     ...mirrorOptionV7(factions),
     mapType: options.mapType ?? "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

@@ -17,7 +17,9 @@ import { runAiMatchV7 } from "../../src/headless/v7";
 
 describe("neutral-owner fuzz, headless matches (section 10.5)", () => {
   // `monsters` is the Giant Spiders the board draws: at least two of the
-  // three matches play 25 rounds with one on the board.
+  // three matches play 25 rounds with one on the board. The seeds are those
+  // of the village-density boards (`pulp_wars-ykw.2`, with the lair 4 from
+  // a village and the wider reserve of `pulp_wars-ykw.7`).
   const matches: readonly {
     readonly seed: number;
     readonly mapType: MapTypeV7;
@@ -25,19 +27,19 @@ describe("neutral-owner fuzz, headless matches (section 10.5)", () => {
     readonly monsters: number;
   }[] = [
     {
-      seed: 3,
+      seed: 149,
       mapType: "PANGEA",
       factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
       monsters: 1,
     },
     {
-      seed: 3,
+      seed: 0,
       mapType: "LAKES",
       factions: ["ORIGINAL", "UNDEAD", "GOBLIN"],
       monsters: 1,
     },
     {
-      seed: 7,
+      seed: 11,
       mapType: "DRY_LAND",
       factions: ["MARTIAN", "ICE_FOLK", "DWARF"],
       monsters: 1,
@@ -63,7 +65,7 @@ describe("neutral-owner fuzz, headless matches (section 10.5)", () => {
         humanColor: "CORAL",
         factions: [...factions],
         mapType,
-        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+        mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
         curiosities: true,
       };
       const match = runAiMatchV7(setup, { maxRounds: 25 });

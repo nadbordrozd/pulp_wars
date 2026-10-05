@@ -100,6 +100,15 @@ const PINNED_MISSION_HASHES: Readonly<Record<string, string>> = {
     "12888fadf662936bf1658b22795874f9ec6d27caa67d6dcee32a8fe4fa5083e4",
 };
 
+/**
+ * The map revision the pins were taken at. The village density
+ * (`pulp_wars-ykw.2`) renamed the generator a setup names to
+ * `REGIONAL_BIOMES_NAVAL_V3`; a mission board is authored, not generated,
+ * so like the ruleset ID the name alone changes no mission and the pins
+ * keep hashing the name they were taken with.
+ */
+const PINNED_MAP_GENERATION_REVISION = "REGIONAL_BIOMES_NAVAL_V2";
+
 function missionStateHash(state: GameStateV7): string {
   // The Giant Spider (`pulp_wars-737.3`) added the `monsters` list, always
   // empty on a mission board, so the pins leave it out.
@@ -129,7 +138,11 @@ function missionStateHash(state: GameStateV7): string {
   return canonicalHash({
     ...rest,
     rulesetId: "*",
-    setup: { ...state.setup, rulesetId: "*" },
+    setup: {
+      ...state.setup,
+      rulesetId: "*",
+      mapGenerationRevision: PINNED_MAP_GENERATION_REVISION,
+    },
   });
 }
 
@@ -191,7 +204,11 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
   return canonicalHash({
     ...rest,
     rulesetId: "*",
-    setup: { ...setup, rulesetId: "*" },
+    setup: {
+      ...setup,
+      rulesetId: "*",
+      mapGenerationRevision: PINNED_MAP_GENERATION_REVISION,
+    },
   });
 }
 
@@ -329,7 +346,7 @@ describe("the mission registry", () => {
       humanColor: "CORAL",
       factions: ["ORIGINAL", "UNDEAD"],
       mapType: "MISSION",
-      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+      mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: false,
       mission: { id: "TEST_GROUNDS", revision: 1 },
     });

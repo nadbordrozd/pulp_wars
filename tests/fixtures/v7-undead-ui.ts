@@ -63,7 +63,7 @@ export function undeadUiSetupV7(
     humanColor: "CORAL",
     factions: [...factions],
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
     ...mirrorOptionV7(factions),
   };
@@ -199,20 +199,30 @@ export function undeadShowcaseFixtureV7(): GameStateV7 {
 }
 
 /**
- * A real, replay-valid seed-2 Undead-vs-Human save (Undead-vs-Undead until
+ * The seed of {@link scriptedUndeadRaiseDeadSaveV7}: 10 on the
+ * village-density boards (`pulp_wars-ykw.2`; the script reaches Raise Dead
+ * on 20 of seeds 0-39), 2 before.
+ */
+export const SCRIPTED_RAISE_DEAD_SEED_V7 = 10;
+
+/**
+ * A real, replay-valid seed-10 Undead-vs-Human save (Undead-vs-Undead until
  * pulp_wars-w5j.1: the browser resumes only distinct factions) that stops on
  * the human turn where Raise Dead first becomes legal. Both seats follow a
  * fixed script (research and train a Necromancer, fight, walk the
  * Necromancer to a Grave), so it never depends on the Normal AI. The browser
  * smoke loads it through the production resume path.
  */
-export function scriptedUndeadRaiseDeadSaveV7(savedAt: string): {
+export function scriptedUndeadRaiseDeadSaveV7(
+  savedAt: string,
+  seed: number = SCRIPTED_RAISE_DEAD_SEED_V7,
+): {
   readonly source: string;
   readonly necromancerAt: CoordV7;
   readonly cursorStart: CoordV7;
   readonly graves: readonly CoordV7[];
 } {
-  const setup = undeadUiSetupV7(["UNDEAD", "ORIGINAL"]);
+  const setup = { ...undeadUiSetupV7(["UNDEAD", "ORIGINAL"]), seed };
   const created = createPlayableGameV7(setup);
   if (!created.ok) throw new Error(created.error.code);
   let state = created.state;

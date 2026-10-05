@@ -57,7 +57,9 @@ describe("Ruleset 7 browser controller", () => {
       persistenceNow: () => "2026-09-08T12:00:00.000Z",
       createAiPolicyWork: immediateEndTurnWork,
     });
-    const launched = await controller.launch(setupV7(0, 1));
+    // Seed 2: the AI moves first on its village-density map (`pulp_wars-ykw.2`;
+    // seed 0 did before).
+    const launched = await controller.launch(setupV7(2, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const snapshot = controller.snapshot();
     expect(snapshot).toMatchObject({
@@ -117,9 +119,9 @@ describe("Ruleset 7 browser controller", () => {
       }
       if (snapshot.ai.active) clock += 3;
     });
-    // Seed 3: the human moves last on its revision-14 map (seed 0 did on
-    // revision 13), so three AI turns run first.
-    const launched = await controller.launch(setupV7(3, 3));
+    // Seed 2: the human moves last on its village-density map (seed 3 did on
+    // revision 14, seed 0 on revision 13), so three AI turns run first.
+    const launched = await controller.launch(setupV7(2, 3));
     if (!launched.ok) throw new Error(launched.diagnostic);
     const progress = controller.progressAiTurns();
     await waitUntil(() => scheduler.activeCount() === 1);
@@ -152,8 +154,8 @@ describe("Ruleset 7 browser controller", () => {
     ).toBe(true);
     expect(result).not.toHaveProperty("commands");
     expect(result).not.toHaveProperty("stateHash");
-    // The seed-3 turn order runs the three AI seats as players 2, 4, 3.
-    expect(policyViewerIds).toEqual([2, 4, 3]);
+    // The seed-2 turn order runs the three AI seats as players 3, 2, 4.
+    expect(policyViewerIds).toEqual([3, 2, 4]);
     expect(
       publicSnapshots
         .filter((snapshot) => snapshot.view !== null)
@@ -179,7 +181,8 @@ describe("Ruleset 7 browser controller", () => {
       aiProgressScheduler: scheduler.schedule,
       createAiPolicyWork: immediateEndTurnWork,
     });
-    const launched = await controller.launch(setupV7(0, 1));
+    // Seed 2: the AI moves first on its village-density map.
+    const launched = await controller.launch(setupV7(2, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
 
     const progress = controller.progressAiTurns();
@@ -359,7 +362,9 @@ describe("Ruleset 7 browser controller", () => {
         queueMicrotask(resume);
       },
     });
-    const launched = await controller.launch(setupV7(1, 1));
+    // Seed 3: the human moves first and has Fertile Ground at its capital
+    // on the village-density board (`pulp_wars-ykw.2`; seed 1 before).
+    const launched = await controller.launch(setupV7(3, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     await dispatchKind(
       controller,
@@ -411,8 +416,9 @@ describe("Ruleset 7 browser controller", () => {
       storage: new WriteFailingStorage(),
       persistenceNow: () => "2026-09-08T12:00:00.000Z",
     });
-    // Seed 43: the human moves first on its revision-14 map.
-    const launched = await controller.launch(setupV7(43, 1));
+    // Seed 44: the human moves first on its village-density map (seed 43 did
+    // on revision 14).
+    const launched = await controller.launch(setupV7(44, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     expect(controller.snapshot()).toMatchObject({
       phase: "ACTIVE",
@@ -428,8 +434,9 @@ describe("Ruleset 7 browser controller", () => {
   it("keeps the match active when menu persistence fails and allows a safe retry", async () => {
     const storage = new ToggleWriteStorage();
     const controller = new Ruleset7BrowserController({ storage });
-    // Seed 43: the human moves first on its revision-14 map.
-    const launched = await controller.launch(setupV7(43, 1));
+    // Seed 44: the human moves first on its village-density map (seed 43 did
+    // on revision 14).
+    const launched = await controller.launch(setupV7(44, 1));
     if (!launched.ok) throw new Error(launched.diagnostic);
     await dispatchKind(controller, "WAIT");
     const commandIndex = requireView(controller.snapshot()).commandIndex;
@@ -727,7 +734,7 @@ function setupV7(seed: number, aiCount: 1 | 2 | 3): MatchSetupV7 {
     // pulp_wars-w5j.1: the browser launches only distinct factions.
     factions: distinctFactionsV7(aiCount + 1),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }

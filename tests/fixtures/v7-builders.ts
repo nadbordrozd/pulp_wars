@@ -47,7 +47,7 @@ export function browserSetupV7(
     humanColor: "CORAL",
     factions: distinctFactionsV7(aiCount + 1),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }
@@ -69,7 +69,7 @@ export function setupV7(seed = 71, aiCount: 1 | 2 | 3 = 1): MatchSetupV7 {
     humanColor: "CORAL",
     factions: Array.from({ length: aiCount + 1 }, () => "ORIGINAL"),
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
     allowDuplicateFactions: true,
   };

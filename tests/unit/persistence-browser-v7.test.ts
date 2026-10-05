@@ -43,7 +43,7 @@ describe("Ruleset 7 browser persistence", () => {
     expect(storage.getItem(SAVE_STORAGE_KEY)).toBe(v6);
   });
 
-  it("removes exactly the thirty-eight obsolete v7 keys and preserves current, v6, settings, and unrelated data", () => {
+  it("removes exactly the thirty-nine obsolete v7 keys and preserves current, v6, settings, and unrelated data", () => {
     const preserved = [
       [SAVE_STORAGE_KEY_V7, "r15"],
       [SAVE_STORAGE_KEY, "v6"],
@@ -89,6 +89,7 @@ describe("Ruleset 7 browser persistence", () => {
       ["pulpWars.save.v7r36.current", "r36"],
       ["pulpWars.save.v7r37.current", "r37"],
       ["pulpWars.save.v7r38.current", "r38"],
+      ["pulpWars.save.v7r39.current", "r39"],
       ...preserved,
     ]);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toEqual([
@@ -130,10 +131,11 @@ describe("Ruleset 7 browser persistence", () => {
       "pulpWars.save.v7r36.current",
       "pulpWars.save.v7r37.current",
       "pulpWars.save.v7r38.current",
+      "pulpWars.save.v7r39.current",
     ]);
     expect(cleanupObsoleteRuleset7Saves(storage)).toEqual({
       removedKeys: OBSOLETE_SAVE_STORAGE_KEYS_V7,
-      removedCount: 38,
+      removedCount: 39,
       warning: null,
     });
     for (const [key, value] of preserved)
@@ -248,7 +250,7 @@ function setup(): MatchSetupV7 {
     // pulp_wars-w5j.1: a Human mirror through the test only option.
     allowDuplicateFactions: true,
     mapType: "DRY_LAND",
-    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2",
+    mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
     curiosities: false,
   };
 }
