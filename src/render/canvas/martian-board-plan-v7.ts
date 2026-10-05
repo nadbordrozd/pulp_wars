@@ -216,6 +216,10 @@ export function martianPickTargetsV7(
         at: preview.from,
         command,
         family: "TRACTOR_BEAM",
+        // Bead pulp_wars-9im: pulling an own unit is a Help, not an attack.
+        ...(target?.ownerId === view.viewer.id
+          ? { highlight: "SUPPORT" as const }
+          : {}),
         previewLabel: tractorBeamTargetLabelV7(view, preview),
         ...(lines.length > 1
           ? { previewNote: lines.slice(1).join(" · ") }

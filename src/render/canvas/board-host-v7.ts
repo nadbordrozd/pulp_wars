@@ -108,6 +108,7 @@ import {
   type MapCommandTargetV7,
   type UnitPulseV7,
 } from "./board-renderer-v7";
+import { targetIsSteppedV7 } from "./target-highlight-v7";
 import {
   corePresentationPlanV7,
   type CorePresentationStepV7,
@@ -2291,22 +2292,25 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /**
    * The tiles of the aimed ability's targets (a Tunnel, Bomb Run,
    * Assemble, Beam Down, Mind Control, Tractor Beam, Bolas, Cold Snap or
-   * nest tile), once each in reading order; empty when nothing is aimed.
+   * nest tile), once each in reading order. Bead pulp_wars-9im: with
+   * nothing aimed, the units the selection may attack, heal or hatch (its
+   * plain Move tiles are reached with the arrow keys); empty when there
+   * are none.
    */
   #aimedTargetCells(model: BoardHostModelV7): CoordV7[] {
     const interaction = model.interaction;
-    if (
-      (interaction.dwarfPick ?? null) === null &&
-      (interaction.candyPick ?? null) === null &&
-      (interaction.martianPick ?? null) === null &&
-      (interaction.iceFolkPick ?? null) === null &&
-      (interaction.layEgg ?? null) === null
-    )
-      return [];
+    const aimed =
+      (interaction.dwarfPick ?? null) !== null ||
+      (interaction.candyPick ?? null) !== null ||
+      (interaction.martianPick ?? null) !== null ||
+      (interaction.iceFolkPick ?? null) !== null ||
+      (interaction.layEgg ?? null) !== null;
+    if (!aimed && !model.interactive) return [];
     const cells = new Map<string, CoordV7>();
     for (const target of this.#planFor(model.view, model.offeredCommands)
       .targets)
-      cells.set(`${target.at.x},${target.at.y}`, target.at);
+      if (aimed || targetIsSteppedV7(target.family))
+        cells.set(`${target.at.x},${target.at.y}`, target.at);
     return [...cells.values()].sort(
       (left, right) => left.y - right.y || left.x - right.x,
     );

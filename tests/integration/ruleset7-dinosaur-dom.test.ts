@@ -34,6 +34,7 @@ import type {
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
+import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
   Ruleset7DomAppView,
   recruitmentRolePresentationV7,
@@ -688,7 +689,7 @@ describe("Revision 19 Egg dock and Shaman Hatch", () => {
     );
     expect(requiredElement(".v7-selection-dock h2").textContent).toBe("Shaman");
     expect(actionLabels()).toEqual(["Hatch", "Disband", "Wait", "Hatch"]);
-    const hatch = requiredButton(`command-hatch-${egg.id}`);
+    const hatch = requiredButton("command-hatch");
     expect(hatch.title).toBe(
       "Hatch an adjacent Egg laid on an earlier turn. The new unit cannot act this turn.",
     );
@@ -726,6 +727,55 @@ describe("Revision 19 Egg dock and Shaman Hatch", () => {
     // The hatchling is a T-Rex now; the new Egg still waits.
     selectUnitAt(controller, host, AT.tRexEgg);
     expect(requiredElement(".v7-selection-dock h2").textContent).toBe("T-Rex");
+    app.destroy();
+  });
+
+  it("has one Hatch button for two Eggs, which are picked on the board", async () => {
+    // Bead pulp_wars-9im: no button per Egg.
+    const shamanAt = { x: 8, y: 7 };
+    const eggs = [
+      { x: 7, y: 7 },
+      { x: 9, y: 7 },
+    ];
+    const controller = new FixtureController(
+      dinosaurUiFieldV7([{ seat: 0, role: "CAPTAIN", at: shamanAt }], {
+        eggs: [
+          { seat: 0, role: "KNIGHT", at: required(eggs[0]) },
+          { seat: 0, role: "RAIDER", at: required(eggs[1]) },
+        ],
+      }),
+    );
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const shaman = selectUnitAt(controller, host, shamanAt);
+    expect(
+      document.querySelectorAll('[data-action^="command-hatch"]'),
+    ).toHaveLength(1);
+    const hatch = requiredButton("command-hatch");
+    expect(hatch.dataset.hatchTargets).toBe("2");
+    expect(hatch.getAttribute("aria-label")).toContain(
+      "Choose a highlighted Egg",
+    );
+    // Both Eggs are Help targets beside the Shaman's Moves, nothing armed.
+    const targets = boardPlan(host).targets.filter(
+      (target) => target.family === "HATCH",
+    );
+    expect(targets.map((target) => target.at)).toEqual(eggs);
+    for (const target of targets)
+      expect(targetHighlightStyleV7(target.family)).toBe("SUPPORT");
+    // The button sends nothing: it points at the board.
+    hatch.click();
+    expect(controller.accepted).toHaveLength(0);
+    expect(document.querySelector("#v7-live")?.textContent).toBe(
+      "Choose a highlighted Egg.",
+    );
+    host.callbacks?.onCommand(required(targets[1]));
+    await waitUntil(() => controller.accepted.length === 1);
+    expect(controller.accepted[0]).toEqual({
+      kind: "HATCH",
+      unitId: shaman.id,
+      eggUnitId: unitAt(controller, required(eggs[1])).id,
+    });
     app.destroy();
   });
 });

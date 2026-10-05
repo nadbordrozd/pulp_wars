@@ -37,9 +37,10 @@ Ruleset 5 and 6 interfaces are unchanged.
   tests and tooling may keep coordinates; they are never read out.
 - **As little text as possible while aiming an ability.** The aiming
   panel in the dock is the ability's icon and name, a small `?` info
-  button, the buttons that choose a unit (portraits or names) and the
-  actions (the ability's confirmation, Back, Cancel). It has no
-  instruction sentences, no forecast sentences and no tile chips: the
+  button and the actions (the ability's confirmation or toggle, Back,
+  Cancel). It has no instruction sentences, no forecast sentences, no tile
+  chips and, since bead `pulp_wars-9im`, no buttons that choose a unit
+  ([board targeting](#board-targeting-bead-pulp_wars-9im)): the
   board carries the targets, their numbers, ghosts and dots. The `?`
   button's tooltip (and its toast when pressed, for touch) holds the
   instruction and any caveat ("Damage is a forecast: enemies may move
@@ -51,6 +52,40 @@ Ruleset 5 and 6 interfaces are unchanged.
   description names it without coordinates ("Surface next to Catapult
   and Captain, erupts for 6", "Surface in the open", "Land here, safe",
   "Assemble here", "Beam the Grunt here").
+
+### Board targeting (bead `pulp_wars-9im`)
+
+The full rule, the audit of every dock action and the highlight vocabulary
+are in [BOARD_TARGETING.md](BOARD_TARGETING.md). In short:
+
+- **Targets are picked on the board, never from a list in the dock.** An
+  action that targets a unit, a tile or a building highlights its legal
+  targets on the board and is performed by choosing one there. No dock
+  shows one button, portrait or chip per target. Where a later section of
+  this document describes such a list (the Beam Down passenger portraits,
+  the Mind Control, Tractor Beam, Bolas and Bomb Run target chips, the
+  Tunnel's passenger buttons, the Re-bake and Sugar Toss buttons, one
+  Hatch button per Egg) or a target outline in a faction's colour, this
+  section wins.
+- **Four highlight styles, the same for every faction**, told apart by
+  shape first and colour second, each on a dark casing: **Move** (a
+  dashed teal tile), **Attack** (a solid red tile with corner brackets),
+  **Help** (a green ring with a plus badge, on an own unit) and **Place**
+  (a dotted cream tile with corner pips). The marks do not animate.
+- **No arming where a click cannot be misread.** A selected unit shows its
+  Moves, its Attacks and the own units it may heal or hatch together; a
+  click on each does what its mark says. An ability whose targets could
+  also be Move or Attack targets is armed with its one dock button; while
+  it is armed only its targets are highlighted, and Back, Cancel or Escape
+  disarms it.
+- **Previews** stand at each target (damage, heal, cost, "Frozen"), from
+  the engine's public previews, as an attack's does.
+- **Keyboard.** Tab and Shift+Tab on the board step through the armed
+  ability's targets, or, with nothing armed, through the units the
+  selection may attack, heal or hatch; Enter chooses; plain Move tiles are
+  reached with the arrow keys. Past the last target Tab leaves the board.
+- **Help** shows the four marks with their names under "How to play", and
+  lists Tab as "Next target".
 
 ### Research prompts (bead `pulp_wars-gl1`)
 
@@ -550,10 +585,14 @@ seat looks as in revision 18 apart from the extra faction option.
   (with Administration) **Abandon Egg** with its refund ("Remove this Egg
   for 5 Coins"). Enemy Eggs are ordinary attack targets with ordinary attack
   previews.
-- **Hatch.** A selected Shaman gets one "Hatch" button per adjacent own Egg
-  laid on an earlier turn (chip "{Unit} · now"; the tooltip is the section
-  12.2 sentence), and the same Egg is a board target labelled "Hatch {Unit}"
-  with the note "Cannot act this turn". An adjacent Egg laid this turn is
+- **Hatch.** A selected Shaman next to an own Egg laid on an earlier turn
+  gets one "Hatch" button, whatever the number of Eggs (bead
+  `pulp_wars-9im`), and every such Egg is a board target (a Help ring)
+  labelled "Hatch {Unit}" with the note "Cannot act this turn"; choosing
+  the Egg on the board hatches it. With one Egg the button hatches it too
+  (chip "{Unit} · now"; the tooltip is the section 12.2 sentence); with
+  several it reads "Choose a highlighted Egg" and sends the keyboard to
+  the board. An adjacent Egg laid this turn is
   marked "Next turn" on the board, and the dock adds an `aria-disabled` Hatch
   explaining "This Egg was laid this turn; it can be hatched from your next
   turn".
@@ -747,41 +786,43 @@ without a Martian seat looks as before apart from the extra faction option.
   neither button, as before. A
   press aims the ability: the dock replaces the actions with the aiming
   panel of the [no-coordinates rule](#no-coordinates-minimal-text-bead-pulp_wars-b5f8)
-  (the ability's icon and name with its `?`, unit choices as chips, each
-  carrying its whole preview in its accessible name, Back and Cancel; no
-  tile chips and no detail sentences), the board's only targets become the
-  ability's (magenta dashed outlines) and the camera frames them above the
-  dock. Escape steps back (a Beam Down tile to its passenger) and then
-  leaves.
+  (the ability's icon and name with its `?`, Back and Cancel; no unit
+  chips, no tile chips and no detail sentences), the board's only targets
+  become the ability's (in the styles of
+  [board targeting](#board-targeting-bead-pulp_wars-9im): hostile targets
+  as Attack marks, passengers as Help rings, beam tiles as Place marks)
+  and the camera frames them above the dock. Escape steps back (a Beam
+  Down tile to its passenger) and then leaves.
   - **Beam Down** (passenger first, like the Dwarf Tunnel;
     `pulp_wars-1wy.5`): every unit the carrier may beam (on or next to own
     city centers, or within two tiles of the carrier) wears a **"Beam"
     badge** on the board, with no tile outline, and the carrier's
     **pick-up range** (the tiles within two of it) is tinted pale magenta
     with a dashed outer edge, so a badged unit inside it is a pick-up and
-    one outside it stands at a city. The dock mirrors the badges with one
-    **portrait button** per passenger (its portrait and "8/8"; the
-    accessible name "Beam Grunt, 8 of 8 HP, picked up nearby" or "…, from
-    your city"). Under them the caveat is **two icon chips**, not a
-    sentence: the attack icon with "Can attack" and the move icon struck
-    through with "No move" (together one image named "After landing it can
-    attack but not move"; the `?` says it too). Tapping a badge or a
-    portrait moves on to the legal tiles around the carrier, on the board
-    only: plain dashed outlines with no label, "Destroys Field Defense"
+    one outside it stands at a city. Each badged unit also wears the Help
+    ring and is named for the cursor "Beam the Grunt down, 8 of 8 HP,
+    picked up nearby" or "…, from your city"; the dock lists no passengers
+    (bead `pulp_wars-9im`). In the dock the caveat is **two icon chips**,
+    not a sentence: the attack icon with "Can attack" and the move icon
+    struck through with "No move" (together one image named "After landing
+    it can attack but not move"; the `?` says it too). Choosing a badged
+    unit moves on to the legal tiles around the carrier, on the board
+    only: Place marks with no label, "Destroys Field Defense"
     only on a tile where the landing would (named "Beam the Grunt here.
     After landing it can attack but not move"); the chosen passenger is
     marked "Beaming"; a tile performs it. The beamed unit then shows the
     "Beamed" chip, its attack targets, and no Move.
   - **Mind Control**: the legal targets, wounded hostile units ("Take · 5
     HP", with "Mind Control recovers for 2 turns · Returns if this Brain is
-    lost"; named "Take the Marksman, 5 of 12 HP" with no tile); the dock's
-    choice "Take Player 2's Marksman (5 HP)" carries "Becomes yours:
-    Marksman (5 / 12 HP)" in its accessible name; a hostile unit in reach
+    lost"; named "Take the Marksman, 5 of 12 HP" with no tile); the dock
+    lists no targets (bead `pulp_wars-9im`); a hostile unit in reach
     that cannot be taken is marked grey with why: "Too healthy (10 HP)",
     "Unhurt", "Immune", "Already controlled", "Protected on a city or
     village center". A target performs it, like an attack.
   - **Tractor Beam**: the targets two tiles away (a Mothership's: two or
-    three); the focused one shows its **path** (`pulp_wars-1wy.5`, from
+    three), a hostile unit as an Attack mark and an own unit as a Help
+    ring (bead `pulp_wars-9im`); the focused one shows its **path**
+    (`pulp_wars-1wy.5`, from
     the preview's `path`): the tile it ends on is the magenta dashed tile,
     a tile it only crosses on a Mothership's two-tile pull is a lighter
     dotted tile with a dot, and one arrow runs from the target through
@@ -926,13 +967,13 @@ from the extra faction option.
   offered commands are never buttons). Without a legal choice the button is
   `aria-disabled` and names why: "No enemy within 2 tiles" or "Frozen: it
   moved". A press aims it: the dock shows a compact prompt, the board's
-  only targets become the ability's (pale-ice outlines, each labelled
+  only targets become the ability's (Attack marks, each labelled
   "Frozen" or "Frosted" by the preview) and the camera frames them; Escape
   or Cancel leaves.
-  - **Bolas**: one chip per target ("Player 2's Fighter (7 HP)"), its
-    accessible name carrying "Will be Frozen" or "Will be Frosted" and
-    "Yeti can then shatter it" (`shatterSetups`); a chip or a board target
-    throws it.
+  - **Bolas**: each target on the board is named for the cursor and Tab
+    "Bolas: chills this Fighter. Will be Frozen" (or "Will be Frosted")
+    with "Yeti can then shatter it" (`shatterSetups`); a board target
+    throws it, and the dock lists no targets (bead `pulp_wars-9im`).
   - **Cold Snap**: the dock is "Cold Snap" with its `?` (the summary
     "Chills 2 units: 1 Frozen, 1 Frosted") and one "Cast Cold Snap", whose
     accessible name carries the summary and each target; the Witch's
@@ -1071,12 +1112,15 @@ apart from the extra faction option.
     Mole tunnels alone. The dock is the drill icon and "Tunnel" with its
     `?` ("Choose where the Mole surfaces. Tap a Hammerer to seat or unseat
     it. Damage is a forecast: enemies may move before the Mole surfaces"),
-    the **passenger buttons**, one per Hammerer (its portrait and "12/12";
-    accessible name "Hammerer, 12 of 12 HP, riding") and "Alone"
-    (accessible name "Tunnel alone"), and Cancel. No word "Passenger", no
-    destination chips, no sentences. With no Hammerer that could ride, the
-    passenger buttons do not appear.
-  - Every offered **destination** is outlined in light earth; only one that
+    **who rides** (the seated Hammerer's portrait and "12/12", not a
+    button; accessible name "Hammerer, 12 of 12 HP, riding"), the one
+    "Alone" toggle (accessible name "Tunnel alone"; pressed again it seats
+    the best Hammerer again), and Cancel. Since bead `pulp_wars-9im` the
+    dock has no button per Hammerer: each wears its badge and a Help ring
+    on the board and is seated there. No word "Passenger", no
+    destination chips, no sentences. With no Hammerer that could ride,
+    neither appears.
+  - Every offered **destination** is a Move mark; only one that
     would erupt on someone is labelled ("Erupt −6"). The focused one shows
     its forecast (the eruption ring, "−3" on each visible hostile unit on
     the ground, the Field Defense it would undermine) and its **ghosts**: a
@@ -1094,7 +1138,7 @@ apart from the extra faction option.
     landings next to it are small dots ("The Hammerer lands here instead");
     choosing a dot moves the Hammerer's ghost there. The dock keeps its head
     (the `?` now says "Tap the tile again or press Tunnel. Tap a dot to move
-    the Hammerer. Damage is a forecast: ...") and the passenger buttons, and
+    the Hammerer. Damage is a forecast: ...") and who rides, and
     offers **Tunnel** (primary; accessible name "Tunnel. Surface next to
     ..."), Back and Cancel. Choosing the destination again, or Tunnel,
     sends the one TUNNEL command, with the rider and its landing or alone.
@@ -1102,17 +1146,18 @@ apart from the extra faction option.
     seated; another destination can be chosen at once. The common case is
     Tunnel, the destination, the destination again. Without a Hammerer that
     could ride, choosing a destination tunnels at once.
-  - **Bomb Run**: the targets within 2 are outlined in copper and labelled
+  - **Bomb Run**: the targets within 2 are Attack marks labelled
     "Bomb −5" (or "Bomb −5 · Kills"); hostile units in range bombed this
-    turn are marked "Bombed this turn". The dock is "Bomb Run" with its `?`,
-    one button per target ("Player 2's Marksman (10 HP)"), and Cancel.
-    Choosing a target outlines its landing tiles beyond it, each labelled
+    turn are marked "Bombed this turn". The dock is "Bomb Run" with its `?`
+    and Cancel; it lists no targets (bead `pulp_wars-9im`): a target is
+    chosen on the board (named "Bomb the Marksman: ...").
+    Choosing a target marks its landing tiles beyond it (Move marks), each labelled
     with the landing threat ("Land · up to 8", "Land · safe"; named "Land
     here. Lands next to: up to 8 damage next turn"), the target keeps its
     "Bomb −5" mark and a killed exploding target's blast is shown; the dock
     keeps only its head, Back and Cancel. Landings are chosen on the board.
-  - **Assemble**: the free tiles round the Engineer are outlined in steam
-    white (no labels; named "Assemble here: ..."), and the dock is
+  - **Assemble**: the free tiles round the Engineer are Place marks
+    (no labels; named "Assemble here: ..."), and the dock is
     "Assemble" with its `?` ("Choose a tile next to the Engineer. The
     Clockwork Gunner arrives exhausted"), one line "4 Coins · slot 2/3",
     and Cancel; its accessible name adds "Assemble a Clockwork Gunner: 4
@@ -1183,11 +1228,20 @@ option.
   (`#ffb8d8`). The Gallery has a Candy column with the same art. The
   Candy icons, the Crumbs marker, and the effect sprites are registered
   and not drawn yet.
-- **Commands.** The dock lists the three Candy commands as plain buttons:
-  "Sugar Rush"; "Re-bake Gummy Bear: 5 Coins, 7 HP" (one per Crumbs tile
-  next to the Confectioner, from `previewRebakeV7`); "Toss to Gumdrop: +2"
-  (one per target, from `previewSugarTossV7`). The Confectioner's Tend
-  Wounded button reads "Frosting". No button text contains a coordinate.
+- **Commands** (the interface of `pulp_wars-jdb.6`, under
+  [board targeting](#board-targeting-bead-pulp_wars-9im)). The dock has
+  one button per Candy ability: "Sugar Rush", "Re-bake" and "Sugar Toss",
+  each disabled with its reason when it has no legal choice. None lists
+  its targets. An armed Sugar Rush shows its reach (Move marks, sparkles
+  on the tiles only the Rush reaches) and its attacks; an aimed Re-bake
+  shows each Crumbs tile it may bake back as a Place mark with the unit's
+  ghost and "5 Coins · 7 HP" (named "Re-bake Gummy Bear: 5 Coins, 7 HP",
+  from `previewRebakeV7`). A selected Gumball Gunner shows the own units
+  it may heal as Help rings labelled "+2" (named "Toss to Gumdrop: +2",
+  from `previewSugarTossV7`) beside its Moves and Attacks, with nothing
+  armed; choosing one tosses the sugar. Its Sugar Toss button narrows the
+  board to the heals. The Confectioner's Tend
+  Wounded button reads "Frosting". No text contains a coordinate.
 - **Not yet shown.** The Rush reach, the Rushed, Crashed, and Splatted
   markers, Crumbs on the board, the Splat, Bounce, and eating lines of the
   previews, the event log text of the seven Candy events, the full

@@ -164,6 +164,13 @@ import {
 } from "./dwarf-canvas-v7";
 import { STAYS_BEHIND_V7, matchHasDwarfSeatV7 } from "../dwarf-presentation-v7";
 import {
+  TARGET_HIGHLIGHTS_V7,
+  drawTargetHighlightV7,
+  targetHighlightEdgeRankV7,
+  targetHighlightStyleV7,
+  type TargetHighlightStyleV7,
+} from "./target-highlight-v7";
+import {
   candyAttackTargetExtrasV7,
   candyConfectionerSelectedV7,
   candyCrumbsEntriesV7,
@@ -405,6 +412,11 @@ export interface MapCommandTargetV7 {
    * Move reaches the cell and the landing is still offered.
    */
   readonly followUp?: Extract<CommandV7, { kind: "DISEMBARK" }>;
+  /**
+   * Bead pulp_wars-9im: this target's own highlight style where its family
+   * alone does not say it (a Tractor Beam on an own unit is a Help ring).
+   */
+  readonly highlight?: TargetHighlightStyleV7;
   readonly previewLabel?: string;
   readonly semanticLabel?: string;
   /**
@@ -1257,6 +1269,24 @@ export function buildBoardRenderPlanV7(
     interaction.candyPick.unitId === interaction.selectedUnitId
       ? interaction.candyPick
       : null;
+  /** The Candy revision: the art of a role the viewer would bake back. */
+  const candyGhost = (
+    role: UnitRoleIdV7,
+  ): NonNullable<MapCommandTargetV7["rebake"]> => ({
+    role,
+    assetId: RULESET7_UNIT_ART_IDS[role],
+    artSubject: unitArtSubjectV7({
+      role,
+      form: "LAND",
+      faction: "CANDY",
+      machine: false,
+    }),
+    ...ownerPresentation(view, view.viewer.id),
+  });
+  const unarmedToss = commands.find(
+    (command): command is Extract<CommandV7, { kind: "SUGAR_TOSS" }> =>
+      command.kind === "SUGAR_TOSS" && command.unitId === selectedUnitId,
+  );
   const targets = kaboomPreview
     ? []
     : layEgg !== null
@@ -1281,21 +1311,23 @@ export function buildBoardRenderPlanV7(
                         { assumeSugarRush: true },
                       )
                     : [],
-                  (role) => ({
-                    role,
-                    assetId: RULESET7_UNIT_ART_IDS[role],
-                    artSubject: unitArtSubjectV7({
-                      role,
-                      form: "LAND",
-                      faction: "CANDY",
-                      machine: false,
-                    }),
-                    ...ownerPresentation(view, view.viewer.id),
-                  }),
+                  candyGhost,
                 )
-              : dedupeMapTargets(
-                  mapTargets(view, commands, interaction.selectedUnitId),
-                );
+              : dedupeMapTargets([
+                  ...mapTargets(view, commands, interaction.selectedUnitId),
+                  // Bead pulp_wars-9im: a selected Gunner shows the units
+                  // it may heal beside its Moves and Attacks, unarmed: an
+                  // own unit is never a Move or an Attack target.
+                  ...(unarmedToss === undefined
+                    ? []
+                    : candyPickTargetsV7(
+                        view,
+                        commands,
+                        { kind: "SUGAR_TOSS", unitId: unarmedToss.unitId },
+                        [],
+                        candyGhost,
+                      )),
+                ]);
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
@@ -3707,6 +3739,7 @@ export function drawBoardV7(input: {
       placer,
       defer,
       focusNoteAt !== undefined && same(focusNoteAt, target.at),
+      input.highContrast ?? false,
     );
     // Map curiosities: a Move that ends next to the Spider carries the
     // provoked marker in the tile's top-right corner.
@@ -3868,17 +3901,21 @@ function mapTargetEdges(
     string,
     { readonly target: MapCommandTargetV7; readonly edge: TileEdge }
   >();
-  for (const target of targets)
+  for (const target of targets) {
+    // Bead pulp_wars-9im: a Help ring is inside its tile; it owns no edge,
+    // so the Move tiles and the territory border beside it keep theirs.
+    if (targetPriority(target) === 0) continue;
     for (const edge of TILE_EDGES) {
       const key = edgeKey(target.at, edge);
       const winner = winners.get(key);
       // `pulp_wars-1wy.5`: a Glide tile keeps its whole pale-ice outline
       // where it touches a plain Move tile.
       const priority = (candidate: MapCommandTargetV7): number =>
-        targetPriority(candidate.family) + (candidate.glide === true ? 0.5 : 0);
+        targetPriority(candidate) + (candidate.glide === true ? 0.5 : 0);
       if (winner === undefined || priority(target) > priority(winner.target))
         winners.set(key, { target, edge });
     }
+  }
   const result = new Map<string, TileEdge[]>();
   for (const { target, edge } of winners.values()) {
     const key = `${target.family}:${target.at.x},${target.at.y}`;
@@ -3889,25 +3926,20 @@ function mapTargetEdges(
   return result;
 }
 
-function targetPriority(family: MapCommandTargetV7["family"]): number {
-  if (family === "ATTACK") return 6;
-  if (
-    family === "MIND_CONTROL" ||
-    family === "TRACTOR_BEAM" ||
-    family === "BEAM_DOWN" ||
-    family === "BEAM_DOWN_PASSENGER" ||
-    family === "THROW_BOLAS" ||
-    family === "COLD_SNAP" ||
-    family === "SUGAR_TOSS" ||
-    family === "REBAKE"
-  )
-    return 5;
-  if (family === "HATCH") return 4;
-  // Revision 16: a two-step landing cell keeps its whole dotted outline
-  // where it touches a "Land now" or Move target.
-  if (family === "LANDING_AFTER_MOVE") return 3;
-  if (family === "MONUMENT") return 2;
-  return 1;
+/**
+ * Bead pulp_wars-9im: which target owns a tile edge two targets share, by
+ * its highlight style (an attack over a place over a move; a Help ring is
+ * inside its tile and owns none).
+ */
+function targetPriority(target: MapCommandTargetV7): number {
+  return (
+    targetHighlightEdgeRankV7(
+      targetHighlightStyleV7(target.family, target.highlight),
+    ) +
+    // Revision 16: a two-step landing cell keeps its whole dotted outline
+    // where it touches a "Land now" or Move target.
+    (target.family === "LANDING_AFTER_MOVE" ? 0.75 : 0)
+  );
 }
 
 /** Bead pulp_wars-78i.9: the strength of a Tunnel destination's ghosts. */
@@ -3922,47 +3954,26 @@ export const LAUNCH_TARGET_STROKE_V7 = "#c7e7f5";
  */
 export const GLIDE_TARGET_STROKE_V7 = "#d6f0ff";
 
-function targetStroke(
-  family: MapCommandTargetV7["family"] | undefined,
-): string {
-  if (family === "ATTACK") return "#ff655f";
-  if (family === "LANDING_AFTER_MOVE") return "#f4c95d";
-  // Revision 19: Hatch and nest-tile targets use the unowned cue cream.
-  if (family === "HATCH" || family === "LAY_EGG") return "#fff8d0";
-  // The Martian revision: the faction's magenta glow (MARTIAN_PALETTE_V7).
-  if (
-    family === "MIND_CONTROL" ||
-    family === "TRACTOR_BEAM" ||
-    family === "BEAM_DOWN" ||
-    family === "BEAM_DOWN_PASSENGER"
-  )
-    return "#ff8fd6";
-  // The Ice Folk revision: the pale ice of ICE_FOLK_PALETTE_V7.
-  if (family === "THROW_BOLAS" || family === "COLD_SNAP") return "#d6f0ff";
-  // The Dwarf revision: light earth for the tunnel, lit copper for the
-  // bomb, steam white for the Assemble tiles (DWARF_PALETTE_V7).
-  if (
-    family === "TUNNEL" ||
-    family === "TUNNEL_DESTINATION" ||
-    family === "TUNNEL_PASSENGER" ||
-    family === "TUNNEL_RIDER"
-  )
-    return "#d8b58a";
-  if (family === "BOMB_TARGET" || family === "BOMB_RUN") return "#f2a46a";
-  if (family === "ASSEMBLE") return "#f0f1ee";
-  // The Candy revision: the faction's cotton-candy pink for the Rush, cream
-  // for the Re-bake tiles, mint for the Sugar Toss (CANDY_PALETTE_V7).
-  if (family === "SUGAR_RUSH") return "#ffb8d8";
-  if (family === "REBAKE") return "#f0d7ba";
-  if (family === "SUGAR_TOSS") return "#8ddab3";
-  return "#64e6cf";
-}
+/** The gold of a two-step landing's dotted outline (a Move variant). */
+export const LANDING_AFTER_MOVE_STROKE_V7 = "#f4c95d";
 
-/** Dash pattern in CSS pixels; the two-step landing marker is dotted. */
-function targetDash(
-  family: MapCommandTargetV7["family"] | undefined,
-): readonly [number, number] {
-  return family === "LANDING_AFTER_MOVE" ? [3, 6] : [9, 5];
+/**
+ * Bead pulp_wars-9im: the Move style's named variants keep their own
+ * stroke and dash (each has a legend in the dock): a Launch tile, a Glide
+ * tile and a two-step landing. Every other target is its style's plain
+ * mark (target-highlight-v7), whatever its faction.
+ */
+function targetVariant(target: MapCommandTargetV7 | undefined): {
+  readonly stroke?: string;
+  readonly dash?: readonly number[];
+} {
+  // The Martian revision: a Launch tile is dotted in the pale glass blue.
+  if (target?.launch === true)
+    return { stroke: LAUNCH_TARGET_STROKE_V7, dash: [3, 5] };
+  if (target?.glide === true) return { stroke: GLIDE_TARGET_STROKE_V7 };
+  if (target?.family === "LANDING_AFTER_MOVE")
+    return { stroke: LANDING_AFTER_MOVE_STROKE_V7, dash: [3, 6] };
+  return {};
 }
 
 /** Vertical band (and optional side insets) preview labels must stay in. */
@@ -4001,6 +4012,7 @@ function drawMapTarget(
   defer: (draw: () => void) => void,
   /** The Martian revision: this target also shows `previewFocusNote`. */
   focused = false,
+  highContrast = false,
 ): void {
   const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
   const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
@@ -4008,43 +4020,38 @@ function drawMapTarget(
   // The Candy revision: a tile only the armed Rush reaches sparkles.
   if (entry.target?.sugarRush?.newReach === true)
     drawCandyRushSparklesV7(context, x, y, camera.zoom);
-  context.save();
-  context.lineWidth = 4 * camera.zoom;
-  // The Martian revision: a Launch tile is dotted in the pale glass blue.
-  const launch = entry.target?.launch === true;
-  context.strokeStyle = launch
-    ? LAUNCH_TARGET_STROKE_V7
-    : entry.target?.glide === true
-      ? GLIDE_TARGET_STROKE_V7
-      : targetStroke(entry.target?.family);
-  const [dash, gap] = launch ? [3, 5] : targetDash(entry.target?.family);
-  context.setLineDash([dash * camera.zoom, gap * camera.zoom]);
+  // Bead pulp_wars-9im: one mark per highlight style (move, attack, help,
+  // place), the same for every faction; see target-highlight-v7.
+  const style = targetHighlightStyleV7(family, entry.target?.highlight);
   if (family === "TUNNEL_RIDER") {
     // Bead pulp_wars-78i.9: another landing of the seated Hammerer is a
     // small dot, not a tile: the destinations stay the outlined tiles.
+    context.save();
     context.setLineDash([]);
-    context.fillStyle = targetStroke(family);
+    context.fillStyle = TARGET_HIGHLIGHTS_V7[style].stroke;
     context.strokeStyle = "#171722";
     context.lineWidth = 2 * camera.zoom;
     context.beginPath();
     context.arc(x, y + 6 * camera.zoom, 9 * camera.zoom, 0, Math.PI * 2);
     context.fill();
     context.stroke();
-  } else if (
-    family === "TUNNEL_PASSENGER" ||
-    family === "BEAM_DOWN_PASSENGER"
-  ) {
-    // A Hammerer that can ride wears its "Ride" badge alone (below); its
-    // own tile keeps the unit in view. `pulp_wars-1wy.5`: a unit a carrier
-    // may beam wears its "Beam" badge the same way.
+    context.restore();
   } else {
-    // A chosen Tunnel destination is a whole solid tile.
+    // A chosen Tunnel destination is a whole solid tile. A Hammerer that
+    // can ride and a unit a carrier may beam wear the Help ring under
+    // their "Ride" and "Beam" badges.
     const chosen = entry.target?.tunnel?.chosen === true;
-    if (chosen) context.setLineDash([]);
-    for (const edge of chosen ? TILE_EDGES : (entry.targetEdges ?? TILE_EDGES))
-      strokeTileEdge(context, camera, entry.at, edge);
+    drawTargetHighlightV7(
+      context,
+      { x, y, size: TILE_WIDTH * camera.zoom, zoom: camera.zoom },
+      style,
+      {
+        edges: chosen ? TILE_EDGES : (entry.targetEdges ?? TILE_EDGES),
+        ...(chosen ? { dash: [] } : targetVariant(entry.target)),
+        highContrast,
+      },
+    );
   }
-  context.restore();
   const target = entry.target;
   const labelBox = (text: string): PreviewTextBoxV7 => ({
     text,
@@ -4400,7 +4407,8 @@ function drawCandyFocusPreviewV7(
   const defender = point(target.at);
   if (bounce.to !== null) {
     context.save();
-    context.strokeStyle = targetStroke("SUGAR_RUSH");
+    // The Candy faction's cotton-candy pink (a preview, not a target).
+    context.strokeStyle = "#ffb8d8";
     context.lineWidth = 3 * camera.zoom;
     context.setLineDash([6 * camera.zoom, 4 * camera.zoom]);
     for (const edge of TILE_EDGES)

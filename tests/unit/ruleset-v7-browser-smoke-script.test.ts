@@ -300,20 +300,26 @@ describe("Ruleset 7 browser smoke script", () => {
       `rayPreview.includes("Leaves it Cooling next turn")`,
     );
     expect(probe).toContain("entry.firedThisTurn");
-    // Beam Down: the button and the passenger in the dock, then a tile on
-    // the board with Tab and Enter (bead pulp_wars-b5f.8: the dock names
-    // no tile, and the board's targets are named without coordinates).
+    // Beam Down: the button in the dock, then the passenger and a tile on
+    // the board (bead pulp_wars-b5f.8: the dock names no tile, and the
+    // board's targets are named without coordinates; bead pulp_wars-9im:
+    // the dock lists no passengers).
     const beam = probe.indexOf(
       `await pointerClick(connection, '[data-action="martian-beam-down"]')`,
     );
     expect(beam).toBeGreaterThan(preview);
-    // `pulp_wars-1wy.3`: the Grunt is picked by its own passenger button
-    // (units within two tiles of the Saucer are passengers too).
+    // `pulp_wars-1wy.3`: the Grunt is picked on its own tile (units within
+    // two tiles of the Saucer are passengers too): the cursor walks to it.
     const passenger = probe.indexOf(
-      `await pointerClick(connection, beamPassenger)`,
+      "beamPassenger.x - started.saucer.x,",
+      beam,
     );
     expect(passenger).toBeGreaterThan(beam);
-    expect(probe).toContain(`'[data-action="beam-passenger-'`);
+    expect(probe).not.toContain(`pointerClick(connection, beamPassenger)`);
+    expect(probe).toContain(
+      `[data-v7-martian-pick="beam_down"] [data-action^="beam-passenger-"]') === null`,
+    );
+    expect(probe).toContain(`[data-v7-martian-pick="beam_down"].v7-board-pick`);
     expect(probe).not.toContain(
       `await pointerClick(connection, '[data-action^="beam-tile-"]')`,
     );
@@ -382,11 +388,27 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       'capitalText.includes("Snow: your units move at half cost")',
     );
-    // The Sled moves into reach, aims its Bolas and throws it from the dock.
+    // The Sled moves into reach and aims its Bolas from the dock; the
+    // target is picked on the board with Tab and Enter (bead
+    // pulp_wars-9im: the dock lists no targets).
     const bolas = probe.indexOf(
       `await pointerClick(connection, '[data-action="ice-folk-bolas"]')`,
     );
     expect(bolas).toBeGreaterThan(-1);
+    expect(probe).toContain(
+      `[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]') === null`,
+    );
+    expect(probe).not.toContain(
+      `pointerClick(\n    connection,\n    '[data-v7-ice-folk-pick="bolas"]`,
+    );
+    const bolasTab = probe.indexOf(
+      `await pressKey(connection, "Tab", "Tab")`,
+      bolas,
+    );
+    expect(bolasTab).toBeGreaterThan(bolas);
+    expect(probe.indexOf(`.startsWith('Bolas: ')`, bolasTab)).toBeGreaterThan(
+      bolasTab,
+    );
     expect(probe).toContain("/Will be (Frozen|Frosted)/.test(hint)");
     expect(probe).toContain("includes('Sled chilled a')");
     expect(probe).toContain("!chilled.entry.sluggish");
@@ -638,9 +660,26 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(`[data-unit-status="rushed"]`);
     expect(probe).toContain(`pointerClick('[data-action="candy-rebake"]')`);
     expect(probe).toContain("trace.eventKinds.includes('UNIT_REBAKED')");
+    // Bead pulp_wars-9im: the Gunner's Moves and heals are highlighted
+    // together and the heal is picked on the board; the Re-bake's Crumbs
+    // are picked on the board; the dock lists no target of either.
+    expect(probe).toContain(`healer.styles.join() !== "MOVE,SUPPORT"`);
+    expect(probe).toContain(
+      "boardHost.activate(${JSON.stringify(at.tossNear)})",
+    );
+    expect(probe).toContain("trace.eventKinds.includes('SUGAR_TOSSED')");
+    expect(probe).toContain(
+      "boardHost.activate(${JSON.stringify(at.crumbsBear)})",
+    );
+    expect(probe).toContain(`[data-action^="rebake-"]') === null`);
+    expect(probe).not.toContain(`pointerClick('[data-action="rebake-0"]')`);
     // The dock never names a tile.
     expect(probe).toContain("The Candy dock names a tile");
-    for (const name of ["candy-sugar-rush-armed.png", "candy-rebake-aimed.png"])
+    for (const name of [
+      "candy-sugar-rush-armed.png",
+      "candy-gunner-move-and-heal.png",
+      "candy-rebake-aimed.png",
+    ])
       expect(probe).toContain(`await driver.capture("${name}")`);
   });
   it("probes the research prompt on its fixture: a Fruit, Tech on Gathering, the Harvest on return", () => {

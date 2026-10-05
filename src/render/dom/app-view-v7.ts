@@ -37,7 +37,6 @@ import {
   previewKaboomV7,
   unitRoleRuleV7,
   unitRoleMechanicsV7,
-  BEAM_DOWN_PICKUP_RANGE_V7,
   tractorBeamRuleV7,
   previewDevourV7,
   previewRaiseDeadV7,
@@ -47,14 +46,8 @@ import {
   isEggLaidRoleV7,
   previewHatchV7,
   previewLayEggV7,
-  previewMindControlV7,
-  previewTractorBeamV7,
-  previewBolasV7,
   previewColdSnapV7,
   previewAssembleV7,
-  previewRebakeV7,
-  previewSugarTossV7,
-  previewBombRunV7,
   previewTunnelV7,
   queryAssembleUnavailableReasonV7,
   queryLandingPreviewV7,
@@ -131,6 +124,8 @@ import {
   LANDING_NOW_LABEL_V7,
   type MapCommandTargetV7,
 } from "../canvas/board-renderer-v7";
+import { TARGET_HIGHLIGHT_HELP_TIP_V7 } from "../canvas/target-highlight-v7";
+import { targetLegendV7 } from "./target-legend-v7";
 import { technologyTreeLayoutV7 } from "./technology-tree-layout-v7";
 import { createTacticalSymbolV7 } from "./tactical-symbol-v7";
 import type { TacticalSymbolTheme } from "../../assets/ruleset7-tactical-ui-symbols";
@@ -226,6 +221,7 @@ import {
   DINOSAUR_HELP_RULES_V7,
   HATCH_LABEL_V7,
   HATCH_NEW_EGG_V7,
+  HATCH_PICK_V7,
   HATCH_TOOLTIP_V7,
   LAY_EGG_LABEL_V7,
   LAY_EGG_PROMPT_V7,
@@ -294,13 +290,11 @@ import {
   martianUnitInfoLinesV7,
   martianUnitNameV7,
   matchHasMartianV7,
-  mindControlPreviewLinesV7,
   mindControlUnavailableTextV7,
   mindControlledInfoV7,
   rayPowerTextV7,
   type MindControlledInfoV7,
   shieldTextV7,
-  tractorBeamPreviewLinesV7,
   tractorBeamTooltipV7,
   tractorBeamUnavailableTextV7,
 } from "../martian-presentation-v7";
@@ -326,7 +320,6 @@ import {
   ICE_FOLK_HELP_RULES_V7,
   SNOW_LABEL_V7,
   WITCH_SUPPORT_UNLOCK_TEXT_V7,
-  bolasPreviewLinesV7,
   chillChipV7,
   coldSnapSummaryV7,
   frozenAfterMoveV7,
@@ -380,7 +373,6 @@ import {
   assembleCostLineV7,
   assembleSummaryV7,
   assembleTooltipV7,
-  bombPreviewLinesV7,
   bombRunTooltipV7,
   clockworkRecoverBlockedV7,
   digInChipV7,
@@ -430,11 +422,8 @@ import {
   candyUnitInfoLinesV7,
   crumbsTileLinesV7,
   matchHasCandySeatV7,
-  rebakeBoardLabelV7,
-  rebakeTargetNameV7,
   rebakeUnavailableTextV7,
   sugarRushUnavailableTextV7,
-  sugarTossTargetNameV7,
   sugarTossUnavailableTextV7,
 } from "../candy-presentation-v7";
 import type { CandyPickV7 } from "../canvas/candy-board-plan-v7";
@@ -571,6 +560,9 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // Revision 19: an Egg is laid from its city's Lay Egg cards, by picking a
   // nest tile on the board (up to 40 commands per city are never buttons).
   "LAY_EGG",
+  // Bead pulp_wars-9im: a Shaman has one Hatch button; the Egg is picked
+  // on the board (with one Egg in reach the button hatches it).
+  "HATCH",
   // The Martian revision: one button per unit aims the ability; its targets
   // (one command per passenger and tile, or per target) are picked on the
   // board.
@@ -3288,6 +3280,9 @@ export class Ruleset7DomAppView {
           command.unitId === unit.id &&
           !NON_BUTTON_COMMANDS.has(command.kind),
       );
+      // Bead pulp_wars-9im: one Hatch button, whatever the number of Eggs.
+      const hatch = this.#hatchButton(unit.id);
+      if (hatch !== null) actions.prepend(hatch);
       // Revision 19: why an adjacent Egg cannot be hatched yet, and the
       // Field Defense restriction. aria-disabled keeps each explanation
       // reachable by keyboard.
@@ -3510,7 +3505,7 @@ export class Ruleset7DomAppView {
         this.#martianPickPanel(view, unit.id) ??
         this.#iceFolkPickPanel(view, unit.id) ??
         this.#dwarfPickPanel(view, unit.id) ??
-        this.#candyPickPanel(view, unit.id);
+        this.#candyPickPanel(unit.id);
       if (martianPanel !== null) {
         dock.dataset.hasActions = "true";
         dock.append(martianPanel);
@@ -4164,10 +4159,7 @@ export class Ruleset7DomAppView {
         "",
         command.kind === "BUILD_MONUMENT"
           ? `command-build_monument-${command.achievement.toLowerCase()}`
-          : // Revision 19: one button per hatchable Egg.
-            command.kind === "HATCH"
-            ? `command-hatch-${command.eggUnitId}`
-            : `command-${command.kind.toLowerCase()}`,
+          : `command-${command.kind.toLowerCase()}`,
         command.kind === "TRAIN" || command.kind === "TRAIN_NAVAL"
           ? "v7-train-action"
           : "v7-context-action",
@@ -4343,8 +4335,6 @@ export class Ruleset7DomAppView {
         // Revision 20: a Promotion adds maximum HP and fully heals.
         action.title = PROMOTE_TOOLTIP_V7;
         action.setAttribute("aria-label", PROMOTE_TOOLTIP_V7);
-      } else if (command.kind === "HATCH") {
-        this.#decorateHatchButton(action, command);
       } else if (abandonedEgg !== undefined) {
         const refund = eggRefundV7(abandonedEgg.role, this.#viewerFaction());
         action.title = abandonEggTooltipV7(refund);
@@ -4774,7 +4764,9 @@ export class Ruleset7DomAppView {
     const view = this.#snapshot.view;
     const undeadViewer = view?.viewer.faction === "UNDEAD";
     for (const tip of [
-      "Select a unit, then a highlighted tile to move or attack.",
+      // Bead pulp_wars-9im: every target is picked on the map; the legend
+      // under these tips shows the four marks.
+      "Select a unit, then pick a highlighted target on the map.",
       OWN_UNIT_PASS_THROUGH_TEXT_V7,
       ROAD_MOVEMENT_TEXT_V7,
       // Revision 19: a Dinosaur city also lays Eggs.
@@ -4843,6 +4835,7 @@ export class Ruleset7DomAppView {
     for (const [key, action] of [
       ["Arrows", "Move cursor"],
       ["Enter", "Select"],
+      ["Tab", "Next target"],
       ["Esc", "Deselect"],
       ["E", "End turn"],
       ["T", "Technology"],
@@ -4856,7 +4849,9 @@ export class Ruleset7DomAppView {
       );
       keys.append(row);
     }
-    section.append(text(this.#document, "h2", "How to play"), tips);
+    const legend = targetLegendV7(this.#document);
+    legend.title = TARGET_HIGHLIGHT_HELP_TIP_V7;
+    section.append(text(this.#document, "h2", "How to play"), tips, legend);
     // Revision 17 (section 11.3): one sentence per Goblin rule, for every
     // viewer of a match with a Goblin seat.
     if (view !== null && matchHasGoblinV7(view)) {
@@ -6808,18 +6803,58 @@ export class Ruleset7DomAppView {
     return panel;
   }
 
-  /** Revision 19: a Hatch button names the unit that appears at once. */
-  #decorateHatchButton(
-    action: HTMLButtonElement,
-    command: Extract<CommandV7, { kind: "HATCH" }>,
-  ): void {
+  /**
+   * Revision 19, bead pulp_wars-9im: the one Hatch button of a Shaman next
+   * to an own Egg it may hatch. The Eggs are highlighted on the board and
+   * picked there; with a single Egg the button hatches it and names the
+   * unit that appears at once, with several it sends the keyboard to the
+   * board, where Tab steps through them.
+   */
+  #hatchButton(unitId: UnitId): HTMLButtonElement | null {
+    const hatches = this.#snapshot.offeredCommands.filter(
+      (command): command is Extract<CommandV7, { kind: "HATCH" }> =>
+        command.kind === "HATCH" && command.unitId === unitId,
+    );
+    const command = hatches[0];
+    if (command === undefined) return null;
+    const action = button(
+      this.#document,
+      "",
+      "command-hatch",
+      "v7-context-action",
+    );
+    action.append(
+      this.#chibiArt(
+        commandSubjectV7(command, this.#viewerFaction()),
+        CHIBI_DOM_BOXES_V7.action,
+        this.#viewerColour(),
+      )?.element ??
+        uiIconV7(this.#document, "hatch", "v7-ui-icon v7-command-icon"),
+      text(this.#document, "span", HATCH_LABEL_V7, "v7-action-label"),
+    );
+    action.title = HATCH_TOOLTIP_V7;
+    action.dataset.hatchTargets = String(hatches.length);
+    action.disabled = this.#localBusy();
     const view = this.#snapshot.view;
+    if (hatches.length > 1) {
+      action.setAttribute(
+        "aria-label",
+        `${HATCH_LABEL_V7}. ${HATCH_PICK_V7}. ${HATCH_TOOLTIP_V7}`,
+      );
+      action.onclick = () => {
+        this.#notice = `${HATCH_PICK_V7}.`;
+        this.#pendingFocusAction = null;
+        this.#render();
+        this.#queueBoardFocus();
+      };
+      return action;
+    }
+    action.onclick = () => void this.#dispatch(command);
     const preview =
       view === null
         ? null
         : previewHatchV7(view, command.unitId, command.eggUnitId);
-    action.title = HATCH_TOOLTIP_V7;
-    if (view === null || preview === null) return;
+    if (view === null || preview === null) return action;
     const label = effectiveRoleRuleV7(preview.role, view.viewer.faction).label;
     action.dataset.hatchRole = preview.role;
     action.setAttribute(
@@ -6834,6 +6869,7 @@ export class Ruleset7DomAppView {
         "v7-undead-preview-chip v7-hatch-chip",
       ),
     );
+    return action;
   }
 
   /**
@@ -7099,10 +7135,12 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * The Martian aiming panel in the dock: the prompt, every legal choice as
-   * a button with its preview (a keyboard path beside the board targets),
-   * the reasons of Mind Control targets that cannot be taken, and Cancel.
-   * Null (and the aiming ends) when nothing is offered any more.
+   * The Martian aiming panel in the dock (bead pulp_wars-9im): the
+   * ability's icon and name with its "?", Back and Cancel. Every passenger,
+   * target and tile is highlighted and picked on the board, which carries
+   * each preview and the reasons of Mind Control targets that cannot be
+   * taken; the dock lists none of them. Null (and the aiming ends) when
+   * nothing is offered any more.
    */
   #martianPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
     const pick = this.#martianPick;
@@ -7119,149 +7157,32 @@ export class Ruleset7DomAppView {
     const panel = el(
       this.#document,
       "section",
-      "v7-kaboom-preview v7-martian-pick",
+      "v7-kaboom-preview v7-martian-pick v7-board-pick",
     );
     panel.dataset.v7MartianPick = pick.kind.toLowerCase();
-    // The choices are compact unit chips (the board shows each preview on
-    // its target); each chip carries its whole preview in its accessible
-    // name and tooltip. Tiles are chosen on the board only.
-    const lines = el(this.#document, "div", "v7-martian-choices");
-    const choice = (
-      action: string,
-      label: string,
-      details: readonly string[],
-      onclick: () => void,
-    ): void => {
-      const control = button(
-        this.#document,
-        label,
-        action,
-        "v7-martian-choice-button",
-      );
-      control.setAttribute(
-        "aria-label",
-        details.length === 0 ? label : `${label}. ${details.join(". ")}.`,
-      );
-      control.title = details.join(" · ");
-      control.disabled = this.#localBusy();
-      control.onclick = onclick;
-      lines.append(control);
-    };
-    let prompt: string;
-    if (pick.kind === "BEAM_DOWN") {
-      const beams = commands.filter(
-        (command): command is Extract<CommandV7, { kind: "BEAM_DOWN" }> =>
-          command.kind === "BEAM_DOWN",
-      );
-      if (pick.passengerUnitId === null) {
-        prompt = BEAM_DOWN_PICK_PASSENGER_V7;
-        // `pulp_wars-1wy.5`: passenger first, like a Tunnel's rider: one
-        // portrait button per unit the carrier may beam (its portrait and
-        // HP), mirroring the board's "Beam" badges; the name, the HP and
-        // where it stands are its accessible name.
-        lines.className = "v7-dwarf-passengers v7-beam-passengers";
-        lines.setAttribute("role", "group");
-        lines.setAttribute("aria-label", BEAM_DOWN_PICK_PASSENGER_V7);
-        const carrier = unitById(unitId);
-        const seen = new Set<number>();
-        for (const command of beams) {
-          if (seen.has(command.passengerUnitId)) continue;
-          seen.add(command.passengerUnitId);
-          const passenger = unitById(command.passengerUnitId);
-          if (passenger === undefined) continue;
-          const control = button(
-            this.#document,
-            "",
-            `beam-passenger-${command.passengerUnitId}`,
-            "v7-dwarf-passenger v7-beam-passenger",
-          );
-          control.append(
-            this.#chibiArt(
-              portraitSubjectV7(
-                passenger.role,
-                presentedUnitFactionV7(view, passenger),
-              ),
-              CHIBI_DOM_BOXES_V7.passenger,
-              this.#viewerColour(),
-            )?.element ??
-              uiIconV7(
-                this.#document,
-                "beam-down",
-                "v7-ui-icon v7-command-icon",
-              ),
-            text(
-              this.#document,
-              "span",
-              `${passenger.hp}/${passenger.maxHp}`,
-              "v7-dwarf-passenger-hp",
-            ),
-          );
-          const pickUp =
-            carrier !== undefined &&
-            Math.max(
-              Math.abs(carrier.at.x - passenger.at.x),
-              Math.abs(carrier.at.y - passenger.at.y),
-            ) <= BEAM_DOWN_PICKUP_RANGE_V7;
-          control.dataset.beamSource = pickUp ? "pick-up" : "city";
-          const name = `Beam ${nameOf(passenger.id)}, ${passenger.hp} of ${passenger.maxHp} HP, ${pickUp ? "picked up nearby" : "from your city"}`;
-          control.setAttribute("aria-label", name);
-          control.title = name;
-          control.disabled = this.#localBusy();
-          control.onclick = () => {
-            this.#martianPick = {
-              kind: "BEAM_DOWN",
-              unitId,
-              passengerUnitId: command.passengerUnitId,
-            };
-            this.#notice = `${BEAM_DOWN_PICK_TILE_V7}.`;
-            this.#pendingFocusAction = null;
-            this.#render();
-            this.#queueBoardFocus();
-          };
-          lines.append(control);
-        }
-      } else {
-        // The tiles are chosen on the board only (bead pulp_wars-b5f.8: no
-        // text names a tile).
-        prompt = `${BEAM_DOWN_PICK_TILE_V7} for the ${nameOf(pick.passengerUnitId)}`;
-      }
-    } else if (pick.kind === "MIND_CONTROL") {
-      prompt = MIND_CONTROL_PICK_V7;
-      for (const command of commands) {
-        if (command.kind !== "MIND_CONTROL") continue;
-        const preview = previewMindControlV7(
-          view,
-          command.unitId,
-          command.targetUnitId,
-        );
-        if (preview === null) continue;
-        const target = unitById(command.targetUnitId);
-        choice(
-          `mind-control-${command.targetUnitId}`,
-          `Take ${target === undefined ? "unit" : `${possessiveName(view, target.ownerId)} ${nameOf(target.id)}`} (${target?.hp ?? preview.hp} HP)`,
-          mindControlPreviewLinesV7(view, preview),
-          () => void this.#dispatch(command),
-        );
-      }
-    } else {
-      prompt = TRACTOR_BEAM_PICK_V7;
-      for (const command of commands) {
-        if (command.kind !== "TRACTOR_BEAM") continue;
-        const preview = previewTractorBeamV7(
-          view,
-          command.unitId,
-          command.targetUnitId,
-        );
-        if (preview === null) continue;
-        const target = unitById(command.targetUnitId);
-        choice(
-          `tractor-beam-${command.targetUnitId}`,
-          `Pull ${target === undefined ? "unit" : `${possessiveName(view, target.ownerId)} ${nameOf(target.id)}`}`,
-          tractorBeamPreviewLinesV7(view, preview),
-          () => void this.#dispatch(command),
-        );
-      }
-    }
+    panel.dataset.boardTargets = String(
+      new Set(
+        commands.map((command) =>
+          command.kind === "BEAM_DOWN"
+            ? pick.kind === "BEAM_DOWN" && pick.passengerUnitId !== null
+              ? `${command.to.x},${command.to.y}`
+              : String(command.passengerUnitId)
+            : "targetUnitId" in command
+              ? String(command.targetUnitId)
+              : "",
+        ),
+      ).size,
+    );
+    const prompt =
+      pick.kind === "BEAM_DOWN"
+        ? pick.passengerUnitId === null
+          ? BEAM_DOWN_PICK_PASSENGER_V7
+          : // The tiles are chosen on the board only (bead pulp_wars-b5f.8:
+            // no text names a tile).
+            `${BEAM_DOWN_PICK_TILE_V7} for the ${nameOf(pick.passengerUnitId)}`
+        : pick.kind === "MIND_CONTROL"
+          ? MIND_CONTROL_PICK_V7
+          : TRACTOR_BEAM_PICK_V7;
     if (commands.length === 0 && pick.kind !== "MIND_CONTROL") {
       this.#martianPick = null;
       return null;
@@ -7289,7 +7210,6 @@ export class Ruleset7DomAppView {
         info,
       ),
     );
-    if (lines.childElementCount > 0) panel.append(lines);
     if (pick.kind === "BEAM_DOWN") {
       // `pulp_wars-1wy.5`: the caveat as two icon chips, not a sentence:
       // the attack icon ("Can attack") and the move icon struck through
@@ -7528,40 +7448,18 @@ export class Ruleset7DomAppView {
     const panel = el(
       this.#document,
       "section",
-      "v7-kaboom-preview v7-martian-pick v7-ice-folk-pick",
+      "v7-kaboom-preview v7-martian-pick v7-ice-folk-pick v7-board-pick",
     );
     panel.dataset.v7IceFolkPick =
       pick.kind === "THROW_BOLAS" ? "bolas" : "cold_snap";
     const lines = el(this.#document, "div", "v7-martian-choices");
     let prompt: string;
     if (pick.kind === "THROW_BOLAS") {
+      // Bead pulp_wars-9im: the Bolas targets are highlighted and picked on
+      // the board, each with its Frozen or Frosted hint; the dock lists
+      // none.
       prompt = BOLAS_PICK_V7;
-      for (const command of commands) {
-        if (command.kind !== "THROW_BOLAS") continue;
-        const preview = previewBolasV7(
-          view,
-          command.unitId,
-          command.targetUnitId,
-        );
-        if (preview === null) continue;
-        const details = bolasPreviewLinesV7(view, preview);
-        // Two targets of one kind are told apart by their HP.
-        const label = `${nameOf(command.targetUnitId)} (${unitById(command.targetUnitId)?.hp ?? 0} HP)`;
-        const control = button(
-          this.#document,
-          label,
-          `bolas-${command.targetUnitId}`,
-          "v7-martian-choice-button",
-        );
-        control.setAttribute(
-          "aria-label",
-          `${BOLAS_LABEL_V7}: ${label}. ${details.join(". ")}.`,
-        );
-        control.title = details.join(" · ");
-        control.disabled = this.#localBusy();
-        control.onclick = () => void this.#dispatch(command);
-        lines.append(control);
-      }
+      panel.dataset.boardTargets = String(commands.length);
     } else {
       const command = commands[0];
       const preview =
@@ -7571,6 +7469,7 @@ export class Ruleset7DomAppView {
         return null;
       }
       prompt = coldSnapSummaryV7(preview);
+      panel.dataset.boardTargets = String(preview.targets.length);
       // Each target is labelled Frozen or Frosted on the board; the cast
       // button names them for assistive technology.
       const targets = preview.targets
@@ -7756,12 +7655,13 @@ export class Ruleset7DomAppView {
 
   /**
    * The Candy aiming panel in the dock (section 15.1, under the
-   * no-coordinates rule): the ability's icon and name with its "?", one
-   * button per unit a Re-bake would bake back or a Sugar Toss would heal
-   * (a portrait and its numbers), and Back. Every tile is chosen on the
-   * board. Null (and the aiming ends) when nothing is offered any more.
+   * no-coordinates rule; bead pulp_wars-9im): the ability's icon and name
+   * with its "?", and Back. The Crumbs a Re-bake would bake back and the
+   * units a Sugar Toss would heal are highlighted and picked on the board,
+   * each with its numbers; the dock lists none. Null (and the aiming ends)
+   * when nothing is offered any more.
    */
-  #candyPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+  #candyPickPanel(unitId: UnitId): HTMLElement | null {
     const pick = this.#candyPick;
     if (pick === null || pick.unitId !== unitId) return null;
     const commands = this.#snapshot.offeredCommands.filter(
@@ -7774,87 +7674,23 @@ export class Ruleset7DomAppView {
     const panel = el(
       this.#document,
       "section",
-      "v7-kaboom-preview v7-martian-pick v7-candy-pick",
+      "v7-kaboom-preview v7-martian-pick v7-candy-pick v7-board-pick",
     );
     panel.dataset.v7CandyPick = pick.kind.toLowerCase();
-    const lines = el(this.#document, "div", "v7-dwarf-passengers");
-    const choice = (
-      action: string,
-      role: UnitRoleIdV7,
-      caption: string,
-      name: string,
-      command: CommandV7,
-    ): void => {
-      const control = button(
-        this.#document,
-        "",
-        action,
-        "v7-dwarf-passenger v7-candy-choice",
-      );
-      control.append(
-        this.#chibiArt(
-          portraitSubjectV7(role, "CANDY"),
-          CHIBI_DOM_BOXES_V7.passenger,
-          this.#viewerColour(),
-        )?.element ??
-          uiIconV7(this.#document, "units", "v7-ui-icon v7-command-icon"),
-        text(this.#document, "span", caption, "v7-dwarf-passenger-hp"),
-      );
-      control.setAttribute("aria-label", name);
-      control.title = name;
-      control.disabled = this.#localBusy();
-      control.onclick = () => void this.#dispatch(command);
-      lines.append(control);
-    };
-    let title: string;
-    let info: string;
-    if (pick.kind === "SUGAR_RUSH") {
-      title = SUGAR_RUSH_LABEL_V7;
-      info = SUGAR_RUSH_TOOLTIP_V7;
-    } else if (pick.kind === "REBAKE") {
-      title = REBAKE_LABEL_V7;
-      info = REBAKE_TOOLTIP_V7;
-      const preview = previewRebakeV7(view, unitId);
-      for (const [index, option] of (preview?.options ?? []).entries()) {
-        const command = commands.find(
-          (candidate) =>
-            candidate.kind === "REBAKE" && same(candidate.at, option.at),
-        );
-        if (command === undefined) continue;
-        choice(
-          `rebake-${index}`,
-          option.role,
-          rebakeBoardLabelV7(option.cost, option.hp),
-          rebakeTargetNameV7(option.role, option.cost, option.hp),
-          command,
-        );
-      }
-    } else {
-      title = SUGAR_TOSS_LABEL_V7;
-      info = SUGAR_TOSS_TOOLTIP_V7;
-      const preview = previewSugarTossV7(view, unitId);
-      for (const target of preview?.targets ?? []) {
-        const unit = view.units.find(
-          (candidate) => candidate.id === target.unitId,
-        );
-        const command = commands.find(
-          (candidate) =>
-            candidate.kind === "SUGAR_TOSS" &&
-            candidate.targetUnitId === target.unitId,
-        );
-        if (unit === undefined || command === undefined) continue;
-        choice(
-          `sugar-toss-${target.unitId}`,
-          unit.role,
-          `+${target.amount}`,
-          sugarTossTargetNameV7(
-            unitRoleRuleV7(view, unit).label,
-            target.amount,
-          ),
-          command,
-        );
-      }
-    }
+    const title =
+      pick.kind === "SUGAR_RUSH"
+        ? SUGAR_RUSH_LABEL_V7
+        : pick.kind === "REBAKE"
+          ? REBAKE_LABEL_V7
+          : SUGAR_TOSS_LABEL_V7;
+    const info =
+      pick.kind === "SUGAR_RUSH"
+        ? SUGAR_RUSH_TOOLTIP_V7
+        : pick.kind === "REBAKE"
+          ? REBAKE_TOOLTIP_V7
+          : SUGAR_TOSS_TOOLTIP_V7;
+    if (pick.kind !== "SUGAR_RUSH")
+      panel.dataset.boardTargets = String(commands.length);
     panel.setAttribute("aria-label", info);
     panel.append(
       this.#pickHead(
@@ -7872,11 +7708,6 @@ export class Ruleset7DomAppView {
         info,
       ),
     );
-    if (lines.childElementCount > 0) {
-      lines.setAttribute("role", "group");
-      lines.setAttribute("aria-label", title);
-      panel.append(lines);
-    }
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
     const back = button(
       this.#document,
@@ -8108,11 +7939,12 @@ export class Ruleset7DomAppView {
 
   /**
    * The Dwarf aiming panel in the dock (trimmed by bead pulp_wars-b5f.8):
-   * the ability's icon and name with its "?" info, for a Tunnel the
-   * passenger buttons (a portrait and HP each, and "Alone"), for a Bomb
-   * Run the targets by name, and the actions (Tunnel, Back, Cancel). Every
-   * tile is chosen on the board, which carries the forecast; no text names
-   * a tile. Null (and the aiming ends) when nothing is offered any more.
+   * the ability's icon and name with its "?" info, for a Tunnel who rides
+   * (a portrait) and the "Alone" toggle, and the actions (Tunnel, Back,
+   * Cancel). Bead pulp_wars-9im: every Hammerer, bomb target and tile is
+   * highlighted and picked on the board, which carries the forecast; the
+   * dock lists no targets and no text names a tile. Null (and the aiming
+   * ends) when nothing is offered any more.
    */
   #dwarfPickPanel(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
     const pick = this.#dwarfPick;
@@ -8133,10 +7965,22 @@ export class Ruleset7DomAppView {
     const panel = el(
       this.#document,
       "section",
-      "v7-kaboom-preview v7-martian-pick v7-dwarf-pick",
+      "v7-kaboom-preview v7-martian-pick v7-dwarf-pick v7-board-pick",
     );
     panel.dataset.v7DwarfPick = pick.kind.toLowerCase();
-    const lines = el(this.#document, "div", "v7-martian-choices");
+    panel.dataset.boardTargets = String(
+      new Set(
+        commands.map((command) =>
+          command.kind === "BOMB_RUN" && pick.kind === "BOMB_RUN"
+            ? pick.targetUnitId === null
+              ? String(command.targetUnitId)
+              : `${command.to.x},${command.to.y}`
+            : "to" in command
+              ? `${command.to.x},${command.to.y}`
+              : "",
+        ),
+      ).size,
+    );
     let prompt: string;
     let info: string;
     let detail: string | null = null;
@@ -8145,35 +7989,40 @@ export class Ruleset7DomAppView {
     let passengers: HTMLElement | null = null;
     let confirm: HTMLButtonElement | null = null;
     if (pick.kind === "TUNNEL") {
-      // Passenger first (bead pulp_wars-78i.9): the Hammerers that can ride
-      // as portrait buttons mirroring the board's badges; the destination
-      // is chosen on the board, then confirmed here.
+      // Passenger first (bead pulp_wars-78i.9). Bead pulp_wars-9im: the
+      // Hammerers that can ride wear their badge on the board and are
+      // seated there; the dock shows who rides (a portrait, not a button)
+      // and one "Alone" toggle. The destination is chosen on the board,
+      // then confirmed here.
       const offered = this.#snapshot.offeredCommands;
       const riders = tunnelRidersV7(view, offered, unitId);
       if (riders.length > 0) {
         passengers = el(this.#document, "div", "v7-dwarf-passengers");
         passengers.setAttribute("role", "group");
         passengers.setAttribute("aria-label", TUNNEL_PASSENGER_V7);
-        const seat = (riderUnitId: UnitId | null): void => {
-          if (pick.riderUnitId === riderUnitId) return;
-          this.#dwarfPick = { ...pick, riderUnitId, riderTo: null };
-          this.#pendingFocusAction =
-            riderUnitId === null
-              ? "tunnel-passenger-none"
-              : `tunnel-passenger-${riderUnitId}`;
-          this.#render();
-        };
-        for (const rider of riders) {
-          const selected = pick.riderUnitId === rider.unitId;
-          const control = button(
+        passengers.dataset.riders = String(riders.length);
+        const seated = riders.find(
+          (rider) => rider.unitId === pick.riderUnitId,
+        );
+        if (seated !== undefined) {
+          const unit = unitById(seated.unitId);
+          const riding = el(
             this.#document,
-            "",
-            `tunnel-passenger-${rider.unitId}`,
-            "v7-dwarf-passenger",
+            "span",
+            "v7-dwarf-passenger v7-dwarf-riding",
           );
-          const unit = unitById(rider.unitId);
-          const portrait =
-            unit === undefined
+          riding.dataset.tunnelRider = String(seated.unitId);
+          const name = passengerAccessibleNameV7(
+            seated.label,
+            seated.hp,
+            seated.maxHp,
+            true,
+          );
+          riding.setAttribute("role", "img");
+          riding.setAttribute("aria-label", name);
+          riding.title = name;
+          riding.append(
+            (unit === undefined
               ? null
               : this.#chibiArt(
                   // Mind Control revision: the rider's kind.
@@ -8183,44 +8032,39 @@ export class Ruleset7DomAppView {
                   ),
                   CHIBI_DOM_BOXES_V7.passenger,
                   this.#viewerColour(),
-                );
-          control.append(
-            portrait?.element ??
+                )
+            )?.element ??
               uiIconV7(this.#document, "drill", "v7-ui-icon v7-command-icon"),
             text(
               this.#document,
               "span",
-              `${rider.hp}/${rider.maxHp}`,
+              `${seated.hp}/${seated.maxHp}`,
               "v7-dwarf-passenger-hp",
             ),
           );
-          control.setAttribute("aria-pressed", String(selected));
-          const name = passengerAccessibleNameV7(
-            rider.label,
-            rider.hp,
-            rider.maxHp,
-            selected,
-          );
-          control.setAttribute("aria-label", name);
-          control.title = name;
-          control.disabled = this.#localBusy();
-          control.onclick = () => seat(rider.unitId);
-          passengers.append(control);
+          passengers.append(riding);
         }
+        const alone = pick.riderUnitId === null;
         const none = button(
           this.#document,
           TUNNEL_NO_PASSENGER_V7,
           "tunnel-passenger-none",
           "v7-dwarf-passenger",
         );
-        none.setAttribute("aria-pressed", String(pick.riderUnitId === null));
-        none.setAttribute(
-          "aria-label",
-          noPassengerAccessibleNameV7(pick.riderUnitId === null),
-        );
+        none.setAttribute("aria-pressed", String(alone));
+        none.setAttribute("aria-label", noPassengerAccessibleNameV7(alone));
         none.title = TUNNEL_ALONE_V7;
         none.disabled = this.#localBusy();
-        none.onclick = () => seat(null);
+        // Pressed again, the best Hammerer that can ride is seated again.
+        none.onclick = () => {
+          this.#dwarfPick = {
+            ...pick,
+            riderUnitId: alone ? (riders[0]?.unitId ?? null) : null,
+            riderTo: null,
+          };
+          this.#pendingFocusAction = "tunnel-passenger-none";
+          this.#render();
+        };
         passengers.append(none);
       }
       panel.dataset.destinations = String(
@@ -8262,46 +8106,11 @@ export class Ruleset7DomAppView {
         }
       }
     } else if (pick.kind === "BOMB_RUN") {
-      const runs = commands.filter(
-        (command): command is Extract<CommandV7, { kind: "BOMB_RUN" }> =>
-          command.kind === "BOMB_RUN",
-      );
+      // Bead pulp_wars-9im: the bomb targets are highlighted and picked on
+      // the board, each with its damage; the dock lists none.
       if (pick.targetUnitId === null) {
         prompt = BOMB_RUN_PICK_TARGET_V7;
         info = BOMB_RUN_PICK_TARGET_V7;
-        const seen = new Set<number>();
-        for (const command of runs) {
-          if (seen.has(command.targetUnitId)) continue;
-          seen.add(command.targetUnitId);
-          const preview = previewBombRunV7(view, command);
-          const target = unitById(command.targetUnitId);
-          if (preview === null || target === undefined) continue;
-          const label = `${possessiveName(view, target.ownerId)} ${nameOf(target.id)} (${target.hp} HP)`;
-          const control = button(
-            this.#document,
-            label,
-            `bomb-target-${command.targetUnitId}`,
-            "v7-martian-choice-button",
-          );
-          control.setAttribute(
-            "aria-label",
-            `Bomb ${label}. ${bombPreviewLinesV7(preview).join(". ")}.`,
-          );
-          control.title = bombPreviewLinesV7(preview).join(" · ");
-          control.disabled = this.#localBusy();
-          control.onclick = () => {
-            this.#dwarfPick = {
-              kind: "BOMB_RUN",
-              unitId,
-              targetUnitId: command.targetUnitId,
-            };
-            this.#notice = `${BOMB_RUN_PICK_LANDING_V7}.`;
-            this.#pendingFocusAction = null;
-            this.#render();
-            this.#queueBoardFocus();
-          };
-          lines.append(control);
-        }
       } else {
         back = true;
         prompt = `${BOMB_RUN_PICK_LANDING_V7} after bombing the ${nameOf(pick.targetUnitId)}`;
@@ -8336,7 +8145,6 @@ export class Ruleset7DomAppView {
       ),
     );
     if (passengers !== null) panel.append(passengers);
-    if (lines.childElementCount > 0) panel.append(lines);
     if (detail !== null)
       panel.append(text(this.#document, "p", detail, "v7-martian-detail"));
     const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");

@@ -309,7 +309,7 @@ try {
       await activate(connection, at.shaman as Coord);
       await evaluate(
         connection,
-        `document.querySelector('[data-action^="command-hatch-"]')?.click()`,
+        `document.querySelector('[data-action^="command-hatch"]')?.click()`,
       );
       await waitFor(
         connection,

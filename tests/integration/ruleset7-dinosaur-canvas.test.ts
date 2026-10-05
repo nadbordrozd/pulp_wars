@@ -20,6 +20,7 @@ import {
 import * as renderer from "../../src/render/canvas/board-renderer-v7";
 import type { CameraState } from "../../src/render/canvas/geometry";
 import { eggCountdownTextV7 } from "../../src/render/dinosaur-presentation-v7";
+import { CANDY_HEALER_V7, candyHealerFixtureV7 } from "../fixtures/v7-candy-ui";
 import {
   DINOSAUR_CITY_V7,
   DINOSAUR_SHOWCASE_V7,
@@ -325,6 +326,101 @@ describe("Revision 19 board targets on the board host", () => {
     rig.host.activate(DINOSAUR_CITY_V7.capital);
     expect(callbacks.onCommand).toHaveBeenCalledTimes(1);
     expect(callbacks.onSelection).toHaveBeenCalledTimes(1);
+    rig.host.destroy();
+  });
+});
+
+describe("Bead pulp_wars-9im: the keyboard path to targets picked on the board", () => {
+  const tab = (canvas: HTMLCanvasElement, shiftKey = false): boolean => {
+    const event = new KeyboardEvent("keydown", {
+      key: "Tab",
+      shiftKey,
+      bubbles: true,
+      cancelable: true,
+    });
+    canvas.dispatchEvent(event);
+    return event.defaultPrevented;
+  };
+
+  it("steps a selected Shaman to the Egg it may hatch and hatches it with Enter", () => {
+    const state = dinosaurShowcaseFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const callbacks = { onSelection: vi.fn(), onCommand: vi.fn() };
+    const rig = hostRig(view, "REDUCED", callbacks);
+    const shaman = unitAt(view, AT.shaman);
+    rig.host.update(model(view, shaman.id));
+    // Nothing is armed: the Egg is the Shaman's only unit target.
+    expect(tab(rig.canvas)).toBe(true);
+    expect(rig.description()).toContain("Available: Hatch: a T-Rex with");
+    expect(rig.description()).not.toMatch(/\d+, ?\d+/);
+    // Past the last target Tab leaves the board for the dock.
+    expect(tab(rig.canvas)).toBe(false);
+    rig.canvas.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+    );
+    expect(callbacks.onCommand).toHaveBeenCalledTimes(1);
+    expect(callbacks.onCommand.mock.calls[0]?.[0]).toMatchObject({
+      family: "HATCH",
+      at: AT.tRexEgg,
+      command: {
+        kind: "HATCH",
+        unitId: shaman.id,
+        eggUnitId: unitAt(view, AT.tRexEgg).id,
+      },
+    });
+    rig.host.destroy();
+  });
+
+  it("steps a selected healer through the units it may shoot and heal, in reading order, and sends the right command for each", () => {
+    const state = candyHealerFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const callbacks = { onSelection: vi.fn(), onCommand: vi.fn() };
+    const rig = hostRig(view, "REDUCED", callbacks);
+    const gunner = unitAt(view, CANDY_HEALER_V7.gunner);
+    rig.host.update(model(view, gunner.id));
+    const enter = (): void => {
+      rig.canvas.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+      );
+    };
+    // Reading order: the wounded Guard and the enemy Guard on the upper
+    // row, the enemy Fighter, then the wounded Fighter. The Move tiles are
+    // not stepped through (the arrow keys reach them).
+    const order = [
+      [CANDY_HEALER_V7.woundedFar, "SUGAR_TOSS"],
+      [CANDY_HEALER_V7.enemyFar, "ATTACK"],
+      [CANDY_HEALER_V7.enemyNear, "ATTACK"],
+      [CANDY_HEALER_V7.woundedNear, "SUGAR_TOSS"],
+    ] as const;
+    for (const [at, family] of order) {
+      expect(tab(rig.canvas), `${at.x}/${at.y}`).toBe(true);
+      expect(rig.description()).toContain("Available: ");
+      expect(rig.description()).not.toMatch(/\d+, ?\d+/);
+      enter();
+      expect(callbacks.onCommand.mock.calls.at(-1)?.[0]).toMatchObject({
+        family,
+        at,
+        command: {
+          kind: family,
+          unitId: gunner.id,
+          targetUnitId: unitAt(view, at).id,
+        },
+      });
+    }
+    expect(tab(rig.canvas)).toBe(false);
+    expect(tab(rig.canvas, true)).toBe(true);
+    // A click on a Move tile moves; a click on a healable unit heals it
+    // (it is not selected instead).
+    callbacks.onCommand.mockClear();
+    callbacks.onSelection.mockClear();
+    rig.host.activate(CANDY_HEALER_V7.woundedNear);
+    expect(callbacks.onSelection).not.toHaveBeenCalled();
+    expect(callbacks.onCommand.mock.calls[0]?.[0]).toMatchObject({
+      family: "SUGAR_TOSS",
+    });
+    // Not the viewer's turn to act: Tab is left alone.
+    rig.host.update({ ...model(view, gunner.id), interactive: false });
+    expect(tab(rig.canvas)).toBe(false);
     rig.host.destroy();
   });
 });

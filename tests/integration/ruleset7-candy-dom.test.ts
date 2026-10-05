@@ -26,6 +26,7 @@ import type {
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
+import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
   Ruleset7DomAppView,
   recruitmentRolePresentationV7,
@@ -304,15 +305,22 @@ describe("Candy abilities through the dock and the board", () => {
     const preview = required(
       previewRebakeV7(required(controller.snapshot().view), confectioner.id),
     );
-    // One button per unit it would bake back, named by price and HP.
+    // Bead pulp_wars-9im: no button per unit in the dock; each Crumbs
+    // tile is a Place target on the board, named by price and HP.
+    expect(document.querySelector('[data-action^="rebake-"]')).toBe(null);
+    expect(document.querySelector(".v7-candy-choice")).toBe(null);
     expect(
-      preview.options.map(
-        (_, index) => requiredButton(`rebake-${index}`).title,
-      ),
+      boardPlan(host).targets.map((target) => [
+        target.family,
+        targetHighlightStyleV7(target.family),
+        target.semanticLabel,
+      ]),
     ).toEqual(
-      preview.options.map((option) =>
+      preview.options.map((option) => [
+        "REBAKE",
+        "PLACE",
         rebakeTargetNameV7(option.role, option.cost, option.hp),
-      ),
+      ]),
     );
     expect(
       requiredElement<HTMLElement>("[data-v7-candy-pick]").textContent,
@@ -351,30 +359,72 @@ describe("Candy abilities through the dock and the board", () => {
     app.destroy();
   });
 
-  it("tosses sugar to a picked unit, from the board or the dock", async () => {
+  it("shows a Gunner's moves, attacks and heals together, and tosses sugar to the unit picked on the board", async () => {
     const controller = new FixtureController(candyUiFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
     const gunner = selectUnitAt(controller, host, AT.gunner);
-    const toss = requiredButton("candy-sugar-toss");
-    expect(toss.title).toBe(SUGAR_TOSS_TOOLTIP_V7);
-    toss.click();
     const view = required(controller.snapshot().view);
     const preview = required(previewSugarTossV7(view, gunner.id));
     expect(preview.targets).toHaveLength(2);
+    // Bead pulp_wars-9im: nothing is armed, and the board shows the
+    // Gunner's Moves and the units it may heal, each in its own style and
+    // on its own tile.
+    expect(host.lastModel?.interaction.candyPick ?? null).toBe(null);
+    const unarmed = boardPlan(host).targets;
+    const styles = new Set(
+      unarmed.map((target) => targetHighlightStyleV7(target.family)),
+    );
+    expect(styles.has("MOVE")).toBe(true);
+    expect(styles.has("SUPPORT")).toBe(true);
+    expect(
+      new Set(unarmed.map((target) => `${target.at.x},${target.at.y}`)).size,
+    ).toBe(unarmed.length);
+    const heals = (): ReturnType<typeof boardPlan>["targets"] =>
+      boardPlan(host).targets.filter(
+        (target) => target.family === "SUGAR_TOSS",
+      );
+    expect(heals().map((target) => target.previewLabel)).toEqual(
+      preview.targets.map((target) => `+${target.amount}`),
+    );
     for (const target of preview.targets) {
       const unit = required(
         view.units.find((candidate) => candidate.id === target.unitId),
       );
-      expect(requiredButton(`sugar-toss-${target.unitId}`).title).toBe(
+      expect(
+        required(heals().find((entry) => same(entry.at, unit.at)))
+          .semanticLabel,
+      ).toBe(
         sugarTossTargetNameV7(
           effectiveRoleRuleV7(unit.role, "CANDY").label,
           target.amount,
         ),
       );
     }
+    // The one Sugar Toss button arms it: only the heals stay, and the dock
+    // lists no unit.
+    const toss = requiredButton("candy-sugar-toss");
+    expect(toss.title).toBe(SUGAR_TOSS_TOOLTIP_V7);
+    toss.click();
+    expect(host.lastModel?.interaction.candyPick).toEqual({
+      kind: "SUGAR_TOSS",
+      unitId: gunner.id,
+    });
+    expect(document.querySelector('[data-action^="sugar-toss-"]')).toBe(null);
+    expect(document.querySelector(".v7-candy-choice")).toBe(null);
+    expect(boardPlan(host).targets.map((target) => target.family)).toEqual(
+      preview.targets.map(() => "SUGAR_TOSS"),
+    );
+    // Escape disarms; the heals stay on the board beside the Moves.
+    document.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    expect(host.lastModel?.interaction.candyPick ?? null).toBe(null);
+    expect(heals()).toHaveLength(2);
     const near = unitAt(controller, AT.tossNear);
-    requiredButton(`sugar-toss-${near.id}`).click();
+    host.callbacks?.onCommand(
+      required(heals().find((target) => same(target.at, AT.tossNear))),
+    );
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
       kind: "SUGAR_TOSS",

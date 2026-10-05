@@ -27,6 +27,7 @@ import type {
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
+import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
   Ruleset7DomAppView,
   recruitmentRolePresentationV7,
@@ -350,7 +351,21 @@ describe("Martian abilities", () => {
       unitId: saucer.id,
       passengerUnitId: null,
     });
-    requiredButton(`beam-passenger-${passenger.id}`).click();
+    // Bead pulp_wars-9im: the passenger is picked on the board again; the
+    // dock lists no passengers.
+    expect(document.querySelector('[data-action^="beam-passenger-"]')).toBe(
+      null,
+    );
+    host.callbacks?.onCommand(
+      required(
+        boardPlan(host).targets.find(
+          (target) =>
+            target.family === "BEAM_DOWN_PASSENGER" &&
+            target.at.x === passenger.at.x &&
+            target.at.y === passenger.at.y,
+        ),
+      ),
+    );
     const first = required(preview.destinations[0]);
     host.callbacks?.onCommand(
       required(
@@ -389,12 +404,28 @@ describe("Martian abilities", () => {
         weak.id,
       ),
     );
-    const choice = requiredButton(`mind-control-${weak.id}`);
-    expect(choice.getAttribute("aria-label")).toContain(
-      mindControlPreviewLinesV7(
-        required(controller.snapshot().view),
-        preview,
-      )[0],
+    // Bead pulp_wars-9im: the target is picked on the board, which carries
+    // its preview; the dock lists no targets.
+    expect(document.querySelector('[data-action^="mind-control-"]')).toBe(null);
+    expect(document.querySelector(".v7-martian-choice-button")).toBe(null);
+    const choice = required(
+      boardPlan(host).targets.find(
+        (target) =>
+          target.family === "MIND_CONTROL" &&
+          target.at.x === AT.weakTarget.x &&
+          target.at.y === AT.weakTarget.y,
+      ),
+    );
+    expect(choice.semanticLabel).toContain(
+      required(
+        mindControlPreviewLinesV7(
+          required(controller.snapshot().view),
+          preview,
+        )[1],
+      ),
+    );
+    expect(targetHighlightStyleV7(choice.family, choice.highlight)).toBe(
+      "ATTACK",
     );
     expect(
       boardPlan(host).entries.some(
@@ -405,7 +436,7 @@ describe("Martian abilities", () => {
             `Too healthy (${unitAt(controller, AT.healthyTarget).hp} HP)`,
       ),
     ).toBe(true);
-    choice.click();
+    host.callbacks?.onCommand(choice);
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
       kind: "MIND_CONTROL",
@@ -533,17 +564,23 @@ describe("Martian mobility UI", () => {
     const cityGrunt = unitAt(controller, MOB.cityGrunt);
     requiredButton("martian-beam-down").click();
     const panel = requiredElement<HTMLElement>("[data-v7-martian-pick]");
-    // One portrait button per passenger: HP as text, the rest in its name.
-    const near = requiredButton(`beam-passenger-${pickUp.id}`);
-    const far = requiredButton(`beam-passenger-${cityGrunt.id}`);
-    expect(near.classList.contains("v7-beam-passenger")).toBe(true);
-    expect(near.dataset.beamSource).toBe("pick-up");
-    expect(far.dataset.beamSource).toBe("city");
-    expect(near.textContent).toBe(`${pickUp.hp}/${pickUp.maxHp}`);
-    expect(near.getAttribute("aria-label")).toBe(
-      `Beam ${label("FIGHTER")}, ${pickUp.hp} of ${pickUp.maxHp} HP, picked up nearby`,
+    // Bead pulp_wars-9im: no passenger buttons in the dock; each passenger
+    // wears its badge and a Help ring on the board, named for the cursor.
+    expect(panel.querySelector('[data-action^="beam-passenger-"]')).toBeNull();
+    expect(panel.querySelector(".v7-beam-passenger")).toBeNull();
+    expect(Number(panel.dataset.boardTargets)).toBeGreaterThanOrEqual(2);
+    const badge = (at: CoordV7) =>
+      required(
+        boardPlan(host).targets.find(
+          (target) => target.at.x === at.x && target.at.y === at.y,
+        ),
+      );
+    expect(badge(MOB.pickUp).family).toBe("BEAM_DOWN_PASSENGER");
+    expect(targetHighlightStyleV7(badge(MOB.pickUp).family)).toBe("SUPPORT");
+    expect(badge(MOB.pickUp).semanticLabel).toContain(
+      `Beam the ${label("FIGHTER")} down, ${pickUp.hp} of ${pickUp.maxHp} HP, picked up nearby`,
     );
-    expect(far.getAttribute("aria-label")).toContain("from your city");
+    expect(badge(MOB.cityGrunt).semanticLabel).toContain("from your city");
     // The caveat is two icon chips, not a sentence.
     const hint = requiredElement<HTMLElement>(".v7-beam-hint");
     expect(hint.getAttribute("aria-label")).toBe(BEAMED_HINT_V7);

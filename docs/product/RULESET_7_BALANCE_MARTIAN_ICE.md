@@ -940,7 +940,8 @@ the detail. No rule, number, or identity changes.
   landing tile) and the pulled unit slides through both tiles.
 - **Beam Down, passenger first** (like the Dwarf Tunnel): every unit the
   carrier may beam wears a "Beam" badge, the pick-up range is tinted, the
-  dock has one portrait button per passenger, and the caveat is two icon
+  passenger is picked on the board (until bead `pulp_wars-9im` the dock
+  also had one portrait button per passenger), and the caveat is two icon
   chips ("Can attack", "No move"). A beamed unit is not shown as an
   ordinary moved unit only: it also has a "Beamed" chip, because it cannot
   be beamed again this turn.

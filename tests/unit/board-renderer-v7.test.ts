@@ -6,6 +6,10 @@ import {
   type BoardRenderPlanEntryV7,
 } from "../../src/render/canvas/board-renderer-v7";
 import { FACTION_COLOURS_V7 } from "../../src/render/canvas/faction-colours-v7";
+import {
+  TARGET_HIGHLIGHTS_V7,
+  TARGET_HIGHLIGHT_CASING_V7,
+} from "../../src/render/canvas/target-highlight-v7";
 import { type TileEdge } from "../../src/render/canvas/geometry";
 import { exploredAllV7, initialV7 } from "../fixtures/v7-builders";
 import {
@@ -1221,7 +1225,12 @@ describe("Ruleset 7 board renderer", () => {
       },
       images: { resolve: () => null },
     });
-    expect(strokedStyles).toEqual(["#64e6cf"]);
+    // Bead pulp_wars-9im: the Move mark is its dark casing, then its teal
+    // dashes; the territory border under the shared edge is not drawn.
+    expect(strokedStyles).toEqual([
+      TARGET_HIGHLIGHT_CASING_V7,
+      TARGET_HIGHLIGHTS_V7.MOVE.stroke,
+    ]);
   });
 
   it("wraps the ninth processor pip onto a second row", () => {

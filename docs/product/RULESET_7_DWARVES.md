@@ -3017,7 +3017,10 @@ Precise readings:
    a choice of rider. "Tunnel alone" sends the rider-less command. (Since
    bead `pulp_wars-b5f.8` no text names a tile: the riders are portrait
    buttons, "Hammerer, 12 of 12 HP, riding", and "Alone"; see
-   [SCREEN_FLOW](../ui/SCREEN_FLOW.md#no-coordinates-minimal-text-bead-pulp_wars-b5f8).)
+   [SCREEN_FLOW](../ui/SCREEN_FLOW.md#no-coordinates-minimal-text-bead-pulp_wars-b5f8).
+   Since bead `pulp_wars-9im` the riders are chosen on the board only; the
+   dock shows who rides and the one "Alone" toggle; see
+   [board targeting](../ui/BOARD_TARGETING.md).)
 3. **Unavailable texts** beyond section 16.2: a Mole with no destination
    says "No free tile within 3"; a Gyrocopter that moved (not Frozen) says
    "It moved this turn"; the Assemble reasons name the home city ("Your

@@ -190,8 +190,7 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dispatch": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#layEggCards": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#layEggPickPanel": "SEAT",
-  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#decorateHatchButton":
-    "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#hatchButton": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#dwarfActionButtons":
     "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#viewerFaction": "SEAT",

@@ -25,6 +25,7 @@ import type {
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
+import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
   Ruleset7DomAppView,
   recruitmentRolePresentationV7,
@@ -198,8 +199,15 @@ describe("Dwarf abilities through the dock and the board", () => {
       riderUnitId: rider.id,
       riderTo: null,
     });
-    const seated = requiredButton(`tunnel-passenger-${rider.id}`);
-    expect(seated.getAttribute("aria-pressed")).toBe("true");
+    // Bead pulp_wars-9im: who rides is shown (a portrait, not a button);
+    // the Hammerers are seated on the board.
+    expect(document.querySelector('[data-action^="tunnel-passenger-"]')).toBe(
+      requiredButton("tunnel-passenger-none"),
+    );
+    const seated = requiredElement<HTMLElement>(
+      `[data-tunnel-rider="${rider.id}"]`,
+    );
+    expect(seated.tagName).toBe("SPAN");
     expect(seated.getAttribute("aria-label")).toBe(
       passengerAccessibleNameV7(label("FIGHTER"), rider.hp, rider.maxHp, true),
     );
@@ -255,6 +263,7 @@ describe("Dwarf abilities through the dock and the board", () => {
       boardPlan(host).targets.find((target) => same(target.at, AT.rider)),
     );
     expect(badge.family).toBe("TUNNEL_PASSENGER");
+    expect(targetHighlightStyleV7(badge.family)).toBe("SUPPORT");
     // Unseat on the board, then seat again.
     host.callbacks?.onCommand(badge);
     await waitUntil(
@@ -272,9 +281,7 @@ describe("Dwarf abilities through the dock and the board", () => {
     );
     await waitUntil(
       () =>
-        requiredButton(`tunnel-passenger-${rider.id}`).getAttribute(
-          "aria-pressed",
-        ) === "true",
+        document.querySelector(`[data-tunnel-rider="${rider.id}"]`) !== null,
     );
     // Choosing the destination on the board shows the whole tunnel; nothing
     // is sent yet.
@@ -306,7 +313,6 @@ describe("Dwarf abilities through the dock and the board", () => {
       ),
     ).toEqual([
       "pick-info",
-      `tunnel-passenger-${rider.id}`,
       "tunnel-passenger-none",
       "tunnel-confirm",
       "dwarf-pick-back",
@@ -377,7 +383,7 @@ describe("Dwarf abilities through the dock and the board", () => {
     app.destroy();
   });
 
-  it("re-seats among two Hammerers from the dock and tunnels alone with None, confirmed by the dock's Tunnel", async () => {
+  it("re-seats among two Hammerers on the board and tunnels alone with None, confirmed by the dock's Tunnel", async () => {
     const controller = new FixtureController(dwarfDigInFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -389,16 +395,34 @@ describe("Dwarf abilities through the dock and the board", () => {
     expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
       riderUnitId: healthy.id,
     });
+    // Bead pulp_wars-9im: one "Alone" toggle and who rides, whatever the
+    // number of Hammerers; both wear their badge on the board.
     expect(
-      [
-        ...document.querySelectorAll<HTMLButtonElement>(".v7-dwarf-passenger"),
-      ].map((control) => control.dataset.action),
-    ).toEqual([
-      `tunnel-passenger-${healthy.id}`,
-      `tunnel-passenger-${wounded.id}`,
-      "tunnel-passenger-none",
-    ]);
-    requiredButton(`tunnel-passenger-${wounded.id}`).click();
+      [...document.querySelectorAll<HTMLElement>(".v7-dwarf-passenger")].map(
+        (control) =>
+          control.dataset.action ?? `riding-${control.dataset.tunnelRider}`,
+      ),
+    ).toEqual([`riding-${healthy.id}`, "tunnel-passenger-none"]);
+    expect(
+      requiredElement<HTMLElement>(".v7-dwarf-passengers").dataset.riders,
+    ).toBe("2");
+    expect(
+      boardPlan(host)
+        .targets.filter((target) => target.family === "TUNNEL_PASSENGER")
+        .map((target) => target.at),
+    ).toEqual(expect.arrayContaining([wounded.at, healthy.at]));
+    host.callbacks?.onCommand(
+      required(
+        boardPlan(host).targets.find(
+          (target) =>
+            target.family === "TUNNEL_PASSENGER" && same(target.at, wounded.at),
+        ),
+      ),
+    );
+    await waitUntil(
+      () =>
+        document.querySelector(`[data-tunnel-rider="${wounded.id}"]`) !== null,
+    );
     expect(host.lastModel?.interaction.dwarfPick).toMatchObject({
       riderUnitId: wounded.id,
     });
@@ -442,7 +466,24 @@ describe("Dwarf abilities through the dock and the board", () => {
     const gyro = selectUnitAt(controller, host, AT.gyrocopter);
     const target = unitAt(controller, AT.bombTarget);
     requiredButton("dwarf-bomb-run").click();
-    requiredButton(`bomb-target-${target.id}`).click();
+    // Bead pulp_wars-9im: the target is picked on the board (an Attack
+    // mark with its damage); the dock lists no targets.
+    expect(document.querySelector('[data-action^="bomb-target-"]')).toBe(null);
+    const bombTarget = required(
+      boardPlan(host).targets.find(
+        (candidate) =>
+          candidate.family === "BOMB_TARGET" &&
+          same(candidate.at, AT.bombTarget),
+      ),
+    );
+    expect(targetHighlightStyleV7(bombTarget.family)).toBe("ATTACK");
+    expect(bombTarget.semanticLabel).toMatch(/^Bomb the /);
+    host.callbacks?.onCommand(bombTarget);
+    await waitUntil(
+      () =>
+        host.lastModel?.interaction.dwarfPick?.kind === "BOMB_RUN" &&
+        host.lastModel.interaction.dwarfPick.targetUnitId === target.id,
+    );
     expect(host.lastModel?.interaction.dwarfPick).toEqual({
       kind: "BOMB_RUN",
       unitId: gyro.id,

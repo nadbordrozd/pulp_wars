@@ -105,7 +105,55 @@ export async function probeCandyV7(
   await driver.waitForExpression(
     `document.querySelector('.v7-selection-dock [data-unit-status="rushed"]')?.textContent === 'Rushed' && document.querySelector('[data-action="candy-sugar-rush"]')?.dataset.disabledReason === 'Already rushed'`,
   );
-  // A Re-bake from the dock: the Confectioner bakes the fallen unit back.
+  // Bead pulp_wars-9im: a selected Gunner shows its Moves and the units it
+  // may heal together, unarmed, each in its own highlight style; the dock
+  // has the one Sugar Toss button and lists no unit; choosing a healable
+  // unit on the board tosses the sugar.
+  await driver.evaluate(
+    `(() => { const host = ${REVIEW}.boardHost; host.resetInspectionCycle(); host.activate(${JSON.stringify(at.gunner)}); })()`,
+  );
+  await driver.waitForExpression(
+    `document.querySelector('.v7-selection-dock [data-action="candy-sugar-toss"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
+  );
+  const healer = await driver.evaluate<{
+    readonly styles: readonly string[];
+    readonly heals: number;
+    readonly listed: number;
+  }>(
+    `(async () => {
+      const engine = await import('/src/engine/index.ts');
+      const { buildBoardRenderPlanV7 } = await import('/src/render/canvas/board-renderer-v7.ts');
+      const { targetHighlightStyleV7 } = await import('/src/render/canvas/target-highlight-v7.ts');
+      const view = ${REVIEW}.snapshotView();
+      const unit = view.units.find((candidate) => candidate.at.x === ${at.gunner?.x} && candidate.at.y === ${at.gunner?.y});
+      const targets = buildBoardRenderPlanV7(view, engine.queryPlayerCommandsV7(view), { selection: { kind: 'UNIT', unitId: unit.id }, selectedUnitId: unit.id, selectedAchievement: null }).targets;
+      return {
+        styles: [...new Set(targets.map((target) => targetHighlightStyleV7(target.family, target.highlight)))].sort(),
+        heals: targets.filter((target) => target.family === 'SUGAR_TOSS').length,
+        listed: document.querySelectorAll('.v7-selection-dock [data-action^="sugar-toss-"], .v7-selection-dock .v7-candy-choice').length,
+      };
+    })()`,
+    true,
+  );
+  if (
+    healer.styles.join() !== "MOVE,SUPPORT" ||
+    healer.heals !== 2 ||
+    healer.listed !== 0
+  )
+    throw new Error(`Gunner targets wrong: ${JSON.stringify(healer)}`);
+  await driver.capture("candy-gunner-move-and-heal.png");
+  await driver.evaluate(
+    `${REVIEW}.boardHost.activate(${JSON.stringify(at.tossNear)})`,
+  );
+  await driver.waitForExpression(
+    `${REVIEW}.traces.some((trace) => trace.command.kind === 'SUGAR_TOSS' && trace.eventKinds.includes('SUGAR_TOSSED'))`,
+  );
+  await driver.waitForExpression(
+    `document.querySelector('canvas[data-candy-effect]') === null`,
+    300,
+  );
+  // A Re-bake picked on the board: the Confectioner's one button aims it,
+  // the Crumbs tiles are the targets, and the dock lists none of them.
   await driver.evaluate(
     `(() => { const host = ${REVIEW}.boardHost; host.resetInspectionCycle(); host.activate(${JSON.stringify(at.confectioner)}); })()`,
   );
@@ -114,7 +162,7 @@ export async function probeCandyV7(
   );
   await driver.pointerClick('[data-action="candy-rebake"]');
   await driver.waitForExpression(
-    `document.querySelector('[data-v7-candy-pick="rebake"] [data-action="rebake-0"]') !== null`,
+    `document.querySelector('[data-v7-candy-pick="rebake"].v7-board-pick')?.dataset.boardTargets === '2' && document.querySelector('[data-v7-candy-pick="rebake"] [data-action^="rebake-"]') === null`,
   );
   const dockText = await driver.evaluate<string>(
     `document.querySelector('.v7-selection-dock')?.textContent ?? ''`,
@@ -122,7 +170,9 @@ export async function probeCandyV7(
   if (/\(\s*\d+\s*,\s*\d+\s*\)/.test(dockText))
     throw new Error(`The Candy dock names a tile: ${dockText}`);
   await driver.capture("candy-rebake-aimed.png");
-  await driver.pointerClick('[data-action="rebake-0"]');
+  await driver.evaluate(
+    `${REVIEW}.boardHost.activate(${JSON.stringify(at.crumbsBear)})`,
+  );
   await driver.waitForExpression(
     `${REVIEW}.traces.some((trace) => trace.command.kind === 'REBAKE' && trace.eventKinds.includes('UNIT_REBAKED'))`,
   );
@@ -133,5 +183,5 @@ export async function probeCandyV7(
   await driver.evaluate(
     `(() => { ${REVIEW}?.view?.destroy?.(); delete globalThis.__CANDY_SMOKE__; })()`,
   );
-  return `Crumbs and the Rushed, Crashed, Splatted and Sugar Frenzy markers planned, Sugar Rush armed and sent before its Move, "Rushed" in the dock, Re-bake from the dock`;
+  return `Crumbs and the Rushed, Crashed, Splatted and Sugar Frenzy markers planned, Sugar Rush armed and sent before its Move, "Rushed" in the dock, the Gunner's moves and heals highlighted together and a Sugar Toss picked on the board, Re-bake picked on the board`;
 }

@@ -1751,6 +1751,29 @@
   line-height: 1.35;
 }
 
+/* Bead pulp_wars-9im: the four target marks of the board, with their names. */
+.v7-target-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.v7-target-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+}
+
+.v7-target-legend-swatch {
+  flex: none;
+  border-radius: 4px;
+  background: #1c2a25;
+}
+
 .v7-help-keys {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
@@ -3258,21 +3281,11 @@
 }
 
 /*
- * Bead pulp_wars-1wy.5: Beam Down picks its passenger first. The portrait
- * buttons mirror the board's "Beam" badges (the Tunnel's passenger buttons
- * in the Martian magenta), and the caveat is two icon chips: the attack
- * icon ("Can attack") and the move icon struck through ("No move").
+ * Bead pulp_wars-1wy.5: Beam Down picks its passenger first, on the board
+ * (bead pulp_wars-9im: the units wearing the "Beam" badge). The caveat is
+ * two icon chips: the attack icon ("Can attack") and the move icon struck
+ * through ("No move").
  */
-.v7-beam-passengers {
-  max-height: 6.5rem;
-  overflow-y: auto;
-}
-
-.v7-dwarf-passenger.v7-beam-passenger {
-  border-color: #ff8fd6;
-  background: #3a2236;
-  color: #ffd3ee;
-}
 
 .v7-beam-hint {
   display: flex;
@@ -3508,12 +3521,6 @@
   border-color: #c99a6666;
 }
 
-.v7-dwarf-pick .v7-martian-choice-button {
-  border-color: #c99a66;
-  background: #2a2019;
-  color: #f0e2cc;
-}
-
 /* Bead pulp_wars-78i.9: the Tunnel's passenger control and confirmation. */
 .v7-dwarf-passengers {
   display: flex;
@@ -3543,6 +3550,12 @@
 
 .v7-dwarf-passenger-hp {
   font-variant-numeric: tabular-nums;
+}
+
+/* Bead pulp_wars-9im: who rides is shown, not a button (seated on the board). */
+.v7-dwarf-riding {
+  border-style: dashed;
+  background: transparent;
 }
 
 .v7-context-action[data-disabled-reason="clockwork"],
@@ -3601,12 +3614,6 @@
 
 .v7-candy-pick {
   border-color: #ffb8d866;
-}
-
-.v7-dwarf-passenger.v7-candy-choice {
-  border-color: #ffb8d8;
-  background: #33202a;
-  color: #ffe6f1;
 }
 
 .v7-context-action[data-disabled-reason="candy-field-defense"],

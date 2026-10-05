@@ -59,6 +59,8 @@ export const LAY_EGG_NO_TILE_V7 = "No free tile next to the city";
 export const HATCH_LABEL_V7 = "Hatch";
 export const HATCH_TOOLTIP_V7 =
   "Hatch an adjacent Egg laid on an earlier turn. The new unit cannot act this turn.";
+/** Bead pulp_wars-9im: several Eggs in reach are picked on the board. */
+export const HATCH_PICK_V7 = "Choose a highlighted Egg";
 export const HATCH_NEW_EGG_V7 =
   "This Egg was laid this turn; it can be hatched from your next turn";
 export const ABANDON_EGG_LABEL_V7 = "Abandon Egg";

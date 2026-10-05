@@ -1760,7 +1760,7 @@ async function probeDinosaurMatch(connection: Connection): Promise<string> {
  * power", the attack preview names the ray's power and the Cooling it
  * leaves, and it fires (the shooter is Cooling afterwards); the Saucer
  * beams the capital's Grunt down through its Beam Down button, the
- * passenger and tile picked in the dock; and the save resumes with its
+ * passenger and tile picked on the board; and the save resumes with its
  * Martian seat on a fresh default-route load. It uses no fixture, so it
  * also runs against a deployed bundle.
  */
@@ -1905,8 +1905,10 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
   if (!cooling) throw new Error("The full-power ray left no Cooling entry");
   // Beam Down: Escape clears the selection (the cursor stays on the ray's
   // target); the Saucer is selected, its Beam Down button aims, the
-  // passenger is picked in the dock, and the first tile on the board with
-  // Tab and Enter (bead pulp_wars-b5f.8: the dock names no tile).
+  // passenger is picked on the board with the arrow keys and Enter (bead
+  // pulp_wars-9im: the dock lists no passengers), and the first tile on
+  // the board with Tab and Enter (bead pulp_wars-b5f.8: the dock names no
+  // tile).
   await focusBoard();
   await pressKey(connection, "Escape", "Escape");
   await arrows(
@@ -1921,16 +1923,29 @@ async function probeMartianMatch(connection: Connection): Promise<string> {
   await pointerClick(connection, '[data-action="martian-beam-down"]');
   await waitForExpression(
     connection,
-    `document.querySelector('[data-v7-martian-pick="beam_down"] [data-action^="beam-passenger-"]') !== null`,
+    `Number(document.querySelector('[data-v7-martian-pick="beam_down"].v7-board-pick')?.dataset.boardTargets ?? '0') >= 1 && document.querySelector('[data-v7-martian-pick="beam_down"] [data-action^="beam-passenger-"]') === null`,
   );
   // `pulp_wars-1wy.3`: own units within two tiles of the Saucer are
-  // passengers too, so the Grunt the probe follows is picked by its own
-  // button.
-  const beamPassenger = await evaluate<string>(
+  // passengers too, so the Grunt the probe follows is picked on its own
+  // tile: the cursor walks from the Saucer to it.
+  const beamPassenger = await evaluate<{
+    readonly x: number;
+    readonly y: number;
+  } | null>(
     connection,
-    `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const grunt = view.units.find((unit) => unit.ownerId === view.viewer.id && unit.role === 'FIGHTER'); return '[data-action="beam-passenger-' + String(grunt?.id) + '"]'; })()`,
+    `(() => { const view = globalThis.__PULP_WARS_APP__.controller.snapshot().view; const grunt = view.units.find((unit) => unit.ownerId === view.viewer.id && unit.role === 'FIGHTER'); return grunt?.at ?? null; })()`,
   );
-  await pointerClick(connection, beamPassenger);
+  if (beamPassenger === null) throw new Error("Beam Down passenger missing");
+  await focusBoard();
+  await arrows(
+    beamPassenger.x - started.saucer.x,
+    beamPassenger.y - started.saucer.y,
+  );
+  await waitForExpression(
+    connection,
+    `(document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? '').startsWith('Beam the ')`,
+  );
+  await pressKey(connection, "Enter", "Enter");
   await waitForExpression(
     connection,
     `(document.querySelector('[data-v7-martian-pick="beam_down"]')?.getAttribute('aria-label') ?? '').startsWith('Choose a tile next to the carrier') && document.querySelector('[data-v7-martian-pick="beam_down"] [data-action^="beam-tile-"]') === null`,
@@ -2054,11 +2069,16 @@ async function probeMindControlFixture(
     `document.querySelector('[data-action="martian-mind-control"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
   );
   await pointerClick(connection, '[data-action="martian-mind-control"]');
+  // Bead pulp_wars-9im: the target is picked on the board; the dock lists
+  // no targets.
   await waitForExpression(
     connection,
-    `document.querySelector('[data-action="mind-control-${target.id}"]') !== null`,
+    `Number(document.querySelector('[data-v7-martian-pick="mind_control"].v7-board-pick')?.dataset.boardTargets ?? '0') >= 1 && document.querySelector('[data-action^="mind-control-"]') === null`,
   );
-  await pointerClick(connection, `[data-action="mind-control-${target.id}"]`);
+  await evaluate(
+    connection,
+    `${review}.boardHost.activate(${JSON.stringify(at.weakTarget)})`,
+  );
   await waitForExpression(
     connection,
     `${review}.traces.some((trace) => trace.command.kind === 'MIND_CONTROL' && trace.command.targetUnitId === ${target.id})`,
@@ -2263,27 +2283,28 @@ async function probeIceFolkMatch(connection: Connection): Promise<string> {
     `document.querySelector('.v7-selection-dock h2')?.textContent === 'Sled' && document.querySelector('[data-action="ice-folk-bolas"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
   );
   await pointerClick(connection, '[data-action="ice-folk-bolas"]');
+  // Bead pulp_wars-9im: the Bolas targets are picked on the board (the
+  // dock lists none): Tab steps to the first one in reading order, whose
+  // description carries the hint, and Enter throws.
   await waitForExpression(
     connection,
-    `document.querySelector('[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]') !== null`,
+    `Number(document.querySelector('[data-v7-ice-folk-pick="bolas"].v7-board-pick')?.dataset.boardTargets ?? '0') >= 1 && document.querySelector('[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]') === null`,
   );
-  const hint = await evaluate<string>(
+  const targetId = await evaluate<number>(
     connection,
-    `document.querySelector('[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]')?.getAttribute('aria-label') ?? ''`,
+    `(() => { const s = globalThis.__PULP_WARS_APP__.controller.snapshot(); const targets = s.offeredCommands.filter((command) => command.kind === 'THROW_BOLAS').map((command) => s.view.units.find((unit) => unit.id === command.targetUnitId)).filter((unit) => unit !== undefined).sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x); return targets[0]?.id ?? -1; })()`,
   );
+  await focusBoard();
+  await pressKey(connection, "Tab", "Tab");
+  await waitForExpression(
+    connection,
+    `(document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? '').startsWith('Bolas: ')`,
+  );
+  const hint = await evaluate<string>(connection, cursorText);
   if (!/Will be (Frozen|Frosted)/.test(hint))
     throw new Error(`Bolas hint missing: ${hint}`);
   await capture(connection, "ice-folk-bolas-desktop.png");
-  const targetId = Number(
-    await evaluate<string>(
-      connection,
-      `document.querySelector('[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]')?.dataset.action?.slice('bolas-'.length) ?? '-1'`,
-    ),
-  );
-  await pointerClick(
-    connection,
-    '[data-v7-ice-folk-pick="bolas"] [data-action^="bolas-"]',
-  );
+  await pressKey(connection, "Enter", "Enter");
   await waitForExpression(
     connection,
     `globalThis.__PULP_WARS_APP__.controller.snapshot().view.commandIndex === 2 && (document.querySelector('#v7-live')?.textContent ?? '').includes('Sled chilled a') && ${settled}`,
@@ -2456,7 +2477,7 @@ async function probeDwarfMatch(connection: Connection): Promise<string> {
     `document.querySelector('.v7-selection-dock h2')?.textContent === 'Steam Mole' && document.querySelector('[data-action="dwarf-tunnel"]:not([aria-disabled="true"]):not(:disabled)') !== null`,
   );
   await pointerClick(connection, '[data-action="dwarf-tunnel"]');
-  // The dock is the ability's head, any passenger buttons and Cancel; it
+  // The dock is the ability's head, who rides, the Alone toggle and Cancel; it
   // names no tile (bead pulp_wars-b5f.8). A destination is chosen on the
   // board: Tab steps through the aimed targets in reading order (the
   // offered destinations and the tiles of the Hammerers that can ride),

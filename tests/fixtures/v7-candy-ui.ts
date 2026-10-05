@@ -202,3 +202,31 @@ export function candyVictimFixtureV7(): GameStateV7 {
     },
   );
 }
+
+/** Where everything stands in `candyHealerFixtureV7`. */
+export const CANDY_HEALER_V7 = {
+  /** A fresh Gunner in the open: it may move, shoot and toss sugar. */
+  gunner: { x: 5, y: 3 },
+  /** Two wounded own units within two tiles of it. */
+  woundedNear: { x: 4, y: 4 },
+  woundedFar: { x: 5, y: 1 },
+  /** Two enemies in its range. */
+  enemyNear: { x: 7, y: 3 },
+  enemyFar: { x: 6, y: 1 },
+} as const;
+
+/**
+ * Bead pulp_wars-9im: seat 0 (Candy) with one Gunner that has all three
+ * kinds of target at once: free tiles to move to, enemies to shoot and
+ * wounded own units to heal.
+ */
+export function candyHealerFixtureV7(): GameStateV7 {
+  const at = CANDY_HEALER_V7;
+  return candyUiFieldV7([
+    { seat: 0, role: "MARKSMAN", at: at.gunner },
+    { seat: 0, role: "FIGHTER", at: at.woundedNear, hp: 5 },
+    { seat: 0, role: "GUARD", at: at.woundedFar, hp: 9 },
+    { seat: 1, role: "FIGHTER", at: at.enemyNear },
+    { seat: 1, role: "GUARD", at: at.enemyFar },
+  ]);
+}

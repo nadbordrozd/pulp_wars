@@ -25,6 +25,7 @@ import type {
   BoardHostV7,
 } from "../../src/render/canvas/board-host-v7";
 import { buildBoardRenderPlanV7 } from "../../src/render/canvas/board-renderer-v7";
+import { targetHighlightStyleV7 } from "../../src/render/canvas/target-highlight-v7";
 import {
   Ruleset7DomAppView,
   recruitmentRolePresentationV7,
@@ -287,16 +288,29 @@ describe("Ice Folk abilities", () => {
       offered.map(() => "THROW_BOLAS"),
     );
     const preview = required(previewBolasV7(view, sled.id, target.id));
-    const choice = requiredButton(`bolas-${target.id}`);
+    // Bead pulp_wars-9im: the target is picked on the board, which carries
+    // its hint; the dock lists no targets.
+    expect(document.querySelector('[data-action^="bolas-"]')).toBe(null);
+    expect(document.querySelector(".v7-martian-choice-button")).toBe(null);
+    const choice = () =>
+      required(
+        boardPlan(host).targets.find(
+          (entry) =>
+            entry.family === "THROW_BOLAS" &&
+            entry.at.x === AT.bolasTarget.x &&
+            entry.at.y === AT.bolasTarget.y,
+        ),
+      );
     for (const line of bolasPreviewLinesV7(view, preview))
-      expect(choice.getAttribute("aria-label")).toContain(line);
+      expect(choice().semanticLabel).toContain(line);
+    expect(targetHighlightStyleV7(choice().family)).toBe("ATTACK");
     // Escape leaves the aiming; the button aims again.
     document.dispatchEvent(
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );
     expect(host.lastModel?.interaction.iceFolkPick ?? null).toBe(null);
     requiredButton("ice-folk-bolas").click();
-    requiredButton(`bolas-${target.id}`).click();
+    host.callbacks?.onCommand(choice());
     await waitUntil(() => controller.accepted.length === 1);
     expect(controller.accepted[0]).toEqual({
       kind: "THROW_BOLAS",

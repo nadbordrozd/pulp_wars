@@ -53,10 +53,13 @@ import {
   martianFrozenFixtureV7,
 } from "../fixtures/v7-ice-folk-ui";
 import {
+  MARTIAN_UI_V7,
   martianDuelFixtureV7,
   martianMobilityFixtureV7,
   martianUiFixtureV7,
 } from "../fixtures/v7-martian-ui";
+import { BOARD_PICK_PANEL_MAX_BUTTONS_V7 } from "../../src/render/canvas/target-highlight-v7";
+import { candyUiFixtureV7 } from "../fixtures/v7-candy-ui";
 import { curiositiesUiFixtureV7 } from "../fixtures/v7-curiosities-ui";
 import { riftUiFixtureV7 } from "../fixtures/v7-rift-ui";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
@@ -81,7 +84,7 @@ const STAGE_FAMILIES = new Set([
 /** These toggle or adjust an aimed ability without finishing it. */
 const ADJUST_FAMILIES = new Set(["TUNNEL_PASSENGER", "TUNNEL_RIDER"]);
 const ABILITY_BUTTONS =
-  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true'])";
+  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true']), .v7-selection-dock [data-candy-ability]:not([aria-disabled='true'])";
 
 /**
  * The fixtures, and steps each sweep must reach (so a fixture that stops
@@ -149,6 +152,18 @@ const FIXTURES: readonly (readonly [
     ],
   ],
   ["Ice Folk victim", iceFolkVictimFixtureV7, []],
+  // Bead pulp_wars-9im: the Candy abilities, each picked on the board.
+  [
+    "Candy abilities",
+    () => candyUiFixtureV7(),
+    [
+      "candy-sugar-rush aimed",
+      "candy-rebake aimed",
+      "candy-rebake performed",
+      "candy-sugar-toss aimed",
+      "candy-sugar-toss performed",
+    ],
+  ],
   ["Dinosaur showcase", dinosaurShowcaseFixtureV7, []],
   ["Dinosaur nest", () => dinosaurCityFixtureV7(), ["lay-egg-knight"]],
   ["Undead showcase", undeadShowcaseFixtureV7, []],
@@ -316,6 +331,63 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
     expect([...offences]).toEqual([]);
   });
 
+  // Bead pulp_wars-9im: the sweep below also fails on a dock that lists
+  // the targets of a board-targetable action; this proves the guard bites.
+  it("the target-list guard passes an aiming panel and catches a list of targets", () => {
+    const controller = new FixtureController(martianUiFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const view = required(controller.snapshot().view);
+    const unitAt = (at: { readonly x: number; readonly y: number }) =>
+      required(
+        view.units.find((unit) => unit.at.x === at.x && unit.at.y === at.y),
+      );
+    host.callbacks?.onSelection({
+      kind: "UNIT",
+      unitId: unitAt(MARTIAN_UI_V7.brain).id,
+    });
+    required(
+      document.querySelector<HTMLButtonElement>(
+        '[data-action="martian-mind-control"]',
+      ),
+    ).click();
+    const panel = required(
+      document.querySelector<HTMLElement>("[data-v7-martian-pick]"),
+    );
+    expect(panel.classList.contains("v7-board-pick")).toBe(true);
+    expect(Number(panel.dataset.boardTargets)).toBeGreaterThanOrEqual(1);
+    expect(targetListOffences(controller, host)).toEqual([]);
+    // A button named after the unit on a highlighted target is a list.
+    const listed = document.createElement("button");
+    listed.dataset.action = `mind-control-${unitAt(MARTIAN_UI_V7.weakTarget).id}`;
+    panel.append(listed);
+    expect(targetListOffences(controller, host)).toEqual([
+      `an aiming panel lists "${listed.dataset.action}"`,
+      `the dock lists the target "${listed.dataset.action}"`,
+    ]);
+    listed.remove();
+    // So is a panel that grows past its fixed controls.
+    const before = panel.querySelectorAll("button").length;
+    for (
+      let extra = before;
+      extra <= BOARD_PICK_PANEL_MAX_BUTTONS_V7;
+      extra += 1
+    ) {
+      const control = document.createElement("button");
+      control.dataset.action = "pick-info";
+      panel.append(control);
+    }
+    expect(targetListOffences(controller, host)).toEqual([
+      `an aiming panel has ${BOARD_PICK_PANEL_MAX_BUTTONS_V7 + 1} buttons`,
+    ]);
+    // And a panel that is not marked as a board pick.
+    panel.classList.remove("v7-board-pick");
+    expect(targetListOffences(controller, host)).toContain(
+      "an aiming panel is not a board pick",
+    );
+    app.destroy();
+  });
+
   for (const [name, fixture, steps] of FIXTURES)
     it(`${name}: docks, aiming panels, board labels, Help and notices`, async () => {
       const { offences, visited } = await sweep(fixture);
@@ -342,6 +414,8 @@ async function sweep(fixture: () => GameStateV7): Promise<{
     visited.add(step);
     for (const text of collect(host))
       if (COORDINATE.test(text)) offences.add(`${step}: ${text}`);
+    for (const offence of targetListOffences(controller, host))
+      offences.add(`${step}: ${offence}`);
   };
   check("start");
   const view = required(controller.snapshot().view);
@@ -482,6 +556,57 @@ async function sweep(fixture: () => GameStateV7): Promise<{
     app.destroy();
   }
   return { offences: [...offences], visited };
+}
+
+/** The only controls an aiming panel may hold (bead pulp_wars-9im). */
+const PICK_PANEL_CONTROLS =
+  /^(pick-info|[a-z-]+-pick-cancel|[a-z-]+-pick-back|tunnel-confirm|tunnel-passenger-none|cold-snap-cast)$/;
+
+/**
+ * Bead pulp_wars-9im, the generic guard: targets are picked on the board,
+ * never from a list in the dock. An aiming panel holds a fixed, small set
+ * of controls whatever the number of targets, and no dock button is named
+ * after a unit that stands on a highlighted target.
+ */
+function targetListOffences(
+  controller: FixtureController,
+  host: RecordingBoardHost,
+): string[] {
+  const offences: string[] = [];
+  const dock = document.querySelector<HTMLElement>(".v7-selection-dock");
+  if (dock === null || host.lastModel === null) return offences;
+  for (const panel of dock.querySelectorAll<HTMLElement>(
+    "[data-v7-martian-pick], [data-v7-ice-folk-pick], [data-v7-dwarf-pick], [data-v7-candy-pick]",
+  )) {
+    if (!panel.classList.contains("v7-board-pick"))
+      offences.push("an aiming panel is not a board pick");
+    const controls = [...panel.querySelectorAll("button")].map(
+      (control) => control.dataset.action ?? "",
+    );
+    if (controls.length > BOARD_PICK_PANEL_MAX_BUTTONS_V7)
+      offences.push(`an aiming panel has ${controls.length} buttons`);
+    for (const action of controls)
+      if (!PICK_PANEL_CONTROLS.test(action))
+        offences.push(`an aiming panel lists "${action}"`);
+  }
+  const view = controller.snapshot().view;
+  if (view === null) return offences;
+  const targetCells = new Set(
+    boardPlan(host).targets.map((target) => `${target.at.x},${target.at.y}`),
+  );
+  const targetUnitIds = new Set(
+    view.units
+      .filter((unit) => targetCells.has(`${unit.at.x},${unit.at.y}`))
+      .map((unit) => String(unit.id)),
+  );
+  for (const control of dock.querySelectorAll<HTMLButtonElement>("button")) {
+    const id = /-(\d+)$/.exec(control.dataset.action ?? "")?.[1];
+    if (id !== undefined && targetUnitIds.has(id))
+      offences.push(
+        `the dock lists the target "${control.dataset.action ?? ""}"`,
+      );
+  }
+  return offences;
 }
 
 /**
