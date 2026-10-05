@@ -78,6 +78,7 @@ import {
   UNIT_ROLE_IDS_V7,
   type CoordV7,
   type ImprovementIdV7,
+  type NavalRoleIdV7,
   type TechnologyIdV7,
   type UnitRoleIdV7,
 } from "../engine/v7/types";
@@ -4166,6 +4167,9 @@ function* sharedCityContextWorkV7(
   let hasLandCaptureUnit = false;
   let patrolBoats = 0;
   let battleships = 0;
+  // The naval branch (`pulp_wars-5ti.2`): Submarines count as naval units
+  // for the two-ship cap; the plan itself never asks for one (`5ti.4`).
+  let submarines = 0;
   let transports = 0;
   let defendedLanding = false;
   for (const unit of view.units) {
@@ -4187,6 +4191,7 @@ function* sharedCityContextWorkV7(
         hasLandCaptureUnit = true;
       if (unit.role === "PATROL_BOAT") patrolBoats += 1;
       if (unit.role === "BATTLESHIP") battleships += 1;
+      if (unit.role === "SUBMARINE") submarines += 1;
       if (unit.form === "EMBARKED") transports += 1;
       const cityId = cityIdByKey.get(coordKey(unit.at));
       if (
@@ -4484,7 +4489,7 @@ function* sharedCityContextWorkV7(
       yield;
     }
     const naval = navalByCity.get(cityId) ?? [];
-    let firstNaval: "PATROL_BOAT" | "BATTLESHIP" | null = null;
+    let firstNaval: NavalRoleIdV7 | null = null;
     let offersPatrol = false;
     let offersBattleship = false;
     for (const command of naval) {
@@ -4560,7 +4565,7 @@ function* sharedCityContextWorkV7(
               // boats held the unit slots the land war needed.
               !(
                 preferredNaval !== command.role &&
-                patrolBoats + battleships >= 2
+                patrolBoats + battleships + submarines >= 2
               )));
       if (eligible) {
         const utility =

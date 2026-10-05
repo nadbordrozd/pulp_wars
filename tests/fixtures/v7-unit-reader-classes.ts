@@ -255,6 +255,11 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::previewHatchV7": "BOARD",
     "src/engine/v7/query.ts::previewKaboomV7": "BOARD",
     "src/engine/v7/query.ts::previewMindControlV7": "BOARD",
+    // The naval branch (`pulp_wars-5ti.2`): Board reads ships on the board
+    // (a burrowed unit is never afloat).
+    "src/engine/v7/query.ts::previewBoardV7": "BOARD",
+    "src/engine/v7/query.ts::publicBoardTargetsV7": "BOARD",
+    "src/engine/v7/reducer.ts::applyBoard": "BOARD",
     "src/engine/v7/query.ts::previewMonsterV7": "BOARD",
     "src/engine/v7/query.ts::previewTendWoundedV7": "BOARD",
     "src/engine/v7/query.ts::previewTractorBeamV7": "BOARD",

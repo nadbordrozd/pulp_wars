@@ -16,7 +16,13 @@ import {
 // faction choices are the design's; and the player-facing text is short and
 // never names a tile coordinate.
 
-const NAVAL = ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"] as const;
+const NAVAL = [
+  "SHORECRAFT",
+  "NAVIGATION",
+  "NAVAL_ENGINEERING",
+  "SEAMANSHIP",
+  "SUBMERSIBLES",
+] as const;
 
 function mission(id: string): MissionDefinitionV7 {
   const found = missionByIdV7(id);

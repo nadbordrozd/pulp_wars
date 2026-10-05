@@ -95,12 +95,12 @@ describe("ruleset-7 revision-16 research costs", () => {
           (total, node) => total + technologyResearchCostV7(node.tier, cities),
           0,
         ) - technologyResearchCostV7(1, cities);
-    expect(factionTreeV7("ORIGINAL").nodes).toHaveLength(23);
+    expect(factionTreeV7("ORIGINAL").nodes).toHaveLength(25);
     expect([1, 2, 3, 5, 6, 8].map((cities) => whole(cities, false))).toEqual([
-      164, 240, 316, 468, 544, 696,
+      180, 264, 348, 516, 600, 768,
     ]);
-    // Dry Land has 20 technologies (no Naval branch).
-    expect(whole(1, true)).toBe(164 - 5 - 7 - 9);
+    // Dry Land has 20 technologies (no Naval branch of five).
+    expect(whole(1, true)).toBe(180 - 5 - 7 - 9 - 7 - 9);
   });
 
   it("offers the revision-16 costs in the public tree and charges them", () => {

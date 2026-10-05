@@ -94,6 +94,12 @@ export const TEST_NECK_V7: MissionDefinitionV7 = {
       reveal: { radius: 2, rects: [{ x0: 1, y0: 3, x1: 5, y1: 7 }] },
     },
   ],
-  forbiddenTechnologies: ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"],
+  forbiddenTechnologies: [
+    "SHORECRAFT",
+    "NAVIGATION",
+    "NAVAL_ENGINEERING",
+    "SEAMANSHIP",
+    "SUBMERSIBLES",
+  ],
   objective: { kind: "DOMINATION" },
 };

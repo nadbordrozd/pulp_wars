@@ -249,7 +249,10 @@ function capturedView(): PlayerViewV7 {
     commandIndex: captured.source.commandIndex,
     round: captured.source.round,
     setup: { aiMode: captured.source.aiMode },
-    viewer: captured.viewer,
+    // The capture predates factions (every seat was Human). The naval
+    // branch (`pulp_wars-5ti.2`) reads the viewer's faction for the
+    // population of its docks (Harbours), so the view names it.
+    viewer: { ...captured.viewer, faction: "ORIGINAL" },
     leaderboard: captured.leaderboard,
     board: {
       width: captured.board.width,

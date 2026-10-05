@@ -20,6 +20,12 @@ import {
   rebakeHpV7,
   rebakePriceV7,
   armouredDamageV7,
+  RAM_BONUS2_V7,
+  attackIsRamV7,
+  attackIsTorpedoV7,
+  boardedHpV7,
+  dockPopulationV7,
+  unitIsSubmergedV7,
   coverBonusV7,
   terrainGivesCoverV7,
   attackIgnoresCityWallsV7,
@@ -120,6 +126,7 @@ import {
   type ExplosionCauseV7,
 } from "./explosions";
 import { INFECT_RISING_HP_V7 } from "./infect";
+import { boardTargetBlockV7 } from "./naval-branch";
 import {
   advanceSiteAllowedV7,
   attackFortificationV7,
@@ -130,6 +137,7 @@ import {
   calculateCombatPreviewV7,
   collateralEntryV7,
   gangUpBonusV7,
+  ramShoveTileOpenV7,
   sweepEntryV7,
   tractorBeamTargetTechnologyV7,
   undeadCombatEffectsV7,
@@ -195,10 +203,12 @@ import {
 import {
   COMMAND_KIND_ORDER_V7,
   ACHIEVEMENT_IDS_V7,
+  NAVAL_ROLE_IDS_V7,
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
   isAfloatFormV7,
+  isNavalRoleV7,
   isNeutralOwnerV7,
   type CoordV7,
   type FactionIdV7,
@@ -585,8 +595,7 @@ function appendPublicCityCommandsV7(
     if (
       !centerBlocked &&
       fits(role) &&
-      role !== "PATROL_BOAT" &&
-      role !== "BATTLESHIP" &&
+      !isNavalRoleV7(role) &&
       rule.cost !== null &&
       // The Forge discount never lowers a cost below 1 (revision 17: the
       // 1-Coin Goblin stays at 1), exactly as the reducer charges it.
@@ -596,7 +605,7 @@ function appendPublicCityCommandsV7(
     )
       candidates.push({ kind: "TRAIN", cityId: city.id, role });
   }
-  for (const role of ["PATROL_BOAT", "BATTLESHIP"] as const) {
+  for (const role of NAVAL_ROLE_IDS_V7) {
     const rule = effectiveRoleRuleV7(role, player.faction);
     if (
       fits(role) &&
@@ -815,6 +824,10 @@ function appendPublicUnitCommandsV7(
       });
   // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2.
   const attackRange = publicAttackMaximumRangeV7(view, unit);
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
+  // and 5.3): a torpedo is offered only at units afloat, and no attack on a
+  // submerged Submarine from 2 or more tiles.
+  const torpedo = attackIsTorpedoV7(view, unit);
   for (const target of view.units) {
     const distance = chebyshev(unit.at, target.at);
     if (
@@ -822,7 +835,9 @@ function appendPublicUnitCommandsV7(
       rule.abilities.includes("ATTACK") &&
       publicHostile(view, player.id, target.ownerId) &&
       distance >= rule.minimumRange &&
-      distance <= attackRange
+      distance <= attackRange &&
+      (!torpedo || isAfloatFormV7(target.form)) &&
+      (distance <= 1 || !unitIsSubmergedV7(view, target))
     )
       candidates.push({
         kind: "ATTACK",
@@ -830,6 +845,13 @@ function appendPublicUnitCommandsV7(
         targetUnitId: target.id,
       });
   }
+  // The naval branch section 4.2: Board, for every legal pair.
+  for (const target of publicBoardTargetsV7(view, unit))
+    candidates.push({
+      kind: "BOARD",
+      unitId: unit.id,
+      targetUnitId: target.id,
+    });
   // The Martian revision: Beam Down (a carrier, after its Move too), Mind
   // Control, and the Tractor Beam, each offered exactly for its legal
   // targets. `pulp_wars-1wy.3`: the carrier and puller readiness are the
@@ -1048,6 +1070,73 @@ function appendPublicUnitCommandsV7(
 }
 
 /** A unit's movement mode and Mountain-born, through its kind. */
+/**
+ * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.2): the
+ * visible hostile ships an own ship may `BOARD` now, in view order: exactly
+ * the targets the reducer accepts (the actor rows 2 to 4, then the shared
+ * `boardTargetBlockV7`). Every unit on an explored tile is visible, and HP
+ * and maximum HP are public, so the offer is exact.
+ */
+function publicBoardTargetsV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): PlayerViewV7["units"] {
+  if (
+    unit.ownerId !== view.viewer.id ||
+    unit.form !== "NAVAL" ||
+    !unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).boarding ||
+    unit.activation.overrunActive ||
+    primaryUsedForQuery(unit) ||
+    primaryActionBlockedAfterMoveV7(view, unit)
+  )
+    return [];
+  return view.units.filter(
+    (target) =>
+      publicHostile(view, view.viewer.id, target.ownerId) &&
+      boardTargetBlockV7(unit, target) === null,
+  );
+}
+
+/**
+ * The naval branch (section 4.2): the exact result of an offered `BOARD`.
+ * The prize keeps its ID, role, maximum HP, kills, and tile, belongs to the
+ * viewer afterwards, and has `hpAfter` HP.
+ */
+export interface BoardPreviewV7 {
+  readonly unitId: UnitId;
+  readonly targetUnitId: UnitId;
+  readonly fromPlayerId: PlayerId;
+  readonly hpAfter: number;
+}
+
+/**
+ * The naval branch (section 4.2): the preview of `BOARD` by the viewer's
+ * ship `unitId` on `targetUnitId`, or null unless that command is offered.
+ */
+export function previewBoardV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  targetUnitId: UnitId,
+): BoardPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "BOARD" &&
+        command.unitId === unitId &&
+        command.targetUnitId === targetUnitId,
+    )
+  )
+    return null;
+  const target = view.units.find((unit) => unit.id === targetUnitId);
+  if (target === undefined) return null;
+  return {
+    unitId,
+    targetUnitId,
+    fromPlayerId: target.ownerId,
+    hpAfter: boardedHpV7(target.maxHp),
+  };
+}
+
 function unitMobilityV7(
   view: PlayerViewV7,
   unit: Pick<PublicUnitV7, "id" | "ownerId" | "role">,
@@ -3267,7 +3356,12 @@ export function estimateCombatV7(
         state,
         attacker,
         tileAtV7(state.board, attacker.at)?.terrain,
-      )
+      ) ||
+    // The naval branch (sections 5.2 and 5.3): a torpedo targets only
+    // units afloat, and a submerged Submarine is attacked only from an
+    // adjacent tile.
+    (attackIsTorpedoV7(state, attacker) && !isAfloatFormV7(target.form)) ||
+    (distance > 1 && unitIsSubmergedV7(state, target))
   )
     return null;
   return calculateCombatPreviewV7(
@@ -3481,17 +3575,46 @@ export function queryThreatenedTilesV7(
       tile?.explored === true ? tile.terrain : undefined,
     );
   };
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
+  // and 5.3): a Submarine threatens only units afloat, so never an explored
+  // land tile; and an attack reaches a tile that holds a visible submerged
+  // Submarine of another owner only from an adjacent tile (a Wail is not an
+  // attack and keeps its reach).
+  const torpedo = attackIsTorpedoV7(view, unit);
+  const submergedKeys = wail
+    ? new Set<string>()
+    : new Set(
+        view.units
+          .filter(
+            (candidate) =>
+              candidate.hp > 0 &&
+              candidate.ownerId !== unit.ownerId &&
+              unitIsSubmergedV7(view, candidate),
+          )
+          .map((candidate) => `${candidate.at.y},${candidate.at.x}`),
+      );
   const direct = view.board.tiles
+    .filter(
+      (tile) =>
+        !torpedo ||
+        !tile.explored ||
+        tile.terrain === "SHALLOW_WATER" ||
+        tile.terrain === "DEEP_WATER",
+    )
     .map((tile) => tile.at)
-    .filter((at) =>
-      origins.some((origin) => {
+    .filter((at) => {
+      const cap = submergedKeys.has(`${at.y},${at.x}`) ? 1 : Infinity;
+      return origins.some((origin) => {
         const distance = Math.max(
           Math.abs(origin.x - at.x),
           Math.abs(origin.y - at.y),
         );
-        return distance >= minimumRange && distance <= rangeFrom(origin);
-      }),
-    );
+        return (
+          distance >= minimumRange &&
+          distance <= Math.min(cap, rangeFrom(origin))
+        );
+      });
+    });
   return [
     ...new Map(direct.map((at) => [`${at.y},${at.x}`, at])).values(),
   ].sort((a, b) => a.y - b.y || a.x - b.x);
@@ -3774,7 +3897,8 @@ function calculatePublicEconomicPreviewV7(
         coinIncomeDeltaByCity,
         resultingContribution:
           command.kind === "BUILD_PORT"
-            ? 1
+            ? // The naval branch section 5.4: 2 with the viewer's Harbours.
+              publicDockPopulationV7(afterGraph, "PORT")
             : (evaluation?.population ?? basic?.population ?? 0),
         outputTransitions: economicOutputTransitionsV7(
           view,
@@ -4267,6 +4391,22 @@ function graphAfterTileCommandV7(
   return null;
 }
 
+/**
+ * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 5.4): the
+ * population of an active dock of the graph's owner (the viewer), with its
+ * own Harbours capability; the shared `dockPopulationV7`.
+ */
+function publicDockPopulationV7(
+  graph: PublicEconomyGraphV7,
+  improvement: "PORT" | "SHIPYARD",
+): number {
+  return dockPopulationV7(
+    improvement,
+    technologyCapabilitiesV7(graph.researchedTechs, graph.faction)
+      .harbourPopulation,
+  );
+}
+
 function liveTotalForCityV7(
   graph: PublicEconomyGraphV7,
   cityId: CityId,
@@ -4282,9 +4422,7 @@ function liveTotalForCityV7(
         total +
         (improvement === "PORT" || improvement === "SHIPYARD"
           ? graph.activePortKeys.has(coordKeyV7(tile.at))
-            ? improvement === "SHIPYARD"
-              ? 2
-              : 1
+            ? publicDockPopulationV7(graph, improvement)
             : 0
           : spatialContributionAtV7(graph, tile.at, improvement).population);
       if (!Number.isSafeInteger(value))
@@ -6074,7 +6212,7 @@ function publicGraphTotalsV7(
       population +=
         tile.improvement === "PORT" || tile.improvement === "SHIPYARD"
           ? Number(graph.activePortKeys.has(coordKeyV7(tile.at))) *
-            (tile.improvement === "SHIPYARD" ? 2 : 1)
+            publicDockPopulationV7(graph, tile.improvement)
           : spatialContributionAtV7(graph, tile.at, tile.improvement)
               .population;
       if (!Number.isSafeInteger(population))
@@ -6170,7 +6308,7 @@ function publicTileGraphOutputV7(
     population:
       tile.improvement === "PORT" || tile.improvement === "SHIPYARD"
         ? Number(graph.activePortKeys.has(coordKeyV7(tile.at))) *
-          (tile.improvement === "SHIPYARD" ? 2 : 1)
+          publicDockPopulationV7(graph, tile.improvement)
         : contribution.population,
     recurringCoins:
       tile.improvement === "MARKET"
@@ -6803,6 +6941,23 @@ function publicCombatPreviewCore(
     distance > publicAttackMaximumRangeV7(view, attacker)
   )
     return null;
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
+  // and 5.3): a torpedo targets only units afloat, and a submerged
+  // Submarine is attacked only from an adjacent tile.
+  const torpedo = attackIsTorpedoV7(view, attacker);
+  if (
+    (torpedo && !isAfloatFormV7(target.form)) ||
+    (distance > 1 && unitIsSubmergedV7(view, target))
+  )
+    return null;
+  // Section 4.1: a Patrol Boat that moved this turn rams a target afloat.
+  const ram = attackIsRamV7(
+    view,
+    attacker,
+    target,
+    distance,
+    view.viewer.researchedTechs,
+  );
   const attackStats = view.unitStats.find(
     (stats) => stats.unitId === attacker.id,
   );
@@ -6861,6 +7016,7 @@ function publicCombatPreviewCore(
   const attack2 =
     rationalToHalfUnits(attack.total) +
     assumedRush2 +
+    (ram ? RAM_BONUS2_V7 : 0) +
     gangUp * 2 +
     (rockfallApplied
       ? attackerMechanics0.rockfallAttack2 - attackerRule.attack2
@@ -6995,8 +7151,9 @@ function publicCombatPreviewCore(
   const defenderArmoured =
     hitOnDefender < Math.min(target.hp + defenderShield, formulaDefenderDamage);
   const defenderDies = damageToDefender >= target.hp;
-  // Revision 14 (V1): an UNANSWERED attacker draws no retaliation.
-  const unanswered = attackerRule.abilities.includes("UNANSWERED");
+  // Revision 14 (V1): an UNANSWERED attacker draws no retaliation. The
+  // naval branch section 5.3: neither does a torpedo.
+  const unanswered = attackerRule.abilities.includes("UNANSWERED") || torpedo;
   // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
   // a Gyrocopter retaliates too.
   const wouldRetaliate =
@@ -7123,9 +7280,17 @@ function publicCombatPreviewCore(
     ),
   });
   // The Dwarf revision section 10.1: a Steam Cannon's Knockback.
+  // The naval branch section 4.1: a ram's shove is the Push step of a Ram.
   const push = attackKnocksBackV7(view, attacker)
     ? publicKnockbackState(view, attacker, target, !defenderDies)
-    : publicPushState(view, attacker, target, !defenderDies && distance === 1);
+    : ram
+      ? publicRamShoveState(view, attacker, target, !defenderDies)
+      : publicPushState(
+          view,
+          attacker,
+          target,
+          !defenderDies && distance === 1,
+        );
   // Revision 19 section 6.7: a melee attacker that destroys an Egg advances
   // like after killing a land unit. Revision 20: a Charge! also follows a
   // pushed target into the tile it vacated.
@@ -7267,7 +7432,40 @@ function publicCombatPreviewCore(
     sugarRushApplied: rushInStats || assumedRush2 > 0,
     splatApplied: attackSplatAppliesV7(view, attacker, target, defenderDies),
     ...bounced,
+    ram,
+    torpedo,
   };
+}
+
+/**
+ * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1): the
+ * public shove of an own Patrol Boat's Ram, mirroring
+ * `ramShoveDestinationV7`. The tile behind the target must be explored by
+ * the viewer, and every unit on an explored tile is visible; the Deep Water
+ * rule reads the target's own tile, never its owner's technologies. So the
+ * result is exact: `WILL_PUSH` or `BLOCKED`, never unknown.
+ */
+function publicRamShoveState(
+  view: PlayerViewV7,
+  attacker: PlayerViewV7["units"][number],
+  defender: PlayerViewV7["units"][number],
+  survives: boolean,
+): CombatPreviewV7["push"] {
+  if (!survives) return "BLOCKED";
+  const behind = {
+    x: defender.at.x + Math.sign(defender.at.x - attacker.at.x),
+    y: defender.at.y + Math.sign(defender.at.y - attacker.at.y),
+  };
+  const tile = tileAtView(view, behind);
+  const targetTile = tileAtView(view, defender.at);
+  return tile?.explored === true &&
+    ramShoveTileOpenV7(
+      tile,
+      targetTile?.explored === true ? targetTile.terrain : undefined,
+      tileOccupiedV7(view, behind, defender.id),
+    )
+    ? "WILL_PUSH"
+    : "BLOCKED";
 }
 
 /**

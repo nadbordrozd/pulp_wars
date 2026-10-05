@@ -151,7 +151,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
   });
 
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(56);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(57);
     const snap = COMMAND_KIND_ORDER_V7.indexOf("COLD_SNAP");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 4)).toEqual([
       "COLD_SNAP",
@@ -164,7 +164,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(96);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(97);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [
@@ -1234,9 +1234,9 @@ describe("Dwarf Showcase (section 2.4)", () => {
     ).toEqual([
       [5, 7],
       [3, 6],
-      [2, 5],
+      [3, 6],
     ]);
-    expect(playerIncomeV7(state, dwarfId).totalCoins).toBe(16);
+    expect(playerIncomeV7(state, dwarfId).totalCoins).toBe(17);
   });
 
   it("offers a Tunnel, an Assemble, and a Cannon shot with a blocked Knockback on turn 1; every offered command is accepted", () => {

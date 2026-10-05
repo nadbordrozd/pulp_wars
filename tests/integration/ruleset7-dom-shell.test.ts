@@ -334,8 +334,8 @@ describe("Ruleset 7 DOM shell", () => {
     expect(document.body.textContent).not.toContain("CANDY");
 
     requiredButton('[data-action="tech"]').click();
-    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(23);
-    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(18);
+    expect(document.querySelectorAll(".v7-tech-card")).toHaveLength(25);
+    expect(document.querySelectorAll(".v7-tech-edge")).toHaveLength(20);
     expect(document.querySelectorAll(".v7-tech-children.is-unary").length).toBe(
       10,
     );

@@ -66,7 +66,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
     "d095b657a12242e56e4bf3ada5e3a0a8d1982da358a906c9bd477e0eabe6c75b",
   /** `canonicalHash` of the whole decision (command and candidates). */
   policyDecisionHash:
-    "7622b46fc2e5f02b146de9ea3ef978dd5185bb000743b0fe0047ccc49ec8e548",
+    // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK, moving
+    // every later command kind forward by one (was 7622b4…e548).
+    "a302717690b2a2e90e1d2ea311dfb6d228af6a7053261b1990231e4fbd3b8cc3",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -144,10 +146,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r42",
+    rulesetId: "pulp-wars-poc-7r43",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r42",
+      rulesetId: "pulp-wars-poc-7r43",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,

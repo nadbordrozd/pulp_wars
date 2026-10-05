@@ -479,8 +479,8 @@ async function captureMountedUiEvidence(
         const bounds = card.getBoundingClientRect();
         return bounds.left >= viewport.left && bounds.right <= viewport.right;
       });
-      if (cards.length !== 3 || visibleCards.length !== 3)
-        throw new Error('all three Naval cards are not horizontally accessible');
+      if (cards.length !== 5 || visibleCards.length !== 5)
+        throw new Error('all five Naval cards are not horizontally accessible');
       return {
         selectedBranch: document.querySelector('.v7-tech-branch-select')?.value,
         cards: cards.length,
@@ -735,7 +735,7 @@ async function mountVisual(
       globalThis.__PULP_WARS_APP__?.destroy();
       const aiCount = ${size} === 11 ? 1 : 3;
       const setup = {
-        rulesetId: 'pulp-wars-poc-7r42', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
+        rulesetId: 'pulp-wars-poc-7r43', mapGenerationRevision: 'REGIONAL_BIOMES_NAVAL_V4', curiosities: false, seed: 42,
         width: ${size}, height: ${size}, aiCount, aiDifficulty: 'NORMAL', aiMode: 'RIVAL',
         humanColor: 'CORAL', factions: Array.from({ length: aiCount + 1 }, () => 'ORIGINAL'), mapType: 'ARCHIPELAGO',
         // A Human mirror presentation scene: the headless and test only

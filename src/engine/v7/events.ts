@@ -4,6 +4,7 @@ import type {
   CoordV7,
   ImprovementIdV7,
   MatchOutcomeV7,
+  NavalRoleIdV7,
   RewardIdV7,
   TechnologyIdV7,
   UnitRoleIdV7,
@@ -176,6 +177,18 @@ export interface CombatPreviewV7 {
   readonly bounce: "NONE" | "WILL_BOUNCE" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
   /** The attacker's tile after the Bounce for `WILL_BOUNCE`, else null. */
   readonly bounceTo: CoordV7 | null;
+  /**
+   * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1):
+   * the attack is a Patrol Boat's Ram. Its bonus (`RAM_BONUS2_V7`) is in
+   * `attack2`, and `push` reports the shove of a surviving target.
+   */
+  readonly ram: boolean;
+  /**
+   * The naval branch (section 5.3): the attack is a Submarine's torpedo; it
+   * draws no retaliation (`noRetaliationReason` is `UNANSWERED` when the
+   * target survives).
+   */
+  readonly torpedo: boolean;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -418,7 +431,8 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly at: CoordV7;
       readonly cost: 4;
-      readonly populationAdded: 1;
+      /** 2 for an owner with Harbours (the naval branch section 5.4). */
+      readonly populationAdded: 1 | 2;
     }
   | {
       readonly kind: "SHIPYARD_BUILT";
@@ -427,7 +441,8 @@ export type DomainEventV7 =
       readonly at: CoordV7;
       readonly cost: 5;
       readonly populationAdded: 1;
-      readonly livePopulationTotal: 2;
+      /** 3 for an owner with Harbours (the naval branch section 5.4). */
+      readonly livePopulationTotal: 2 | 3;
     }
   | {
       readonly kind: "PORT_BLOCKADE_CHANGED";
@@ -605,7 +620,7 @@ export type DomainEventV7 =
       readonly playerId: PlayerId;
       readonly cityId: CityId;
       readonly unitId: UnitId;
-      readonly role: "PATROL_BOAT" | "BATTLESHIP";
+      readonly role: NavalRoleIdV7;
       readonly cost: number;
       readonly at: CoordV7;
       readonly dock: "PORT" | "SHIPYARD";
@@ -1057,6 +1072,21 @@ export type DomainEventV7 =
       readonly targetUnitId: UnitId;
       readonly targetOwnerId: PlayerId;
       readonly targetRole: UnitRoleIdV7;
+      readonly at: CoordV7;
+      readonly hp: number;
+    }
+  | {
+      /**
+       * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section
+       * 4.2): the ship `unitId` of `playerId` boarded the ship
+       * `targetUnitId` of `fromPlayerId` on `at`. The prize now belongs to
+       * `playerId` (its kind follows its new owner) and has `hp`.
+       */
+      readonly kind: "SHIP_BOARDED";
+      readonly playerId: PlayerId;
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+      readonly fromPlayerId: PlayerId;
       readonly at: CoordV7;
       readonly hp: number;
     }

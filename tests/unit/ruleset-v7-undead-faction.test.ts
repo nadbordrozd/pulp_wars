@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r42");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r42.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r43.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r41 and preserves the r42 save", () => {
+  it("cleans obsolete keys through v7r42 and preserves the r43 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r41.current",
+      "pulpWars.save.v7r42.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(41);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(42);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -179,7 +179,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r39.current", "r39"],
       ["pulpWars.save.v7r40.current", "r40"],
       ["pulpWars.save.v7r41.current", "r41"],
-      [SAVE_STORAGE_KEY_V7, "r42"],
+      ["pulpWars.save.v7r42.current", "r42"],
+      [SAVE_STORAGE_KEY_V7, "r43"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -215,8 +216,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r39.current",
         "pulpWars.save.v7r40.current",
         "pulpWars.save.v7r41.current",
+        "pulpWars.save.v7r42.current",
       ],
-      removedCount: 30,
+      removedCount: 31,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -635,7 +637,8 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         2,
         "SHORECRAFT",
         true,
-        ["ATTACK"],
+        // The naval branch (`pulp_wars-5ti.2`): the Ram (with Seamanship).
+        ["ATTACK", "RAM"],
       ],
       BATTLESHIP: [
         "Battleship",
@@ -650,6 +653,21 @@ describe("ruleset-7 Undead roster and technology registration", () => {
         "NAVAL_ENGINEERING",
         false,
         ["ATTACK"],
+      ],
+      // The naval branch (`pulp_wars-5ti.2`): the shared Submarine.
+      SUBMARINE: [
+        "Submarine",
+        9,
+        12,
+        8,
+        4,
+        2,
+        1,
+        1,
+        2,
+        "SUBMERSIBLES",
+        true,
+        ["ATTACK", "SUBMERGED", "TORPEDO"],
       ],
     };
     for (const role of UNIT_ROLE_IDS_V7) {
@@ -723,8 +741,10 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       ["Catapult", 8, 10, 7, 1, 1, 3, 2, "ATTACK"],
       ["Knight", 9, 10, 6, 2, 3, 1, 1, "ATTACK+OVERRUN"],
       ["Juggernaut", null, 40, 8, 8, 1, 1, 1, "ATTACK+CAPTURE+PUSH"],
-      ["Patrol Boat", 5, 10, 4, 4, 2, 1, 1, "ATTACK"],
+      ["Patrol Boat", 5, 10, 4, 4, 2, 1, 1, "ATTACK+RAM"],
       ["Battleship", 16, 25, 12, 8, 2, 3, 1, "ATTACK"],
+      // The naval branch (`pulp_wars-5ti.2`).
+      ["Submarine", 9, 12, 8, 4, 2, 1, 1, "ATTACK+SUBMERGED+TORPEDO"],
     ]);
   });
 
@@ -815,6 +835,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       DRILL: "Zombie",
       SHORECRAFT: "Patrol Boat",
       NAVAL_ENGINEERING: "Battleship",
+      SUBMERSIBLES: "Submarine",
     });
     expect(labels(humanTree)).toEqual({
       ADMINISTRATION: "Captain",
@@ -825,6 +846,7 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       DRILL: "Guard",
       SHORECRAFT: "Patrol Boat",
       NAVAL_ENGINEERING: "Battleship",
+      SUBMERSIBLES: "Submarine",
     });
     const effects = (tree: typeof undeadTree, id: string) =>
       tree.nodes.find((node) => node.id === id)?.effects.map((e) => e.kind);
@@ -1779,8 +1801,12 @@ describe("ruleset-7 all-Human parity digests", () => {
           splatApplied,
           bounce,
           bounceTo,
+          ram,
+          torpedo,
           ...previewWithoutSplash
         } = event.preview;
+        // The naval branch (pulp_wars-5ti.2): two neutral fields.
+        expect([ram, torpedo]).toEqual([false, false]);
         // The Candy revision (pulp_wars-jdb.3): four neutral fields.
         expect([sugarRushApplied, splatApplied, bounce, bounceTo]).toEqual([
           false,
@@ -1928,6 +1954,16 @@ describe("ruleset-7 all-Human parity digests", () => {
             if ((key === "snow" || key === "blizzard") && item === false)
               return undefined;
             if (key === "chill" && item === null) return undefined;
+            // pulp_wars-5ti.2: the two naval-branch unit facts of a view, at
+            // their neutral values (no seat ever holds Submersibles or
+            // Seamanship here, so nothing is submerged; the boarding
+            // threshold is a constant of the ship).
+            if (key === "submerged" && item === false) return undefined;
+            if (key === "boardableAt") return undefined;
+            // The Patrol Boat's ability list names Ram (naval branch
+            // section 2.1); it does nothing before Seamanship.
+            if (key === "abilities" && Array.isArray(item))
+              return item.filter((ability) => ability !== "RAM");
             // pulp_wars-ykw.2: the map revision a setup names (V3 since the
             // village density); the digests hash the name they were taken
             // with, like the identity.
@@ -2013,7 +2049,17 @@ describe("ruleset-7 all-Human parity digests", () => {
         normalizedFinalStateHash: canonicalHash(normalize(result.state)),
         normalizedHumanViewHash: canonicalHash(normalize(humanView)),
         normalizedHumanCommandsHash: canonicalHash(
-          queryPlayerCommandsV7(result.state, result.state.humanPlayerId),
+          // pulp_wars-5ti.2: apart from the Research offers for the two
+          // naval-branch technologies.
+          queryPlayerCommandsV7(
+            result.state,
+            result.state.humanPlayerId,
+          ).filter(
+            (command) =>
+              command.kind !== "RESEARCH" ||
+              (command.tech !== "SEAMANSHIP" &&
+                command.tech !== "SUBMERSIBLES"),
+          ),
         ),
       }).toEqual({
         acceptedCommands: baseline.acceptedCommands,

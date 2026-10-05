@@ -101,10 +101,10 @@ interface ArenaOptions {
 }
 
 describe("ruleset-7 revision-14 identity and roster", () => {
-  it("keeps rejecting r13 after the r42 identity and cleans the r13 through r41 save keys", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r42");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r42.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-29)).toEqual([
+  it("keeps rejecting r13 after the r43 identity and cleans the r13 through r42 save keys", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r43.current");
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-30)).toEqual([
       "pulpWars.save.v7r13.current",
       "pulpWars.save.v7r14.current",
       "pulpWars.save.v7r15.current",
@@ -134,6 +134,7 @@ describe("ruleset-7 revision-14 identity and roster", () => {
       "pulpWars.save.v7r39.current",
       "pulpWars.save.v7r40.current",
       "pulpWars.save.v7r41.current",
+      "pulpWars.save.v7r42.current",
     ]);
     const state = arena(["UNDEAD", "ORIGINAL"], []);
     expect(
@@ -187,9 +188,11 @@ describe("ruleset-7 revision-14 identity and roster", () => {
     expect(at("UNIT_INFECTED")).toBe(at("UNIT_DIED") + 1);
     // The Martian revision inserts UNIT_MIND_CONTROLLED after UNIT_INFECTED.
     expect(at("UNIT_MIND_CONTROLLED")).toBe(at("UNIT_DIED") + 2);
-    // The Mind Control revision inserts UNIT_RELEASED after it.
-    expect(at("UNIT_RELEASED")).toBe(at("UNIT_DIED") + 3);
-    expect(at("GRAVE_CREATED")).toBe(at("UNIT_DIED") + 4);
+    // The naval branch inserts SHIP_BOARDED right after it, and the Mind
+    // Control revision UNIT_RELEASED after that.
+    expect(at("SHIP_BOARDED")).toBe(at("UNIT_DIED") + 3);
+    expect(at("UNIT_RELEASED")).toBe(at("UNIT_DIED") + 4);
+    expect(at("GRAVE_CREATED")).toBe(at("UNIT_DIED") + 5);
     // The Candy revision inserts CRUMBS_LEFT after GRAVE_CREATED.
     expect(at("CRUMBS_LEFT")).toBe(at("GRAVE_CREATED") + 1);
     expect(at("BITTEN_UNIT_RISEN")).toBe(at("GRAVE_CREATED") + 2);

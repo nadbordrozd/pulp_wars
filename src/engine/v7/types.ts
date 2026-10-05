@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r42" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r43" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -53,8 +53,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r39",
   "pulp-wars-poc-7r40",
   "pulp-wars-poc-7r41",
+  "pulp-wars-poc-7r42",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r42.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r43.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -145,7 +146,24 @@ export const UNIT_ROLE_IDS_V7 = Object.freeze([
   "JUGGERNAUT",
   "PATROL_BOAT",
   "BATTLESHIP",
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 5.1).
+  "SUBMARINE",
 ] as const);
+/**
+ * The naval branch (section 6): the ship roles, in role order. A unit has
+ * one of them exactly when its form is `NAVAL`; every rule that names
+ * "naval units" covers all three.
+ */
+export const NAVAL_ROLE_IDS_V7 = Object.freeze([
+  "PATROL_BOAT",
+  "BATTLESHIP",
+  "SUBMARINE",
+] as const);
+export type NavalRoleIdV7 = (typeof NAVAL_ROLE_IDS_V7)[number];
+/** Whether `role` is a ship role ({@link NAVAL_ROLE_IDS_V7}). */
+export function isNavalRoleV7(role: unknown): role is NavalRoleIdV7 {
+  return NAVAL_ROLE_IDS_V7.includes(role as NavalRoleIdV7);
+}
 export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "GATHERING",
   "FARMING",
@@ -170,10 +188,15 @@ export const TECHNOLOGY_IDS_V7 = Object.freeze([
   "SHORECRAFT",
   "NAVIGATION",
   "NAVAL_ENGINEERING",
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 2).
+  "SEAMANSHIP",
+  "SUBMERSIBLES",
 ] as const);
 export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   "MOVE",
   "ATTACK",
+  // The naval branch (section 4.2): a ship captures a crippled enemy ship.
+  "BOARD",
   "RALLY",
   "TEND_WOUNDED",
   "RAISE_DEAD",
@@ -356,6 +379,8 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNIT_DIED",
   "UNIT_INFECTED",
   "UNIT_MIND_CONTROLLED",
+  // The naval branch (section 4.2): a ship boarded an enemy ship.
+  "SHIP_BOARDED",
   // The Mind Control revision (section 6).
   "UNIT_RELEASED",
   "GRAVE_CREATED",

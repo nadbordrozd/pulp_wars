@@ -56,6 +56,8 @@ export type TechnologyUnlockedCommandV7 = Extract<
   | "CULTIVATE_FOREST"
   | "BLAST_MOUNTAIN"
   | "LAND_GRANT"
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.2).
+  | "BOARD"
 >;
 
 export type TechnologyUnlockV7 =
@@ -192,6 +194,16 @@ export type TechnologyUnlockV7 =
     }
   | { readonly kind: "MELEE_FIELD_DEMOLITION" }
   | { readonly kind: "NAVAL_TRAINING_DISCOUNT"; readonly coins: 2 }
+  /**
+   * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1):
+   * Seamanship, the owner's Patrol Boats ram.
+   */
+  | { readonly kind: "RAM" }
+  /**
+   * The naval branch (section 5.4): Harbours, every active Port and
+   * Shipyard of the owner gives `population` more live population.
+   */
+  | { readonly kind: "HARBOURS"; readonly population: 1 }
   | { readonly kind: "FIRST_HOSTILE_CAPTURE_SPOILS"; readonly coins: 2 };
 
 export interface TechnologyNodeV7 {
@@ -286,7 +298,13 @@ export type UnitRoleAbilityV7 =
   | "BOUNCE"
   | "SPLAT"
   | "REBAKE"
-  | "SUGAR_TOSS";
+  | "SUGAR_TOSS"
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 4.1,
+  // 5.2, and 5.3): the Patrol Boat's Ram, and the Submarine's Submerged and
+  // Torpedo.
+  | "RAM"
+  | "SUBMERGED"
+  | "TORPEDO";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -308,7 +326,9 @@ export interface EffectiveRoleRuleV7 {
     | "BREAKTHROUGH"
     | "MYTHIC"
     | "NAVAL_SCREEN"
-    | "NAVAL_CAPITAL";
+    | "NAVAL_CAPITAL"
+    // The naval branch (section 3.2): the Submarine.
+    | "NAVAL_HUNTER";
   readonly cost: number | null;
   readonly maxHp: number;
   readonly attack2: number;
@@ -889,6 +909,25 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
       { kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 },
     ],
   ),
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 2.1):
+  // the second Naval line, Shorecraft -> Seamanship -> Submersibles.
+  node(
+    "SEAMANSHIP",
+    "NAVAL",
+    2,
+    ["SHORECRAFT"],
+    [{ kind: "RAM" }, { kind: "COMMAND", command: "BOARD" }],
+  ),
+  node(
+    "SUBMERSIBLES",
+    "NAVAL",
+    3,
+    ["SEAMANSHIP"],
+    [
+      { kind: "UNIT_ROLE", role: "SUBMARINE" },
+      { kind: "HARBOURS", population: 1 },
+    ],
+  ),
 ] as const);
 
 /**
@@ -1058,7 +1097,8 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SHORECRAFT",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK"],
+    // The naval branch (section 4.1): the Ram needs Seamanship.
+    abilities: ["ATTACK", "RAM"],
   }),
   BATTLESHIP: role({
     role: "BATTLESHIP",
@@ -1075,6 +1115,23 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     technology: "NAVAL_ENGINEERING",
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK"],
+  }),
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 5.1).
+  SUBMARINE: role({
+    role: "SUBMARINE",
+    label: "Submarine",
+    tacticalRole: "NAVAL_HUNTER",
+    cost: 9,
+    maxHp: 12,
+    attack2: 8,
+    defense2: 4,
+    move: 2,
+    range: 1,
+    minimumRange: 1,
+    sightRadius: 2,
+    technology: "SUBMERSIBLES",
+    mayUsePrimaryActionAfterMove: true,
+    abilities: ["ATTACK", "SUBMERGED", "TORPEDO"],
   }),
 });
 
@@ -1293,6 +1350,7 @@ export const UNDEAD_ROLE_RULES_V7: Readonly<
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
 });
 
 /**
@@ -1474,6 +1532,7 @@ export const GOBLIN_ROLE_RULES_V7: Readonly<
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
 });
 
 /**
@@ -1682,6 +1741,7 @@ export const DINOSAUR_ROLE_RULES_V7: Readonly<
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
 });
 
 /**
@@ -1896,6 +1956,7 @@ export const MARTIAN_ROLE_RULES_V7: Readonly<
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
 });
 
 /**
@@ -2101,6 +2162,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
 });
 
 /**
@@ -2318,6 +2380,7 @@ export const DWARF_ROLE_RULES_V7: Readonly<
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
 });
 
 /** The Dwarf revision (section 10.2): the Steam Tank's Plated cap. */
@@ -2550,6 +2613,7 @@ export const CANDY_ROLE_RULES_V7: Readonly<
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
+  SUBMARINE: role({ ...ORIGINAL_ROLE_RULES_V7.SUBMARINE }),
 });
 
 /** The Candy revision (section 5.2): a Rushed unit's extra Move. */
@@ -3642,6 +3706,112 @@ export const DIG_IN_RADIUS_V7 = 1;
 /** The Dwarf revision (section 9.2): the Coins an Assemble costs. */
 export const ASSEMBLE_COST_V7 = 4;
 
+/**
+ * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1): the
+ * `attack2` a Ram adds (+1 Attack).
+ */
+export const RAM_BONUS2_V7 = 2;
+/**
+ * The naval branch (section 4.2): a ship can be boarded at
+ * `floor(maxHp / BOARDING_HP_DIVISOR_V7)` HP or less.
+ */
+export const BOARDING_HP_DIVISOR_V7 = 3;
+/** The naval branch (section 5.4): Harbours, per active Port or Shipyard. */
+export const HARBOUR_POPULATION_V7 = 1;
+
+/**
+ * The naval branch (section 4.2): the HP at or below which a ship of
+ * `maxHp` can be boarded (Patrol Boat 3, Submarine 4, Battleship 8).
+ */
+export function boardableAtV7(maxHp: number): number {
+  return Math.floor(maxHp / BOARDING_HP_DIVISOR_V7);
+}
+
+/**
+ * The naval branch (section 4.2): the HP of a boarded prize (the prize crew
+ * patches it up to one above the boarding line).
+ */
+export function boardedHpV7(maxHp: number): number {
+  return boardableAtV7(maxHp) + 1;
+}
+
+/**
+ * The naval branch (section 5.4): THE live population of an active dock: a
+ * Port gives 1 and a Shipyard 2, plus the owner's `harbourPopulation`
+ * (Harbours). A blockaded dock gives 0 (the caller's rule).
+ */
+export function dockPopulationV7(
+  improvement: "PORT" | "SHIPYARD",
+  harbourPopulation: number,
+): number {
+  return (improvement === "SHIPYARD" ? 2 : 1) + harbourPopulation;
+}
+
+/** The unit facts the naval-branch helpers read (state and public units). */
+export interface NavalBranchUnitFactsV7 {
+  readonly id: number;
+  readonly ownerId: PlayerId;
+  readonly role: UnitRoleIdV7;
+  readonly form: UnitFormV7;
+}
+
+/**
+ * The naval branch (section 5.2): whether the unit is submerged (a
+ * `NAVAL`-form unit whose role has `SUBMERGED`: the Submarine). An `ATTACK`
+ * on it is legal only from Chebyshev distance 1.
+ */
+export function unitIsSubmergedV7(
+  roster: FactionRosterV7,
+  unit: NavalBranchUnitFactsV7,
+): boolean {
+  return (
+    unit.form === "NAVAL" &&
+    unitRoleRuleV7(roster, unit).abilities.includes("SUBMERGED")
+  );
+}
+
+/**
+ * The naval branch (section 5.3): whether an `ATTACK` by this unit is a
+ * torpedo (a `NAVAL`-form unit whose role has `TORPEDO`): it targets only
+ * units afloat and draws no retaliation.
+ */
+export function attackIsTorpedoV7(
+  roster: FactionRosterV7,
+  attacker: NavalBranchUnitFactsV7,
+): boolean {
+  return (
+    attacker.form === "NAVAL" &&
+    unitRoleRuleV7(roster, attacker).abilities.includes("TORPEDO")
+  );
+}
+
+/**
+ * The naval branch (section 4.1): whether an `ATTACK` is a Ram: a
+ * `NAVAL`-form attacker whose role has `RAM` and whose kind's capabilities
+ * under its owner have `ram` (Seamanship), that has moved this turn (an
+ * interrupted Move counts; `plannedMove` estimates an attack after a planned
+ * Move), at Chebyshev distance 1, on a target afloat.
+ */
+export function attackIsRamV7(
+  roster: FactionRosterV7,
+  attacker: NavalBranchUnitFactsV7 & {
+    readonly activation: { readonly moved: boolean };
+  },
+  target: { readonly form: UnitFormV7 },
+  distance: number,
+  attackerOwnerResearchedTechs: readonly TechnologyIdV7[],
+  plannedMove = false,
+): boolean {
+  return (
+    attacker.form === "NAVAL" &&
+    distance === 1 &&
+    (attacker.activation.moved || plannedMove) &&
+    (target.form === "NAVAL" || target.form === "EMBARKED") &&
+    unitRoleRuleV7(roster, attacker).abilities.includes("RAM") &&
+    unitCapabilitiesV7(roster, attacker, attackerOwnerResearchedTechs).ram
+  );
+}
+
 /** The unit facts the Martian registry helpers read. */
 export interface MartianUnitFactsV7 {
   readonly id: number;
@@ -4001,6 +4171,19 @@ export interface TechnologyCapabilitiesV7 {
    * `PEPPERMINT_DAMAGE_V7`).
    */
   readonly crumbsBite: number;
+  /**
+   * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1):
+   * Seamanship, the player's Patrol Boats ram.
+   */
+  readonly ram: boolean;
+  /** The naval branch (section 4.2): Seamanship, the player's ships board. */
+  readonly boarding: boolean;
+  /**
+   * The naval branch (section 5.4): Harbours, the live population every
+   * active Port and Shipyard of the player adds (0, or
+   * `HARBOUR_POPULATION_V7`).
+   */
+  readonly harbourPopulation: 0 | 1;
 }
 
 export function technologyCapabilitiesV7(
@@ -4054,6 +4237,8 @@ export function technologyCapabilitiesV7(
   let cannonIgnoresFortification = false;
   let homeSweetHome = false;
   let crumbsBite = 0;
+  let ram = false;
+  let harbourPopulation: 0 | 1 = 0;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -4155,6 +4340,12 @@ export function technologyCapabilitiesV7(
       case "PEPPERMINT_SURPRISE":
         crumbsBite = PEPPERMINT_DAMAGE_V7;
         break;
+      case "RAM":
+        ram = true;
+        break;
+      case "HARBOURS":
+        harbourPopulation = unlock.population;
+        break;
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
       case "WITCH_SUPPORT":
@@ -4213,6 +4404,9 @@ export function technologyCapabilitiesV7(
     cannonIgnoresFortification,
     homeSweetHome,
     crumbsBite,
+    ram,
+    boarding: commands.has("BOARD"),
+    harbourPopulation,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

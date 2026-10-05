@@ -99,6 +99,12 @@ export const FRONTIER_1_V7: MissionDefinitionV7 = {
       directive: { kind: "RUSH" },
     },
   ],
-  forbiddenTechnologies: ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"],
+  forbiddenTechnologies: [
+    "SHORECRAFT",
+    "NAVIGATION",
+    "NAVAL_ENGINEERING",
+    "SEAMANSHIP",
+    "SUBMERSIBLES",
+  ],
   objective: { kind: "DOMINATION" },
 };

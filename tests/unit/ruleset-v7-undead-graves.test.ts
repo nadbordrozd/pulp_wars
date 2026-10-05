@@ -3,7 +3,6 @@ import {
   DOMAIN_EVENT_KIND_ORDER_V7,
   FACTION_RULES_V7,
   RULESET_7_ID,
-  TECHNOLOGY_IDS_V7,
   appendReplayCommandV7,
   applyCommandV7,
   canonicalHash,
@@ -36,7 +35,11 @@ import {
 } from "../../src/engine/index";
 import { runAiMatchV7 } from "../../src/headless/v7";
 import { createSaveEnvelopeV7, parseSaveV7 } from "../../src/persistence/index";
-import { checkedV7, mirrorOptionV7 } from "../fixtures/v7-builders";
+import {
+  PRE_NAVAL_BRANCH_TECHS_V7,
+  checkedV7,
+  mirrorOptionV7,
+} from "../fixtures/v7-builders";
 import { withPortV7 } from "../fixtures/v7-naval-builders";
 import { createRevision13MapStateV7 } from "../fixtures/v7-revision13-map";
 
@@ -611,10 +614,11 @@ describe("ruleset-7 revision-13 Graves: state, events, and persistence", () => {
 
   it("orders GRAVE_CREATED right after UNIT_DIED and parses it strictly", () => {
     // Section 8: UNIT_INFECTED and then GRAVE_CREATED follow UNIT_DIED (the
-    // Martian revision puts UNIT_MIND_CONTROLLED between the two, and the
-    // Mind Control revision UNIT_RELEASED after it).
+    // Martian revision puts UNIT_MIND_CONTROLLED between the two, the naval
+    // branch SHIP_BOARDED after it, and the Mind Control revision
+    // UNIT_RELEASED after that).
     expect(DOMAIN_EVENT_KIND_ORDER_V7.indexOf("GRAVE_CREATED")).toBe(
-      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_DIED") + 4,
+      DOMAIN_EVENT_KIND_ORDER_V7.indexOf("UNIT_DIED") + 5,
     );
     expect(parseEventV7({ kind: "GRAVE_CREATED", at: { x: 1, y: 2 } })).toEqual(
       { ok: true, value: { kind: "GRAVE_CREATED", at: { x: 1, y: 2 } } },
@@ -1136,7 +1140,7 @@ function arena(
     activeSeatIndex: base.turnOrder.indexOf(activeId),
     players: base.players.map((candidate) => ({
       ...candidate,
-      researchedTechs: TECHNOLOGY_IDS_V7,
+      researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
       coins: 10_000,
       explored: sortedCoords(
         options.explored?.[candidate.seat] ?? allExceptTiles([], size),

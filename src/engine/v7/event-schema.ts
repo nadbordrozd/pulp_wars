@@ -27,8 +27,10 @@ import {
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  isNavalRoleV7,
   type DomainEventKindV7,
   type ImprovementIdV7,
+  type NavalRoleIdV7,
   type RewardIdV7,
   type UnitRoleIdV7,
 } from "./types";
@@ -400,6 +402,15 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
     "targetUnitId",
     "targetOwnerId",
     "targetRole",
+    "at",
+    "hp",
+  ],
+  SHIP_BOARDED: [
+    "kind",
+    "playerId",
+    "unitId",
+    "targetUnitId",
+    "fromPlayerId",
     "at",
     "hp",
   ],
@@ -836,13 +847,18 @@ function validPayload(
         e.coinDelta === 2
       );
     case "PORT_BUILT":
-      return playerCityAt(e) && e.cost === 4 && e.populationAdded === 1;
+      // The naval branch section 5.4: 2 for an owner with Harbours.
+      return (
+        playerCityAt(e) &&
+        e.cost === 4 &&
+        (e.populationAdded === 1 || e.populationAdded === 2)
+      );
     case "SHIPYARD_BUILT":
       return (
         playerCityAt(e) &&
         e.cost === 5 &&
         e.populationAdded === 1 &&
-        e.livePopulationTotal === 2
+        (e.livePopulationTotal === 2 || e.livePopulationTotal === 3)
       );
     case "PORT_BLOCKADE_CHANGED":
       return (
@@ -1104,7 +1120,7 @@ function validPayload(
         id(e.playerId) &&
         id(e.cityId) &&
         id(e.unitId) &&
-        (e.role === "PATROL_BOAT" || e.role === "BATTLESHIP") &&
+        isNavalRoleV7(e.role) &&
         (e.cost === trainingCost(e.role) ||
           e.cost === Math.max(1, trainingCost(e.role) - 2)) &&
         (e.dock === "PORT" || e.dock === "SHIPYARD") &&
@@ -1385,6 +1401,19 @@ function validPayload(
         pos(e.hp) &&
         (e.hp as number) <= MIND_CONTROL_HP_V7
       );
+    case "SHIP_BOARDED":
+      // The naval branch (section 4.2): the prize keeps its ID and is
+      // patched up to at least 1 HP above a boarding line of 0.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        id(e.targetUnitId) &&
+        id(e.fromPlayerId) &&
+        e.fromPlayerId !== e.playerId &&
+        e.unitId !== e.targetUnitId &&
+        parseCoordV7(e.at) !== null &&
+        pos(e.hp)
+      );
     case "UNIT_RELEASED":
       // The Mind Control revision (section 4.2).
       return (
@@ -1500,6 +1529,8 @@ function combat(input: unknown): boolean {
       "splatApplied",
       "bounce",
       "bounceTo",
+      "ram",
+      "torpedo",
     ])
   )
     return false;
@@ -1655,7 +1686,19 @@ function combat(input: unknown): boolean {
       ? parseCoordV7(input.bounceTo) !== null
       : input.bounceTo === null) &&
     (input.bounce === "NONE" ||
-      (input.defenderDies === false && input.attackerDies === false))
+      (input.defenderDies === false && input.attackerDies === false)) &&
+    // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 4.1
+    // and 5.3): a Ram is a ship's first attack (never with Charge), and a
+    // torpedo is never answered; a ship is never both.
+    typeof input.ram === "boolean" &&
+    typeof input.torpedo === "boolean" &&
+    (input.ram !== true ||
+      (input.chargeApplied === false && input.torpedo === false)) &&
+    (input.torpedo !== true ||
+      (input.retaliation === false &&
+        input.attackerDies === false &&
+        input.noRetaliationReason !== "OUT_OF_RANGE" &&
+        input.noRetaliationReason !== "SPLATTED"))
   );
 }
 function splash(input: unknown): boolean {
@@ -2117,8 +2160,13 @@ function improvementCost(improvement: ImprovementIdV7): number {
       return 5;
   }
 }
-function trainingCost(role: "PATROL_BOAT" | "BATTLESHIP"): number {
-  return role === "PATROL_BOAT" ? 5 : 16;
+/**
+ * A ship's training cost. Every faction registers the same ships (the naval
+ * branch section 7: no faction rule applies to a boat), so the Human
+ * registration is every seat's.
+ */
+function trainingCost(role: NavalRoleIdV7): number {
+  return effectiveRoleRuleV7(role, "ORIGINAL").cost ?? 0;
 }
 /**
  * Context-free event parsing cannot see the owner's faction, so a land

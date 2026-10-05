@@ -2815,7 +2815,7 @@ describe("ruleset-7 revision-19 Showcase with a Dinosaur seat", () => {
     });
     if (!created.ok) throw new Error(created.error.code);
     expect(created.state.eggs).toEqual([]);
-    expect(created.state.units).toHaveLength(20);
+    expect(created.state.units).toHaveLength(22);
     expect(
       created.state.units.every(
         (unit) => unit.form === "LAND" || unit.form === "NAVAL",

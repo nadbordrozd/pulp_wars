@@ -48,9 +48,15 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/dwarf-reducer.ts::applyAssembleV7": "SEAT",
   "src/engine/v7/economy.ts::cityUnitCapacityV7": "SEAT",
   "src/engine/v7/economy.ts::landTradeCityIdsV7": "SEAT",
+  // The naval branch (`pulp_wars-5ti.2`): Harbours is the dock owner's own
+  // capability (a seat-level economy rule).
+  "src/engine/v7/economy.ts::harbourPopulationForV7": "SEAT",
   "src/engine/v7/eggs.ts::laidEggHpV7": "SEAT",
   "src/engine/v7/eggs.ts::laidEggTurnsV7": "SEAT",
   "src/engine/v7/event-schema.ts::trainingCosts": "SEAT",
+  // The naval branch: a ship's cost is the same in every registration (the
+  // Human one is read).
+  "src/engine/v7/event-schema.ts::trainingCost": "SEAT",
   "src/engine/v7/ice-folk.ts::winterV7": "SEAT",
   "src/engine/v7/map.ts::createPlayers": "SEAT",
   "src/engine/v7/map.ts::createEntities": "SEAT",
@@ -58,6 +64,8 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/engine/v7/movement.ts::publicMovementContextV7": "SEAT",
   "src/engine/v7/query.ts::queryTechnologyTreeV7": "SEAT",
   "src/engine/v7/query.ts::queryTechnologyCapabilitiesV7": "SEAT",
+  // The naval branch: the viewer's own Harbours for its own docks.
+  "src/engine/v7/query.ts::publicDockPopulationV7": "SEAT",
   "src/engine/v7/query.ts::appendPublicCityCommandsV7": "SEAT",
   "src/engine/v7/query.ts::publicAssembleFactsV7": "SEAT",
   "src/engine/v7/query.ts::previewLayEggV7": "SEAT",

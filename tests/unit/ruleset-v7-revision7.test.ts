@@ -38,6 +38,7 @@ import {
   type UnitStateV7,
 } from "../../src/engine/index";
 import {
+  PRE_NAVAL_BRANCH_TECHS_V7,
   allTechsV7,
   checkedV7,
   exploredAllV7,
@@ -65,7 +66,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r42");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -1839,7 +1840,7 @@ function portGraph(
       player.id === owner
         ? {
             ...player,
-            researchedTechs: TECHNOLOGY_IDS_V7,
+            researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
             explored: base.board.tiles.map((tile) => tile.at),
           }
         : player,
@@ -1888,7 +1889,7 @@ function densePortGraph(
       player.id === owner
         ? {
             ...player,
-            researchedTechs: TECHNOLOGY_IDS_V7,
+            researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
             explored: base.board.tiles.map((tile) => tile.at),
           }
         : player,

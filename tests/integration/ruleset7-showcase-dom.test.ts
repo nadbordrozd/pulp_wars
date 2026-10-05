@@ -121,11 +121,11 @@ describe("Ruleset 7 Showcase setup option", () => {
     expect(randomSeed).not.toHaveBeenCalled();
     expect(
       view.units.filter((unit) => unit.ownerId === view.viewer.id),
-    ).toHaveLength(10);
+    ).toHaveLength(11);
     expect(
       view.cities.filter((city) => city.ownerId === view.viewer.id),
     ).toHaveLength(3);
-    expect(view.viewer.researchedTechs).toHaveLength(23);
+    expect(view.viewer.researchedTechs).toHaveLength(25);
     expect(view.board.tiles.every((tile) => tile.explored)).toBe(true);
     app.destroy();
   });
@@ -137,13 +137,13 @@ describe("Ruleset 7 Showcase setup option", () => {
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     const launched = app.controller.snapshot().view;
     if (launched === null) throw new Error("public view missing");
-    expect(launched.viewer.coins).toBe(19);
+    expect(launched.viewer.coins).toBe(20);
     requiredButton('[data-action="compact-menu"]').click();
     requiredButton('[data-action="main-menu"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
     // In a match the map label reads "Showcase".
     expect(document.querySelector(".v7-resume-summary")?.textContent).toBe(
-      "Turn 1 · 19 coins · 2 players · Showcase",
+      "Turn 1 · 20 coins · 2 players · Showcase",
     );
     app.destroy();
 
@@ -175,7 +175,7 @@ describe("Ruleset 7 Showcase setup option", () => {
     expect(restarted?.commandIndex).toBe(0);
     expect(
       restarted?.units.filter((unit) => unit.ownerId === restarted.viewer.id),
-    ).toHaveLength(10);
+    ).toHaveLength(11);
     next.destroy();
   });
 });

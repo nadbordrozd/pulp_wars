@@ -1,6 +1,5 @@
 import {
   RULESET_7_ID,
-  TECHNOLOGY_IDS_V7,
   applyCommandV7,
   effectiveRoleRuleV7,
   unitId,
@@ -15,7 +14,11 @@ import {
   type UnitRoleIdV7,
   type UnitStateV7,
 } from "../../src/engine/index";
-import { checkedV7, mirrorOptionV7 } from "./v7-builders";
+import {
+  PRE_NAVAL_BRANCH_TECHS_V7,
+  checkedV7,
+  mirrorOptionV7,
+} from "./v7-builders";
 import { createRevision13MapStateV7 } from "./v7-revision13-map";
 
 /**
@@ -130,7 +133,8 @@ export function goblinArenaV7(
     activeSeatIndex: base.turnOrder.indexOf(activeId),
     players: base.players.map((candidate) => ({
       ...candidate,
-      researchedTechs: options.techs?.[candidate.seat] ?? TECHNOLOGY_IDS_V7,
+      researchedTechs:
+        options.techs?.[candidate.seat] ?? PRE_NAVAL_BRANCH_TECHS_V7,
       coins: options.coins ?? 100,
       explored: all,
     })),

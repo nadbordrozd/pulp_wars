@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 42;
+const REVISION = 43;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -263,7 +263,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
   });
 
   it("has the new kinds at the stated positions (48 command and 76 event kinds; the Ice Folk revision adds two and one, the Dwarf revision three and four)", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(56);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(57);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -276,7 +276,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(96);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(97);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1
@@ -286,7 +286,8 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     expect(after("MONSTER_REGENERATED")).toBe("SHIELDS_RECHARGED");
     expect(after("UNIT_DISEMBARKED")).toBe("UNIT_BEAMED");
     expect(after("UNIT_INFECTED")).toBe("UNIT_MIND_CONTROLLED");
-    expect(after("UNIT_MIND_CONTROLLED")).toBe("UNIT_RELEASED");
+    expect(after("UNIT_MIND_CONTROLLED")).toBe("SHIP_BOARDED");
+    expect(after("SHIP_BOARDED")).toBe("UNIT_RELEASED");
     expect(after("UNIT_PUSHED")).toBe("UNIT_PULLED");
     // The Dwarf revision inserts UNIT_TUNNELLED after UNIT_PULLED.
     expect(after("UNIT_PULLED")).toBe("UNIT_TUNNELLED");
@@ -855,6 +856,7 @@ describe("Martian roster (section 3)", () => {
         ...martianAbilities,
         ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP.abilities,
         ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT.abilities,
+        ...ORIGINAL_ROLE_RULES_V7.SUBMARINE.abilities,
       ]
         .filter((ability, index, all) => all.indexOf(ability) === index)
         .sort(),
@@ -1021,6 +1023,7 @@ describe("Martian roster (section 3)", () => {
       "KNIGHT",
       "PATROL_BOAT",
       "BATTLESHIP",
+      "SUBMARINE",
     ]);
     // The leaderboard unit count includes controlled units.
     const view = viewForV7(state, seatIdV7(state, 1));
@@ -1472,7 +1475,7 @@ describe("Martian Showcase (section 2.4)", () => {
       state.players.find((player) => player.id === martianId)?.researchedTechs,
     ).toEqual(TECHNOLOGY_IDS_V7);
     // Capital 7 of 7 (Grunt 1, Brain 1, Tripod 1, Mothership 2, Colossus 2),
-    // North 3 of 6, Coast 2 of 5.
+    // North 3 of 6, Coast 3 of 6 (level 4 with the Submarine since `pulp_wars-5ti.2`).
     expect(
       state.cities
         .filter((city) => city.ownerId === martianId)
@@ -1483,9 +1486,9 @@ describe("Martian Showcase (section 2.4)", () => {
     ).toEqual([
       [7, 7],
       [3, 6],
-      [2, 5],
+      [3, 6],
     ]);
-    expect(playerIncomeV7(state, martianId).totalCoins).toBe(16);
+    expect(playerIncomeV7(state, martianId).totalCoins).toBe(17);
   });
 
   it("the first Start Turn recharges under the Force Field, and every ability can be tried on the first turn", () => {

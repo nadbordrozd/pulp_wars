@@ -510,10 +510,10 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       `await pointerClick(connection, '[data-action="launch"]')`,
     );
-    expect(probe).toContain("started.units !== 10");
-    expect(probe).toContain("started.roles !== 10");
+    expect(probe).toContain("started.units !== 11");
+    expect(probe).toContain("started.roles !== 11");
     expect(probe).toContain("started.cities !== 3");
-    expect(probe).toContain("started.technologies !== 23");
+    expect(probe).toContain("started.technologies !== 25");
     expect(probe).toContain("started.unexplored !== 0");
     expect(probe).toContain(
       'await capture(connection, "showcase-launch-desktop.png")',
@@ -521,7 +521,7 @@ describe("Ruleset 7 browser smoke script", () => {
     const endTurn = probe.indexOf(
       `await pointerClick(connection, '[data-action="end-turn"]')`,
     );
-    expect(endTurn).toBeGreaterThan(probe.indexOf("started.units !== 10"));
+    expect(endTurn).toBeGreaterThan(probe.indexOf("started.units !== 11"));
     expect(
       probe.indexOf("await evaluate(connection, armFastForwardExpression())"),
     ).toBeLessThan(endTurn);
@@ -548,7 +548,7 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY",
     );
-    expect(probe).toContain("table.cells !== 89");
+    expect(probe).toContain("table.cells !== 97");
     expect(probe).toContain("table.empty !== 7");
     expect(probe).toContain("filtered.cells.length !== 7");
     expect(probe).toContain(`.v7-gallery-chip[data-value="GOBLIN"]`);
@@ -923,7 +923,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r42", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r43", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

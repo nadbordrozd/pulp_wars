@@ -8,6 +8,7 @@ import {
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
+  dockPopulationV7,
   effectiveRoleRuleV7,
   eggMaxHpOptionsV7,
   factionTreeIdV7,
@@ -31,6 +32,7 @@ import {
   TERRAIN_IDS_V7,
   UNIT_ROLE_IDS_V7,
   NEUTRAL_OWNER_ID_V7,
+  isNavalRoleV7,
   isNeutralOwnerV7,
   type MonsterStateV7,
   isAfloatFormV7,
@@ -82,7 +84,11 @@ import {
 } from "./curiosities";
 import { parseMatchSetupV7 } from "./setup";
 import { spatialContributionAtV7 } from "./spatial-economy";
-import { cooperativeAlliesV7, roadPopulationForCityV7 } from "./economy";
+import {
+  cooperativeAlliesV7,
+  harbourPopulationForV7,
+  roadPopulationForCityV7,
+} from "./economy";
 import {
   compareCoordsV7,
   hasExactKeysV7,
@@ -161,6 +167,9 @@ const PREREQUISITE: Readonly<Partial<Record<TechnologyIdV7, TechnologyIdV7>>> =
     EXPLOSIVES: "FORTIFICATION",
     NAVIGATION: "SHORECRAFT",
     NAVAL_ENGINEERING: "NAVIGATION",
+    // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 2).
+    SEAMANSHIP: "SHORECRAFT",
+    SUBMERSIBLES: "SEAMANSHIP",
   };
 
 export function parseGameStateV7(input: unknown): GameStateV7 | null {
@@ -970,8 +979,7 @@ function parseUnit(
         !activation.attacked ||
         activation.handled)) ||
     activation.attacked !== activation.attacksUsed > 0 ||
-    (role === "PATROL_BOAT" || role === "BATTLESHIP") !==
-      (input.form === "NAVAL")
+    isNavalRoleV7(role) !== (input.form === "NAVAL")
   )
     return null;
   return {
@@ -2414,9 +2422,11 @@ function populationLedgerValid(
                     ),
                 )
                   ? 0
-                  : tile.improvement === "SHIPYARD"
-                    ? 2
-                    : 1)
+                  : // The naval branch section 5.4: Harbours.
+                    dockPopulationV7(
+                      tile.improvement,
+                      harbourPopulationForV7(players, city.ownerId),
+                    ))
               : contribution.amount !== liveValue(board, cities, tile))
           : tile.improvement !== "MONUMENT" || contribution.amount !== 3)
       )

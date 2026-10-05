@@ -417,6 +417,15 @@ function eventVisible(
   afterVisible: ReadonlySet<UnitId>,
 ): boolean {
   const ids = unitIds(event);
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 12): a
+  // boarding is projected to the actor, the former owner, and every viewer
+  // that sees the prize's tile before or after the command.
+  if (event.kind === "SHIP_BOARDED")
+    return (
+      event.playerId === viewerId ||
+      event.fromPlayerId === viewerId ||
+      coordVisible(before, after, viewerId, event.at)
+    );
   // The Martian revision section 10.8: a Beam Down, a Mind Control, and a
   // pull are projected to the actor and to every viewer that can see a unit
   // or tile involved before or after the command.
@@ -612,6 +621,7 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
     case "UNIT_BEAMED":
       return [event.unitId, event.passengerUnitId];
     case "UNIT_MIND_CONTROLLED":
+    case "SHIP_BOARDED":
       return [event.unitId, event.targetUnitId];
     case "UNIT_SPAWN_DISPLACED":
       return [event.spawnedUnitId, event.displacedUnitId];

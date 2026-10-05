@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  TECHNOLOGY_IDS_V7,
   applyCommandV7,
   createInitialMapStateV7,
   nextBounded,
@@ -15,7 +14,11 @@ import {
   type PlayerId,
   type UnitId,
 } from "../../src/engine/index";
-import { checkedV7, setupV7 } from "../fixtures/v7-builders";
+import {
+  PRE_NAVAL_BRANCH_TECHS_V7,
+  checkedV7,
+  setupV7,
+} from "../fixtures/v7-builders";
 import { withPortV7 } from "../fixtures/v7-naval-builders";
 
 describe("ruleset-7 naval transport", () => {
@@ -234,7 +237,7 @@ describe("ruleset-7 naval transport", () => {
       activeSeatIndex: created.state.turnOrder.indexOf(actor.id),
       players: created.state.players.map((player) => ({
         ...player,
-        researchedTechs: TECHNOLOGY_IDS_V7,
+        researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
       })),
       board: {
         ...created.state.board,
@@ -615,7 +618,7 @@ function blockedForeignPortV7(seed: number): {
     board,
     players: fixture.state.players.map((player) => ({
       ...player,
-      researchedTechs: TECHNOLOGY_IDS_V7,
+      researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
       explored: board.tiles.map((tile) => tile.at),
     })),
     cities: economy.cities,

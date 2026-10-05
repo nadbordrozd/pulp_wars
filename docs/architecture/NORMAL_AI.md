@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r42`. Role facts resolve through the unit's
+previews under `pulp-wars-poc-7r43`. Role facts resolve through the unit's
 kind (`unitFactionV7`: its owner's faction registration, or its original
 owner's while it is mind-controlled,
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14
@@ -276,7 +276,12 @@ plan is not holding it off a target that an own or allied capturer is
 taking. It lands (priority 810) on an offered tile from which a village or
 a known enemy city can be walked to, and takes that job ashore. Beyond two owned naval
 units the seat trains only the naval role its plan asks for, in every match
-(the revision-14 rule for Undead matches). The plan still becomes active
+(the revision-14 rule for Undead matches). Since the naval branch engine
+(`pulp_wars-5ti.2`, `7r43`) Submarines count among those naval units; the
+plan never asks for one, and the policy does not yet use the Ram, Board, or
+Submarines on purpose
+([naval branch overlay, section 13.1](../product/RULESET_7_NAVAL_BRANCH.md#131-seafaring-seats-bead-5ti4),
+`pulp_wars-5ti.4`). The plan still becomes active
 only as before, so a seat with objectives on its own land does not start an
 invasion across the water; see the limits below.
 

@@ -1,12 +1,17 @@
 import {
-  TECHNOLOGY_IDS_V7,
   applyCommandV7,
   sameCoordV7,
   type CoordV7,
   type GameStateV7,
   type UnitId,
 } from "../../src/engine/index";
-import { checkedV7, exploredAllV7, initialV7, setupV7 } from "./v7-builders";
+import {
+  PRE_NAVAL_BRANCH_TECHS_V7,
+  checkedV7,
+  exploredAllV7,
+  initialV7,
+  setupV7,
+} from "./v7-builders";
 import { revision13MapStateV7 } from "./v7-revision13-map";
 
 export function coastalV7(
@@ -38,7 +43,7 @@ export function coastalV7(
     ),
     players: state.players.map((player) =>
       player.id === state.humanPlayerId
-        ? { ...player, coins: 100, researchedTechs: TECHNOLOGY_IDS_V7 }
+        ? { ...player, coins: 100, researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7 }
         : player,
     ),
     board: {
@@ -294,7 +299,7 @@ export function embarkedLandingV7(
           player.id === base.humanPlayerId
             ? {
                 ...player,
-                researchedTechs: TECHNOLOGY_IDS_V7,
+                researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
                 explored: base.board.tiles.map((tile) => tile.at),
               }
             : player,

@@ -161,7 +161,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
   // The Dwarf revision (`pulp_wars-78i.3`) adds three command kinds after
   // COLD_SNAP and four event kinds (ruleset-v7-dwarf-faction.test.ts).
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(56);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(57);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
@@ -174,7 +174,7 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(96);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(97);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
@@ -1144,7 +1144,7 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     expect(
       state.players.find((player) => player.id === iceId)?.researchedTechs,
     ).toEqual(TECHNOLOGY_IDS_V7);
-    // Capital 5 of 7, North 3 of 6, Coast 2 of 5 (every role one slot).
+    // Capital 5 of 7, North 3 of 6, Coast 3 of 6 (every role one slot; level 4 with the Submarine since `pulp_wars-5ti.2`).
     expect(
       state.cities
         .filter((city) => city.ownerId === iceId)
@@ -1155,9 +1155,9 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     ).toEqual([
       [5, 7],
       [3, 6],
-      [2, 5],
+      [3, 6],
     ]);
-    expect(playerIncomeV7(state, iceId).totalCoins).toBe(16);
+    expect(playerIncomeV7(state, iceId).totalCoins).toBe(17);
   });
 
   it("every Ice Folk ability can be offered on the first turns, and every offered command is accepted", () => {

@@ -61,6 +61,11 @@ import {
 import { BOARD_PICK_PANEL_MAX_BUTTONS_V7 } from "../../src/render/canvas/target-highlight-v7";
 import { candyUiFixtureV7 } from "../fixtures/v7-candy-ui";
 import { curiositiesUiFixtureV7 } from "../fixtures/v7-curiosities-ui";
+import {
+  navalArenaV7,
+  navalUnitAtV7,
+  patchNavalUnitV7,
+} from "../fixtures/v7-naval-branch";
 import { riftUiFixtureV7 } from "../fixtures/v7-rift-ui";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
 
@@ -172,7 +177,33 @@ const FIXTURES: readonly (readonly [
   // Map curiosities (bead pulp_wars-737.6): the Spider, its lair, the
   // Fountain, the Shrine and the Wreck; the provoke warning on Moves.
   ["Curiosities", () => curiositiesUiFixtureV7(), []],
+  // The naval branch engine (bead pulp_wars-5ti.2): two boardable ships
+  // beside one boarder. Board has no dock button until the naval
+  // interface (bead pulp_wars-5ti.7), so the dock lists neither ship.
+  ["Naval boarding", navalBoardingFixtureV7, []],
 ];
+
+const NAVAL_BOARDER = { x: 5, y: 4 } as const;
+const NAVAL_PRIZES = [
+  { x: 5, y: 5 },
+  { x: 4, y: 5 },
+] as const;
+/** A Patrol Boat with Seamanship beside two enemy Patrol Boats at 1 HP. */
+function navalBoardingFixtureV7(): GameStateV7 {
+  let state = navalArenaV7({
+    units: [
+      { seat: 0, role: "PATROL_BOAT", at: NAVAL_BOARDER },
+      ...NAVAL_PRIZES.map((at) => ({
+        seat: 1 as const,
+        role: "PATROL_BOAT" as const,
+        at,
+      })),
+    ],
+  });
+  for (const at of NAVAL_PRIZES)
+    state = patchNavalUnitV7(state, navalUnitAtV7(state, at).id, { hp: 1 });
+  return state;
+}
 
 beforeEach(() => {
   document.body.innerHTML = '<div id="app"></div>';
@@ -180,6 +211,31 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 player-facing text names no tile coordinates", () => {
+  it("Board is offered by the engine but has no dock button before the naval interface", () => {
+    const controller = new FixtureController(navalBoardingFixtureV7());
+    const host = new RecordingBoardHost();
+    const app = mount(controller, host);
+    const view = required(controller.snapshot().view);
+    const boarder = required(
+      view.units.find(
+        (unit) =>
+          unit.at.x === NAVAL_BOARDER.x && unit.at.y === NAVAL_BOARDER.y,
+      ),
+    );
+    expect(
+      queryPlayerCommandsV7(view).filter(
+        (command) => command.kind === "BOARD" && command.unitId === boarder.id,
+      ),
+    ).toHaveLength(2);
+    host.callbacks?.onSelection({ kind: "UNIT", unitId: boarder.id });
+    expect(document.querySelector(".v7-selection-dock")).not.toBeNull();
+    expect(
+      document.querySelectorAll('[data-action^="command-board"]'),
+    ).toHaveLength(0);
+    expect(targetListOffences(controller, host)).toEqual([]);
+    app.destroy();
+  });
+
   it("the pattern catches a coordinate and spares HP, damage and costs", () => {
     for (const text of ["Tunnel to 4, 2?", "now at 3,1", "Windmill (12, 7)"])
       expect(COORDINATE.test(text)).toBe(true);

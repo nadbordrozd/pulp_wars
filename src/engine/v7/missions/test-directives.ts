@@ -8,7 +8,14 @@ import type { MissionDefinitionV7 } from "./types";
  * seat's reveal rectangle includes the human capital, so the AI knows a
  * hostile city from the first turn (a `NORMAL` seat would march on it).
  */
-const DRY_NAVAL_V7 = ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"] as const;
+const DRY_NAVAL_V7 = [
+  "SHORECRAFT",
+  "NAVIGATION",
+  "NAVAL_ENGINEERING",
+  // The naval branch (`pulp_wars-5ti.2`): the whole five-node branch.
+  "SEAMANSHIP",
+  "SUBMERSIBLES",
+] as const;
 
 /**
  * `TEST_RUSH`: a Goblin `RUSH` seat with four units against a Human capital,

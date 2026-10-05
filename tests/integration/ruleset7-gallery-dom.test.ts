@@ -165,11 +165,13 @@ describe("Ruleset 7 Gallery", () => {
       "JUGGERNAUT",
       "PATROL_BOAT",
       "BATTLESHIP",
+      // The naval branch (`pulp_wars-5ti.2`).
+      "SUBMARINE",
       "TRANSPORT",
       "EGG",
     ]);
-    // 11 rows of eight units, and one Egg.
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(89);
+    // 12 rows of eight units, and one Egg.
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(97);
     expect(
       document.querySelectorAll(".v7-gallery-cell-wrap.is-empty"),
     ).toHaveLength(7);
@@ -254,7 +256,7 @@ describe("Ruleset 7 Gallery", () => {
     );
     required<HTMLButtonElement>('[data-action="gallery-factions-all"]').click();
     required<HTMLButtonElement>('[data-action="gallery-rows-all"]').click();
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(89);
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(97);
   });
 
   it("survives storage that throws", () => {

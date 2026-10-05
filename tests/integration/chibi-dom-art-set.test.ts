@@ -262,7 +262,7 @@ describe("CHIBI art set in the Ruleset 7 DOM", () => {
     const cards = [
       ...document.querySelectorAll<HTMLElement>(".v7-tech-card .v7-tech-art"),
     ];
-    expect(cards).toHaveLength(23);
+    expect(cards).toHaveLength(25);
     for (const card of cards) expect(card.dataset.artSet).toBe("chibi");
     expect(
       document

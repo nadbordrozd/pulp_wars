@@ -25,6 +25,10 @@ import {
   MIND_CONTROL_LIMIT_V7,
   ORIGINAL_BASELINE_V5_TREE,
   SPATIAL_ECONOMIC_ACTIONS_V7,
+  attackIsTorpedoV7,
+  boardedHpV7,
+  dockPopulationV7,
+  unitIsSubmergedV7,
   canEnterTerrainV7,
   effectiveRoleRuleV7,
   flyerMayStandOnSiteV7,
@@ -89,6 +93,7 @@ import {
   cityUnitCapacityV7,
   economyEventsV7,
   growthEventsV7,
+  harbourPopulationForV7,
   isCityBesiegedV7,
   isActivePortV7,
   combinedNetworkCityIdsV7,
@@ -135,6 +140,7 @@ import {
   withBittenV7,
   withPlaguedV7,
 } from "./afflictions";
+import { boardTargetBlockV7 } from "./naval-branch";
 import { resolveStartTurnPlagueV7 } from "./plague";
 import {
   isExplodingUnitV7,
@@ -210,6 +216,8 @@ import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import {
   NEUTRAL_OWNER_ID_V7,
   TECHNOLOGY_IDS_V7,
+  isAfloatFormV7,
+  isNavalRoleV7,
   isNeutralOwnerV7,
   type AchievementIdV7,
   type CityStateV7,
@@ -310,7 +318,12 @@ export type RuleErrorCodeV7 =
   | "UNIT_CRASHED"
   | "SUGAR_RUSH_NOT_LEGAL"
   | "REBAKE_NOT_LEGAL"
-  | "SUGAR_TOSS_NOT_LEGAL";
+  | "SUGAR_TOSS_NOT_LEGAL"
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.2):
+  // an illegal Board (`NOT_A_SHIP`, `TARGET_IMMUNE`, `OUT_OF_RANGE`,
+  // `TARGET_HEALTHY`). A torpedo at a land unit is `ATTACK_NOT_LEGAL` with
+  // the reason `NOT_AFLOAT` (section 5.3).
+  | "BOARD_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -544,6 +557,9 @@ function navalFactsMayChangeV7(
   // revision section 5.4; only a state with controlled units).
   if (command.kind === "MIND_CONTROL" || command.kind === "TRACTOR_BEAM")
     return true;
+  // The naval branch section 4.2: a prize standing on its former owner's
+  // dock now blockades it (and one taken off an own dock lifts a blockade).
+  if (command.kind === "BOARD") return true;
   // The Dwarf revision section 6.3: a bomb can kill an embarked blockader,
   // and a self-launch can start a blockade.
   if (command.kind === "BOMB_RUN") return true;
@@ -672,6 +688,8 @@ function applyCommandCoreV7(
     return applyMove(stateInput, state, actor, command);
   if (command.kind === "ATTACK")
     return applyAttack(stateInput, state, actor, command);
+  if (command.kind === "BOARD")
+    return applyBoard(stateInput, state, actor, command);
   if (command.kind === "RALLY")
     return applyRally(stateInput, state, actor, command.unitId);
   if (command.kind === "TEND_WOUNDED")
@@ -1559,11 +1577,16 @@ function applyPort(
     return rejected(original, "INSUFFICIENT_COINS", { cost: 4 });
   try {
     const board = replaceTile(state, at, { ...tile, improvement: "PORT" });
+    // The naval branch section 5.4: a Port gives 2 with Harbours.
+    const portPopulation = dockPopulationV7(
+      "PORT",
+      harbourPopulationForV7(state.players, actor),
+    ) as 1 | 2;
     const contribution: PopulationContributionV7 = {
       id: state.nextEntityId,
       cityId: city.id,
       category: "LIVE",
-      amount: 1,
+      amount: portPopulation,
       source: { kind: "IMPROVEMENT", improvement: "PORT", at },
     };
     const recalculation = recomputeLiveEconomyV7(
@@ -1588,7 +1611,7 @@ function applyPort(
         cityId: city.id,
         at,
         cost: 4,
-        populationAdded: 1,
+        populationAdded: portPopulation,
       },
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
@@ -1661,7 +1684,11 @@ function applyShipyard(
         at,
         cost: 5,
         populationAdded: 1,
-        livePopulationTotal: 2,
+        // The naval branch section 5.4: a Shipyard gives 3 with Harbours.
+        livePopulationTotal: dockPopulationV7(
+          "SHIPYARD",
+          harbourPopulationForV7(state.players, actor),
+        ) as 2 | 3,
       },
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
@@ -1981,7 +2008,7 @@ function applyTrain(
     return rejected(original, "CITY_REWARD_PENDING", { cityId: city.id });
   const player = requirePlayer(state, actor);
   const rule = effectiveRoleRuleV7(command.role, player.faction);
-  if (command.role === "PATROL_BOAT" || command.role === "BATTLESHIP")
+  if (isNavalRoleV7(command.role))
     return rejected(original, "UNIT_ROLE_INVALID", { role: command.role });
   // Revision 19 section 6.3: an egg-laid role is never trained; its owner
   // lays it with `LAY_EGG`.
@@ -3627,8 +3654,14 @@ function applyAttack(
     arePlayersAlliedV7(state, actor, defender.ownerId)
   )
     return rejected(original, "TARGET_ALLIED");
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 5.3):
+  // a torpedo targets only units afloat.
+  if (attackIsTorpedoV7(state, attacker) && !isAfloatFormV7(defender.form))
+    return rejected(original, "ATTACK_NOT_LEGAL", { reason: "NOT_AFLOAT" });
   const distance = chebyshev(attacker.at, defender.at);
-  // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2.
+  // The Ice Folk revision section 7.2: a Yeti on a Mountain reaches 2. The
+  // naval branch section 5.2: a submerged Submarine is attacked only from
+  // an adjacent tile.
   if (
     distance < rule.minimumRange ||
     distance >
@@ -3636,7 +3669,8 @@ function applyAttack(
         state,
         attacker,
         tileAtV7(state.board, attacker.at)?.terrain,
-      )
+      ) ||
+    (distance > 1 && unitIsSubmergedV7(state, defender))
   )
     return rejected(original, "TARGET_OUT_OF_RANGE");
   try {
@@ -3657,6 +3691,119 @@ function applyAttack(
     const achievements = evaluateAchievementsV7(settlement.state, actor);
     events.push(...achievements.events);
     return accepted(checked(achievements.state), events);
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * The naval branch `BOARD` (docs/product/RULESET_7_NAVAL_BRANCH.md section
+ * 4.2): a ship next to a hostile ship at a third of its maximum HP or less
+ * captures it. It is a primary action, not an Attack, and costs no Coins.
+ * The prize keeps its ID, role, maximum HP, kills, `veteran`, tile, and
+ * every status entry; it becomes the actor's (so its kind follows its new
+ * owner), an orphan (`homeCityId` null), exhausted, and patched up to one
+ * HP above its boarding line. It is not a kill: no credit, Slayer, Plunder,
+ * Grave, or growth.
+ */
+function applyBoard(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "BOARD" }>,
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const boarder = actorCheck.unit;
+  if (boarder.form !== "NAVAL")
+    return rejected(original, "BOARD_NOT_LEGAL", { reason: "NOT_A_SHIP" });
+  if (
+    !unitCapabilitiesV7(
+      state,
+      boarder,
+      ownerResearchedTechsV7(state, boarder.ownerId),
+    ).boarding
+  )
+    return rejected(original, "TECH_REQUIRED", { tech: "SEAMANSHIP" });
+  if (
+    boarder.activation.overrunActive ||
+    primaryUsed(boarder) ||
+    primaryActionBlockedAfterMoveV7(state, boarder)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: boarder.id });
+  const target = state.units.find(
+    (unit) => unit.id === command.targetUnitId && unit.hp > 0,
+  );
+  if (target === undefined || !isUnitVisibleToPlayerV7(state, actor, target))
+    return rejected(original, "TARGET_NOT_FOUND", {
+      targetUnitId: command.targetUnitId,
+    });
+  if (!arePlayersHostileV7(state, actor, target.ownerId))
+    return rejected(original, "TARGET_ALLIED");
+  const block = boardTargetBlockV7(boarder, target);
+  if (block !== null)
+    return rejected(original, "BOARD_NOT_LEGAL", { reason: block });
+  try {
+    const prize: UnitStateV7 = {
+      ...target,
+      ownerId: actor,
+      homeCityId: null,
+      hp: boardedHpV7(target.maxHp),
+      captureEligible: false,
+      activation: exhaustedActivation(),
+    };
+    const events: DomainEventV7[] = [
+      {
+        kind: "SHIP_BOARDED",
+        playerId: actor,
+        unitId: boarder.id,
+        targetUnitId: target.id,
+        fromPlayerId: target.ownerId,
+        at: { x: target.at.x, y: target.at.y },
+        hp: prize.hp,
+      },
+    ];
+    const units = state.units.map((unit) =>
+      unit.id === boarder.id
+        ? {
+            ...unit,
+            activation: {
+              ...unit.activation,
+              specialActed: true,
+              handled: true,
+            },
+          }
+        : unit.id === target.id
+          ? prize
+          : unit,
+    );
+    const sightState = { ...state, units } as GameStateV7;
+    const reveal = revealRadius(
+      sightState,
+      actor,
+      prize.at,
+      unitSightRadiusAtV7(sightState, prize),
+    );
+    if (reveal.revealed.length > 0)
+      events.push({
+        kind: "TILES_REVEALED",
+        playerId: actor,
+        tiles: reveal.revealed,
+      });
+    const staged = graveActionTail(
+      {
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        players: setExplored(state.players, actor, reveal.explored),
+        units,
+      },
+      actor,
+      events,
+    );
+    return accepted(checked(staged), events);
   } catch (cause) {
     return arithmeticFailure(original, cause);
   }

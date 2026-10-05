@@ -26,6 +26,7 @@ import {
   type PlayerViewV7,
   type PublicIceFolkMechanicsV7,
   type PublicUnitStatsV7,
+  isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
 
@@ -515,8 +516,7 @@ export function iceFolkRecruitNotesV7(
   role: UnitRoleIdV7,
   faction: FactionIdV7,
 ): readonly string[] {
-  if (faction !== "ICE_FOLK" || role === "PATROL_BOAT" || role === "BATTLESHIP")
-    return [];
+  if (faction !== "ICE_FOLK" || isNavalRoleV7(role)) return [];
   const mechanics = roleMechanicsV7(role, faction);
   return [
     ...(mechanics.mountainBorn ? [`${MOUNTAIN_BORN_INFO_V7}.`] : []),

@@ -126,6 +126,12 @@ export const FRONTIER_3_V7: MissionDefinitionV7 = {
       },
     },
   ],
-  forbiddenTechnologies: ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"],
+  forbiddenTechnologies: [
+    "SHORECRAFT",
+    "NAVIGATION",
+    "NAVAL_ENGINEERING",
+    "SEAMANSHIP",
+    "SUBMERSIBLES",
+  ],
   objective: { kind: "DOMINATION" },
 };

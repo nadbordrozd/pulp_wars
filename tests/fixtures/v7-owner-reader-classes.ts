@@ -46,12 +46,18 @@ export const OWNER_READER_CLASSES_V7: Readonly<
   "src/engine/v7/combat.ts::knockbackStateV7": "PLAYER_ONLY",
   "src/engine/v7/combat.ts::pushState": "PLAYER_ONLY",
   "src/engine/v7/combat.ts::pushedDestinationV7": "PLAYER_ONLY",
+  // The naval branch (`pulp_wars-5ti.2`): the rammer is a seat's Patrol
+  // Boat with Seamanship (the Spider is a land unit with no technology).
+  "src/engine/v7/combat.ts::ramShoveDestinationV7": "PLAYER_ONLY",
   "src/engine/v7/dwarf-reducer.ts::applyAssembleV7": "PLAYER_ONLY",
   // The tunnelling Mole is the acting seat's unit.
   "src/engine/v7/dwarf-reducer.ts::tunnelTileLegalV7": "PLAYER_ONLY",
   "src/engine/v7/economy.ts::cityUnitCapacityV7": "PLAYER_ONLY",
   // THE Cooperative alliance rule: the neutral owner is never an ally.
   "src/engine/v7/economy.ts::cooperativeAlliesV7": "NEUTRAL_AWARE",
+  // The naval branch: a dock's owner is a city's owner (a seat); an owner
+  // that is no player has no Harbours (0).
+  "src/engine/v7/economy.ts::harbourPopulationForV7": "NEUTRAL_SAFE",
   "src/engine/v7/economy.ts::roadPopulationForCityV7": "PLAYER_ONLY",
   "src/engine/v7/eggs.ts::isNestTileV7": "PLAYER_ONLY",
   // The killing Zombie's seat (the Spider has no Infect).

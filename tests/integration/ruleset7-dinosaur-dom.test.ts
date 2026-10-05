@@ -205,7 +205,7 @@ describe("Revision 19 Dinosaur setup", () => {
       "ORIGINAL",
     ]);
     const own = view.units.filter((unit) => unit.ownerId === view.viewer.id);
-    expect(own).toHaveLength(10);
+    expect(own).toHaveLength(11);
     expect(own.every((unit) => unit.form !== "EGG")).toBe(true);
     // The capital's cards say why they cannot be used, if they cannot.
     const cities = view.cities.filter(

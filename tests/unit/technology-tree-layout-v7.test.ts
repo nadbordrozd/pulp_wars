@@ -16,7 +16,7 @@ describe("Ruleset 7 technology tree layout", () => {
       "NAVAL",
     ]);
     expect(layout).toHaveLength(5);
-    expect(layout.map((root) => root.children.length)).toEqual([2, 2, 2, 2, 1]);
+    expect(layout.map((root) => root.children.length)).toEqual([2, 2, 2, 2, 2]);
     expect(
       layout.flatMap((root) => [
         root.node.id,
@@ -25,8 +25,8 @@ describe("Ruleset 7 technology tree layout", () => {
           ...child.children.map((grandchild) => grandchild.node.id),
         ]),
       ]),
-    ).toHaveLength(23);
-    expect(layout.map((root) => root.leafCount)).toEqual([2, 2, 2, 2, 1]);
+    ).toHaveLength(25);
+    expect(layout.map((root) => root.leafCount)).toEqual([2, 2, 2, 2, 2]);
     expect(layout[3]?.node.id).toBe("DRILL");
     expect(layout[3]?.children[0]?.children[0]?.node.id).toBe("METALLURGY");
   });

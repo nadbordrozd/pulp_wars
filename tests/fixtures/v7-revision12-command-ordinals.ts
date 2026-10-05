@@ -21,9 +21,12 @@ import {
  * 11), and the Ice Folk revision THROW_BOLAS and COLD_SNAP after
  * TRACTOR_BEAM (its section 11), and the Dwarf revision TUNNEL, BOMB_RUN,
  * and ASSEMBLE after COLD_SNAP (its section 14), and the Candy revision
- * SUGAR_RUSH, REBAKE, and SUGAR_TOSS after ASSEMBLE (its section 13).
+ * SUGAR_RUSH, REBAKE, and SUGAR_TOSS after ASSEMBLE (its section 13). The
+ * naval branch (`pulp_wars-5ti.2`) inserts BOARD right after ATTACK (its
+ * section 3.1), so every kind after ATTACK moves forward by one.
  */
 const LATER_COMMAND_KINDS: readonly string[] = [
+  "BOARD",
   "RAISE_DEAD",
   "DEVOUR",
   "WAIL",

@@ -8,9 +8,25 @@ import {
   type GameStateV7,
   type MatchSetupV7,
   type PlayerStateV7,
+  type TechnologyIdV7,
   type TileStateV7,
 } from "../../src/engine/index";
 import { revision13MapStateV7 } from "./v7-revision13-map";
+
+/**
+ * Every technology but Seamanship and Submersibles (the naval branch,
+ * `pulp_wars-5ti.2`, docs/product/RULESET_7_NAVAL_BRANCH.md). The rule
+ * fixtures written before the branch gave a seat "every technology" to
+ * unlock what they test; they keep this list, so their Ports still give 1
+ * population (no Harbours), a Patrol Boat that moved does not ram, and no
+ * Board is offered. The naval-branch tests
+ * (`tests/unit/ruleset-v7-naval-branch-*.test.ts`) research the two
+ * technologies themselves.
+ */
+export const PRE_NAVAL_BRANCH_TECHS_V7: readonly TechnologyIdV7[] =
+  TECHNOLOGY_IDS_V7.filter(
+    (tech) => tech !== "SEAMANSHIP" && tech !== "SUBMERSIBLES",
+  );
 
 /**
  * Test only: the mirror option (`allowDuplicateFactions: true`,
@@ -115,12 +131,16 @@ export function richV7(state: GameStateV7, coins = 10_000): GameStateV7 {
   });
 }
 
+/**
+ * Gives every seat every technology that existed before the naval branch
+ * ({@link PRE_NAVAL_BRANCH_TECHS_V7}) and at least 10 000 Coins.
+ */
 export function allTechsV7(state: GameStateV7): GameStateV7 {
   return checkedV7({
     ...state,
     players: state.players.map((player) => ({
       ...player,
-      researchedTechs: TECHNOLOGY_IDS_V7,
+      researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
       coins: Math.max(player.coins, 10_000),
     })),
   });

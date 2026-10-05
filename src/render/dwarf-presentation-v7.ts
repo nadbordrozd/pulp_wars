@@ -29,6 +29,7 @@ import {
   type PublicDwarfMechanicsV7,
   type PublicUnitStatsV7,
   type TunnelPreviewV7,
+  isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
 
@@ -541,8 +542,7 @@ export function dwarfRecruitNotesV7(
   role: UnitRoleIdV7,
   faction: FactionIdV7,
 ): readonly string[] {
-  if (faction !== "DWARF" || role === "PATROL_BOAT" || role === "BATTLESHIP")
-    return [];
+  if (faction !== "DWARF" || isNavalRoleV7(role)) return [];
   const mechanics = roleMechanicsV7(role, faction);
   return [
     ...(mechanics.construct

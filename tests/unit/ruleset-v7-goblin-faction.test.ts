@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r42 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r42");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r42.current");
-    expect(PRIOR_RULESET_7_IDS.at(-26)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(41);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-26)).toBe(
+  it("keeps r16 among the prior identities after the r43 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r43.current");
+    expect(PRIOR_RULESET_7_IDS.at(-27)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(42);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-27)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -467,7 +467,8 @@ describe("ruleset-7 Goblin roster", () => {
       1,
       2,
       true,
-      ["ATTACK"],
+      // The naval branch (`pulp_wars-5ti.2`): the Ram (with Seamanship).
+      ["ATTACK", "RAM"],
       null,
       null,
     ],
@@ -485,6 +486,24 @@ describe("ruleset-7 Goblin roster", () => {
       3,
       false,
       ["ATTACK"],
+      null,
+      null,
+    ],
+    // The naval branch (`pulp_wars-5ti.2`): the shared Submarine.
+    SUBMARINE: [
+      "Submarine",
+      "NAVAL_HUNTER",
+      "SUBMERSIBLES",
+      9,
+      12,
+      8,
+      4,
+      2,
+      1,
+      1,
+      2,
+      true,
+      ["ATTACK", "SUBMERGED", "TORPEDO"],
       null,
       null,
     ],
@@ -564,6 +583,7 @@ describe("ruleset-7 Goblin roster", () => {
       ["JUGGERNAUT", true, false, "HOSTILE", false, 1, false, 4],
       ["PATROL_BOAT", true, false, "HOSTILE", false, 1, false, 0],
       ["BATTLESHIP", true, true, "HOSTILE", false, 1, false, 0],
+      ["SUBMARINE", true, false, "HOSTILE", false, 1, false, 0],
     ]);
     for (const table of [ORIGINAL_ROLE_MECHANICS_V7, UNDEAD_ROLE_MECHANICS_V7])
       for (const role of UNIT_ROLE_IDS_V7)

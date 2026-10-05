@@ -22,6 +22,7 @@ import {
   type PlayerEventV7,
   type PlayerViewV7,
   type PublicDinosaurMechanicsV7,
+  isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
 import { technologyNameV7 } from "./goblin-presentation-v7";
@@ -535,8 +536,7 @@ export function dinosaurUnitInfoLinesV7(
   role: UnitRoleIdV7,
   mechanics: PublicDinosaurMechanicsV7,
 ): readonly DinosaurUnitInfoLineV7[] {
-  if (role === "PATROL_BOAT" || role === "BATTLESHIP" || mechanics.egg !== null)
-    return [];
+  if (isNavalRoleV7(role) || mechanics.egg !== null) return [];
   const lines: DinosaurUnitInfoLineV7[] = [];
   if (mechanics.growthStage !== null)
     lines.push({
@@ -567,8 +567,7 @@ export function dinosaurRecruitNotesV7(
   role: UnitRoleIdV7,
   faction: FactionIdV7,
 ): readonly string[] {
-  if (faction !== "DINOSAUR" || role === "PATROL_BOAT" || role === "BATTLESHIP")
-    return [];
+  if (faction !== "DINOSAUR" || isNavalRoleV7(role)) return [];
   const mechanics = roleMechanicsV7(role, faction);
   return [
     ...(mechanics.hatchTurns === null

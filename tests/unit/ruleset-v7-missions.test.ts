@@ -53,10 +53,13 @@ import { browserSetupV7 } from "../fixtures/v7-builders";
 // initial-state hash per mission revision, saves, replays, the stale-mission
 // diagnostic, and the headless `--mission` flag.
 
+// The naval branch (`pulp_wars-5ti.2`): five technologies.
 const NAVAL: readonly TechnologyIdV7[] = [
   "SHORECRAFT",
   "NAVIGATION",
   "NAVAL_ENGINEERING",
+  "SEAMANSHIP",
+  "SUBMERSIBLES",
 ];
 
 /**

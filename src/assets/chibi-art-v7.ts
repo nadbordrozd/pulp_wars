@@ -2,6 +2,7 @@ import type {
   CommandV7,
   FactionIdV7,
   ImprovementIdV7,
+  NavalRoleIdV7,
   ResourceIdV7,
   TechnologyIdV7,
   TerrainIdV7,
@@ -133,6 +134,17 @@ const NAVAL_ART_ROLES_V7: readonly NavalArtRoleV7[] = [
   "BATTLESHIP",
   "EMBARKED_TRANSPORT",
 ];
+
+/**
+ * The naval branch engine (bead pulp_wars-5ti.2,
+ * docs/product/RULESET_7_NAVAL_BRANCH.md section 14.3): the naval art role
+ * a ship role draws. STAND-IN until the Submarine art of bead
+ * pulp_wars-5ti.6: a Submarine draws its faction's Patrol Boat sprite and
+ * portrait (its label, stats, and info panel say "Submarine").
+ */
+export function navalArtRoleForV7(role: NavalRoleIdV7): NavalPortraitRoleV7 {
+  return role === "SUBMARINE" ? "PATROL_BOAT" : role;
+}
 
 /**
  * The subject of a faction's naval sprite (UNIT) or portrait (PORTRAIT):
@@ -369,10 +381,7 @@ export type UiArtSubjectV7 =
  * Patrol Boat and the Battleship are naval subjects of their own
  * (NavalFactionArtSubjectV7, bead pulp_wars-w5j.3).
  */
-export type UndeadArtRoleV7 = Exclude<
-  UnitRoleIdV7,
-  "PATROL_BOAT" | "BATTLESHIP"
->;
+export type UndeadArtRoleV7 = Exclude<UnitRoleIdV7, NavalRoleIdV7>;
 
 /**
  * Roles with their own Goblin art (docs/art/factions/GOBLIN.md): the same
@@ -482,6 +491,7 @@ export function cityArtSubjectV7(city: {
 const SHARED_ART_ROLES_V7: readonly UnitRoleIdV7[] = [
   "PATROL_BOAT",
   "BATTLESHIP",
+  "SUBMARINE",
 ];
 
 /**
@@ -518,7 +528,7 @@ export function unitArtSubjectV7(unit: {
     return navalArtSubjectV7(
       unit.faction,
       "UNIT",
-      unit.role as NavalPortraitRoleV7,
+      navalArtRoleForV7(unit.role as NavalRoleIdV7),
     );
   if (unit.faction === "UNDEAD")
     return `UNIT:UNDEAD:${unit.role as UndeadArtRoleV7}`;

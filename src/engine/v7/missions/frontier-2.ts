@@ -112,6 +112,12 @@ export const FRONTIER_2_V7: MissionDefinitionV7 = {
       reveal: { radius: 2 },
     },
   ],
-  forbiddenTechnologies: ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"],
+  forbiddenTechnologies: [
+    "SHORECRAFT",
+    "NAVIGATION",
+    "NAVAL_ENGINEERING",
+    "SEAMANSHIP",
+    "SUBMERSIBLES",
+  ],
   objective: { kind: "DOMINATION" },
 };

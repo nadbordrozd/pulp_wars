@@ -39,12 +39,13 @@ export async function probeGalleryV7(
   }>(
     `({ factions: [...document.querySelectorAll('.v7-gallery-faction')].map((th) => th.dataset.faction), cells: document.querySelectorAll('.v7-gallery-cell').length, empty: document.querySelectorAll('.v7-gallery-cell-wrap.is-empty').length, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`,
   );
-  // Eight factions (the Candy since pulp_wars-jdb.3): eleven rows of eight
+  // Eight factions (the Candy since pulp_wars-jdb.3): twelve rows of eight
+  // (the Submarine since pulp_wars-5ti.2)
   // units and the one Egg, whose row is empty for the seven other factions.
   if (
     table.factions.join() !==
       "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY" ||
-    table.cells !== 89 ||
+    table.cells !== 97 ||
     table.empty !== 7 ||
     table.overflow > 0
   )

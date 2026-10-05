@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r42");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -103,21 +103,26 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       "JUGGERNAUT",
       "PATROL_BOAT",
       "BATTLESHIP",
+      // The naval branch (`pulp_wars-5ti.2`).
+      "SUBMARINE",
     ]);
-    expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
+    // The naval branch adds Seamanship and Submersibles (23 -> 25).
+    expect(TECHNOLOGY_IDS_V7).toHaveLength(25);
     // Revision 20 removes STAMPEDE (46 -> 45 command kinds). The Martian
     // revision adds BEAM_DOWN, MIND_CONTROL, and TRACTOR_BEAM (48) and four
     // event kinds (72 -> 76); the Ice Folk revision THROW_BOLAS and
     // COLD_SNAP (50) and UNITS_CHILLED (77); the Dwarf revision TUNNEL,
-    // BOMB_RUN, and ASSEMBLE (53) and four event kinds (81).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(56);
+    // BOMB_RUN, and ASSEMBLE (53) and four event kinds (81); the Candy
+    // revision three more commands (56); the naval branch BOARD (57).
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(57);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
-    // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(96);
+    // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96); the
+    // naval branch SHIP_BOARDED (97).
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(97);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after

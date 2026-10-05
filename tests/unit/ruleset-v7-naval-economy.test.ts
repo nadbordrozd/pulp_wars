@@ -10,11 +10,10 @@ import {
   queryPlayerCommandsV7,
   recomputeLiveEconomyV7,
   seaTradeCityIdsV7,
-  TECHNOLOGY_IDS_V7,
   viewForV7,
   type GameStateV7,
 } from "../../src/engine/index";
-import { checkedV7 } from "../fixtures/v7-builders";
+import { PRE_NAVAL_BRANCH_TECHS_V7, checkedV7 } from "../fixtures/v7-builders";
 import { coastalV7, withPortV7 } from "../fixtures/v7-naval-builders";
 
 describe("ruleset-7 naval economy", () => {
@@ -36,7 +35,11 @@ describe("ruleset-7 naval economy", () => {
       ...fixture.state,
       players: fixture.state.players.map((player) =>
         player.id === actor
-          ? { ...player, coins: 100, researchedTechs: TECHNOLOGY_IDS_V7 }
+          ? {
+              ...player,
+              coins: 100,
+              researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
+            }
           : player,
       ),
     });
@@ -84,7 +87,11 @@ describe("ruleset-7 naval economy", () => {
       ...fixture.state,
       players: fixture.state.players.map((player) =>
         player.id === actor
-          ? { ...player, coins: 100, researchedTechs: TECHNOLOGY_IDS_V7 }
+          ? {
+              ...player,
+              coins: 100,
+              researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
+            }
           : player,
       ),
       units: fixture.state.units
@@ -572,7 +579,7 @@ describe("ruleset-7 naval economy", () => {
         player.id === hostile.ownerId
           ? {
               ...player,
-              researchedTechs: TECHNOLOGY_IDS_V7,
+              researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
               explored: fixture.state.board.tiles.map((tile) => tile.at),
             }
           : player,

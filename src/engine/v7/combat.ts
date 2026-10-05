@@ -4,9 +4,12 @@ import {
   NO_COVER_V7,
   coverBonusV7,
   terrainGivesCoverV7,
+  RAM_BONUS2_V7,
   armouredDamageV7,
   attackIgnoresCityWallsV7,
   attackIsChargeV7,
+  attackIsRamV7,
+  attackIsTorpedoV7,
   canEnterTerrainV7,
   chargeRunUpAttack2V7,
   factionRulesV7,
@@ -332,10 +335,23 @@ export function calculateCombatPreviewV7(
         ? attackerMechanics.rockfallAttack2
         : attackerRule.attack2;
   // Revision 19: an Alpha adds 1 Attack to every attack it makes.
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1):
+  // a Patrol Boat that moved this turn rams a target afloat (+1 Attack);
+  // section 5.3: a Submarine's attack is a torpedo.
+  const ram = attackIsRamV7(
+    state,
+    attacker,
+    defender,
+    distance,
+    ownerResearchedTechsV7(state, attacker.ownerId),
+    (plannedPathLength ?? 0) > 0,
+  );
+  const torpedo = attackIsTorpedoV7(state, attacker);
   const attack2 =
     attacker.form === "EMBARKED"
       ? 0
       : baseAttack2 +
+        (ram ? RAM_BONUS2_V7 : 0) +
         (chargeApplied ? 2 : 0) +
         (inspiredApplied ? 2 : 0) +
         sugarRush2 +
@@ -467,7 +483,8 @@ export function calculateCombatPreviewV7(
   const defenderDies = damageToDefender >= defender.hp;
   // Revision 14 (V1): an UNANSWERED attacker (the Vampire) draws no
   // retaliation.
-  const unanswered = attackerRule.abilities.includes("UNANSWERED");
+  // The naval branch section 5.3: so does a torpedo.
+  const unanswered = attackerRule.abilities.includes("UNANSWERED") || torpedo;
   // Revision 19: an Egg never retaliates. The Dwarf revision section 6.1:
   // a Gyrocopter (`BOMB_RUN`, no `ATTACK`) retaliates too.
   const wouldRetaliate =
@@ -587,9 +604,15 @@ export function calculateCombatPreviewV7(
   });
   // The Dwarf revision section 10.1: a Steam Cannon's Knockback is the
   // Push step of a ranged attack.
+  // The naval branch section 4.1: a ram's shove is the Push step of a Ram.
   const push = attackKnocksBackV7(state, attacker)
     ? knockbackStateV7(state, attacker, defender, !defenderDies)
-    : pushState(state, attacker, defender, !defenderDies && distance === 1);
+    : ram
+      ? ramShoveDestinationV7(state, attacker, defender) !== null &&
+        !defenderDies
+        ? "WILL_PUSH"
+        : "BLOCKED"
+      : pushState(state, attacker, defender, !defenderDies && distance === 1);
   // Revision 19 section 6.7: a melee attacker that destroys an Egg advances
   // onto its tile exactly as after killing a land unit. Revision 20: a
   // Charge! also follows a pushed target into the tile it vacated.
@@ -724,7 +747,62 @@ export function calculateCombatPreviewV7(
     sugarRushApplied: sugarRush2 > 0,
     splatApplied: attackSplatAppliesV7(state, attacker, defender, defenderDies),
     ...bounced,
+    ram,
+    torpedo,
   };
+}
+
+/**
+ * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 4.1): the
+ * tile a ram shoves its surviving target onto, or null when nothing moves.
+ * The target goes one tile directly away from the boat, only onto a tile
+ * that is on the board, explored by the attacker, water that is not a dock
+ * (Port or Shipyard), holds no unit, and is Shallow Water, or Deep Water
+ * only when the target stands on Deep Water (the Tractor Beam's public
+ * rule: the target owner's Navigation is private).
+ */
+export function ramShoveDestinationV7(
+  state: GameStateV7,
+  attacker: UnitStateV7,
+  defender: UnitStateV7,
+): CoordV7 | null {
+  const destination = {
+    x: defender.at.x + Math.sign(defender.at.x - attacker.at.x),
+    y: defender.at.y + Math.sign(defender.at.y - attacker.at.y),
+  };
+  const tile = tileAtV7(state.board, destination);
+  if (
+    tile === undefined ||
+    !requirePlayer(state, attacker.ownerId).explored.some((at) =>
+      same(at, destination),
+    ) ||
+    !ramShoveTileOpenV7(
+      tile,
+      tileAtV7(state.board, defender.at)?.terrain,
+      tileOccupiedV7(state, destination, defender.id),
+    )
+  )
+    return null;
+  return destination;
+}
+
+/**
+ * The tile part of the ram's shove (section 4.1), shared by resolution and
+ * the public preview: open water that is not a dock, with no unit on it,
+ * Shallow Water, or Deep Water only for a target standing on Deep Water.
+ */
+export function ramShoveTileOpenV7(
+  tile: { readonly terrain: string; readonly improvement: string | null },
+  targetTerrain: string | undefined,
+  occupied: boolean,
+): boolean {
+  return (
+    !occupied &&
+    tile.improvement !== "PORT" &&
+    tile.improvement !== "SHIPYARD" &&
+    (tile.terrain === "SHALLOW_WATER" ||
+      (tile.terrain === "DEEP_WATER" && targetTerrain === "DEEP_WATER"))
+  );
 }
 
 /**
@@ -1042,6 +1120,17 @@ export function pushedDestinationV7(
     return knockbackStateV7(state, attacker, defender, true) === "WILL_PUSH"
       ? knockbackDestinationV7(attacker.at, defender.at)
       : null;
+  // The naval branch section 4.1: a ram's shove.
+  if (
+    attackIsRamV7(
+      state,
+      attacker,
+      defender,
+      chebyshev(attacker.at, defender.at),
+      ownerResearchedTechsV7(state, attacker.ownerId),
+    )
+  )
+    return ramShoveDestinationV7(state, attacker, defender);
   const destination = {
     x: defender.at.x + defender.at.x - attacker.at.x,
     y: defender.at.y + defender.at.y - attacker.at.y,

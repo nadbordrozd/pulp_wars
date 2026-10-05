@@ -2,6 +2,7 @@ import type {
   CommandV7,
   FactionIdV7,
   ImprovementIdV7,
+  NavalRoleIdV7,
   RewardIdV7,
   TechnologyIdV7,
   UnitRoleIdV7,
@@ -16,7 +17,7 @@ import {
   type GoblinArtRoleV7,
   type IceFolkArtRoleV7,
   type MartianArtRoleV7,
-  type NavalPortraitRoleV7,
+  navalArtRoleForV7,
   type UndeadArtRoleV7,
 } from "./chibi-art-v7";
 
@@ -33,7 +34,14 @@ import {
  * its map sprite in the dock, as in LEGACY.
  */
 
-const NAVAL_ROLES: readonly UnitRoleIdV7[] = ["PATROL_BOAT", "BATTLESHIP"];
+// The naval branch engine (bead pulp_wars-5ti.2): the Submarine is a ship;
+// its portrait is the Patrol Boat's until bead pulp_wars-5ti.6
+// (navalArtRoleForV7).
+const NAVAL_ROLES: readonly UnitRoleIdV7[] = [
+  "PATROL_BOAT",
+  "BATTLESHIP",
+  "SUBMARINE",
+];
 
 /**
  * The portrait of a role for a faction: Undead, (revision 17, bead
@@ -49,7 +57,11 @@ export function portraitSubjectV7(
   faction: FactionIdV7,
 ): ArtSubjectV7 {
   if (NAVAL_ROLES.includes(role))
-    return navalArtSubjectV7(faction, "PORTRAIT", role as NavalPortraitRoleV7);
+    return navalArtSubjectV7(
+      faction,
+      "PORTRAIT",
+      navalArtRoleForV7(role as NavalRoleIdV7),
+    );
   if (faction === "UNDEAD") return `PORTRAIT:UNDEAD:${role as UndeadArtRoleV7}`;
   if (faction === "GOBLIN") return `PORTRAIT:GOBLIN:${role as GoblinArtRoleV7}`;
   if (faction === "DINOSAUR")
@@ -126,6 +138,11 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
   SHORECRAFT: "IMPROVEMENT:PORT",
   NAVIGATION: "ICON:TECH:NAVIGATION",
   NAVAL_ENGINEERING: "UNIT:BATTLESHIP",
+  // The naval branch engine (bead pulp_wars-5ti.2): STAND-INS until the UI
+  // and art beads (pulp_wars-5ti.6, 5ti.7): Seamanship shows the Patrol
+  // Boat (the rammer) and Submersibles the Shipyard (Harbours).
+  SEAMANSHIP: "UNIT:PATROL_BOAT",
+  SUBMERSIBLES: "IMPROVEMENT:SHIPYARD",
 } as const satisfies Readonly<Record<TechnologyIdV7, ArtSubjectV7>>;
 
 /**
@@ -189,6 +206,9 @@ export function technologySubjectV7(
   // pulp_wars-w5j.3).
   if (subject === "UNIT:BATTLESHIP")
     return navalArtSubjectV7(faction, "UNIT", "BATTLESHIP");
+  // Seamanship (the stand-in above) shows the faction's own Patrol Boat.
+  if (subject === "UNIT:PATROL_BOAT")
+    return navalArtSubjectV7(faction, "UNIT", "PATROL_BOAT");
   return subject;
 }
 

@@ -1,6 +1,7 @@
 import {
   effectiveRoleRuleV7,
   type FactionIdV7,
+  isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
 import {
@@ -63,7 +64,7 @@ export function recruitmentRolePresentationV7(
 ): RecruitmentRolePresentationV7 {
   const role = effectiveRoleRuleV7(roleId, faction);
   const restrictions: string[] = [];
-  const ship = roleId === "PATROL_BOAT" || roleId === "BATTLESHIP";
+  const ship = isNavalRoleV7(roleId);
   if (!role.mayUsePrimaryActionAfterMove && role.minimumRange <= 1 && !ship)
     restrictions.push("Can't attack after moving.");
   if (!role.abilities.includes("CAPTURE") && !ship)
@@ -183,6 +184,15 @@ export function roleAbilityDescriptionV7(
       return "May move again after attacking: a fresh full Move if it survives, then it is done for the turn.";
     case "PUSH":
       return "Knocks surviving targets back a tile.";
+    // The naval branch (`pulp_wars-5ti.2`): the help sentences of
+    // docs/product/RULESET_7_NAVAL_BRANCH.md section 14.2, shared by every
+    // faction (plain text until the naval UI bead `pulp_wars-5ti.7`).
+    case "RAM":
+      return "With Seamanship, a Patrol Boat that moved this turn rams boats and transports with +1 Attack and shoves them one tile back.";
+    case "SUBMERGED":
+      return "Can only be attacked from an adjacent tile.";
+    case "TORPEDO":
+      return "Attacks only boats and transports, which cannot strike back.";
     default:
       return null;
   }

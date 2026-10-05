@@ -9,6 +9,8 @@ import {
   RUN_UP_MAXIMUM_TILES_V7,
   attackIsChargeV7,
   attackIsRayV7,
+  boardableAtV7,
+  unitIsSubmergedV7,
   chargeRunUpAttack2V7,
   halfPowerAttack2V7,
   isMindControlledV7,
@@ -281,6 +283,17 @@ export interface PublicUnitStatsV7 {
     readonly sluggish: boolean;
     readonly turnsLeft: number;
   } | null;
+  /**
+   * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 5.2):
+   * the unit is a submerged Submarine, attackable only from an adjacent
+   * tile. Present for every unit.
+   */
+  readonly submerged: boolean;
+  /**
+   * The naval branch (section 4.2): the HP at or below which the ship can be
+   * boarded (`floor(maxHp / 3)`); null for every unit not in `NAVAL` form.
+   */
+  readonly boardableAt: number | null;
   /** The Ice Folk revision: present exactly for units of the Ice Folk kind. */
   readonly iceFolk?: PublicIceFolkMechanicsV7;
   /**
@@ -689,6 +702,8 @@ export function publicUnitStatsV7(
       ...(unit.activation.escapeAvailable ? ["Escape: may move again"] : []),
     ],
     chill,
+    submerged: unitIsSubmergedV7(state, unit),
+    boardableAt: unit.form === "NAVAL" ? boardableAtV7(unit.maxHp) : null,
     ...(goblin
       ? {
           goblin: {
@@ -871,6 +886,8 @@ function eggStats(
     abilities: [],
     statuses: [],
     chill: null,
+    submerged: false,
+    boardableAt: null,
     // The Dwarf revision: an Egg may be bombed (the public per-turn list).
     ...(matchHasDwarvesV7(state)
       ? {

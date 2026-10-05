@@ -245,7 +245,7 @@ describe("ruleset-7 revision-20 Nesting city slot", () => {
     });
   });
 
-  it("starts the Showcase capital at 8 of 8 slots, North 3 of 7, Coast 2 of 6", () => {
+  it("starts the Showcase capital at 8 of 8 slots, North 3 of 7, Coast 3 of 7", () => {
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
       seed: 1,
@@ -273,12 +273,12 @@ describe("ruleset-7 revision-20 Nesting city slot", () => {
     expect(slots(0)).toEqual([
       [8, 8],
       [3, 7],
-      [2, 6],
+      [3, 7],
     ]);
     // Human: level + 1 + Planning; Goblin adds Warrens; no Nesting slot.
-    expect(slots(1).map(([, capacity]) => capacity)).toEqual([7, 6, 5]);
-    expect(slots(2).map(([, capacity]) => capacity)).toEqual([8, 7, 6]);
-    expect(slots(3).map(([, capacity]) => capacity)).toEqual([7, 6, 5]);
+    expect(slots(1).map(([, capacity]) => capacity)).toEqual([7, 6, 6]);
+    expect(slots(2).map(([, capacity]) => capacity)).toEqual([8, 7, 7]);
+    expect(slots(3).map(([, capacity]) => capacity)).toEqual([7, 6, 6]);
   });
 });
 

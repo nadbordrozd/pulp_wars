@@ -4,12 +4,17 @@ import {
   type CityId,
   type UnitId,
 } from "../model/ids";
-import { effectiveRoleRuleV7 } from "../rules/ruleset-v7";
-import { growthSpentV7, roadPopulationForCityV7 } from "./economy";
+import { dockPopulationV7, effectiveRoleRuleV7 } from "../rules/ruleset-v7";
+import {
+  growthSpentV7,
+  harbourPopulationForV7,
+  roadPopulationForCityV7,
+} from "./economy";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import {
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  isNavalRoleV7,
   type AiCountV7,
   type BoardStateV7,
   type CityRewardRecordV7,
@@ -111,10 +116,16 @@ export const SHOWCASE_CITY_TEMPLATES_V7: readonly ShowcaseCityTemplateV7[] =
     {
       key: "COAST",
       y: 11,
-      level: 3,
+      // The naval branch (`pulp_wars-5ti.2`,
+      // docs/product/RULESET_7_NAVAL_BRANCH.md section 5.4): every
+      // technology is researched, so Harbours adds 1 population to the Port
+      // and to the Shipyard; under the ordinary ledger the Coast city is
+      // then level 4 (it was 3), with the reward North took at that level.
+      level: 4,
       rewards: [
         { reachedLevel: 2, reward: "SURVEY" },
         { reachedLevel: 3, reward: "WALLS" },
+        { reachedLevel: 4, reward: "TREASURY_8" },
       ],
       tiles: [
         { dx: -1, y: 10, resource: "FERTILE_GROUND", improvement: "FARM" },
@@ -150,6 +161,9 @@ export const SHOWCASE_UNIT_TEMPLATES_V7: readonly {
   { role: "JUGGERNAUT", dx: 1, y: 8, home: "CAPITAL" },
   { role: "PATROL_BOAT", dx: 0, y: 12, home: "COAST" },
   { role: "BATTLESHIP", dx: 0, y: 13, home: "COAST" },
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 3.3):
+  // one Submarine on the free Deep Water tile east of the Battleship.
+  { role: "SUBMARINE", dx: 1, y: 13, home: "COAST" },
 ]);
 
 /**
@@ -354,7 +368,7 @@ export function createShowcaseEntitiesV7(
   // records first, then live records in (y, x) tile order.
   const graph = { board, cities: draftCities };
   const populationContributions: PopulationContributionV7[] = [];
-  players.forEach((_, seat) => {
+  players.forEach((player, seat) => {
     const cx = centers[seat] as number;
     for (const city of SHOWCASE_CITY_TEMPLATES_V7) {
       const id = (cityIds[seat] as Record<ShowcaseCityKeyV7, CityId>)[city.key];
@@ -393,13 +407,15 @@ export function createShowcaseEntitiesV7(
           id: nextEntityId,
           cityId: id,
           category: "LIVE",
+          // The naval branch section 5.4: every technology is researched,
+          // so the docks give their Harbours population too.
           amount:
-            tile.improvement === "PORT"
-              ? 1
-              : tile.improvement === "SHIPYARD"
-                ? 2
-                : spatialContributionAtV7(graph, at, tile.improvement)
-                    .population,
+            tile.improvement === "PORT" || tile.improvement === "SHIPYARD"
+              ? dockPopulationV7(
+                  tile.improvement,
+                  harbourPopulationForV7(players, player.id),
+                )
+              : spatialContributionAtV7(graph, at, tile.improvement).population,
           source: { kind: "IMPROVEMENT", improvement: tile.improvement, at },
         });
         nextEntityId += 1;
@@ -421,10 +437,7 @@ export function createShowcaseEntitiesV7(
         template.home
       ],
       role: template.role,
-      form:
-        template.role === "PATROL_BOAT" || template.role === "BATTLESHIP"
-          ? "NAVAL"
-          : "LAND",
+      form: isNavalRoleV7(template.role) ? "NAVAL" : "LAND",
       at: { x: (centers[seat] as number) + template.dx, y: template.y },
       hp: rule.maxHp,
       maxHp: rule.maxHp,

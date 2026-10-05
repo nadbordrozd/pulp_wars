@@ -433,9 +433,9 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
       [cx + 1, 10, "FOREST", "GAME", null, false, null],
       [cx - 1, 11, "GRASS", null, "WORKSHOP", false, 2],
       [cx + 1, 11, "GRASS", "FRUIT", null, false, null],
-      [cx - 1, 12, "SHALLOW_WATER", null, "PORT", false, 1],
+      [cx - 1, 12, "SHALLOW_WATER", null, "PORT", false, 2],
       [cx, 12, "SHALLOW_WATER", null, null, false, null],
-      [cx + 1, 12, "SHALLOW_WATER", null, "SHIPYARD", false, 2],
+      [cx + 1, 12, "SHALLOW_WATER", null, "SHIPYARD", false, 3],
       // The neutral Road tiles and the North city's top-middle tile
       [cx, 2, "GRASS", null, null, false, null],
       [cx, 5, "GRASS", null, null, true, null],
@@ -498,13 +498,17 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
         id: coastId,
         at: { x: cx, y: 11 },
         isCapital: false,
-        level: 3,
+        // The naval branch (`pulp_wars-5ti.2`): every technology is
+        // researched, so Harbours adds 1 to the Port and 1 to the Shipyard
+        // (8 -> 10) and the Coast city is level 4 (it was 3).
+        level: 4,
         permanentPopulation: 0,
-        economicPopulation: 8,
-        population: 3,
+        economicPopulation: 10,
+        population: 1,
         rewards: [
           { reachedLevel: 2, reward: "SURVEY" },
           { reachedLevel: 3, reward: "WALLS" },
+          { reachedLevel: 4, reward: "TREASURY_8" },
         ],
       });
       expect(tile(state, cx, 7).site).toBe("CAPITAL");
@@ -645,7 +649,9 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
           .reduce((total, entry) => total + entry.amount, 0);
       const road = roadPopulationForCityV7(state, city);
       expect(road).toBe(city.isCapital ? 2 : 1);
-      expect(sum("LIVE")).toBe(city.isCapital ? 8 : city.level === 4 ? 10 : 7);
+      // North (odd ID) holds 10; Coast (even ID) 9: 7 and, with Harbours,
+      // one more from each dock (`pulp_wars-5ti.2`).
+      expect(sum("LIVE")).toBe(city.isCapital ? 8 : city.id % 2 === 1 ? 10 : 9);
       expect(city.economicPopulation).toBe(sum("LIVE") + road);
       expect(city.permanentPopulation).toBe(sum("PERMANENT"));
       expect(city.population).toBe(
@@ -658,22 +664,22 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
     }
   });
 
-  it("pays the stated first income: 16 Coins, or 14 for a Goblin seat", () => {
+  it("pays the stated first income: 17 Coins, or 15 for a Goblin seat", () => {
     state.players.forEach((player, seat) => {
       const income = playerIncomeV7(state, player.id);
       const goblin = player.faction === "GOBLIN";
-      expect(income.totalCoins).toBe(goblin ? 14 : 16);
+      expect(income.totalCoins).toBe(goblin ? 15 : 17);
       expect(income.cities).toEqual([
         { cityId: 2 * seat + 1, coins: 7 },
         { cityId: 9 + 2 * seat, coins: goblin ? 4 : 5 },
-        { cityId: 10 + 2 * seat, coins: goblin ? 3 : 4 },
+        { cityId: 10 + 2 * seat, coins: goblin ? 4 : 5 },
       ]);
     });
     // The first seat's Start Turn runs at creation and pays that income.
     for (const [faction, coins] of [
-      ["ORIGINAL", 19],
-      ["UNDEAD", 19],
-      ["GOBLIN", 17],
+      ["ORIGINAL", 20],
+      ["UNDEAD", 20],
+      ["GOBLIN", 18],
     ] as const) {
       const created = playableShowcase([faction, "ORIGINAL"]);
       expect(created.state.players.map((player) => player.coins)).toEqual([
@@ -692,7 +698,7 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
 describe("ruleset-7 revision-18 Showcase players and units", () => {
   it("starts every seat with 23 technologies, 256 explored cells, and 3 Coins", () => {
     const state = rawShowcase(["GOBLIN", "ORIGINAL", "UNDEAD"]);
-    expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
+    expect(TECHNOLOGY_IDS_V7).toHaveLength(25);
     for (const player of state.players) {
       expect(player.researchedTechs).toEqual(TECHNOLOGY_IDS_V7);
       expect(player.explored).toHaveLength(256);
@@ -709,30 +715,41 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
         { achievement: "SLAYER", unlocked: false, spent: false },
       ]);
       // Every unit of every seat is visible to every seat.
-      expect(viewForV7(state, player.id).units).toHaveLength(30);
+      expect(viewForV7(state, player.id).units).toHaveLength(33);
     }
     expect(state.turnOrder).toEqual([1, 2, 3]);
     expect(state.activeSeatIndex).toBe(0);
     expect(state.round).toBe(1);
   });
 
-  it("unlocks Explorer and Muster, not Engineer, at each seat's first evaluation", () => {
+  it("unlocks Explorer, Muster, and Sea Dog, not Engineer, at each seat's first evaluation", () => {
     const created = playableShowcase(["UNDEAD", "GOBLIN", "ORIGINAL"]);
     // Explorer, Engineer, Muster, then the revision-21 Conqueror, Land Baron,
-    // Sea Dog, and Slayer: three cities and two ships complete none of them.
+    // Sea Dog, and Slayer: three cities complete no Land Baron. The naval
+    // branch (`pulp_wars-5ti.2`): with the Submarine every seat has three
+    // ships, which is Sea Dog.
     const unlocked = (state: GameStateV7, seat: number) =>
       state.players[seat]?.achievementEntitlements.map(
         (entry) => entry.unlocked,
       );
-    const NONE = [false, false, false, false];
+    const REST = [false, false, true, false];
     expect(
       created.events.filter((event) => event.kind === "ACHIEVEMENT_UNLOCKED"),
     ).toEqual([
       { kind: "ACHIEVEMENT_UNLOCKED", playerId: 1, achievement: "EXPLORER" },
       { kind: "ACHIEVEMENT_UNLOCKED", playerId: 1, achievement: "MUSTER" },
+      { kind: "ACHIEVEMENT_UNLOCKED", playerId: 1, achievement: "SEA_DOG" },
     ]);
-    expect(unlocked(created.state, 0)).toEqual([true, false, true, ...NONE]);
-    expect(unlocked(created.state, 1)).toEqual([false, false, false, ...NONE]);
+    expect(unlocked(created.state, 0)).toEqual([true, false, true, ...REST]);
+    expect(unlocked(created.state, 1)).toEqual([
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]);
     let state = created.state;
     for (const seat of [1, 2]) {
       const ended = applyCommandV7(
@@ -742,12 +759,12 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       );
       if (!ended.accepted) throw new Error("END_TURN rejected");
       state = ended.state;
-      expect(unlocked(state, seat)).toEqual([true, false, true, ...NONE]);
+      expect(unlocked(state, seat)).toEqual([true, false, true, ...REST]);
     }
     // Nothing is left to research for any faction.
     for (const player of state.players) {
       const tree = queryTechnologyTreeV7(state, player.id);
-      expect(tree.nodes).toHaveLength(23);
+      expect(tree.nodes).toHaveLength(25);
       expect(tree.nodes.every((node) => node.state === "OWNED")).toBe(true);
     }
     expect(
@@ -768,13 +785,13 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
     expect(SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role)).toEqual(
       UNIT_ROLE_IDS_V7,
     );
-    expect(state.units).toHaveLength(40);
+    expect(state.units).toHaveLength(44);
     // IDs: capital 2s + 1 and FIGHTER 2s + 2; then North and Coast cities
-    // (9–16), the 16 ledger records per seat (17–80), then nine units each.
+    // (9–16), the 16 ledger records per seat (17–80), then ten units each.
     expect(state.populationContributions.map((entry) => entry.id)).toEqual(
       Array.from({ length: 64 }, (_, index) => 17 + index),
     );
-    expect(state.nextEntityId).toBe(117);
+    expect(state.nextEntityId).toBe(121);
     const table = [
       ["FIGHTER", 0, 7, "LAND", "CAPITAL"],
       ["RAIDER", -1, 5, "LAND", "NORTH"],
@@ -786,6 +803,8 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       ["JUGGERNAUT", 1, 8, "LAND", "CAPITAL"],
       ["PATROL_BOAT", 0, 12, "NAVAL", "COAST"],
       ["BATTLESHIP", 0, 13, "NAVAL", "COAST"],
+      // The naval branch (`pulp_wars-5ti.2`): east of the Battleship.
+      ["SUBMARINE", 1, 13, "NAVAL", "COAST"],
     ] as const;
     state.players.forEach((player, seat) => {
       const cx = showcaseStripCenterXV7(seat, 3);
@@ -795,11 +814,11 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
         COAST: 10 + 2 * seat,
       };
       const own = state.units.filter((unit) => unit.ownerId === player.id);
-      expect(own).toHaveLength(10);
+      expect(own).toHaveLength(11);
       table.forEach(([role, dx, y, form, home], index) => {
         const rule = effectiveRoleRuleV7(role, player.faction);
         expect(own[index], `${player.faction} ${role}`).toEqual({
-          id: index === 0 ? 2 * seat + 2 : 81 + 9 * seat + (index - 1),
+          id: index === 0 ? 2 * seat + 2 : 81 + 10 * seat + (index - 1),
           ownerId: player.id,
           homeCityId: homes[home],
           role,
@@ -826,7 +845,7 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
           },
         });
       });
-      // Within capacity: Capital 5 of 7, North 3 of 6, Coast 2 of 5, each
+      // Within capacity: Capital 5 of 7, North 3 of 6, Coast 3 of 6 (level 4, with the Submarine), each
       // capacity one higher for a Goblin seat. Revision 19 (root decision):
       // a Dinosaur capital starts at 8 of 7 slots, because the Triceratops,
       // T-Rex, and Brontosaurus homed to it use two slots each
@@ -835,7 +854,7 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       for (const [home, assigned, capacity] of [
         ["CAPITAL", player.faction === "DINOSAUR" ? 8 : 5, 7],
         ["NORTH", 3, 6],
-        ["COAST", 2, 5],
+        ["COAST", 3, 6],
       ] as const) {
         const city = state.cities.find((entry) => entry.id === homes[home]);
         if (city === undefined) throw new Error("home city missing");
@@ -925,7 +944,7 @@ describe("ruleset-7 revision-18 Showcase play", () => {
       const own = state.units.filter(
         (unit) => unit.ownerId === state.humanPlayerId,
       );
-      expect(own).toHaveLength(10);
+      expect(own).toHaveLength(11);
       for (const unit of own) {
         const offered = commands.filter(
           (command) => "unitId" in command && command.unitId === unit.id,

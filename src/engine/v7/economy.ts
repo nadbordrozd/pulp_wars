@@ -1,6 +1,7 @@
 import type { CityId, PlayerId } from "../model/ids";
 import {
   cityUnitCapacityForV7,
+  dockPopulationV7,
   unitCapacitySlotsV7,
   technologyCapabilitiesV7,
   unitRoleMechanicsV7,
@@ -50,6 +51,22 @@ export function isActivePortV7(
       // Only afloat units blockade (revision 19: never an Egg).
       isAfloatFormV7(unit.form),
   );
+}
+
+/**
+ * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 5.4): the
+ * Harbours population of the docks of `ownerId`: its `harbourPopulation`
+ * capability, read through its own tree (never a raw technology test).
+ */
+export function harbourPopulationForV7(
+  players: readonly Pick<PlayerStateV7, "id" | "faction" | "researchedTechs">[],
+  ownerId: PlayerId,
+): number {
+  const owner = players.find((player) => player.id === ownerId);
+  return owner === undefined
+    ? 0
+    : technologyCapabilitiesV7(owner.researchedTechs, owner.faction)
+        .harbourPopulation;
 }
 
 export interface CityGrowthResultV7 {
@@ -307,9 +324,12 @@ export function recomputeLiveEconomyV7(
               tile.at,
               city.ownerId,
             )
-            ? tile.improvement === "SHIPYARD"
-              ? 2
-              : 1
+            ? // The naval branch section 5.4: Harbours adds 1 to every
+              // active dock of an owner with the capability.
+              dockPopulationV7(
+                tile.improvement,
+                harbourPopulationForV7(beforeState.players, city.ownerId),
+              )
             : 0
           : spatialContributionAtV7(finalGraph, tile.at, tile.improvement)
               .population,

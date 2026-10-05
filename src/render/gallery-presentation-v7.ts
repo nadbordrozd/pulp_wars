@@ -11,6 +11,7 @@ import {
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
   isEggLaidRoleV7,
+  isNavalRoleV7,
   roleMechanicsV7,
   type FactionIdV7,
   type ImprovementIdV7,
@@ -201,7 +202,7 @@ export function galleryRowLabelV7(
 }
 
 export function galleryNavalRowV7(row: GalleryUnitRowIdV7): boolean {
-  return row === "PATROL_BOAT" || row === "BATTLESHIP" || row === "TRANSPORT";
+  return isNavalRoleV7(row) || row === "TRANSPORT";
 }
 
 export type GalleryUnitCellV7 =
@@ -257,7 +258,7 @@ export function galleryUnitCellV7(
           portrait: null,
         }
       : { kind: "EMPTY", row, faction };
-  const naval = row === "PATROL_BOAT" || row === "BATTLESHIP";
+  const naval = isNavalRoleV7(row);
   return {
     kind: "UNIT",
     row,

@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { upgradeRetainedPublicViewV7 } from "../../scripts/ruleset-v7-late-public-view-contract";
 import {
-  TECHNOLOGY_IDS_V7,
   applyCommandV7,
   canonicalHash,
   createPublicPlanningWorkV7,
@@ -12,6 +11,7 @@ import {
   type PlayerViewV7,
   type PublicPlanningWorkResultV7,
 } from "../../src/engine/index";
+import { PRE_NAVAL_BRANCH_TECHS_V7 } from "../fixtures/v7-builders";
 import { coastalV7, withPortV7 } from "../fixtures/v7-naval-builders";
 
 const retained = upgradeRetainedPublicViewV7(
@@ -118,7 +118,9 @@ describe("ruleset-7 exact public-planning performance", () => {
           ? {
               ...player,
               coins: 100,
-              researchedTechs: TECHNOLOGY_IDS_V7,
+              // Every technology from before the naval branch, so the
+              // frozen command surface has no Submarine offer.
+              researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
               explored: source.state.board.tiles.map((tile) => tile.at),
             }
           : player,
@@ -157,7 +159,9 @@ describe("ruleset-7 exact public-planning performance", () => {
           ? {
               ...player,
               coins: 100,
-              researchedTechs: TECHNOLOGY_IDS_V7,
+              // Before the naval branch: with Harbours the new Port would
+              // level the city, leaving only the reward choice to plan.
+              researchedTechs: PRE_NAVAL_BRANCH_TECHS_V7,
               explored: source.state.board.tiles.map((tile) => tile.at),
             }
           : player,

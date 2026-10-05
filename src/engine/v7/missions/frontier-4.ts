@@ -158,6 +158,8 @@ export const FRONTIER_4_V7: MissionDefinitionV7 = {
     "SHORECRAFT",
     "NAVIGATION",
     "NAVAL_ENGINEERING",
+    "SEAMANSHIP",
+    "SUBMERSIBLES",
     "SAWMILLING",
   ],
   objective: { kind: "DOMINATION" },

@@ -15,6 +15,7 @@ import {
   type PlayerViewV7,
   type PublicGoblinMechanicsV7,
   type TechnologyIdV7,
+  isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
 
@@ -180,7 +181,7 @@ export function goblinUnitInfoLinesV7(
   mechanics: PublicGoblinMechanicsV7,
   splashAll: boolean,
 ): readonly GoblinUnitInfoLineV7[] {
-  if (role === "PATROL_BOAT" || role === "BATTLESHIP") return [];
+  if (isNavalRoleV7(role)) return [];
   const lines: GoblinUnitInfoLineV7[] = [];
   if (mechanics.kaboomDamage !== null)
     lines.push({

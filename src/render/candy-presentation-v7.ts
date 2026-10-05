@@ -28,6 +28,7 @@ import {
   type PlayerViewV7,
   type PublicCandyMechanicsV7,
   type PublicUnitStatsV7,
+  isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
 
@@ -650,8 +651,7 @@ export function candyRecruitNotesV7(
   role: UnitRoleIdV7,
   faction: FactionIdV7,
 ): readonly string[] {
-  if (faction !== "CANDY" || role === "PATROL_BOAT" || role === "BATTLESHIP")
-    return [];
+  if (faction !== "CANDY" || isNavalRoleV7(role)) return [];
   const mechanics = roleMechanicsV7(role, faction);
   return [
     ...(mechanics.rushPerk === "ESCAPE"

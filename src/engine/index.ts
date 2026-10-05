@@ -72,6 +72,7 @@ export * from "./v7/missions/index";
 export * from "./v7/missions/build";
 export * from "./v7/ice-folk";
 export * from "./v7/movement";
+export * from "./v7/naval-branch";
 export * from "./v7/observation";
 export * from "./v7/order";
 export * from "./v7/plague";

@@ -33,7 +33,7 @@ describe("ruleset-7 technology", () => {
     expect(canonicalHash(reverse)).toBe(canonicalHash(forward));
   });
 
-  it("registers the exact ordered 23-node five-branch graph and start", () => {
+  it("registers the exact ordered 25-node five-branch graph and start", () => {
     assertRuleset7Registry();
     expect(ORIGINAL_BASELINE_V5_NODES.map((node) => node.id)).toEqual(
       TECHNOLOGY_IDS_V7,
@@ -48,17 +48,17 @@ describe("ruleset-7 technology", () => {
       ...Array(5).fill("WILDS"),
       ...Array(5).fill("MOBILITY"),
       ...Array(5).fill("INDUSTRY"),
-      ...Array(3).fill("NAVAL"),
+      ...Array(5).fill("NAVAL"),
     ]);
     expect(
       ORIGINAL_BASELINE_V5_NODES.filter((node) => node.tier === 1),
     ).toHaveLength(5);
     expect(
       ORIGINAL_BASELINE_V5_NODES.filter((node) => node.tier === 2),
-    ).toHaveLength(9);
+    ).toHaveLength(10);
     expect(
       ORIGINAL_BASELINE_V5_NODES.filter((node) => node.tier === 3),
-    ).toHaveLength(9);
+    ).toHaveLength(10);
     expect(
       initialV7().players.every(
         (player) => player.researchedTechs.length === 0,
@@ -109,11 +109,13 @@ describe("ruleset-7 technology", () => {
       ["JUGGERNAUT", null, 40, 8, 8, 1, 1, 1, null, true],
       ["PATROL_BOAT", 5, 10, 4, 4, 2, 1, 1, "SHORECRAFT", true],
       ["BATTLESHIP", 16, 25, 12, 8, 2, 3, 1, "NAVAL_ENGINEERING", false],
+      // The naval branch (`pulp_wars-5ti.2`).
+      ["SUBMARINE", 9, 12, 8, 4, 2, 1, 1, "SUBMERSIBLES", true],
     ]);
     expect(Object.isFrozen(ORIGINAL_ROLE_RULES_V7)).toBe(true);
   });
 
-  it("researches the entire graph for 164 coins without PRNG use", () => {
+  it("researches the entire graph for 180 coins without PRNG use", () => {
     let state = richV7(
       checkedV7({
         ...initialV7(),
@@ -143,7 +145,7 @@ describe("ruleset-7 technology", () => {
       state = result.state;
     }
     expect(state.players[0]).toMatchObject({
-      coins: 836,
+      coins: 820,
       researchedTechs: TECHNOLOGY_IDS_V7,
     });
   });
@@ -223,7 +225,7 @@ describe("ruleset-7 technology", () => {
     expect(
       tree.nodes.find((node) => node.id === "NAVAL_ENGINEERING")?.effects,
     ).toContainEqual({ kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 });
-    expect(capabilities.trainableRoles).toHaveLength(9);
+    expect(capabilities.trainableRoles).toHaveLength(10);
     expect(capabilities.commands).toEqual(
       expect.arrayContaining(["BUILD_MINE", "PILLAGE", "DISBAND"]),
     );

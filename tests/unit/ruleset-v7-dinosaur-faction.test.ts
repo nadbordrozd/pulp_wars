@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r42 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r42");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r42");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r42.current");
+  it("keeps r18 among the gap-free prior identities after the r43 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r43");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r43.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 40 },
+        { length: 41 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-24)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-25)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 40 },
+        { length: 41 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r42");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r43");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -581,7 +581,8 @@ describe("ruleset-7 Dinosaur roster", () => {
       1,
       2,
       true,
-      ["ATTACK"],
+      // The naval branch (`pulp_wars-5ti.2`): the Ram (with Seamanship).
+      ["ATTACK", "RAM"],
       "NAVAL_SCREEN",
     ],
     [
@@ -601,6 +602,25 @@ describe("ruleset-7 Dinosaur roster", () => {
       false,
       ["ATTACK"],
       "NAVAL_CAPITAL",
+    ],
+    // The naval branch (`pulp_wars-5ti.2`): the shared Submarine.
+    [
+      "Submarine",
+      "SUBMARINE",
+      "SUBMERSIBLES",
+      9,
+      null,
+      1,
+      12,
+      8,
+      4,
+      2,
+      1,
+      1,
+      2,
+      true,
+      ["ATTACK", "SUBMERGED", "TORPEDO"],
+      "NAVAL_HUNTER",
     ],
   ];
 
@@ -675,6 +695,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       ["JUGGERNAUT", 2, null, 0, 0, false, true, false],
       ["PATROL_BOAT", 1, null, 0, 0, false, true, false],
       ["BATTLESHIP", 1, null, 0, 0, false, true, true],
+      ["SUBMARINE", 1, null, 0, 0, false, true, false],
     ]);
     for (const faction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const)
       for (const role of UNIT_ROLE_IDS_V7) {
@@ -810,6 +831,7 @@ describe("ruleset-7 Dinosaur roster", () => {
       "KNIGHT",
       "PATROL_BOAT",
       "BATTLESHIP",
+      "SUBMARINE",
     ]);
   });
 });
@@ -1449,7 +1471,9 @@ describe("ruleset-7 Dinosaur Showcase", () => {
     ).toEqual(TECHNOLOGY_IDS_V7);
     // Used slots (revision 20 section 4.1): the Triceratops uses two slots
     // again and Nesting adds a slot to every city, so the capital starts
-    // exactly full at 8 of 8, North at 3 of 7 and Coast at 2 of 6.
+    // exactly full at 8 of 8 and North at 3 of 7. The naval branch
+    // (`pulp_wars-5ti.2`): the Coast city is level 4 (Harbours) and homes
+    // the Submarine too, so it is at 3 of 7.
     const slots = state.cities
       .filter((city) => city.ownerId === dinosaurId)
       .map((city) => [
@@ -1459,17 +1483,17 @@ describe("ruleset-7 Dinosaur Showcase", () => {
     expect(slots).toEqual([
       [8, 8],
       [3, 7],
-      [2, 6],
+      [3, 7],
     ]);
     // The other seats keep one slot per unit.
     expect(
       state.cities
         .filter((city) => city.ownerId === seatIdV7(state, 1))
         .map((city) => assignedUnitCountV7(state, city.id)),
-    ).toEqual([5, 3, 2]);
+    ).toEqual([5, 3, 3]);
     // The first income is the Human one.
-    expect(playerIncomeV7(state, dinosaurId).totalCoins).toBe(16);
-    expect(playerIncomeV7(reference, dinosaurId).totalCoins).toBe(16);
+    expect(playerIncomeV7(state, dinosaurId).totalCoins).toBe(17);
+    expect(playerIncomeV7(reference, dinosaurId).totalCoins).toBe(17);
   });
 
   it("cannot train or lay in the over-capacity capital but can in North and at the Coast docks", () => {
@@ -1534,7 +1558,7 @@ describe("ruleset-7 Dinosaur Showcase", () => {
             : [],
         ),
       ),
-    ).toEqual(new Set(["PATROL_BOAT", "BATTLESHIP"]));
+    ).toEqual(new Set(["PATROL_BOAT", "BATTLESHIP", "SUBMARINE"]));
     for (const command of trains)
       expect(applyCommandV7(state, state.humanPlayerId, command).accepted).toBe(
         true,

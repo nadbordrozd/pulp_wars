@@ -472,8 +472,18 @@ describe("headless parity and the CLI flag", () => {
       expect(result.metrics.eventHash).toBe(canonicalHash(result.events));
       const eventsBeforeCandy = result.events.map((event) => {
         if (event.kind !== "COMBAT_RESOLVED") return event;
-        const { sugarRushApplied, splatApplied, bounce, bounceTo, ...preview } =
-          event.preview;
+        const {
+          sugarRushApplied,
+          splatApplied,
+          bounce,
+          bounceTo,
+          ram,
+          torpedo,
+          ...preview
+        } = event.preview;
+        // The naval branch (`pulp_wars-5ti.2`, 7r43) adds two more, neutral
+        // while no seat holds Seamanship or Submersibles.
+        expect([ram, torpedo]).toEqual([false, false]);
         expect([sugarRushApplied, splatApplied, bounce, bounceTo]).toEqual([
           false,
           false,

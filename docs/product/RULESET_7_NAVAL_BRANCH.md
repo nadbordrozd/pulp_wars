@@ -2,7 +2,12 @@
 
 **Status:** design specification (`pulp_wars-5ti.1`, epic `pulp_wars-5ti`):
 drafted, critiqued, and redrafted ([Appendix A](#appendix-a-draft-critique-redraft)).
-Nothing here is implemented. It is an overlay over
+**Engine step I is implemented** (`pulp_wars-5ti.2`, identity
+`pulp-wars-poc-7r43`, which is `7rA` below): the five-technology branch,
+the Submarine, Ram, Board, and Harbours for all eight factions, as recorded
+in [section 20](#20-engine-step-i-as-built-pulp_wars-5ti2). Engine step II
+(the Ice Folk frozen sea), the Normal AI, the art, and the interface are
+not implemented. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r35`
 (seven factions, map curiosities engine I), and it supersedes the deferred
 floe of the [Ice Folk overlay section 17.3](RULESET_7_ICE_FOLK.md#173-deferred-the-floe).
@@ -283,15 +288,15 @@ Attack and costs no Coins. Legality, in this order (all rejections atomic):
 Engine formula, open water, full HP unless stated
 ([section 11.1](#111-method)):
 
-| Exchange                                                   | Result                                                                               |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Patrol Boat attacks a Patrol Boat                          | 5 dealt, 5 taken                                                                     |
-| Patrol Boat **rams** a Patrol Boat                         | 8 dealt (2 left: boardable), 4 taken, target shoved                                  |
-| a second ship boards that Patrol Boat                      | it is yours at 4 HP; a plain hit would have killed it (6 on 2 HP) for a kill instead |
-| Patrol Boat rams a transport (any land unit embarked)      | 10 dealt (6 without the ram), 1 taken; the transport is shoved off the landing coast |
-| Patrol Boat rams a Battleship                              | 6 dealt, 10 taken: the boat dies (a ram does not beat a Battleship)                  |
-| Patrol Boat rams a blockader on its own dock               | the blockader is shoved to open water and the dock is active again                   |
-| two Submarines torpedo a Battleship, then a boat boards it | 9 and 11 dealt (5 left), then the Battleship is yours at 9 HP                        |
+| Exchange                                                   | Result                                                                                                                   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Patrol Boat attacks a Patrol Boat                          | 5 dealt, 5 taken                                                                                                         |
+| Patrol Boat **rams** a Patrol Boat                         | 8 dealt (2 left: boardable), 4 taken, target shoved                                                                      |
+| a second ship boards that Patrol Boat                      | it is yours at 4 HP; a plain hit would have killed it (6 on 2 HP) for a kill instead                                     |
+| Patrol Boat rams a transport (any land unit embarked)      | 10 dealt (6 without the ram), 0 taken (an embarked unit never retaliates); the transport is shoved off the landing coast |
+| Patrol Boat rams a Battleship                              | 6 dealt, 10 taken: the boat dies (a ram does not beat a Battleship)                                                      |
+| Patrol Boat rams a blockader on its own dock               | the blockader is shoved to open water and the dock is active again                                                       |
+| two Submarines torpedo a Battleship, then a boat boards it | 9 and 11 dealt (5 left), then the Battleship is yours at 9 HP                                                            |
 
 ## 5. Submersibles: the Submarine and Harbours
 
@@ -767,7 +772,7 @@ Cost 5, 10 HP, Attack 2 (3 ramming), Defense 2, Move 2.
 | Battleship                         | 3; 12 (boat dies)          | 6; 10 (boat dies) | none: rams do not beat Battleships |
 | Battleship at 16 HP                | 4; 10                      | 7; 8              |                                    |
 | Battleship at 9 HP                 | 5; 8                       | 9; 6              | finishes it                        |
-| any transport (embarked land unit) | 6; 2                       | 10; 1             | shoved away from the coast         |
+| any transport (embarked land unit) | 6; 0                       | 10; 0             | shoved away from the coast         |
 
 - **Job.** Escort, screen, and Submarine hunter; with Seamanship the fight
   between boats is decided by who rams first, and transports learn to sail
@@ -1522,6 +1527,81 @@ may change any of them.
 9. **Humans first, then copies** means five factions share the branch with
    no identity of their own at sea; that is what the user asked, and the art
    carries the difference.
+
+## 20. Engine step I as built (`pulp_wars-5ti.2`)
+
+Engine step I took the identity **`pulp-wars-poc-7r43`** (autosave
+`pulpWars.save.v7r43.current`; `7r42` is the last prior identity). The map
+revision did not change. What the code does where this document left a
+choice, or reads differently:
+
+1. **Eight factions, not seven.** The Candy faction joined after this
+   overlay was written. It is a seafaring faction like the other six: same
+   technologies, Submarine, Ram, Board, and Harbours, no Candy rule on a
+   boat (no Rush, no Crumbs).
+2. **Costs.** Tier 3 has cost `9 + 5(C − 1)` since `7r41`
+   ([section 2](#2-the-branch-at-a-glance) quotes the older 12): Seamanship
+   costs 7 and Submersibles 9 with one city.
+3. **An embarked unit never strikes back (ruled).** The worked examples of
+   [sections 4.3](#43-worked-examples) and
+   [11.2](#112-the-patrol-boat-with-ram) first gave a rammed transport a
+   reply of 1 (2 without the ram). The current rules win: an embarked unit
+   never retaliates, so the boat takes 0, and both tables now say so; the
+   damage dealt (10, or 6 without the ram, and 14 for a torpedo) is as
+   stated. Every other worked example of sections 4.3, 5.5, and 11.4 that
+   the tests pin holds as written.
+4. **The shove's conditions are exactly the list of
+   [section 4.1](#41-ram).** The ordinary Push also refuses territory allied
+   to the pushed unit; the shove does not. A tile the attacker has not
+   explored blocks the shove with `push: "BLOCKED"` (a Juggernaut's Push
+   reports `UNKNOWN_BEHIND_FOG` there); the public preview of a ram is
+   therefore always `WILL_PUSH` or `BLOCKED`.
+5. **Order of the `ATTACK` checks.** After `TARGET_ALLIED`: a torpedo at a
+   target that is not afloat is `ATTACK_NOT_LEGAL { reason: "NOT_AFLOAT" }`;
+   then the range check, in which a Submarine farther than 1 is
+   `TARGET_OUT_OF_RANGE`.
+6. **`BOARD`.** The boarder is marked like a unit that used a special
+   action (`specialActed` and `handled`); the prize gets the exhausted
+   activation of a mind-controlled unit. `TARGET_ALLIED` covers the actor's
+   own ships and its allies'. A prize keeps its Promotion (`veteran`, its
+   maximum HP) and its kills (ruled), so one with three kills may be
+   promoted by its new owner like any unit (a Promotion heals fully). An overrunning unit is refused with `UNIT_ALREADY_ACTED` (no ship
+   overruns today).
+7. **Harbours in events and previews.** `PORT_BUILT.populationAdded` is 1 or
+   2 and `SHIPYARD_BUILT.livePopulationTotal` 2 or 3 (they were the
+   constants 1 and 2); the public preview of `BUILD_PORT` reports 2 with the
+   viewer's Harbours. A foreign city's population is public as before, so a
+   viewer may infer an opponent's Harbours from it; a ship's public
+   abilities list `RAM` whatever its owner researched.
+8. **Showcase.** Every seat has a Submarine on the Deep Water tile east of
+   its Battleship (`dx` 1, `y` 13), homed to the Coast city. Every technology
+   is researched there, so the Coast city's Port gives 2 and its Shipyard 3;
+   under the ordinary ledger the Coast city is **level 4** (it was 3), with
+   the level-4 reward `TREASURY_8` (the North city's).
+9. **Missions.** Every registered mission forbids Shorecraft (the four of
+   Chapter One and the five test fixtures), and each now forbids all five
+   technologies. No mission's initial state changed, so no
+   mission revision was bumped.
+10. **Threatened tiles.** A tile that holds a visible Submarine of another
+    owner counts as threatened by an attacker only from the attacker's
+    reachable tiles next to it (a Wail keeps its reach); a Submarine
+    threatens explored water tiles only.
+11. **Normal AI.** Unchanged apart from counting Submarines as naval units
+    for its two-ship training cap. It may research the two technologies,
+    train a Submarine, ram by moving and attacking, or pick an offered
+    `BOARD` only as its general scoring happens to; the rules of
+    [section 13.1](#131-seafaring-seats-bead-5ti4) are `pulp_wars-5ti.4`.
+12. **Stand-ins until the art and interface beads.** A Submarine draws its
+    faction's Patrol Boat sprite and portrait; Seamanship shows the Patrol
+    Boat and Submersibles the Shipyard on their technology cards; `BOARD` has
+    **no control in the interface** until `pulp_wars-5ti.7` aims it on the
+    board (one dock button per boardable ship would break
+    [the board-targeting rule](../ui/BOARD_TARGETING.md)): the engine offers
+    it, the AI and headless play may use it, and a player cannot yet; Ram,
+    Submerged, Torpedo, Board, and Harbours have their one-sentence texts in
+    the technology cards, recruitment help, and the Gallery. There is no
+    ram or torpedo wording in the attack preview, no grappling-hook badge,
+    and no shove arrow yet.
 
 ## Appendix A. Draft, critique, redraft
 

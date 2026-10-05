@@ -617,6 +617,11 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "SUGAR_RUSH",
   "REBAKE",
   "SUGAR_TOSS",
+  // The naval branch engine (bead pulp_wars-5ti.2): Board is legal in the
+  // engine but has no dock button until the naval interface (bead
+  // pulp_wars-5ti.7) aims it on the board; one button per boardable ship
+  // would break the board-targeting rule (docs/ui/BOARD_TARGETING.md).
+  "BOARD",
 ]);
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
 export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
@@ -9008,7 +9013,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r42",
+    rulesetId: "pulp-wars-poc-7r43",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -9110,7 +9115,15 @@ function effectDescription(
     case "COMMAND":
       return effect.command === "CULTIVATE_FOREST"
         ? "Clear for farming: removes Forest and creates Fertile Ground"
-        : title(effect.command);
+        : // The naval branch (`pulp_wars-5ti.2`; the help sentence of
+          // RULESET_7_NAVAL_BRANCH.md section 14.2).
+          effect.command === "BOARD"
+          ? "Board: a ship can capture an adjacent enemy ship that has a third of its HP or less"
+          : title(effect.command);
+    case "RAM":
+      return "Ram: a Patrol Boat that moved this turn rams boats and transports with +1 Attack and shoves them one tile back";
+    case "HARBOURS":
+      return `Harbours: every active Port and Shipyard gives ${effect.population} more population`;
     case "UNIT_ROLE":
       return label(effect.role);
     case "RESOURCE_REVEAL":
@@ -9222,6 +9235,11 @@ function navalTechnologyNotesV7(
     return ["Ships can sail deep water", "Active Ports link sea trade"];
   if (technology === "NAVAL_ENGINEERING")
     return ["Battleship: long-range splash damage"];
+  // The naval branch (`pulp_wars-5ti.2`; RULESET_7_NAVAL_BRANCH.md 14.2).
+  if (technology === "SUBMERSIBLES")
+    return [
+      "Submarine: can only be attacked from an adjacent tile; attacks only boats and transports, which cannot strike back",
+    ];
   if (technology === "EXPLOSIVES")
     return ["Drill identifies resource-free mountains safe to Blast"];
   if (technology === "ROADS")
@@ -9358,6 +9376,8 @@ function technologyEffectGroupIdV7(
     case "CONFECTIONER_SUPPORT":
     case "HOME_SWEET_HOME":
     case "PEPPERMINT_SURPRISE":
+    case "RAM":
+    case "HARBOURS":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":

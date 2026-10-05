@@ -30,6 +30,7 @@ import {
   type PlayerViewV7,
   type PublicMartianMechanicsV7,
   type TractorBeamPreviewV7,
+  isNavalRoleV7,
   type UnitRoleIdV7,
 } from "../engine/index";
 
@@ -367,8 +368,7 @@ export function martianHelpRulesV7(): readonly (readonly [string, string])[] {
   // and no heat ray) and the Tripod's range-2-only ray.
   const pistolRoles = martianRolesWith("ATTACK").filter(
     (role) =>
-      role !== "PATROL_BOAT" &&
-      role !== "BATTLESHIP" &&
+      !isNavalRoleV7(role) &&
       !martianRolesWith("HEAT_RAY").includes(role) &&
       effectiveRoleRuleV7(role, "MARTIAN").range >= 2,
   );
@@ -577,8 +577,7 @@ export function martianRecruitNotesV7(
   role: UnitRoleIdV7,
   faction: FactionIdV7,
 ): readonly string[] {
-  if (faction !== "MARTIAN" || role === "PATROL_BOAT" || role === "BATTLESHIP")
-    return [];
+  if (faction !== "MARTIAN" || isNavalRoleV7(role)) return [];
   const mechanics = roleMechanicsV7(role, faction);
   return [
     ...(mechanics.shield > 0

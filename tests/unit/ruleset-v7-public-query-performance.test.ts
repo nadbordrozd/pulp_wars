@@ -86,7 +86,9 @@ describe("ruleset-7 late public query performance", () => {
       // The Candy revision (`pulp_wars-jdb.3`) inserts SUGAR_RUSH, REBAKE,
       // and SUGAR_TOSS after ASSEMBLE, moving every later kind forward by
       // three (was 845cbd…b1a9); the revision-12-ordinal value is unchanged.
-      "6f1e43a15a53e8a5b700861843e160e026280d536ed29ae371e4d0e8c3b6b43d",
+      // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
+      // moving every later kind forward by one (was 6f1e43…b43d).
+      "056a9c9f7c1876befbdb94ba6aa25eda58021efbaf92eba31406adfed10221e1",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

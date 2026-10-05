@@ -5,7 +5,9 @@ import {
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  isNavalRoleV7,
   type CommandKindV7,
+  type NavalRoleIdV7,
   type AchievementIdV7,
   type CoordV7,
   type RewardIdV7,
@@ -51,6 +53,16 @@ export type CommandV7 =
     }
   | {
       readonly kind: "ATTACK";
+      readonly unitId: UnitId;
+      readonly targetUnitId: UnitId;
+    }
+  | {
+      /**
+       * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section
+       * 4.2): the ship `unitId` captures the adjacent, badly damaged
+       * hostile ship `targetUnitId`.
+       */
+      readonly kind: "BOARD";
       readonly unitId: UnitId;
       readonly targetUnitId: UnitId;
     }
@@ -213,7 +225,7 @@ export type CommandV7 =
       readonly kind: "TRAIN_NAVAL";
       readonly cityId: CityId;
       readonly at: CoordV7;
-      readonly role: "PATROL_BOAT" | "BATTLESHIP";
+      readonly role: NavalRoleIdV7;
     }
   | {
       readonly kind: "DISEMBARK";
@@ -354,6 +366,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
   }
   if (
     kind === "ATTACK" ||
+    kind === "BOARD" ||
     kind === "MIND_CONTROL" ||
     kind === "TRACTOR_BEAM" ||
     kind === "THROW_BOLAS" ||
@@ -502,9 +515,7 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
       ? parseCityIdV7(candidate.cityId)
       : null;
     const at = city === null ? null : parseCoordV7(candidate.at);
-    return city === null ||
-      at === null ||
-      (candidate.role !== "PATROL_BOAT" && candidate.role !== "BATTLESHIP")
+    return city === null || at === null || !isNavalRoleV7(candidate.role)
       ? invalid(kind)
       : { ok: true, value: { kind, cityId: city, at, role: candidate.role } };
   }
@@ -642,6 +653,7 @@ function referencedOrdinal(command: CommandV7): number {
     return ACHIEVEMENT_IDS_V7.indexOf(command.achievement);
   if (
     command.kind === "ATTACK" ||
+    command.kind === "BOARD" ||
     command.kind === "MIND_CONTROL" ||
     command.kind === "TRACTOR_BEAM" ||
     command.kind === "THROW_BOLAS" ||

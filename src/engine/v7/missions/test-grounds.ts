@@ -137,6 +137,12 @@ export const TEST_GROUNDS_V7: MissionDefinitionV7 = {
       reveal: { radius: 2, rects: [{ x0: 1, y0: 7, x1: 3, y1: 9 }] },
     },
   ],
-  forbiddenTechnologies: ["SHORECRAFT", "NAVIGATION", "NAVAL_ENGINEERING"],
+  forbiddenTechnologies: [
+    "SHORECRAFT",
+    "NAVIGATION",
+    "NAVAL_ENGINEERING",
+    "SEAMANSHIP",
+    "SUBMERSIBLES",
+  ],
   objective: { kind: "DOMINATION" },
 };

@@ -6,6 +6,7 @@ import {
   applyCommandV7,
   buildMissionStateV7,
   effectiveRoleRuleV7,
+  isNavalRoleV7,
   projectEventsV7,
   queryPlayerCommandsV7,
   roleMechanicsV7,
@@ -181,7 +182,12 @@ const TERRAIN: readonly string[] = [
 ];
 
 function naval(role: UnitRoleIdV7): boolean {
-  return role === "PATROL_BOAT" || role === "BATTLESHIP";
+  return isNavalRoleV7(role);
+}
+
+/** The role attacks only units afloat (the Submarine's Torpedo). */
+function torpedoes(role: UnitRoleIdV7): boolean {
+  return role === "SUBMARINE";
 }
 
 /**
@@ -216,6 +222,9 @@ function targetAt(
   role: UnitRoleIdV7,
   cue: GalleryDemoCueV7,
 ): CoordV7 {
+  // The naval branch (bead pulp_wars-5ti.2): a Submarine torpedoes only
+  // units afloat, so its target is a Patrol Boat on the water beside it.
+  if (torpedoes(role)) return { x: SHIP.x + 1, y: SHIP.y };
   if (naval(role)) return { x: SHIP.x + 1, y: SHIP.y - 1 };
   // Bead pulp_wars-1wy.5: a Mothership's Heavy Tractor Beam pulls from its
   // full reach, so the target slides two tiles; a Saucer's pulls one.
@@ -289,7 +298,12 @@ function missionFor(
         coins: 0,
         technologies: [],
         cities: [{ at: ENEMY_CAPITAL, level: 1, rewards: [] }],
-        units: [{ role: "GUARD", at: targetAt(faction, role, cue) }],
+        units: [
+          {
+            role: torpedoes(role) ? "PATROL_BOAT" : "GUARD",
+            at: targetAt(faction, role, cue),
+          },
+        ],
         reveal: { radius: 1 },
       },
     ],

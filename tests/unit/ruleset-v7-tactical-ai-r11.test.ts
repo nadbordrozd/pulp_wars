@@ -981,7 +981,9 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // REBAKE, and SUGAR_TOSS after ASSEMBLE, moving every later kind
           // forward by three (was 96afa0…4064); the revision-12-ordinal
           // value below is unchanged.
-          "b34c5ae7732b79f075de7f2e879eefe1ba5d83e54c2a8a50e1130074c6243ef8",
+          // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
+          // moving every later kind forward by one (was b34c5a…3ef8).
+          "32a2e1c4cbc5f2f56739d727946319c1c0e3bebd66995fc9ee79e2a64b5815c0",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1056,7 +1058,9 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The Candy revision (`pulp_wars-jdb.3`) inserts SUGAR_RUSH,
           // REBAKE, and SUGAR_TOSS after ASSEMBLE, moving every later
           // command-kind ordinal forward by three (was 9651ad…0520).
-          "02ba06f3db7d67f1317aae8c4b662b2bf23bc887d7f4b9c3765358d037e8c4a5",
+          // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
+          // moving every later kind forward by one (was 02ba06…c4a5).
+          "d9e8edaca015f56c82cc5625c73b73b023b2767fa6f9229c345c8e5a101c968a",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

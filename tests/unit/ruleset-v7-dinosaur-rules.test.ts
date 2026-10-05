@@ -141,6 +141,7 @@ describe("ruleset-7 Dinosaur capacity slots", () => {
         { role: "KNIGHT", slots: 2 },
         { role: "PATROL_BOAT", slots: 1 },
         { role: "BATTLESHIP", slots: 1 },
+        { role: "SUBMARINE", slots: 1 },
       ],
     });
     const human = previewCityCapacityV7(state, humanCity.id);

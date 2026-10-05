@@ -12,6 +12,7 @@ import { randomState } from "../../random/random";
 import {
   ORIGINAL_BASELINE_V5_TREE,
   canEnterTerrainV7,
+  dockPopulationV7,
   effectiveRoleRuleV7,
   factionTreeV7,
   gravesEnabledV7,
@@ -19,12 +20,17 @@ import {
   technologyCapabilitiesV7,
 } from "../../rules/ruleset-v7";
 import { initialAchievementEntitlementsV7 } from "../achievements";
-import { growthSpentV7, roadPopulationForCityV7 } from "../economy";
+import {
+  growthSpentV7,
+  harbourPopulationForV7,
+  roadPopulationForCityV7,
+} from "../economy";
 import { withFullShieldsV7 } from "../martian";
 import { spatialContributionAtV7 } from "../spatial-economy";
 import { parseGameStateV7 } from "../state-schema";
 import {
   IMPROVEMENT_IDS_V7,
+  NAVAL_ROLE_IDS_V7,
   REWARD_IDS_V7,
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
@@ -89,7 +95,7 @@ const BIOME_LEGEND_V7: Readonly<Record<string, BiomeIdV7>> = {
   W: "WOODLAND",
   H: "HIGHLANDS",
 };
-const NAVAL_ROLES_V7 = new Set(["PATROL_BOAT", "BATTLESHIP"]);
+const NAVAL_ROLES_V7 = new Set<string>(NAVAL_ROLE_IDS_V7);
 /** The `BOOM` reward's permanent record (section 4.2 of the current rules). */
 const BOOM_POPULATION_V7 = 3;
 
@@ -386,13 +392,16 @@ export function buildMissionStateV7(
           id: 0,
           cityId: id,
           category: "LIVE",
+          // The naval branch section 5.4: a seat that starts with the
+          // capability has its Harbours population.
           amount:
-            tile.improvement === "PORT"
-              ? 1
-              : tile.improvement === "SHIPYARD"
-                ? 2
-                : spatialContributionAtV7(graph, tile.at, tile.improvement)
-                    .population,
+            tile.improvement === "PORT" || tile.improvement === "SHIPYARD"
+              ? dockPopulationV7(
+                  tile.improvement,
+                  harbourPopulationForV7(players, city.ownerId),
+                )
+              : spatialContributionAtV7(graph, tile.at, tile.improvement)
+                  .population,
           source: {
             kind: "IMPROVEMENT",
             improvement: tile.improvement,

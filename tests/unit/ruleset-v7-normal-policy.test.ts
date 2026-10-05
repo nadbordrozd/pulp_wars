@@ -315,7 +315,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The Candy revision (`pulp_wars-jdb.3`) inserts SUGAR_RUSH, REBAKE,
       // and SUGAR_TOSS after ASSEMBLE, moving every later kind forward by
       // three (was ffcd2f…677b); the revision-12-ordinal value is unchanged.
-      "fdc900fdc9e76d100f85ac6faf24e3c61ee9549f3a1e255717717c38614a1608",
+      // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
+      // moving every later kind forward by one (was fdc900…1608).
+      "32d19a8c92bbba6024c83121fa71cf8104452422cf8f8a3e80fe6a93791619d3",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1051,7 +1053,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The Candy revision (`pulp_wars-jdb.3`) inserts SUGAR_RUSH, REBAKE,
       // and SUGAR_TOSS after ASSEMBLE, moving every later command-kind
       // ordinal forward by three (was 7c5499…bf5c).
-      "ba920b3f443d63f68451d7ee27b07849a5ab0b110b9288104b95aab465d49a33",
+      // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
+      // moving every later command-kind ordinal forward by one (was
+      // ba920b…9a33).
+      "6b50029f26b061e511547d3d5ae4a99654653950a125834e5c0fb63b5b9d9b1e",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1068,7 +1073,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r42");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r43");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(
