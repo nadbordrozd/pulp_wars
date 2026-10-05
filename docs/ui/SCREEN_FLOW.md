@@ -1349,7 +1349,10 @@ select offers every faction, this overlay wins.
   script setting a taken faction moves each later seat whose faction an
   earlier seat now plays to the first untaken faction in the frozen faction
   order. The AI seats are therefore always distinct, and every seat count
-  from 2 to 4 always has a legal assignment.
+  from 2 to the faction count always has a legal assignment (the
+  [many players overlay](#current-ruleset-7-many-players-overlay) raised
+  the limit from 4; seats past the fourth default to the next factions in
+  the same order).
 - **Showcase.** The Showcase uses the same selects and the same rule.
 - **Launch and resume.** A setup that still repeats a faction (never built
   by the form) is refused by the engine with `DUPLICATE_FACTION` and the
@@ -1357,6 +1360,81 @@ select offers every faction, this overlay wins.
   the headless and test only mirror option opens the save-recovery screen
   ("Saved match repeats a faction; every player must play a different
   faction.").
+
+## Current Ruleset 7 many players overlay
+
+This overlay (`pulp_wars-ykw.5`) applies to the current Ruleset 7 route in
+both art sets; the rules are in the
+[map scale spec](../product/RULESET_7_MAP_SCALE.md) (sections 6.3, 8.1 and
+8.5). Where an older section says one to three opponents, a minimum size per
+opponent count, four seats, or a faction select per row, this overlay wins.
+Everything the setup offers is read from the engine's map-scale queries
+(`src/render/setup-options-v7.ts`); no size, seat or village table is
+repeated in the interface.
+
+**Setup**
+
+- **Opponents** offers 1 up to one less than the number of factions (7
+  today). Every player plays a different faction, so the unique-factions
+  rule above holds at every count: seats default to the factions in their
+  registration order, and with every faction taken an opponent's select has
+  nothing free (only "Your faction" still swaps).
+- **Size** offers only the sizes legal for the chosen map and player count.
+  A size the engine classes as crowded reads "11 × 11 · Crowded" in the
+  list.
+- **Under Size and Map**, one line: the villages of the chosen board as the
+  most it holds ("Up to 5 villages", "Up to 1 village", "No villages"),
+  and, on a crowded board, the **Crowded** mark: a crossed-swords icon and
+  the one word, with "Few or no villages. Expect early fighting." as its
+  tooltip and accessible description. The Showcase shows no village line.
+- **A choice that stops being legal moves, visibly.** When the opponent
+  count or the map changes and the size is no longer legal, the size moves
+  to the nearest legal one (the larger of two equally near); the line under
+  Size then reads "Size changed to 14 × 14." (`role="status"`) and the Size
+  select is ringed in gold until the next change. With reduced motion the
+  ring appears without its pulse. The form is updated in place: no control
+  is replaced and focus stays.
+- **Map.** A map type that cannot take the players at any size is disabled
+  with a short reason in its label: "Showcase (up to 3 opponents)". Raising
+  the opponents past that while it is selected moves the map to Continents
+  ("Map changed to Continents."). Every generated map type takes every
+  opponent count at some size.
+- **Mode.** The Mode select's tooltip reads "AIs allied: every opponent is
+  allied against you."
+- **Factions** is a compact grid, two seats a row on desktop and phone
+  (eight seats are four rows): each cell is the faction's emblem (its
+  Fighter portrait ringed in the faction colour) beside the seat's select
+  ("Your faction", "Player N faction"). The emblem follows the select in
+  place. There is no random choice.
+
+**Match**
+
+- **Turn-order strip.** In a match with three or more players the HUD
+  shows, after the coins and the turn, a strip of small faction emblems in
+  turn order, each ringed in its faction colour: the player whose turn it is
+  has a second, gold ring and is slightly larger; a player who is out is
+  grey and crossed out. It is a list ("Turn order"), not a control: nothing
+  in it takes focus, and each emblem's name is spoken ("Player 5, Dwarf,
+  playing now", "Player 3, Goblin, out", "You, Human"). Below 600 CSS px
+  the strip collapses to the current player's emblem and the place in the
+  order, "3/8". Two-player matches have no strip.
+- **AI-turn status.** With two or more opponents still in the game the
+  status reads "Player 5 (Dwarf) is playing… (3 of 7)". The count starts
+  with the opponent who plays right after the human, so it runs 1, 2, 3…
+  while the player waits, and it skips players who are out. Below 600 CSS
+  px the "(3 of 7)" is left out (the strip shows "3/8").
+- **Leaderboard.** One row per player as before; the row of the player
+  whose turn it is has a gold edge and a gold ring on its swatch
+  (`aria-current`). The list scrolls inside its popup when it does not fit.
+- **Results.** Victory and Defeat list every player once, in leaderboard
+  order: emblem, "You" or "Player N" with the faction's name, a trophy on
+  the winner of a Victory, "Out" on players who lost every city, and the
+  city count. The list scrolls inside the dialog. A Defeat shows no trophy:
+  the match ends with the other players still in it.
+- **Resume and Help.** The resume summary names the player count ("Turn 7 ·
+  12 coins · 8 players · Dry land"), and Help has one line: "A game holds
+  up to 8 players, each a different faction." (the number is the faction
+  count).
 
 ## Current Ruleset 7 Gallery
 

@@ -15,9 +15,11 @@ step I, the village density (bead 2 of
 [section 11](#11-implementation-beads)), is implemented at
 `pulp-wars-poc-7r40`, and engine step II, many seats (bead 3), at
 `pulp-wars-poc-7r42` with map revision `REGIONAL_BIOMES_NAVAL_V4`; both are
-folded into the current rules (sections 2.1 to 2.3 and 3). The Normal AI
-budget, the setup screen, and the coarse check (beads 4 to 6) are not
-implemented yet. It is an overlay over
+folded into the current rules (sections 2.1 to 2.3 and 3). The setup
+screen and the match interface for many players (bead 5,
+`pulp_wars-ykw.5`) are implemented as the notes under sections 6.3 and 8.5
+say, with no change of identity. The Normal AI budget and the coarse check
+(beads 4 and 6) are not implemented yet. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r35`
 (sections 2.1–2.3, 2.7, and 3 in particular), the
 [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md), and the
@@ -1050,6 +1052,28 @@ section 3.3 and at most 9 seats), the next allowed size is used.
   section 7). With more opponents selected, the Showcase option is greyed
   out with the reason.
 
+**As implemented** (`pulp_wars-ykw.5`; the interface is described in the
+[many players overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-many-players-overlay)).
+The setup reads everything from the queries of
+`src/engine/v7/map-scale.ts`. It differs from the list above in four
+places, each following the user's standing interface rules (little text,
+icons) or a ruling of section 5.6:
+
+- A size that stops being legal moves to the **nearest legal size**, for a
+  change of the opponent count as well as of the map (the list above says
+  the auto size for the first and the smallest allowed size for the
+  second). A size only ever becomes illegal by being too small, so the
+  nearest legal size is the smallest allowed one: the player who chose a
+  small board keeps the smallest board there is. The move is shown ("Size
+  changed to 14 × 14.").
+- The village line is "Up to V villages" (ruling 2 of section 5.6), with no
+  per-player figure; it says "Up to" on every setup, the exact ones
+  included, because the engine has no public query that tells an exact
+  count from a most.
+- The Crowded label is an icon and the one word; its sentence is the
+  tooltip.
+- The Cooperative sentence of section 6.4 is the Mode select's tooltip.
+
 ### 6.4 Cooperative with many seats
 
 `COOPERATIVE` keeps its meaning at every count: every AI seat is allied to
@@ -1155,6 +1179,16 @@ stay under 1 MB), and the frame time on the late 25 x 25 8-seat fixture.
 - **Turn banner and status** name the seat and faction (every match now has
   factions) and the position in the round.
 - Every seat-count-dependent text ("Player N") works for N up to `F`.
+
+**As implemented** (`pulp_wars-ykw.5`,
+[many players overlay](../ui/SCREEN_FLOW.md#current-ruleset-7-many-players-overlay)).
+The strip appears in matches with three or more players and is a row of
+small faction emblems (Fighter portraits ringed in the faction colour); on
+a phone it shows the current player's emblem and "3/8" (not "Turn 3 of 8":
+"Turn N" already names the round). The status reads "Player 5 (Dwarf) is
+playing… (3 of 7)", counted from the opponent who plays right after the
+human and skipping players who are out. There is no separate turn banner.
+The results dialog lists every player.
 
 ### 8.6 Colours
 

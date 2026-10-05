@@ -563,6 +563,99 @@ describe("Ruleset 7 browser smoke script", () => {
       expect(probe).toContain(`await driver.capture("${name}")`);
     expect(probe).not.toContain("/tests/fixtures/");
   });
+  it("launches the most players on the smallest Dry Land board and plays one End Turn", () => {
+    const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
+    const probe = readFileSync(
+      "scripts/browser-smoke-v7-many-seats.ts",
+      "utf8",
+    );
+
+    // After the Gallery probe (a fresh front screen) and before the
+    // campaign probe, to which it returns a fresh front screen.
+    const call = source.indexOf("await probeManySeatsV7({");
+    expect(call).toBeGreaterThan(source.indexOf("await probeGalleryV7({"));
+    expect(call).toBeLessThan(
+      source.indexOf("await probeCampaign(connection)"),
+    );
+    // The count is read from the setup, never written into the probe.
+    expect(probe).toContain("#v7-ai-count option");
+    expect(probe).toContain("const most = counts.at(-1)");
+    expect(probe).toContain("const seats = counts.length + 1");
+    // Chosen with the keyboard on focused, closed selects.
+    expect(probe).toContain(
+      'await driver.typeSelectKeys("#v7-ai-count", most, most)',
+    );
+    expect(probe).toContain(
+      'await driver.typeSelectKeys("#v7-map-type", "D", "DRY_LAND")',
+    );
+    // Repeated "1" keys cycle through the sizes starting with 1, so the
+    // probe counts the presses from the current size to 11 x 11.
+    expect(probe).toContain(
+      'await driver.typeSelectKeys("#v7-board-size", "1".repeat(presses), "11")',
+    );
+    // The default flow's own size step leaves a select that already holds
+    // the value alone (two players keep 11 x 11 now).
+    expect(
+      source.slice(
+        source.indexOf("async function typeSelectValue("),
+        source.indexOf("async function typeSelectKeys("),
+      ),
+    ).toContain(
+      ".value === ${JSON.stringify(value)}`,\n    )\n  )\n    return;",
+    );
+    const helper = source.slice(
+      source.indexOf("async function typeSelectKeys("),
+      source.indexOf("async function launchWithFastForward("),
+    );
+    expect(helper).toContain("!select.matches(':open')");
+    expect(helper).toContain('"Input.dispatchKeyEvent"');
+    // The setup: the crowded size marked, the Showcase disabled with its
+    // reason, one seat cell per player, no horizontal overflow.
+    expect(probe).toContain("option.dataset.crowded === 'true'");
+    expect(probe).toContain("chip.textContent === 'Crowded'");
+    expect(probe).toContain("!setup.showcaseDisabled");
+    expect(probe).toContain("setup.seatCells !== seats");
+    expect(probe).toContain("setup.factions !== seats");
+    expect(probe).toContain("setup.overflow > 0");
+    // The match: every player, the strip, the human's turn ringed.
+    expect(probe).toContain("started.players !== seats");
+    expect(probe).toContain("started.width !== 11");
+    expect(probe).toContain('started.mapType !== "DRY_LAND"');
+    expect(probe).toContain("started.chips !== seats");
+    expect(probe).toContain("!started.activeViewer");
+    // One End Turn at normal speed: no Fast Forward, no fixture.
+    const endTurn = probe.indexOf(
+      `await driver.pointerClick('[data-action="end-turn"]')`,
+    );
+    expect(endTurn).toBeGreaterThan(
+      probe.indexOf(`await driver.pointerClick('[data-action="launch"]')`),
+    );
+    expect(probe.match(/data-action="end-turn"/g)).toHaveLength(1);
+    expect(probe).not.toContain("armFastForwardExpression");
+    expect(probe).not.toContain("/tests/fixtures/");
+    expect(probe).not.toContain("import ");
+    // Every player was active once and the status counted the opponents.
+    expect(probe).toContain("round.active !== seats");
+    expect(probe).toContain("round.eliminated !== 0");
+    expect(probe).toContain("places.length === 0");
+    expect(probe).toContain("snapshot().phase === 'ERROR'");
+    // Then it leaves: save and quit, the player count, delete.
+    expect(
+      probe.indexOf('driver.openCompactMenuItem("main-menu")'),
+    ).toBeGreaterThan(endTurn);
+    expect(probe).toContain("players · Dry land");
+    expect(probe).toContain(
+      `await driver.pointerClick('[data-action="delete-save"]')`,
+    );
+    for (const name of [
+      "many-seats-setup-desktop.png",
+      "many-seats-hud-desktop.png",
+    ])
+      expect(probe).toContain(`await driver.capture("${name}")`);
+    expect(source).toContain(
+      "Curiosities ${curiosities}. Many players ${manySeats}. Evidence:",
+    );
+  });
   it("probes the campaign: switch, list, briefing, mission start, a fixture win and the filtered choice", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     const probe = source.slice(
@@ -620,7 +713,9 @@ describe("Ruleset 7 browser smoke script", () => {
       source.indexOf("await probeShowcaseMatch(connection)"),
     );
     expect(source).toContain('? "fixture skipped on the deployed bundle"');
-    expect(source).toContain("Curiosities ${curiosities}. Evidence:");
+    expect(source).toContain(
+      "Curiosities ${curiosities}. Many players ${manySeats}. Evidence:",
+    );
     expect(probe).toContain('module: "/tests/fixtures/v7-curiosities-ui.ts"');
     expect(probe).toContain('fixture: "curiositiesWoundedSpiderFixtureV7"');
     expect(probe).toContain("UNIT:MONSTER_GIANT_SPIDER:provoked");

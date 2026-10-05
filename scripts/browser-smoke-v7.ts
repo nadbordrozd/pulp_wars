@@ -23,6 +23,7 @@ import {
 import { probeCandyV7 } from "./browser-smoke-v7-candy";
 import { probeCuriositiesV7 } from "./browser-smoke-v7-curiosities";
 import { probeGalleryV7 } from "./browser-smoke-v7-gallery";
+import { probeManySeatsV7 } from "./browser-smoke-v7-many-seats";
 import { probeResearchPromptV7 } from "./browser-smoke-v7-research-prompt";
 import {
   browserTimingModeV7,
@@ -739,6 +740,20 @@ try {
     pressEscape: () => pressKey(connection, "Escape", "Escape"),
     capture: (name) => capture(connection, name),
   });
+  // Bead pulp_wars-ykw.5: the most players on the smallest Dry Land board,
+  // one End Turn at normal speed, from the fresh front screen the Gallery
+  // probe returns to; it leaves a fresh front screen for the campaign.
+  const manySeats = await probeManySeatsV7({
+    evaluate: (expression, awaitPromise) =>
+      evaluate(connection, expression, awaitPromise),
+    waitForExpression: (expression, attempts) =>
+      waitForExpression(connection, expression, attempts),
+    pointerClick: (selector) => pointerClick(connection, selector),
+    typeSelectKeys: (selector, keys, value) =>
+      typeSelectKeys(connection, selector, keys, value),
+    openCompactMenuItem: (action) => openCompactMenuItem(connection, action),
+    capture: (name) => capture(connection, name),
+  });
   const campaign = await probeCampaign(connection);
   await evaluate(
     connection,
@@ -822,7 +837,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; research prompt ${researchPrompt}; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Candy ${candy}. Curiosities ${curiosities}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; research prompt ${researchPrompt}; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Candy ${candy}. Curiosities ${curiosities}. Many players ${manySeats}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {
@@ -3028,6 +3043,17 @@ async function typeSelectValue(
   );
   if (!focused)
     throw new Error(`Select is not focused and closed: ${selector}`);
+  // A select that already holds the value is left alone: repeated
+  // typeahead keys cycle through the matching options, away from it.
+  // (Since pulp_wars-ykw.5 two players keep 11 x 11 when the opponent
+  // count goes up and down again.)
+  if (
+    await evaluate<boolean>(
+      connection,
+      `document.querySelector(${JSON.stringify(selector)}).value === ${JSON.stringify(value)}`,
+    )
+  )
+    return;
   for (const digit of value) {
     await connection.send("Input.dispatchKeyEvent", {
       type: "keyDown",
@@ -3046,6 +3072,46 @@ async function typeSelectValue(
   await waitForExpression(
     connection,
     `(() => { const select = document.querySelector(${JSON.stringify(selector)}); return select instanceof HTMLSelectElement && document.activeElement === select && !select.matches(':open') && select.value === ${JSON.stringify(value)}; })()`,
+  );
+}
+
+/**
+ * Trusted typeahead on a focused, closed select for any option text (the
+ * many-players probe types an opponent count, "D" for Dry land and a
+ * size); `value` is the option value the keys must select.
+ */
+async function typeSelectKeys(
+  connection: Connection,
+  selector: string,
+  keys: string,
+  value: string,
+): Promise<void> {
+  const focused = await evaluate<boolean>(
+    connection,
+    `(() => { const select = document.querySelector(${JSON.stringify(selector)}); return select instanceof HTMLSelectElement && document.activeElement === select && !select.matches(':open'); })()`,
+  );
+  if (!focused)
+    throw new Error(`Select is not focused and closed: ${selector}`);
+  for (const key of keys) {
+    const upper = key.toUpperCase();
+    const code = /\d/.test(key) ? `Digit${key}` : `Key${upper}`;
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key,
+      code,
+      text: key,
+      windowsVirtualKeyCode: upper.charCodeAt(0),
+    });
+    await connection.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key,
+      code,
+      windowsVirtualKeyCode: upper.charCodeAt(0),
+    });
+  }
+  await waitForExpression(
+    connection,
+    `(() => { const select = document.querySelector(${JSON.stringify(selector)}); return select instanceof HTMLSelectElement && !select.matches(':open') && select.value === ${JSON.stringify(value)}; })()`,
   );
 }
 

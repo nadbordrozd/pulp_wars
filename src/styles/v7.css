@@ -4248,3 +4248,319 @@
     grid-template-columns: repeat(3, max-content);
   }
 }
+
+/*
+ * ---------- Many players (bead pulp_wars-ykw.5) ----------
+ * Setup: the line under Size and Map, the Crowded mark, and the faction
+ * grid with one emblem per seat. Match: the turn-order strip, the current
+ * player's mark in the Leaderboard, and the end-of-game player list.
+ */
+
+.v7-faction-emblem[data-size="small"] {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.v7-faction-emblem[data-size="tiny"] {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.v7-setup-size-info {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  gap: 0.35rem 0.6rem;
+  align-items: center;
+  min-height: 1.7rem;
+  margin-top: -0.4rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.v7-setup-size-info[hidden],
+.v7-setup-size-info > [hidden] {
+  display: none;
+}
+
+.v7-crowded-chip {
+  border: 1px solid rgb(255 143 134 / 45%);
+  background: rgb(255 143 134 / 14%);
+  color: var(--v7-loss);
+}
+
+.v7-crowded-chip .v7-ui-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.v7-setup-note {
+  color: var(--gold);
+  font-weight: 800;
+}
+
+/* A size or map the setup changed by itself is ringed until the next change. */
+.v7-setup-form select[data-moved="true"] {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  animation: v7-setup-moved 0.9s ease-out 1;
+}
+
+@keyframes v7-setup-moved {
+  from {
+    box-shadow: 0 0 0 0.6rem rgb(255 215 96 / 35%);
+  }
+
+  to {
+    box-shadow: 0 0 0 0 rgb(255 215 96 / 0%);
+  }
+}
+
+.v7-setup-factions {
+  gap: 0.6rem 0.8rem;
+}
+
+.v7-setup-seat {
+  /* Set per seat to the faction colour (faction-colours-v7.ts). */
+  --player: #9c968a;
+
+  display: flex;
+  gap: 0.5rem;
+  align-items: end;
+  min-width: 0;
+}
+
+.v7-setup-seat > .v7-faction-emblem {
+  margin-bottom: 0.2rem;
+  box-shadow: 0 0 0 2px var(--player);
+}
+
+.v7-setup-seat > label {
+  flex: 1;
+  min-width: 0;
+}
+
+.v7-setup-seat select {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Five or more players: a tighter grid, so eight seats stay in view. */
+.v7-setup-factions[data-seats="5"] .v7-setup-seat > label,
+.v7-setup-factions[data-seats="6"] .v7-setup-seat > label,
+.v7-setup-factions[data-seats="7"] .v7-setup-seat > label,
+.v7-setup-factions[data-seats="8"] .v7-setup-seat > label,
+.v7-setup-factions[data-seats="9"] .v7-setup-seat > label {
+  gap: 0.15rem;
+  font-size: 0.72rem;
+}
+
+.v7-turn-strip {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 2.5rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--v7-edge);
+  border-radius: 999px;
+  background: var(--v7-glass);
+}
+
+.v7-turn-strip-list {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0.15rem;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.v7-turn-chip {
+  /* Set per player to the faction colour (faction-colours-v7.ts). */
+  --player: #9c968a;
+
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--player);
+  opacity: 0.72;
+}
+
+.v7-turn-chip[data-active="true"] {
+  box-shadow:
+    0 0 0 2px var(--player),
+    0 0 0 4px var(--gold);
+  opacity: 1;
+  transform: scale(1.12);
+}
+
+.v7-turn-chip[data-status="eliminated"] {
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 25%);
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+/* A player who is out is crossed out. */
+.v7-turn-chip[data-status="eliminated"]::after {
+  position: absolute;
+  inset: 45% -10%;
+  border-radius: 2px;
+  background: var(--paper);
+  content: "";
+  transform: rotate(-40deg);
+}
+
+.v7-turn-strip-count {
+  display: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.v7-turn-place {
+  color: var(--muted);
+}
+
+.v7-leaderboard-row[data-active="true"] {
+  border-color: var(--gold);
+  border-left-color: var(--player);
+}
+
+.v7-leaderboard-row[data-active="true"] .v7-player-swatch {
+  box-shadow: 0 0 0 3px var(--gold);
+}
+
+.v7-result-seats {
+  display: grid;
+  gap: 0.3rem;
+  max-height: min(22rem, 45dvh);
+  margin: 0;
+  padding: 0.15rem;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.v7-result-seat {
+  /* Set per player to the faction colour (faction-colours-v7.ts). */
+  --player: #9c968a;
+
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  min-height: 2.6rem;
+  padding: 0.15rem 0.6rem 0.15rem 0.3rem;
+  border: 1px solid var(--v7-edge);
+  border-left: 4px solid var(--player);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 5%);
+}
+
+.v7-result-seat[data-viewer="true"] {
+  background: rgb(255 255 255 / 10%);
+}
+
+.v7-result-seat[data-status="eliminated"] {
+  opacity: 0.6;
+}
+
+.v7-result-seat-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.v7-result-winner {
+  display: inline-flex;
+  color: var(--gold);
+}
+
+@media (max-width: 599px) {
+  /* Two seats a row on a phone too: eight seats are four rows. */
+  .v7-setup-factions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .v7-setup-seat {
+    gap: 0.35rem;
+  }
+
+  .v7-setup-form .v7-setup-factions .v7-setup-seat > label {
+    gap: 0.15rem;
+    font-size: 0.66rem;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  /* Room for the longest faction name beside the emblem. */
+  .v7-setup-form .v7-setup-seat select {
+    padding-inline: 0.5rem 0.2rem;
+    font-size: 0.95rem;
+  }
+
+  .v7-setup-factions {
+    padding-inline: 0.6rem;
+  }
+
+  /* The strip collapses to the current player and "3/8". */
+  .v7-turn-strip {
+    padding: 0.2rem 0.6rem 0.2rem 0.4rem;
+  }
+
+  .v7-turn-strip-list {
+    overflow: visible;
+  }
+
+  .v7-turn-chip:not([data-active="true"]) {
+    display: none;
+  }
+
+  .v7-turn-chip[data-active="true"] {
+    transform: none;
+  }
+
+  .v7-turn-strip-count {
+    display: inline;
+  }
+
+  /* The strip already shows the place in the round. */
+  .v7-turn-place {
+    display: none;
+  }
+
+  .v7-turn-status {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .v7-leaderboard[data-players="5"] .v7-leaderboard-row,
+  .v7-leaderboard[data-players="6"] .v7-leaderboard-row,
+  .v7-leaderboard[data-players="7"] .v7-leaderboard-row,
+  .v7-leaderboard[data-players="8"] .v7-leaderboard-row,
+  .v7-leaderboard[data-players="9"] .v7-leaderboard-row {
+    gap: 0.5rem;
+    min-height: 2.6rem;
+    padding: 0.2rem 0.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v7-setup-form select[data-moved="true"] {
+    animation: none;
+  }
+
+  .v7-turn-chip[data-active="true"] {
+    transform: none;
+  }
+}

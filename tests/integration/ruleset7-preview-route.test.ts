@@ -8,6 +8,7 @@ import {
   type Ruleset7PolicyWork,
 } from "../../src/app/index";
 import {
+  allowedBoardSizesV7,
   queryPlayerCommandsV7,
   type PlayerViewV7,
 } from "../../src/engine/index";
@@ -73,7 +74,11 @@ describe("Ruleset 7 application route", () => {
     count.dispatchEvent(new Event("change", { bubbles: true }));
     expect(document.activeElement).toBe(count);
     expect(requiredButton('[data-action="launch"]')).toBe(launch);
-    expect(selectValues("v7-board-size")).toEqual(["16", "20", "25"]);
+    // Every size the engine allows four players on the default map
+    // (pulp_wars-ykw.5; the old minimum of 16 is gone).
+    expect(selectValues("v7-board-size")).toEqual(
+      allowedBoardSizesV7("CONTINENTS", 4).map(String),
+    );
     expect(document.body.textContent).not.toContain("fixed Original seats");
 
     count.value = "1";

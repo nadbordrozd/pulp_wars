@@ -200,6 +200,14 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#briefing": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#factionEmblem": "SEAT",
   "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#missionResults": "SEAT",
+  // Many players (pulp_wars-ykw.5): seats and their factions in the setup
+  // grid, the turn-order strip and the end-of-game list.
+  "src/render/dom/app-view-v7.ts::syncFactionFieldsV7": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#settleSetupEmblems":
+    "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#factionFields": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#resultSeats": "SEAT",
+  "src/render/dom/app-view-v7.ts::Ruleset7DomAppView.#turnStrip": "SEAT",
   "src/render/dom/app-view-v7.ts::identity": "SEAT",
   "src/render/dom/app-view-v7.ts::trainingCostForViewV7": "SEAT",
   "src/render/dom/app-view-v7.ts::incomeDescription": "SEAT",

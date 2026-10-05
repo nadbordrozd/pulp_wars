@@ -72,7 +72,26 @@ import {
   type UnitId,
   type CityId,
   type FactionIdV7,
+  type BoardSizeV7,
+  BOARD_SIZES_V7,
+  maxSeatCountV7,
 } from "../../engine/index";
+import {
+  CROWDED_HINT_V7,
+  CROWDED_LABEL_V7,
+  SETUP_MAP_TYPES_V7,
+  clampOpponentCountV7,
+  resolveSetupChoiceV7,
+  setupMapLimitReasonV7,
+  setupMapOptionsV7,
+  setupOpponentCountsV7,
+  setupSizeOptionsV7,
+  setupVillageLineV7,
+} from "../setup-options-v7";
+import {
+  aiTurnPlaceV7,
+  playerCountLabelV7,
+} from "../turn-order-presentation-v7";
 import { presentedUnitFactionV7 } from "../neutral-presentation-v7";
 import { curiosityGlyphV7, spiderFigureV7 } from "./curiosity-dom-v7";
 import {
@@ -446,21 +465,14 @@ export {
 } from "../role-presentation-v7";
 export { economicFormulaV7 } from "../economy-presentation-v7";
 
-const BOARD_SIZES = [11, 14, 16, 20, 25] as const;
+const BOARD_SIZES = BOARD_SIZES_V7;
 /** The Rift (bead pulp_wars-9s0.5, RULESET_7_RIFT.md section 8). */
 export const RIFT_LABEL_V7 = "Only flyers";
 export const RIFT_TOOLTIP_V7 =
   "A Rift: only flying units can cross or stand on it, and nothing can be built on it.";
 export const RIFT_HELP_TIP_V7 =
   "Rift: a crack in the ground. Only flying units can cross or stand on it, and nothing can be built on it.";
-const MAP_TYPES: readonly MapTypeV7[] = [
-  "DRY_LAND",
-  "PANGEA",
-  "CONTINENTS",
-  "ARCHIPELAGO",
-  "LAKES",
-  "SHOWCASE",
-];
+const MAP_TYPES = SETUP_MAP_TYPES_V7;
 /** Revision 18 section 5: the fixed Showcase board is always 16 x 16. */
 const SHOWCASE_BOARD_SIZE = 16;
 /** The Showcase board ignores the seed; its setup carries this valid one. */
@@ -469,6 +481,11 @@ const AI_MODE_LABELS: Readonly<Record<string, string>> = {
   RIVAL: "Free-for-all",
   COOPERATIVE: "AIs allied",
 };
+/** Help: the player limit, one player per faction (map scale section 6.1). */
+const PLAYER_LIMIT_HELP_TIP_V7 = (): string =>
+  `A game holds up to ${maxSeatCountV7()} players, each a different faction.`;
+/** Map scale section 6.4: what "AIs allied" means, as the Mode tooltip. */
+const AI_MODE_HINT_V7 = "AIs allied: every opponent is allied against you.";
 const MAP_TYPE_LABELS: Readonly<Record<string, string>> = {
   DRY_LAND: "Dry land",
   PANGEA: "Pangea",
@@ -508,13 +525,24 @@ const FACTIONS_HINT_V7 =
  * disabled; "Your faction" offers every faction, because the human's choice
  * comes first and moves the opponent who played it to a free faction.
  */
-function syncFactionFieldsV7(fieldset: HTMLElement, draft: DraftV7): void {
+function syncFactionFieldsV7(
+  fieldset: HTMLElement,
+  draft: DraftV7,
+  emblem: (faction: FactionIdV7) => HTMLElement,
+): void {
   const shown = draft.factions.slice(0, draft.aiCount + 1);
   shown.forEach((faction, seat) => {
     const field = fieldset.querySelector<HTMLSelectElement>(
       `#v7-faction-${seat}`,
     );
     if (field === null) return;
+    // The seat's emblem follows its faction (portrait and colour).
+    const cell = field.closest<HTMLElement>(".v7-setup-seat");
+    if (cell !== null && cell.dataset.faction !== faction) {
+      cell.dataset.faction = faction;
+      cell.style.setProperty("--player", factionColourV7(faction));
+      cell.querySelector(".v7-faction-emblem")?.replaceWith(emblem(faction));
+    }
     for (const option of Array.from(field.options))
       option.disabled =
         seat !== 0 &&
@@ -664,9 +692,10 @@ const NO_CAMPAIGN_PROGRESS_V7: Ruleset7CampaignProgressV7 = Object.freeze({
 type FrontModeV7 = "SKIRMISH" | "CAMPAIGN";
 
 interface DraftV7 {
-  readonly aiCount: 1 | 2 | 3;
+  /** Opponents: 1 up to one less than the faction count (map scale 6.1). */
+  readonly aiCount: number;
   readonly aiMode: "RIVAL" | "COOPERATIVE";
-  readonly boardSize: (typeof BOARD_SIZES)[number];
+  readonly boardSize: BoardSizeV7;
   /** NEW draws a random seed at launch; SEED uses `seedText`. */
   readonly seedMode: "NEW" | "SEED";
   readonly seedText: string;
@@ -678,9 +707,9 @@ interface DraftV7 {
    */
   readonly curiosities: boolean;
   /**
-   * Seat factions (seat 0 is the human), always four and always distinct
-   * (docs/product/RULESET_7_UNIQUE_FACTIONS.md): Human, Undead, Goblin,
-   * Dinosaur by default. Seats beyond the AI count keep their choice hidden.
+   * Seat factions (seat 0 is the human), one per faction and always distinct
+   * (docs/product/RULESET_7_UNIQUE_FACTIONS.md), in registration order by
+   * default. Seats beyond the AI count keep their choice hidden.
    */
   readonly factions: readonly FactionIdV7[];
 }
@@ -713,7 +742,17 @@ export class Ruleset7DomAppView {
     seedText: "42",
     mapType: "CONTINENTS",
     curiosities: true,
-    factions: distinctFactionsV7(4),
+    factions: distinctFactionsV7(maxSeatCountV7()),
+  };
+  /**
+   * What the setup last changed by itself (a size or map that stopped being
+   * legal for the players), shown under Size until the next change.
+   */
+  #setupNote = "";
+  /** Whether that change moved the size, the map, or both. */
+  #setupMoved: { readonly size: boolean; readonly map: boolean } = {
+    size: false,
+    map: false,
   };
   #selection: BoardSelectionV7 | null = null;
   #screen: ScreenV7 = "MATCH";
@@ -1055,8 +1094,34 @@ export class Ruleset7DomAppView {
     this.#chibiRenderQueued = true;
     queueMicrotask(() => {
       this.#chibiRenderQueued = false;
+      if (this.#settleSetupEmblems()) return;
       this.#render();
     });
+  }
+
+  /**
+   * A portrait that settles while the setup form is shown redraws only the
+   * seats' emblems, in place: the form's controls are never replaced under
+   * the player's hands (an open select would close). False when the setup
+   * form is not on screen.
+   */
+  #settleSetupEmblems(): boolean {
+    const fieldset = this.#root.querySelector<HTMLElement>(
+      "[data-v7-setup] [data-v7-factions]",
+    );
+    if (fieldset === null) return false;
+    for (const cell of Array.from(
+      fieldset.querySelectorAll<HTMLElement>(".v7-setup-seat"),
+    )) {
+      const faction = FACTIONS.find(
+        (candidate) => candidate === cell.dataset.faction,
+      );
+      if (faction !== undefined)
+        cell
+          .querySelector(".v7-faction-emblem")
+          ?.replaceWith(this.#factionEmblem(faction, "small"));
+    }
+    return true;
   }
 
   /**
@@ -1614,13 +1679,21 @@ export class Ruleset7DomAppView {
    * section 1), in the faction's colour, with the placeholder badge where
    * the art is Human art.
    */
-  #factionEmblem(faction: FactionIdV7): HTMLElement {
+  #factionEmblem(
+    faction: FactionIdV7,
+    size: "normal" | "small" | "tiny" = "normal",
+  ): HTMLElement {
     const frame = el(this.#document, "span", "v7-faction-emblem");
     frame.dataset.faction = faction;
+    if (size !== "normal") frame.dataset.size = size;
     frame.setAttribute("aria-hidden", "true");
     const chibi = this.#chibiArt(
       portraitSubjectV7("FIGHTER", faction),
-      CHIBI_DOM_BOXES_V7.action,
+      size === "tiny"
+        ? CHIBI_DOM_BOXES_V7.leaderboard
+        : size === "small"
+          ? CHIBI_DOM_BOXES_V7.passenger
+          : CHIBI_DOM_BOXES_V7.action,
       factionColourV7(faction),
     );
     frame.append(
@@ -1650,7 +1723,7 @@ export class Ruleset7DomAppView {
         this.#document,
         "Opponents",
         "v7-ai-count",
-        ["1", "2", "3"],
+        setupOpponentCountsV7().map(String),
         String(this.#draft.aiCount),
       ),
       select(
@@ -1665,7 +1738,7 @@ export class Ruleset7DomAppView {
         this.#document,
         "Size",
         "v7-board-size",
-        offeredSizes(this.#draft).map(String),
+        [String(effectiveBoardSize(this.#draft))],
         String(effectiveBoardSize(this.#draft)),
         BOARD_SIZE_LABELS,
       ),
@@ -1677,6 +1750,7 @@ export class Ruleset7DomAppView {
         this.#draft.mapType,
         MAP_TYPE_LABELS,
       ),
+      this.#sizeInfo(),
       text(
         this.#document,
         "p",
@@ -1695,32 +1769,9 @@ export class Ruleset7DomAppView {
     );
     launch.type = "submit";
     form.append(launch);
-    // The Showcase forces 16 x 16 and ignores the seed: its Size select is
-    // disabled and the seed group is hidden. Both come back, with the
-    // player's earlier size and seed choice, when another map is chosen.
-    const syncShowcase = (): void => {
-      const showcase = this.#draft.mapType === "SHOWCASE";
-      form.dataset.v7Showcase = String(showcase);
-      const size = form.querySelector<HTMLSelectElement>("#v7-board-size");
-      if (size !== null) {
-        replaceOptions(
-          this.#document,
-          size,
-          offeredSizes(this.#draft).map(String),
-          String(effectiveBoardSize(this.#draft)),
-          BOARD_SIZE_LABELS,
-        );
-        size.disabled = showcase;
-      }
-      const seed = form.querySelector<HTMLElement>(".v7-seed-choice");
-      if (seed !== null) seed.hidden = showcase;
-      // The Showcase never has curiosities: the checkbox is hidden (its
-      // choice is kept for the next map).
-      const curiosities = form.querySelector<HTMLElement>(
-        ".v7-curiosities-choice",
-      );
-      if (curiosities !== null) curiosities.hidden = showcase;
-    };
+    const mode = form.querySelector<HTMLSelectElement>("#v7-ai-mode");
+    if (mode !== null) mode.title = AI_MODE_HINT_V7;
+    const syncShowcase = (): void => this.#syncSetupFields(form);
     syncShowcase();
     form.addEventListener("change", () => {
       this.#readDraft(form);
@@ -1739,7 +1790,9 @@ export class Ruleset7DomAppView {
       )
         liveFactions.replaceWith(this.#factionFields());
       else if (liveFactions !== null)
-        syncFactionFieldsV7(liveFactions, this.#draft);
+        syncFactionFieldsV7(liveFactions, this.#draft, (faction) =>
+          this.#factionEmblem(faction, "small"),
+        );
     });
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -1762,6 +1815,117 @@ export class Ruleset7DomAppView {
     });
     main.append(form, this.#galleryEntry(), this.#ruleset6Link());
     return main;
+  }
+
+  /**
+   * The line under Size and Map (map scale section 6.3): the villages of
+   * the chosen board, the Crowded mark, and what the setup last changed by
+   * itself. Filled by `#syncSetupFields`.
+   */
+  #sizeInfo(): HTMLElement {
+    const info = el(this.#document, "div", "v7-setup-size-info");
+    const crowded = el(this.#document, "span", "v7-chip v7-crowded-chip");
+    crowded.title = CROWDED_HINT_V7;
+    crowded.setAttribute("aria-description", CROWDED_HINT_V7);
+    crowded.append(
+      uiIconV7(this.#document, "attack"),
+      text(this.#document, "span", CROWDED_LABEL_V7),
+    );
+    const note = el(this.#document, "span", "v7-setup-note");
+    note.setAttribute("role", "status");
+    note.setAttribute("aria-live", "polite");
+    info.append(el(this.#document, "span", "v7-setup-villages"), crowded, note);
+    return info;
+  }
+
+  /**
+   * Brings Size, Map and the line under them in line with the draft, in
+   * place (no control is replaced, focus stays). Size offers only the
+   * sizes legal for the map type and the players, crowded ones marked; a
+   * map type that cannot take the players at any size is disabled with the
+   * reason. The Showcase forces 16 x 16 and ignores the seed: its Size
+   * select is disabled and the seed group and Curiosities are hidden; they
+   * come back, with the player's earlier choices, when another map is
+   * chosen.
+   */
+  #syncSetupFields(form: HTMLElement): void {
+    const draft = this.#draft;
+    const showcase = draft.mapType === "SHOWCASE";
+    form.dataset.v7Showcase = String(showcase);
+    const sizes = setupSizeOptionsV7(draft.mapType, draft.aiCount);
+    const effective = effectiveBoardSize(draft);
+    const size = form.querySelector<HTMLSelectElement>("#v7-board-size");
+    if (size !== null) {
+      replaceOptions(
+        this.#document,
+        size,
+        sizes.map((option) => String(option.size)),
+        String(effective),
+        Object.fromEntries(
+          sizes.map((option) => [
+            String(option.size),
+            `${BOARD_SIZE_LABELS[String(option.size)] ?? option.size}${
+              option.crowded ? ` · ${CROWDED_LABEL_V7}` : ""
+            }`,
+          ]),
+        ),
+      );
+      for (const option of Array.from(size.options))
+        option.dataset.crowded = String(
+          sizes.some(
+            (entry) => String(entry.size) === option.value && entry.crowded,
+          ),
+        );
+      size.disabled = showcase;
+      size.dataset.moved = String(this.#setupMoved.size);
+    }
+    const map = form.querySelector<HTMLSelectElement>("#v7-map-type");
+    if (map !== null) {
+      const options = setupMapOptionsV7(draft.aiCount);
+      for (const option of Array.from(map.options)) {
+        const entry = options.find(
+          (candidate) => candidate.mapType === option.value,
+        );
+        if (entry === undefined) continue;
+        const label = MAP_TYPE_LABELS[entry.mapType] ?? entry.mapType;
+        const next = entry.enabled
+          ? label
+          : `${label} (${setupMapLimitReasonV7(entry)})`;
+        option.disabled = !entry.enabled;
+        if (option.textContent !== next) option.textContent = next;
+      }
+      if (map.value !== draft.mapType) map.value = draft.mapType;
+      map.dataset.moved = String(this.#setupMoved.map);
+    }
+    const chosen = sizes.find((option) => option.size === effective);
+    const villages = chosen === undefined ? null : setupVillageLineV7(chosen);
+    const info = form.querySelector<HTMLElement>(".v7-setup-size-info");
+    if (info !== null) {
+      const line = info.querySelector<HTMLElement>(".v7-setup-villages");
+      if (line !== null) {
+        line.textContent = villages ?? "";
+        line.hidden = villages === null;
+      }
+      const crowded = info.querySelector<HTMLElement>(".v7-crowded-chip");
+      if (crowded !== null) crowded.hidden = chosen?.crowded !== true;
+      const note = info.querySelector<HTMLElement>(".v7-setup-note");
+      if (note !== null) {
+        if (note.textContent !== this.#setupNote)
+          note.textContent = this.#setupNote;
+        note.hidden = this.#setupNote === "";
+      }
+      info.dataset.crowded = String(chosen?.crowded === true);
+      info.hidden =
+        villages === null && chosen?.crowded !== true && this.#setupNote === "";
+    }
+    const seed = form.querySelector<HTMLElement>(".v7-seed-choice");
+    if (seed !== null) seed.hidden = showcase;
+    // The Showcase never has curiosities: the checkbox is hidden (its
+    // choice is kept for the next map).
+    const curiosities = form.querySelector<HTMLElement>(
+      ".v7-curiosities-choice",
+    );
+    if (curiosities !== null) curiosities.hidden = showcase;
   }
 
   /**
@@ -1834,30 +1998,43 @@ export class Ruleset7DomAppView {
   }
 
   /**
-   * Per-seat faction choice: one select per seat. Every player plays a
-   * different faction (docs/product/RULESET_7_UNIQUE_FACTIONS.md): an
-   * opponent's select disables the factions other seats play, and the
-   * human's choice moves an opponent who played it to a free faction.
+   * Per-seat faction choice: a compact grid with one cell per seat, the
+   * faction's emblem (its Fighter portrait in the faction colour) beside
+   * the seat's select. Every player plays a different faction
+   * (docs/product/RULESET_7_UNIQUE_FACTIONS.md): an opponent's select
+   * disables the factions other seats play, and the human's choice moves
+   * an opponent who played it to a free faction.
    */
   #factionFields(): HTMLElement {
     const fieldset = el(this.#document, "fieldset", "v7-setup-factions");
     fieldset.dataset.v7Factions = "true";
+    fieldset.dataset.seats = String(this.#draft.aiCount + 1);
     fieldset.append(
       text(this.#document, "legend", "Factions"),
       text(this.#document, "p", FACTIONS_HINT_V7, "v7-setup-factions-hint"),
     );
-    for (let seat = 0; seat <= this.#draft.aiCount; seat += 1)
-      fieldset.append(
+    for (let seat = 0; seat <= this.#draft.aiCount; seat += 1) {
+      const faction = this.#draft.factions[seat] ?? "ORIGINAL";
+      const cell = el(this.#document, "div", "v7-setup-seat");
+      cell.dataset.seat = String(seat);
+      cell.dataset.faction = faction;
+      cell.style.setProperty("--player", factionColourV7(faction));
+      cell.append(
+        this.#factionEmblem(faction, "small"),
         select(
           this.#document,
           seat === 0 ? "Your faction" : `${playerName(seat)} faction`,
           `v7-faction-${seat}`,
           FACTIONS,
-          this.#draft.factions[seat] ?? "ORIGINAL",
+          faction,
           FACTION_LABELS,
         ),
       );
-    syncFactionFieldsV7(fieldset, this.#draft);
+      fieldset.append(cell);
+    }
+    syncFactionFieldsV7(fieldset, this.#draft, (faction) =>
+      this.#factionEmblem(faction, "small"),
+    );
     return fieldset;
   }
 
@@ -1877,7 +2054,7 @@ export class Ruleset7DomAppView {
         ? "A saved game is waiting."
         : mission !== null
           ? `Mission ${mission.entry.number} · ${mission.entry.name} · Turn ${view.round}`
-          : `Turn ${view.round} · ${view.viewer.coins} coins · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)}`,
+          : `Turn ${view.round} · ${view.viewer.coins} coins · ${playerCountLabelV7(view)} · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)}`,
       "v7-resume-summary",
     );
     if (mission !== null) summary.dataset.missionId = mission.entry.missionId;
@@ -2105,16 +2282,10 @@ export class Ruleset7DomAppView {
       `Turn ${view.round}`,
       "v7-hud-round",
     );
-    const status = text(
-      this.#document,
-      "p",
-      this.#snapshot.phase === "COMPLETE"
-        ? "Game over"
-        : humanTurn
-          ? "Your turn"
-          : `${playerTitle(view, active?.seat ?? 0)} is playing…`,
-      "v7-turn-status",
-    );
+    const status = el(this.#document, "p", "v7-turn-status");
+    if (this.#snapshot.phase === "COMPLETE") status.textContent = "Game over";
+    else if (humanTurn) status.textContent = "Your turn";
+    else this.#fillAiStatus(status);
     status.dataset.v7AiProgress = "true";
     status.dataset.turn =
       this.#snapshot.phase === "COMPLETE"
@@ -2123,6 +2294,8 @@ export class Ruleset7DomAppView {
           ? "human"
           : "other";
     stats.append(economy, round, status);
+    const strip = this.#turnStrip(view);
+    if (strip !== null) stats.append(strip);
     const nav = el(this.#document, "nav", "v7-hud-nav");
     nav.setAttribute("aria-label", "Game");
     nav.dataset.compactMenu = this.#compactMenuOpen ? "open" : "closed";
@@ -4832,6 +5005,8 @@ export class Ruleset7DomAppView {
       // Revision 21: what achievements are for.
       ACHIEVEMENT_HELP_TIP_V7,
       "Capture every enemy city to win.",
+      // Map scale (bead pulp_wars-ykw.5): the player limit.
+      PLAYER_LIMIT_HELP_TIP_V7(),
       "Move a land unit onto your port to put it to sea.",
       // Faction building looks (epic pulp_wars-xdh), in a match with a
       // faction that has one.
@@ -5261,8 +5436,18 @@ export class Ruleset7DomAppView {
     );
     const list = this.#document.createElement("ol");
     list.className = "v7-leaderboard";
+    list.dataset.players = String(view.leaderboard.length);
+    const playingId =
+      this.#snapshot.phase === "COMPLETE"
+        ? null
+        : view.turnOrder[view.activeSeatIndex];
     for (const entry of view.leaderboard) {
       const row = el(this.#document, "li", "v7-leaderboard-row");
+      // The player whose turn it is carries a mark (map scale 8.5).
+      if (entry.playerId === playingId) {
+        row.dataset.active = "true";
+        row.setAttribute("aria-current", "true");
+      }
       // The row's edge and swatch are in the faction colour (bead
       // pulp_wars-b5f.4), the owner colour everywhere else too.
       row.dataset.faction = entry.faction.toLowerCase();
@@ -5802,6 +5987,7 @@ export class Ruleset7DomAppView {
         `Turn ${view.round} · ${MAP_TYPE_LABELS[view.setup.mapType] ?? title(view.setup.mapType)} ${view.setup.width} × ${view.setup.height}`,
         "v7-screen-lede",
       ),
+      this.#resultSeats(view),
     );
     const actions = el(this.#document, "div", "button-row");
     const restart = button(
@@ -5814,6 +6000,65 @@ export class Ruleset7DomAppView {
     actions.append(restart);
     result.append(actions, this.#ruleset6Link());
     return result;
+  }
+
+  /**
+   * The end-of-game list (map scale section 10.3): every player once, in
+   * leaderboard order, as an emblem with the faction's name, the winner's
+   * trophy, "Out" for players who lost every city, and the city count. It
+   * scrolls inside the dialog when eight players do not fit a phone.
+   */
+  #resultSeats(view: PlayerViewV7): HTMLElement {
+    const list = this.#document.createElement("ol");
+    list.className = "v7-result-seats";
+    list.dataset.players = String(view.leaderboard.length);
+    list.setAttribute("aria-label", "Players");
+    // A defeat ends the match with the other players still in it: nobody
+    // has won, so only a victory shows a trophy.
+    const winnerId =
+      view.outcome === null || view.outcome.kind === "DEFEAT"
+        ? null
+        : view.outcome.winnerId;
+    for (const entry of view.leaderboard) {
+      const row = el(this.#document, "li", "v7-result-seat");
+      row.dataset.seat = String(entry.seat);
+      row.dataset.status = entry.status.toLowerCase();
+      row.style.setProperty("--player", factionColourV7(entry.faction));
+      if (entry.isViewer) row.dataset.viewer = "true";
+      const name = text(
+        this.#document,
+        "span",
+        `${entry.isViewer ? "You" : playerName(entry.seat)} · ${factionNameV7(entry.faction)}`,
+        "v7-result-seat-name",
+      );
+      const cities = el(this.#document, "span", "v7-leaderboard-stat");
+      cities.title = "Cities";
+      cities.append(
+        this.#chibiArt(
+          cityArtSubjectV7({ artLevel: 1, faction: entry.faction }),
+          CHIBI_DOM_BOXES_V7.leaderboard,
+          factionColourV7(entry.faction),
+        )?.element ?? art(this.#document, "building-city-1", ""),
+        String(entry.cityCount),
+        text(this.#document, "span", " cities", "v7-sr-only"),
+      );
+      row.append(this.#factionEmblem(entry.faction, "small"), name);
+      if (entry.playerId === winnerId) {
+        row.dataset.winner = "true";
+        const won = el(this.#document, "span", "v7-result-winner");
+        won.title = "Winner";
+        won.append(
+          uiIconV7(this.#document, "trophy"),
+          text(this.#document, "span", "Winner", "v7-sr-only"),
+        );
+        row.append(won);
+      }
+      if (entry.status === "ELIMINATED")
+        row.append(text(this.#document, "span", "Out", "v7-chip is-idle"));
+      row.append(cities);
+      list.append(row);
+    }
+    return list;
   }
 
   /**
@@ -5982,35 +6227,61 @@ export class Ruleset7DomAppView {
     });
   }
   #readDraft(form: HTMLElement): void {
-    const count = Number(value(form, "v7-ai-count"));
-    const aiCount = count === 2 || count === 3 ? count : 1;
-    const sizes = compatibleSizes(aiCount);
+    const requestedMap = MAP_TYPES.includes(
+      value(form, "v7-map-type") as MapTypeV7,
+    )
+      ? (value(form, "v7-map-type") as MapTypeV7)
+      : "CONTINENTS";
     // While the Showcase was selected the Size select only held the forced
     // 16 x 16, so the player's own size is kept from the draft.
-    const requested =
+    const requestedSize =
       this.#draft.mapType === "SHOWCASE"
         ? this.#draft.boardSize
         : Number(value(form, "v7-board-size"));
+    const own = BOARD_SIZES.find((size) => size === requestedSize) ?? 11;
+    // A map type that cannot take the players gives way to another, and a
+    // size that is not legal for the map type and the players to the
+    // nearest legal one (map scale section 6.3). The Showcase keeps the
+    // player's own size for the next map.
+    const resolved = resolveSetupChoiceV7({
+      mapType: requestedMap,
+      opponents: clampOpponentCountV7(Number(value(form, "v7-ai-count"))),
+      boardSize: requestedMap === "SHOWCASE" ? SHOWCASE_BOARD_SIZE : own,
+    });
+    const boardSize =
+      resolved.mapType === "SHOWCASE"
+        ? own
+        : requestedMap === "SHOWCASE"
+          ? resolveSetupChoiceV7({ ...resolved, boardSize: own }).boardSize
+          : resolved.boardSize;
+    const sizeMoved = resolved.mapType !== "SHOWCASE" && boardSize !== own;
+    this.#setupMoved = { size: sizeMoved, map: resolved.mapMoved };
+    this.#setupNote = [
+      ...(resolved.mapMoved
+        ? [
+            `Map changed to ${MAP_TYPE_LABELS[resolved.mapType] ?? resolved.mapType}.`,
+          ]
+        : []),
+      ...(sizeMoved
+        ? [`Size changed to ${BOARD_SIZE_LABELS[String(boardSize)]}.`]
+        : []),
+    ].join(" ");
     this.#draft = {
       seedMode: this.#draft.seedMode,
-      aiCount,
+      aiCount: resolved.opponents,
       aiMode:
         value(form, "v7-ai-mode") === "COOPERATIVE" ? "COOPERATIVE" : "RIVAL",
-      boardSize: sizes.includes(requested as never)
-        ? (requested as DraftV7["boardSize"])
-        : (sizes[0] ?? 11),
+      boardSize,
       seedText: value(form, "v7-seed"),
-      mapType: MAP_TYPES.includes(value(form, "v7-map-type") as MapTypeV7)
-        ? (value(form, "v7-map-type") as MapTypeV7)
-        : "CONTINENTS",
+      mapType: resolved.mapType,
       curiosities:
         form.querySelector<HTMLInputElement>("#v7-curiosities")?.checked ??
         this.#draft.curiosities,
       // Seats keep their choice in seat order; a seat whose faction an
-      // earlier seat now plays takes the first untaken faction, so the four
+      // earlier seat now plays takes the first untaken faction, so the
       // seats always play different factions (RULESET_7_UNIQUE_FACTIONS.md).
       factions: distinctFactionsV7(
-        4,
+        maxSeatCountV7(),
         this.#draft.factions.map((prior, seat) => {
           const field = form.querySelector<HTMLSelectElement>(
             `#v7-faction-${seat}`,
@@ -6238,7 +6509,7 @@ export class Ruleset7DomAppView {
     const progress = this.#root.querySelector<HTMLElement>(
       "[data-v7-ai-progress]",
     );
-    if (progress !== null) progress.textContent = this.#aiStatusText();
+    if (progress !== null) this.#fillAiStatus(progress);
     const fast = this.#root.querySelector<HTMLButtonElement>(
       '[data-action="fast-forward"]',
     );
@@ -6256,6 +6527,81 @@ export class Ruleset7DomAppView {
     return view === null
       ? `${playerName(active?.seat ?? 0)} is playing…`
       : `${playerTitle(view, active?.seat ?? 0)} is playing…`;
+  }
+  /**
+   * The AI-turn status: "Player 5 (Dwarf) is playing…", and with several
+   * opponents still in the game its place among them, "(3 of 7)" (map
+   * scale section 8.1). The place is its own element so that a phone,
+   * where the turn-order strip already shows it, can leave it out.
+   */
+  #fillAiStatus(status: HTMLElement): void {
+    const view = this.#snapshot.view;
+    const place = view === null ? null : aiTurnPlaceV7(view);
+    const label = this.#aiStatusText();
+    if (place === null) {
+      if (status.textContent !== label) status.textContent = label;
+      return;
+    }
+    status.replaceChildren(
+      label,
+      text(
+        this.#document,
+        "span",
+        ` (${place.index} of ${place.total})`,
+        "v7-turn-place",
+      ),
+    );
+  }
+
+  /**
+   * The turn-order strip (map scale section 8.5), in matches with three or
+   * more players: one small faction emblem per player in turn order, the
+   * player whose turn it is ringed, players who are out crossed out. A
+   * phone shows only the current player's emblem and "3/8". It is a list,
+   * not a control: nothing in it takes focus.
+   */
+  #turnStrip(view: PlayerViewV7): HTMLElement | null {
+    if (view.turnOrder.length < 3) return null;
+    const strip = el(this.#document, "div", "v7-turn-strip");
+    strip.dataset.v7TurnStrip = "true";
+    strip.dataset.players = String(view.turnOrder.length);
+    const list = this.#document.createElement("ol");
+    list.className = "v7-turn-strip-list";
+    list.setAttribute("aria-label", "Turn order");
+    const over = this.#snapshot.phase === "COMPLETE";
+    view.turnOrder.forEach((id, index) => {
+      const player = view.players.find((candidate) => candidate.id === id);
+      if (player === undefined) return;
+      const chip = el(this.#document, "li", "v7-turn-chip");
+      const active = !over && index === view.activeSeatIndex;
+      const out = player.status === "ELIMINATED";
+      chip.dataset.seat = String(player.seat);
+      chip.dataset.status = player.status.toLowerCase();
+      chip.dataset.active = String(active);
+      if (id === view.viewer.id) chip.dataset.viewer = "true";
+      if (active) chip.setAttribute("aria-current", "true");
+      chip.style.setProperty("--player", factionColourV7(player.faction));
+      const name = `${
+        id === view.viewer.id ? "You" : playerName(player.seat)
+      }, ${factionNameV7(player.faction)}${
+        out ? ", out" : active ? ", playing now" : ""
+      }`;
+      chip.title = name;
+      chip.append(
+        this.#factionEmblem(player.faction, "tiny"),
+        text(this.#document, "span", name, "v7-sr-only"),
+      );
+      list.append(chip);
+    });
+    const count = text(
+      this.#document,
+      "span",
+      `${view.activeSeatIndex + 1}/${view.turnOrder.length}`,
+      "v7-turn-strip-count",
+    );
+    count.setAttribute("aria-hidden", "true");
+    strip.append(list, count);
+    return strip;
   }
 
   #queueBoundary(boundary: Ruleset7AcceptedBoundary): void {
@@ -8642,16 +8988,6 @@ function art(
   image.alt = alt;
   image.dataset.assetId = assetId;
   return image;
-}
-function compatibleSizes(aiCount: 1 | 2 | 3): readonly DraftV7["boardSize"][] {
-  const minimum = aiCount === 1 ? 11 : aiCount === 2 ? 14 : 16;
-  return BOARD_SIZES.filter((size) => size >= minimum);
-}
-/** The sizes the Size select offers: only 16 x 16 for the Showcase. */
-function offeredSizes(draft: DraftV7): readonly DraftV7["boardSize"][] {
-  return draft.mapType === "SHOWCASE"
-    ? [SHOWCASE_BOARD_SIZE]
-    : compatibleSizes(draft.aiCount);
 }
 /** The size a launch uses; the draft keeps the player's own choice. */
 function effectiveBoardSize(draft: DraftV7): DraftV7["boardSize"] {

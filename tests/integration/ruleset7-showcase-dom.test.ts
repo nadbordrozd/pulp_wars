@@ -143,7 +143,7 @@ describe("Ruleset 7 Showcase setup option", () => {
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
     // In a match the map label reads "Showcase".
     expect(document.querySelector(".v7-resume-summary")?.textContent).toBe(
-      "Turn 1 · 19 coins · Showcase",
+      "Turn 1 · 19 coins · 2 players · Showcase",
     );
     app.destroy();
 
