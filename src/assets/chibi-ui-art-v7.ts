@@ -319,7 +319,7 @@ export function rewardSubjectV7(
       return "ICON:REWARD:WALLS";
     case "STOCKPILE":
     case "TREASURY":
-    case "TREASURY_8":
+    case "TREASURY_6":
       return "ICON:HUD:COIN";
     case "BOOM":
       return "ICON:HUD:POPULATION";

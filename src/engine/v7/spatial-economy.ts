@@ -1,4 +1,5 @@
 import type { CityId, PlayerId } from "../model/ids";
+import { MONUMENT_POPULATION_V7 } from "../rules/ruleset-v7";
 import type { CoordV7, ImprovementIdV7 } from "./types";
 
 export const ECONOMIC_FAMILY_ORDER_V7 = Object.freeze([
@@ -108,7 +109,8 @@ function calculateSpatialContributionAtV7(
   if (improvement === "FARM") return fixed(2, at, improvement);
   if (improvement === "LUMBER_CAMP") return fixed(1, at, improvement);
   if (improvement === "MINE") return fixed(2, at, improvement);
-  if (improvement === "MONUMENT") return fixed(3, at, improvement);
+  if (improvement === "MONUMENT")
+    return fixed(MONUMENT_POPULATION_V7, at, improvement);
   if (
     improvement === "WINDMILL" ||
     improvement === "SAWMILL" ||
@@ -213,6 +215,8 @@ function spatialPlacementSupportV7(
       city.ownerId,
       [type],
       cityById,
+    ).filter((tile) =>
+      contributorServesV7(graph, tile, improvement, at, city, cityById),
     );
     return {
       contributingTiles: contributors,
@@ -245,6 +249,8 @@ function spatialPlacementSupportV7(
       city.ownerId,
       [...BASIC, ...PROCESSORS],
       cityById,
+    ).filter((tile) =>
+      contributorServesV7(graph, tile, improvement, at, city, cityById),
     );
     const families = ECONOMIC_FAMILY_ORDER_V7.filter((family) =>
       contributors.some((tile) => familyFor(tile.improvement) === family),
@@ -262,6 +268,50 @@ function spatialPlacementSupportV7(
     distinctFamilies: [],
     placementCount: 0,
   };
+}
+
+/**
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`; current rules section
+ * 8.3): one contributor counts for exactly one building of a kind. A Farm,
+ * Lumber Camp, or Mine counts for one Windmill, Sawmill, or Forge, and each
+ * Farm, Windmill, Lumber Camp, Sawmill, Mine, or Forge counts for one
+ * Market (the two are independent: a Farm may count for a Windmill and for
+ * a Market). Among the same-owner buildings of `consumer` kind on the eight
+ * tiles around the contributor, it serves the one of its own city;
+ * otherwise the first in (y, x) order. The tile `at` being evaluated always
+ * takes part as a building of the consumer kind, placed or not, so the same
+ * rule answers placement, previews, and live output.
+ */
+function contributorServesV7(
+  graph: EconomyGraphV7,
+  contributor: EconomyGraphTileV7,
+  consumer: ImprovementIdV7,
+  at: CoordV7,
+  atCity: EconomyGraphCityV7,
+  cityById: ReadonlyMap<CityId, EconomyGraphCityV7>,
+): boolean {
+  if (contributor.territoryCityId === atCity.id) return true;
+  // `adjacentTilesV7` is in (y, x) order.
+  for (const tile of adjacentTilesV7(graph.board, contributor.at)) {
+    const here = tile.at.x === at.x && tile.at.y === at.y;
+    if (
+      !here &&
+      (tile.improvement !== consumer ||
+        tileOwner(tile, cityById) !== atCity.ownerId)
+    )
+      continue;
+    if (!here && tile.territoryCityId === contributor.territoryCityId)
+      return false;
+  }
+  for (const tile of adjacentTilesV7(graph.board, contributor.at)) {
+    if (tile.at.x === at.x && tile.at.y === at.y) return true;
+    if (
+      tile.improvement === consumer &&
+      tileOwner(tile, cityById) === atCity.ownerId
+    )
+      return false;
+  }
+  return false;
 }
 
 export function capitalConnectedRoadKeysV7(

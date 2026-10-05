@@ -690,7 +690,7 @@ function projectEventPayload(
           visibility: "BUILDING_ONLY",
           cityId: event.cityId,
           at: event.at,
-          populationAdded: 3,
+          populationAdded: event.populationAdded,
         };
   }
   if (

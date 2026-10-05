@@ -372,6 +372,12 @@ describe("headless parity and the CLI flag", () => {
     // PRNG ends, commands, events, and rounds) were recomputed at 7r42; the
     // 7r41 boards are held by the V3 parity rules
     // (tests/unit/ruleset-v7-map-scale.test.ts).
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46: retaliation, technology costs, the
+    // reward and economy numbers) changes every match, so the command and
+    // event hashes of all five pins were recomputed at 7r46 (the Archipelago
+    // match keeps its commands and changes only its events), with the
+    // rounds of the Dry Land pin (16, was 17); the maps and the PRNG ends
+    // did not change.
     const pins: readonly {
       readonly mapType: MapTypeV7;
       readonly factions: readonly FactionIdV7[];
@@ -388,11 +394,11 @@ describe("headless parity and the CLI flag", () => {
         mapType: "DRY_LAND",
         factions: ["ORIGINAL", "UNDEAD"],
         seed: 3,
-        rounds: 17,
+        rounds: 16,
         commandHash:
-          "ced0c25d56388055bf3c2587536280f05d1af15706c5ec397dd210f628ea617f",
+          "ff6fde78c2498b7855a79af33fbc86ff180d2fb611945a119027f339ba992972",
         eventHash:
-          "fd4dc8d3a21d5734ac9a6e305d13edd3f9f807b436065137b521440f98bda9cd",
+          "dee0ca1f3d202b97f8da6f601f0cc05ba2ec6cea513c874ebe086325eae1c5d1",
         mapHash:
           "1f6ad08d476884229d6cb8a7319ea209b8667cf4e28e24cd07352ebafc3055de",
         finalPrngHash:
@@ -404,9 +410,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 11,
         rounds: 15,
         commandHash:
-          "b74aa59d23513f0c961c4b75a81c3f9a5f2d708af921b542af3caf9ce1c303d8",
+          "1bac0025a353492cfe34b28455b5500671e72a4bff83476142ed3a2fdeabf466",
         eventHash:
-          "68c75b7af3ddfb4dc4aa6e32e8c76ad0864355ec36a1ed6d9fc48226dd6ba856",
+          "8794fa3fde3b60175f3b1eb10d253c119232265dc28b0a604b2d6e9d50ac312a",
         mapHash:
           "5b286bbe8cdb2f8a339cd7a74ba219bc2b57a4322370548442b3c8f26bef4ad9",
         finalPrngHash:
@@ -421,9 +427,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 5,
         rounds: 20,
         commandHash:
-          "15181766086da0e49c57693a1f7e28156e1de59ffd98484f0eb79b8bc95f05ce",
+          "3d25812fcf13acd3253388b1aabdd2ceed2a13aa9ab1c0f2c1607cae491c9551",
         eventHash:
-          "18e61e8e061b9a12da48d2fa70b3798846f786df3124b48848ffabeac2f44979",
+          "468ba32f1ae45e1560c4d8a90ba46e9b073aa1af57a1d409170337a657c50d78",
         mapHash:
           "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:
@@ -437,7 +443,7 @@ describe("headless parity and the CLI flag", () => {
         commandHash:
           "78f067971e0f8aec5855e7fd25f519c8cbd69092772228fbc8cfaf3b868187ae",
         eventHash:
-          "7fe9bd05b9fd52e78f7f99df67e2e40117d1489f0f496294becbb524fb8fdd9e",
+          "6a3b1afa5700e15a39c0d97b449ca24459a38441a39dac161500d72ddccb0964",
         mapHash:
           "be112bd78cfeb3f5ae72a6b67f8f91bd45b81814c5d0cdad9abe7f31f221be5d",
         finalPrngHash:
@@ -449,9 +455,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 2,
         rounds: 11,
         commandHash:
-          "0e09b1924ab593443a1cc26cbd4a6596ae3003f3bd2edbf2e27e24b6f23125ea",
+          "85af21c6f2b103ab8cadf424b9ff6a9e79af2704bfdafaa2948abf9cb0937e03",
         eventHash:
-          "67fb68c498478662e35445ab4f0421d338d9b19aed5f2688b53eded7618cc3ac",
+          "263a856e6f75939ab7543a001764b37528c5e072e84513ca6da06295e732a9e5",
         mapHash:
           "70ff339440ce86f231bca6b2be56c748891436934f614f6ef66fa53933f3d5ab",
         finalPrngHash:

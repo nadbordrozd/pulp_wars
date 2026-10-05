@@ -148,10 +148,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r45",
+    rulesetId: "pulp-wars-poc-7r46",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r45",
+      rulesetId: "pulp-wars-poc-7r46",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -179,7 +179,7 @@ export function upgradeRetainedPublicViewV7(
       rewards: city.rewards.map((reward) => ({
         ...reward,
         reward:
-          String(reward.reward) === "EXPAND" ? "TREASURY_8" : reward.reward,
+          String(reward.reward) === "EXPAND" ? "TREASURY_6" : reward.reward,
       })),
     })),
     units,

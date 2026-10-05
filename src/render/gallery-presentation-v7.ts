@@ -532,7 +532,7 @@ const BUILDING_DESCRIPTIONS: Readonly<Record<GalleryBuildingRowIdV7, string>> =
     WORKSHOP: "Built among varied buildings.",
     MARKET: "Built among varied buildings.",
     MONUMENT:
-      "Each achievement earns a free Monument: +3 population, one per city.",
+      "Each achievement earns a free Monument: +2 population, one per city.",
     PORT: "Built on Shallow Water. Puts land units to sea and trains ships.",
     SHIPYARD: "An upgraded Port. Ships cost less.",
   };

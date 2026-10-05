@@ -12,7 +12,7 @@
  *
  * - `lineup-{1x,x3}.png`, `lineup.json`: the spec's 32 px lineup (section
  *   15.4): the Gumdrop against the Goblin and the Yeti, the Marshmallow
- *   against the Mammoth and the Ice Witch, the Gummy Bear against the
+ *   against the Mammoth and the Ice Witch, the Chocolate Bunny against the
  *   Sabretooth, the Confectioner against the Engineer and the Brain, in
  *   colour and greyscale, at native and half size, with the measures of
  *   scripts/art/dwarf-direction/measure.ts and their calibrated thresholds;
@@ -119,8 +119,8 @@ const UNITS: readonly (readonly [Role, string, string, string])[] = [
   ["GUARD", "marshmallow", "Marshmallow", "steam-mole"],
   ["CAPTAIN", "confectioner", "Confectioner", "engineer"],
   ["CATAPULT", "pie-launcher", "Pie Launcher", "steam-cannon"],
-  ["KNIGHT", "gummy-bear", "Gummy Bear", "steam-tank"],
-  ["JUGGERNAUT", "rock-candy-golem", "Rock Candy Golem", "brass-titan"],
+  ["KNIGHT", "gummy-bear", "Chocolate Bunny", "steam-tank"],
+  ["JUGGERNAUT", "rock-candy-golem", "Gingerbread Giant", "brass-titan"],
 ];
 const FACTION_NAMES = [
   "Human",
@@ -158,7 +158,7 @@ const EFFECTS = [
 const LINEUP: readonly (readonly [string, string, readonly string[]])[] = [
   ["gumdrop", "Gumdrop", ["goblin-goblin", "ice-folk-yeti"]],
   ["marshmallow", "Marshmallow", ["ice-folk-mammoth", "ice-folk-ice-witch"]],
-  ["gummy-bear", "Gummy Bear", ["ice-folk-sabretooth"]],
+  ["gummy-bear", "Chocolate Bunny", ["ice-folk-sabretooth"]],
   ["confectioner", "Confectioner", ["dwarf-engineer", "martian-brain"]],
 ];
 

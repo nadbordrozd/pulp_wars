@@ -654,7 +654,7 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
       ]);
       if (asset === undefined) continue;
       // A unit fills at least half of its canvas height and stands within
-      // 16 px of its bottom (the Gumdrop, a squat dome, is the smallest).
+      // 16 px of its bottom (the Toffee Trooper, a squat dome, is the smallest).
       const rows = opaqueRows(await readRaster(masterFile(asset)));
       expect(rows.bottom - rows.top + 1, name).toBeGreaterThanOrEqual(
         height * 0.55,

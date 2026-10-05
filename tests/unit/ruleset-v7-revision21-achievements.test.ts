@@ -548,7 +548,7 @@ describe("ruleset-7 revision-21 Conqueror", () => {
       expect.objectContaining({
         kind: "MONUMENT_BUILT",
         achievement: "CONQUEROR",
-        populationAdded: 3,
+        populationAdded: 2,
       }),
     );
     expect(entitlement(built.state, 0, "CONQUEROR")).toEqual({

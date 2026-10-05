@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r45`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
+## Current release contract (`pulp-wars-poc-7r46`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
 
-The current runtime is `pulp-wars-poc-7r45` (autosave
-`pulpWars.save.v7r45.current`; saves and replays of `pulp-wars-poc-7r44`
+The current runtime is `pulp-wars-poc-7r46` (autosave
+`pulpWars.save.v7r46.current`; saves and replays of `pulp-wars-poc-7r45`
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -255,6 +255,19 @@ one test per interaction row of the frozen sea (a Wreck under ice, the
 Tunnel and the eruption, Eggs, Crumbs and Re-bake, Assemble, a
 mind-controlled Ice Folk unit, an icebound ship's Recover and Promote, Fish
 and Pearls, Port income, a Submarine next to ice).
+`pulp_wars-w49.3` (`7r46`) is
+[tuning 1](../product/RULESET_7_TUNING_1.md), the Human tech tree and
+economy changes that followed five hand-played games (the retaliation from
+the base Defense, the technology cost steps, the Catapult, Knight, and
+Marksman numbers, the reward unit once per city, the Monument, Treasury,
+Land Grant, and contributor rules, Commerce, Breach, Blast Mountain, Field
+Defense, and the chests). It changed rules shared by every faction and was
+judged by hand play: no balance matrix was run, so every balance record
+named in this document was measured before it. A pending city reward may
+now carry one candidate, a permanent population record may have the source
+action `BLAST_MOUNTAIN`, the level-4 Treasury's reward ID is `TREASURY_6`,
+and `LAND_GRANTED.cost` is no longer the constant 6;
+`tests/unit/ruleset-v7-tuning-1.test.ts` holds the rules.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
 Dwarves, and the Candy are part of the default route: match setup always
 offers a
@@ -277,7 +290,7 @@ The naval branch has no balance evidence yet: its water-map matrix is
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r45` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r46` identity (ruleset ID, autosave key, the
   map revision `REGIONAL_BIOMES_NAVAL_V4`, the
   eight-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`/`CANDY`

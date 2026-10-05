@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r45");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r45.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r44 and preserves the r45 save", () => {
+  it("cleans obsolete keys through v7r45 and preserves the r46 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r44.current",
+      "pulpWars.save.v7r45.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(44);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(45);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -182,7 +182,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r42.current", "r42"],
       ["pulpWars.save.v7r43.current", "r43"],
       ["pulpWars.save.v7r44.current", "r44"],
-      [SAVE_STORAGE_KEY_V7, "r45"],
+      ["pulpWars.save.v7r45.current", "r45"],
+      [SAVE_STORAGE_KEY_V7, "r46"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -221,8 +222,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r42.current",
         "pulpWars.save.v7r43.current",
         "pulpWars.save.v7r44.current",
+        "pulpWars.save.v7r45.current",
       ],
-      removedCount: 33,
+      removedCount: 34,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -739,11 +741,13 @@ describe("ruleset-7 Undead roster and technology registration", () => {
       // Marksman 12 HP (were 10), Guard 17 (was 15).
       ["Fighter", 2, 12, 4, 4, 1, 1, 1, "ATTACK+CAPTURE"],
       ["Raider", 4, 12, 4, 2, 2, 1, 1, "ATTACK+CAPTURE+CHARGE+ESCAPE"],
-      ["Marksman", 3, 12, 4, 2, 1, 2, 1, "ATTACK+CAPTURE"],
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): Marksman 4 Coins, Catapult
+      // Attack 3, Knight 13 HP.
+      ["Marksman", 4, 12, 4, 2, 1, 2, 1, "ATTACK+CAPTURE"],
       ["Guard", 3, 17, 3, 6, 1, 1, 1, "ATTACK+CAPTURE"],
       ["Captain", 5, 10, 2, 2, 1, 1, 1, "ATTACK+RALLY+TEND_WOUNDED"],
-      ["Catapult", 8, 10, 7, 1, 1, 3, 2, "ATTACK"],
-      ["Knight", 9, 10, 6, 2, 3, 1, 1, "ATTACK+OVERRUN"],
+      ["Catapult", 8, 10, 6, 1, 1, 3, 2, "ATTACK"],
+      ["Knight", 9, 13, 6, 2, 3, 1, 1, "ATTACK+OVERRUN"],
       ["Juggernaut", null, 40, 8, 8, 1, 1, 1, "ATTACK+CAPTURE+PUSH"],
       ["Patrol Boat", 5, 10, 4, 4, 2, 1, 1, "ATTACK+RAM"],
       ["Battleship", 16, 25, 12, 8, 2, 3, 1, "ATTACK"],
@@ -1036,8 +1040,11 @@ describe("ruleset-7 Undead training and substitutions", () => {
           { own: false, role: "FIGHTER", at: { x: 9, y: 9 } },
         ],
       );
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): a chest gives a tier 3 unit
+      // only from round 15 (a Ghoul or a Raider before it).
       state = checkedV7({
         ...state,
+        round: 15,
         random: { ...state.random, state: seed },
         treasureChests: [{ x: 2, y: 1 }],
         board: patchTiles(state, [{ x: 2, y: 1 }]),
@@ -1652,6 +1659,12 @@ describe("ruleset-7 all-Human parity digests", () => {
   // so no seat buys a unit on it. Seed 7 now reaches the 30-round cap with
   // 466 commands (was a conquest in round 22 with 232); seed 1234 has 341
   // commands (was 386).
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46: retaliation, technology costs, the
+  // reward and economy numbers) re-pins the same digests of both matches;
+  // map and post-generation PRNG digests are unchanged. Seed 7 reaches the
+  // cap with 387 commands (was 466) and researches Seamanship, so its
+  // combats carry Rams; seed 1234 has 337 commands (was 341). The `ram`,
+  // `torpedo`, and `fortificationIgnored` preview fields are hashed now.
   const BASELINE = [
     {
       seed: 7,
@@ -1660,7 +1673,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 466,
+      acceptedCommands: 387,
       rounds: 31,
       termination: "ROUND_CAP",
       mapHash:
@@ -1668,15 +1681,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "34fa0a047e074b45012e9fc1729ffa8a951908464dcde382d7b7de6a303921d5",
+        "c31c82d300d3e45e7c89e807e66a9e26f4322af00e60ee8345eacfbc1925990c",
       eventHash:
-        "5fea8833b65d9eea644d42d120f78619cd04baa8e082a666294d9cc8001d8aef",
+        "e83d7acb4231c86a75df103fb3954bd2e2dd1894ee2399cf07f7f71c36102b3f",
       normalizedFinalStateHash:
-        "e2eef1f86f93ac15b4c9b5ddc2195ad45c14a967a97a29dfe7feeeaa925722f6",
+        "257b57d74aae254f6488b7a9c907473b47f93f05db302cf7e94ca07ecf836e0d",
       normalizedHumanViewHash:
-        "8a26ef8b4876d6d880c78927e541aad20391a1070cb495432be71d1e6a2bf8e0",
+        "e2f9a1ad22b222bcc592db9ff50338f97a0faba0350c8a357a5d0ed8e121eaa5",
       normalizedHumanCommandsHash:
-        "c9d3fa6a1945397ff2992f042634cb417b1d6f0d9899adc965af566dc2d2af0b",
+        "663402033ac1524fab8b924150ba2374e67c44b1f7715e16e63b14247e9b8134",
     },
     {
       seed: 1234,
@@ -1685,7 +1698,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "COOPERATIVE",
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
-      acceptedCommands: 341,
+      acceptedCommands: 337,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1693,15 +1706,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "f12718df22bf47aa7d747e7395dcd34c4aa58824ffd5ca0b2c89434eeb5e04bd",
+        "1192d91355e362cce0c91978dcba938defa9f5870a7b90689922004f817bac0b",
       eventHash:
-        "c2bc4fc600c9ddf9cb58dd72ed75d5bcdcc4dfcdebd03afb1857688ecc2c95c6",
+        "2b0601867683855075ba6109ea1e6a81dc37acaadcb7c0b3f3c6c69ccf3843c8",
       normalizedFinalStateHash:
-        "4e6d8329bd4491c426e422134760ff4b993a06016a33997e6429dec2b813f7b2",
+        "72aeeb8ca56fc8f46f293f218f3dcb6a384c10f05807714b138820c605f010bb",
       normalizedHumanViewHash:
-        "767e08d117b3c956f121a622b33cced97f936b40025890dd3477034a0fbd5a15",
+        "d98ac336c5c5d8f3b879e9b4620693f706673f1d842dfaed983a85266972fce1",
       normalizedHumanCommandsHash:
-        "b1d589f358328c6e50956bcd3321a3f86fce18bf1ee32e967c9d315efa908a15",
+        "f6f0f49d5dc31fd30b31e4db67e917565959e8dc670748808b4e8e4ff151acc4",
     },
   ] as const;
 
@@ -1813,8 +1826,12 @@ describe("ruleset-7 all-Human parity digests", () => {
         } = event.preview;
         // The frozen sea (pulp_wars-5ti.3): two neutral fields.
         expect([iceCover, icebound]).toEqual([false, false]);
-        // The naval branch (pulp_wars-5ti.2): two neutral fields.
-        expect([ram, torpedo]).toEqual([false, false]);
+        // The naval branch (pulp_wars-5ti.2): two fields that were neutral
+        // while no seat researched Seamanship or Submersibles. Since tuning
+        // 1 (`pulp_wars-w49.3`, 7r46: cheaper technology with many cities)
+        // the seed-7 match researches Seamanship and rams, so they stay in
+        // the hashed preview (below), like `fortificationIgnored`, which a
+        // Breach now sets in an all-Human match.
         // The Candy revision (pulp_wars-jdb.3): four neutral fields.
         expect([sugarRushApplied, splatApplied, bounce, bounceTo]).toEqual([
           false,
@@ -1854,6 +1871,9 @@ describe("ruleset-7 all-Human parity digests", () => {
         });
         const preview = {
           ...previewWithoutSplash,
+          ram,
+          torpedo,
+          fortificationIgnored,
           splash: shieldedSplash.map(({ shieldDamage, ...entry }) => {
             expect(shieldDamage).toBe(0);
             return entry;
@@ -1861,13 +1881,11 @@ describe("ruleset-7 all-Human parity digests", () => {
         };
         expect({
           runUp,
-          fortificationIgnored,
           acid,
           defenderArmoured,
           attackerArmoured,
         }).toEqual({
           runUp: 0,
-          fortificationIgnored: 0,
           acid: false,
           defenderArmoured: false,
           attackerArmoured: false,
@@ -2252,7 +2270,7 @@ function rewardState(
                 : [
                     { reachedLevel: 2, reward: "SURVEY" as const },
                     { reachedLevel: 3, reward: "WALLS" as const },
-                    { reachedLevel: 4, reward: "TREASURY_8" as const },
+                    { reachedLevel: 4, reward: "TREASURY_6" as const },
                   ],
           }
         : candidate,

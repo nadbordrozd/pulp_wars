@@ -66,7 +66,7 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 7 networks and fortifications", () => {
   it("freezes the revision identity and removes the retired systems", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r45");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
     expect(setupV7().mapGenerationRevision).toBe("REGIONAL_BIOMES_NAVAL_V4");
     expect(TECHNOLOGY_IDS_V7).toContain("ENGINEERING");
     expect(TECHNOLOGY_IDS_V7).not.toContain("GRAND_WORKS");
@@ -1393,7 +1393,7 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     }
   });
 
-  it("keeps pre-Drill Ore private and Blasts only revealed empty Mountains", () => {
+  it("keeps pre-Drill Ore private and Blasts empty and Ore Mountains with Explosives", () => {
     const base = richV7(exploredAllV7(initialV7(87)), 100);
     const actor = base.humanPlayerId;
     const city = required(
@@ -1475,10 +1475,15 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     });
     const offered = queryPlayerCommandsV7(viewForV7(afterDrill, actor));
     expect(offered).toContainEqual({ kind: "BLAST_MOUNTAIN", at: bareAt });
-    expect(offered).not.toContainEqual({ kind: "BLAST_MOUNTAIN", at: oreAt });
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): an Ore Mountain may be blasted
+    // too (its Ore is lost); before, Ore blocked the Blast.
+    expect(offered).toContainEqual({ kind: "BLAST_MOUNTAIN", at: oreAt });
   });
 
-  it("queues multi-level rewards one at a time and grants sequential Juggernauts", () => {
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): a city takes its reward unit once;
+  // the next level offers the Treasury alone (it granted a second
+  // Juggernaut before).
+  it("queues multi-level rewards one at a time and grants one Juggernaut, then the Treasury", () => {
     const fixture = rewardSawmillState(91);
     const built = applyCommandV7(fixture.state, fixture.state.humanPlayerId, {
       kind: "BUILD_SAWMILL",
@@ -1503,21 +1508,35 @@ describe("Ruleset 7 revision 7 networks and fortifications", () => {
     });
     if (!first.accepted) throw new Error(first.error.code);
     expect(first.state.pendingChoices).toEqual([
-      expect.objectContaining({ reachedLevel: 6 }),
+      expect.objectContaining({ reachedLevel: 6, candidates: ["TREASURY"] }),
     ]);
-    const second = applyCommandV7(first.state, first.state.humanPlayerId, {
+    const again = applyCommandV7(first.state, first.state.humanPlayerId, {
       kind: "CHOOSE_CITY_REWARD",
       cityId: fixture.cityId,
       reachedLevel: 6,
       reward: "JUGGERNAUT",
+    });
+    expect(again).toMatchObject({
+      accepted: false,
+      error: { code: "CITY_REWARD_MISMATCH" },
+    });
+    const second = applyCommandV7(first.state, first.state.humanPlayerId, {
+      kind: "CHOOSE_CITY_REWARD",
+      cityId: fixture.cityId,
+      reachedLevel: 6,
+      reward: "TREASURY",
     });
     if (!second.accepted) throw new Error(second.error.code);
     const juggernauts = second.state.units.filter(
       (unit) =>
         unit.homeCityId === fixture.cityId && unit.role === "JUGGERNAUT",
     );
-    expect(juggernauts).toHaveLength(2);
-    expect(new Set(juggernauts.map((unit) => key(unit.at))).size).toBe(2);
+    expect(juggernauts).toHaveLength(1);
+    expect(second.events[0]).toMatchObject({
+      kind: "CITY_REWARD_CHOSEN",
+      reward: "TREASURY",
+      coinDelta: 12,
+    });
   });
 
   it("keeps Juggernaut available and removes the center occupant when no adjacent land remains", () => {
@@ -1787,7 +1806,7 @@ function rewardSawmillState(seed: number): {
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" as const },
                 { reachedLevel: 3, reward: "WALLS" as const },
-                { reachedLevel: 4, reward: "TREASURY_8" as const },
+                { reachedLevel: 4, reward: "TREASURY_6" as const },
               ],
             }
           : candidate,

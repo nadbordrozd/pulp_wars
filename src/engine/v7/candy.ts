@@ -241,7 +241,7 @@ function countsAsRushedV7(
 
 /**
  * Section 5.4: the Overrun an `ATTACK` by this unit has: the role ability
- * `OVERRUN` (uncapped), the Gummy Bear's Sugar Frenzy while it is Rushed in
+ * `OVERRUN` (uncapped), the Chocolate Bunny's Sugar Frenzy while it is Rushed in
  * land form (capped), or none.
  */
 export function overrunKindV7(

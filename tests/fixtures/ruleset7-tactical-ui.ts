@@ -49,8 +49,9 @@ export function knightOverrunPublicFixtureV7(): TacticalPublicFixtureV7 {
         ...own,
         role: "KNIGHT" as const,
         at: { x: 4, y: 4 },
-        hp: 10,
-        maxHp: 10,
+        // Tuning 1 (7r46): the Knight has 13 HP.
+        hp: 13,
+        maxHp: 13,
         activation: READY,
       },
       {

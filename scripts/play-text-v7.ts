@@ -49,6 +49,7 @@ import {
   canonicalHash,
   canonicalJson,
   cityLevelIncomeV7,
+  LAND_TRADE_INCOME_COINS_V7,
   cityUnitCapacityForV7,
   createPlayableGameV7,
   duplicateFactionV7,
@@ -83,10 +84,12 @@ import {
   projectEventsV7,
   queryCombatPreviewV7,
   queryIdleRecoveryV7,
+  queryLandGrantPreviewV7,
   queryPlayerCommandsV7,
   queryTechnologyTreeV7,
   seatCountAllowedV7,
   unitCapacitySlotsV7,
+  unitRoleMechanicsV7,
   unitRoleRuleV7,
   viewForV7,
   type BoardSizeV7,
@@ -109,6 +112,12 @@ import {
   type TechnologyUnlockV7,
   type UnitRoleIdV7,
 } from "../src/engine/index";
+import {
+  BLAST_MOUNTAIN_UNLOCK_TEXT_V7,
+  BREACH_UNLOCK_TEXT_V7,
+  FIELD_DEFENSE_UNLOCK_TEXT_V7,
+  landTradeUnlockTextV7,
+} from "../src/render/technology-unlock-text-v7";
 
 export const TEXT_PLAY_SESSION_FORMAT_V7 = "pulp-wars-text-play-session";
 export const TEXT_PLAY_SESSION_VERSION_V7 = 1;
@@ -164,6 +173,14 @@ interface SessionV7 {
   readonly state: GameStateV7;
   readonly stateHash: string;
   readonly journal: JournalV7;
+  /**
+   * Set by a `do` that stopped at a rejected id and cleared by the next
+   * `do` or `end`: a plain `end` right after it is refused (see `end`).
+   */
+  readonly rejectedDo?: {
+    readonly id: string;
+    readonly notExecuted: readonly string[];
+  } | null;
 }
 
 const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; state lives in the session file.
@@ -174,9 +191,13 @@ const HELP_V7 = `Pulp Wars text play (Ruleset 7). One command per invocation; st
   tech    --session S                   technology tree with costs and unlocks
   options --session S [--unit ID | --city ID | --tile x,y | --all]
                                         offered commands with ids and previews
-  do      --session S <id> [<id>...] [--at N]
-                                        apply offered commands in order; stops at the first rejection
-  end     --session S [--at N]          end your turn; the AI seats play; prints what you observed
+  do      --session S <id> [<id>...] [--at N] [--end]
+                                        apply offered commands in order; stops at the first rejection;
+                                        --end also ends the turn, only if every id was applied
+  end     --session S [--at N] [--force]
+                                        end your turn; the AI seats play; prints what you observed;
+                                        refused right after a do that stopped at a rejected id
+                                        (issue another do first, or pass --force)
   log     --session S [--round N]       your own timeline (public information only)
   debrief --session S --out FILE [--reveal-hidden]
                                         AFTER THE GAME ONLY: reveals every seat's hidden data
@@ -192,7 +213,14 @@ Command ids (case-insensitive, valid while offered; see docs/validation/TEXT_PLA
 Coordinates are x,y with 0,0 in the top-left corner; x grows to the right, y grows downwards.
 --at N refuses to act unless the session is at state #N (the number every header prints).`;
 
-const BOOLEAN_FLAGS_V7 = new Set(["full", "all", "overwrite", "reveal-hidden"]);
+const BOOLEAN_FLAGS_V7 = new Set([
+  "full",
+  "all",
+  "overwrite",
+  "reveal-hidden",
+  "end",
+  "force",
+]);
 const VALUE_FLAGS_V7 = new Set([
   "session",
   "map",
@@ -571,7 +599,8 @@ function cityIncomeV7(view: PlayerViewV7, city: PublicCityV7): number {
     1,
     cityLevelIncomeV7(city.level) +
       (city.isCapital ? 1 : 0) +
-      Number(view.naval.landTradeCityIds.includes(city.id)) +
+      Number(view.naval.landTradeCityIds.includes(city.id)) *
+        LAND_TRADE_INCOME_COINS_V7 +
       Number(view.naval.seaTradeCityIds.includes(city.id)) +
       market +
       Math.min(0, city.population),
@@ -833,7 +862,7 @@ const REWARD_TEXT_V7: Readonly<Record<string, string>> = {
   WALLS: "City Walls: stronger defense on the city center",
   MILITIA: "free basic unit(s) of your faction",
   BOOM: "+3 population",
-  TREASURY_8: "+8 Coins",
+  TREASURY_6: "+6 Coins",
   JUGGERNAUT: "a free giant unit",
   TREASURY: "+12 Coins",
 };
@@ -971,7 +1000,13 @@ function unlockTextV7(
         >
       )[unlock.command];
       return spatial === undefined
-        ? `cmd ${unlock.command}`
+        ? `cmd ${unlock.command}${
+            unlock.command === "BLAST_MOUNTAIN"
+              ? ` (${BLAST_MOUNTAIN_UNLOCK_TEXT_V7})`
+              : unlock.command === "BUILD_FIELD_DEFENSE"
+                ? ` (${FIELD_DEFENSE_UNLOCK_TEXT_V7}; 3c, built before moving on a tile of your territory)`
+                : ""
+          }`
         : `cmd ${unlock.command} (${spatial.cost}c, output by neighbours)`;
     }
     case "UNIT_ROLE": {
@@ -980,6 +1015,11 @@ function unlockTextV7(
     }
     case "RESOURCE_REVEAL":
       return `reveals ${unlock.resources.join(",").toLowerCase()}`;
+    // Tuning 1 (7r46): the tech card's sentences for the changed effects.
+    case "MELEE_FIELD_DEMOLITION":
+      return `${BREACH_UNLOCK_TEXT_V7} [${unlock.kind}]`;
+    case "LAND_TRADE_INCOME":
+      return `${landTradeUnlockTextV7(unlock.coins)} [${unlock.kind}]`;
     default: {
       const fields = Object.entries(unlock)
         .filter(([key]) => key !== "kind")
@@ -1100,7 +1140,7 @@ function describeCommandV7(
         ? "pillage the improvement under the unit"
         : `pillage (${tileBriefV7(view, unit.at)}): destroys the improvement, +1 Coin`;
     case "BUILD_FIELD_DEFENSE":
-      return "build a Field Defense on this tile (3c): fortifies units standing here";
+      return "build a Field Defense on this tile (3c): fortifies units standing here | the unit keeps its move and its action";
     case "RALLY":
       return "rally: inspires own units in reach (bonus on their next attack)";
     case "TEND_WOUNDED":
@@ -1159,20 +1199,10 @@ function describeCommandV7(
       return `lay a ${rule.label} egg at ${xyV7(command.at)}${generic(previewLayEggV7(view, command.cityId, command.role))}`;
     }
     case "LAND_GRANT": {
-      const city = view.cities.find(
-        (candidate) => candidate.id === command.cityId,
-      );
-      const claim =
-        city === undefined
-          ? 0
-          : view.board.tiles.filter(
-              (tile) =>
-                tile.explored &&
-                chebyshevV7(tile.at, city.at) <= 2 &&
-                tile.territoryCityId === null &&
-                tile.territoryOwnerId === null,
-            ).length;
-      return `Land Grant for 6c (coins ${view.viewer.coins}->${view.viewer.coins - 6}): the city claims every neutral tile of its 5x5 area (${claim} explored neutral tiles now; unexplored neutral ones are claimed and revealed too) | once per city | uses the city action`;
+      const grant = queryLandGrantPreviewV7(view, command.cityId);
+      const cost = grant?.cost ?? 6;
+      const claim = grant?.tiles.length ?? 0;
+      return `Land Grant for ${cost}c (2c per explored neutral tile, at least 6c; coins ${view.viewer.coins}->${view.viewer.coins - cost}): the city claims every neutral tile of its 5x5 area (${claim} explored neutral tiles now; unexplored neutral ones are claimed and revealed too, free) | once per city | uses the city action`;
     }
     case "CHOOSE_CITY_REWARD": {
       const special =
@@ -1310,6 +1340,17 @@ function eventTextV7(
           `TRAINED ${event.role} in c${event.cityId} (${event.cost}c)`,
         );
       break;
+    case "TREASURE_CAPTURED": {
+      // The serialized reward literal `KNIGHT` means "the chest unit" for
+      // every faction and round, so the line names the unit that came.
+      const text =
+        event.spawnedUnitId === null
+          ? `TREASURE_CAPTURED by ${context.memory.tag(event.unitId)} at ${xyV7(event.at)}: +${event.coinDelta} Coins${event.knightFallback ? " (no free tile or unit slot for the chest unit)" : ""}`
+          : `TREASURE_CAPTURED by ${context.memory.tag(event.unitId)} at ${xyV7(event.at)}: granted ${context.memory.tag(event.spawnedUnitId)}${event.spawnedAt === null ? "" : ` at ${xyV7(event.spawnedAt)}`}${event.homeCityId === null ? "" : ` home c${event.homeCityId}`}`;
+      lines.push(text);
+      if (event.playerId === me) notes.push(text);
+      break;
+    }
     default: {
       const text = `${event.kind} ${compactFieldsV7(event as unknown as Record<string, unknown>, context)}`;
       lines.push(text.trimEnd());
@@ -1321,8 +1362,7 @@ function eventTextV7(
           (event.kind === "ACHIEVEMENT_UNLOCKED" ||
             event.kind === "MONUMENT_BUILT" ||
             event.kind === "CITY_REWARD_CHOSEN" ||
-            event.kind === "LAND_GRANTED" ||
-            event.kind === "TREASURE_CAPTURED"))
+            event.kind === "LAND_GRANTED"))
       )
         notes.push(text.trimEnd());
     }
@@ -1814,6 +1854,77 @@ function activationTextV7(unit: PublicUnitV7): string {
   return flags.length === 0 ? "fresh" : flags.join("+");
 }
 
+/**
+ * Why an attack or a Field Defense is not offered for one of the viewer's
+ * units on its turn, from the public facts the engine's command query
+ * reads (`options --unit`). The first failed condition is named.
+ */
+function unitReasonLinesV7(
+  view: PlayerViewV7,
+  unit: PublicUnitV7,
+  offered: readonly OfferedV7[],
+): string[] {
+  if (unit.ownerId !== view.viewer.id || offered.length === 0) return [];
+  const mine = offered.filter(
+    (entry) => commandUnitIdV7(entry.command) === unit.id,
+  );
+  const rule = unitRoleRuleV7(view, unit);
+  const activation = unit.activation;
+  const primaryUsed =
+    activation.attacked ||
+    activation.recovered ||
+    activation.captured ||
+    activation.specialActed;
+  const lines: string[] = [];
+  if (
+    rule.abilities.includes("ATTACK") &&
+    !mine.some((entry) => entry.command.kind === "ATTACK")
+  )
+    lines.push(
+      `no attack: ${
+        activation.attacked
+          ? "it has attacked this turn"
+          : activation.moved && !rule.mayUsePrimaryActionAfterMove
+            ? `a ${rule.label} cannot attack after it has moved this turn (it attacks only from where it started)`
+            : primaryUsed
+              ? "its action this turn is used"
+              : "no visible hostile unit is in its range"
+      }`,
+    );
+  if (
+    view.viewer.researchedTechs.includes("FORTIFICATION") &&
+    !mine.some((entry) => entry.command.kind === "BUILD_FIELD_DEFENSE")
+  ) {
+    const tile = tileAtV7(view, unit.at);
+    const builders = UNIT_ROLE_IDS_V7.filter(
+      (role) => unitRoleMechanicsV7(view, { ...unit, role }).buildsFieldDefense,
+    ).map((role) => effectiveRoleRuleV7(role, view.viewer.faction).label);
+    lines.push(
+      `no fortify: ${
+        !unitRoleMechanicsV7(view, unit).buildsFieldDefense
+          ? `a ${rule.label} cannot build Field Defense${builders.length === 0 ? " (no unit of this faction can)" : ` (only ${builders.join(" and ")} can)`}`
+          : unit.form !== "LAND"
+            ? "only a unit on land builds Field Defense"
+            : activation.moved
+              ? "it has moved this turn (Field Defense is built before moving)"
+              : primaryUsed
+                ? "its action this turn is used"
+                : tile?.explored !== true ||
+                    tile.territoryOwnerId !== view.viewer.id
+                  ? "the tile is not in your territory"
+                  : tile.fieldDefense
+                    ? "the tile already has a Field Defense"
+                    : tile.biome === null || tile.terrain === "RIFT"
+                      ? "Field Defense cannot stand on this tile"
+                      : view.viewer.coins < 3
+                        ? "it costs 3 Coins"
+                        : "the engine does not offer it here"
+      }`,
+    );
+  }
+  return lines;
+}
+
 function unitLineV7(
   view: PlayerViewV7,
   unit: PublicUnitV7,
@@ -2044,7 +2155,13 @@ function viewLinesV7(session: SessionV7, full: boolean): string[] {
               : "currentMaximumOutput" in entry
                 ? `${entry.currentMaximumOutput}/${entry.requiredOutput}`
                 : `${entry.currentDistinctTrainableRoles}/${entry.requiredDistinctTrainableRoles}`;
-        return `${entry.achievement} ${progress}${entitlement?.spent === true ? " built" : entitlement?.unlocked === true ? " UNLOCKED (monument available)" : ""}`;
+        // Slayer reads the most kills held by ONE of the viewer's units
+        // that is still on the board, not the seat's total kills.
+        const meaning =
+          entry.achievement === "SLAYER"
+            ? " (most kills by one living unit)"
+            : "";
+        return `${entry.achievement} ${progress}${meaning}${entitlement?.spent === true ? " built" : entitlement?.unlocked === true ? " UNLOCKED (monument available)" : ""}`;
       })
       .join(" | ")}`,
   );
@@ -2166,6 +2283,7 @@ function commandOptionsV7(args: ArgsV7): string {
           : "(not your unit)",
       );
     for (const entry of mine) lines.push(row(entry));
+    lines.push(...unitReasonLinesV7(view, unit, offered));
     const targeted = offered.filter(
       (entry) =>
         "targetUnitId" in entry.command && entry.command.targetUnitId === id,
@@ -2260,7 +2378,7 @@ function commandOptionsV7(args: ArgsV7): string {
   if (!all && moves.length > 0)
     lines.push(
       "",
-      "Move destinations are listed as x,y; options --unit ID (or --all) describes each one.",
+      "Move destinations are listed as x,y; options --unit ID (or --all) describes each one, and says why an attack or fortify is not offered.",
     );
   return lines.join("\n");
 }
@@ -2311,6 +2429,7 @@ function commandDoV7(args: ArgsV7): string {
   const memory = new UnitMemoryV7();
   const lines: string[] = [];
   let rejection: string | null = null;
+  let rejectedDo: SessionV7["rejectedDo"] = null;
   for (const [index, id] of args.positionals.entries()) {
     const view = viewForV7(session.state, session.playerId);
     memory.remember(view);
@@ -2357,10 +2476,32 @@ function commandDoV7(args: ArgsV7): string {
       lines.push(rejection);
       const skipped = args.positionals.slice(index + 1);
       if (skipped.length > 0) lines.push(`NOT EXECUTED: ${skipped.join(" ")}`);
+      rejectedDo = { id, notExecuted: skipped };
       break;
     }
   }
+  session = { ...session, rejectedDo };
   saveSessionV7(path, session);
+  // `--end`: end the turn only when every id was applied and the turn can
+  // end (no pending city reward, the match not over).
+  let endRefused: string | null = null;
+  if (args.switches.has("end")) {
+    const now = viewForV7(session.state, session.playerId);
+    if (rejection !== null)
+      endRefused =
+        "TURN NOT ENDED: --end ends the turn only when every id was applied";
+    else if (now.outcome === null) {
+      if (offeredV7(now).some((entry) => entry.command.kind === "END_TURN")) {
+        lines.push(...endTurnLinesV7(path, session));
+        return lines.join("\n");
+      }
+      endRefused =
+        now.pendingChoices.length > 0
+          ? "TURN NOT ENDED: a city reward choice is pending; choose it, then end"
+          : "TURN NOT ENDED: ending the turn is not offered now";
+    }
+  }
+  if (endRefused !== null) lines.push(endRefused);
   const view = viewForV7(session.state, session.playerId);
   lines.push(
     `== state #${session.state.commandIndex} | round ${view.round} | coins ${view.viewer.coins} | income +${totalIncomeV7(view)}/turn ==`,
@@ -2371,7 +2512,8 @@ function commandDoV7(args: ArgsV7): string {
     );
   if (view.outcome !== null) lines.push(outcomeLineV7(view));
   else lines.push(offeredSummaryV7(offeredV7(view)));
-  if (rejection !== null) throw new TextPlayRejectionV7(lines.join("\n"));
+  if (rejection !== null || endRefused !== null)
+    throw new TextPlayRejectionV7(lines.join("\n"));
   return lines.join("\n");
 }
 
@@ -2379,6 +2521,17 @@ function commandEndV7(args: ArgsV7): string {
   const path = sessionPathV7(args);
   const session = loadSessionV7(args);
   expectStateV7(args, session);
+  requireOwnTurnV7(session);
+  const rejected = session.rejectedDo ?? null;
+  if (rejected !== null && !args.switches.has("force"))
+    throw new TextPlayErrorV7(
+      `turn NOT ended: your last do stopped at the rejected id ${rejected.id}${rejected.notExecuted.length === 0 ? "" : ` and did not execute ${rejected.notExecuted.join(" ")}`}. Run options and issue the rest with do, or end the turn anyway with: end --force`,
+    );
+  return endTurnLinesV7(path, session).join("\n");
+}
+
+/** Ends the playing seat's turn, lets the AI seats play, saves, and reports. */
+function endTurnLinesV7(path: string, session: SessionV7): string[] {
   const view = requireOwnTurnV7(session);
   const end = offeredV7(view).find(
     (entry) => entry.command.kind === "END_TURN",
@@ -2406,7 +2559,7 @@ function commandEndV7(args: ArgsV7): string {
   const lines = [`END OF YOUR TURN (round ${round})`];
   for (const line of applied.lines) lines.push(`  ${line}`);
   const ended = withStateV7(
-    session,
+    { ...session, rejectedDo: null },
     applied.state,
     [...session.commands, end.command],
     {
@@ -2424,7 +2577,7 @@ function commandEndV7(args: ArgsV7): string {
   const after = viewForV7(played.session.state, played.session.playerId);
   lines.push("", ...headerLinesV7(played.session, after));
   if (after.outcome === null) lines.push(offeredSummaryV7(offeredV7(after)));
-  return lines.join("\n");
+  return lines;
 }
 
 // ---------------------------------------------------------------------------

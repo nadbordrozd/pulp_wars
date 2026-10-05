@@ -1,5 +1,7 @@
 import type { CityId, PlayerId } from "../model/ids";
 import {
+  LAND_TRADE_INCOME_COINS_V7,
+  MONUMENT_POPULATION_V7,
   cityUnitCapacityForV7,
   dockPopulationV7,
   unitCapacitySlotsV7,
@@ -129,13 +131,24 @@ export function assignedUnitCountV7(
   return used;
 }
 
+/**
+ * The rewards a city is offered for a reached level. Tuning 1
+ * (`pulp_wars-w49.3`, 7r46): the level-5+ reward unit is taken at most once
+ * per city, so a city whose reward history (`rewards`, which travels with
+ * the city on capture) already holds a `JUGGERNAUT` is offered only the
+ * Treasury at every later level.
+ */
 export function rewardCandidatesForLevelV7(
   level: number,
-): readonly [RewardIdV7, RewardIdV7] {
+  rewards: readonly { readonly reward: RewardIdV7 }[] = [],
+): readonly RewardIdV7[] {
   if (level === 2) return ["SURVEY", "STOCKPILE"];
   if (level === 3) return ["WALLS", "MILITIA"];
-  if (level === 4) return ["BOOM", "TREASURY_8"];
-  if (level >= 5) return ["JUGGERNAUT", "TREASURY"];
+  if (level === 4) return ["BOOM", "TREASURY_6"];
+  if (level >= 5)
+    return rewards.some((record) => record.reward === "JUGGERNAUT")
+      ? ["TREASURY"]
+      : ["JUGGERNAUT", "TREASURY"];
   throw new RangeError("INVALID_REWARD_LEVEL");
 }
 
@@ -294,7 +307,11 @@ export function recomputeLiveEconomyV7(
     if (contribution.source.kind === "MONUMENT") {
       if (tile.improvement !== "MONUMENT")
         throw new RangeError("INVALID_STATE");
-      return { ...contribution, cityId: tile.territoryCityId, amount: 3 };
+      return {
+        ...contribution,
+        cityId: tile.territoryCityId,
+        amount: MONUMENT_POPULATION_V7,
+      };
     }
     if (
       contribution.source.kind !== "IMPROVEMENT" ||
@@ -383,7 +400,10 @@ export function cityIncomeV7(state: GameStateV7, city: CityStateV7): number {
     cityLevelIncomeV7(city.level) +
     (city.isCapital ? 1 : 0) +
     (seaTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0) +
-    (landTradeCityIdsV7(state, city.ownerId).has(city.id) ? 1 : 0);
+    // Tuning 1 (7r46): Commerce pays 2 Coins per connected city.
+    (landTradeCityIdsV7(state, city.ownerId).has(city.id)
+      ? LAND_TRADE_INCOME_COINS_V7
+      : 0);
   const result = Math.max(
     1,
     base + marketIncomeForCityV7(state, city) + Math.min(0, city.population),

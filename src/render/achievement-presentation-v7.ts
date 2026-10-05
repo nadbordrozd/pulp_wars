@@ -34,7 +34,7 @@ export const ACHIEVEMENT_GOALS_V7: Readonly<Record<AchievementIdV7, string>> =
 
 /** The Help tip that explains what achievements are for. */
 export const ACHIEVEMENT_HELP_TIP_V7 =
-  "Achievements (see the menu) each earn a free Monument: +3 population, one per city. Conquer, expand, sail, and keep your killers alive.";
+  "Achievements (see the menu) each earn a free Monument: +2 population, one per city. Conquer, expand, sail, and keep your killers alive.";
 
 export function achievementNameV7(achievement: AchievementIdV7): string {
   return ACHIEVEMENT_NAMES_V7[achievement];

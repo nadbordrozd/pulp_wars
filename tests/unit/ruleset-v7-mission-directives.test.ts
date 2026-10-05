@@ -509,6 +509,7 @@ describe("directives in headless play", () => {
       expect(result.stalls).toEqual([]);
       let leftAfter: number | null = null;
       let decisions = 0;
+      let normalDecisions = 0;
       replay("TEST_HOLD", result.commandLog, (state, actor, command) => {
         if (actor !== state.players[1]?.id) return;
         const view = viewForV7(state, actor);
@@ -536,15 +537,26 @@ describe("directives in headless play", () => {
             if (unit !== undefined && zoneContainsV7(zone, unit.at))
               expect(zoneContainsV7(zone, move.to)).toBe(true);
           }
-        } else if (
-          command.kind === "END_TURN" &&
-          ownLand(view).some((unit) => !zoneContainsV7(zone, unit.at))
-        )
-          leftAfter ??= state.round;
+        } else {
+          // From `untilRound` on the seat has no directive plan: its policy
+          // is exactly the policy without directives.
+          normalDecisions += 1;
+          expect(directivePlanForViewV7(view)).toBeNull();
+          if (
+            command.kind === "END_TURN" &&
+            ownLand(view).some((unit) => !zoneContainsV7(zone, unit.at))
+          )
+            leftAfter ??= state.round;
+        }
       });
       expect(decisions).toBeGreaterThan(10);
-      expect(leftAfter).not.toBeNull();
-      expect(leftAfter).toBeGreaterThanOrEqual(8);
+      expect(normalDecisions).toBeGreaterThan(10);
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): in this match the Human seat now
+      // wins the fight inside the zone by round 13 (the retaliation of the
+      // Undead defenders no longer uses their cover), so the Undead units
+      // never get out; before, they left the zone in round 8 or later. A
+      // unit that does leave still leaves only from round 8.
+      if (leftAfter !== null) expect(leftAfter).toBeGreaterThanOrEqual(8);
     },
   );
 

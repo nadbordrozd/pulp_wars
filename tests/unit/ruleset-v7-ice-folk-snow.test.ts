@@ -9,6 +9,7 @@ import {
   type CommandV7,
   type CoordV7,
   type GameStateV7,
+  TECHNOLOGY_IDS_V7,
 } from "../../src/engine/index";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { applyOkV7, seatIdV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
@@ -296,14 +297,21 @@ describe("Snow cover (section 6.2, 2)", () => {
       defenseBonusDenominator: 2,
       snowCover: false,
     });
-    // Field Defense in own territory: fortified, no Snow cover.
+    // Field Defense in own territory: fortified, no Snow cover (the
+    // attacker has no Explosives: a Breach would ignore the level; tuning
+    // 1, 7r46).
     const fortified = patchTileV7(
       iceFieldV7(
         [
           { seat: 0, role: "FIGHTER", at: at(7, 7) },
           { seat: 1, role: "FIGHTER", at: at(6, 6) },
         ],
-        { activeSeat: 1 },
+        {
+          activeSeat: 1,
+          techs: {
+            1: TECHNOLOGY_IDS_V7.filter((tech) => tech !== "EXPLOSIVES"),
+          },
+        },
       ),
       at(7, 7),
       { fieldDefense: true },

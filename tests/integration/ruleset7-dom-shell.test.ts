@@ -548,7 +548,7 @@ describe("Ruleset 7 DOM shell", () => {
     ).not.toContain("Coins");
     requiredButton('[data-action="tech-commerce"]').click();
     expect(document.querySelector(".v7-tech-detail")?.textContent).toContain(
-      "Road-linked cities: +1 Coin",
+      "Road-linked cities: +2 Coins each turn",
     );
     // Revision 14 (E2): Commerce no longer doubles Markets.
     expect(document.querySelector(".v7-tech-detail")?.textContent).not.toMatch(
@@ -694,7 +694,7 @@ describe("Ruleset 7 DOM shell", () => {
     expect(
       modal.querySelector<HTMLImageElement>(".v7-art-frame")?.dataset.assetId,
     ).toBe(RULESET7_UNIT_ART_IDS.KNIGHT);
-    expect(modal.textContent).toContain("HP10");
+    expect(modal.textContent).toContain("HP13");
     expect(modal.textContent).toContain("Range1");
     expect(modal.textContent).toContain(
       "After a kill, advances and can attack another adjacent enemy.",
@@ -1403,7 +1403,7 @@ describe("Ruleset 7 DOM shell", () => {
           id: 99,
           cityId: city.id,
           category: "LIVE",
-          amount: 3,
+          amount: 2,
           source: {
             kind: "MONUMENT",
             visibility: "FULL",
@@ -1652,7 +1652,7 @@ describe("Ruleset 7 DOM shell", () => {
               ? ({
                   ...contribution,
                   category: "LIVE",
-                  amount: 3,
+                  amount: 2,
                   source: {
                     kind: "MONUMENT",
                     visibility: "BUILDING_ONLY",

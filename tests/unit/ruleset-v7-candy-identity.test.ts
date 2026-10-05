@@ -42,7 +42,7 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // tier 3 technology base cost 9) 7r41.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 45;
+const REVISION = 46;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -269,7 +269,7 @@ describe("Candy setup (sections 2.4 and 12.17)", () => {
     expect(mapOf(["ORIGINAL", "CANDY"])).toBe(reference);
   });
 
-  it("starts a Candy seat with one Gumdrop on its capital, 3 Coins, and no technology", () => {
+  it("starts a Candy seat with one Toffee Trooper on its capital, 3 Coins, and no technology", () => {
     const state = playable(goblinSetupV7(["ORIGINAL", "CANDY"]));
     const candy = state.players.find((player) => player.faction === "CANDY");
     if (candy === undefined) throw new Error("no Candy seat");

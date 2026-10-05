@@ -24,6 +24,7 @@ import {
   movedV7,
   moveV7,
   walledV7,
+  withoutTechsV7,
 } from "../fixtures/v7-revision20";
 
 // The Ice Folk revision (`pulp_wars-7g3.3`): Shatter
@@ -139,7 +140,9 @@ describe("Shatter worked examples (section 5.6)", () => {
     });
   });
 
-  it("Fighter (12 HP) on Field Defense: Yeti 4 (takes 8), then the second would leave 3: shatters", () => {
+  // Tuning 1 (7r46): the Fighter's retaliation is its open-ground 5 (8 with
+  // the Field Defense level before).
+  it("Fighter (12 HP) on Field Defense: Yeti 4 (takes 5), then the second would leave 3: shatters", () => {
     // The Human Fighter stands on Field Defense in its own territory (3, 7).
     const base = iceFieldV7(
       [
@@ -154,7 +157,7 @@ describe("Shatter worked examples (section 5.6)", () => {
     expect(first?.combat).toMatchObject({
       fortificationLevel: 1,
       damageToDefender: 4,
-      damageToAttacker: 8,
+      damageToAttacker: 5,
     });
     expect(second?.combat).toMatchObject({
       shatters: true,
@@ -183,6 +186,8 @@ describe("Shatter worked examples (section 5.6)", () => {
         { role: "GUARD", at: at(6, 8) },
         { role: "FIGHTER", at: at(6, 9) },
       ],
+      // Tuning 1 (7r46): without Brittle, whose Breach ignores the Walls.
+      attackerTechs: withoutTechsV7("ICE_FOLK", "EXPLOSIVES"),
     });
     // The section's 15-HP Guard is a 17-HP Guard at 15 HP since revision 20
     // section 6.3.
@@ -210,24 +215,25 @@ describe("Shatter worked examples (section 5.6)", () => {
     const [first, second, third] = runs;
     expect(first?.combat).toMatchObject({
       damageToDefender: 4,
-      damageToAttacker: 14,
+      damageToAttacker: 7,
     });
     expect(second?.combat).toMatchObject({
       damageToDefender: 5,
-      damageToAttacker: 13,
+      damageToAttacker: 6,
     });
     expect(third?.combat).toMatchObject({
       shatters: true,
       damageToDefender: 6,
     });
-    // Unchilled the Yeti takes 10, capped at its 9 HP (`pulp_wars-7g3.7`),
-    // and dies.
+    // Unchilled the Yeti takes the wounded Guard's open-ground 5 and lives
+    // (tuning 1, 7r46; with the Walls in the retaliation it took 10, capped
+    // at its 9 HP, and died).
     const warm = checkedV7({ ...(second?.state as GameStateV7), chilled: [] });
     const walked = moveV7(warm, at(6, 9), [at(7, 9)]).state;
     expect(attackV7(walked, at(7, 9), at(8, 8)).combat).toMatchObject({
       shatters: false,
-      damageToAttacker: 9,
-      attackerDies: true,
+      damageToAttacker: 5,
+      attackerDies: false,
     });
   });
 
@@ -318,10 +324,12 @@ describe("Shatter worked examples (section 5.6)", () => {
     });
   });
 
-  it("Spitter, Knight, Wolf Rider: a Mammoth's 8 would leave 2: shatters at full HP", () => {
+  // Tuning 1 (7r46): the Human Knight has 13 HP, so the Mammoth's 8 leaves
+  // it 5 and it no longer shatters at full HP; the 10-HP Captain does.
+  it("Spitter, Captain, Wolf Rider: a Mammoth's 8 would leave 2: shatters at full HP", () => {
     for (const [faction, role] of [
       ["DINOSAUR", "MARKSMAN"],
-      ["ORIGINAL", "KNIGHT"],
+      ["ORIGINAL", "CAPTAIN"],
       ["GOBLIN", "RAIDER"],
     ] as const) {
       const state = against(faction, role, [
@@ -369,6 +377,8 @@ describe("Shatter worked examples (section 5.6)", () => {
     const walled = walledV7({
       attackerFaction: "ICE_FOLK",
       attackers: [{ role: "CAPTAIN", at: at(8, 7) }],
+      // Tuning 1 (7r46): without Brittle, whose Breach ignores the Walls.
+      attackerTechs: withoutTechsV7("ICE_FOLK", "EXPLOSIVES"),
     });
     const state = withChillV7(
       checkedV7({

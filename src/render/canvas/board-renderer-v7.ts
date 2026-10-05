@@ -51,6 +51,7 @@ import {
 } from "./curiosity-canvas-v7";
 import type { CuriosityOverlayIdV7 } from "../../assets/chibi-art-v7";
 import {
+  breachCombatNotesV7,
   dinosaurCombatNoteV7,
   dinosaurCombatSemanticNoteV7,
   hatchBlockedEggsV7,
@@ -5836,6 +5837,8 @@ function commandMapTargets(
         ...(naval?.notes ?? []),
         // The frozen sea: Glacier's cover on ice, and a target frozen in.
         ...(preview === null ? [] : frozenSeaCombatNotesV7(preview)),
+        // Tuning 1 (7r46): Breach (Explosives) ignores fortification.
+        ...(preview === null ? [] : breachCombatNotesV7(preview)),
       ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [

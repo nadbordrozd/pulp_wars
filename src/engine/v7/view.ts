@@ -15,7 +15,11 @@ import {
   marketCoinsV7,
   seaTradeCityIdsV7,
 } from "./economy";
-import { isResourceRevealedV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
+import {
+  MONUMENT_POPULATION_V7,
+  isResourceRevealedV7,
+  unitRoleRuleV7,
+} from "../rules/ruleset-v7";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { knownWinterV7 } from "./ice-folk";
@@ -216,7 +220,8 @@ export type PublicPopulationContributionV7 =
     })
   | (Omit<PopulationContributionV7, "amount" | "category" | "source"> & {
       readonly category: "LIVE";
-      readonly amount: 3;
+      /** `MONUMENT_POPULATION_V7` (2 since tuning 1, 7r46; 3 before). */
+      readonly amount: 2;
       readonly source:
         | {
             readonly kind: "MONUMENT";
@@ -592,7 +597,7 @@ export function viewForV7(
         {
           ...contribution,
           category: "LIVE",
-          amount: 3,
+          amount: MONUMENT_POPULATION_V7,
           source:
             owner === viewerId
               ? {
@@ -620,7 +625,7 @@ export function viewForV7(
           {
             at: tile.at,
             improvement: "MONUMENT",
-            level: 3,
+            level: MONUMENT_POPULATION_V7,
             measure: "POPULATION",
             contributingTiles: [],
           },

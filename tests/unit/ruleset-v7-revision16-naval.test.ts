@@ -612,8 +612,20 @@ describe("ruleset-7 revision-16 Normal AI landings", () => {
       for (const entry of match.commandLog) {
         const command = entry.command;
         if (command.kind === "END_TURN") spentByUnit.clear();
-        if (command.kind === "MOVE")
-          spentByUnit.set(command.unitId, command.path.length);
+        // The points a Move spent are the tiles it traversed: an interrupted
+        // Move stops short of its commanded path.
+        if (command.kind === "MOVE") {
+          const moved = entry.events.find(
+            (event) =>
+              event.kind === "UNIT_MOVED" && event.unitId === command.unitId,
+          );
+          spentByUnit.set(
+            command.unitId,
+            moved?.kind === "UNIT_MOVED"
+              ? moved.path.length
+              : command.path.length,
+          );
+        }
         if (command.kind === "DISEMBARK")
           expect(spentByUnit.get(command.unitId) ?? 0).toBeLessThanOrEqual(1);
       }

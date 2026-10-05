@@ -82,7 +82,7 @@ ran at; the Candy engine, the Grunt at 8 HP, the village density, the
 tier 3 technology base cost of 9 (`pulp_wars-if6`), many seats
 (`pulp_wars-ykw.3`, which regenerates every board again), and the naval
 branch engine (`pulp_wars-5ti.2`, and its frozen sea, `pulp_wars-5ti.3`) have
-since made the current identity `pulp-wars-poc-7r45`, which is what
+since made the current identity `pulp-wars-poc-7r46`, which is what
 `--ruleset` takes now. Through `7r39` a match without a Candy or Martian
 seat plays as at `7r37`; the village density of `7r40`
 (`pulp_wars-ykw.2`) regenerates every board, so these seeds no longer give

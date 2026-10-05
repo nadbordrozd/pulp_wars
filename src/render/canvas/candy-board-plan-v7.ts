@@ -33,7 +33,7 @@ import type {
 /**
  * The Candy part of the board plan (bead pulp_wars-jdb.6, docs/product/
  * RULESET_7_CANDY.md section 15.1): the Rushed, Crashed, Splatted and Home
- * Sweet Home markers of each unit and a Rushed Gummy Bear's Sugar Frenzy
+ * Sweet Home markers of each unit and a Rushed Chocolate Bunny's Sugar Frenzy
  * pips, the Crumbs of each tile, the armed Sugar Rush and the Re-bake and
  * Sugar Toss picking modes, the "Eats Crumbs" label of a Move, and the
  * Candy lines of an attack preview (the Bounce's arrow among them).
@@ -51,7 +51,7 @@ export interface CandyUnitMarkersV7 {
   readonly splatted: boolean;
   /** The owner's view: a Rushed unit that will not Crash where it stands. */
   readonly home: boolean;
-  /** A Rushed Gummy Bear's Sugar Frenzy continuations, as pips. */
+  /** A Rushed Chocolate Bunny's Sugar Frenzy continuations, as pips. */
   readonly frenzy: { readonly left: number; readonly of: number } | null;
 }
 

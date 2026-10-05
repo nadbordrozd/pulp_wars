@@ -552,7 +552,8 @@ export type DomainEventV7 =
       readonly kind: "LAND_GRANTED";
       readonly playerId: PlayerId;
       readonly cityId: CityId;
-      readonly cost: 6;
+      /** Tuning 1 (7r46): 2 per explored claimed tile, at least 6. */
+      readonly cost: number;
       readonly tiles: readonly CoordV7[];
     }
   | {
@@ -609,7 +610,7 @@ export type DomainEventV7 =
       readonly cityId: CityId;
       readonly achievement: AchievementIdV7;
       readonly at: CoordV7;
-      readonly populationAdded: 3;
+      readonly populationAdded: 2;
     }
   | {
       readonly kind: "UNIT_TRAINED";
@@ -1264,14 +1265,14 @@ export type ProjectedMonumentBuiltV7 =
       readonly cityId: CityId;
       readonly achievement: AchievementIdV7;
       readonly at: CoordV7;
-      readonly populationAdded: 3;
+      readonly populationAdded: 2;
     }
   | {
       readonly kind: "MONUMENT_BUILT";
       readonly visibility: "BUILDING_ONLY";
       readonly cityId: CityId;
       readonly at: CoordV7;
-      readonly populationAdded: 3;
+      readonly populationAdded: 2;
     };
 
 /**

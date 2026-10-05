@@ -506,7 +506,8 @@ describe("ruleset-7 naval economy", () => {
         base,
         base.cities.find((city) => city.id === cityBId) ?? cityB,
       ),
-    ).toBe(3);
+      // Level 1 + land trade 2 (tuning 1, 7r46; 1 before) + sea trade 1.
+    ).toBe(4);
     expect(
       cityIncomeV7(
         base,
@@ -556,7 +557,7 @@ describe("ruleset-7 naval economy", () => {
           frozenRoute.cities.find((city) => city.id === id) ?? cityB,
         ),
       ),
-    ).toEqual([3, 2]);
+    ).toEqual([4, 2]);
     const blockaded = {
       ...base,
       units: [

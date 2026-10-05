@@ -259,7 +259,7 @@ export function rewardStateV7(
                 : [
                     { reachedLevel: 2, reward: "SURVEY" as const },
                     { reachedLevel: 3, reward: "WALLS" as const },
-                    { reachedLevel: 4, reward: "TREASURY_8" as const },
+                    { reachedLevel: 4, reward: "TREASURY_6" as const },
                   ],
           }
         : candidate,

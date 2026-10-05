@@ -968,7 +968,10 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
     ).toBeGreaterThan(1);
   });
 
-  it("applies to the defender's retaliation too", () => {
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): no retaliation uses fortification
+  // any more, so the Disintegrator changes the damage dealt and leaves the
+  // retaliation as it is (before, it lowered the retaliation too).
+  it("lowers nothing in the defender's retaliation, which never uses fortification", () => {
     // A Ray Gunner next to the Guard on the Walled center.
     const build = (disintegrator: boolean) =>
       walledV7({
@@ -991,10 +994,12 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
     expect(ignored.combat.damageToDefender).toBeGreaterThan(
       plain.combat.damageToDefender,
     );
-    expect(taken(ignored)).toBeLessThan(taken(plain));
+    expect(taken(ignored)).toBe(taken(plain));
   });
 
-  it("does not apply to a Martian attack that is no ray", () => {
+  // Tuning 1 (7r46): the Disintegrator is the Martian Explosives, so a
+  // melee attack of its owner breaches; without it the level applies.
+  it("does not apply to a Martian attack that is no ray, which breaches instead", () => {
     const state = fieldDefenseV7(
       martianFieldV7([
         { seat: 0, role: "KNIGHT", at: at(4, 7) },
@@ -1003,8 +1008,25 @@ describe("Martian heat rays: the Disintegrator (section 6.5)", () => {
       at(3, 7),
     );
     expect(attackV7(state, at(4, 7), at(3, 7)).combat).toMatchObject({
+      fortificationLevel: 0,
+      fortificationIgnored: 1,
+      breachApplied: true,
+      rayPower: "NONE",
+    });
+    const plain = fieldDefenseV7(
+      martianFieldV7(
+        [
+          { seat: 0, role: "KNIGHT", at: at(4, 7) },
+          { seat: 1, role: "GUARD", at: at(3, 7) },
+        ],
+        { techs: { 0: withoutTechsV7("MARTIAN", "EXPLOSIVES") } },
+      ),
+      at(3, 7),
+    );
+    expect(attackV7(plain, at(4, 7), at(3, 7)).combat).toMatchObject({
       fortificationLevel: 1,
       fortificationIgnored: 0,
+      breachApplied: false,
       rayPower: "NONE",
     });
   });

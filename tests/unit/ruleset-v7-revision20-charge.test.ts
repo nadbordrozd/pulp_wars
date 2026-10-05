@@ -540,7 +540,9 @@ describe("ruleset-7 revision-20 Charge! ignores fortification", () => {
         fortificationLevel: 0,
         fortificationIgnored: 1,
         damageToDefender: 12,
-        damageToAttacker: 6,
+        // Tuning 1 (7r46): the Guard's open-ground retaliation (6 with the
+        // cover in it before).
+        damageToAttacker: 5,
       });
     }
   });

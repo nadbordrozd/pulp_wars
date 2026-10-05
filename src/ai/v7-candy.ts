@@ -148,7 +148,7 @@ export const SUGAR_TOSS_PRIORITY_V7 = 905;
 export const SUGAR_TOSS_IDLE_PRIORITY_V7 = 650;
 /** A Gunner's shot is weak below this damage (unless it kills). */
 export const SUGAR_TOSS_WEAK_DAMAGE_V7 = 3;
-/** The Rock Candy Golem's cost for the Toss order (it has none). */
+/** The Gingerbread Giant's cost for the Toss order (it has none). */
 export const GOLEM_TOSS_COST_V7 = 12;
 /** Kills of these roles are worth a Rush into lethal reach. */
 export const RUSH_KEY_KILL_ROLES_V7: readonly UnitRoleIdV7[] = [
@@ -449,9 +449,9 @@ function plainKillsV7(
 }
 
 /**
- * Rule 1's safety and the Gummy Bear's condition for one Rushed kill: the
+ * Rule 1's safety and the Chocolate Bunny's condition for one Rushed kill: the
  * unit does not end in visible lethal reach unless the kill is a key role;
- * a Gummy Bear Rushes only for a kill with a Sugar Frenzy target next to
+ * a Chocolate Bunny Rushes only for a kill with a Sugar Frenzy target next to
  * its new tile, or for a key kill.
  */
 function rushKillAcceptableV7(
@@ -499,7 +499,7 @@ function rushedKillPlanV7(
  *
  * 1. `KILL`: the Rushed plan kills a target no plain plan of the unit
  *    kills, and the unit does not end in visible lethal reach unless the
- *    kill is a Catapult, Captain, or Knight role; a Gummy Bear also needs a
+ *    kill is a Catapult, Captain, or Knight role; a Chocolate Bunny also needs a
  *    Sugar Frenzy target next to its new tile (or a key kill).
  * 2. `CITY`: the Rushed Move reaches a threatened own center with no own
  *    unit on it that the plain Move cannot reach.
@@ -975,7 +975,7 @@ export function sugarTossScoreV7(
 
 export interface CandyArmyCountsV7 {
   readonly byRole: ReadonlyMap<UnitRoleIdV7, number>;
-  /** Gumdrops, Racers, Gunners, Marshmallows, Bears, and the Golem. */
+  /** Toffee Troopers, Racers, Gunners, Marshmallows, Bears, and the Golem. */
   readonly front: number;
 }
 
@@ -1000,11 +1000,11 @@ export function candyArmyCountsV7(view: PlayerViewV7): CandyArmyCountsV7 {
 
 /**
  * The Candy production adjustment of one role, added to the policy's role
- * value (section 14, "produce every role"; "Gumdrops first under threat"):
+ * value (section 14, "produce every role"; "Toffee Troopers first under threat"):
  *
  * - the Marshmallow, the Gunner, the Confectioner, the Pie Launcher, and
- *   the Gummy Bear gain 10 as the first of their role;
- * - in a threatened city the Gumdrop gains 12, and the Confectioner and the
+ *   the Chocolate Bunny gain 10 as the first of their role;
+ * - in a threatened city the Toffee Trooper gains 12, and the Confectioner and the
  *   Pie Launcher are worth -30 (bodies first);
  * - a Confectioner beyond one per six front units, and a Pie Launcher
  *   beyond one per four, costs 20.
@@ -1065,7 +1065,7 @@ export interface CandyResearchFactsV7 {
  * Administration (the Confectioner) at two cities; Sawmilling (the Pie
  * Launcher) against a visible Walled city or at three cities; Home Sweet
  * Home once a visible hostile unit stands within 3 of an own center; then
- * Chivalry (the Gummy Bear); Peppermint Surprise last. Returns the next
+ * Chivalry (the Chocolate Bunny); Peppermint Surprise last. Returns the next
  * technology to research and its tier, or null.
  */
 export function candyResearchV7(

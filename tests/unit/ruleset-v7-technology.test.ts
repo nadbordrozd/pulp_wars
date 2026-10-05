@@ -68,14 +68,14 @@ describe("ruleset-7 technology", () => {
   });
 
   it("uses the exact city-scaled formula without unsafe arithmetic", () => {
-    // Revision 16: tier 2 = 7 + 3(C - 1); `pulp_wars-if6` (7r41): tier 3 =
-    // 9 + 5(C - 1) (12 + 5(C - 1) before).
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): tier 2 = 7 + 2(C - 1) and tier 3 =
+    // 9 + 2(C - 1) (7 + 3(C - 1) and 9 + 5(C - 1) before).
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 1)),
     ).toEqual([5, 7, 9]);
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 4)),
-    ).toEqual([8, 16, 24]);
+    ).toEqual([8, 13, 15]);
     expect(() => technologyResearchCostV7(3, Number.MAX_SAFE_INTEGER)).toThrow(
       "INTEGER_OVERFLOW",
     );
@@ -101,11 +101,12 @@ describe("ruleset-7 technology", () => {
     ).toEqual([
       ["FIGHTER", 2, 12, 4, 4, 1, 1, 1, null, true],
       ["RAIDER", 4, 12, 4, 2, 2, 1, 1, "SCOUTING", true],
-      ["MARKSMAN", 3, 12, 4, 2, 1, 2, 1, "MARKSMANSHIP", true],
+      // Tuning 1 (7r46): Marksman 4 Coins, Catapult Attack 3, Knight 13 HP.
+      ["MARKSMAN", 4, 12, 4, 2, 1, 2, 1, "MARKSMANSHIP", true],
       ["GUARD", 3, 17, 3, 6, 1, 1, 1, "DRILL", false],
       ["CAPTAIN", 5, 10, 2, 2, 1, 1, 1, "ADMINISTRATION", true],
-      ["CATAPULT", 8, 10, 7, 1, 1, 3, 2, "SAWMILLING", false],
-      ["KNIGHT", 9, 10, 6, 2, 3, 1, 1, "CHIVALRY", true],
+      ["CATAPULT", 8, 10, 6, 1, 1, 3, 2, "SAWMILLING", false],
+      ["KNIGHT", 9, 13, 6, 2, 3, 1, 1, "CHIVALRY", true],
       ["JUGGERNAUT", null, 40, 8, 8, 1, 1, 1, null, true],
       ["PATROL_BOAT", 5, 10, 4, 4, 2, 1, 1, "SHORECRAFT", true],
       ["BATTLESHIP", 16, 25, 12, 8, 2, 3, 1, "NAVAL_ENGINEERING", false],
@@ -208,7 +209,8 @@ describe("ruleset-7 technology", () => {
       // Revision 14 (E2): Commerce no longer doubles Market income.
       marketIncomeMultiplier: 1,
       armsIndustryDiscountCoins: 1,
-      landTradeIncomeCoins: 1,
+      // Tuning 1 (7r46): Commerce pays 2 Coins per connected city.
+      landTradeIncomeCoins: 2,
       seaTradeIncomeCoins: 1,
       mountainMovement: true,
       ownedCityCapacityBonus: 1,

@@ -1220,7 +1220,8 @@ describe("Ice Folk Showcase (section 2.4)", () => {
       [3, 6],
       [0, 6],
     ]);
-    expect(playerIncomeV7(state, iceId).totalCoins).toBe(17);
+    // 19 since land trade pays 2 Coins (tuning 1, 7r46; 17 before).
+    expect(playerIncomeV7(state, iceId).totalCoins).toBe(19);
   });
 
   it("every Ice Folk ability can be offered on the first turns, and every offered command is accepted", () => {

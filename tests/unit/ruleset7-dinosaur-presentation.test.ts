@@ -65,6 +65,7 @@ import {
   slotsTextV7,
   turnsTextV7,
   unitDisplayNameV7,
+  breachCombatNotesV7,
 } from "../../src/render/dinosaur-presentation-v7";
 import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-plan-v7";
 import { tacticalAttachmentsV7 } from "../../src/render/tactical-presentation-v7";
@@ -560,7 +561,11 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
     );
   });
 
-  it("names Wallbreaker for another dinosaur that ignores City Walls", () => {
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): Wallbreaker is the Dinosaur
+  // Explosives, so the T-Rex's melee attack is a Breach and the shared
+  // Breach note names it; the Wallbreaker line is kept for an attack that
+  // ignores the Walls without a Breach.
+  it("names the Breach of another dinosaur that ignores City Walls", () => {
     // Seat 1 is the Dinosaur seat here, on its turn: its T-Rex attacks the
     // Guard on the Human seat's Walled center.
     const state = walledV7({
@@ -575,7 +580,14 @@ describe("Revision 20 Charge! attack preview text (section 7.2)", () => {
       runUp: 0,
     });
     // No Push or follow line: the T-Rex has no Charge!.
-    expect(wall.lines).toEqual(["Wallbreaker: ignores City Walls"]);
+    expect(wall.lines).toEqual([]);
+    expect(wall.preview.breachApplied).toBe(true);
+    expect(breachCombatNotesV7(wall.preview)).toEqual([
+      "Breach: ignores fortification",
+    ]);
+    expect(
+      chargePreviewLinesV7(view, { ...wall.preview, breachApplied: false }),
+    ).toEqual(["Wallbreaker: ignores City Walls"]);
     // A Triceratops on the same Walls ignores fortification through Charge!.
     const triceratops = walledV7({
       attackers: [{ role: "CATAPULT", at: { x: 7, y: 8 } }],

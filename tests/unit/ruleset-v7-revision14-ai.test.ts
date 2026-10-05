@@ -368,10 +368,12 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // seeds 0-23 only seed 3 Pangea trains a Lich (two) and plagues within
     // 40 rounds. Many seats (`pulp_wars-ykw.3`) regenerates every board
     // again: seeds 1, 7, 9, and 13 Pangea train a Lich and plague within 40
-    // rounds (seed 1: two Liches, seven Plague applications).
+    // rounds (seed 1: two Liches, seven Plague applications). With tuning 1
+    // (`pulp_wars-w49.3`, 7r46) seed 1 trains none; seeds 4, 5, 7, and 9
+    // Pangea do and plague (seed 5: three Liches, 13 Plague applications).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 1,
+      seed: 5,
       width: 11,
       height: 11,
       aiCount: 1,

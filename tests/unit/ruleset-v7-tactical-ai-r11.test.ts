@@ -335,7 +335,8 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
   )(
     "rejects a dying %s-chip attack on a healthy valuable target (%s)",
     (role, direction) => {
-      const state = combatState(direction, 1, 10, role, "KNIGHT", false);
+      // A full-HP Knight (13 HP since tuning 1, 7r46).
+      const state = combatState(direction, 1, 13, role, "KNIGHT", false);
       const view = viewForV7(state, state.humanPlayerId);
       const attack = required(
         queryPlayerCommandsV7(view).find(
@@ -1066,14 +1067,16 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after
           // COLD_SNAP, moving every later command-kind ordinal forward by
           // one (was d9e8ed…968a).
-          "7e8bcc81c357fcf5286249aac5952c507df31dba72723eb67332b4a3b5b5dce8",
+          // Tuning 1 (`pulp_wars-w49.3`, 7r46): the candidate scores read the new
+          // numbers (was 7e8bcc…dce8).
+          "813c7fe9026dcb10bf03b484a2569439a750164762a0caed00a574519ca607f9",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).
         expect(
           canonicalHash(withRevision12DecisionOrdinalsV7(capturedDecision)),
         ).toBe(
-          "22cb83a71dc79ac27013eb5786b3fc1342e03d512640ba561274dfde46ba2bdf",
+          "41aca9bea81968ce25da84d5decf7bcd53919b7f0938c2975af0aafd6b353244",
         );
       }
 

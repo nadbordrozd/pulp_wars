@@ -1352,9 +1352,9 @@ faction option.
   production art of `pulp_wars-jdb.5` (a raster that fails to load falls
   back to the Human art, and the Classic and LEGACY looks draw Human
   sprites; there is no Candy badge, `pulp_wars-jdb.9`) and are
-  named by the Candy registration (Gumdrop, Donut Racer, Gumball
-  Gunner, Marshmallow, Confectioner, Pie Launcher, Gummy Bear, Rock Candy
-  Golem). Borders and pennants use the Candy colour, cotton-candy pink
+  named by the Candy registration (Toffee Trooper, Donut Racer, Gumball
+  Gunner, Marshmallow, Confectioner, Pie Launcher, Chocolate Bunny, Gingerbread
+  Giant). Borders and pennants use the Candy colour, cotton-candy pink
   (`#ffb8d8`). The Gallery has a Candy column with the same art and plays
   Sugar Rush, Re-bake, and Sugar Toss on its demo board. The faction emblem
   is registered and not drawn.
@@ -1365,16 +1365,16 @@ faction option.
   its targets. An armed Sugar Rush shows its reach (Move marks, sparkles
   on the tiles only the Rush reaches) and its attacks; an aimed Re-bake
   shows each Crumbs tile it may bake back as a Place mark with the unit's
-  ghost and "5 Coins · 7 HP" (named "Re-bake Gummy Bear: 5 Coins, 7 HP",
+  ghost and "5 Coins · 7 HP" (named "Re-bake Chocolate Bunny: 5 Coins, 7 HP",
   from `previewRebakeV7`). A selected Gumball Gunner shows the own units
-  it may heal as Help rings labelled "+2" (named "Toss to Gumdrop: +2",
+  it may heal as Help rings labelled "+2" (named "Toss to Toffee Trooper: +2",
   from `previewSugarTossV7`) beside its Moves and Attacks, with nothing
   armed; choosing one tosses the sugar. Its Sugar Toss button narrows the
   board to the heals. The Confectioner's Tend
   Wounded button reads "Frosting". No text contains a coordinate.
 - **Markers.** A Rushed unit carries a chip ("Rushed: +1 Move, +1 Attack on
   its first attack"; a Donut Racer "Rushed: may move again after
-  attacking"; a Gummy Bear its Sugar Frenzy continuations left as two
+  attacking"; a Chocolate Bunny its Sugar Frenzy continuations left as two
   pips), and on its owner's view a small house when Home Sweet Home will
   spare it where it stands. A Crashed unit has a swirl over a faded sprite
   ("Crashed: can move, can't act this turn" on its owner's turn, otherwise
@@ -1384,7 +1384,7 @@ faction option.
   Bounce, and eaten Crumbs each play a short cue, of which reduced motion
   holds one frame. Crumbs are a token with the fallen unit's head, a pip
   per turn left, and a peppermint dot when they bite; the tile info reads
-  "Gummy Bear Crumbs: 3 turns left" and, for Crumbs that bite, "Peppermint
+  "Chocolate Bunny Crumbs: 3 turns left" and, for Crumbs that bite, "Peppermint
   Surprise: an enemy that eats them takes 3".
 - **Previews.** An attack preview adds "Sugar Rush +1", "Splat: no
   strike-back this turn", "No strike-back: Splatted", and "Bounces back",
@@ -1395,7 +1395,7 @@ faction option.
   "Already acted", or "Already rushed"; a disabled Re-bake "Crashed", "No
   home city", "No Crumbs next to it", "The Crumbs are covered", that its
   city is full, or "Not enough Coins"; a disabled Sugar Toss "Crashed" or
-  "No wounded unit within 2 tiles". A Gumdrop or a Marshmallow that could
+  "No wounded unit within 2 tiles". A Toffee Trooper or a Marshmallow that could
   otherwise build Field Defense says "Candy can't build Field Defense".
 - **Log, technology tree, and Help.** The log has a line for a Rush, a
   Crash (a count), a Re-bake, eaten Crumbs (with the Peppermint damage),

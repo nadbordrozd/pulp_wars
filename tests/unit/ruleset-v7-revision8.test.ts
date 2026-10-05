@@ -29,8 +29,8 @@ import {
 
 describe("Ruleset 7 inherited Industry and shared adjacency", () => {
   it("uses the current identity and the two exact Industry branches", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r45");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r45.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
     expect(TECHNOLOGY_IDS_V7).toEqual(
       expect.arrayContaining([
         "DRILL",
@@ -174,7 +174,10 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
     },
   );
 
-  it("lets one Lumber Camp boost two, three, and four distinct cities' Sawmills", () => {
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): one contributor counts for one
+  // building of a kind (its own city's, otherwise the first in (y, x)
+  // order); before, the camp boosted every adjacent city's Sawmill.
+  it("counts one Lumber Camp for one Sawmill among two, three, and four distinct cities'", () => {
     const camp = { x: 3, y: 3 };
     const positions = [
       { x: 3, y: 2 },
@@ -197,11 +200,14 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
           .map(
             (at) => spatialContributionAtV7(graph, at, "SAWMILL").population,
           ),
-      ).toEqual(Array(count).fill(1));
+      ).toEqual([1, ...Array<number>(count - 1).fill(0)]);
     }
   });
 
-  it("recomputes both processor cities when a shared Camp is built, redeveloped, or captured", () => {
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): the Camp of the first city counts
+  // for the first city's Sawmill only (it counted for both before), and for
+  // the second city's once the first city's Sawmill is gone.
+  it("counts a shared Camp for its own city's Sawmill when it is built, redeveloped, or captured", () => {
     const fixture = sharedCampState();
     const build = { kind: "BUILD_LUMBER_CAMP", at: fixture.camp } as const;
     const buildPreview = previewEconomicV7(
@@ -211,10 +217,7 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
     expect(buildPreview).toMatchObject({
       ok: true,
       preview: {
-        populationDeltaByCity: expect.arrayContaining([
-          { cityId: fixture.firstCityId, delta: 2 },
-          { cityId: fixture.secondCityId, delta: 1 },
-        ]),
+        populationDeltaByCity: [{ cityId: fixture.firstCityId, delta: 2 }],
       },
     });
     const built = applyCommandV7(
@@ -225,12 +228,25 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
     if (!built.accepted) throw new Error(built.error.code);
     expect(amountAt(built.state.populationContributions, fixture.left)).toBe(1);
     expect(amountAt(built.state.populationContributions, fixture.right)).toBe(
-      1,
+      0,
     );
     expect(cityDelta(fixture.before, built.state, fixture.firstCityId)).toBe(2);
     expect(cityDelta(fixture.before, built.state, fixture.secondCityId)).toBe(
-      1,
+      0,
     );
+    // Without the first city's Sawmill the Camp counts for the second's.
+    const withoutLeft = {
+      board: {
+        ...built.state.board,
+        tiles: built.state.board.tiles.map((tile) =>
+          same(tile.at, fixture.left) ? { ...tile, improvement: null } : tile,
+        ),
+      },
+      cities: built.state.cities,
+    };
+    expect(
+      spatialContributionAtV7(withoutLeft, fixture.right, "SAWMILL").population,
+    ).toBe(1);
 
     let builtState = built.state;
     while (builtState.pendingChoices[0] !== undefined) {
@@ -253,10 +269,7 @@ describe("Ruleset 7 inherited Industry and shared adjacency", () => {
     ).toMatchObject({
       ok: true,
       preview: {
-        populationDeltaByCity: expect.arrayContaining([
-          { cityId: fixture.firstCityId, delta: -2 },
-          { cityId: fixture.secondCityId, delta: -1 },
-        ]),
+        populationDeltaByCity: [{ cityId: fixture.firstCityId, delta: -2 }],
       },
     });
     const redeveloped = applyCommandV7(

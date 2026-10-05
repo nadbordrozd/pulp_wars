@@ -74,7 +74,7 @@ describe("Splat (section 7)", () => {
   it("Splats a surviving target, whose strike-back is gone for every later attacker this turn", () => {
     const state = field({ role: "GUARD" });
     const guard = unitAtV7(state, TARGET);
-    // Before the pie: the Guard strikes back at the Gumdrop.
+    // Before the pie: the Guard strikes back at the Toffee Trooper.
     const before = exchangeV7(state, at(5, 3), TARGET);
     expect(before).toMatchObject({
       retaliation: true,

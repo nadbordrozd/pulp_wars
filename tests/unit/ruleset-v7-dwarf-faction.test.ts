@@ -1238,7 +1238,8 @@ describe("Dwarf Showcase (section 2.4)", () => {
       [3, 6],
       [3, 6],
     ]);
-    expect(playerIncomeV7(state, dwarfId).totalCoins).toBe(17);
+    // 19 since land trade pays 2 Coins (tuning 1, 7r46; 17 before).
+    expect(playerIncomeV7(state, dwarfId).totalCoins).toBe(19);
   });
 
   it("offers a Tunnel, an Assemble, and a Cannon shot with a blocked Knockback on turn 1; every offered command is accepted", () => {

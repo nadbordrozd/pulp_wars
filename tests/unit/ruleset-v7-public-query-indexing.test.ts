@@ -77,15 +77,18 @@ describe("ruleset-7 exact public query indexing", () => {
     expect(canonicalHash(measured.view)).toBe(
       // The frozen sea (`pulp_wars-5ti.3`) adds the empty `ice` list (was
       // c84363…6692, the same view otherwise).
-      "70a55be380083978e25552108713864069e136c74e58a82f865c282450bd16d4",
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): the captured view's level-4 Treasury
+      // records carry the reward ID `TREASURY_6` (was 70a55b…16d4 with
+      // `TREASURY_8`, the same view otherwise).
+      "5baf10d6fd66487bf788660d05418d3d174eaef2f82295667175742cc84111be",
     );
 
     const planned = drain(measured.view, commands, 113);
     expect(planned.operations).toBe(
-      66_235 + publicPlanningFactScanOperations(measured.view),
+      66_233 + publicPlanningFactScanOperations(measured.view),
     );
     expect(canonicalHash(planned.result)).toBe(
-      "b32cb8941a64df8d59e6b302c253ccaaa5a1459768943025ec1a35f526181f5b",
+      "29fefcd36ee4f6ae94c1bf36337092aeaa0128ca1613d96c07625c40edbc2f1e",
     );
   });
 
@@ -167,7 +170,7 @@ describe("ruleset-7 exact public query indexing", () => {
           kind: "CITY_REWARD",
           cityId: city.id,
           reachedLevel: city.level + 1,
-          candidates: ["TREASURY_8"],
+          candidates: ["TREASURY_6"],
         },
       ],
     };
@@ -187,7 +190,7 @@ describe("ruleset-7 exact public query indexing", () => {
         kind: "CHOOSE_CITY_REWARD",
         cityId: city.id,
         reachedLevel: city.level + 1,
-        reward: "TREASURY_8",
+        reward: "TREASURY_6",
       },
     ]);
     expect(queryPlayerCommandsV7(structuredClone(retained))).toEqual(

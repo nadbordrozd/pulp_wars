@@ -13,6 +13,7 @@ import {
   type GameStateV7,
   type TechnologyIdV7,
   type UnitRoleIdV7,
+  TECHNOLOGY_IDS_V7,
 } from "../../src/engine/index";
 import {
   applyOkV7,
@@ -388,6 +389,10 @@ describe("Stride (section 7.1)", () => {
         defender: role,
         attackers: [{ role: "FIGHTER", at: at(7, 8) }],
         attackerFaction: "ORIGINAL",
+        // Tuning 1 (7r46): without Explosives (a Breach ignores the levels).
+        attackerTechs: TECHNOLOGY_IDS_V7.filter(
+          (tech) => tech !== "EXPLOSIVES",
+        ),
         fieldDefense: true,
       });
       expect(

@@ -7,6 +7,7 @@ import {
   type CommandV7,
   type CoordV7,
   type GameStateV7,
+  TECHNOLOGY_IDS_V7,
 } from "../../src/engine/index";
 import { checkedV7 } from "../fixtures/v7-builders";
 import { applyOkV7, seatIdV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
@@ -396,11 +397,19 @@ describe("Sweep and Trample (section 7.5)", () => {
   });
 
   it("Trample destroys Field Defense on the target's tile (reason TRAMPLE), which still counts for the exchange", () => {
-    const base = iceFieldV7([
-      { seat: 0, role: "GUARD", at: at(4, 7) },
-      { seat: 1, role: "FIGHTER", at: at(3, 7) },
-      { seat: 1, role: "FIGHTER", at: at(3, 6) },
-    ]);
+    // Tuning 1 (7r46): without Brittle, whose Breach would ignore the level.
+    const base = iceFieldV7(
+      [
+        { seat: 0, role: "GUARD", at: at(4, 7) },
+        { seat: 1, role: "FIGHTER", at: at(3, 7) },
+        { seat: 1, role: "FIGHTER", at: at(3, 6) },
+      ],
+      {
+        techs: {
+          0: TECHNOLOGY_IDS_V7.filter((tech) => tech !== "EXPLOSIVES"),
+        },
+      },
+    );
     const state = fieldDefenseV7(fieldDefenseV7(base, at(3, 7)), at(3, 6));
     const run = attackV7(state, at(4, 7), at(3, 7));
     expect(run.combat.fortificationLevel).toBe(1);

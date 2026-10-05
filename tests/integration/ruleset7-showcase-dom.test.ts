@@ -137,13 +137,14 @@ describe("Ruleset 7 Showcase setup option", () => {
     await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
     const launched = app.controller.snapshot().view;
     if (launched === null) throw new Error("public view missing");
-    expect(launched.viewer.coins).toBe(20);
+    // 3 starting Coins plus the first income of 19 (tuning 1, 7r46).
+    expect(launched.viewer.coins).toBe(22);
     requiredButton('[data-action="compact-menu"]').click();
     requiredButton('[data-action="main-menu"]').click();
     await waitUntil(() => app.controller.snapshot().phase === "RESUMABLE");
     // In a match the map label reads "Showcase".
     expect(document.querySelector(".v7-resume-summary")?.textContent).toBe(
-      "Turn 1 · 20 coins · 2 players · Showcase",
+      "Turn 1 · 22 coins · 2 players · Showcase",
     );
     app.destroy();
 

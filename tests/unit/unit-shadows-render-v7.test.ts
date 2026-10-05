@@ -260,7 +260,7 @@ describe("unit shadow table (pulp_wars-jg1)", () => {
     const giants = radius("GIANT");
     const bigs = radius("BIG");
     const normals = radius("NORMAL");
-    // The eight Juggernaut-role giants (the Rock Candy Golem since the Candy
+    // The eight Juggernaut-role giants (the Gingerbread Giant since the Candy
     // art was wired in, pulp_wars-jdb.3) and the neutral Giant Spider, whose
     // 88 x 72 canvas is a giant's (wide and flat), not a SMALL one.
     expect(giants).toHaveLength(9);

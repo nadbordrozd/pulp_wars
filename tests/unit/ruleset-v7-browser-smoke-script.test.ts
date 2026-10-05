@@ -709,7 +709,7 @@ describe("Ruleset 7 browser smoke script", () => {
     ])
       expect(probe).toContain(`await driver.capture("${name}")`);
     expect(source).toContain(
-      "Curiosities ${curiosities}. Many players ${manySeats}. Evidence:",
+      "Curiosities ${curiosities}. Many players ${manySeats}; asset preload ${preload}. Evidence:",
     );
   });
   it("probes the campaign: switch, list, briefing, mission start, a fixture win and the filtered choice", () => {
@@ -770,7 +770,7 @@ describe("Ruleset 7 browser smoke script", () => {
     );
     expect(source).toContain('? "fixture skipped on the deployed bundle"');
     expect(source).toContain(
-      "Curiosities ${curiosities}. Many players ${manySeats}. Evidence:",
+      "Curiosities ${curiosities}. Many players ${manySeats}; asset preload ${preload}. Evidence:",
     );
     expect(probe).toContain('module: "/tests/fixtures/v7-curiosities-ui.ts"');
     expect(probe).toContain('fixture: "curiositiesWoundedSpiderFixtureV7"');
@@ -848,7 +848,7 @@ describe("Ruleset 7 browser smoke script", () => {
       source.indexOf("await probeShowcaseMatch(connection)"),
     );
     expect(source).toContain(
-      "; research prompt ${researchPrompt}; Campaign ${campaign};",
+      "; research prompt ${researchPrompt}; sound ${sound}; Campaign ${campaign};",
     );
     expect(probe).toContain('module: "/tests/fixtures/v7-research-prompt.ts"');
     expect(probe).toContain('fixture: "researchPromptSmokeFixtureV7"');
@@ -979,7 +979,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r45", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r46", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

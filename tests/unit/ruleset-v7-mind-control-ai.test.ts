@@ -304,11 +304,12 @@ describe("Mind Control AI: playing controlled units", () => {
     const knight = unitAt(view, at(5, 6));
     const brain = unitAt(view, at(5, 5));
     const facts = martianFactsV7(view);
-    // Knight cost 9: 36 x 5 / 10 = 18, plus 5 HP and 2 for its kill.
-    expect(controlledRetainedValueV7(view, knight)).toBe(25);
-    expect(martianRetainedValueV7(view, facts, knight, 0)).toBe(25);
+    // Knight cost 9, 13 HP (tuning 1, 7r46; 10 before): 36 x 5 / 13 = 13,
+    // plus 5 HP and 2 for its kill.
+    expect(controlledRetainedValueV7(view, knight)).toBe(20);
+    expect(martianRetainedValueV7(view, facts, knight, 0)).toBe(20);
     // The Brain carries it.
-    expect(martianRetainedValueV7(view, facts, brain, 28)).toBe(28 + 25);
+    expect(martianRetainedValueV7(view, facts, brain, 28)).toBe(28 + 20);
     // The baseline: HP only (the Thrall).
     baseline(() =>
       expect(martianRetainedValueV7(view, facts, knight, 0)).toBe(5 + 2),

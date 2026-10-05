@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r45 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r45");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r45");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r45.current");
+  it("keeps r18 among the gap-free prior identities after the r46 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r46");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 43 },
+        { length: 44 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-27)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-28)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 43 },
+        { length: 44 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r45");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r46");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -916,7 +916,8 @@ describe("ruleset-7 Dinosaur technology", () => {
     expect(dinosaur.trainableRoles).toEqual(human.trainableRoles);
     expect(dinosaur.roleSightRadius).toEqual({ RAIDER: 2, MARKSMAN: 2 });
     expect(dinosaur.forestMovementFreedomRoles).toEqual(["RAIDER", "MARKSMAN"]);
-    expect(dinosaur.landTradeIncomeCoins).toBe(1);
+    // Tuning 1 (7r46): Commerce pays 2 Coins per connected city.
+    expect(dinosaur.landTradeIncomeCoins).toBe(2);
     expect(dinosaur.plunderCoins).toBe(0);
     expect(dinosaur.commands).toEqual(
       human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
@@ -978,16 +979,18 @@ describe("ruleset-7 Dinosaur technology", () => {
       "Eggs have +4 HP and hatch one turn sooner; +1 unit slot in every city",
     ]);
     expect(text(0, "EXPLOSIVES")).toEqual([
-      "Blast mountain",
-      "Surviving melee attacks destroy Field Defense",
+      "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+      "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
       "Dinosaurs ignore City Walls",
     ]);
     expect(text(1, "EXPLOSIVES")).toEqual([
-      "Blast mountain",
-      "Surviving melee attacks destroy Field Defense",
+      "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+      "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(text(0, "SAWMILLING")).toContain("Triceratops Egg (Charge!)");
-    expect(text(1, "FORTIFICATION")).toEqual(["Build field defense"]);
+    expect(text(1, "FORTIFICATION")).toEqual([
+      "Build Field Defense: the builder keeps its move and attack",
+    ]);
     expect(text(0, "ADMINISTRATION")).toEqual([
       "Train Shaman",
       "Disband",
@@ -1213,6 +1216,7 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
     const treasure = (
       faction: FactionIdV7,
       extra: readonly UnitRoleIdV7[],
+      round = 1,
     ): {
       readonly before: GameStateV7;
       readonly after: GameStateV7;
@@ -1234,6 +1238,7 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
       );
       const before = checkedV7({
         ...arena,
+        round,
         random: { ...arena.random, state: knightSeed },
         treasureChests: [{ x: 5, y: 3 }],
       });
@@ -1295,18 +1300,26 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
       ).toMatchObject({ grantedReward: "COINS", knightFallback: true });
     });
 
-    it("keeps the KNIGHT role for Human, Undead, and Goblin seats", () => {
-      for (const [faction, label] of [
-        ["ORIGINAL", "Knight"],
-        ["UNDEAD", "Vampire"],
-        ["GOBLIN", "Scrap Buggy"],
+    it("keeps the KNIGHT role for Human, Undead, and Goblin seats from round 15", () => {
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): before round 15 a chest gives
+      // these seats their RAIDER-role unit, as it always gives a Dinosaur.
+      for (const [faction, label, early] of [
+        ["ORIGINAL", "Knight", "Raider"],
+        ["UNDEAD", "Vampire", "Ghoul"],
+        ["GOBLIN", "Scrap Buggy", "Wolf Rider"],
       ] as const) {
-        const { before, after } = treasure(faction, []);
+        const { before, after } = treasure(faction, [], 15);
         const created = newUnitsV7(before, after);
         expect(created.map((unit) => unit.role)).toEqual(["KNIGHT"]);
         const unit = created[0];
         if (unit === undefined) throw new Error("treasure unit missing");
         expect(unitRoleRuleV7(after, unit).label).toBe(label);
+        const first = treasure(faction, [], 14);
+        const earlyUnits = newUnitsV7(first.before, first.after);
+        expect(earlyUnits.map((item) => item.role)).toEqual(["RAIDER"]);
+        const earlyUnit = earlyUnits[0];
+        if (earlyUnit === undefined) throw new Error("treasure unit missing");
+        expect(unitRoleRuleV7(first.after, earlyUnit).label).toBe(early);
       }
     });
   });
@@ -1491,9 +1504,10 @@ describe("ruleset-7 Dinosaur Showcase", () => {
         .filter((city) => city.ownerId === seatIdV7(state, 1))
         .map((city) => assignedUnitCountV7(state, city.id)),
     ).toEqual([5, 3, 3]);
-    // The first income is the Human one.
-    expect(playerIncomeV7(state, dinosaurId).totalCoins).toBe(17);
-    expect(playerIncomeV7(reference, dinosaurId).totalCoins).toBe(17);
+    // The first income is the Human one (19 since land trade pays 2 Coins;
+    // tuning 1, 7r46).
+    expect(playerIncomeV7(state, dinosaurId).totalCoins).toBe(19);
+    expect(playerIncomeV7(reference, dinosaurId).totalCoins).toBe(19);
   });
 
   it("cannot train or lay in the over-capacity capital but can in North and at the Coast docks", () => {

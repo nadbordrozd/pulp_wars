@@ -94,7 +94,7 @@ export const SHOWCASE_CITY_TEMPLATES_V7: readonly ShowcaseCityTemplateV7[] =
       rewards: [
         { reachedLevel: 2, reward: "SURVEY" },
         { reachedLevel: 3, reward: "WALLS" },
-        { reachedLevel: 4, reward: "TREASURY_8" },
+        { reachedLevel: 4, reward: "TREASURY_6" },
       ],
       tiles: [
         { dx: -1, y: 2, terrain: "FOREST", improvement: "LUMBER_CAMP" },
@@ -130,7 +130,7 @@ export const SHOWCASE_CITY_TEMPLATES_V7: readonly ShowcaseCityTemplateV7[] =
       rewards: [
         { reachedLevel: 2, reward: "SURVEY" },
         { reachedLevel: 3, reward: "WALLS" },
-        { reachedLevel: 4, reward: "TREASURY_8" },
+        { reachedLevel: 4, reward: "TREASURY_6" },
       ],
       tiles: [
         { dx: -1, y: 10, resource: "FERTILE_GROUND", improvement: "FARM" },

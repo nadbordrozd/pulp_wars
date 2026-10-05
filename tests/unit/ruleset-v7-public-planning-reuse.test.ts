@@ -144,7 +144,7 @@ describe("ruleset-7 exact public planning reuse", () => {
               kind: "CITY_REWARD",
               cityId: ownedCity.id,
               reachedLevel: ownedCity.level,
-              candidates: ["TREASURY_8"],
+              candidates: ["TREASURY_6"],
             },
           ],
         },

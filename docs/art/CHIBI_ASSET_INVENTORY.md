@@ -729,9 +729,9 @@ chocolate, a little mint trim), no owner mask. See
 
 | Subjects                                                                     | Assets                                                       | Class and canvas                                           |
 | ---------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------------- |
-| `UNIT:CANDY:FIGHTER`, `MARKSMAN`, `GUARD`, `CAPTAIN`                         | Gumdrop, Gumball Gunner, Marshmallow, Confectioner           | `STANDARD_UNIT`, 56 x 80                                   |
-| `UNIT:CANDY:RAIDER`, `CATAPULT`, `KNIGHT`                                    | Donut Racer, Pie Launcher, Gummy Bear                        | `LARGE_UNIT`, 72 x 88                                      |
-| `UNIT:CANDY:JUGGERNAUT`                                                      | Rock Candy Golem                                             | `GIANT_UNIT`, 88 x 104                                     |
+| `UNIT:CANDY:FIGHTER`, `MARKSMAN`, `GUARD`, `CAPTAIN`                         | Toffee Trooper, Gumball Gunner, Marshmallow, Confectioner    | `STANDARD_UNIT`, 56 x 80                                   |
+| `UNIT:CANDY:RAIDER`, `CATAPULT`, `KNIGHT`                                    | Donut Racer, Pie Launcher, Chocolate Bunny                   | `LARGE_UNIT`, 72 x 88                                      |
+| `UNIT:CANDY:JUGGERNAUT`                                                      | Gingerbread Giant                                            | `GIANT_UNIT`, 88 x 104                                     |
 | `PORTRAIT:CANDY:<ROLE>`                                                      | eight portraits                                              | `PORTRAIT`, 48 x 48                                        |
 | `CITY:CANDY:1` to `3`                                                        | the gingerbread village, cake town and cake castle           | `SETTLEMENT`, 80 x 80, 88 x 88, 96 x 88; no pennant anchor |
 | `CRUMBS`                                                                     | the Crumbs pile of a tile                                    | `RESOURCE`, 40 x 40 (the Grave's class and canvas)         |

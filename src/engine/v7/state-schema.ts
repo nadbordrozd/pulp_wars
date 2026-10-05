@@ -9,6 +9,8 @@ import {
   PROMOTION_HP_V7,
   PROMOTION_KILLS_V7,
   NEUTRAL_MONSTER_ROLE_RULE_V7,
+  BOOM_POPULATION_V7,
+  MONUMENT_POPULATION_V7,
   dockPopulationV7,
   effectiveRoleRuleV7,
   eggMaxHpOptionsV7,
@@ -89,6 +91,7 @@ import { spatialContributionAtV7 } from "./spatial-economy";
 import {
   cooperativeAlliesV7,
   harbourPopulationForV7,
+  rewardCandidatesForLevelV7,
   roadPopulationForCityV7,
 } from "./economy";
 import {
@@ -756,8 +759,10 @@ function parseContributions(
       (candidate.category === "PERMANENT") !==
         (source.kind === "RESOURCE_ACTION" || source.kind === "CITY_REWARD") ||
       (candidate.category === "PERMANENT" &&
-        candidate.amount !== (source.kind === "CITY_REWARD" ? 3 : 1)) ||
-      (source.kind === "MONUMENT" && candidate.amount !== 3) ||
+        candidate.amount !==
+          (source.kind === "CITY_REWARD" ? BOOM_POPULATION_V7 : 1)) ||
+      (source.kind === "MONUMENT" &&
+        candidate.amount !== MONUMENT_POPULATION_V7) ||
       (source.kind === "IMPROVEMENT" && source.improvement === "MARKET") ||
       (values.at(-1)?.id ?? 0) >= candidate.id
     )
@@ -781,7 +786,9 @@ function parseContributionSource(
     input.kind === "RESOURCE_ACTION" &&
     (input.action === "HARVEST_FRUIT" ||
       input.action === "HUNT_GAME" ||
-      input.action === "HARVEST_FISH")
+      input.action === "HARVEST_FISH" ||
+      // Tuning 1 (7r46): the permanent population of a Blast Mountain.
+      input.action === "BLAST_MOUNTAIN")
   ) {
     const at = parseCoordV7(input.at);
     return at === null
@@ -920,7 +927,7 @@ function parseUnit(
   const faction = players.find((player) => player.id === kindOwner)?.faction;
   if (faction === undefined) return null;
   const rule = effectiveRoleRuleV7(role, faction);
-  // The Candy revision (section 5.4): the Gummy Bear's Sugar Frenzy is an
+  // The Candy revision (section 5.4): the Chocolate Bunny's Sugar Frenzy is an
   // Overrun and the Donut Racer's perk an Escape; that the unit is Rushed
   // is checked with the cross references (`candyListsValid`).
   const rushPerk = roleMechanicsV7(role, faction).rushPerk;
@@ -1182,7 +1189,6 @@ function parseChoices(input: unknown): readonly PendingChoiceV7[] | null {
     if (
       city === null ||
       rewards === null ||
-      rewards.length !== 2 ||
       !candidateRewardsMatchLevel(rewards, candidate.reachedLevel)
     )
       return null;
@@ -1900,7 +1906,12 @@ function validateCrossReferences(value: CrossInput): boolean {
     if (
       choice === undefined ||
       choice.cityId !== firstUnrewarded.city.id ||
-      choice.reachedLevel !== firstUnrewarded.level
+      choice.reachedLevel !== firstUnrewarded.level ||
+      choice.candidates.join() !==
+        rewardCandidatesForLevelV7(
+          firstUnrewarded.level,
+          firstUnrewarded.city.rewards,
+        ).join()
     )
       return false;
   }
@@ -2512,7 +2523,8 @@ function populationLedgerValid(
                       harbourPopulationForV7(players, city.ownerId),
                     ))
               : contribution.amount !== liveValue(board, cities, tile))
-          : tile.improvement !== "MONUMENT" || contribution.amount !== 3)
+          : tile.improvement !== "MONUMENT" ||
+            contribution.amount !== MONUMENT_POPULATION_V7)
       )
         return false;
       liveByCoord.set(key(tile.at), contribution);
@@ -2596,7 +2608,7 @@ function rewardMatchesLevel(reward: RewardIdV7, level: number): boolean {
     : level === 3
       ? reward === "WALLS" || reward === "MILITIA"
       : level === 4
-        ? reward === "BOOM" || reward === "TREASURY_8"
+        ? reward === "BOOM" || reward === "TREASURY_6"
         : level >= 5 && (reward === "JUGGERNAUT" || reward === "TREASURY");
 }
 
@@ -2610,11 +2622,19 @@ function candidateRewardsMatchLevel(
       : level === 3
         ? ["WALLS", "MILITIA"]
         : level === 4
-          ? ["BOOM", "TREASURY_8"]
+          ? ["BOOM", "TREASURY_6"]
           : level >= 5
             ? ["JUGGERNAUT", "TREASURY"]
             : [];
-  return rewards[0] === expected[0] && rewards[1] === expected[1];
+  // Tuning 1 (7r46): a city that already took its reward unit is offered
+  // the Treasury alone at level 5 and above (checked against the city's
+  // reward history by the state invariants).
+  if (level >= 5 && rewards.length === 1) return rewards[0] === "TREASURY";
+  return (
+    rewards.length === 2 &&
+    rewards[0] === expected[0] &&
+    rewards[1] === expected[1]
+  );
 }
 
 function growthSpent(level: number): number | null {

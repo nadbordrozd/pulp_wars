@@ -204,7 +204,8 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
 
   it("pins the maximum HP of every land role of every faction", () => {
     // Fighter, Raider, Marksman, Guard, Captain, Catapult, Knight, Juggernaut.
-    expect(hp("ORIGINAL")).toEqual([12, 12, 12, 17, 10, 10, 10, 40]);
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): the Human Knight has 13.
+    expect(hp("ORIGINAL")).toEqual([12, 12, 12, 17, 10, 10, 13, 40]);
     expect(hp("UNDEAD")).toEqual([10, 10, 8, 18, 10, 10, 10, 40]);
     expect(hp("GOBLIN")).toEqual([6, 10, 8, 15, 12, 8, 10, 40]);
     expect(hp("DINOSAUR")).toEqual([10, 12, 10, 20, 10, 20, 28, 45]);
@@ -235,8 +236,9 @@ describe("ruleset-7 revision-20 section 6.3 sturdiness numbers", () => {
       defense2: 2,
       move: 2,
     });
+    // Tuning 1 (7r46): the Marksman costs 4 (3 before).
     expect(effectiveRoleRuleV7("MARKSMAN", "ORIGINAL")).toMatchObject({
-      cost: 3,
+      cost: 4,
       attack2: 4,
       defense2: 2,
       range: 2,

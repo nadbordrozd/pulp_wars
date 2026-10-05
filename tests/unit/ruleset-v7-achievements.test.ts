@@ -15,6 +15,7 @@ import {
   type GameStateV7,
   type PopulationContributionV7,
   type UnitStateV7,
+  MONUMENT_POPULATION_V7,
   TECHNOLOGY_IDS_V7,
   effectiveRoleRuleV7,
 } from "../../src/engine/index";
@@ -465,7 +466,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toMatchObject({ currentDistinctTrainableRoles: 3 });
   });
 
-  it("spends each entitlement once for a free +3 Monument and allows the other after removal", () => {
+  it("spends each entitlement once for a free +2 Monument and allows the other after removal", () => {
     let state = unlockEntitlement(
       levelTwoWithoutPopulation(
         exploredAllV7(richV7(allTechsV7(initialV7(703)))),
@@ -542,7 +543,7 @@ describe("ruleset-7 achievements and Monuments", () => {
       preview: {
         achievement: "MUSTER",
         cityId: city.id,
-        populationAdded: 3,
+        populationAdded: 2,
         cityHasMonument: false,
         onePerCityAvailable: true,
         lostEmptyTile: true,
@@ -563,13 +564,13 @@ describe("ruleset-7 achievements and Monuments", () => {
     expect(state.players[0]?.achievementEntitlements[1]?.unlocked).toBe(false);
     expect(populationAt(state, at)).toMatchObject({
       category: "LIVE",
-      amount: 3,
+      amount: 2,
       source: { kind: "MONUMENT", achievement: "MUSTER", at },
     });
     expect(built.events[0]).toMatchObject({
       kind: "MONUMENT_BUILT",
       achievement: "MUSTER",
-      populationAdded: 3,
+      populationAdded: 2,
     });
 
     const sameCity = applyCommandV7(
@@ -694,7 +695,7 @@ describe("ruleset-7 achievements and Monuments", () => {
     ).toBe(true);
     expect(populationAt(captured.state, monumentAt)).toMatchObject({
       cityId: targetCityId,
-      amount: 3,
+      amount: 2,
       source: { kind: "MONUMENT", achievement: "ENGINEER" },
     });
     const currentView = viewForV7(captured.state, captured.state.humanPlayerId);
@@ -710,14 +711,14 @@ describe("ruleset-7 achievements and Monuments", () => {
     expect(currentView.improvementValues).toContainEqual({
       at: monumentAt,
       improvement: "MONUMENT",
-      level: 3,
+      level: 2,
       measure: "POPULATION",
       contributingTiles: [],
     });
     const formerView = viewForV7(captured.state, formerOwnerId);
     expect(formerView.populationContributions).toContainEqual(
       expect.objectContaining({
-        amount: 3,
+        amount: 2,
         source: {
           kind: "MONUMENT",
           visibility: "BUILDING_ONLY",
@@ -948,7 +949,7 @@ describe("ruleset-7 achievements and Monuments", () => {
         visibility: "BUILDING_ONLY",
         cityId: city.id,
         at,
-        populationAdded: 3,
+        populationAdded: 2,
       },
     ]);
     expect(parsePlayerEventEnvelopeV7(opponentProjected)).toMatchObject({
@@ -1138,7 +1139,7 @@ function engineerBuildState(): { state: GameStateV7; forgeAt: CoordV7 } {
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" },
                 { reachedLevel: 3, reward: "WALLS" },
-                { reachedLevel: 4, reward: "TREASURY_8" },
+                { reachedLevel: 4, reward: "TREASURY_6" },
               ],
             }
           : candidate,
@@ -1243,7 +1244,7 @@ function capturedMonumentState(): {
     id: base.nextEntityId,
     cityId: target.id,
     category: "LIVE",
-    amount: 3,
+    amount: MONUMENT_POPULATION_V7,
     source: { kind: "MONUMENT", achievement: "ENGINEER", at: monumentAt },
   };
   return {
@@ -1267,8 +1268,8 @@ function capturedMonumentState(): {
           ? {
               ...candidate,
               level: 2,
-              economicPopulation: 3,
-              population: 1,
+              economicPopulation: 2,
+              population: 0,
               rewards: [{ reachedLevel: 2, reward: "SURVEY" }],
             }
           : candidate,

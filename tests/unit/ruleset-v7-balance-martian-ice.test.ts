@@ -1488,7 +1488,9 @@ describe("I2: Snow cover x 1.25 (section 6.2)", () => {
       defenseBonusNumerator: 3,
       defenseBonusDenominator: 2,
       damageToDefender: 4,
-      damageToAttacker: 4,
+      // Tuning 1 (7r46): the Yeti's open-ground retaliation (4 with the
+      // Forest cover in it before).
+      damageToAttacker: 3,
     });
   });
 

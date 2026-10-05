@@ -61,6 +61,10 @@ import {
   platedCapAppliesV7,
   playerTechnologyResearchCostV7,
   technologyResearchCostV7,
+  BLAST_MOUNTAIN_POPULATION_V7,
+  LAND_TRADE_INCOME_COINS_V7,
+  MONUMENT_POPULATION_V7,
+  landGrantCostV7,
   type BasicEconomicCommandKindV7,
   type EffectiveRoleRuleV7,
   type MovementModeV7,
@@ -137,7 +141,9 @@ import {
   attackHasPierceV7,
   attackSplatAppliesV7,
   noRetaliationReasonV7,
+  attackBreachesV7,
   calculateCombatPreviewV7,
+  retaliationDamageV7,
   collateralEntryV7,
   gangUpBonusV7,
   ramShoveTileOpenV7,
@@ -551,19 +557,13 @@ function appendPublicCityCommandsV7(
     player.researchedTechs.includes("PLANNING") &&
     city.level >= 3 &&
     !city.landGrantUsed &&
-    player.coins >= 6 &&
     !view.pendingChoices.some((choice) => choice.cityId === city.id) &&
     // An explored cell is neutral only when it has no public territory owner:
     // the view hides the city ID of territory whose city center is still
-    // unexplored, but always shows that territory's owner.
-    view.board.tiles.some(
-      (tile) =>
-        Math.abs(tile.at.x - city.at.x) <= 2 &&
-        Math.abs(tile.at.y - city.at.y) <= 2 &&
-        tile.explored &&
-        tile.territoryCityId === null &&
-        tile.territoryOwnerId === null,
-    )
+    // unexplored, but always shows that territory's owner. Tuning 1 (7r46):
+    // the cost counts exactly those cells, so it is exact from the view.
+    publicLandGrantTilesV7(view, city).length > 0 &&
+    player.coins >= landGrantCostV7(publicLandGrantTilesV7(view, city).length)
   )
     candidates.push({ kind: "LAND_GRANT", cityId: city.id });
   const forgeDiscount = view.improvementValues.some(
@@ -2740,6 +2740,59 @@ function publicActiveOwnedPort(
   );
 }
 
+/**
+ * Tuning 1 (`pulp_wars-w49.3`, 7r46): the explored neutral cells of a
+ * city's 5 x 5 footprint, which a Land Grant claims and pays for (2 Coins
+ * each, at least 6). Unexplored neutral cells are claimed too and are free,
+ * so this list and the cost are exact from the owner's view.
+ */
+function publicLandGrantTilesV7(
+  view: PlayerViewV7,
+  city: { readonly at: CoordV7 },
+): readonly CoordV7[] {
+  return view.board.tiles
+    .filter(
+      (tile) =>
+        Math.abs(tile.at.x - city.at.x) <= 2 &&
+        Math.abs(tile.at.y - city.at.y) <= 2 &&
+        tile.explored &&
+        tile.territoryCityId === null &&
+        tile.territoryOwnerId === null,
+    )
+    .map((tile) => tile.at);
+}
+
+/** The exact public preview of an offered `LAND_GRANT` (tuning 1, 7r46). */
+export interface LandGrantPreviewV7 {
+  readonly cityId: CityId;
+  /** 2 Coins per tile of `tiles`, at least 6. */
+  readonly cost: number;
+  /** The explored neutral tiles the grant claims, in (y, x) order. */
+  readonly tiles: readonly CoordV7[];
+}
+
+/**
+ * The cost and the explored tiles of a Land Grant the public command query
+ * offers for `cityId`, or null when it is not offered.
+ */
+export function queryLandGrantPreviewV7(
+  view: PlayerViewV7,
+  cityId: CityId,
+): LandGrantPreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) => command.kind === "LAND_GRANT" && command.cityId === cityId,
+    )
+  )
+    return null;
+  const city = view.cities.find((candidate) => candidate.id === cityId);
+  if (city === undefined) return null;
+  const tiles = [...publicLandGrantTilesV7(view, city)].sort(
+    (left, right) => left.y - right.y || left.x - right.x,
+  );
+  return { cityId, cost: landGrantCostV7(tiles.length), tiles };
+}
+
 export interface MonumentPreviewV7 {
   readonly achievement: AchievementIdV7;
   readonly entitlement: AchievementEntitlementV7;
@@ -2747,7 +2800,7 @@ export interface MonumentPreviewV7 {
   readonly cityId: CityId;
   readonly cityHasMonument: false;
   readonly onePerCityAvailable: true;
-  readonly populationAdded: 3;
+  readonly populationAdded: 2;
   readonly levelsReached: readonly number[];
   readonly rewardWork: readonly Extract<
     DomainEventV7,
@@ -2797,7 +2850,8 @@ export function previewMonumentV7(
   );
   if (city === undefined) return { ok: false, error: "NOT_OFFERED" };
   const levelsReached: number[] = [];
-  const total = city.permanentPopulation + city.economicPopulation + 3;
+  const total =
+    city.permanentPopulation + city.economicPopulation + MONUMENT_POPULATION_V7;
   if (!Number.isSafeInteger(total)) return { ok: false, error: "NOT_OFFERED" };
   let level = city.level;
   while (total - growthSpentForPreview(level) >= level + 1) {
@@ -2813,7 +2867,7 @@ export function previewMonumentV7(
       kind: "CITY_REWARD_QUEUED",
       cityId: city.id,
       reachedLevel,
-      candidates: rewardCandidatesForLevelV7(reachedLevel),
+      candidates: rewardCandidatesForLevelV7(reachedLevel, city.rewards),
     });
     break;
   }
@@ -2826,7 +2880,7 @@ export function previewMonumentV7(
       cityId: tile.territoryCityId,
       cityHasMonument: false,
       onePerCityAvailable: true,
-      populationAdded: 3,
+      populationAdded: MONUMENT_POPULATION_V7,
       levelsReached,
       rewardWork,
       lostEmptyTile: true,
@@ -3991,10 +4045,15 @@ function calculatePublicEconomicPreviewV7(
     for (const candidate of view.cities
       .filter((value) => value.ownerId === view.viewer.id)
       .sort((left, right) => left.id - right.id)) {
+      // Tuning 1 (7r46): a Blast gives its city permanent population.
       const permanentDelta =
-        candidate.id === city?.id && basic?.populationCategory === "PERMANENT"
-          ? basic.population
-          : 0;
+        candidate.id !== city?.id
+          ? 0
+          : basic?.populationCategory === "PERMANENT"
+            ? basic.population
+            : command.kind === "BLAST_MOUNTAIN"
+              ? BLAST_MOUNTAIN_POPULATION_V7
+              : 0;
       const liveDelta = changesLiveGraph
         ? liveTotalForCityV7(afterGraph, candidate.id) -
           liveTotalForCityV7(beforeGraph, candidate.id)
@@ -4014,7 +4073,8 @@ function calculatePublicEconomicPreviewV7(
               publicGraphNavalConnectivityV7(afterGraph).landTrade.has(
                 candidate.id,
               ),
-            ) +
+            ) *
+              LAND_TRADE_INCOME_COINS_V7 +
               Number(
                 publicGraphNavalConnectivityV7(afterGraph).seaTrade.has(
                   candidate.id,
@@ -4029,7 +4089,8 @@ function calculatePublicEconomicPreviewV7(
               publicGraphNavalConnectivityV7(beforeGraph).landTrade.has(
                 candidate.id,
               ),
-            ) +
+            ) *
+              LAND_TRADE_INCOME_COINS_V7 +
               Number(
                 publicGraphNavalConnectivityV7(beforeGraph).seaTrade.has(
                   candidate.id,
@@ -4064,7 +4125,11 @@ function calculatePublicEconomicPreviewV7(
           command.kind === "BUILD_PORT"
             ? // The naval branch section 5.4: 2 with the viewer's Harbours.
               publicDockPopulationV7(afterGraph, "PORT")
-            : (evaluation?.population ?? basic?.population ?? 0),
+            : (evaluation?.population ??
+              basic?.population ??
+              (command.kind === "BLAST_MOUNTAIN"
+                ? BLAST_MOUNTAIN_POPULATION_V7
+                : 0)),
         outputTransitions: economicOutputTransitionsV7(
           view,
           beforeGraph,
@@ -4751,7 +4816,7 @@ function publicGraphNavalConnectivityV7(graph: PublicEconomyGraphV7): {
   // Revision 17: land trade is a technology capability of the viewer's tree.
   const landTrade =
     technologyCapabilitiesV7(graph.researchedTechs, graph.faction)
-      .landTradeIncomeCoins === 1
+      .landTradeIncomeCoins > 0
       ? new Set([...network].filter((cityId) => !roots.includes(cityId)))
       : new Set<CityId>();
   const seaTrade = new Set(
@@ -4866,7 +4931,8 @@ function publicCityIncomeV7(
   view: PlayerViewV7,
   city: PlayerViewV7["cities"][number],
   market: number,
-  tradeBonuses = Number(view.naval.landTradeCityIds.includes(city.id)) +
+  tradeBonuses = Number(view.naval.landTradeCityIds.includes(city.id)) *
+    LAND_TRADE_INCOME_COINS_V7 +
     Number(view.naval.seaTradeCityIds.includes(city.id)),
 ): number {
   if (publicCityBesieged(view, city.at)) return 0;
@@ -6948,24 +7014,34 @@ function publicTileCommandLegal(
       (candidate): candidate is Extract<PlayerTileViewV7, { explored: true }> =>
         candidate.explored,
     );
-    if (kind === "BUILD_WINDMILL")
-      return adjacent.some(
-        (item) =>
-          item.territoryOwnerId === view.viewer.id &&
-          item.improvement === "FARM",
+    // Tuning 1 (7r46): a contributor counts for one building of a kind, so
+    // the placement needs a contributor that would count for this one. A
+    // contributor of this city always does; one of another city only when
+    // no building of the kind next to it comes first, which is exact only
+    // when every tile around it is explored.
+    if (
+      kind === "BUILD_WINDMILL" ||
+      kind === "BUILD_SAWMILL" ||
+      kind === "BUILD_FORGE" ||
+      kind === "BUILD_MARKET"
+    ) {
+      const support = spatialContributionAtV7(
+        publicEconomyGraph(view),
+        tile.at,
+        spatial.improvement,
       );
-    if (kind === "BUILD_SAWMILL")
-      return adjacent.some(
-        (item) =>
-          item.territoryOwnerId === view.viewer.id &&
-          item.improvement === "LUMBER_CAMP",
+      return (
+        support.placementCount >= spatial.placementMinimum &&
+        support.contributingTiles.some((at) => {
+          const contributor = tileAtView(view, at);
+          return (
+            contributor?.explored === true &&
+            (contributor.territoryCityId === city.id ||
+              adjacentPublicTiles(view, at).every((near) => near.explored))
+          );
+        })
       );
-    if (kind === "BUILD_FORGE")
-      return adjacent.some(
-        (item) =>
-          item.territoryOwnerId === view.viewer.id &&
-          item.improvement === "MINE",
-      );
+    }
     if (kind === "BUILD_WORKSHOP")
       return (
         distinct(
@@ -6976,16 +7052,6 @@ function publicTileCommandLegal(
               ? [item.improvement]
               : [],
           ),
-        ).length >= 1
-      );
-    if (kind === "BUILD_MARKET")
-      return (
-        distinct(
-          adjacent.flatMap((item) => {
-            if (item.territoryOwnerId !== view.viewer.id) return [];
-            const family = improvementFamily(item.improvement);
-            return family === null ? [] : [family];
-          }),
         ).length >= 1
       );
     return true;
@@ -7018,7 +7084,8 @@ function publicTileCommandLegal(
       view.viewer.coins >= 3 &&
       tile.site === null &&
       tile.terrain === "MOUNTAIN" &&
-      tile.resource === null &&
+      // Tuning 1 (7r46): an Ore Mountain may be blasted.
+      (tile.resource === null || tile.resource === "ORE") &&
       tile.improvement === null &&
       !tile.fieldDefense
     );
@@ -7051,15 +7118,6 @@ function adjacentPublicTiles(
       if (tile !== undefined) result.push(tile);
     }
   return result;
-}
-
-function improvementFamily(improvement: ImprovementIdV7 | null): string | null {
-  if (improvement === "FARM" || improvement === "WINDMILL")
-    return "AGRICULTURE";
-  if (improvement === "LUMBER_CAMP" || improvement === "SAWMILL")
-    return "TIMBER";
-  if (improvement === "MINE" || improvement === "FORGE") return "METAL";
-  return null;
 }
 
 function distinct<T>(values: readonly T[]): T[] {
@@ -7221,6 +7279,12 @@ function publicCombatPreviewCore(
   // part (never added to Field Defense), read from the target's public
   // stats (its owner's technologies are private).
   const dugIn = targetTakesCover && publicUnitIsDugInV7(view, target.id);
+  const breach = attackBreachesV7(
+    view,
+    attacker,
+    distance,
+    view.viewer.researchedTechs,
+  );
   const { fortificationLevel, fortificationIgnored } = attackFortificationV7(
     {
       walls: tileFortification - tileFieldDefense,
@@ -7247,6 +7311,8 @@ function publicCombatPreviewCore(
         attacker,
         view.viewer.researchedTechs,
       ),
+      // Tuning 1 Breach: a melee attack of an owner with Explosives.
+      breach,
     },
   );
   // Revision 19 section 6.2: an Egg defends with a fixed 1.
@@ -7276,7 +7342,7 @@ function publicCombatPreviewCore(
   // Section 8.9: an icebound defender never retaliates.
   const defenderIcebound = unitIsIceboundV7(view, target);
   const bonus = coverBonusV7(terrainCover, snowCover || iceCover);
-  const breachApplied = false;
+  const breachApplied = breach && fortificationIgnored > 0;
   const applied = bonus;
   // The Dwarf revision section 7.1: Unflinching (a construct's attack).
   const unflinching = attackIsUnflinchingV7(view, attacker);
@@ -7346,11 +7412,17 @@ function publicCombatPreviewCore(
   // public `splattedThisTurn` of a visible unit).
   const splatted = unitIsSplattedV7(view, target.id);
   const retaliation = wouldRetaliate && !splatted;
-  // Section 13.2: retaliation uses the same fortified Defense as the
-  // defender's force, exactly as canonical resolution does.
-  const rawAttackerDamage = retaliation
-    ? roundHalfUpPublic(defenseOnCommon * BigInt(defense2) * 9n, total * 4n)
-    : 0;
+  // Section 13.2 (tuning 1, 7r46): the retaliation uses the defender's base
+  // Defense, without fortification and cover, exactly as canonical
+  // resolution does (the shared `retaliationDamageV7`).
+  const retaliationFormula = retaliationDamageV7({
+    attackForceNumerator,
+    attackForceDenominator,
+    defense2: defenderRule.defense2,
+    hp: target.hp,
+    maxHp: target.maxHp,
+  });
+  const rawAttackerDamage = retaliation ? retaliationFormula : 0;
   const attackerShield = shieldOfV7(view.shields, attacker.id);
   const attackerHit = absorbHitV7(
     attackerShield,
@@ -7490,7 +7562,7 @@ function publicCombatPreviewCore(
       view.cities.find((city) => same(city.at, target.at))?.ownerId ?? null,
     );
   const nextAttacks = attacker.activation.attacksUsed + 1;
-  // The Candy revision section 5.4: a Rushed Gummy Bear's Sugar Frenzy is an
+  // The Candy revision section 5.4: a Rushed Chocolate Bunny's Sugar Frenzy is an
   // Overrun capped at two continuations (the shared predicates).
   const overrunKind = overrunKindV7(view, attacker, attackerRule, assumeRushed);
   // The Candy revision section 8: the Bounce, after the Push and the follow.
@@ -7598,15 +7670,7 @@ function publicCombatPreviewCore(
     unflinchingApplied: unflinching,
     platedApplied:
       platedCapAppliesV7(view, target, formulaDefenderDamage) ||
-      (retaliation &&
-        platedCapAppliesV7(
-          view,
-          attacker,
-          roundHalfUpPublic(
-            defenseOnCommon * BigInt(defense2) * 9n,
-            total * 4n,
-          ),
-        )),
+      (retaliation && platedCapAppliesV7(view, attacker, retaliationFormula)),
     sugarRushApplied: rushInStats || assumedRush2 > 0,
     splatApplied: attackSplatAppliesV7(view, attacker, target, defenderDies),
     ...bounced,
@@ -8166,10 +8230,13 @@ function publicAttackChainV7(
       // The Ice Folk revision section 7.5: Trample.
       preview.sweep ||
       (preview.inspiredApplied && distance === 1 && !preview.attackerDies) ||
-      (distance === 1 &&
-        !preview.attackerDies &&
-        attackerUnit.form === "LAND" &&
-        view.viewer.researchedTechs.includes("EXPLOSIVES")) ||
+      // Tuning 1 Breach (7r46): whether or not the attacker survives.
+      attackBreachesV7(
+        view,
+        attackerUnit,
+        distance,
+        view.viewer.researchedTechs,
+      ) ||
       preview.advances);
   const chain = sim.run(
     // The controlled units of a Brain the attack removed are released before

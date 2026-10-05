@@ -192,7 +192,7 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
     expect(
       document.querySelector(".v7-info-screen .v7-screen-lede")?.textContent,
     ).toBe(
-      "Each achievement earns a free Monument: +3 population, one per city.",
+      "Each achievement earns a free Monument: +2 population, one per city.",
     );
     // The revision-5 achievements still wait for their technology.
     expect(cardFacts("EXPLORER")).toMatchObject({
@@ -445,7 +445,7 @@ describe("Ruleset 7 revision-21 achievements UI", () => {
     );
     expect(build.textContent).toContain("Monument");
     expect(build.getAttribute("aria-label")).toBe(
-      "Monument · free · population +3",
+      "Monument · free · population +2",
     );
     expect(
       build.querySelector('[data-asset-id="building-square-monument"]'),

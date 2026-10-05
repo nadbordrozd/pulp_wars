@@ -200,7 +200,7 @@ try {
       const permanent = camps.slice(0, 5).map((at, index) => ({ id: landBase.nextEntityId + live.length + index, cityId: landCity.id, category: 'PERMANENT', amount: 1, source: { kind: 'RESOURCE_ACTION', action: 'HARVEST_FRUIT', at } }));
       const assignedStart = landBase.nextEntityId + live.length + permanent.length;
       const assigned = [landAt, ...camps.slice(0, 5)].map((at, index) => ({ ...landUnit, id: assignedStart + index, ownerId: landActor, homeCityId: landCity.id, role: 'FIGHTER', at, hp: 10, maxHp: 10, activation: { ...landUnit.activation } }));
-      const landState = checkedV7({ ...landBase, nextEntityId: assignedStart + assigned.length, treasureChests: [], units: assigned, players: landBase.players.map((player) => player.id === landActor ? { ...player, coins: 100 } : player), board: { ...landBase.board, tiles: landBase.board.tiles.map((tile) => same(tile.at, landAt) || campKeys.has(tile.at.y + ',' + tile.at.x) ? { ...tile, biome: 'WOODLAND', terrain: 'FOREST', resource: null, improvement: campKeys.has(tile.at.y + ',' + tile.at.x) ? 'LUMBER_CAMP' : null, road: false, site: null, territoryCityId: landCity.id } : tile) }, cities: landBase.cities.map((candidate) => candidate.id === landCity.id ? { ...candidate, level: 4, permanentPopulation: 5, economicPopulation: 8, population: 4, landGrantUsed: false, rewards: [{ reachedLevel: 2, reward: 'STOCKPILE' }, { reachedLevel: 3, reward: 'WALLS' }, { reachedLevel: 4, reward: 'TREASURY_8' }] } : candidate), populationContributions: [...live, ...permanent] });
+      const landState = checkedV7({ ...landBase, nextEntityId: assignedStart + assigned.length, treasureChests: [], units: assigned, players: landBase.players.map((player) => player.id === landActor ? { ...player, coins: 100 } : player), board: { ...landBase.board, tiles: landBase.board.tiles.map((tile) => same(tile.at, landAt) || campKeys.has(tile.at.y + ',' + tile.at.x) ? { ...tile, biome: 'WOODLAND', terrain: 'FOREST', resource: null, improvement: campKeys.has(tile.at.y + ',' + tile.at.x) ? 'LUMBER_CAMP' : null, road: false, site: null, territoryCityId: landCity.id } : tile) }, cities: landBase.cities.map((candidate) => candidate.id === landCity.id ? { ...candidate, level: 4, permanentPopulation: 5, economicPopulation: 8, population: 4, landGrantUsed: false, rewards: [{ reachedLevel: 2, reward: 'STOCKPILE' }, { reachedLevel: 3, reward: 'WALLS' }, { reachedLevel: 4, reward: 'TREASURY_6' }] } : candidate), populationContributions: [...live, ...permanent] });
       const landReview = mountState('playtest-land-review', landState);
       landReview.root.style.display = 'none'; landReview.select({ kind: 'CITY', cityId: landCity.id });
 
@@ -421,7 +421,11 @@ try {
     `per-object Road layering failed: ${JSON.stringify(layer.cellPixels)}`,
   );
   assert(
-    land.label === "Land grant for 6 Coins" && land.cost === "6",
+    // Tuning 1 (7r46): 2 Coins per explored claimed tile, at least 6.
+    typeof land.label === "string" &&
+      /^Land grant for \d+ Coins · claims \d+ tiles?$/.test(land.label) &&
+      Number(land.cost) >= 6 &&
+      land.label.startsWith(`Land grant for ${String(land.cost)} Coins`),
     `Land Grant evidence failed: ${JSON.stringify(land)}`,
   );
   assert(

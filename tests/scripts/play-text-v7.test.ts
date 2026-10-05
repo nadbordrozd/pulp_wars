@@ -4,7 +4,9 @@ import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import {
   RULESET_7_ID,
+  TECHNOLOGY_IDS_V7,
   canonicalHash,
+  effectiveRoleRuleV7,
   parseGameStateV7,
   queryPlayerCommandsV7,
   viewForV7,
@@ -57,6 +59,25 @@ function newSession(name: string): string {
     "0",
   );
   return session;
+}
+
+/** Rewrites the stored state of a session (a constructed position). */
+function patchState(
+  session: string,
+  change: (state: GameStateV7) => GameStateV7,
+): void {
+  const raw = JSON.parse(readFileSync(session, "utf8")) as Record<
+    string,
+    unknown
+  >;
+  const next = change(sessionState(session));
+  expect(parseGameStateV7(JSON.parse(JSON.stringify(next)))).toEqual(next);
+  // The harness checks the stored hash; `verify` (a replay from the setup)
+  // would not accept a constructed position and is not used on one.
+  writeFileSync(
+    session,
+    JSON.stringify({ ...raw, state: next, stateHash: canonicalHash(next) }),
+  );
 }
 
 /** The ids `options` prints (an id starts a line, two spaces follow it). */
@@ -226,14 +247,183 @@ describe("text-mode play harness", () => {
     );
   });
 
+  it("ends the turn with do --end only when every id was applied", () => {
+    const session = newSession("do-end");
+    const move = offeredIds(session).find((id) => /^u\d+\.m\./.test(id));
+    const research = offeredIds(session).find((id) => id.startsWith("r."));
+    if (move === undefined || research === undefined)
+      throw new Error("the opening offers a move and a research");
+    // A rejected id: the earlier ids stay applied and the turn is not ended.
+    const partial = run("do", "--session", session, move, move, "--end");
+    expect(partial.exitCode).toBe(1);
+    expect(partial.output).toContain(`OK ${move} -> state #1`);
+    expect(partial.output).toContain(`REJECTED ${move}`);
+    expect(partial.output).toContain("TURN NOT ENDED");
+    expect(partial.output).not.toContain("END OF YOUR TURN");
+    expect(sessionState(session).round).toBe(1);
+    expect(sessionState(session).commandIndex).toBe(1);
+    // Every id applied: the turn ends and the AI seat plays.
+    const whole = run("do", "--session", session, research, "--end");
+    expect(whole.exitCode, whole.output).toBe(0);
+    expect(whole.output).toContain(`OK ${research} -> state #2`);
+    expect(whole.output).toContain("END OF YOUR TURN (round 1)");
+    expect(sessionState(session).round).toBe(2);
+    expect(ok("verify", "--session", session)).toContain("VERIFIED");
+  });
+
+  it("refuses a plain end right after a do that stopped at a rejected id", () => {
+    const session = newSession("end-guard");
+    const [move, second] = offeredIds(session).filter((id) =>
+      /^u\d+\.m\./.test(id),
+    );
+    const research = offeredIds(session).find((id) => id.startsWith("r."));
+    if (move === undefined || research === undefined)
+      throw new Error("the opening offers a move and a research");
+    const partial = run("do", "--session", session, move, move, research);
+    expect(partial.exitCode).toBe(1);
+    expect(partial.output).toContain(`NOT EXECUTED: ${research}`);
+    const refused = run("end", "--session", session);
+    expect(refused.exitCode).toBe(1);
+    expect(refused.output).toContain("turn NOT ended");
+    expect(refused.output).toContain(`rejected id ${move}`);
+    expect(refused.output).toContain(`did not execute ${research}`);
+    expect(refused.output).toContain("end --force");
+    expect(sessionState(session).round).toBe(1);
+    // Read-only commands do not clear the guard; another do does.
+    ok("view", "--session", session);
+    ok("options", "--session", session);
+    expect(run("end", "--session", session).exitCode).toBe(1);
+    ok("do", "--session", session, research);
+    expect(ok("end", "--session", session)).toContain(
+      "END OF YOUR TURN (round 1)",
+    );
+    expect(sessionState(session).round).toBe(2);
+
+    // --force ends the turn as it stands.
+    const forced = newSession("end-force");
+    const forcedMove = offeredIds(forced).find((id) => /^u\d+\.m\./.test(id));
+    if (forcedMove === undefined) throw new Error("no move is offered");
+    expect(run("do", "--session", forced, "u999.m.0,0").exitCode).toBe(1);
+    expect(run("end", "--session", forced).exitCode).toBe(1);
+    expect(ok("end", "--session", forced, "--force")).toContain(
+      "END OF YOUR TURN (round 1)",
+    );
+    expect(sessionState(forced).round).toBe(2);
+    void second;
+  });
+
+  // pulp_wars-w49.3: what two hand playtests of identity 7r46 could not
+  // read from the text.
+  it("states the tuning-1 unlocks, the Slayer count, and the chest unit", () => {
+    const session = newSession("tuning-text");
+    const tech = ok("tech", "--session", session);
+    expect(tech).toContain(
+      "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
+    );
+    expect(tech).toContain("its city gains +1 population");
+    expect(tech).toContain("Road-linked cities: +2 Coins each turn");
+    expect(tech).toContain(
+      "Build Field Defense: the builder keeps its move and attack",
+    );
+    expect(tech).not.toMatch(/unlocks: [^\n]*(^|; )MELEE_FIELD_DEMOLITION/m);
+    expect(ok("view", "--session", session, "--full")).toContain(
+      "SLAYER 0/5 (most kills by one living unit)",
+    );
+
+    // The seat's unit beside the first chest: before round 15 the Human
+    // chest unit is a Raider, and the line names it (the event's reward
+    // literal stays KNIGHT for every faction and round).
+    const chest = sessionState(session).treasureChests[0];
+    if (chest === undefined) throw new Error("the map has no chest");
+    patchState(session, (state) => ({
+      ...state,
+      units: state.units.map((unit) =>
+        unit.ownerId === state.humanPlayerId
+          ? { ...unit, at: { x: chest.x, y: chest.y + 1 } }
+          : unit,
+      ),
+    }));
+    const move = offeredIds(session).find((id) =>
+      id.endsWith(`.m.${chest.x},${chest.y}`),
+    );
+    if (move === undefined) throw new Error("the chest is not reachable");
+    const output = ok("do", "--session", session, move);
+    expect(output).toMatch(
+      new RegExp(
+        `TREASURE_CAPTURED by u\\d+\\(S0 Fighter\\) at ${chest.x},${chest.y}: granted u\\d+\\(S0 Raider\\) at \\d+,\\d+ home c\\d+`,
+      ),
+    );
+    expect(output).not.toContain("KNIGHT");
+    expect(
+      sessionState(session).units.filter((unit) => unit.role === "RAIDER"),
+    ).toHaveLength(1);
+  });
+
+  it("says why an attack or a Field Defense is not offered", () => {
+    const withRole = (name: string, role: "GUARD" | "MARKSMAN"): string => {
+      const session = newSession(name);
+      const maxHp = effectiveRoleRuleV7(role, "ORIGINAL").maxHp;
+      patchState(session, (state) => ({
+        ...state,
+        players: state.players.map((player) =>
+          player.id === state.humanPlayerId
+            ? {
+                ...player,
+                researchedTechs: [...TECHNOLOGY_IDS_V7],
+              }
+            : player,
+        ),
+        units: state.units.map((unit) =>
+          unit.ownerId === state.humanPlayerId
+            ? { ...unit, role, hp: maxHp, maxHp }
+            : unit,
+        ),
+      }));
+      return session;
+    };
+    // A Guard that has moved: both are rules, and the text says so.
+    const guard = withRole("reason-guard", "GUARD");
+    const move = offeredIds(guard).find((id) => /^u\d+\.m\./.test(id));
+    if (move === undefined) throw new Error("no move is offered");
+    const unit = move.split(".")[0] ?? "";
+    expect(offeredIds(guard)).toContain(`${unit}.fortify`);
+    expect(ok("options", "--session", guard, "--unit", unit)).not.toContain(
+      "no fortify",
+    );
+    ok("do", "--session", guard, move);
+    const moved = ok("options", "--session", guard, "--unit", unit);
+    expect(moved).toContain(
+      "no attack: a Guard cannot attack after it has moved this turn",
+    );
+    expect(moved).toContain("no fortify: it has moved this turn");
+    // A Marksman never builds one, wherever it stands.
+    const marksman = withRole("reason-marksman", "MARKSMAN");
+    const text = ok("options", "--session", marksman, "--unit", unit);
+    expect(text).toContain(
+      "no fortify: a Marksman cannot build Field Defense (only Fighter and Guard can)",
+    );
+    expect(text).toContain(
+      "no attack: no visible hostile unit is in its range",
+    );
+    expect(offeredIds(marksman)).not.toContain(`${unit}.fortify`);
+  });
+
   it("rejects illegal and stale ids cleanly", () => {
     const session = newSession("reject");
-    const before = readFileSync(session, "utf8");
+    const before = JSON.parse(readFileSync(session, "utf8")) as Record<
+      string,
+      unknown
+    >;
     const bogus = run("do", "--session", session, "u999.m.0,0");
     expect(bogus.exitCode).toBe(1);
     expect(bogus.output).toContain("REJECTED u999.m.0,0");
     expect(bogus.output).toContain("not an offered command at state #0");
-    expect(readFileSync(session, "utf8")).toBe(before);
+    // Nothing of the match changed; the session only notes the rejection
+    // (the guard of `end`, below).
+    expect(JSON.parse(readFileSync(session, "utf8"))).toEqual({
+      ...before,
+      rejectedDo: { id: "u999.m.0,0", notExecuted: [] },
+    });
 
     const move = offeredIds(session).find((id) => /^u\d+\.m\./.test(id));
     const research = offeredIds(session).find((id) => id.startsWith("r."));

@@ -231,6 +231,12 @@ export function attackFortificationV7(
      * Charges (Walls, Field Defense, and Dig In; cover stays).
      */
     readonly blasting?: boolean;
+    /**
+     * Tuning 1 Breach (`pulp_wars-w49.3`): a land-form attack from distance
+     * 1 by an owner with Explosives (Walls, Field Defense, and Dig In; cover
+     * stays).
+     */
+    readonly breach?: boolean;
   },
 ): {
   readonly fortificationLevel: number;
@@ -241,7 +247,8 @@ export function attackFortificationV7(
     attack.charge ||
     attack.disintegrator === true ||
     attack.boulders === true ||
-    attack.blasting === true
+    attack.blasting === true ||
+    attack.breach === true
       ? parts.walls + parts.fieldDefense
       : attack.ignoresCityWalls
         ? parts.walls
@@ -388,8 +395,15 @@ export function calculateCombatPreviewV7(
   // Revision 19 Acid (section 8.1): a land-form Spitter's attack removes the
   // defender's cover and fortification from the whole exchange.
   const acid = attackHasAcidV7(attackerRule, attacker);
+  // Tuning 1 Breach: a melee attack of an owner with Explosives.
+  const breach = attackBreachesV7(
+    state,
+    attacker,
+    distance,
+    ownerResearchedTechsV7(state, attacker.ownerId),
+  );
   // Revision 20: Charge! removes every fortification level and Wallbreaker
-  // the City Walls levels, for the damage and for the retaliation.
+  // the City Walls levels, for the damage the defender takes.
   const fullParts = fortificationPartsForUnitV7(state, defender);
   const defenderParts =
     options.ignoreDigIn === true && fullParts.dugIn
@@ -425,6 +439,7 @@ export function calculateCombatPreviewV7(
         attacker,
         ownerResearchedTechsV7(state, attacker.ownerId),
       ),
+      breach,
     },
   );
   // Revision 19 section 6.2: an Egg defends with a fixed 1, like an embarked
@@ -435,7 +450,7 @@ export function calculateCombatPreviewV7(
       : defender.form === "EGG"
         ? EGG_DEFENSE2_V7
         : defenderRule.defense2 + fortificationLevel * 2;
-  const breachApplied = false;
+  const breachApplied = breach && fortificationIgnored > 0;
   // The Ice Folk revision section 6.2: Snow cover (a telemetry option can
   // evaluate the exchange without it).
   const snowAt =
@@ -466,10 +481,15 @@ export function calculateCombatPreviewV7(
     attackOnCommon * BigInt(attack2) * 9n,
     total * 4n,
   );
-  const rawAttackerDamage = roundHalfUp(
-    defenseOnCommon * BigInt(defense2) * 9n,
-    total * 4n,
-  );
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): the retaliation is computed from
+  // the defender's base Defense, without fortification and without cover.
+  const rawAttackerDamage = retaliationDamageV7({
+    attackForceNumerator,
+    attackForceDenominator,
+    defense2: defenderRule.defense2,
+    hp: defender.hp,
+    maxHp: defender.maxHp,
+  });
   // Revision 19 Armoured (section 8.2): the reduction applies before the cap
   // at current HP, and everything derived from damage uses the reduced value.
   // The Martian revision section 5.3: the hit is then taken from the
@@ -738,7 +758,7 @@ export function calculateCombatPreviewV7(
     push,
     attacksUsed: nextAttacks,
     attacksRemaining: twinShotLeft ? 1 : 0,
-    // The Candy revision section 5.4: a Rushed Gummy Bear's Sugar Frenzy is
+    // The Candy revision section 5.4: a Rushed Chocolate Bunny's Sugar Frenzy is
     // an Overrun.
     overrunAdvance:
       overrunKindV7(state, attacker, attackerRule, assumeRushed) !== null &&
@@ -783,6 +803,55 @@ export function calculateCombatPreviewV7(
     iceCover,
     icebound: defenderIcebound,
   };
+}
+
+/**
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`; current rules section
+ * 13.2): the raw retaliation of a defender, before Armoured, Plated, and the
+ * attacker's Shield. Fortification and cover make the defender take less;
+ * they never make it hit harder, so the retaliation is the ordinary formula
+ * with the defender's base role Defense (no fortification level) and cover 1:
+ *
+ *   retaliationForce = defense * hp / maxHp
+ *   damage = roundHalfUp(retaliationForce / (attackForce + retaliationForce)
+ *                        * defense * 4.5)
+ *
+ * `attackForceNumerator / attackForceDenominator` is the attacker's force of
+ * the same exchange. Shared by canonical resolution and the public preview.
+ */
+export function retaliationDamageV7(input: {
+  readonly attackForceNumerator: bigint;
+  readonly attackForceDenominator: bigint;
+  readonly defense2: number;
+  readonly hp: number;
+  readonly maxHp: number;
+}): number {
+  const forceNumerator = BigInt(input.defense2) * BigInt(input.hp);
+  const forceDenominator = 2n * BigInt(input.maxHp);
+  const attackOnCommon = input.attackForceNumerator * forceDenominator;
+  const defenseOnCommon = forceNumerator * input.attackForceDenominator;
+  const total = attackOnCommon + defenseOnCommon;
+  if (total <= 0n) return 0;
+  return roundHalfUp(defenseOnCommon * BigInt(input.defense2) * 9n, total * 4n);
+}
+
+/**
+ * Tuning 1 Breach (`pulp_wars-w49.3`; current rules section 13.3): whether
+ * an `ATTACK` breaches: a land-form attacker at distance 1 whose kind's
+ * capabilities under its owner's research have `breach` (Explosives, under
+ * its name in every tree). `techs` is the attacker's owner's research.
+ */
+export function attackBreachesV7(
+  roster: FactionRosterV7,
+  attacker: Pick<UnitStateV7, "id" | "ownerId" | "role" | "form">,
+  distance: number,
+  techs: Parameters<typeof unitCapabilitiesV7>[2],
+): boolean {
+  return (
+    attacker.form === "LAND" &&
+    distance === 1 &&
+    unitCapabilitiesV7(roster, attacker, techs).breach
+  );
 }
 
 /**

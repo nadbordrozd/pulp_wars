@@ -192,8 +192,8 @@ describe("ruleset-7 naval transport", () => {
           ? {
               ...candidate,
               role: "KNIGHT" as const,
-              hp: 10,
-              maxHp: 10,
+              hp: 13,
+              maxHp: 13,
               activation: {
                 ...candidate.activation,
                 attacked: true,
@@ -426,8 +426,11 @@ describe("ruleset-7 naval transport", () => {
         (unit) => unit.id === fixture.blockerId,
       );
       if (afloat === undefined) throw new Error("passenger missing");
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): a chest gives the Knight only
+      // from round 15.
       const state = checkedV7({
         ...fixture.state,
+        round: 15,
         random: { ...fixture.state.random, state: randomState },
         treasureChests: [fixture.landingAt],
         players: fixture.state.players.map((player) =>

@@ -245,13 +245,14 @@ describe("the five-node Naval branch in every tree", () => {
         { kind: "NAVAL_TRAINING_DISCOUNT", coins: 2 },
       ]);
     }
-    // Costs follow the ordinary tier formula (tier 3 base 9 since 7r41).
+    // Costs follow the ordinary tier formula (tier 3 base 9 since 7r41; the
+    // per-city steps 2 and 2 since tuning 1, 7r46).
     expect(
       [1, 2, 3].map((cities) => technologyResearchCostV7(2, cities)),
-    ).toEqual([7, 10, 13]);
+    ).toEqual([7, 9, 11]);
     expect(
       [1, 2, 3].map((cities) => technologyResearchCostV7(3, cities)),
-    ).toEqual([9, 14, 19]);
+    ).toEqual([9, 11, 13]);
   });
 
   it("registers the same Submarine and the rammer Patrol Boat for every faction", () => {

@@ -181,7 +181,7 @@ describe("Candy Normal AI: the gate and the switch", () => {
 });
 
 describe("Candy Normal AI: Sugar Rush", () => {
-  it("Rushes a Gumdrop for a kill it could not make plain", () => {
+  it("Rushes a Toffee Trooper for a kill it could not make plain", () => {
     const build = (hp: number) =>
       asCandy([own("FIGHTER", 5, 3), foe("FIGHTER", 5, 2, { hp })]);
     const hp = rushOnlyHp(build, at(5, 3), at(5, 2), 10);
@@ -241,7 +241,7 @@ describe("Candy Normal AI: Sugar Rush", () => {
     const pieces = (hp: number, role: UnitRoleIdV7): CandyPieceV7[] => [
       own("FIGHTER", 5, 3),
       foe(role, 5, 2, { hp }),
-      // Full Fighters: a Rushed Gumdrop does not kill them, and three of
+      // Full Fighters: a Rushed Toffee Trooper does not kill them, and three of
       // them kill it on the target's tile.
       foe("FIGHTER", 4, 1),
       foe("FIGHTER", 6, 1),
@@ -271,7 +271,7 @@ describe("Candy Normal AI: Sugar Rush", () => {
     ).toHaveLength(1);
   });
 
-  it("Rushes a Gummy Bear only for a Sugar Frenzy continuation or a key kill", () => {
+  it("Rushes a Chocolate Bunny only for a Sugar Frenzy continuation or a key kill", () => {
     const lone = (hp: number) =>
       asCandy([own("KNIGHT", 5, 3), foe("FIGHTER", 5, 2, { hp })]);
     const hp = rushOnlyHp(lone, at(5, 3), at(5, 2), 10);
@@ -333,7 +333,7 @@ describe("Candy Normal AI: Sugar Rush", () => {
 });
 
 describe("Candy Normal AI: Re-bake, Splat, and Sugar Toss", () => {
-  it("walks a Confectioner to Gummy Bear Crumbs and Re-bakes", () => {
+  it("walks a Confectioner to Chocolate Bunny Crumbs and Re-bakes", () => {
     const state = asCandy([own("CAPTAIN", 6, 5), foe("FIGHTER", 1, 1)], {
       crumbs: [
         { at: at(6, 3), role: "KNIGHT" },
@@ -394,7 +394,7 @@ describe("Candy Normal AI: Re-bake, Splat, and Sugar Toss", () => {
     expect(rebakes).toHaveLength(1);
     expect(rebakes[0]?.score.priority).toBe(REBAKE_PRIORITY_V7);
     expect(rebakes[0]?.command).toMatchObject({ at: at(6, 3) });
-    // A 5-HP Gumdrop beside two Knights is a free kill for them.
+    // A 5-HP Toffee Trooper beside two Knights is a free kill for them.
     const fragile = asCandy(
       [own("CAPTAIN", 6, 4), foe("KNIGHT", 6, 2), foe("KNIGHT", 5, 2)],
       { crumbs: [{ at: at(6, 3), role: "FIGHTER" }] },
@@ -582,7 +582,7 @@ describe("Normal AI against the Candy", () => {
       (moveCandidateV7(plain, at(5, 3), side)?.score.objectiveValue ?? 0) +
         CRUMBS_EAT_OBJECTIVE_V7,
     );
-    // A Peppermint bite for a Gumdrop's Crumbs is not worth it.
+    // A Peppermint bite for a Toffee Trooper's Crumbs is not worth it.
     const bite = againstCandy(pieces, {
       crumbs: [{ at: side, role: "FIGHTER", seat: 1 }],
     });
@@ -623,7 +623,7 @@ describe("Normal AI against the Candy", () => {
     expect(unitCandidatesV7(state, at(5, 3), "ATTACK")[0]?.command).toEqual(
       attackV7(state, at(5, 3), at(4, 2)),
     );
-    // Only the free Gumdrop threatens the tiles around them.
+    // Only the free Toffee Trooper threatens the tiles around them.
     const lone = (rush?: "CRASHED") =>
       againstCandy([
         own("FIGHTER", 6, 5),
@@ -637,7 +637,7 @@ describe("Normal AI against the Candy", () => {
       }).safetyValue;
     expect(beside(lone("CRASHED"))).toBeCloseTo(0);
     expect(beside(lone())).toBeLessThan(0);
-    // Off with the switch: the Crashed Gumdrop counts like a free one.
+    // Off with the switch: the Crashed Toffee Trooper counts like a free one.
     setCandyPolicyOptionsV7({ readCrash: false });
     expect(beside(lone("CRASHED"))).toBe(beside(lone()));
   });

@@ -116,7 +116,7 @@ function buildCorpus(): ReleaseCorpusV7 {
               ? "reward-level2-offered-contract"
               : id === "WALLS" || id === "MILITIA"
                 ? "reward-level3-accepted-and-offered-contract"
-                : id === "TREASURY_8" || id === "BOOM"
+                : id === "TREASURY_6" || id === "BOOM"
                   ? "reward-level4-policy-contract"
                   : id === "JUGGERNAUT"
                     ? "reward-juggernaut"

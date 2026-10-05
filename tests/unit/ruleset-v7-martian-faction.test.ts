@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 45;
+const REVISION = 46;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -1488,7 +1488,8 @@ describe("Martian Showcase (section 2.4)", () => {
       [3, 6],
       [3, 6],
     ]);
-    expect(playerIncomeV7(state, martianId).totalCoins).toBe(17);
+    // 19 since land trade pays 2 Coins (tuning 1, 7r46; 17 before).
+    expect(playerIncomeV7(state, martianId).totalCoins).toBe(19);
   });
 
   it("the first Start Turn recharges under the Force Field, and every ability can be tried on the first turn", () => {

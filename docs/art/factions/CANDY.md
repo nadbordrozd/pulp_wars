@@ -251,9 +251,10 @@ with the sweet-shop fragment:
 | **Wrapped toffee**, lollipop mace        | 54 x 53 | **accepted**: the widest and most distinctive outline at board size (the wrapper wings), golden where the old unit was pink, and its mint lollipop and chocolate shield carry two more of the palette |
 | Peppermint disc, mint-striped candy cane | 50 x 41 | rejected: charming, but half the height of a Human Fighter, and a pale shape like the Marshmallow                                                                                                     |
 
-The rules still call this unit **Gumdrop** (`UNIT_ROLES` label, the AI's
-names, the spec). The sprite is no longer a gumdrop; a display rename (for
-example "Toffee Trooper") is suggested to the root and not made here.
+The rules call this unit **Toffee Trooper** since `pulp-wars-poc-7r46`
+(`pulp_wars-w49.3`: the display name only). It was the **Gumdrop** until then,
+and the old pink sprite is called that below. Asset ids, file names, and
+recipe names keep `gumdrop`.
 
 **The Gumball Gunner** is a fresh creation with the `machine` class: three
 samples (a toffee-gold base, twice, and a mint base). The gold ones were
@@ -358,13 +359,13 @@ protanopia.
 | White against the Ice Folk        | the marshmallow white is the Ice Folk's fur white; the Marshmallow is told by its square shape, its biscuit shield and its pink legs (see the lineup).                                                                                             |
 | Biscuit against the Human, Goblin | 45 from the Human crimson but **14** under a deficiency; 54 from the Goblin yellow; 35 from the Dinosaur orange (20). Biscuit is 12% of the roster, in small areas.                                                                                |
 | Nearest look-alike of each unit   | 17 to 30 away in palette distance; for five of eight units it is the Dwarf Engineer (ginger, leather and copper against caramel and biscuit). Silhouettes overlap 0.42 to 0.68.                                                                    |
-| One family                        | each unit is 7 to 12 from the Gumdrop in palette distance.                                                                                                                                                                                         |
-| Sizes                             | the role canvases of every faction (56 x 80, 72 x 88, 88 x 104). The Gumdrop's body is 54 x 48 px and stands 16 px above the canvas bottom; the others stand 2 to 11 px above it.                                                                  |
+| One family                        | each unit is 7 to 12 from the Toffee Trooper in palette distance.                                                                                                                                                                                  |
+| Sizes                             | the role canvases of every faction (56 x 80, 72 x 88, 88 x 104). The Toffee Trooper's body is 54 x 48 px and stands 16 px above the canvas bottom; the others stand 2 to 11 px above it.                                                           |
 
 ## The 32 px lineup
 
 The spec makes it mandatory before batching: in colour and greyscale, at
-native size and at half size, the Gumdrop against the Goblin and the Yeti,
+native size and at half size, the Toffee Trooper against the Goblin and the Yeti,
 the Marshmallow against the Mammoth and the Ice Witch, the Gummy Bear
 against the Sabretooth, the Confectioner against the Engineer and the
 Brain. Evidence:
@@ -379,15 +380,15 @@ Goblins included).
 
 | Pair                    | Palette | Deut. / Prot. | Lightness | Overlap | Verdict                                                                             |
 | ----------------------- | ------: | ------------: | --------: | ------: | ----------------------------------------------------------------------------------- |
-| Gumdrop / Goblin        |    17.0 |    9.2 / 11.4 |       5.0 |    0.60 | **fails in colour** since the redesign (toffee gold against sand and hazard yellow) |
-| Gumdrop / Yeti          |    20.7 |   17.5 / 18.4 |       2.5 |    0.71 | **fails in greyscale** since the redesign (the same mean lightness, both squat)     |
+| Toffee Trooper / Goblin |    17.0 |    9.2 / 11.4 |       5.0 |    0.60 | **fails in colour** since the redesign (toffee gold against sand and hazard yellow) |
+| Toffee Trooper / Yeti   |    20.7 |   17.5 / 18.4 |       2.5 |    0.71 | **fails in greyscale** since the redesign (the same mean lightness, both squat)     |
 | Marshmallow / Mammoth   |    20.1 |     9.9 / 8.3 |      15.3 |    0.75 | **fails under colour-vision simulation** (both pale and blocky)                     |
 | Marshmallow / Ice Witch |    25.2 |   19.0 / 15.8 |      10.8 |    0.62 | distinct                                                                            |
 | Gummy Bear / Sabretooth |    41.4 |   31.1 / 28.3 |      13.5 |    0.53 | distinct                                                                            |
 | Confectioner / Engineer |    17.8 |     6.4 / 7.3 |      18.1 |    0.60 | **fails in colour** (caramel against ginger and leather)                            |
 | Confectioner / Brain    |    23.1 |   16.0 / 12.8 |       5.7 |    0.71 | distinct                                                                            |
 
-The Gumdrop and Gummy Bear rows are measured on the redesigned sprites of
+The Toffee Trooper and Gummy Bear rows are measured on the redesigned sprites of
 bead `pulp_wars-2o7.3` (the pink Gumdrop measured 34.1 and 27.8 and was
 distinct in both pairs; the toffee unit fails both: it is as light as the
 Yeti and its gold is near the Goblin's sand leather and hazard yellow). The
@@ -433,7 +434,7 @@ subject lines in [`subjects/CANDY.json`](../../../scripts/art/chibi/subjects/CAN
 
 | Unit (role)                     | Canvas   | Accepted recipe                | What it shows                                                                                                                       |
 | ------------------------------- | -------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Gumdrop (`FIGHTER`)             | 56 x 80  | `fighter-toffee-a`             | since the redesign a wrapped toffee cube with wrapper wings, a mint lollipop and a chocolate shield (was `gumdrop-b`, a pink dome)  |
+| Toffee Trooper (`FIGHTER`)      | 56 x 80  | `fighter-toffee-a`             | since the redesign a wrapped toffee cube with wrapper wings, a mint lollipop and a chocolate shield (was `gumdrop-b`, a pink dome)  |
 | Donut Racer (`RAIDER`)          | 72 x 88  | `donut-racer-a`                | a pink-frosted ring donut on its edge with a candy-corn rider in goggles, a kickstand wheel and speed lines                         |
 | Gumball Gunner (`MARKSMAN`)     | 56 x 80  | `gunner-machine-mint-a-spit-b` | since the redesign a walking gumball machine on a mint base, shooting a gumball (was `gumball-gunner-a`, a jellybean)               |
 | Marshmallow (`GUARD`)           | 56 x 80  | `marshmallow-a`                | a fat square white block with a face and pink cheeks behind a big graham cracker                                                    |
@@ -552,10 +553,10 @@ failed; 44 accepted assets; 30 recipes rejected with a recorded reason
 (and `confectioner-a`, accepted first and superseded by its apron edit in
 the correction pass).
 
-- **The sample** (Gumdrop, Marshmallow, Gummy Bear, Rock Candy Golem) took
+- **The sample** (Toffee Trooper, Marshmallow, Gummy Bear, Rock Candy Golem) took
   16 calls. The Marshmallow was right first time. The Golem needed one edit
   (a teal crystal with a face on its belly and a weapon were erased). The
-  Gumdrop took four calls: the first was a ball-headed child in a striped
+  Toffee Trooper took four calls: the first was a ball-headed child in a striped
   shirt; the second is the accepted dome; an edit asked to enlarge it drew a
   tall pill, and a third creation a frosted child.
 - **"Bear" draws a teddy bear.** Seven Gummy Bear recipes (creations and
@@ -608,7 +609,7 @@ fallback of item 2 has no Candy badge). The subjects exist (`CandyArtSubjectV7` 
    [FACTION_COLOURS.md](../FACTION_COLOURS.md) (the engine bead adds the
    faction; this bead only re-measured the colour, see Readability).
 4. **Shadows.** Run `npm run art:unit-shadows-measure` so the eight units
-   get their own ground-shadow anchors (the Gumdrop stands 16 px above its
+   get their own ground-shadow anchors (the Toffee Trooper stands 16 px above its
    canvas bottom).
 5. **Markers and effects.** Crumbs (`CRUMBS`) on the tile with the
    code-drawn role icon and pips; the status icons at the sizes and places
@@ -646,8 +647,8 @@ Decided in bead `pulp_wars-jdb.5`:
    shine**, pinned by the `candy-pink` accent step; mint is trim only.
 2. **The Gumball Gunner is vanilla cream**, not a coloured jellybean: the
    spec allows mint only as small trim, and a third all-pink small unit
-   would sit on the Gumdrop.
-3. **The Gumdrop stays small** (a 54 x 48 px dome): a dome as wide as the
+   would sit on the Toffee Trooper.
+3. **The Toffee Trooper stays small** (a 54 x 48 px dome): a dome as wide as the
    canvas cannot be taller, and the taller attempts lost the gumdrop.
 4. **The Gummy Bear is bare and one colour**, with no weapon; the subject
    line avoids the word "bear".
@@ -671,7 +672,7 @@ Decided in bead `pulp_wars-jdb.5`:
   colours under a colour-vision deficiency; its goggle lenses are pale ice
   blue (a few pixels). (Its portrait's white apron top was redrawn pink in
   bead `pulp_wars-2o7.3`.)
-- **The Gumdrop is small** (48 px tall beside a 72 px Human Fighter) and
+- **The Toffee Trooper is small** (48 px tall beside a 72 px Human Fighter) and
   stands 16 px above its canvas bottom, so it needs its own shadow anchor.
 - **Pink on Shallow Water and Mountain rock under a colour-vision
   deficiency** (worst 10 and 6 for the lit pink; 4.3 for the border colour
@@ -693,7 +694,7 @@ Decided in bead `pulp_wars-jdb.5`:
   has blush and bigger eyes; the Gunner's shows nearly the whole figure).
 - **The review's scenes use stand-ins**: the Candy seat is a Human seat
   with its colour set to pink in the page, the unit shadows are the Human
-  sprites' anchors (the Gumdrop's shadow sits low), and Crumbs appear as
+  sprites' anchors (the Toffee Trooper's shadow sits low), and Crumbs appear as
   the live look's Grave glyph.
 - **Every recipe but the apron edit was generated with the show's name in
   the negative list** (the stored requests keep it); no sample showed a

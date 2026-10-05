@@ -58,6 +58,12 @@ import {
   playerTechnologyResearchCostV7,
   primaryActionBlockedAfterMoveV7,
   sluggishUnitMovedV7,
+  BLAST_MOUNTAIN_POPULATION_V7,
+  BOOM_POPULATION_V7,
+  CITY_REWARD_COINS_V7,
+  MONUMENT_POPULATION_V7,
+  landGrantCostV7,
+  treasureUnitRoleForRoundV7,
   type BasicEconomicCommandKindV7,
   type SpatialEconomicCommandKindV7,
 } from "../rules/ruleset-v7";
@@ -120,6 +126,7 @@ import {
 import type { DomainEventV7 } from "./events";
 import {
   bounceStateV7,
+  attackBreachesV7,
   calculateCombatPreviewV7,
   pushedDestinationV7,
   tractorBeamTargetTechnologyV7,
@@ -1220,7 +1227,7 @@ function applyMonument(
       id: state.nextEntityId,
       cityId: city.id,
       category: "LIVE",
-      amount: 3,
+      amount: MONUMENT_POPULATION_V7,
       source: {
         kind: "MONUMENT",
         achievement: command.achievement,
@@ -1262,7 +1269,7 @@ function applyMonument(
         cityId: city.id,
         achievement: command.achievement,
         at: command.at,
-        populationAdded: 3,
+        populationAdded: MONUMENT_POPULATION_V7,
       },
       ...economyAndGrowth(recalculation.changes),
       ...settlement.events,
@@ -1334,9 +1341,11 @@ function applyInfrastructure(
     return rejected(original, "REDEVELOP_INVALID_TARGET");
   if (
     command.kind === "BLAST_MOUNTAIN" &&
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): an Ore Mountain may be blasted
+    // (the Ore is lost); an improvement still blocks it.
     (tile.terrain !== "MOUNTAIN" ||
       tile.site !== null ||
-      tile.resource !== null ||
+      (tile.resource !== null && tile.resource !== "ORE") ||
       tile.improvement !== null ||
       tile.fieldDefense)
   )
@@ -1402,12 +1411,29 @@ function applyInfrastructure(
           ? tile.resource
           : command.kind === "CULTIVATE_FOREST"
             ? "FERTILE_GROUND"
-            : command.kind === "REPLANT_FOREST"
+            : command.kind === "REPLANT_FOREST" ||
+                command.kind === "BLAST_MOUNTAIN"
               ? null
               : tile.resource,
     });
-    const contributions =
-      removedContribution === undefined
+    // Tuning 1 (7r46): a Blast gives the tile's city permanent population.
+    const blasted = command.kind === "BLAST_MOUNTAIN" && city !== undefined;
+    const contributions: readonly PopulationContributionV7[] = blasted
+      ? [
+          ...state.populationContributions,
+          {
+            id: state.nextEntityId,
+            cityId: city.id,
+            category: "PERMANENT",
+            amount: BLAST_MOUNTAIN_POPULATION_V7,
+            source: {
+              kind: "RESOURCE_ACTION",
+              action: "BLAST_MOUNTAIN",
+              at: command.at,
+            },
+          },
+        ]
+      : removedContribution === undefined
         ? state.populationContributions
         : state.populationContributions.filter(
             (item) => item.id !== removedContribution.id,
@@ -1421,6 +1447,7 @@ function applyInfrastructure(
     if (!Number.isSafeInteger(coins)) throw new RangeError("INTEGER_OVERFLOW");
     const staged: GameStateV7 = {
       ...state,
+      nextEntityId: blasted ? nextSafe(state.nextEntityId) : state.nextEntityId,
       commandIndex: nextSafe(state.commandIndex),
       board,
       players: state.players.map((item) =>
@@ -3053,8 +3080,6 @@ function applyLandGrant(
   if (isCityBesiegedV7(state, city)) return rejected(original, "CITY_BESIEGED");
   if (hasCityChoice(state, city.id))
     return rejected(original, "CITY_REWARD_PENDING");
-  if (player.coins < 6)
-    return rejected(original, "INSUFFICIENT_COINS", { cost: 6 });
   const claimed = state.board.tiles
     .filter(
       (tile) =>
@@ -3066,6 +3091,15 @@ function applyLandGrant(
     .sort(compareCoords);
   if (claimed.length === 0)
     return rejected(original, "INVALID_TILE", { action: "LAND_GRANT" });
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): 2 Coins per claimed tile the actor
+  // has explored, at least 6. Unexplored neutral tiles are still claimed
+  // and cost nothing, so the price never depends on hidden tiles.
+  const exploredKeys = new Set(player.explored.map(key));
+  const cost = landGrantCostV7(
+    claimed.filter((at) => exploredKeys.has(key(at))).length,
+  );
+  if (player.coins < cost)
+    return rejected(original, "INSUFFICIENT_COINS", { cost });
   try {
     const claimKeys = new Set(claimed.map(key));
     const board = {
@@ -3098,7 +3132,7 @@ function applyLandGrant(
       cities: recalculation.cities,
       populationContributions: recalculation.populationContributions,
       players: setExplored(
-        debit(state.players, actor, 6),
+        debit(state.players, actor, cost),
         actor,
         [...player.explored, ...revealed].sort(compareCoords),
       ),
@@ -3111,7 +3145,7 @@ function applyLandGrant(
         kind: "LAND_GRANTED",
         playerId: actor,
         cityId: city.id,
-        cost: 6,
+        cost,
         tiles: claimed,
       },
       ...(revealed.length > 0
@@ -3178,13 +3212,11 @@ function applyReward(
         reachedLevel: command.reachedLevel,
         reward: command.reward,
         coinDelta:
-          command.reward === "STOCKPILE"
-            ? 4
-            : command.reward === "TREASURY"
-              ? 12
-              : command.reward === "TREASURY_8"
-                ? 8
-                : 0,
+          command.reward === "STOCKPILE" ||
+          command.reward === "TREASURY" ||
+          command.reward === "TREASURY_6"
+            ? CITY_REWARD_COINS_V7[command.reward]
+            : 0,
       },
     ];
     const rewarded = {
@@ -3208,14 +3240,9 @@ function applyReward(
     } else if (
       command.reward === "STOCKPILE" ||
       command.reward === "TREASURY" ||
-      command.reward === "TREASURY_8"
+      command.reward === "TREASURY_6"
     ) {
-      const amount =
-        command.reward === "STOCKPILE"
-          ? 4
-          : command.reward === "TREASURY_8"
-            ? 8
-            : 12;
+      const amount = CITY_REWARD_COINS_V7[command.reward];
       const coins = requirePlayer(state, actor).coins + amount;
       if (!Number.isSafeInteger(coins))
         throw new RangeError("INTEGER_OVERFLOW");
@@ -3229,7 +3256,7 @@ function applyReward(
           id: nextEntityId,
           cityId: city.id,
           category: "PERMANENT",
-          amount: 3,
+          amount: BOOM_POPULATION_V7,
           source: {
             kind: "CITY_REWARD",
             reward: "BOOM",
@@ -3609,9 +3636,13 @@ function resolveTreasure(
   // Revision 19 section 9.8: the treasure unit's role is a faction rule
   // (`KNIGHT`; `RAIDER`, the Raptor, for a Dinosaur seat). The serialized
   // reward literal stays `KNIGHT` for every faction.
-  const treasureRole = factionRulesV7(
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): before round 15 a chest never gives
+  // a unit of a tier 3 technology; the seat's `RAIDER`-role unit appears
+  // instead (the PRNG draw is unchanged).
+  const treasureRole = treasureUnitRoleForRoundV7(
     requirePlayer(state, actor).faction,
-  ).treasureUnitRole;
+    state.round,
+  );
   const placement =
     requestedReward === "KNIGHT"
       ? treasureKnightPlacement(state, actor, mover, at, treasureRole)
@@ -4128,10 +4159,13 @@ function resolveAttackExchangeV7(
         ? "TRAMPLE"
         : preview.inspiredApplied && distance === 1 && !preview.attackerDies
           ? "INSPIRED"
-          : distance === 1 &&
-              !preview.attackerDies &&
-              attacker.form === "LAND" &&
-              ownerResearchedTechsV7(state, actor).includes("EXPLOSIVES")
+          : // Tuning 1 Breach (7r46): whether or not the attacker survives.
+            attackBreachesV7(
+                state,
+                attacker,
+                distance,
+                ownerResearchedTechsV7(state, actor),
+              )
             ? "EXPLOSIVES"
             : preview.advances
               ? "OCCUPATION"
@@ -4400,7 +4434,7 @@ function resolveAttackExchangeV7(
     board,
     units,
   } as GameStateV7;
-  // The Candy revision section 5.4: a Rushed Gummy Bear's Sugar Frenzy is
+  // The Candy revision section 5.4: a Rushed Chocolate Bunny's Sugar Frenzy is
   // an Overrun capped at `SUGAR_FRENZY_MAX_CONTINUATIONS_V7` continuations.
   const overrunKind = overrunKindV7(state, attacker, rule);
   const overrunContinues =
@@ -5219,19 +5253,10 @@ function applyFieldDefense(
       ...state,
       commandIndex: nextSafe(state.commandIndex),
       board: replaceTile(state, unit.at, { ...tile, fieldDefense: true }),
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): building no longer uses the
+      // unit's turn. The unit keeps its Move and its primary action; it
+      // still must not have moved or acted before building.
       players: debit(state.players, actor, 3),
-      units: state.units.map((candidate) =>
-        candidate.id === unit.id
-          ? {
-              ...candidate,
-              activation: {
-                ...candidate.activation,
-                specialActed: true,
-                handled: true,
-              },
-            }
-          : candidate,
-      ),
     });
     return accepted(next, [
       {
@@ -6744,7 +6769,7 @@ function settleCityRewardsV7(
       if (city === undefined) throw new RangeError("INVALID_STATE");
       if (city.rewards.some((reward) => reward.reachedLevel === reachedLevel))
         continue;
-      const candidates = rewardCandidatesForLevelV7(reachedLevel);
+      const candidates = rewardCandidatesForLevelV7(reachedLevel, city.rewards);
       const owner = players.find((player) => player.id === city.ownerId);
       if (owner?.status !== "ACTIVE") throw new RangeError("INVALID_STATE");
       const pendingChoices: readonly PendingChoiceV7[] = [

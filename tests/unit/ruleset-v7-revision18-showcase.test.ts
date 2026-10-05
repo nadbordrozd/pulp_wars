@@ -494,7 +494,7 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
         rewards: [
           { reachedLevel: 2, reward: "SURVEY" },
           { reachedLevel: 3, reward: "WALLS" },
-          { reachedLevel: 4, reward: "TREASURY_8" },
+          { reachedLevel: 4, reward: "TREASURY_6" },
         ],
       });
       expect(byId(coastId)).toEqual({
@@ -512,7 +512,7 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
         rewards: [
           { reachedLevel: 2, reward: "SURVEY" },
           { reachedLevel: 3, reward: "WALLS" },
-          { reachedLevel: 4, reward: "TREASURY_8" },
+          { reachedLevel: 4, reward: "TREASURY_6" },
         ],
       });
       expect(tile(state, cx, 7).site).toBe("CAPITAL");
@@ -668,21 +668,23 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
     }
   });
 
-  it("pays the stated first income: 17 Coins, or 15 for a Goblin seat", () => {
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): land trade pays 2 Coins, so the two
+  // connected cities pay 6 each and the total is 19 (17 before).
+  it("pays the stated first income: 19 Coins, or 15 for a Goblin seat", () => {
     state.players.forEach((player, seat) => {
       const income = playerIncomeV7(state, player.id);
       const goblin = player.faction === "GOBLIN";
-      expect(income.totalCoins).toBe(goblin ? 15 : 17);
+      expect(income.totalCoins).toBe(goblin ? 15 : 19);
       expect(income.cities).toEqual([
         { cityId: 2 * seat + 1, coins: 7 },
-        { cityId: 9 + 2 * seat, coins: goblin ? 4 : 5 },
-        { cityId: 10 + 2 * seat, coins: goblin ? 4 : 5 },
+        { cityId: 9 + 2 * seat, coins: goblin ? 4 : 6 },
+        { cityId: 10 + 2 * seat, coins: goblin ? 4 : 6 },
       ]);
     });
     // The first seat's Start Turn runs at creation and pays that income.
     for (const [faction, coins] of [
-      ["ORIGINAL", 20],
-      ["UNDEAD", 20],
+      ["ORIGINAL", 22],
+      ["UNDEAD", 22],
       ["GOBLIN", 18],
     ] as const) {
       const created = playableShowcase([faction, "ORIGINAL"]);
@@ -887,7 +889,7 @@ describe("ruleset-7 revision-18 Showcase players and units", () => {
       // The Dwarf revision (`pulp_wars-78i.3`).
       "Brass Titan",
       // The Candy revision (`pulp_wars-jdb.3`).
-      "Rock Candy Golem",
+      "Gingerbread Giant",
     ]);
   });
 });

@@ -800,8 +800,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // pulp_wars-if6: with 3 starting Coins the seed-8 match ends in round 22
     // with no Wail; seed 2 had two (of seeds 0-23, so did 1, 3, 4, 5, 13, 17,
     // 20, 22, and 23). On the many-seats boards (`pulp_wars-ykw.3`) the
-    // seed-2 match has no Wail; seed 5 has two.
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 5);
+    // seed-2 match has no Wail; seed 5 has two. With tuning 1
+    // (`pulp_wars-w49.3`, 7r46) the seed-5 match has none; seed 12 has two.
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 12);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
@@ -850,8 +851,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // maps).
     // With 3 starting Coins (`pulp_wars-if6`) seed 15 trains no Lich; seed 2
     // fielded four, and they splashed. On the many-seats boards
-    // (`pulp_wars-ykw.3`) seed 5 fields two, which splash seven times.
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 5), {
+    // (`pulp_wars-ykw.3`) seed 5 fields two, which splash seven times. With
+    // tuning 1 (`pulp_wars-w49.3`, 7r46) seed 5 fields none; seed 12 fields
+    // four, which splash 14 times.
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 12), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

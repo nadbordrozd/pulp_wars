@@ -522,14 +522,24 @@ describe("ruleset-7 pure public economy", () => {
       explosivesOre,
       explosivesOre.humanPlayerId,
     );
-    expect(queryPlayerCommandsV7(explosivesOreView)).not.toContainEqual(blast);
-    expect(previewEconomicV7(explosivesOreView, blast)).toEqual({
-      ok: false,
-      error: "NOT_OFFERED",
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): an Ore Mountain may be blasted
+    // (the Ore is lost) and a Blast gives its city 1 permanent population;
+    // before, Ore blocked it (`INVALID_TILE`) and it gave nothing.
+    expect(queryPlayerCommandsV7(explosivesOreView)).toContainEqual(blast);
+    expect(previewEconomicV7(explosivesOreView, blast)).toMatchObject({
+      ok: true,
+      preview: { cost: 3, resultingContribution: 1 },
     });
+    const blastedOre = applyCommandV7(
+      explosivesOre,
+      explosivesOre.humanPlayerId,
+      blast,
+    );
+    expect(blastedOre.accepted).toBe(true);
+    if (!blastedOre.accepted) return;
     expect(
-      applyCommandV7(explosivesOre, explosivesOre.humanPlayerId, blast),
-    ).toMatchObject({ accepted: false, error: { code: "INVALID_TILE" } });
+      blastedOre.state.board.tiles.find((tile) => same(tile.at, target)),
+    ).toMatchObject({ terrain: "GRASS", resource: null });
   });
 
   it("rejects Clear Forest coin overflow and accepts the last safe value", () => {
@@ -829,7 +839,7 @@ describe("ruleset-7 pure public economy", () => {
               rewards: [
                 { reachedLevel: 2, reward: "STOCKPILE" },
                 { reachedLevel: 3, reward: "WALLS" },
-                { reachedLevel: 4, reward: "TREASURY_8" },
+                { reachedLevel: 4, reward: "TREASURY_6" },
                 { reachedLevel: 5, reward: "TREASURY" },
                 { reachedLevel: 6, reward: "TREASURY" },
               ],
@@ -913,7 +923,8 @@ describe("ruleset-7 pure public economy", () => {
       achievement: "ENGINEER",
       at: monumentAt,
     } as const;
-    expect(scorePublicSpatialPlanV7(twoCities, monumentPlan)).toBe(-29);
+    // Tuning 1 (7r46): a Monument gives 2 population (-29 at 3).
+    expect(scorePublicSpatialPlanV7(twoCities, monumentPlan)).toBe(-21);
 
     const expandCity = required(
       base.cities.find((city) => city.id === staged.cityId),
@@ -940,7 +951,7 @@ describe("ruleset-7 pure public economy", () => {
           kind: "CITY_REWARD",
           cityId: staged.cityId,
           reachedLevel: 4,
-          candidates: ["TREASURY_8", "BOOM"],
+          candidates: ["TREASURY_6", "BOOM"],
         },
       ],
     };
@@ -948,7 +959,7 @@ describe("ruleset-7 pure public economy", () => {
       kind: "CHOOSE_CITY_REWARD",
       cityId: staged.cityId,
       reachedLevel: 4,
-      reward: "TREASURY_8",
+      reward: "TREASURY_6",
     };
     expect(scorePublicSpatialPlanV7(expandView, expand)).toBeGreaterThan(0);
   });

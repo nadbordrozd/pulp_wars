@@ -47,16 +47,16 @@ import {
 } from "../fixtures/v7-builders";
 
 describe("ruleset-7 revision-12 identity", () => {
-  it("keeps rejecting r11 after the r45 identity and cleans every obsolete Ruleset-7 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r45");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r45.current");
+  it("keeps rejecting r11 after the r46 identity and cleans every obsolete Ruleset-7 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r44.current",
+      "pulpWars.save.v7r45.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
 
     const state = initialV7();
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r45");
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r46");
     expect(
       parseGameStateV7({ ...state, rulesetId: "pulp-wars-poc-7r11" }),
     ).toBeNull();
@@ -957,8 +957,9 @@ describe("ruleset-7 revision-12 Raider Escape", () => {
     // pulp_wars-9s0.1: with the campaign plan the seed-5 Raider scouts
     // elsewhere; seed 1 shows a natural escape within the cap. On the
     // many-seats boards (`pulp_wars-ykw.3`) seed 2 does (of seeds 0-15:
-    // 2, 8, 10, and 14).
-    const setup = setupV7(2);
+    // 2, 8, 10, and 14). With tuning 1 (`pulp_wars-w49.3`, 7r46) seed 8
+    // does (of seeds 0-15: 8, 10, and 14).
+    const setup = setupV7(8);
     const natural = runAiMatchV7(setup, { maxRounds: 40, maxCommands: 110 });
     const index = natural.commandLog.findIndex((entry) =>
       entry.events.some(

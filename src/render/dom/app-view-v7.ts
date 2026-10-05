@@ -1,5 +1,11 @@
 import { ACCEPTED_ART_URLS } from "../../assets/generated-art-manifest";
 import {
+  BLAST_MOUNTAIN_UNLOCK_TEXT_V7,
+  BREACH_UNLOCK_TEXT_V7,
+  FIELD_DEFENSE_UNLOCK_TEXT_V7,
+  landTradeUnlockTextV7,
+} from "../technology-unlock-text-v7";
+import {
   RULESET7_IMPROVEMENT_ART_IDS,
   RULESET7_RESOURCE_ART_IDS,
   resourceMapArtIdV7,
@@ -57,6 +63,11 @@ import {
   ACHIEVEMENT_REQUIRED_TECH_V7,
   CITY_LEVEL_INCOME_CAP_V7,
   cityLevelIncomeV7,
+  CITY_REWARD_COINS_V7,
+  LAND_GRANT_MINIMUM_COST_V7,
+  LAND_TRADE_INCOME_COINS_V7,
+  MONUMENT_POPULATION_V7,
+  queryLandGrantPreviewV7,
   forbiddenTechnologiesV7,
   dockPopulationV7,
   queryTechnologyTreeV7,
@@ -4212,7 +4223,11 @@ export class Ruleset7DomAppView {
             trade.dataset.stat = `${kind}-trade`;
             trade.title = `${title(kind)} trade income`;
             const value = el(this.#document, "dd", "v7-city-income");
-            value.append(economyIcon(this.#document, "coin"), "+1");
+            // Tuning 1 (7r46): land trade pays 2 Coins, sea trade 1.
+            value.append(
+              economyIcon(this.#document, "coin"),
+              kind === "land" ? `+${LAND_TRADE_INCOME_COINS_V7}` : "+1",
+            );
             trade.append(
               text(this.#document, "dt", `${title(kind)} trade`),
               value,
@@ -4837,9 +4852,11 @@ export class Ruleset7DomAppView {
       } else if (command.kind === "BUILD_MONUMENT") {
         action.setAttribute(
           "aria-label",
-          `${commandLabel(command, this.#viewerFaction())} · free · population +3`,
+          `${commandLabel(command, this.#viewerFaction())} · free · population +${MONUMENT_POPULATION_V7}`,
         );
-        action.append(economyChips(this.#document, { population: 3 }));
+        action.append(
+          economyChips(this.#document, { population: MONUMENT_POPULATION_V7 }),
+        );
       } else if (command.kind === "BUILD_FIELD_DEFENSE") {
         const view = this.#snapshot.view;
         const unit = view?.units.find((item) => item.id === command.unitId);
@@ -4854,8 +4871,17 @@ export class Ruleset7DomAppView {
         );
         action.append(economyChips(this.#document, { cost: 3 }));
       } else if (command.kind === "LAND_GRANT") {
-        action.setAttribute("aria-label", "Land grant for 6 Coins");
-        action.append(economyChips(this.#document, { cost: 6 }));
+        // Tuning 1 (7r46): 2 Coins per explored neutral tile, at least 6.
+        const grant =
+          this.#snapshot.view === null
+            ? null
+            : queryLandGrantPreviewV7(this.#snapshot.view, command.cityId);
+        const cost = grant?.cost ?? LAND_GRANT_MINIMUM_COST_V7;
+        action.setAttribute(
+          "aria-label",
+          `Land grant for ${cost} Coins${grant === null ? "" : ` · claims ${grant.tiles.length} ${grant.tiles.length === 1 ? "tile" : "tiles"}`}`,
+        );
+        action.append(economyChips(this.#document, { cost }));
       } else if (
         command.kind === "TEND_WOUNDED" &&
         this.#snapshot.view !== null &&
@@ -5911,7 +5937,7 @@ export class Ruleset7DomAppView {
       text(
         this.#document,
         "p",
-        "Each achievement earns a free Monument: +3 population, one per city.",
+        `Each achievement earns a free Monument: +${MONUMENT_POPULATION_V7} population, one per city.`,
         "v7-screen-lede",
       ),
     );
@@ -9844,7 +9870,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r45",
+    rulesetId: "pulp-wars-poc-7r46",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -9885,7 +9911,8 @@ export function cityIncomeForViewerV7(
     1,
     cityLevelIncomeV7(city.level) +
       (city.isCapital ? 1 : 0) +
-      Number(view.naval.landTradeCityIds.includes(city.id)) +
+      Number(view.naval.landTradeCityIds.includes(city.id)) *
+        LAND_TRADE_INCOME_COINS_V7 +
       Number(view.naval.seaTradeCityIds.includes(city.id)) +
       market +
       Math.min(0, city.population),
@@ -9950,7 +9977,12 @@ function effectDescription(
           // RULESET_7_NAVAL_BRANCH.md section 14.2).
           effect.command === "BOARD"
           ? BOARD_UNLOCK_V7
-          : title(effect.command);
+          : // Tuning 1 (7r46): the two commands whose rule changed say so.
+            effect.command === "BLAST_MOUNTAIN"
+            ? BLAST_MOUNTAIN_UNLOCK_TEXT_V7
+            : effect.command === "BUILD_FIELD_DEFENSE"
+              ? FIELD_DEFENSE_UNLOCK_TEXT_V7
+              : title(effect.command);
     case "RAM":
       return NAVAL_RAM_UNLOCK_V7;
     case "HARBOURS":
@@ -9994,7 +10026,7 @@ function effectDescription(
         ? `Forge discount: ${effect.coins} Coin off trained land units and Eggs`
         : `Forge training discount: ${effect.coins} Coin`;
     case "LAND_TRADE_INCOME":
-      return `Road-linked cities: +${effect.coins} Coin`;
+      return landTradeUnlockTextV7(effect.coins);
     case "LAND_ROAD_POPULATION":
       return `Road-linked cities: +${effect.amount} live population`;
     case "MARKET_INCOME_MULTIPLIER":
@@ -10060,7 +10092,8 @@ function effectDescription(
     case "CHARGE_BONUS":
       return `${faction === "DINOSAUR" ? "Pounce: " : faction === "MARTIAN" ? `${STRAFE_LABEL_V7}: ` : ""}${label("RAIDER")}s gain +${effect.attack} Attack after moving ${effect.minimumMove}+ cells`;
     case "MELEE_FIELD_DEMOLITION":
-      return "Surviving melee attacks destroy Field Defense";
+      // Tuning 1 (7r46): Breach.
+      return BREACH_UNLOCK_TEXT_V7;
     case "NAVAL_TRAINING_DISCOUNT":
       return `Shipyards discount naval training by ${effect.coins} Coins`;
     case "FIRST_HOSTILE_CAPTURE_SPOILS":
@@ -10089,8 +10122,6 @@ function navalTechnologyNotesV7(
     return ["Battleship: long-range splash damage"];
   // The naval branch (`pulp_wars-5ti.2`; RULESET_7_NAVAL_BRANCH.md 14.2).
   if (technology === "SUBMERSIBLES") return [SUBMARINE_UNLOCK_NOTE_V7];
-  if (technology === "EXPLOSIVES")
-    return ["Drill identifies resource-free mountains safe to Blast"];
   if (technology === "ROADS")
     return [
       "Your city centers count as Road tiles",
@@ -10433,7 +10464,8 @@ function rewardLabel(
   if (reward === "WALLS") return ["Walls", "Stronger city defense"];
   if (reward === "MILITIA") return ["Militia", "A free Fighter"];
   if (reward === "BOOM") return ["Boom", "+3 population"];
-  if (reward === "TREASURY_8") return ["Treasury", "+8 Coins"];
+  if (reward === "TREASURY_6")
+    return ["Treasury", `+${CITY_REWARD_COINS_V7.TREASURY_6} Coins`];
   if (reward === "JUGGERNAUT") return ["Juggernaut", "A giant unit"];
   if (reward === "TREASURY") return ["Treasury", "+12 Coins"];
   return [title(reward), ""];

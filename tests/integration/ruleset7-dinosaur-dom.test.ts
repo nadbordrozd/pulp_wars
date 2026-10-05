@@ -1095,7 +1095,10 @@ describe("Revision 19 growth, abilities and labels", () => {
     ).toBe("Wallbreaker");
     // It keeps both Explosives unlocks and adds its own.
     expect(unlocks("explosives")).toEqual(
-      expect.arrayContaining(["Blast mountain", WALLBREAKER_UNLOCK_TEXT_V7]),
+      expect.arrayContaining([
+        "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+        WALLBREAKER_UNLOCK_TEXT_V7,
+      ]),
     );
     expect(requiredElement(".v7-tech-detail").getAttribute("aria-label")).toBe(
       "Wallbreaker details",

@@ -343,7 +343,7 @@ function wounded(
 ): GameStateV7 {
   const viewerId = state.players[0]?.id;
   // The Candy revision: a Re-bake needs Crumbs next to the Confectioner (a
-  // fallen Gumdrop's, one tile west of it).
+  // fallen Toffee Trooper's, one tile west of it).
   if (cue === "REBAKE" && viewerId !== undefined)
     return {
       ...state,

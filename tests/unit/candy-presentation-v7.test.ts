@@ -134,7 +134,9 @@ describe("Candy text (section 15.2)", () => {
       `Re-bake ${label("FIGHTER")}: 1 Coin, 5 HP`,
     );
     expect(rebakeBoardLabelV7(5, 7)).toBe("5 Coins · 7 HP");
-    expect(sugarTossTargetNameV7("Gumdrop", 2)).toBe("Toss to Gumdrop: +2");
+    expect(sugarTossTargetNameV7("Toffee Trooper", 2)).toBe(
+      "Toss to Toffee Trooper: +2",
+    );
   });
 
   it("names no tile in any Candy text", () => {
@@ -249,7 +251,7 @@ describe("Candy unit status (section 15.2)", () => {
     ]);
   });
 
-  it("shows a Rushed Gummy Bear's Sugar Frenzy as pips, not a number", () => {
+  it("shows a Rushed Chocolate Bunny's Sugar Frenzy as pips, not a number", () => {
     const bear = unitAt(view, AT.rushedBear);
     const [chip] = candyChipsV7(view, bear);
     expect(chip).toEqual({
@@ -274,7 +276,7 @@ describe("Candy unit status (section 15.2)", () => {
         stats as never,
       )?.left;
     expect([0, 1, 2, 3].map(pipsAfter)).toEqual([2, 2, 1, 0]);
-    // A unit that is not a Rushed Gummy Bear has none.
+    // A unit that is not a Rushed Chocolate Bunny has none.
     expect(
       sugarFrenzyPipsV7(unitAt(view, AT.rushedDonut), {
         rushed: true,

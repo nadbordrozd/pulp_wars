@@ -39,8 +39,8 @@ export function enemyCameraFixtureV7(scenario: EnemyCameraScenarioV7): {
         ...enemy,
         at: { x: 4, y: 4 },
         role: "KNIGHT",
-        hp: 10,
-        maxHp: 10,
+        hp: 13,
+        maxHp: 13,
       },
     ],
     players: base.players.map((player) => ({

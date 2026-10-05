@@ -65,7 +65,7 @@ export async function probeCandyV7(
     pieces.markers.join() !== "crashed,frenzy,rushed-home,splatted"
   )
     throw new Error(`Candy markers missing: ${JSON.stringify(pieces)}`);
-  // Arm the Sugar Rush of the fresh Gumdrop and choose a tile only the
+  // Arm the Sugar Rush of the fresh Toffee Trooper and choose a tile only the
   // Rush reaches: SUGAR_RUSH, then the Move.
   await driver.evaluate(
     `(() => { const host = ${REVIEW}.boardHost; host.resetInspectionCycle(); host.activate(${JSON.stringify(at.gumdrop)}); document.querySelector('canvas.board-canvas-v7')?.focus(); })()`,

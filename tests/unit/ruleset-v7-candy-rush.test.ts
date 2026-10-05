@@ -272,7 +272,7 @@ describe("Rushed (section 5.2)", () => {
     expect([moves("FIGHTER", false), moves("FIGHTER", true)]).toEqual([1, 2]);
     expect([moves("RAIDER", false), moves("RAIDER", true)]).toEqual([2, 3]);
     expect([moves("KNIGHT", false), moves("KNIGHT", true)]).toEqual([2, 3]);
-    // A Forest stops a Rushed Gumdrop on entering it.
+    // A Forest stops a Rushed Toffee Trooper on entering it.
     const forest = forestV7(
       candyFieldV7([
         { seat: 0, role: "FIGHTER", at: at(5, 3), rush: "RUSHED" },
@@ -814,7 +814,7 @@ describe("Rush perks (section 5.4)", () => {
     expect(reach(sluggish.state, at(5, 3))).toEqual([]);
   });
 
-  it("gives a Rushed Gummy Bear Sugar Frenzy with at most two continuations", () => {
+  it("gives a Rushed Chocolate Bunny Sugar Frenzy with at most two continuations", () => {
     const line = (rush: boolean, role: UnitRoleIdV7 = "KNIGHT") =>
       candyFieldV7(
         [

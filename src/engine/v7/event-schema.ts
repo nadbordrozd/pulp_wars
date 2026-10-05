@@ -10,6 +10,10 @@ import {
   DIVE_BOMB_DAMAGE_V7,
   HEAVY_TRACTOR_PULL_V7,
   ICE_CRUSH_DAMAGE_V7,
+  LAND_GRANT_COST_PER_TILE_V7,
+  LAND_GRANT_MINIMUM_COST_V7,
+  MONUMENT_POPULATION_V7,
+  landGrantCostV7,
   REPAIR_MACHINE_V7,
   SHIELD_CAP_V7,
   SNOW_COVER_V7,
@@ -503,7 +507,7 @@ function parseProjectedMonumentBuilt(input: unknown): PlayerEventV7 | null {
     id(input.cityId) &&
     ACHIEVEMENT_IDS_V7.includes(input.achievement as never) &&
     parseCoordV7(input.at) !== null &&
-    input.populationAdded === 3
+    input.populationAdded === MONUMENT_POPULATION_V7
   )
     return input as PlayerEventV7;
   if (
@@ -518,7 +522,7 @@ function parseProjectedMonumentBuilt(input: unknown): PlayerEventV7 | null {
     input.visibility === "BUILDING_ONLY" &&
     id(input.cityId) &&
     parseCoordV7(input.at) !== null &&
-    input.populationAdded === 3
+    input.populationAdded === MONUMENT_POPULATION_V7
   )
     return input as PlayerEventV7;
   return null;
@@ -965,9 +969,14 @@ function validPayload(
       return (
         id(e.playerId) &&
         id(e.cityId) &&
-        e.cost === 6 &&
+        // Tuning 1 (7r46): 2 Coins per explored claimed tile, at least 6.
+        isSafeIntegerV7(e.cost) &&
+        (e.cost as number) >= LAND_GRANT_MINIMUM_COST_V7 &&
         Array.isArray(e.tiles) &&
         e.tiles.length > 0 &&
+        (e.cost as number) <= landGrantCostV7(e.tiles.length) &&
+        (e.cost === LAND_GRANT_MINIMUM_COST_V7 ||
+          (e.cost as number) % LAND_GRANT_COST_PER_TILE_V7 === 0) &&
         sortedCoords(e.tiles)
       );
     case "CITY_ECONOMY_CHANGED":
@@ -1002,8 +1011,8 @@ function validPayload(
             ? 4
             : e.reward === "TREASURY"
               ? 12
-              : e.reward === "TREASURY_8"
-                ? 8
+              : e.reward === "TREASURY_6"
+                ? 6
                 : 0)
       );
     case "CITY_REWARD_AUTOMATICALLY_GRANTED":
@@ -1027,7 +1036,7 @@ function validPayload(
         id(e.cityId) &&
         ACHIEVEMENT_IDS_V7.includes(e.achievement as never) &&
         parseCoordV7(e.at) !== null &&
-        e.populationAdded === 3
+        e.populationAdded === MONUMENT_POPULATION_V7
       );
     case "UNIT_TRAINED":
       return (
@@ -2234,6 +2243,10 @@ function healingResults(input: unknown): boolean {
   return true;
 }
 function rewards(input: unknown, level: number): boolean {
+  // Tuning 1 (7r46): the Treasury alone, for a city that already took its
+  // reward unit.
+  if (isDenseArrayV7(input) && input.length === 1)
+    return level >= 5 && input[0] === "TREASURY";
   return (
     isDenseArrayV7(input) &&
     input.length === 2 &&
@@ -2250,7 +2263,7 @@ function rewardMatches(reward: RewardIdV7, level: number): boolean {
     : level === 3
       ? reward === "WALLS" || reward === "MILITIA"
       : level === 4
-        ? reward === "BOOM" || reward === "TREASURY_8"
+        ? reward === "BOOM" || reward === "TREASURY_6"
         : level >= 5 && (reward === "JUGGERNAUT" || reward === "TREASURY");
 }
 function improvementCost(improvement: ImprovementIdV7): number {

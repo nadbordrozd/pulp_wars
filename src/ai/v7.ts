@@ -2043,7 +2043,7 @@ function* roadCorridorWorkV7(
     const populationBenefit = 2 as const;
     const commerceIncomeBenefit = Number(
       technologyCapabilitiesV7(view.viewer.researchedTechs, view.viewer.faction)
-        .landTradeIncomeCoins === 1,
+        .landTradeIncomeCoins > 0,
     ) as 0 | 1;
     const benefit =
       populationBenefit * 4 +
@@ -12949,8 +12949,8 @@ function preferredReward(
               tile.territoryOwnerId === null &&
               distance(tile.at, city.at) <= 2,
           ).length;
-    return offered.includes("TREASURY_8") && neutral >= 4
-      ? "TREASURY_8"
+    return offered.includes("TREASURY_6") && neutral >= 4
+      ? "TREASURY_6"
       : offered.includes("BOOM")
         ? "BOOM"
         : (offered[0] ?? command.reward);

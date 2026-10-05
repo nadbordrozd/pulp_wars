@@ -294,16 +294,23 @@ describe("Dig In (section 8)", () => {
           { seat: 1, role: "FIGHTER", at: at(8, 6) },
           ENEMY,
         ],
-        options,
+        // Tuning 1 (7r46): the attacker has no Explosives, whose Breach
+        // would ignore the Dig In level.
+        {
+          ...options,
+          techs: { 1: WITHOUT("EXPLOSIVES"), ...options.techs },
+        },
       ),
     );
 
   it("gives an unmoved Hammerer next to its own center one Field Defense level, never with Field Defense too", () => {
     const dug = attackV7(duel({}), at(8, 6), at(8, 7));
+    // Tuning 1 (7r46): Dig In lowers the damage taken (4 instead of 5); the
+    // retaliation is the open-ground 5 either way (8 before).
     expect(dug.combat).toMatchObject({
       dugIn: true,
       damageToDefender: 4,
-      damageToAttacker: 8,
+      damageToAttacker: 5,
     });
     const open = attackV7(
       duel({ activation: { moved: true } }),
@@ -324,7 +331,7 @@ describe("Dig In (section 8)", () => {
     expect([
       both.combat.damageToDefender,
       both.combat.damageToAttacker,
-    ]).toEqual([4, 8]);
+    ]).toEqual([4, 5]);
     // Without the Dwarf Fortification nobody digs in.
     const untrained = attackV7(
       duel({}, { techs: { 0: WITHOUT("FORTIFICATION", "EXPLOSIVES") } }),
@@ -352,6 +359,8 @@ describe("Dig In (section 8)", () => {
       defender: "FIGHTER",
       attackerFaction: "ORIGINAL",
       attackers: [{ role: "FIGHTER", at: at(8, 7) }],
+      // Tuning 1 (7r46): without Explosives (no Breach).
+      attackerTechs: WITHOUT("EXPLOSIVES"),
     });
     const hammerer = unitAtV7(state, at(8, 8));
     const preview = queryCombatPreviewV7(

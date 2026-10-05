@@ -44,7 +44,8 @@ describe("ruleset-7 Knight Overrun activation", () => {
   it("uses the exact role values and has no Capture ability", () => {
     expect(effectiveRoleRuleV7("KNIGHT", "ORIGINAL")).toMatchObject({
       cost: 9,
-      maxHp: 10,
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): 13 HP (10 before).
+      maxHp: 13,
       attack2: 6,
       defense2: 2,
       move: 3,
@@ -311,10 +312,11 @@ describe("ruleset-7 Knight Overrun activation", () => {
     });
   });
 
-  it("advances Knight and Marksman after an adjacent kill", () => {
+  it("advances a Knight after an adjacent kill and never a Marksman", () => {
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): the Marksman no longer advances.
     for (const [role, expectedAdvance] of [
       ["KNIGHT", true],
-      ["MARKSMAN", true],
+      ["MARKSMAN", false],
     ] as const) {
       const state = battle(role, "FIGHTER", { x: 2, y: 2 }, { x: 3, y: 2 }, 1);
       const attacker = required(state.units[0], "attacker missing");
@@ -661,8 +663,11 @@ describe("ruleset-7 Knight Overrun activation", () => {
     )
       seed += 1;
     let state = battle("FIGHTER", "FIGHTER", { x: 1, y: 1 }, { x: 9, y: 9 });
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): a chest gives the Knight only from
+    // round 15 (a Raider before it).
     state = checkedV7({
       ...state,
+      round: 15,
       random: { ...state.random, state: seed },
       treasureChests: [{ x: 2, y: 1 }],
       players: state.players.map((player) =>

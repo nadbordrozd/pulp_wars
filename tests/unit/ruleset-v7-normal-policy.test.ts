@@ -319,13 +319,15 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // moving every later kind forward by one (was fdc900…1608).
       // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after COLD_SNAP,
       // moving every later kind forward by one (was 32d19a…19d3).
-      "0a83be5f1602a2160185d503460b26013b1f359cd627943d0e205f3f2d72b889",
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): the candidate scores read the new
+      // numbers (was 0a83be…b889).
+      "65a17d34dcda7a6238b5947a90303b87d98f2264d7a66e513bd6f03655e6443f",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
     // (pulp_wars-9s0.1: was 2355bb…3e7a, for the same two Moves).
     expect(canonicalHash(withRevision12DecisionOrdinalsV7(basicChoice))).toBe(
-      "4aa0f76c8ee28f6e988a0c16c538c66dfc7e74bc3370801d83aaf63c609ffbbf",
+      "05c0e72bb7a401663b46ae84d7e58471b189f6345e97a8786024f7b8fded6273",
     );
     const basicCommands = queryPlayerCommandsV7(basicView);
     const basicWork = new NormalPolicyWorkV7(structuredClone(basicView));
@@ -1078,7 +1080,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r45");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r46");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(
@@ -1124,7 +1126,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       expanded: false,
       landGrantUsed: true,
       rewards: expect.arrayContaining([
-        { reachedLevel: 4, reward: "TREASURY_8" },
+        { reachedLevel: 4, reward: "TREASURY_6" },
       ]),
     });
     expect(
@@ -1673,7 +1675,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
           kind: "CITY_REWARD" as const,
           cityId: city.id,
           reachedLevel: 4,
-          candidates: ["TREASURY_8" as const, "BOOM" as const],
+          candidates: ["TREASURY_6" as const, "BOOM" as const],
         },
       ],
     };
@@ -1700,7 +1702,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       kind: "CHOOSE_CITY_REWARD",
       cityId: city.id,
       reachedLevel: 4,
-      reward: "TREASURY_8",
+      reward: "TREASURY_6",
     });
   });
 });

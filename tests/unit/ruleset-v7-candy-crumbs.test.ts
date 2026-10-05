@@ -296,7 +296,7 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
   });
 
   it("leaves none for a unit that rises, a Golem, a unit on a site, or a controlled Candy unit", () => {
-    // Infect: a Gumdrop killed by a Zombie rises as a Zombie.
+    // Infect: a Toffee Trooper killed by a Zombie rises as a Zombie.
     const infect = candyFieldV7(
       [
         { seat: 1, role: "GUARD", at: at(5, 3) },
@@ -308,7 +308,7 @@ describe("Crumbs are left by a fallen Candy unit (section 6.1)", () => {
     expect(kindsV7(risen.events)).toContain("UNIT_INFECTED");
     expect(risen.state.crumbs).toEqual([]);
     expect(kindsV7(risen.events)).not.toContain("CRUMBS_LEFT");
-    // The Golem, and a Gumdrop on a village.
+    // The Golem, and a Toffee Trooper on a village.
     for (const [role, where] of [
       ["JUGGERNAUT", at(5, 2)],
       ["FIGHTER", at(5, 5)],
@@ -709,7 +709,7 @@ describe("eating Crumbs and the Peppermint Surprise (section 6.3)", () => {
       unitId: buggy.id,
       cause: "PEPPERMINT",
     });
-    // The Scrap Buggy's death blast (4) kills the Gumdrop next to it, which
+    // The Scrap Buggy's death blast (4) kills the Toffee Trooper next to it, which
     // leaves its own Crumbs. The Peppermint death is credited to the Candy
     // seat, which has no Plunder; the blast's kill is the Goblin seat's.
     expect(hasUnitAtV7(moved.state, at(5, 4))).toBe(false);

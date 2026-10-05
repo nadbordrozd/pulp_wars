@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r45 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r45");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r45.current");
-    expect(PRIOR_RULESET_7_IDS.at(-29)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(44);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-29)).toBe(
+  it("keeps r16 among the prior identities after the r46 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
+    expect(PRIOR_RULESET_7_IDS.at(-30)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(45);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-30)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -719,14 +719,15 @@ describe("ruleset-7 Goblin technology", () => {
         ];
       }),
     ).toEqual([
-      ["ORIGINAL", 1, 0],
-      ["UNDEAD", 1, 0],
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): land trade pays 2 Coins.
+      ["ORIGINAL", 2, 0],
+      ["UNDEAD", 2, 0],
       ["GOBLIN", 0, 1],
-      ["DINOSAUR", 1, 0],
-      ["MARTIAN", 1, 0],
-      ["ICE_FOLK", 1, 0],
-      ["DWARF", 1, 0],
-      ["CANDY", 1, 0],
+      ["DINOSAUR", 2, 0],
+      ["MARTIAN", 2, 0],
+      ["ICE_FOLK", 2, 0],
+      ["DWARF", 2, 0],
+      ["CANDY", 2, 0],
     ]);
     const goblin = technologyCapabilitiesV7(all, "GOBLIN");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
@@ -781,7 +782,9 @@ describe("ruleset-7 Goblin technology", () => {
     expect(text(0, "COMMERCE")).toEqual([
       "+1 Coin for each enemy unit your units or blasts kill",
     ]);
-    expect(text(1, "COMMERCE")).toEqual(["Road-linked cities: +1 Coin"]);
+    expect(text(1, "COMMERCE")).toEqual([
+      "Road-linked cities: +2 Coins each turn",
+    ]);
     expect(text(0, "ADMINISTRATION")).toEqual([
       "Train Orc Warboss",
       "Disband",
@@ -1080,8 +1083,11 @@ describe("ruleset-7 Goblin reward substitutions", () => {
         { seat: 1, role: "FIGHTER", at: { x: 1, y: 1 } },
       ],
     );
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): a chest gives a tier 3 unit only
+    // from round 15 (a Wolf Rider before it).
     state = checkedV7({
       ...state,
+      round: 15,
       random: { ...state.random, state: seed },
       treasureChests: [{ x: 5, y: 3 }],
     });
@@ -1516,7 +1522,7 @@ function rewardState(
                 : [
                     { reachedLevel: 2, reward: "SURVEY" as const },
                     { reachedLevel: 3, reward: "WALLS" as const },
-                    { reachedLevel: 4, reward: "TREASURY_8" as const },
+                    { reachedLevel: 4, reward: "TREASURY_6" as const },
                   ],
           }
         : candidate,

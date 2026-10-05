@@ -915,7 +915,7 @@ function rewardFitsLevel(reward: RewardIdV7, level: number): boolean {
     : level === 3
       ? reward === "WALLS" || reward === "MILITIA"
       : level === 4
-        ? reward === "BOOM" || reward === "TREASURY_8"
+        ? reward === "BOOM" || reward === "TREASURY_6"
         : level >= 5 && (reward === "JUGGERNAUT" || reward === "TREASURY");
 }
 

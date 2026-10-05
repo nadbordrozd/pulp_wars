@@ -68,9 +68,12 @@ describe("ruleset-7 exact public-planning performance", () => {
       view: () => captured(300),
       commandHash:
         "68b640b47cff455890b0d253cbbdf1dfe7a23bd38e7665d5d0cd7032a1e31651",
+      // Tuning 1 (`pulp_wars-w49.3`, 7r46): one contributor counts for one
+      // Windmill, Sawmill, Forge, and Market and a Monument gives 2, so the
+      // planned values differ (was b32cb8…1f5b and 66 235 operations).
       resultHash:
-        "b32cb8941a64df8d59e6b302c253ccaaa5a1459768943025ec1a35f526181f5b",
-      operations: 66_235,
+        "29fefcd36ee4f6ae94c1bf36337092aeaa0128ca1613d96c07625c40edbc2f1e",
+      operations: 66_233,
     },
     {
       id: "captured-command-425",
@@ -79,9 +82,10 @@ describe("ruleset-7 exact public-planning performance", () => {
         "1effba1c7759d740bb58c232774d2a9a88bf4f344ee97396ea094b6eabf3be6a",
       // Revision 16 caps a Market at 3 Coins; with the cap at 4 the
       // revision-15 value 209b3326… returns.
+      // Tuning 1 (7r46), as above (was c92698…dbc5 and 94 442 operations).
       resultHash:
-        "c92698816b7e41a8c3313cd84763f570b359bd1804d1a1e8d452fbc5df10dbc5",
-      operations: 94_442,
+        "f6506196d5588ff09f07bcc463b96cc23effec774d2322931c097284c450a4a3",
+      operations: 94_438,
     },
   ] as const;
 

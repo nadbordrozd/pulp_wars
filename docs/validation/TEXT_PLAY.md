@@ -20,6 +20,19 @@ and nothing else.
 The code is `scripts/play-text-v7.ts` (the `play:text` script); the test is
 `tests/scripts/play-text-v7.test.ts`.
 
+**Without `npm` on PATH** (an agent's sandbox shell often has neither `npm`
+nor `node`), use the checked-in wrapper `scripts/play-text`, which takes the
+same commands from any working directory:
+
+```bash
+scripts/play-text view --session S.json
+```
+
+It uses `node` from PATH, or else the pinned Node under
+`~/.local/pulp-wars-tools/node-v*/bin`. The equivalent by hand is to put
+that directory first on PATH, for example
+`PATH=/Users/nadbor/.local/pulp-wars-tools/node-v24.21.0-darwin-arm64/bin:$PATH`.
+
 ## Commands
 
 ```bash
@@ -29,6 +42,7 @@ npm run --silent play:text -- tech --session S.json
 npm run --silent play:text -- options --session S.json
 npm run --silent play:text -- do --session S.json r.HUNTING u2.m.9,3 c1.t.FIGHTER
 npm run --silent play:text -- end --session S.json
+npm run --silent play:text -- do --session S.json u2.a.u31 u5.m.9,4 --end
 npm run --silent play:text -- log --session S.json
 npm run --silent play:text -- debrief --session S.json --out debrief.txt
 ```
@@ -43,8 +57,8 @@ with many AI seats.
 | `view`    | Header (state number, round, coins, income, players in turn order, a pending choice), the map, your cities, your units, visible other units, known other cities, technologies, achievements, and how many commands are offered. `--full` adds the whole legend, stat modifiers, abilities, building outputs, and trade.                                                                                                                                                             |
 | `tech`    | The technology tree: tier, state, cost now, prerequisites, and what each technology unlocks (units with their stats and cost, commands with cost and population, passive effects).                                                                                                                                                                                                                                                                                                  |
 | `options` | The offered commands with ids and previews. Without a filter, moves are listed as destinations only. `--unit u12`, `--city c1`, `--tile 4,5` narrow it and describe every command; `--all` describes everything.                                                                                                                                                                                                                                                                    |
-| `do`      | Applies the given ids in order. Each is checked against the offered commands and then applied by the engine. It stops at the first rejected id, prints the reason and the ids it did not execute, and exits with code 1; the commands before it stay applied.                                                                                                                                                                                                                       |
-| `end`     | Ends your turn; the AI seats play; prints what your seat observed, then the header of your new turn, or the outcome.                                                                                                                                                                                                                                                                                                                                                                |
+| `do`      | Applies the given ids in order. Each is checked against the offered commands and then applied by the engine. It stops at the first rejected id, prints the reason and the ids it did not execute, and exits with code 1; the commands before it stay applied. With `--end` it then ends the turn, only if every id was applied and the turn can end (otherwise it prints `TURN NOT ENDED` and exits with code 1).                                                                   |
+| `end`     | Ends your turn; the AI seats play; prints what your seat observed, then the header of your new turn, or the outcome. It is refused right after a `do` that stopped at a rejected id (see below); `--force` ends the turn anyway.                                                                                                                                                                                                                                                    |
 | `log`     | Your own timeline: one row per turn (coins, income, cities and levels, units by kind, technology count) with the milestones of that round. `--round N` adds what you observed while the other seats played.                                                                                                                                                                                                                                                                         |
 | `debrief` | After the game only. Replays the command log with full information and writes, per seat and round, the economy, cities, armies, technology, training, attacks, kills, and losses (`--out FILE`; a `.json` name writes JSON). It refuses an unfinished match unless `--reveal-hidden` is passed.                                                                                                                                                                                     |
 | `verify`  | Replays the command log from the setup and compares the state hash.                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -53,6 +67,18 @@ with many AI seats.
 `do` and `end` accept `--at N`: the command is refused unless the session is
 at state `#N`, the number in every header. Use it when you are not sure the
 session is where you last saw it.
+
+**Ending a turn safely.** A `do` list stops at the first rejected id, and a
+shell line such as `do a b c; end` would still run the `end` and lose the
+rest of the turn. Two guards prevent that:
+
+- `do a b c --end` ends the turn only when `a`, `b`, and `c` were all
+  applied. This is the form to use when the ids are the whole turn.
+- A plain `end` issued right after a `do` that stopped at a rejected id is
+  refused: `ERROR: turn NOT ended: your last do stopped at the rejected id
+u5.m.9,9 and did not execute u7.a.u31. …`. Issue another `do` (any `do`
+  clears the guard, whatever it does), or pass `end --force` to end the
+  turn as it stands. `view`, `options`, `tech`, and `log` do not clear it.
 
 ## Coordinates and the map
 
@@ -150,7 +176,7 @@ END OF YOUR TURN (round 2)
 -- your turn starts: coins 8 --
   INCOME S0 +3 (c1 +3)
 
-== state #20 | pulp-wars-poc-7r44 | dry_land 11x11 seed 7 ==
+== state #20 | pulp-wars-poc-7r46 | dry_land 11x11 seed 7 ==
 ROUND 3 | you are S0 Human | YOUR TURN | coins 8 | income +3/turn | cities 1 | units 2
 PLAYERS in turn order: S0 Human (you) active cities 1 units 2 > S1 Goblin (AI) active cities 1 units 2
 OFFERED 17: research 5 | train 1 | move 9 | unit 2 | end available
@@ -168,12 +194,15 @@ home c1 fresh options 6`: the stats are the current totals with every
   and so on name what it has done; `spent` is a unit that arrived this turn.
   `options` is how many commands are offered for it now.
 - **Attack previews** are exact: `u20.a.u24 attack u24(S1 Skeleton) @3,5:
-deals 2 (hp 10->8) | takes 6 (hp 17->11) | atk 1.5 vs def 2 x3/2`. `KILLS`
+deals 2 (hp 10->8) | takes 5 (hp 17->12) | atk 1.5 vs def 2 x3/2`. `KILLS`
   and `ATTACKER DIES` are spelled out; `no retaliation (OUT_OF_RANGE)` gives
   the reason; `x3/2` is the defender's Defense bonus and `fort N` its
-  fortification level. Anything else that applies follows as `name=value`
-  (`chargeApplied=yes`, `advances=yes`, `attackerBitten=yes`, a `splash`
-  list).
+  fortification level. Both describe the damage you deal: what you take
+  back comes from the defender's base Defense alone, without fortification
+  or cover. Anything else that applies follows as `name=value`
+  (`chargeApplied=yes`, `advances=yes`, `breachApplied=yes`,
+  `attackerBitten=yes`, a `splash` list). `advances=yes` is not a choice:
+  the unit moves onto the tile of the unit it kills.
 - **Economy previews** give the cost, the population change of the city with
   its meter before and after, the income change, and `LEVEL UP to N` when the
   command levels the city. A level-up queues a reward choice, and nothing
@@ -197,7 +226,8 @@ action used`).
   `do` → `end`. `options` is the cheap one to repeat; `view` is for the map.
 - Put several ids in one `do` when they do not depend on each other. After a
   command that can level a city, expect the list to stop at the reward
-  choice: choose it and send the rest again.
+  choice: choose it and send the rest again. End the turn with `--end` on
+  the last `do` rather than with a second shell command.
 - Ending the turn with idle units is allowed. A wounded idle unit in the
   right place recovers by itself (the `recover` preview says how much).
 - A unit captures a settlement it stands on with `.capture`; `can-capture-now`
@@ -207,6 +237,13 @@ action used`).
 - Use `options --unit u12` before a fight: it lists that unit's attacks with
   exact numbers and, under `COMMANDS TARGETING IT`, your attacks on an enemy
   unit when you pass the enemy's id.
+- When a unit has no attack or no `fortify`, `options --unit u12` ends with
+  a `no attack: …` or `no fortify: …` line that names the reason (a Guard
+  cannot attack after it has moved; only some roles build Field Defense,
+  and only before moving, on a tile of your territory, for 3 Coins).
+- `SLAYER n/5` in the `ACHIEVEMENTS` line is the most kills held by one of
+  your units that is still on the board, not your total kills; a unit line
+  shows `kills n`.
 - `log` is your notebook of what happened; `log --round N` shows again what
   the AI did in a round you want to look at.
 - Do not read a `debrief` of a match you are still playing.

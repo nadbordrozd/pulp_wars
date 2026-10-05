@@ -745,7 +745,7 @@ describe("the mission builder (TEST_GROUNDS)", () => {
                 {
                   at: { x: 2, y: 8 },
                   level: 5,
-                  rewards: ["SURVEY", "WALLS", "TREASURY_8", "TREASURY"],
+                  rewards: ["SURVEY", "WALLS", "TREASURY_6", "TREASURY"],
                 },
                 ...(base.seats[0]?.cities.slice(1) ?? []),
               ],

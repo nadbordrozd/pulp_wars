@@ -170,7 +170,7 @@ describe("Ruleset 7 public presentation", () => {
     const knightOverrun = recruitmentRolePresentationV7("KNIGHT", "ORIGINAL");
     expect(knightOverrun.label).toBe("Knight");
     expect(knightOverrun.stats).toEqual([
-      { label: "HP", value: "10" },
+      { label: "HP", value: "13" },
       { label: "Attack", value: "3" },
       { label: "Defense", value: "1" },
       { label: "Move", value: "3" },
@@ -681,7 +681,7 @@ describe("Ruleset 7 public presentation", () => {
           id: 10,
           cityId: city.id,
           category: "LIVE" as const,
-          amount: 3,
+          amount: 2 as const,
           source: {
             kind: "MONUMENT" as const,
             visibility: "FULL" as const,
@@ -703,7 +703,7 @@ describe("Ruleset 7 public presentation", () => {
             {
               ...fullContribution,
               category: "LIVE" as const,
-              amount: 3 as const,
+              amount: 2 as const,
               source: {
                 kind: "MONUMENT" as const,
                 visibility: "BUILDING_ONLY" as const,

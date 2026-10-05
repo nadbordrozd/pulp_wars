@@ -98,7 +98,7 @@ export type TechnologyUnlockV7 =
   | { readonly kind: "LAND_ROAD_POPULATION"; readonly amount: 1 }
   | { readonly kind: "MARKET_INCOME_MULTIPLIER"; readonly multiplier: 2 }
   | { readonly kind: "ARMS_INDUSTRY_DISCOUNT"; readonly coins: 1 }
-  | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 1 }
+  | { readonly kind: "LAND_TRADE_INCOME"; readonly coins: 2 }
   | { readonly kind: "SEA_TRADE_INCOME"; readonly coins: 1 }
   /** Revision 17 Goblins: 1 Coin for each credited hostile kill. */
   | { readonly kind: "PLUNDER"; readonly coins: 1 }
@@ -513,7 +513,7 @@ export interface RoleMechanicsV7 {
   /**
    * The Candy revision (docs/product/RULESET_7_CANDY.md section 5.4): what
    * the role gets while Rushed besides the Rush itself: the Donut Racer's
-   * Escape, the Gummy Bear's Sugar Frenzy, or nothing.
+   * Escape, the Chocolate Bunny's Sugar Frenzy, or nothing.
    */
   readonly rushPerk: "ESCAPE" | "SUGAR_FRENZY" | null;
   /**
@@ -667,6 +667,46 @@ export const SPATIAL_ECONOMIC_ACTIONS_V7 = deepFreeze({
   Record<SpatialEconomicCommandKindV7, SpatialEconomicActionRuleV7>
 >);
 
+/**
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`,
+ * docs/product/RULESET_7_TUNING_1.md): the economy numbers the hand
+ * playtest moved.
+ */
+/** Commerce: Coins of land trade per connected city (1 before). */
+export const LAND_TRADE_INCOME_COINS_V7 = 2 as const;
+/** A Monument's live population (3 before). */
+export const MONUMENT_POPULATION_V7 = 2 as const;
+/** The Boom reward's permanent population (unchanged). */
+export const BOOM_POPULATION_V7 = 3 as const;
+/** Coins of the three Coin rewards (the level-4 Treasury was 8). */
+export const CITY_REWARD_COINS_V7 = Object.freeze({
+  STOCKPILE: 4,
+  TREASURY_6: 6,
+  TREASURY: 12,
+} as const);
+/** Land Grant: 2 Coins per explored tile it claims, at least 6 (flat 6 before). */
+export const LAND_GRANT_COST_PER_TILE_V7 = 2 as const;
+export const LAND_GRANT_MINIMUM_COST_V7 = 6 as const;
+export function landGrantCostV7(exploredClaimableTiles: number): number {
+  if (
+    !Number.isSafeInteger(exploredClaimableTiles) ||
+    exploredClaimableTiles < 0
+  )
+    throw new RangeError("INVALID_STATE");
+  return Math.max(
+    LAND_GRANT_MINIMUM_COST_V7,
+    LAND_GRANT_COST_PER_TILE_V7 * exploredClaimableTiles,
+  );
+}
+/** Blast Mountain: permanent population for the tile's city (0 before). */
+export const BLAST_MOUNTAIN_POPULATION_V7 = 1 as const;
+/**
+ * Treasure chests: before this round a chest never gives a unit of a tier 3
+ * technology; the seat's `RAIDER`-role unit appears instead.
+ */
+export const TREASURE_TIER_3_UNIT_FIRST_ROUND_V7 = 15 as const;
+export const TREASURE_EARLY_UNIT_ROLE_V7 = "RAIDER" as const;
+
 function node(
   id: TechnologyIdV7,
   branch: TechnologyBranchIdV7,
@@ -819,7 +859,9 @@ export const ORIGINAL_BASELINE_V5_NODES = deepFreeze([
     3,
     ["ROADS"],
     // Revision 14 (E2): Commerce no longer doubles Market income.
-    [{ kind: "LAND_TRADE_INCOME", coins: 1 }],
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): 2 Coins per connected city (1
+    // before).
+    [{ kind: "LAND_TRADE_INCOME", coins: LAND_TRADE_INCOME_COINS_V7 }],
   ),
   node(
     "RAIDING",
@@ -1016,7 +1058,8 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     role: "MARKSMAN",
     label: "Marksman",
     tacticalRole: "RANGED",
-    cost: 3,
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): 4 Coins (3 before).
+    cost: 4,
     maxHp: 12,
     attack2: 4,
     defense2: 2,
@@ -1066,7 +1109,8 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     tacticalRole: "SIEGE",
     cost: 8,
     maxHp: 10,
-    attack2: 7,
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): Attack 3 (3.5 before).
+    attack2: 6,
     defense2: 1,
     move: 1,
     range: 3,
@@ -1081,7 +1125,8 @@ export const ORIGINAL_ROLE_RULES_V7: Readonly<
     label: "Knight",
     tacticalRole: "BREAKTHROUGH",
     cost: 9,
-    maxHp: 10,
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): 13 HP (10 before).
+    maxHp: 13,
     attack2: 6,
     defense2: 2,
     move: 3,
@@ -1214,6 +1259,9 @@ const mechanics = (
   );
 
 export const ORIGINAL_ROLE_MECHANICS_V7 = mechanics({
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): a Marksman never advances after a
+  // kill (it used to, after a kill from distance 1).
+  MARKSMAN: { advancesAfterKill: false },
   CATAPULT: { advancesAfterKill: false },
   BATTLESHIP: { splash: true },
 });
@@ -2541,7 +2589,9 @@ export const CANDY_ROLE_RULES_V7: Readonly<
 > = deepFreeze({
   FIGHTER: role({
     role: "FIGHTER",
-    label: "Gumdrop",
+    // `pulp_wars-w49.3` (7r46): the display name; it was "Gumdrop". The
+    // role ID, asset ids, and the AI constants that say `GUMDROP` are kept.
+    label: "Toffee Trooper",
     tacticalRole: "LINE",
     cost: 2,
     maxHp: 10,
@@ -2637,10 +2687,11 @@ export const CANDY_ROLE_RULES_V7: Readonly<
     mayUsePrimaryActionAfterMove: false,
     abilities: ["ATTACK", "SUGAR_RUSH", "SPLAT"],
   }),
-  // The Gummy Bear has Overrun (Sugar Frenzy) only while Rushed.
+  // The Chocolate Bunny has Overrun (Sugar Frenzy) only while Rushed.
   KNIGHT: role({
     role: "KNIGHT",
-    label: "Gummy Bear",
+    // Displayed as the Gummy Bear before identity 7r46 (`pulp_wars-w49.3`).
+    label: "Chocolate Bunny",
     tacticalRole: "BREAKTHROUGH",
     cost: 9,
     maxHp: 14,
@@ -2656,7 +2707,8 @@ export const CANDY_ROLE_RULES_V7: Readonly<
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
-    label: "Rock Candy Golem",
+    // Displayed as the Rock Candy Golem before identity 7r46.
+    label: "Gingerbread Giant",
     tacticalRole: "MYTHIC",
     cost: null,
     maxHp: 40,
@@ -2691,14 +2743,14 @@ export const SUGAR_TOSS_HEAL_V7 = 2;
 export const SUGAR_TOSS_RANGE_V7 = 2;
 /**
  * The Candy revision (section 5.4, root ruling 7): the most continuations a
- * Sugar Frenzy grants, so a Rushed Gummy Bear attacks at most three times a
+ * Sugar Frenzy grants, so a Rushed Chocolate Bunny attacks at most three times a
  * turn. A rule, never raised by a balance pass.
  */
 export const SUGAR_FRENZY_MAX_CONTINUATIONS_V7 = 2;
 
 /**
  * The Candy engine mechanics (section 13): no role builds Field Defense;
- * the Donut Racer and the Gummy Bear have a Rush perk; the seven trainable
+ * the Donut Racer and the Chocolate Bunny have a Rush perk; the seven trainable
  * land roles leave Crumbs; the Pie Launcher never advances. Every role uses
  * one slot. Boats are Human boats.
  */
@@ -3037,13 +3089,17 @@ export const RULESET_7 = deepFreeze({
  * Early economy tweak (`pulp_wars-if6`, `pulp-wars-poc-7r41`): the tier 3
  * base is 9 (12 before), so the one-city costs read 5 / 7 / 9. The per-city
  * steps are unchanged: tier 3 is `9 + 5(C - 1)`.
+ *
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`): the per-city steps
+ * are 1 / 2 / 2 (1 / 3 / 5 before), so tier 2 is `7 + 2(C - 1)` and tier 3
+ * `9 + 2(C - 1)`; the bases are unchanged.
  */
 export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
   Record<1 | 2 | 3, { readonly base: number; readonly step: number }>
 > = deepFreeze({
   1: { base: 5, step: 1 },
-  2: { base: 7, step: 3 },
-  3: { base: 9, step: 5 },
+  2: { base: 7, step: 2 },
+  3: { base: 9, step: 2 },
 });
 
 export function technologyResearchCostV7(
@@ -3099,6 +3155,30 @@ export function effectiveRoleRuleV7(
   if (rule === undefined)
     throw new RangeError(`Unknown v7 role for ${faction}: ${String(roleId)}`);
   return rule;
+}
+
+/**
+ * Tuning 1 (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`): the role of the unit a
+ * treasure chest gives a seat of `faction` in `round`. It is the faction's
+ * `treasureUnitRole`, except that before round
+ * `TREASURE_TIER_3_UNIT_FIRST_ROUND_V7` a role unlocked by a tier 3
+ * technology (the Human Knight, the Undead Vampire, the Goblin Scrap Buggy)
+ * is replaced by the faction's `RAIDER`-role unit (Raider, Ghoul, Wolf
+ * Rider), the role the five other factions' chests always give.
+ */
+export function treasureUnitRoleForRoundV7(
+  faction: FactionIdV7,
+  round: number,
+): UnitRoleIdV7 {
+  const role = factionRulesV7(faction).treasureUnitRole;
+  if (round >= TREASURE_TIER_3_UNIT_FIRST_ROUND_V7) return role;
+  const tree = factionTreeV7(faction);
+  const technology = tree.roleRules[role].technology;
+  const tier =
+    technology === null
+      ? null
+      : (tree.nodes.find((node) => node.id === technology)?.tier ?? null);
+  return tier === 3 ? TREASURE_EARLY_UNIT_ROLE_V7 : role;
 }
 
 /** Engine-only role mechanics of one faction's registration. */
@@ -4279,7 +4359,15 @@ export interface TechnologyCapabilitiesV7 {
   readonly landRoadPopulationAmount: 0 | 1;
   readonly marketIncomeMultiplier: 1 | 2;
   readonly armsIndustryDiscountCoins: 0 | 1;
-  readonly landTradeIncomeCoins: 0 | 1;
+  readonly landTradeIncomeCoins: 0 | 2;
+  /**
+   * Tuning 1 Breach (`pulp_wars-w49.3`, the `MELEE_FIELD_DEMOLITION` unlock
+   * of Explosives in every tree): the player's land-form attacks from
+   * distance 1 ignore the defender's fortification levels (City Walls, Field
+   * Defense, and Dig In; cover stays) and destroy a Field Defense on the
+   * target tile.
+   */
+  readonly breach: boolean;
   readonly seaTradeIncomeCoins: 0 | 1;
   readonly hostileCaptureSpoilsCoins: 0 | 2;
   /** Revision 17 Goblin Plunder: Coins per credited hostile kill. */
@@ -4410,7 +4498,8 @@ export function technologyCapabilitiesV7(
   let landRoadPopulationAmount: 0 | 1 = 0;
   let marketIncomeMultiplier: 1 | 2 = 1;
   let armsIndustryDiscountCoins: 0 | 1 = 0;
-  let landTradeIncomeCoins: 0 | 1 = 0;
+  let landTradeIncomeCoins: 0 | 2 = 0;
+  let breach = false;
   let seaTradeIncomeCoins: 0 | 1 = 0;
   let hostileCaptureSpoilsCoins: 0 | 2 = 0;
   let plunderCoins: 0 | 1 = 0;
@@ -4488,7 +4577,7 @@ export function technologyCapabilitiesV7(
         armsIndustryDiscountCoins = 1;
         break;
       case "LAND_TRADE_INCOME":
-        landTradeIncomeCoins = 1;
+        landTradeIncomeCoins = LAND_TRADE_INCOME_COINS_V7;
         break;
       case "SEA_TRADE_INCOME":
         seaTradeIncomeCoins = 1;
@@ -4567,8 +4656,10 @@ export function technologyCapabilitiesV7(
       case "WAAAGH_SUPPORT":
       case "OVERRUN":
       case "CHARGE_BONUS":
-      case "MELEE_FIELD_DEMOLITION":
       case "NAVAL_TRAINING_DISCOUNT":
+        break;
+      case "MELEE_FIELD_DEMOLITION":
+        breach = true;
         break;
     }
   const result: TechnologyCapabilitiesV7 = deepFreeze({
@@ -4598,6 +4689,7 @@ export function technologyCapabilitiesV7(
     marketIncomeMultiplier,
     armsIndustryDiscountCoins,
     landTradeIncomeCoins,
+    breach,
     seaTradeIncomeCoins,
     hostileCaptureSpoilsCoins,
     plunderCoins,

@@ -276,7 +276,7 @@ describe("CHIBI interface subjects", () => {
       "WALLS",
       "STOCKPILE",
       "TREASURY",
-      "TREASURY_8",
+      "TREASURY_6",
       "BOOM",
       "MILITIA",
       "JUGGERNAUT",

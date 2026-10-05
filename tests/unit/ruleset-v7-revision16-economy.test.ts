@@ -47,23 +47,25 @@ import {
  * instead of revision 16's 12, the step of 5 unchanged
  * (docs/product/RULESET_7_CURRENT.md section 6.1).
  */
+// Tuning 1 (`pulp_wars-w49.3`, 7r46): the per-city steps are 1 / 2 / 2
+// (1 / 3 / 5 before, when eight cities paid 28 and 44 for tiers 2 and 3).
 const RESEARCH_COST_TABLE: readonly (readonly [number, number, number])[] = [
   [5, 7, 9],
-  [6, 10, 14],
-  [7, 13, 19],
-  [8, 16, 24],
-  [9, 19, 29],
-  [10, 22, 34],
-  [11, 25, 39],
-  [12, 28, 44],
+  [6, 9, 11],
+  [7, 11, 13],
+  [8, 13, 15],
+  [9, 15, 17],
+  [10, 17, 19],
+  [11, 19, 21],
+  [12, 21, 23],
 ];
 
 describe("ruleset-7 revision-16 research costs", () => {
   it("prices every tier at C = 1-8 as section 6.2 states", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
       1: { base: 5, step: 1 },
-      2: { base: 7, step: 3 },
-      3: { base: 9, step: 5 },
+      2: { base: 7, step: 2 },
+      3: { base: 9, step: 2 },
     });
     expect(
       RESEARCH_COST_TABLE.map((_, index) =>
@@ -97,7 +99,7 @@ describe("ruleset-7 revision-16 research costs", () => {
         ) - technologyResearchCostV7(1, cities);
     expect(factionTreeV7("ORIGINAL").nodes).toHaveLength(25);
     expect([1, 2, 3, 5, 6, 8].map((cities) => whole(cities, false))).toEqual([
-      180, 264, 348, 516, 600, 768,
+      180, 224, 268, 356, 400, 488,
     ]);
     // Dry Land has 20 technologies (no Naval branch of five).
     expect(whole(1, true)).toBe(180 - 5 - 7 - 9 - 7 - 9);
@@ -207,17 +209,18 @@ describe("ruleset-7 revision-16 income caps", () => {
 
 describe("ruleset-7 revision-16 income previews", () => {
   it("previews equal Start Turn income in natural play with capped levels and Markets", () => {
+    // pulp_wars-w49.3: an 11 x 11 Pangea duel of 30 rounds (a few seconds)
+    // replaces the 20 x 20 duel of 40 rounds, which took minutes. Under
+    // identity 7r46 seed 2 has a city above the income cap from round 16 and
+    // a Market at its cap from round 18 (of seeds 0-9, seeds 1, 5, 7, and 9
+    // also show both within 30 rounds).
     const setup: MatchSetupV7 = {
-      // pulp_wars-0hi.3: with the revision-20 section 6.3 Human HP the
-      // seed-4 match ends in round 36; seed 0 reaches the cap (of seeds 0-7,
-      // so do 2, 5, 6, and 7).
-      ...setupV7(0, 1),
-      // A 20 x 20 duel lasts past round 40, with level 5+ cities and Markets.
-      width: 20,
-      height: 20,
+      ...setupV7(2, 1),
+      width: 11,
+      height: 11,
       mapType: "PANGEA",
     };
-    const match = runAiMatchV7(setup, { maxRounds: 40, maxCommands: 30_000 });
+    const match = runAiMatchV7(setup, { maxRounds: 30, maxCommands: 30_000 });
     expect(match.errors).toEqual([]);
     expect(match.termination).toBe("ROUND_CAP");
     const created = createPlayableGameV7(setup);
@@ -279,7 +282,7 @@ describe("ruleset-7 revision-16 income previews", () => {
     // The match exercises both caps.
     expect(cappedCityTurns).toBeGreaterThan(0);
     expect(cappedMarketTurns).toBeGreaterThan(0);
-  }, 600_000);
+  }, 120_000);
 });
 
 const MARKET_AT: CoordV7 = { x: 2, y: 7 };

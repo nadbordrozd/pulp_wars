@@ -359,13 +359,13 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       );
     };
     expect(text(0, "EXPLOSIVES")).toEqual([
-      "Blast mountain",
-      "Surviving melee attacks destroy Field Defense",
+      "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+      "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
       "Dinosaurs ignore City Walls",
     ]);
     expect(text(1, "EXPLOSIVES")).toEqual([
-      "Blast mountain",
-      "Surviving melee attacks destroy Field Defense",
+      "Blast Mountain: removes a Mountain in your territory (and its Ore); its city gains +1 population",
+      "Breach: melee attacks ignore Walls and Field Defense, and destroy Field Defense",
     ]);
     expect(text(0, "FORTIFICATION")).toEqual([
       "Eggs have +4 HP and hatch one turn sooner; +1 unit slot in every city",
@@ -397,14 +397,18 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
     return attackV7(state, from, at(8, 8));
   };
 
-  it("matches the section 4.2 table", () => {
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46; current rules section 19.10): the
+  // retaliation never uses fortification, so it is the same with and
+  // without Wallbreaker (it was 13, 16, 11, and 11 without), and
+  // Wallbreaker's node is the Dinosaur Explosives, whose Breach also
+  // ignores the Field Defense level (9 / 9 with it before).
+  it("matches the section 19.10 table", () => {
     for (const [role, defender, fieldDefense, without, withIt] of [
-      ["KNIGHT", "GUARD", false, [8, 13], [10, 6]],
-      ["KNIGHT", "GUARD", true, [7, 16], [9, 9]],
-      ["RAIDER", "FIGHTER", false, [4, 11], [6, 4]],
-      // The spec's table prints the Ankylosaurus's retaliation before its
-      // own Armoured reduction (12 and 5); the exchange takes 1 less.
-      ["GUARD", "FIGHTER", false, [3, 11], [5, 4]],
+      ["KNIGHT", "GUARD", false, [8, 6], [10, 6]],
+      ["KNIGHT", "GUARD", true, [7, 6], [10, 6]],
+      ["RAIDER", "FIGHTER", false, [4, 4], [6, 4]],
+      // The Ankylosaurus's retaliation after its own Armoured reduction.
+      ["GUARD", "FIGHTER", false, [3, 4], [5, 4]],
     ] as const) {
       const plain = onWalls(role, {
         wallbreaker: false,
@@ -428,17 +432,18 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
         [broken.combat.damageToDefender, broken.combat.damageToAttacker],
         `${role} with`,
       ).toEqual(withIt);
-      // The Field Defense level stays; only the two Walls levels go.
+      // Breach removes the Field Defense level with the two Walls levels.
       expect(broken.combat).toMatchObject({
-        fortificationLevel: fieldDefense ? 1 : 0,
-        fortificationIgnored: 2,
+        fortificationLevel: 0,
+        fortificationIgnored: fieldDefense ? 3 : 2,
+        breachApplied: true,
         acid: false,
         runUp: 0,
       });
     }
   });
 
-  it("applies to each of the six dinosaur units and to no other unit", () => {
+  it("applies to each of the six dinosaur units; Breach gives every melee attacker of an Explosives owner the same", () => {
     // Raptor, Ankylosaurus, T-Rex, Brontosaurus: Walls ignored with it only.
     for (const role of ["RAIDER", "GUARD", "KNIGHT", "JUGGERNAUT"] as const) {
       expect(onWalls(role, { wallbreaker: false }).combat).toMatchObject({
@@ -465,18 +470,32 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
         acid: true,
       });
     }
-    // Never the Caveman or the Shaman, and never another faction's units.
-    for (const role of ["FIGHTER", "CAPTAIN"] as const)
+    // `ignoresCityWalls` itself is never the Caveman's or the Shaman's, nor
+    // another faction's. Since tuning 1 (7r46) they breach with the same
+    // technology node (their Explosives), so the Walls are ignored for them
+    // too, and without it they meet the full Walls.
+    for (const role of ["FIGHTER", "CAPTAIN"] as const) {
       expect(onWalls(role, { wallbreaker: true }).combat).toMatchObject({
+        fortificationLevel: 0,
+        fortificationIgnored: 2,
+        breachApplied: true,
+      });
+      expect(onWalls(role, { wallbreaker: false }).combat).toMatchObject({
         fortificationLevel: 2,
         fortificationIgnored: 0,
+        breachApplied: false,
       });
+    }
     for (const attackerFaction of ["ORIGINAL", "UNDEAD", "GOBLIN"] as const)
       for (const role of ["RAIDER", "KNIGHT", "JUGGERNAUT"] as const)
         expect(
           onWalls(role, { wallbreaker: true, attackerFaction }).combat,
           `${attackerFaction} ${role}`,
-        ).toMatchObject({ fortificationLevel: 2, fortificationIgnored: 0 });
+        ).toMatchObject({
+          fortificationLevel: 0,
+          fortificationIgnored: 2,
+          breachApplied: true,
+        });
   });
 
   it("never applies to a boat", () => {
@@ -527,11 +546,11 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
     });
   });
 
-  it("keeps Field Defense and cover, and leaves the Walls standing", () => {
+  it("keeps cover and leaves the Walls standing; Breach also ignores the Field Defense", () => {
     const run = onWalls("KNIGHT", { wallbreaker: true, fieldDefense: true });
     expect(run.combat).toMatchObject({
-      fortificationLevel: 1,
-      fortificationIgnored: 2,
+      fortificationLevel: 0,
+      fortificationIgnored: 3,
     });
     // The Walls reward stays, and so does the fortification of the center.
     expect(cityOfV7(run.state, 0).rewards).toContainEqual({
@@ -561,18 +580,31 @@ describe("ruleset-7 revision-20 Wallbreaker", () => {
       defenseBonusDenominator: 2,
       fortificationIgnored: 0,
     });
-    // Field Defense off a city center is not Walls.
-    const fortified = fieldDefenseV7(
-      fieldV7([
-        { seat: 0, role: "KNIGHT", at: at(4, 7) },
-        { seat: 1, role: "GUARD", at: at(3, 7) },
-      ]),
-      at(3, 7),
-    );
-    expect(attackV7(fortified, at(4, 7), at(3, 7)).combat).toMatchObject({
-      fortificationLevel: 1,
-      fortificationIgnored: 0,
+    // Field Defense off a city center is not Walls: Breach ignores it, and
+    // without the technology it applies.
+    const fortified = (techs: boolean) =>
+      fieldDefenseV7(
+        fieldV7(
+          [
+            { seat: 0, role: "KNIGHT", at: at(4, 7) },
+            { seat: 1, role: "GUARD", at: at(3, 7) },
+          ],
+          techs ? {} : { techs: { 0: WITHOUT_WALLBREAKER } },
+        ),
+        at(3, 7),
+      );
+    expect(attackV7(fortified(true), at(4, 7), at(3, 7)).combat).toMatchObject({
+      fortificationLevel: 0,
+      fortificationIgnored: 1,
+      breachApplied: true,
     });
+    expect(attackV7(fortified(false), at(4, 7), at(3, 7)).combat).toMatchObject(
+      {
+        fortificationLevel: 1,
+        fortificationIgnored: 0,
+        breachApplied: false,
+      },
+    );
   });
 
   it("applies to every Rampage attack of the turn", () => {

@@ -87,23 +87,23 @@ export function candyUiFieldV7(
 
 /** Where everything stands in `candyUiFixtureV7`. */
 export const CANDY_UI_V7 = {
-  /** A fresh Gumdrop next to an enemy Fighter: it may Rush. */
+  /** A fresh Toffee Trooper next to an enemy Fighter: it may Rush. */
   gumdrop: { x: 6, y: 2 },
   rushTarget: { x: 5, y: 2 },
-  /** A Gumdrop that moved: "Already moved". */
+  /** A Toffee Trooper that moved: "Already moved". */
   movedGumdrop: { x: 3, y: 1 },
   /** A Rushed Donut Racer next to the capital: Home Sweet Home. */
   rushedDonut: { x: 7, y: 7 },
-  /** A Rushed Gummy Bear: Sugar Frenzy and its two pips. */
+  /** A Rushed Chocolate Bunny: Sugar Frenzy and its two pips. */
   rushedBear: { x: 4, y: 4 },
   /** A Crashed Marshmallow. */
   crashed: { x: 3, y: 5 },
-  /** A Gumdrop next to a Splatted enemy Guard, and the Pie Launcher. */
+  /** A Toffee Trooper next to a Splatted enemy Guard, and the Pie Launcher. */
   splatAttacker: { x: 9, y: 3 },
   splatted: { x: 9, y: 2 },
   pieLauncher: { x: 9, y: 5 },
   pieTarget: { x: 10, y: 3 },
-  /** A homed Confectioner with two Crumbs and a wounded Gumdrop beside it. */
+  /** A homed Confectioner with two Crumbs and a wounded Toffee Trooper beside it. */
   confectioner: { x: 6, y: 7 },
   crumbsBear: { x: 5, y: 7 },
   crumbsGumdrop: { x: 6, y: 6 },
@@ -119,7 +119,7 @@ export const CANDY_UI_V7 = {
 /**
  * Seat 0 (Candy) with every ability ready, against seat 1 (Human by
  * default): a unit that may Rush, a Rushed Donut Racer at home, a Rushed
- * Gummy Bear, a Crashed Marshmallow, a Splatted enemy, a Confectioner with
+ * Chocolate Bunny, a Crashed Marshmallow, a Splatted enemy, a Confectioner with
  * Crumbs to Re-bake and a unit to Frost, and a Gunner with units to heal.
  */
 export function candyUiFixtureV7(

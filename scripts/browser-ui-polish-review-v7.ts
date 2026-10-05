@@ -456,7 +456,7 @@ async function runRevision8IndustryReview(
       "Build mine",
       "Build workshop",
       "Redevelop",
-      "Build field defense",
+      "Build Field Defense",
       "gains +1 capacity",
     ],
     metallurgy: ["Build forge", "Train Heavy", "Train Breacher", "Pillage"],

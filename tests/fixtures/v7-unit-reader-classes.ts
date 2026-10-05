@@ -303,7 +303,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::applyDisband": "BOARD",
     "src/engine/v7/reducer.ts::applyDisembark": "BOARD",
     "src/engine/v7/reducer.ts::applyEndTurn": "BOARD",
-    "src/engine/v7/reducer.ts::applyFieldDefense": "BOARD",
     "src/engine/v7/reducer.ts::applyHatch": "BOARD",
     "src/engine/v7/reducer.ts::applyInfrastructure": "BOARD",
     "src/engine/v7/reducer.ts::applyKaboom": "BOARD",

@@ -190,8 +190,8 @@ describe("ruleset-7 conflict economy and capacity", () => {
     const heavy = {
       ...freshFighter(state.nextEntityId, human.id, city.id, at),
       role: "KNIGHT" as const,
-      hp: 10,
-      maxHp: 10,
+      hp: 13,
+      maxHp: 13,
     };
     state = checkedV7({
       ...state,

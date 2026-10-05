@@ -1,5 +1,24 @@
 # Ruleset 7: Candy faction
 
+**Name change (`pulp_wars-w49.3`, `pulp-wars-poc-7r46`):** the Candy
+`FIGHTER`-role unit is displayed as **Toffee Trooper** (it was the Gumdrop;
+its sprite has been a wrapped toffee since `pulp_wars-2o7.3`). Only the
+display name changed, and it is replaced throughout this document; the role,
+its numbers and rules, the asset ids and file names (`gumdrop`), and the
+Normal AI constant `THREATENED_GUMDROP_BIAS_V7` are the same. In the same
+identity the `KNIGHT`-role unit is displayed as **Chocolate Bunny** (it was
+the Gummy Bear) and the `JUGGERNAUT`-role unit as **Gingerbread Giant** (it
+was the Rock Candy Golem), after their sprites changed in
+`pulp_wars-jdb.10`; again only the display names changed (the asset ids
+stay `gummy-bear` and `rock-candy-golem`), and this document uses the new
+names, "the Bunny" and "the Giant" where it wrote "the Bear" and "the
+Golem". The battle
+tables of section 11 were computed before
+[tuning 1](RULESET_7_TUNING_1.md) and no longer hold where they involve a
+retaliation against a fortified or covered unit, the Human Catapult
+(Attack 3), or the Human Knight (13 HP);
+`tests/unit/ruleset-v7-candy-numbers.test.ts` has the current values.
+
 **Status:** **folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
 (kept as history)** by `pulp_wars-jdb.8` at `pulp-wars-poc-7r41`: the
 current rules describe the running eight-faction game, with the Candy in
@@ -61,7 +80,7 @@ in it like every other faction: [sections 2.4](#24-setup) and
 [16](#16-naval-branch)).
 
 **Ruleset ID:** `pulp-wars-poc-7r38` (the engine bead's identity; the
-current identity is `pulp-wars-poc-7r45`). The contract was written when
+current identity is `pulp-wars-poc-7r46`). The contract was written when
 `main` was at `pulp-wars-poc-7r35` and named no number: **`7rNN` and `v7rNN`
 stand for `7r38` and `v7r38` everywhere below, and "the previous identity"
 for `pulp-wars-poc-7r37`.**
@@ -140,8 +159,8 @@ with the root rulings of 2026-10-03:
 | #   | Decision (summary)                                                                                                                                                                                  | Where                                                                        |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | D1  | Four pillars: Sugar Rush and the Crash; Crumbs and Re-baking; Splat; Bounce. Two support abilities (Frosting, Sugar Toss) and two technology effects (Home Sweet Home, Peppermint Surprise).        | [sections 5](#5-sugar-rush-and-the-crash) to [9](#9-frosting-and-sugar-toss) |
-| D2  | The roster of the final redraft: Gumdrop, Donut Racer, Gumball Gunner, Marshmallow, Confectioner, Pie Launcher, Gummy Bear, Rock Candy Golem, with the Human boats.                                 | [section 3](#3-candy-roster)                                                 |
-| D3  | Rush gives +1 Move and +1 Attack on the **first** attack only and never adds to Charge; only the Donut Racer (Escape) and the Gummy Bear (Sugar Frenzy) have a Rush perk.                           | [section 5](#5-sugar-rush-and-the-crash)                                     |
+| D2  | The roster of the final redraft: Toffee Trooper, Donut Racer, Gumball Gunner, Marshmallow, Confectioner, Pie Launcher, Chocolate Bunny, Gingerbread Giant, with the Human boats.                    | [section 3](#3-candy-roster)                                                 |
+| D3  | Rush gives +1 Move and +1 Attack on the **first** attack only and never adds to Charge; only the Donut Racer (Escape) and the Chocolate Bunny (Sugar Frenzy) have a Rush perk.                      | [section 5](#5-sugar-rush-and-the-crash)                                     |
 | D4  | Re-bake costs half the printed cost, rounded up, returns half the maximum HP, rounded up, needs a home-city slot, and works only on own Crumbs for three Candy turns; enemies eat Crumbs by a Move. | [section 6](#6-crumbs-and-re-baking)                                         |
 | D5  | Root ruling: Splat lasts for the rest of the Candy turn (the one-strike-back version is a named lever).                                                                                             | [section 7](#7-splat)                                                        |
 | D6  | Root ruling: the faction colour is cotton-candy pink `#ffb8d8`.                                                                                                                                     | [section 15.4](#154-what-the-art-bead-must-draw)                             |
@@ -169,9 +188,9 @@ character, name, likeness, place name, or catchphrase from the show:
 - **Faction display name:** "Candy". The realm, for flavour text only, is
   the **Kingdom of Sugarcrest**; the lore names no ruler (the units are
   generic sweets, like every other faction's units).
-- **Unit names** are generic confection words: Gumdrop, Donut Racer,
-  Gumball Gunner, Marshmallow, Confectioner, Pie Launcher, Gummy Bear, Rock
-  Candy Golem.
+- **Unit names** are generic confection words: Toffee Trooper, Donut Racer,
+  Gumball Gunner, Marshmallow, Confectioner, Pie Launcher, Chocolate Bunny, Gingerbread
+  Giant.
 - **Avoided on purpose:** banana-shaped guards; giant gumball-headed
   guardian statues (the Juggernaut is a rock-candy golem instead of a
   gumball machine); a pink-haired princess in a lab coat (the Confectioner
@@ -180,10 +199,10 @@ character, name, likeness, place name, or catchphrase from the show:
   kingdom, land, or characters. The art bead puts these in the faction's
   negative prompt ([section 15.4](#154-what-the-art-bead-must-draw)).
 
-**The wow events.** A Gummy Bear on a Sugar Rush tramples through a back
+**The wow events.** A Chocolate Bunny on a Sugar Rush tramples through a back
 line (Fighter, Catapult, Captain) and is left Crashed in the middle of the
 enemy army; next turn a Confectioner bakes it back out of its crumbs. A Pie
-lands on a Walled Guard and two Rushed Gumdrops beat it without a blow in
+lands on a Walled Guard and two Rushed Toffee Troopers beat it without a blow in
 return.
 
 ### 2.2 Identity
@@ -327,7 +346,7 @@ faction.
   assumes a seat count.
 - Faction choice never affects map generation, capital placement, turn
   order, treasure placement, curiosity placement, or any PRNG draw.
-- **Starting units.** A Candy seat starts with one Gumdrop (the `FIGHTER`
+- **Starting units.** A Candy seat starts with one Toffee Trooper (the `FIGHTER`
   role) on its capital at full HP, 3 Coins (5 in hand on its first turn,
   after that Start Turn's income of 2; the contract said 5 Coins, the value
   before `pulp-wars-poc-7r41`), and no technology, exactly like every other
@@ -360,18 +379,18 @@ research, hostility, "own") follow its owner (its controller)
   ground unit (the Human movement mode): no flyer, walker, or
   Mountain-born unit.
 
-| Mechanical role | Human       | Undead      | Goblin       | Dinosaur     | Martian          | Ice Folk     | Dwarf            | Candy (`CANDY`)  |
-| --------------- | ----------- | ----------- | ------------ | ------------ | ---------------- | ------------ | ---------------- | ---------------- |
-| `FIGHTER`       | Fighter     | Skeleton    | Goblin       | Caveman      | Grunt            | Yeti         | Hammerer         | Gumdrop          |
-| `RAIDER`        | Raider      | Ghoul       | Wolf Rider   | Raptor       | Saucer           | Sled         | Gyrocopter       | Donut Racer      |
-| `MARKSMAN`      | Marksman    | Banshee     | Bomb Chucker | Spitter      | Ray Gunner       | Snow Hunter  | Clockwork Gunner | Gumball Gunner   |
-| `GUARD`         | Guard       | Zombie      | Orc Brute    | Ankylosaurus | Shield Projector | Mammoth      | Steam Mole       | Marshmallow      |
-| `CAPTAIN`       | Captain     | Necromancer | Orc Warboss  | Shaman       | Brain            | Ice Witch    | Engineer         | Confectioner     |
-| `CATAPULT`      | Catapult    | Lich        | Rocket Cart  | Triceratops  | Tripod           | Boulder Yeti | Steam Cannon     | Pie Launcher     |
-| `KNIGHT`        | Knight      | Vampire     | Scrap Buggy  | T-Rex        | Mothership       | Sabretooth   | Steam Tank       | Gummy Bear       |
-| `JUGGERNAUT`    | Juggernaut  | Abomination | Troll        | Brontosaurus | Colossus         | Frost Giant  | Brass Titan      | Rock Candy Golem |
-| `PATROL_BOAT`   | Patrol Boat | Patrol Boat | Patrol Boat  | Patrol Boat  | Patrol Boat      | Patrol Boat  | Patrol Boat      | Patrol Boat      |
-| `BATTLESHIP`    | Battleship  | Battleship  | Battleship   | Battleship   | Battleship       | Battleship   | Battleship       | Battleship       |
+| Mechanical role | Human       | Undead      | Goblin       | Dinosaur     | Martian          | Ice Folk     | Dwarf            | Candy (`CANDY`)   |
+| --------------- | ----------- | ----------- | ------------ | ------------ | ---------------- | ------------ | ---------------- | ----------------- |
+| `FIGHTER`       | Fighter     | Skeleton    | Goblin       | Caveman      | Grunt            | Yeti         | Hammerer         | Toffee Trooper    |
+| `RAIDER`        | Raider      | Ghoul       | Wolf Rider   | Raptor       | Saucer           | Sled         | Gyrocopter       | Donut Racer       |
+| `MARKSMAN`      | Marksman    | Banshee     | Bomb Chucker | Spitter      | Ray Gunner       | Snow Hunter  | Clockwork Gunner | Gumball Gunner    |
+| `GUARD`         | Guard       | Zombie      | Orc Brute    | Ankylosaurus | Shield Projector | Mammoth      | Steam Mole       | Marshmallow       |
+| `CAPTAIN`       | Captain     | Necromancer | Orc Warboss  | Shaman       | Brain            | Ice Witch    | Engineer         | Confectioner      |
+| `CATAPULT`      | Catapult    | Lich        | Rocket Cart  | Triceratops  | Tripod           | Boulder Yeti | Steam Cannon     | Pie Launcher      |
+| `KNIGHT`        | Knight      | Vampire     | Scrap Buggy  | T-Rex        | Mothership       | Sabretooth   | Steam Tank       | Chocolate Bunny   |
+| `JUGGERNAUT`    | Juggernaut  | Abomination | Troll        | Brontosaurus | Colossus         | Frost Giant  | Brass Titan      | Gingerbread Giant |
+| `PATROL_BOAT`   | Patrol Boat | Patrol Boat | Patrol Boat  | Patrol Boat  | Patrol Boat      | Patrol Boat  | Patrol Boat      | Patrol Boat       |
+| `BATTLESHIP`    | Battleship  | Battleship  | Battleship   | Battleship   | Battleship       | Battleship   | Battleship       | Battleship        |
 
 Tactical-role metadata equals that of the same mechanical role
 (`assertRuleset7Registry` requires it): the Pie Launcher is `SIEGE`, the
@@ -401,18 +420,18 @@ ledger, unit tiles, forms, homes, and entity IDs as any other faction.
 
 "Slots" is the city capacity the unit uses. Every Candy role uses one slot.
 
-| Unit             | Role          | Tech              | Cost | Slots |  HP | Attack (`attack2`) | Defense (`defense2`) | Move | Range | Sight | Attack after Move | Capture | Its own thing                                                      |
-| ---------------- | ------------- | ----------------- | ---: | ----: | --: | ------------------ | -------------------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------------ |
-| Gumdrop          | `FIGHTER`     | start             |    2 |     1 |  10 | 2 (4)              |                2 (4) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; no Field Defense                                       |
-| Donut Racer      | `RAIDER`      | Scouting          |    3 |     1 |  10 | 2 (4)              |                1 (2) |    2 |     1 |     2 | yes               | yes     | Sugar Rush (Rushed: Escape); Charge (Raiding); no Escape otherwise |
-| Gumball Gunner   | `MARKSMAN`    | Marksmanship      |    3 |     1 |   8 | 2 (4)              |                1 (2) |    1 |   1–2 |    1¹ | yes               | yes     | Sugar Rush; Sugar Toss                                             |
-| Marshmallow      | `GUARD`       | Drill             |    4 |     1 |  18 | 1.5 (3)            |              2.5 (5) |    1 |     1 |     1 | no                | yes     | Sugar Rush; Bounce; no Field Defense                               |
-| Confectioner     | `CAPTAIN`     | Administration    |    5 |     1 |  10 | 1 (2)              |                1 (2) |    1 |     1 |     1 | yes               | no      | Sugar Rush; Frosting; Re-bake; no Rally                            |
-| Pie Launcher     | `CATAPULT`    | Sawmilling        |    8 |     1 |  10 | 3 (6)              |              0.5 (1) |    1 |   2–3 |     1 | no                | no      | Sugar Rush; Splat; never advances                                  |
-| Gummy Bear       | `KNIGHT`      | Chivalry          |    9 |     1 |  14 | 3 (6)              |              1.5 (3) |    2 |     1 |     1 | yes               | no      | Sugar Rush (Rushed: Sugar Frenzy); no Overrun otherwise            |
-| Rock Candy Golem | `JUGGERNAUT`  | reward only       |    — |     1 |  40 | 4 (8)              |              3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Push; Bounce                                           |
-| Patrol Boat      | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 | 2 (4)              |                2 (4) |    2 |     1 |     2 | yes               | no      | naval                                                              |
-| Battleship       | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 | 6 (12)             |                4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                                      |
+| Unit              | Role          | Tech              | Cost | Slots |  HP | Attack (`attack2`) | Defense (`defense2`) | Move | Range | Sight | Attack after Move | Capture | Its own thing                                                      |
+| ----------------- | ------------- | ----------------- | ---: | ----: | --: | ------------------ | -------------------: | ---: | ----: | ----: | ----------------- | ------- | ------------------------------------------------------------------ |
+| Toffee Trooper    | `FIGHTER`     | start             |    2 |     1 |  10 | 2 (4)              |                2 (4) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; no Field Defense                                       |
+| Donut Racer       | `RAIDER`      | Scouting          |    3 |     1 |  10 | 2 (4)              |                1 (2) |    2 |     1 |     2 | yes               | yes     | Sugar Rush (Rushed: Escape); Charge (Raiding); no Escape otherwise |
+| Gumball Gunner    | `MARKSMAN`    | Marksmanship      |    3 |     1 |   8 | 2 (4)              |                1 (2) |    1 |   1–2 |    1¹ | yes               | yes     | Sugar Rush; Sugar Toss                                             |
+| Marshmallow       | `GUARD`       | Drill             |    4 |     1 |  18 | 1.5 (3)            |              2.5 (5) |    1 |     1 |     1 | no                | yes     | Sugar Rush; Bounce; no Field Defense                               |
+| Confectioner      | `CAPTAIN`     | Administration    |    5 |     1 |  10 | 1 (2)              |                1 (2) |    1 |     1 |     1 | yes               | no      | Sugar Rush; Frosting; Re-bake; no Rally                            |
+| Pie Launcher      | `CATAPULT`    | Sawmilling        |    8 |     1 |  10 | 3 (6)              |              0.5 (1) |    1 |   2–3 |     1 | no                | no      | Sugar Rush; Splat; never advances                                  |
+| Chocolate Bunny   | `KNIGHT`      | Chivalry          |    9 |     1 |  14 | 3 (6)              |              1.5 (3) |    2 |     1 |     1 | yes               | no      | Sugar Rush (Rushed: Sugar Frenzy); no Overrun otherwise            |
+| Gingerbread Giant | `JUGGERNAUT`  | reward only       |    — |     1 |  40 | 4 (8)              |              3.5 (7) |    1 |     1 |     1 | yes               | yes     | Sugar Rush; Push; Bounce                                           |
+| Patrol Boat       | `PATROL_BOAT` | Shorecraft        |    5 |     1 |  10 | 2 (4)              |                2 (4) |    2 |     1 |     2 | yes               | no      | naval                                                              |
+| Battleship        | `BATTLESHIP`  | Naval Engineering |   16 |     1 |  25 | 6 (12)             |                4 (8) |    2 |   1–3 |     3 | no                | no      | naval; splash                                                      |
 
 ¹ Gumball Gunner Sight becomes 2 with Fieldcraft.
 
@@ -422,7 +441,7 @@ re-ran every exchange with the engine and found no unit dead or dominant,
 so **no roster number is changed**
 ([section 21.1](#211-numbers-corrected-by-the-engine-re-run)).
 
-- **Gumdrop** (a gumdrop soldier with a candy-cane spear and a wafer
+- **Toffee Trooper** (a gumdrop soldier with a candy-cane spear and a wafer
   shield) has Fighter parity for cost, Attack, Defense, Move, capture,
   Pillage with Raiding, Disband, Promotion (15 HP promoted), and the
   advance after a melee kill, with 10 HP like the Skeleton and the Caveman.
@@ -453,12 +472,12 @@ so **no roster number is changed**
   advances, Field Defense destruction on the target tile with reason
   `CATAPULT`) with Attack 3 instead of 3.5, plus **Splat**
   ([section 7](#7-splat)).
-- **Gummy Bear** (a big translucent gummy bear brawler) has Knight parity
+- **Chocolate Bunny** (a big translucent gummy bear brawler) has Knight parity
   for cost, Attack, no capture, and the advance after a melee kill, with 14
-  HP, Defense 1.5, and **Move 2** (the Knight has Move 3; Rushed, the Bear
+  HP, Defense 1.5, and **Move 2** (the Knight has Move 3; Rushed, the Bunny
   has the Knight's 3). It has **no Overrun except while Rushed** (Sugar
   Frenzy, [section 5.4](#54-rush-perks-escape-and-sugar-frenzy)).
-- **Rock Candy Golem** (a hulking golem of rock-candy crystals bound with
+- **Gingerbread Giant** (a hulking golem of rock-candy crystals bound with
   caramel) has Juggernaut parity (reward only, capture, Push on an adjacent
   surviving target, the advance, no Pillage, no Disband) with Defense 3.5
   (the Juggernaut's 4), and **Bounce**. It Rushes and Crashes like every
@@ -469,38 +488,38 @@ so **no roster number is changed**
 - **Every Candy land role has Sugar Rush.** **No Candy unit builds Field
   Defense** (`buildsFieldDefense` false for every role; the tree replaces
   Fortification, [section 4](#4-technology)).
-- **Disband refunds** are `floor(cost / 2)`: Gumdrop, Donut Racer, and
-  Gumball Gunner 1; Marshmallow and Confectioner 2; Pie Launcher and Gummy
-  Bear 4. The Golem cannot Disband.
+- **Disband refunds** are `floor(cost / 2)`: Toffee Trooper, Donut Racer, and
+  Gumball Gunner 1; Marshmallow and Confectioner 2; Pie Launcher and Chocolate
+  Bunny 4. The Giant cannot Disband.
 - **Re-bake price and HP** (`rebakePriceV7` = `ceil(cost / 2)`,
   `rebakeHpV7` = `ceil(maxHp / 2)`; [section 6.4](#64-the-re-bake-command)):
 
-  | Role           | Price | HP of the copy |
-  | -------------- | ----: | -------------: |
-  | Gumdrop        |     1 |              5 |
-  | Donut Racer    |     2 |              5 |
-  | Gumball Gunner |     2 |              4 |
-  | Marshmallow    |     2 |              9 |
-  | Confectioner   |     3 |              5 |
-  | Pie Launcher   |     4 |              5 |
-  | Gummy Bear     |     5 |              7 |
+  | Role            | Price | HP of the copy |
+  | --------------- | ----: | -------------: |
+  | Toffee Trooper  |     1 |              5 |
+  | Donut Racer     |     2 |              5 |
+  | Gumball Gunner  |     2 |              4 |
+  | Marshmallow     |     2 |              9 |
+  | Confectioner    |     3 |              5 |
+  | Pie Launcher    |     4 |              5 |
+  | Chocolate Bunny |     5 |              7 |
 
 - **Arms Industry** lowers training costs as for every faction and never a
   Re-bake price.
 - An **embarked** Candy land unit follows the ordinary embarked rules (Move
   2, Defense 1, Sight 1, no Attack, no retaliation, no ZOC, no ability); it
   cannot Rush.
-- **Public abilities** (the role rule's `abilities` list): Gumdrop
+- **Public abilities** (the role rule's `abilities` list): Toffee Trooper
   `ATTACK`, `CAPTURE`, `SUGAR_RUSH`; Donut Racer `ATTACK`, `CAPTURE`,
   `CHARGE`, `SUGAR_RUSH`; Gumball Gunner `ATTACK`, `CAPTURE`, `SUGAR_RUSH`,
   `SUGAR_TOSS`; Marshmallow `ATTACK`, `CAPTURE`, `SUGAR_RUSH`, `BOUNCE`;
   Confectioner `ATTACK`, `TEND_WOUNDED` (labelled Frosting), `REBAKE`,
-  `SUGAR_RUSH`; Pie Launcher `ATTACK`, `SUGAR_RUSH`, `SPLAT`; Gummy Bear
-  `ATTACK`, `SUGAR_RUSH`; Rock Candy Golem `ATTACK`, `CAPTURE`, `PUSH`,
+  `SUGAR_RUSH`; Pie Launcher `ATTACK`, `SUGAR_RUSH`, `SPLAT`; Chocolate Bunny
+  `ATTACK`, `SUGAR_RUSH`; Gingerbread Giant `ATTACK`, `CAPTURE`, `PUSH`,
   `SUGAR_RUSH`, `BOUNCE`; boats `ATTACK`. Role mechanics: `rushPerk`
-  `"ESCAPE"` (Donut Racer), `"SUGAR_FRENZY"` (Gummy Bear), otherwise null;
+  `"ESCAPE"` (Donut Racer), `"SUGAR_FRENZY"` (Chocolate Bunny), otherwise null;
   `leavesCrumbs` true for the seven trainable land roles and false for the
-  Golem and the boats; `advancesAfterKill` false for the Pie Launcher only.
+  Giant and the boats; `advancesAfterKill` false for the Pie Launcher only.
 
 ## 4. Technology
 
@@ -514,7 +533,7 @@ names:
   Confectioner's Frosting and Re-bake, like `ENGINEER_SUPPORT`) instead of
   `CAPTAIN_SUPPORT` (no Rally).
 - `CHIVALRY` grants no `OVERRUN` (the Undead, Martian, Ice Folk, and Dwarf
-  precedent); the Gummy Bear's Sugar Frenzy is a role rule.
+  precedent); the Chocolate Bunny's Sugar Frenzy is a role rule.
 - `FORTIFICATION` is displayed as **Home Sweet Home** and replaces
   `COMMAND BUILD_FIELD_DEFENSE` with `HOME_SWEET_HOME`
   ([section 5.3](#53-the-crash-and-home-sweet-home)).
@@ -549,7 +568,7 @@ to a Human one.
 | Roads             |    2 | same: Build Road; Road population; half-cost Road movement (a Rushed Move gets the Road discount too)                | —                                       |
 | Commerce          |    3 | same: land trade                                                                                                     | —                                       |
 | Raiding           |    2 | Pillage; the Donut Racer's Charge                                                                                    | —                                       |
-| Chivalry          |    3 | **Gummy Bear** (Sugar Frenzy while Rushed); Cultivate Forest                                                         | Overrun (not granted)                   |
+| Chivalry          |    3 | **Chocolate Bunny** (Sugar Frenzy while Rushed); Cultivate Forest                                                    | Overrun (not granted)                   |
 | Drill             |    1 | reveal Ore; **Marshmallow** (Bounce); first-hostile-capture Spoils                                                   | —                                       |
 | Engineering       |    2 | same: Mountain entry; +1 Sight on a Mountain; Mine; Workshop; Redevelop                                              | —                                       |
 | Metallurgy        |    3 | same: Forge; Arms Industry (training only, never a Re-bake price)                                                    | —                                       |
@@ -574,7 +593,7 @@ The tree, research offers, and Help render names and unlock text from the
 | Fieldcraft     | same                | Replant Forest; Donut Racers and Gunners ignore Forest movement stops; Gunner Sight 2    |
 | Scouting       | same                | Donut Racer; Donut Racer Sight 2                                                         |
 | Raiding        | same                | Pillage; Donut Racer Charge                                                              |
-| Chivalry       | same                | Gummy Bear (Sugar Frenzy while Rushed); Cultivate Forest                                 |
+| Chivalry       | same                | Chocolate Bunny (Sugar Frenzy while Rushed); Cultivate Forest                            |
 | Drill          | same                | reveal Ore; Marshmallow (Bounce); first-hostile-capture Spoils (2 Coins)                 |
 | Fortification  | Home Sweet Home     | Rushed units that end the turn on or next to your city centers don't Crash               |
 | Explosives     | Peppermint Surprise | Blast Mountain; melee attacks destroy Field Defense; enemies that eat your Crumbs take 3 |
@@ -704,7 +723,7 @@ other role has a perk.
   Escape rule applies (never for a sluggish unit; declined by Wait or End
   Turn; it is handled afterwards). The combat preview's `escapeAvailable`
   reports it.
-- **Gummy Bear (`"SUGAR_FRENZY"`):** while Rushed it has the Knight's
+- **Chocolate Bunny (`"SUGAR_FRENZY"`):** while Rushed it has the Knight's
   **Overrun**, displayed as **Sugar Frenzy**
   ([current rules section 13.4](RULESET_7_CURRENT.md#134-after-combat)):
   after it kills (an Egg counts) and advances, if a visible hostile unit is
@@ -725,13 +744,13 @@ other role has a perk.
 Engine numbers at `0dd3686` ([section 11](#11-per-unit-battle-analysis)),
 full HP, open Grass:
 
-- A Gumdrop deals a Fighter 5 and takes 5; Rushed, 8 and takes 4. One
-  Rushed Gumdrop and any second Gumdrop (plain is enough: 4 kills the
-  4-HP Fighter) kill a full Fighter in one turn; plain Gumdrops need three
+- A Toffee Trooper deals a Fighter 5 and takes 5; Rushed, 8 and takes 4. One
+  Rushed Toffee Trooper and any second Toffee Trooper (plain is enough: 4 kills the
+  4-HP Fighter) kill a full Fighter in one turn; plain Toffee Troopers need three
   attacks.
-- **Rush trades total damage for burst.** Over two turns a Gumdrop's two
-  plain attacks on fresh Fighters deal 10 (5 + 5); a Rush and a Crash deal 8. On the **same** Fighter a lone Gumdrop's second plain attack deals 4
-  and takes 5, so it dies (5 + 5 of its 10 HP) where the Rushed Gumdrop took
+- **Rush trades total damage for burst.** Over two turns a Toffee Trooper's two
+  plain attacks on fresh Fighters deal 10 (5 + 5); a Rush and a Crash deal 8. On the **same** Fighter a lone Toffee Trooper's second plain attack deals 4
+  and takes 5, so it dies (5 + 5 of its 10 HP) where the Rushed Toffee Trooper took
   4: the Crash's price is tempo (no capture, no finishing blow, no answer to
   a new threat on the Crash turn), not damage.
 - A Rushed Donut Racer moves three tiles (up to six along a Road), charges
@@ -740,7 +759,7 @@ full HP, open Grass:
   Escape two tiles.
 - A Rushed Pie Launcher hits a Walled Guard with Field Defense for 7 (5
   plain) from range 2 or 3 without moving.
-- A Rushed Golem deals a Guard 14 and takes 5 (10 and 6 plain).
+- A Rushed Giant deals a Guard 14 and takes 5 (10 and 6 plain).
 
 ## 6. Crumbs and Re-baking
 
@@ -766,7 +785,7 @@ A death leaves **Crumbs** when all of these hold:
    (so its kind is `CANDY` and its owner is that seat; a controlled Candy
    unit leaves none, [section 12.5](#125-martian-rules-and-mind-control));
 2. its role has `leavesCrumbs` (the seven trainable land roles: never the
-   Golem, never a boat);
+   Giant, never a boat);
 3. it died in **land form** on a **land** tile (never water, an ice tile
    of the naval design included) that is not a settlement site (village or
    city center), not a Rift, and holds no treasure chest and no map
@@ -888,17 +907,17 @@ its owner, so the command is exact.
 
 ### 6.5 Crumbs worked examples
 
-- A Gummy Bear dies to retaliation next to a Fighter it attacked. Its
+- A Chocolate Bunny dies to retaliation next to a Fighter it attacked. Its
   Crumbs (`turnsLeft` 3) lie on its tile. On the next Candy turn a
-  Confectioner steps next to them and Re-bakes a 7-HP Bear for 5 Coins (a
-  trained one costs 9), homed to the Confectioner's city; the Bear can act
+  Confectioner steps next to them and Re-bakes a 7-HP Bunny for 5 Coins (a
+  trained one costs 9), homed to the Confectioner's city; the Bunny can act
   the turn after.
 - The Fighter instead ends its Move on the Crumbs: they are gone; with
   Peppermint Surprise it takes 3.
 - The Fighter stands on the Crumbs because it advanced there after killing
-  the Bear: it did not eat them, and the Confectioner cannot Re-bake while
+  the Bunny: it did not eat them, and the Confectioner cannot Re-bake while
   it stands there; if the Fighter moves away, the Crumbs are still there.
-- A Re-baked unit is fragile: a 5-HP Gumdrop dies to one Fighter hit (5),
+- A Re-baked unit is fragile: a 5-HP Toffee Trooper dies to one Fighter hit (5),
   and a 9-HP Marshmallow takes 6 from a Fighter. A Re-bake is best made
   outside the enemy's reach or right before Home Sweet Home covers it.
 
@@ -942,15 +961,15 @@ seat.
 
 ## 8. Bounce
 
-**One sentence:** a melee attacker that hits a Marshmallow or a Rock Candy
-Golem and survives is bounced one tile back.
+**One sentence:** a melee attacker that hits a Marshmallow or a Gingerbread
+Giant and survives is bounced one tile back.
 
 - **When.** An `ATTACK` made from distance 1 bounces its attacker when, after
   the exchange's deaths, the attacker and the defender are both on the
   board, the defender is in land form and its role, under its kind, has
-  `BOUNCE` (the Marshmallow and the Golem), and the attacker's mechanical
+  `BOUNCE` (the Marshmallow and the Giant), and the attacker's mechanical
   role is not `JUGGERNAUT` (so never a Juggernaut, Abomination, Troll,
-  Brontosaurus, Colossus, Frost Giant, Brass Titan, Rock Candy Golem, or
+  Brontosaurus, Colossus, Frost Giant, Brass Titan, Gingerbread Giant, or
   the Giant Spider). Two-slot units, flyers, and boats attacking from
   distance 1 are bounced. A Splatted or Crashed Marshmallow still Bounces.
 - **Where.** After the Push, Knockback, advance, and Charge! follow steps,
@@ -1041,7 +1060,7 @@ with the Ice Folk and Dwarf steps, and these Candy steps in bold:
 6. **Splat:** a Pie Launcher's surviving target joins `splattedThisTurn`.
 7. The Push and Knockback, then the advance and the Charge! follow.
 8. **Bounce** of a surviving distance-1 attacker of a surviving Marshmallow
-   or Golem (`UNIT_PUSHED`, `TILES_REVEALED`).
+   or Giant (`UNIT_PUSHED`, `TILES_REVEALED`).
 9. Death-blast chains (each death with its Crumbs), Plunder, reveals, and
    the ordinary tail; then the Overrun or **Sugar Frenzy** continuation
    (Sugar Frenzy only while `attacksUsed` is below 3) and
@@ -1094,7 +1113,7 @@ entry or a Splatted unit.
   roster number).
 - **Reading the tables.** Opponents are at full HP on open Grass with no
   fortification and **no Snow** unless stated (an Ice Folk unit in its own
-  territory stands on Snow and has cover: a Gumdrop then deals a Yeti 4 and
+  territory stands on Snow and has cover: a Toffee Trooper then deals a Yeti 4 and
   takes 4, Rushed 8 and takes 3, no kill). "Deals / takes" is damage dealt
   and the retaliation taken back; "+2 sh" is what a Martian Shield absorbed;
   "kill" means the defender dies (no retaliation). Human Fighter, Raider, and
@@ -1104,11 +1123,11 @@ entry or a Splatted unit.
   the tables from this section with the real registration before coding
   ([section 18](#18-implementation-split-and-test-expectations)).
 
-### 11.2 Gumdrop
+### 11.2 Toffee Trooper
 
 _Fighter, 2 Coins, 10 HP, 2 / 2._
 
-| Gumdrop attacks          | Plain       | Rushed (+1 first attack) |
+| Toffee Trooper attacks   | Plain       | Rushed (+1 first attack) |
 | ------------------------ | ----------- | ------------------------ |
 | Fighter                  | 5 / 5       | 8 / 4                    |
 | Marksman or Raider       | 6 / 2       | 10 / 1                   |
@@ -1122,7 +1141,7 @@ _Fighter, 2 Coins, 10 HP, 2 / 2._
 | Zombie                   | 5 / 5       | 8 / 4                    |
 | Fighter on Field Defense | 4 / 8       | 7 / 7                    |
 
-| Attacker on a Gumdrop            | Deals / takes    |
+| Attacker on a Toffee Trooper     | Deals / takes    |
 | -------------------------------- | ---------------- |
 | Fighter, Skeleton, Caveman, Yeti | 5 / 5            |
 | Knight, Sabretooth, Scrap Buggy  | 8 / 4            |
@@ -1135,7 +1154,7 @@ _Fighter, 2 Coins, 10 HP, 2 / 2._
 | Marksman, Snow Hunter from 2     | 5 / —            |
 | Ray Gunner (full power) from 2   | 8 / —            |
 
-- **In a fight** the Gumdrop is a Skeleton that can spend its next turn for
+- **In a fight** the Toffee Trooper is a Skeleton that can spend its next turn for
   one strong hit ([section 5.5](#55-rush-worked-examples)). Its 10 HP is
   the faction's weak spot: a pouncing Raptor, a Catapult, or a Goblin with
   two helpers kills it outright.
@@ -1186,7 +1205,7 @@ _Marksman, 3 Coins, 8 HP, 2 / 1, range 1–2._
   at 3 (10 / 1 against a Marksman, 8 to a Fighter). A Marksman deals it
   6 / 2; a Knight or a Catapult kills it in one blow (8).
 - **Sugar Toss** heals one own unit within 2 by 2 instead of shooting. Two
-  Gunners keep a Marshmallow or a Golem topped up from behind it; the
+  Gunners keep a Marshmallow or a Giant topped up from behind it; the
   once-per-turn limit stops five Gunners from healing one unit by 10.
 - **Too strong or weak?** It is a Marksman with a second job; the heal is
   the Captain's per-unit amount, at range, on one unit. The tuning bound is
@@ -1233,7 +1252,7 @@ _Captain, 5 Coins, 10 HP, 1 / 1._
 - **Frosting** is the Captain's Tend Wounded. It keeps the Confectioner
   useful before anything has died, and gives the Candy their only cure.
 - **Re-bake** turns a death into a half-price, half-HP copy at the front.
-  Per Coin it is strongest on the Gummy Bear (5 Coins for a 7-HP Bear
+  Per Coin it is strongest on the Chocolate Bunny (5 Coins for a 7-HP Bunny
   instead of 9 for a 14-HP one) and the Pie Launcher (4 for 5 HP).
 - **In a fight** it stands one tile behind the line where its units die. A
   Vampire, a Knight, a pouncing Raptor, or a Lich kills it in one blow (10);
@@ -1266,19 +1285,19 @@ _Catapult, 8 Coins, 10 HP, 3 / 0.5, range 2–3._
 **Splat is the point.** The cracking of a Walled Guard (17 HP, Walls and
 Field Defense):
 
-| Step                | Candy                                   | Human, for comparison         |
-| ------------------- | --------------------------------------- | ----------------------------- |
-| Siege shot          | Pie: 5, the Guard is Splatted (12 left) | Catapult: 6 (11 left)         |
-| First melee attack  | Rushed Gumdrop: 6, no answer (6 left)   | Fighter: 3, takes 12 and dies |
-| Second melee attack | Rushed Gumdrop: 6, kill                 | —                             |
+| Step                | Candy                                        | Human, for comparison         |
+| ------------------- | -------------------------------------------- | ----------------------------- |
+| Siege shot          | Pie: 5, the Guard is Splatted (12 left)      | Catapult: 6 (11 left)         |
+| First melee attack  | Rushed Toffee Trooper: 6, no answer (6 left) | Fighter: 3, takes 12 and dies |
+| Second melee attack | Rushed Toffee Trooper: 6, kill               | —                             |
 
-Without the Rush the Gumdrops deal 3 each; without the Pie a Rushed Gumdrop
+Without the Rush the Toffee Troopers deal 3 each; without the Pie a Rushed Toffee Trooper
 deals 5 and takes 10 (it dies). Three Candy units kill the hardest defender
-in the game in one turn without a loss. The brakes: the two Gumdrops are
+in the game in one turn without a loss. The brakes: the two Toffee Troopers are
 Crashed next turn, the one that advanced onto the center cannot capture
 until the turn after, the Pie is an 8-Coin, 10-HP, Defense-0.5 unit that a
 Raider or a Knight kills in one blow, and the city's next defender walks
-in. The same pair kills a full Zombie: Pie 8, then a Rushed Gumdrop 10
+in. The same pair kills a full Zombie: Pie 8, then a Rushed Toffee Trooper 10
 (kill), with no strike-back, so no bite and no Infect. The tuning lever, if
 Splat proves too strong, is "Splat stops one strike-back"
 ([appendix B](#appendix-b-second-critique) item 1).
@@ -1287,31 +1306,31 @@ Splat proves too strong, is "Splat stops one strike-back"
 a worse Catapult; it is good only with followers, which is the intended
 identity.
 
-### 11.8 Gummy Bear
+### 11.8 Chocolate Bunny
 
 _Knight, 9 Coins, 14 HP, 3 / 1.5, Move 2 (Rushed 3)._
 
 Rushed: Move 3, Attack 4 on the first attack, then Sugar Frenzy at 3, at
 most two continuations (three attacks in all).
 
-| Rushed chain (all targets fresh)                                 | Result (capped at three attacks)                                                          |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Fighter, Catapult, Captain, Marksman                             | kills Fighter (12), Catapult, Captain; the cap stops it; Bear 14 HP                       |
-| Marksman, Catapult, Knight, Skeleton                             | kills Marksman (12), Catapult, Knight; the cap stops it; Bear 14 HP                       |
-| Catapult, Captain, Lich, Necromancer, Yeti, Sled, Shaman, Knight | kills three (Catapult, Captain, Lich); the cap stops it (uncapped: all eight); Bear 14 HP |
-| Raider, Raider                                                   | kills one; the second 10 of 12; Bear 13 HP                                                |
-| Hammerer, Fighter                                                | kills the Hammerer (12); the Fighter 8 of 12; Bear 10 HP                                  |
-| Guard on Field Defense                                           | 9 of 17, takes 9                                                                          |
-| Guard (open)                                                     | 10 of 17, takes 6                                                                         |
-| Re-baked Bear (7 of 14 HP), Fighter                              | 9 of 12, takes 5                                                                          |
+| Rushed chain (all targets fresh)                                 | Result (capped at three attacks)                                                           |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Fighter, Catapult, Captain, Marksman                             | kills Fighter (12), Catapult, Captain; the cap stops it; Bunny 14 HP                       |
+| Marksman, Catapult, Knight, Skeleton                             | kills Marksman (12), Catapult, Knight; the cap stops it; Bunny 14 HP                       |
+| Catapult, Captain, Lich, Necromancer, Yeti, Sled, Shaman, Knight | kills three (Catapult, Captain, Lich); the cap stops it (uncapped: all eight); Bunny 14 HP |
+| Raider, Raider                                                   | kills one; the second 10 of 12; Bunny 13 HP                                                |
+| Hammerer, Fighter                                                | kills the Hammerer (12); the Fighter 8 of 12; Bunny 10 HP                                  |
+| Guard on Field Defense                                           | 9 of 17, takes 9                                                                           |
+| Guard (open)                                                     | 10 of 17, takes 6                                                                          |
+| Re-baked Bunny (7 of 14 HP), Fighter                             | 9 of 12, takes 5                                                                           |
 
-So a Rushed Bear kills at most three units a turn, and three only when the
+So a Rushed Bunny kills at most three units a turn, and three only when the
 second and third are soft. The uncapped engine runs (the same exchanges,
-the chain simply continuing) went on to wound the Marksman (10 of 12, Bear
-13 HP) and the Skeleton (8 of 10, Bear 10 HP), and killed all eight of a
+the chain simply continuing) went on to wound the Marksman (10 of 12, Bunny
+13 HP) and the Skeleton (8 of 10, Bunny 10 HP), and killed all eight of a
 soft line without a scratch: the predictable T-Rex chain the cap removes.
 
-Within the cap, at Attack 3 a full-HP Bear's continuation **kills** every unit of 10 HP or
+Within the cap, at Attack 3 a full-HP Bunny's continuation **kills** every unit of 10 HP or
 less with Defense 1 or less: Catapult, Captain, Knight, Lich, Necromancer,
 Vampire, Ghoul, Banshee, Shaman, Spitter, Yeti and Sled (no Snow), Snow
 Hunter, Wolf Rider, Bomb Chucker, Rocket Cart, Scrap Buggy, Goblin, Brain,
@@ -1321,25 +1340,25 @@ Gunner, Engineer, Steam Cannon. It **stops** on every 12-HP unit (Fighter
 Warboss 10 / 1), every Defense-2 unit (Skeleton, Caveman 8 / 4), and a
 shielded Grunt (7 +2 sh / 2).
 
-| Attacker on a Gummy Bear | Deals / takes |
-| ------------------------ | ------------- |
-| Fighter                  | 5 / 3         |
-| Knight                   | 9 / 2         |
-| Ray Gunner (full) from 2 | 9 / —         |
-| Ray Gunner (full) from 1 | 9 / 2         |
-| Catapult                 | 11 / —        |
-| T-Rex                    | 13 / 2        |
+| Attacker on a Chocolate Bunny | Deals / takes |
+| ----------------------------- | ------------- |
+| Fighter                       | 5 / 3         |
+| Knight                        | 9 / 2         |
+| Ray Gunner (full) from 2      | 9 / —         |
+| Ray Gunner (full) from 1      | 9 / 2         |
+| Catapult                      | 11 / —        |
+| T-Rex                         | 13 / 2        |
 
 - **The T-Rex lesson, checked.** The T-Rex was predictably dominant because
   three things stacked: 28 HP, unlimited Rampage at Attack 4 (which
   one-shot every 12-HP unit, so the chain never stopped on a line), and
-  growth that fully healed it on a kill. The Bear has half the HP, no
+  growth that fully healed it on a kill. The Bunny has half the HP, no
   growth or heal, Attack 4 only on its **first** attack, and at most two
   continuations; the continuation at 3 also stops on any 12-HP or
   Defense-2 unit. Then it is
   Crashed in the enemy's lines, where a Fighter and a Knight together kill
   it (at 13 HP: 5, then 8; at 10 HP: 6, then 4). The first draft gave +1 on
-  every attack of the chain and one Bear killed a Marksman, a Catapult, a
+  every attack of the chain and one Bunny killed a Marksman, a Catapult, a
   Captain, and a Fighter without a scratch
   ([appendix A](#a2-the-critique) item 2).
 - **The soft-line chain is capped.** Uncapped, a line of soft units only
@@ -1350,7 +1369,7 @@ shielded Grunt (7 +2 sh / 2).
   soft kills a turn at most, then the Crash.
 - **The Triceratops lesson, checked.** The first Triceratops was weak
   because its power was in a separate lane command on a Move-1 body that
-  trailed the army. The Bear's power is the ordinary attack after one extra
+  trailed the army. The Bunny's power is the ordinary attack after one extra
   click, on a Move-2 (3 Rushed) body that leads the army.
 - **Off its Rush turn** it is a 14-HP, Attack-3 brawler with no Overrun and
   Move 2: better than a Knight at holding a tile, worse at sustained
@@ -1358,7 +1377,7 @@ shielded Grunt (7 +2 sh / 2).
 - **Counters:** keep a full-HP Fighter or Guard in front of the soft units
   (the chain stops there), punish the Crash turn, and eat its Crumbs.
 
-### 11.9 Rock Candy Golem
+### 11.9 Gingerbread Giant
 
 _Juggernaut, reward, 40 HP, 4 / 3.5._
 
@@ -1369,16 +1388,16 @@ _Juggernaut, reward, 40 HP, 4 / 3.5._
   A Fighter deals it 3 / 10, a Knight 6 / 8.
 - **Bounce** makes it the city anchor: melee units that hit it are thrown
   back, so a besieging ring keeps breaking.
-- **Rush:** Move 2 and Attack 5 on a first attack, then a Crash. A Golem
+- **Rush:** Move 2 and Attack 5 on a first attack, then a Crash. A Giant
   that Rushes off its city to kill something leaves the city without its
   attack next turn; next to its own center, Home Sweet Home makes the Rush
-  free (the named lever "Home Sweet Home off the Golem" watches it).
+  free (the named lever "Home Sweet Home off the Giant" watches it).
 
 ### 11.10 The faction as a whole
 
-- **Early (rounds 1–10):** Gumdrops and Donut Racers expand like any
-  faction; Rush matters from the first contact (a Rushed Gumdrop and any
-  second Gumdrop kill a Fighter), and the Crash makes the Candy predictable
+- **Early (rounds 1–10):** Toffee Troopers and Donut Racers expand like any
+  faction; Rush matters from the first contact (a Rushed Toffee Trooper and any
+  second Toffee Trooper kill a Fighter), and the Crash makes the Candy predictable
   for one turn. Drill (Marshmallow) or Marksmanship (Gunner) are the second
   technologies.
 - **Mid (rounds 10–20):** Administration (Confectioner) turns deaths into
@@ -1387,7 +1406,7 @@ _Juggernaut, reward, 40 HP, 4 / 3.5._
   AI reaches tier-3 units late.
 - **Strong against:** fortified, slow, high-retaliation defenders (Guards on
   Walls, Zombies, dug-in Hammerers and Moles, Ankylosaurs), melee-heavy
-  armies (Bounce), soft back lines (the Bear).
+  armies (Bounce), soft back lines (the Bunny).
 - **Weak against:** area damage and packs (Goblins, the Lich, Bomb
   Chuckers, the Mammoth's Sweep: 10-HP bodies), armies that punish the
   Crash turn, fast units that reach Crumbs and Confectioners (a Raptor or a
@@ -1410,7 +1429,7 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 | Rule                 | Interaction                                                                                                                                                                 |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Field Defense, Walls | Count fully against Candy attacks; only Splat removes the retaliation. Field Defense that already stands in territory a Candy seat captures fortifies Candy units as usual. |
-| Catapult             | Destroys Field Defense; out-ranges every Candy unit but the Pie Launcher; deals a Gumdrop or a Confectioner 10 (kill) and a Marshmallow 9.                                  |
+| Catapult             | Destroys Field Defense; out-ranges every Candy unit but the Pie Launcher; deals a Toffee Trooper or a Confectioner 10 (kill) and a Marshmallow 9.                           |
 | Juggernaut, Push     | Never bounced (`JUGGERNAUT`). Pushes Candy units under the ordinary conditions; a pushed unit keeps its `sugarRush` entry and eats nothing.                                 |
 | Knight, Overrun      | A Knight that hits a Marshmallow without killing it is bounced and has no continuation. Overrun after killing a Candy unit is ordinary.                                     |
 | Raider               | Charge and Escape are ordinary; a bounced Raider may still Escape. A Raider that ends its Escape Move on Candy Crumbs eats them.                                            |
@@ -1427,7 +1446,7 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 | Bitten     | Candy units are bitten as usual; Frosting cures it. A Bitten Candy unit that dies rises and leaves no Crumbs; a Bitten eater killed by Peppermint Surprise rises.                                                            |
 | Plague     | Applies to Candy units; Plague deaths leave Crumbs; Frosting cures it.                                                                                                                                                       |
 | Wail       | Not an attack: no Bounce, no Splat interplay; Wail deaths leave Crumbs.                                                                                                                                                      |
-| Lich       | Its shot and splash are ordinary (8 to a Gumdrop, splash 4 around it; 10 to a Confectioner); splash deaths leave Crumbs.                                                                                                     |
+| Lich       | Its shot and splash are ordinary (8 to a Toffee Trooper, splash 4 around it; 10 to a Confectioner); splash deaths leave Crumbs.                                                                                              |
 | Vampire    | Its attacks are unanswered anyway; Splat on a Vampire stops its Lifesteal retaliation. A Vampire that hits a Marshmallow without killing it is bounced.                                                                      |
 | Restless   | An Undead rule only.                                                                                                                                                                                                         |
 | Frenzy     | Ordinary.                                                                                                                                                                                                                    |
@@ -1436,7 +1455,7 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 
 | Rule         | Interaction                                                                                                                                                                                       |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Gang Up      | Ordinary (a Goblin with two helpers kills a Gumdrop: 10). A bounced Goblin leaves the target's ring and no longer helps Gang Up there.                                                            |
+| Gang Up      | Ordinary (a Goblin with two helpers kills a Toffee Trooper: 10). A bounced Goblin leaves the target's ring and no longer helps Gang Up there.                                                     |
 | Kaboom       | Fixed damage; Kaboom deaths of Candy units are `EXPLOSION` deaths and leave Crumbs. A Splatted goblin-crewed unit may still Kaboom on its own turn (Splat stops retaliation only).                |
 | Death blasts | A Sugar Frenzy that kills an exploding unit takes its blast like any Overrun; a Peppermint Surprise death of an exploding unit explodes with its chain; blast deaths of Candy units leave Crumbs. |
 | Plunder      | A Goblin seat earns 1 Coin for each Candy unit its units or blasts kill. Peppermint Surprise deaths are credited to the Candy seat, which never has Plunder.                                      |
@@ -1449,7 +1468,7 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 | Rule              | Interaction                                                                                                                                                             |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Eggs              | Targets for every Candy unit; a Sugar Frenzy may continue after destroying an Egg. An Egg on Crumbs blocks Re-bake; laying or hatching is a placement and eats nothing. |
-| Charge!           | The Triceratops ignores fortification as usual; after its push and follow it is bounced by a surviving Marshmallow or Golem ([section 8](#8-bounce)).                   |
+| Charge!           | The Triceratops ignores fortification as usual; after its push and follow it is bounced by a surviving Marshmallow or Giant ([section 8](#8-bounce)).                   |
 | Two-slot bodies   | The T-Rex and the Triceratops are bounced; the Brontosaurus (`JUGGERNAUT`) is not. A T-Rex's Rampage after a non-kill is over anyway.                                   |
 | Armoured          | Takes 1 off a Peppermint Surprise (the Ankylosaurus takes 2) and off Candy hits as usual.                                                                               |
 | Acid, Wallbreaker | Ordinary against Candy units and cities.                                                                                                                                |
@@ -1466,22 +1485,22 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 | Tractor Beam          | May pull a Crashed unit or one standing on Crumbs; a pull eats nothing; the pulled unit keeps its `sugarRush` entry.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Beam Down             | A placement: never eats Crumbs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Psychic Command       | On a controlled Candy unit: Inspired, and then the Rush bonus does not add.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Mind Control          | A Candy unit at 6 HP or less is a target under the ordinary conditions; the Rock Candy Golem (`JUGGERNAUT`) is immune. A taken unit keeps its `sugarRush` entry ([section 5.3](#53-the-crash-and-home-sweet-home)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Mind Control          | A Candy unit at 6 HP or less is a target under the ordinary conditions; the Gingerbread Giant (`JUGGERNAUT`) is immune. A taken unit keeps its `sugarRush` entry ([section 5.3](#53-the-crash-and-home-sweet-home)).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Controlled Candy unit | By the kind and controller rules of [current rules section 20.9](RULESET_7_CURRENT.md#209-mind-controlled-units): **body rules follow the kind**, so it Rushes and Crashes for its controller (Home Sweet Home read through `unitCapabilitiesV7` from the controller's research and its centers), keeps its Rush perk, Bounces, Splats (into the controller's turn list), and Tosses and Frosts the controller's units; **seat rules follow the controller**, so it is hostile to the Candy seat and **eats Candy Crumbs**; **no spawning under control**, so its role rule drops `REBAKE` (`MIND_CONTROLLED_LOST_ABILITIES_V7`). **It leaves no Crumbs when it dies:** Crumbs are a Candy seat's resource for spawning, and its owner is the Martian seat ([section 21.2](#212-precise-readings-of-the-design) reading 6). A released unit returns with its entries and the exhausted activation. |
 | Thralls               | Retired by the Mind Control overlay; nothing to rule.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| Disintegrator, rays   | Ordinary; a full-power Ray Gunner deals a Gummy Bear 9.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Disintegrator, rays   | Ordinary; a full-power Ray Gunner deals a Chocolate Bunny 9.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 ### 12.6 Ice Folk rules
 
-| Rule                         | Interaction                                                                                                                                                                                                                         |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Snow                         | Deep snow stops a Candy ground unit's Move on entering Snow, Rushed or not (the extra Move does not cross Snow). Ice Folk defenders on Snow have cover against Candy attacks (a Rushed Gumdrop deals a Yeti on Snow 8 and takes 3). |
-| Chill, sluggish              | A sluggish unit may Rush and then either moves or acts; a Crashed unit cannot act anyway, so the two combine harmlessly. Frosting thaws Chill.                                                                                      |
-| Shatter                      | A shattered Candy unit leaves Crumbs (no Grave).                                                                                                                                                                                    |
-| Blizzard                     | Halves a Gunner's or a Pie's hit from distance 2 or more on an Ice Folk unit of the Witch's seat in her Blizzard (after the Rush bonus).                                                                                            |
-| Mammoth                      | A Mammoth that hits a Marshmallow without killing it is bounced after its Sweep; its Trample destroys Field Defense as usual.                                                                                                       |
-| Sabretooth, Bolas, Cold Aura | Ordinary.                                                                                                                                                                                                                           |
-| Eating                       | Ice Folk ground units eat Crumbs.                                                                                                                                                                                                   |
+| Rule                         | Interaction                                                                                                                                                                                                                                |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Snow                         | Deep snow stops a Candy ground unit's Move on entering Snow, Rushed or not (the extra Move does not cross Snow). Ice Folk defenders on Snow have cover against Candy attacks (a Rushed Toffee Trooper deals a Yeti on Snow 8 and takes 3). |
+| Chill, sluggish              | A sluggish unit may Rush and then either moves or acts; a Crashed unit cannot act anyway, so the two combine harmlessly. Frosting thaws Chill.                                                                                             |
+| Shatter                      | A shattered Candy unit leaves Crumbs (no Grave).                                                                                                                                                                                           |
+| Blizzard                     | Halves a Gunner's or a Pie's hit from distance 2 or more on an Ice Folk unit of the Witch's seat in her Blizzard (after the Rush bonus).                                                                                                   |
+| Mammoth                      | A Mammoth that hits a Marshmallow without killing it is bounced after its Sweep; its Trample destroys Field Defense as usual.                                                                                                              |
+| Sabretooth, Bolas, Cold Aura | Ordinary.                                                                                                                                                                                                                                  |
+| Eating                       | Ice Folk ground units eat Crumbs.                                                                                                                                                                                                          |
 
 ### 12.7 Dwarf rules
 
@@ -1506,12 +1525,12 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 
 ### 12.9 Map curiosities
 
-| Curiosity              | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Fountain of Youth      | Heals a Candy unit like any unit (not Frosting: it ends no Crash). Crumbs are never left on a Fountain.                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Shrine                 | Promotes an eligible Candy unit that ends a Move on it, a Crashed unit included. Crumbs are never left on a Shrine.                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Sunken Wreck           | Salvaged by Candy afloat units as by any.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Giant Spider (Monster) | When it lands ([its spec](RULESET_7_MAP_CURIOSITIES.md#86-what-affects-the-monster)): its attacks are ordinary `ATTACK`s, so Candy deaths leave Crumbs. It is `JUGGERNAUT`-role, so it is **never bounced**. **No status sticks to it, so it is never Splatted** (`splatApplied` false). It never eats Crumbs (the neutral owner is not a seat, and its step is not a Move) and may stand on them, blocking Re-bake while it does. Candy units provoke it and earn its bounty as usual; a Rushed Gumdrop deals it 8 and takes 4 (plain 5 / 5). |
+| Curiosity              | Interaction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fountain of Youth      | Heals a Candy unit like any unit (not Frosting: it ends no Crash). Crumbs are never left on a Fountain.                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Shrine                 | Promotes an eligible Candy unit that ends a Move on it, a Crashed unit included. Crumbs are never left on a Shrine.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Sunken Wreck           | Salvaged by Candy afloat units as by any.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Giant Spider (Monster) | When it lands ([its spec](RULESET_7_MAP_CURIOSITIES.md#86-what-affects-the-monster)): its attacks are ordinary `ATTACK`s, so Candy deaths leave Crumbs. It is `JUGGERNAUT`-role, so it is **never bounced**. **No status sticks to it, so it is never Splatted** (`splatApplied` false). It never eats Crumbs (the neutral owner is not a seat, and its step is not a Move) and may stand on them, blocking Re-bake while it does. Candy units provoke it and earn its bounty as usual; a Rushed Toffee Trooper deals it 8 and takes 4 (plain 5 / 5). |
 
 ### 12.10 Missions and the campaign
 
@@ -1526,17 +1545,17 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 
 ### 12.11 Cities, siege, capture, and capacity
 
-- **Capture-capable Candy units:** Gumdrop, Donut Racer, Gumball Gunner,
-  Marshmallow, Rock Candy Golem. A Crashed unit cannot capture (Capture is a
+- **Capture-capable Candy units:** Toffee Trooper, Donut Racer, Gumball Gunner,
+  Marshmallow, Gingerbread Giant. A Crashed unit cannot capture (Capture is a
   primary action): a unit that Rushed onto a center captures two turns later
   at the earliest.
 - **Siege.** A Candy unit on a hostile center besieges it like any unit, a
   Crashed one included.
 - **Capacity.** Every Candy role uses one slot; a Re-baked unit needs and
   takes a slot in the Confectioner's home city, so Re-bake never exceeds
-  capacity; Candy cities have no capacity bonus; a reward Golem may exceed
+  capacity; Candy cities have no capacity bonus; a reward Giant may exceed
   capacity.
-- **Training.** Every Candy land unit except the Golem is trained on the city
+- **Training.** Every Candy land unit except the Giant is trained on the city
   center with `TRAIN`, with the ordinary gates.
 - Crumbs never lie on a settlement site. Re-bake spends no city action. A
   city's Candy look changes with its owner (art only).
@@ -1586,9 +1605,9 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 ### 12.15 Promotion, Disband, achievements
 
 - **Promotion** is the ordinary rule for every Candy unit (a Crashed unit
-  may Promote; a promoted Gumdrop has 15 HP); a Re-baked unit starts with 0
+  may Promote; a promoted Toffee Trooper has 15 HP); a Re-baked unit starts with 0
   kills. Peppermint Surprise credits no unit kill.
-- **Disband:** every trainable Candy unit, Crashed or not; never the Golem.
+- **Disband:** every trainable Candy unit, Crashed or not; never the Giant.
 - **Achievements** are unchanged and name no faction rule. Muster counts the
   Candy trainable roles owned on the board (a Re-baked unit counts at once);
   Slayer never counts Peppermint Surprise deaths (no unit credit).
@@ -1597,9 +1616,9 @@ Candy command is offered ([section 17](#17-unchanged-behaviour-of-the-other-fact
 
 | Source                             | Human      | Undead      | Goblin      | Dinosaur     | Martian   | Ice Folk    | Dwarf        | Candy                           |
 | ---------------------------------- | ---------- | ----------- | ----------- | ------------ | --------- | ----------- | ------------ | ------------------------------- |
-| Starting units                     | Fighter    | Skeleton    | one Goblin  | one Caveman  | one Grunt | one Yeti    | one Hammerer | one Gumdrop                     |
-| Level-3 Militia reward (`MILITIA`) | Fighter    | Skeleton    | two Goblins | one Caveman  | one Grunt | one Yeti    | one Hammerer | one Gumdrop                     |
-| Level-5+ reward (`JUGGERNAUT`)     | Juggernaut | Abomination | Troll       | Brontosaurus | Colossus  | Frost Giant | Brass Titan  | Rock Candy Golem                |
+| Starting units                     | Fighter    | Skeleton    | one Goblin  | one Caveman  | one Grunt | one Yeti    | one Hammerer | one Toffee Trooper              |
+| Level-3 Militia reward (`MILITIA`) | Fighter    | Skeleton    | two Goblins | one Caveman  | one Grunt | one Yeti    | one Hammerer | one Toffee Trooper              |
+| Level-5+ reward (`JUGGERNAUT`)     | Juggernaut | Abomination | Troll       | Brontosaurus | Colossus  | Frost Giant | Brass Titan  | Gingerbread Giant               |
 | Treasure chest unit                | Knight     | Vampire     | Scrap Buggy | Raptor       | Saucer    | Sled        | Gyrocopter   | **Donut Racer** (role `RAIDER`) |
 
 Reward and treasure units arrive at full HP, exhausted until their owner's
@@ -1698,7 +1717,7 @@ gains four fields, neutral for every attack with no Candy unit:
 | `bounceTo`         | the attacker's tile after the Bounce for `"WILL_BOUNCE"`, otherwise null                                                                              | null     |
 
 `noRetaliationReason` gains `SPLATTED`; `escapeAvailable` reports a Rushed
-Donut Racer's Escape and `overrunAdvance` a Rushed Gummy Bear's Sugar
+Donut Racer's Escape and `overrunAdvance` a Rushed Chocolate Bunny's Sugar
 Frenzy. `CombatOptionsV7` gains `assumeSugarRush` (estimate the attacker as
 Rushed, for the AI and the Rush preview; the bonus then applies under the
 ordinary first-attack conditions).
@@ -1755,8 +1774,8 @@ previewCrumbsEatV7(view, unitId, to) → null | { at, ownerId, role, damage, shi
 - `queryPlayerCommandsV7` offers, for a Candy seat: `SUGAR_RUSH` for every
   legal unit, `REBAKE` for every legal `(Confectioner, at)`, `SUGAR_TOSS`
   for every legal `(Gunner, target)`, the Rushed `MOVE` destinations once a
-  unit is Rushed, a Rushed Donut Racer's Escape Moves, and a Rushed Gummy
-  Bear's Sugar Frenzy attacks. It never offers a primary action or
+  unit is Rushed, a Rushed Donut Racer's Escape Moves, and a Rushed Chocolate
+  Bunny's Sugar Frenzy attacks. It never offers a primary action or
   `SUGAR_RUSH` for a Crashed unit, `SUGAR_RUSH` for a moved or embarked
   unit, `RALLY`, or `BUILD_FIELD_DEFENSE` to a Candy seat. Every offered
   command is accepted.
@@ -1830,7 +1849,7 @@ As the Candy it must at least:
      units) that the plain Move cannot; or
   3. the seat has Home Sweet Home and the unit attacks from a tile on or
      next to an own center (the Rush is free there).
-     The Gummy Bear Rushes only under rule 1 and only when, after the first
+     The Chocolate Bunny Rushes only under rule 1 and only when, after the first
      kill and its advance, a Sugar Frenzy target is adjacent, or the first kill
      is a `CATAPULT`, `CAPTAIN`, or `KNIGHT`-role unit.
 - **Crashed units step back.** A Crashed unit with a visible hostile melee
@@ -1851,16 +1870,16 @@ As the Candy it must at least:
   see `noRetaliationReason: "SPLATTED"` in their previews.
 - **Sugar Toss.** A Gunner Tosses when it has no offered `ATTACK`, or its
   best `ATTACK` neither kills nor deals at least 3; the target is the
-  offered one with the highest role cost (a Golem counts 12), then the
+  offered one with the highest role cost (a Giant counts 12), then the
   lowest HP, then the lowest unit ID.
 - **Marshmallows to the front:** positioned like a Guard in the wave's front
-  row; the Golem garrisons the most threatened own city.
+  row; the Giant garrisons the most threatened own city.
 - **Avoid fragile Re-bakes:** never Re-bake onto a tile in visible lethal
   reach of the copy's HP unless Home Sweet Home or an own unit would cover
   it (the preview gives the copy's HP).
 - **Produce every role:** the ordinary production value plus a
   first-of-role bias for the Marshmallow, the Gunner, the Confectioner, the
-  Pie Launcher, and the Gummy Bear; Gumdrops first under threat.
+  Pie Launcher, and the Chocolate Bunny; Toffee Troopers first under threat.
 - **Research toward its roles:** the ordinary free opener; then Drill when a
   hostile unit is in sight, else Marksmanship; Administration at two cities;
   Sawmilling against a visible Walled city or at three cities; Home Sweet
@@ -1887,11 +1906,11 @@ Against the Candy it must at least:
 
 Headless matches of the Candy against each faction must finish without
 stalls or policy errors, and unit tests (`tests/unit/ruleset-v7-candy-ai.test.ts`)
-cover: a Gumdrop that Rushes for a kill it could not make plain; one that
+cover: a Toffee Trooper that Rushes for a kill it could not make plain; one that
 does not Rush into lethal reach for a non-key kill; a Crashed unit that
-steps back; a Confectioner that walks to Gummy Bear Crumbs and Re-bakes; a
+steps back; a Confectioner that walks to Chocolate Bunny Crumbs and Re-bakes; a
 Pie that shoots before the melee; a Gunner that Tosses when its shot is
-weak; a Gummy Bear that does not Rush without a continuation or key kill;
+weak; a Chocolate Bunny that does not Rush without a continuation or key kill;
 an opponent that eats Crumbs; an opponent that kills the Confectioner
 first; an opponent that prefers a Crashed target.
 
@@ -1907,8 +1926,8 @@ results (27 to 13 in the Candy mirror against the `jdb.3` policy). Where it
 differs from the list above:
 
 - **Not implemented** (no bead yet): the wave plan still counts
-  Crashed units as attackers, and Marshmallows and the Golem use the generic
-  Guard and Juggernaut placement (no "Marshmallows to the front", no Golem
+  Crashed units as attackers, and Marshmallows and the Giant use the generic
+  Guard and Juggernaut placement (no "Marshmallows to the front", no Giant
   garrison rule).
 - **Narrower:** the Home Sweet Home Rush (rule 3) is never taken by a
   Confectioner or for a chip by a unit below half its HP; a Gunner does not
@@ -1992,7 +2011,7 @@ and numbers.
 | Sugar Rush `?`                   | +1 Move and +1 Attack on its first attack this turn. Next turn it Crashes and can't act  |
 | Rushed (chip)                    | Rushed: +1 Move, +1 Attack on its first attack                                           |
 | Rushed Donut Racer (chip)        | Rushed: may move again after attacking                                                   |
-| Rushed Gummy Bear (chip)         | Sugar Frenzy: attacks again after a kill, twice at most                                  |
+| Rushed Chocolate Bunny (chip)    | Sugar Frenzy: attacks again after a kill, twice at most                                  |
 | Home Sweet Home (chip)           | Home Sweet Home: won't Crash here                                                        |
 | Crashed (chip, its owner's turn) | Crashed: can move, can't act this turn                                                   |
 | Crashed (chip, otherwise)        | Crashed: can't act on its next turn                                                      |
@@ -2041,13 +2060,13 @@ One sentence per rule, shown in Help for every viewer:
   half its price and half its HP.
 - **Splat:** a unit hit by a Pie Launcher can't strike back for the rest of
   the Candy turn.
-- **Bounce:** a melee attacker that hits a Marshmallow or a Rock Candy Golem
+- **Bounce:** a melee attacker that hits a Marshmallow or a Gingerbread Giant
   and survives is bounced one tile back.
 - **Sugar Toss:** the Gumball Gunner heals an own unit within 2 tiles by 2,
   once per unit per turn.
 - **Frosting:** the Confectioner heals adjacent units by 2 and cures Plague,
   bites, and Chill.
-- **Sugar Frenzy:** a Rushed Gummy Bear attacks again after a kill, up to
+- **Sugar Frenzy:** a Rushed Chocolate Bunny attacks again after a kill, up to
   three attacks in a turn.
 - **Donut Racer:** a Rushed Donut Racer may move again after attacking.
 - **Home Sweet Home:** a Rushed unit that ends its turn on or next to your
@@ -2111,8 +2130,8 @@ Shallow Water.
   and scrap) and the Ice Folk (also white: Candy is pink and warm, Ice Folk
   blue and cold).
 - **The 32 px lineup, before any batch:** in colour and in greyscale, side
-  by side at native size: the Gumdrop against the Goblin and the Yeti; the
-  Marshmallow against the Mammoth and the Ice Witch; the Gummy Bear against
+  by side at native size: the Toffee Trooper against the Goblin and the Yeti; the
+  Marshmallow against the Mammoth and the Ice Witch; the Chocolate Bunny against
   the Sabretooth; the Confectioner against the Engineer and the Brain. The
   lineup sheet and its verdict are review evidence of the bead.
 - **Ruleset 6 Candy art** (the frozen Candy Warrior, Gumball Guard, Choco
@@ -2130,14 +2149,14 @@ Shallow Water.
 
 | Piece                                                   | Design intent in one line                                                                                                                                                                                   |
 | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Gumdrop (unit, portrait)                                | A gumdrop soldier with a candy-cane spear and a wafer shield: the plain soldier.                                                                                                                            |
+| Toffee Trooper (unit, portrait)                         | A gumdrop soldier with a candy-cane spear and a wafer shield: the plain soldier.                                                                                                                            |
 | Donut Racer (unit, portrait)                            | A candy-corn kid riding a frosted donut that rolls like a wheel.                                                                                                                                            |
 | Gumball Gunner (unit, portrait)                         | A jellybean with a gumball blaster.                                                                                                                                                                         |
 | Marshmallow (unit, portrait)                            | A big square marshmallow with a graham-cracker shield.                                                                                                                                                      |
 | Confectioner (unit, portrait)                           | A round caramel sweet in an apron and brass goggles, with a whisk: the unit to find and kill. Never a princess or a lab coat.                                                                               |
 | Pie Launcher (unit, portrait)                           | A gingerbread catapult with a cream pie in its cup.                                                                                                                                                         |
-| Gummy Bear (unit, portrait)                             | A big translucent gummy bear brawler.                                                                                                                                                                       |
-| Rock Candy Golem (unit, portrait)                       | A hulking golem of rock-candy crystals bound with caramel; never a gumball machine.                                                                                                                         |
+| Chocolate Bunny (unit, portrait)                        | A big translucent gummy bear brawler.                                                                                                                                                                       |
+| Gingerbread Giant (unit, portrait)                      | A hulking golem of rock-candy crystals bound with caramel; never a gumball machine.                                                                                                                         |
 | Patrol Boat, Battleship, transport, two portraits       | A chocolate-bar boat with a wafer sail; a layered-cake galleon with candy-cane masts; a floating donut ring. The shared hull canvases, anchors, and waterline ([naval factions](../art/NAVAL_FACTIONS.md)). |
 | Cities (village, city, capital, with and without Walls) | Cake and candy houses with frosting roofs and lollipop trees, growing by level; Walls of wafer and hard candy. Faction building looks belong to `pulp_wars-xdh`.                                            |
 | Faction emblem and badge                                | A wrapped sweet, for the faction select, the leaderboard, and the fallback badge.                                                                                                                           |
@@ -2189,7 +2208,7 @@ that rule:** a seafaring faction with the Human naval branch, unchanged.
     only from distance 1); the Gumball Gunner can from distance 1, and the
     Submarine, which torpedoes only afloat units, answers it as an ordinary
     retaliation;
-  - a ship that attacks a Marshmallow or a Golem on the shore from distance
+  - a ship that attacks a Marshmallow or a Giant on the shore from distance
     1 is bounced over water under the Push conditions (a Ram targets only
     afloat units, so it never meets a Bounce); an embarked Marshmallow does
     not Bounce;
@@ -2241,7 +2260,7 @@ Each bead proves its part with deterministic tests (new tests live in
   assertion with eight trees; faction-independent maps with Candy seats;
   the three command kinds and seven event kinds at the stated positions.
 - **Roster:** every value of the [section 3](#3-candy-roster) table as
-  registry values; one starting Gumdrop; Militia one Gumdrop; reward Golem;
+  registry values; one starting Toffee Trooper; Militia one Toffee Trooper; reward Giant;
   treasure Donut Racer with a free slot and the 5-Coin fallback; Disband
   refunds; Re-bake prices and HP; Muster roles; no Field Defense, Rally,
   Overrun; per-viewer technology names and unlock text; every audit row that
@@ -2256,14 +2275,14 @@ Each bead proves its part with deterministic tests (new tests live in
   own center and not two tiles away, `UNIT_CRASHED` for every primary
   action and the allowed commands of a Crashed unit; idle recovery of a
   Rushed unit; entries removed on death; the Donut Racer's Escape (budget 2,
-  not when sluggish) and the Gummy Bear's Sugar Frenzy (continuations at 3,
+  not when sluggish) and the Chocolate Bunny's Sugar Frenzy (continuations at 3,
   none when not Rushed, and **no third continuation**: after three kills in
   a row against a line of soft units the fourth `ATTACK` is not offered and
   is rejected, `overrunContinues` is false on the third attack, and the
   Human Knight's Overrun stays uncapped).
 - **Crumbs:** creation for each cause of [section 6.1](#61-crumbs) and none
   for each exclusion (rising, Disband, elimination, `BRAIN_LOST`, a site, a
-  Rift, a chest, a curiosity, the Golem, a boat, an embarked unit, a
+  Rift, a chest, a curiosity, the Giant, a boat, an embarked unit, a
   controlled Candy unit); replacement; event order with a Grave; the stale
   countdown for Crumbs left on the Candy turn and on an enemy turn; eating
   by `MOVE`, an interrupted Move, an Escape Move, and `DISEMBARK`, and not by
@@ -2388,27 +2407,27 @@ root approval, changing this contract, the code, and the tests together and
 justifying each change in its report. Anything outside the bounds, any
 number of another faction, and any mechanic change needs root approval.
 
-| Parameter                                  | Contract value          | Bounds                     |
-| ------------------------------------------ | ----------------------- | -------------------------- |
-| Gumdrop HP / Defense                       | 10 / 2                  | 9–12 / 1.5–2               |
-| Donut Racer HP / cost                      | 10 / 3                  | 9–12 / 3–4                 |
-| Gumball Gunner HP; Sugar Toss heal         | 8; 2                    | 8–10; 2–3                  |
-| Marshmallow HP / Defense / cost            | 18 / 2.5 / 4            | 16–20 / 2–3 / 3–5          |
-| Confectioner HP / cost                     | 10 / 5                  | 10–12 / 4–6                |
-| Re-bake price; HP                          | ⌈cost / 2⌉; ⌈maxHp / 2⌉ | price + 0–1; HP ⅓–½        |
-| Crumbs lifetime                            | 3 Candy turns           | 2–3                        |
-| Pie Launcher Attack / cost                 | 3 / 8                   | 3–3.5 / 7–9                |
-| Gummy Bear HP / Attack / Defense / cost    | 14 / 3 / 1.5 / 9        | 12–16 / 2.5–3 / 1–2 / 8–10 |
-| Rock Candy Golem HP / Attack / Defense     | 40 / 4 / 3.5            | 36–40 / 3.5–4 / 3–4        |
-| Peppermint Surprise damage                 | 3                       | 2–4                        |
-| Rush: +1 Move, +1 first Attack; HSH radius | fixed                   | fixed                      |
-| Gummy Bear Move; Move values; slots        | 2; section 3; 1         | fixed                      |
-| Sugar Frenzy continuations (root ruling)   | 2                       | 1–2 (never more)           |
+| Parameter                                    | Contract value          | Bounds                     |
+| -------------------------------------------- | ----------------------- | -------------------------- |
+| Toffee Trooper HP / Defense                  | 10 / 2                  | 9–12 / 1.5–2               |
+| Donut Racer HP / cost                        | 10 / 3                  | 9–12 / 3–4                 |
+| Gumball Gunner HP; Sugar Toss heal           | 8; 2                    | 8–10; 2–3                  |
+| Marshmallow HP / Defense / cost              | 18 / 2.5 / 4            | 16–20 / 2–3 / 3–5          |
+| Confectioner HP / cost                       | 10 / 5                  | 10–12 / 4–6                |
+| Re-bake price; HP                            | ⌈cost / 2⌉; ⌈maxHp / 2⌉ | price + 0–1; HP ⅓–½        |
+| Crumbs lifetime                              | 3 Candy turns           | 2–3                        |
+| Pie Launcher Attack / cost                   | 3 / 8                   | 3–3.5 / 7–9                |
+| Chocolate Bunny HP / Attack / Defense / cost | 14 / 3 / 1.5 / 9        | 12–16 / 2.5–3 / 1–2 / 8–10 |
+| Gingerbread Giant HP / Attack / Defense      | 40 / 4 / 3.5            | 36–40 / 3.5–4 / 3–4        |
+| Peppermint Surprise damage                   | 3                       | 2–4                        |
+| Rush: +1 Move, +1 first Attack; HSH radius   | fixed                   | fixed                      |
+| Chocolate Bunny Move; Move values; slots     | 2; section 3; 1         | fixed                      |
+| Sugar Frenzy continuations (root ruling)     | 2                       | 1–2 (never more)           |
 
 **Named levers** (each needs root approval before it is applied): Splat
 stops one strike-back instead of all for the turn; the Crash also lowers
 Defense by 0.5; Home Sweet Home off
-the Golem; a Re-bake may exceed capacity (if Re-bake is rarely used because
+the Giant; a Re-bake may exceed capacity (if Re-bake is rarely used because
 slots are full).
 
 ### 19.4 Balance acceptance
@@ -2429,12 +2448,12 @@ Coarse, on Dry Land:
   seat-games with their technology; a Re-bake in at least half of those with
   a Confectioner; a Splat that prevents a strike-back in at least half of
   those with a Pie; a Bounce in at least half of those in which a
-  Marshmallow was attacked in melee; Gummy Bear and Pie reported (tier 3);
-  the Golem reported (reward only).
-- **No dominant unit:** no role but the Gumdrop makes more than 40% of the
+  Marshmallow was attacked in melee; Chocolate Bunny and Pie reported (tier 3);
+  the Giant reported (reward only).
+- **No dominant unit:** no role but the Toffee Trooper makes more than 40% of the
   seat's kills; no Sugar Frenzy chain exceeds three attacks (a hard check:
-  any longer chain is a defect), and Rushed Bear turns with three kills are
-  rare (under about one per seat-game); the Gummy Bear's kills per loss
+  any longer chain is a defect), and Rushed Bunny turns with three kills are
+  rare (under about one per seat-game); the Chocolate Bunny's kills per loss
   stay under about 2.
 - **The Crash bites, but not too much:** units killed while Crashed are
   between about 10% and 50% of Candy losses (below, the Crash is toothless;
@@ -2488,7 +2507,7 @@ also predates `7r39` to `7r41`: the Martian Grunt has 8 HP since `7r39`
 (was 9), boards have a village density instead of a fixed village count
 since `7r40`, and since `7r41` every seat starts with 3 Coins (5 in hand on
 its first turn) and tier 3 technologies (Sawmilling for the Pie Launcher,
-Chivalry for the Gummy Bear, Peppermint Surprise) have base cost 9 (was
+Chivalry for the Chocolate Bunny, Peppermint Surprise) have base cost 9 (was
 12). The numbers are to be revisited with the user's play feedback.
 
 ## 20. The future unlock (a proposal)
@@ -2518,20 +2537,20 @@ Not implemented now; a separate bead after the epic, and the user decides
 The engine re-run ([section 11.1](#111-method)) changed **no roster
 number** and no verdict. It corrected these statements of the design:
 
-1. **Sustained fights** (design section 3.1, "two plain Gumdrop attacks deal
+1. **Sustained fights** (design section 3.1, "two plain Toffee Trooper attacks deal
    10 to a Fighter, one Rushed attack and a Crash deal 8"): exact only for
-   two attacks on **fresh** Fighters (5 + 5). One Gumdrop's second plain
+   two attacks on **fresh** Fighters (5 + 5). One Toffee Trooper's second plain
    attack on the same Fighter deals 4 and takes 5, which kills it; the
    Rushed attack took 4. The Crash's price is tempo, not damage
    ([section 5.5](#55-rush-worked-examples)).
-2. **"Two Rushed Gumdrops kill a full Fighter (8, then 4 more)"** (design
-   sections 7.2 and 7.10): the second Gumdrop need not Rush; a plain one
+2. **"Two Rushed Toffee Troopers kill a full Fighter (8, then 4 more)"** (design
+   sections 7.2 and 7.10): the second Toffee Trooper need not Rush; a plain one
    also deals the last 4.
 3. **The Donut Racer's Rushed reach** (design section 7.3, "three tiles, or
    four on Roads"): Road steps cost half, so Move 3 reaches up to **six**
    tiles along a Road.
-4. **"Knight, Ray Gunner 9 / 2" on a Gummy Bear** (design section 7.8): a
-   Ray Gunner shoots from range 2, where the Bear cannot answer: 9 / —
+4. **"Knight, Ray Gunner 9 / 2" on a Chocolate Bunny** (design section 7.8): a
+   Ray Gunner shoots from range 2, where the Bunny cannot answer: 9 / —
    (9 / 2 only from range 1).
 5. **The Sugar Frenzy kill list** (design section 7.8) named eight units;
    the engine kills every unit of 10 HP or less with Defense 1 or less at
@@ -2541,18 +2560,18 @@ number** and no verdict. It corrected these statements of the design:
    units), so the root capped Sugar Frenzy at two continuations
    ([section 21.4](#214-root-rulings) ruling 7), and the chain table of
    [section 11.8](#118-gummy-bear) is now the capped one (the first two
-   chains end at three kills with the Bear at 14 HP instead of wounding a
+   chains end at three kills with the Bunny at 14 HP instead of wounding a
    fourth unit).
 6. **Snow:** every Ice Folk number of the design is for a Yeti or a Sled
-   **off** Snow. On Snow (its own territory) a Rushed Gumdrop deals a Yeti 8
+   **off** Snow. On Snow (its own territory) a Rushed Toffee Trooper deals a Yeti 8
    and takes 3 instead of killing it.
 7. **"Knight parity … Move 2"** (design section 4): the Knight has Move 3.
-   The Gummy Bear's Move 2 is kept as a deliberate deviation (Rushed it has
+   The Chocolate Bunny's Move 2 is kept as a deliberate deviation (Rushed it has
    the Knight's 3).
 
-Every other number of the design matched the engine exactly: the Gumdrop,
-Marshmallow, Pie Launcher, and Gummy Bear tables, the Walled Guard
-cracking, the Golem's exchanges, the Confectioner's one-blow deaths, the
+Every other number of the design matched the engine exactly: the Toffee Trooper,
+Marshmallow, Pie Launcher, and Chocolate Bunny tables, the Walled Guard
+cracking, the Giant's exchanges, the Confectioner's one-blow deaths, the
 Gunner's shots, the Donut Racer's charges, and the Spider exchange.
 
 ### 21.2 Precise readings of the design
@@ -2649,7 +2668,7 @@ The root ruled on this contract's questions when accepting it (2026-10-04):
 5. **The Spider stays immune to Splat** (reading 7 confirmed).
 6. **A mind-controlled Candy unit leaves no Crumbs** (reading 6 confirmed).
 7. **Sugar Frenzy is capped now at two continuations**, at most three
-   attacks per Rushed Gummy Bear turn ([section 5.4](#54-rush-perks-escape-and-sugar-frenzy)):
+   attacks per Rushed Chocolate Bunny turn ([section 5.4](#54-rush-perks-escape-and-sugar-frenzy)):
    the user warned that the T-Rex's Rampage chain was predictably too
    strong, and an eight-kill soft line is exactly that. The cap is a rule,
    not a balance lever; the balance bead may lower it to one continuation
@@ -2670,21 +2689,21 @@ None open.
    with Charge only as Attack 3 it is a scout and a finisher, but the
    village race should be read in the telemetry.
 4. **Sugar Frenzy is capped at three attacks** (root ruling 7), so a soft
-   line loses at most three units to one Bear; three Rushed Bears in one
-   turn could still clear nine. The telemetry watches three-kill Bear
+   line loses at most three units to one Bunny; three Rushed Bunnies in one
+   turn could still clear nine. The telemetry watches three-kill Bunny
    turns.
-5. **Pie plus Rushed Gumdrops** kills a Walled Guard or a full Zombie in one
+5. **Pie plus Rushed Toffee Troopers** kills a Walled Guard or a full Zombie in one
    turn without a loss. It is the identity, with real brakes, and the
    one-strike-back lever is ready.
 6. **Re-bake may be rare:** the home city must have a slot and the copy is
-   fragile (a 5-HP Gumdrop dies to one Fighter hit). The lever is a Re-bake
+   fragile (a 5-HP Toffee Trooper dies to one Fighter hit). The lever is a Re-bake
    over capacity; the AI must not throw copies into lethal reach.
 7. **The AI's cost:** a Rushed variant of a unit's plan doubles its movement
    and estimate queries; the gate (a hostile within Move + 1 + range) keeps
    it bounded, and Rush adds at most one command per unit.
 8. **Readability:** three short-lived unit states and a tile marker. Each has
    one distinct visual; Rushed and Splatted exist only during their turn.
-9. **The art carries ownership:** without base plates, a Gumdrop that reads
+9. **The art carries ownership:** without base plates, a Toffee Trooper that reads
    as a Goblin, or a Marshmallow that reads as an Ice Folk unit, at 32 px is
    a rules problem. The lineup is mandatory before batching.
 10. **The numbers were computed against a registry that will move.** Other
@@ -2702,9 +2721,9 @@ registration on the `7r38` registry and is pinned in
 `tests/unit/ruleset-v7-candy-numbers.test.ts`. Every number matches the
 contract except two readings, and **no per-unit verdict flips**:
 
-1. a Gummy Bear's Sugar Frenzy continuation (its base Attack 3) against an
+1. a Chocolate Bunny's Sugar Frenzy continuation (its base Attack 3) against an
    Ice Witch deals 10 and takes 1 (the contract's table says 9 and 2);
-2. a plain Gumdrop against a Yeti on Snow deals 5 and takes 3 (the contract
+2. a plain Toffee Trooper against a Yeti on Snow deals 5 and takes 3 (the contract
    says 4 and 4): the balance round made Snow cover × 1.25 at `7r37`.
    Rushed, it still deals 8 and takes 3.
 
@@ -2732,7 +2751,7 @@ contract except two readings, and **no per-unit verdict flips**:
 - **The Sugar Frenzy cap** reads `attacksUsed` after the attack: a
   continuation is granted while it is at most
   `SUGAR_FRENZY_MAX_CONTINUATIONS_V7` (2).
-- **State parsing** also refuses a Gummy Bear with an Overrun continuation
+- **State parsing** also refuses a Chocolate Bunny with an Overrun continuation
   or a Donut Racer with an Escape that has no `RUSHED` entry.
 - **The Normal AI** leaves `SUGAR_RUSH`, `REBAKE`, and `SUGAR_TOSS` out of
   its candidates until `jdb.4`.
@@ -2881,15 +2900,15 @@ also in the current rules'
    `previewSugarRushV7` only (`pulp_wars-jdb.9`).
 7. **`tossedThisTurn` drops a unit that leaves land form** (it embarks),
    as well as one that leaves the board.
-8. **A Pillage by a Crashed Golem or a Crashed embarked unit** reports
+8. **A Pillage by a Crashed Giant or a Crashed embarked unit** reports
    `PILLAGE_INVALID_TARGET` (the role and form test comes before the Crash
    test there); every other primary action of a Crashed unit reports
    `UNIT_CRASHED`.
 9. **Numbers that moved with later identities.** Since `7r39` the Martian
-   Grunt has 8 HP, so a Rushed Gummy Bear's first attack kills a full,
+   Grunt has 8 HP, so a Rushed Chocolate Bunny's first attack kills a full,
    shielded Grunt (8 through its Shield of 2); the continuation still
    stops on one (7 +2 sh / 2), as [section 11.8](#118-gummy-bear) says. A
-   full-power Ray Gunner that attacks a Gummy Bear from distance 1 takes 0
+   full-power Ray Gunner that attacks a Chocolate Bunny from distance 1 takes 0
    to HP (its Shield absorbs the 2 of that table). The tables of
    [section 11](#11-per-unit-battle-analysis) are otherwise pinned at the
    current registry by `tests/unit/ruleset-v7-candy-numbers.test.ts`.
@@ -2953,7 +2972,7 @@ also in the current rules'
 
 The first draft had the same theme and four mechanics with these
 differences: Sugar Rush gave +1 Attack on **every** attack that turn and
-added to Charge; the Gummy Bear had Sugar Frenzy at that Attack; the
+added to Charge; the Chocolate Bunny had Sugar Frenzy at that Attack; the
 Marshmallow was **Sticky** ("a melee attacker that hits it cannot Move on
 its next turn") instead of Bouncy; Crumbs never went stale and were swept by
 any enemy that stood on them, an advance included; **Re-bake was free** (any
@@ -2974,9 +2993,9 @@ draft's position, the objection, and what the redraft did.
    Marksman, Raider, and Hammerer, and escaped, for 4 Coins: a Raptor with
    Escape. Redraft: the Rush bonus does not add to Charge; the Donut Racer's
    Rush buys reach and Escape only, and it costs 3.
-2. **The Gummy Bear was the T-Rex again.** Draft: +1 on every attack of the
+2. **The Chocolate Bunny was the T-Rex again.** Draft: +1 on every attack of the
    chain. Objection: the computed chain was Marksman, Catapult, Captain,
-   Fighter, all killed, the Bear untouched: Attack 4 one-shots every 12-HP
+   Fighter, all killed, the Bunny untouched: Attack 4 one-shots every 12-HP
    unit, so the chain never stops on a line, exactly the predicted T-Rex
    failure. Redraft: +1 on the first attack only; the continuation at 3
    kills only soft units of 10 HP or less ([section 11.8](#118-gummy-bear)).
@@ -2992,7 +3011,7 @@ draft's position, the objection, and what the redraft did.
    kills. Redraft: three Candy turns; only a Move (or a landing) eats them;
    an advanced enemy blocks Re-bake until it leaves.
 5. **A free Re-bake was Raise Dead with better units.** Objection: free
-   Gummy Bears and Pies at the front made losses free and blurred the Undead
+   Chocolate Bunnies and Pies at the front made losses free and blurred the Undead
    identity. Redraft: half the printed cost, a home-city slot, own Crumbs
    only, and the role that died.
 6. **Home Sweet Home in all territory** made Rush free in a large area (and
@@ -3008,13 +3027,13 @@ draft's position, the objection, and what the redraft did.
    feeds the Crumbs pillar and stays small.
 8. **Too much healing for a "fragile" faction.** Draft: Frosting 2 to all
    adjacent, Sugar Toss 3 to anyone in range with no limit, and Re-bake.
-   Objection: three Gunners healed one Golem by 9 a turn; the Candy read as
+   Objection: three Gunners healed one Giant by 9 a turn; the Candy read as
    sustain, which is the Human identity. Redraft: Toss 2, once per target
    per turn. Frosting stays (it is the Captain's, cures Plague, and gives the
    Confectioner a job before deaths). The balance bead watches HP healed.
 9. **Too many mechanics?** The draft also floated a Gunner Rush perk (two
    shots), a Pie Rush perk (splash), and caramel puddles from Pies. Cut:
-   only the two perks that define their units (Donut Escape, Bear Frenzy)
+   only the two perks that define their units (Donut Escape, Bunny Frenzy)
    stay; puddles are the Ice Folk's deep snow.
 10. **AI exploitability of the Crash.** Objection: a naive AI would Rush
     whenever a Rushed attack is better and then lose its army to
@@ -3030,14 +3049,14 @@ draft's position, the objection, and what the redraft did.
 12. **The colour.** `#ff6fb5` was 21.7 from the Martian magenta with normal
     vision and 16.1 under deuteranopia, below every existing pair. Redraft:
     `#ffb8d8` ([section 15.4](#154-what-the-art-bead-must-draw)).
-13. **The Golem was a gumball-machine guardian.** IP: too close to the
-    show's giant guardians. Redraft: the Rock Candy Golem.
-14. **Every unit Rushes, the Golem too.** Objection: a Golem that Rushes
+13. **The Giant was a gumball-machine guardian.** IP: too close to the
+    show's giant guardians. Redraft: the Gingerbread Giant.
+14. **Every unit Rushes, the Giant too.** Objection: a Giant that Rushes
     attacks at 5 and, with Home Sweet Home next to its city, does so every
     turn. Kept: "every Candy land unit can Rush" is one rule with no
-    exceptions to remember, a Golem's Rush off its city leaves the city
+    exceptions to remember, a Giant's Rush off its city leaves the city
     without its attack next turn, and at home it is the reward unit doing
-    its job. The lever "Home Sweet Home off the Golem" is named for the
+    its job. The lever "Home Sweet Home off the Giant" is named for the
     balance bead.
 
 The brief's other ideas were weighed against what the seven factions
@@ -3054,14 +3073,14 @@ attacks made the first Triceratops awkward; kept as the Donut Racer's look).
 
 A shorter pass over the redraft.
 
-1. **Splat still cracks Walls cheaply.** A Pie and two Rushed Gumdrops kill a
+1. **Splat still cracks Walls cheaply.** A Pie and two Rushed Toffee Troopers kill a
    Walled, Field-Defense Guard in one turn without a loss
    ([section 11.7](#117-pie-launcher)). Kept, because it is the faction's
    siege identity and has real brakes (the Crash blocks the capture, the
-   advanced Gumdrop blocks the center for two turns, the Pie is fragile and
+   advanced Toffee Trooper blocks the center for two turns, the Pie is fragile and
    expensive). The balance bead has a named lever: Splat stops one
    strike-back. Root ruling 2 kept the full version.
-2. **The Crash is nearly free for units that sit.** A Marshmallow, Golem, or
+2. **The Crash is nearly free for units that sit.** A Marshmallow, Giant, or
    Pie that does not need its next action loses little. Accepted: Rush then
    is a repositioning tool (Move + 1) for defenders, which is a fair use, and
    their next action is usually wanted (the Pie shoots every turn). The

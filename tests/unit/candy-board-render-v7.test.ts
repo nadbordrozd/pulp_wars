@@ -191,7 +191,7 @@ describe("Candy markers in the board plan (section 15.1)", () => {
     expect(markersAt(AT.gumdrop)).toBeUndefined();
   });
 
-  it("shows a Rushed Gummy Bear's Sugar Frenzy cap as pips", () => {
+  it("shows a Rushed Chocolate Bunny's Sugar Frenzy cap as pips", () => {
     expect(markersAt(AT.rushedBear)?.frenzy).toEqual({
       left: SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
       of: SUGAR_FRENZY_MAX_CONTINUATIONS_V7,
@@ -834,7 +834,9 @@ describe("Candy cues (CANDY.md effects)", () => {
   });
 
   it("names a Candy unit by its own label on the Crumbs", () => {
-    expect(effectiveRoleRuleV7("KNIGHT", "CANDY").label).toBe("Gummy Bear");
+    expect(effectiveRoleRuleV7("KNIGHT", "CANDY").label).toBe(
+      "Chocolate Bunny",
+    );
   });
 });
 

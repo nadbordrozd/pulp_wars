@@ -71,7 +71,7 @@ function must<T>(value: T | undefined, what = "value"): T {
 // range, Sight, attack after Move, abilities
 const ROSTER = [
   [
-    "Gumdrop",
+    "Toffee Trooper",
     "FIGHTER",
     null,
     2,
@@ -161,7 +161,7 @@ const ROSTER = [
     ["ATTACK", "SUGAR_RUSH", "SPLAT"],
   ],
   [
-    "Gummy Bear",
+    "Chocolate Bunny",
     "KNIGHT",
     "CHIVALRY",
     9,
@@ -176,7 +176,7 @@ const ROSTER = [
     ["ATTACK", "SUGAR_RUSH"],
   ],
   [
-    "Rock Candy Golem",
+    "Gingerbread Giant",
     "JUGGERNAUT",
     null,
     null,
@@ -515,7 +515,7 @@ describe("Candy roster (section 3)", () => {
     }
   });
 
-  it("never offers Field Defense or Rally to a Candy seat, and a Gummy Bear that is not Rushed has no Overrun", () => {
+  it("never offers Field Defense or Rally to a Candy seat, and a Chocolate Bunny that is not Rushed has no Overrun", () => {
     const state = candyFieldV7([
       { seat: 0, role: "FIGHTER", at: at(8, 7) },
       { seat: 0, role: "GUARD", at: at(7, 7) },
@@ -718,7 +718,7 @@ describe("Candy technology (section 4)", () => {
     expect(role("DRILL")).toEqual(["Marshmallow"]);
     expect(role("ADMINISTRATION")).toEqual(["Confectioner"]);
     expect(role("SAWMILLING")).toEqual(["Pie Launcher"]);
-    expect(role("CHIVALRY")).toEqual(["Gummy Bear"]);
+    expect(role("CHIVALRY")).toEqual(["Chocolate Bunny"]);
     const state = candyFieldV7([
       { seat: 0, role: "FIGHTER", at: at(4, 3) },
       { seat: 1, role: "FIGHTER", at: at(1, 1) },

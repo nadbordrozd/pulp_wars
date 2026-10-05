@@ -1,0 +1,22 @@
+#!/bin/sh
+# Text play harness (docs/validation/TEXT_PLAY.md): the same commands as
+# `npm run play:text --`, for shells where `npm` or `node` is not on PATH
+# (an agent's sandbox). It finds Node on PATH or in the pinned tools
+# directory, and runs from any working directory.
+#
+#   scripts/play-text view --session /path/to/game.json
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if ! command -v node >/dev/null 2>&1; then
+  for dir in "$HOME"/.local/pulp-wars-tools/node-v*/bin; do
+    if [ -x "$dir/node" ]; then
+      PATH="$dir:$PATH"
+      export PATH
+    fi
+  done
+fi
+if ! command -v node >/dev/null 2>&1; then
+  echo "ERROR: node was not found on PATH or under ~/.local/pulp-wars-tools/node-v*/bin" >&2
+  exit 127
+fi
+exec node "$ROOT/node_modules/tsx/dist/cli.mjs" "$ROOT/scripts/play-text-v7.ts" "$@"

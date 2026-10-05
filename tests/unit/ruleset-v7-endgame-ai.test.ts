@@ -94,7 +94,9 @@ describe("ruleset-7 Normal AI endgame siege (pulp_wars-1mc)", () => {
   });
 
   it("commits a combined attack that clears the last center for a capturer", () => {
-    // A Guard on Field Defense (Defense 4) kills any lone attacking Fighter.
+    // A Guard on Field Defense: a lone Fighter's attack is a losing trade.
+    // (Before tuning 1, 7r46, the fortified retaliation killed the Fighter;
+    // the retaliation now uses the Guard's base Defense.)
     const pieces: Piece[] = [
       { seat: 1, role: "GUARD", at: TARGET },
       { seat: 0, role: "FIGHTER", at: { x: 1, y: 1 } },
@@ -120,7 +122,10 @@ describe("ruleset-7 Normal AI endgame siege (pulp_wars-1mc)", () => {
       unitAt(fortify(arena(pieces, ENDGAME_VILLAGES)), { x: 1, y: 1 }).id,
       guard(fortify(arena(pieces, ENDGAME_VILLAGES))).id,
     );
-    expect(lone).toMatchObject({ attackerDies: true, defenderDies: false });
+    expect(lone).toMatchObject({ attackerDies: false, defenderDies: false });
+    expect(lone?.damageToAttacker ?? 0).toBeGreaterThan(
+      lone?.damageToDefender ?? 0,
+    );
 
     // pulp_wars-9s0.1: outside the endgame the same combined attack is
     // committed on any city the campaign's group has gone in on (until then

@@ -850,8 +850,12 @@ describe("ruleset-7 revision-13 Infect and Lifesteal: events, fog, and persisten
     // Seed 3 shows Infect and Lifesteal within 20 rounds under the
     // revision-18 movement rules (seed 2 did with the revision-16 economy
     // numbers; its first Zombie kill now comes later).
-    const setup = setupWith(["UNDEAD", "UNDEAD"], 3);
-    const match = runAiMatchV7(setup, { maxRounds: 20 });
+    // Tuning 1 (`pulp_wars-w49.3`, 7r46): a chest gives no Vampire before
+    // round 15, so Lifesteal now waits for a trained Vampire: none of seeds
+    // 0-10 shows it within 20 rounds, and seeds 6 and 7 do within 40 (seed
+    // 6: two Vampires, the match over in round 34).
+    const setup = setupWith(["UNDEAD", "UNDEAD"], 6);
+    const match = runAiMatchV7(setup, { maxRounds: 40 });
     expect(match.errors).toEqual([]);
     expect(match.metrics.eventsByKind.UNIT_INFECTED).toBeGreaterThan(0);
     const previews = match.events.flatMap((event) =>
@@ -929,9 +933,11 @@ const SEAT1_CAPITAL = { x: 2, y: 8 } as const;
 const SEAT1_TERRITORY = { x: 3, y: 7 } as const;
 
 describe("ruleset-7 public combat preview against fortified defenders", () => {
-  // Sections 13.2-13.3: retaliation uses the same fortified Defense as the
-  // defender's own force; the public preview must equal resolution exactly,
-  // including the Infect and Lifesteal fields derived from retaliation.
+  // Sections 13.2-13.3 (tuning 1, 7r46): the damage taken uses the fortified
+  // Defense and the retaliation the base Defense; the public preview must
+  // equal resolution exactly, including the Infect and Lifesteal fields
+  // derived from retaliation. The attacker has no Explosives (a Breach
+  // would ignore the levels).
   for (const scenario of [
     {
       name: "a Human Guard in its walled capital on Field Defense",
@@ -975,10 +981,23 @@ describe("ruleset-7 public combat preview against fortified defenders", () => {
     },
   ] as const) {
     it(`matches resolution for ${scenario.name}`, () => {
-      const open = arena(scenario.factions, [
+      const withExplosives = arena(scenario.factions, [
         { seat: 0, role: "FIGHTER", at: scenario.attackerAt },
         { seat: 1, role: scenario.role, at: scenario.defenderAt, hp: 9 },
       ]);
+      const open = checkedV7({
+        ...withExplosives,
+        players: withExplosives.players.map((player) =>
+          player.seat === 0
+            ? {
+                ...player,
+                researchedTechs: player.researchedTechs.filter(
+                  (tech) => tech !== "EXPLOSIVES",
+                ),
+              }
+            : player,
+        ),
+      });
       const fortified = fortify(open, scenario);
       const attacker = unitAt(fortified, scenario.attackerAt);
       const defender = unitAt(fortified, scenario.defenderAt);
@@ -993,13 +1012,15 @@ describe("ruleset-7 public combat preview against fortified defenders", () => {
           retaliation: true,
         });
         expectPublicPreviewMatches(state, attacker.id, defender.id, resolved);
-        // Fortification changes retaliation for at least one attacker HP.
+        // Fortification never changes the retaliation, and it changes the
+        // damage taken for at least one attacker HP.
         const unfortified = calculateCombatPreviewV7(
           withUnit(open, attacker.id, { hp }),
           attacker.id,
           defender.id,
         );
-        if (unfortified.damageToAttacker !== resolved.damageToAttacker)
+        expect(resolved.damageToAttacker).toBe(unfortified.damageToAttacker);
+        if (unfortified.damageToDefender !== resolved.damageToDefender)
           discriminating += 1;
         if (scenario.role === "GUARD" && scenario.factions[1] === "UNDEAD")
           expect(resolved.attackerInfected).toBe(resolved.attackerDies);

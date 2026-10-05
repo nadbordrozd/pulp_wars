@@ -69,6 +69,18 @@ export const ABANDON_EGG_LABEL_V7 = "Abandon Egg";
 export const CHARGE_LABEL_V7 = "Charge!";
 export const CHARGE_IGNORES_FORTIFICATION_V7 = "Ignores fortification";
 export const WALLBREAKER_PREVIEW_V7 = "Wallbreaker: ignores City Walls";
+/**
+ * Tuning 1 (`pulp_wars-w49.3`, 7r46): the preview note of a Breach, a melee
+ * attack of an owner with Explosives (under its name in every tree) that
+ * ignores the target's Walls and Field Defense.
+ */
+export const BREACH_PREVIEW_V7 = "Breach: ignores fortification";
+/** The Breach line of an attack preview, for every faction. */
+export function breachCombatNotesV7(
+  preview: Pick<CombatPreviewV7, "breachApplied">,
+): readonly string[] {
+  return preview.breachApplied ? [BREACH_PREVIEW_V7] : [];
+}
 export const CHARGE_DESTROYS_FIELD_DEFENSE_V7 = "Destroys Field Defense";
 export const ACID_PREVIEW_V7 = "Acid: ignores cover and fortification";
 export const DINOSAUR_FIELD_DEFENSE_EXPLANATION_V7 =
@@ -701,7 +713,12 @@ export function chargePreviewLinesV7(
   if (preview.runUp > 0) lines.push(`Charge +${preview.runUp}`);
   // A heat ray's ignored fortification is the Martian Disintegrator, which
   // the Martian preview lines name (bead pulp_wars-t6s.4).
-  if (preview.fortificationIgnored > 0 && preview.rayPower === "NONE")
+  // Tuning 1 (7r46): a Breach has its own note (`breachCombatNotesV7`).
+  if (
+    preview.fortificationIgnored > 0 &&
+    preview.rayPower === "NONE" &&
+    (charge || !preview.breachApplied)
+  )
     lines.push(
       charge ? CHARGE_IGNORES_FORTIFICATION_V7 : WALLBREAKER_PREVIEW_V7,
     );

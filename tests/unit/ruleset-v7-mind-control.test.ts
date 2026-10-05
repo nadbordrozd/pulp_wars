@@ -408,7 +408,8 @@ describe("Mind Control revision: the result (section 3)", () => {
     // A veteran Knight (promoted: +5 maximum HP), plagued by a Lich and
     // bitten by a Zombie of the Undead seat.
     const state = checkedV7({
-      ...patchUnitV7(base, at(6, 3), { veteran: true, maxHp: 15 }),
+      // Tuning 1 (7r46): the Knight has 13 HP, so a promoted one has 18.
+      ...patchUnitV7(base, at(6, 3), { veteran: true, maxHp: 18 }),
       plagued: [{ unitId: knight.id, sourceUnitId: lich, turnsRemaining: 2 }],
       bitten: [
         {
@@ -433,7 +434,7 @@ describe("Mind Control revision: the result (section 3)", () => {
       role: "KNIGHT",
       faction: "ORIGINAL",
       hp: 5,
-      maxHp: 15,
+      maxHp: 18,
       controlledAfter: 1,
       controlLimit: 1,
       cooldownTurns: 2,
@@ -1425,12 +1426,13 @@ describe("Mind Control revision: saves and replays (section 5.4)", () => {
     // `pulp_wars-1wy.3`, seed 9 until the Grunt's 8 HP, `pulp_wars-1wy.6`,
     // seed 13 until the village density, `pulp_wars-ykw.2`, seed 9 until the 3
     // starting Coins, `pulp_wars-if6`, seed 10 until the many-seats boards,
-    // `pulp_wars-ykw.3`; seed 11 now): the Normal AI
+    // `pulp_wars-ykw.3`, seed 11 until tuning 1, `pulp_wars-w49.3`, after
+    // which only seeds 24 and 32 of 0-40 do; seed 32 now): the Normal AI
     // takes its first Mind Control within the 1,500 steps below. The
     // replay of the command log reaches the same state,
     // with the controlled unit, and a save of it loads back (the loader
     // replays the log, so a save needs a real match).
-    const setup = goblinSetupV7(["MARTIAN", "ICE_FOLK"], 11);
+    const setup = goblinSetupV7(["MARTIAN", "ICE_FOLK"], 32);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;

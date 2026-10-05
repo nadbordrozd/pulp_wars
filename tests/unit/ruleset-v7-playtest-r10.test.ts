@@ -45,8 +45,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("Ruleset 7 revision 10 playtest corrections", () => {
   it("uses the exact current identity while retaining numeric schema 7", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r45");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r45.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r46");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r46.current");
     expect(initialV7().schemaVersion).toBe(7);
   });
 
@@ -793,7 +793,9 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
     },
   );
 
-  it("consumes the full turn when an unmoved Fighter Fortifies", () => {
+  // Tuning 1 (`pulp_wars-w49.3`, 7r46): building a Field Defense no longer
+  // uses the unit's turn; revision 10 made it consume the full turn.
+  it("keeps the unit's Move after an unmoved Fighter Fortifies", () => {
     const state = controlledMoverState(10_017);
     const unit = ownUnit(state);
     const fortified = applyCommandV7(state, state.humanPlayerId, {
@@ -809,22 +811,31 @@ describe("Ruleset 7 revision 10 playtest corrections", () => {
         (command) =>
           "unitId" in command &&
           command.unitId === unit.id &&
-          (command.kind === "MOVE" || command.kind === "ATTACK"),
+          command.kind === "MOVE",
       ),
-    ).toBe(false);
-    const destination = required(
-      canonicalNeighbors(fortified.state, unit.at)[0],
-      "move destination missing",
+    ).toBe(true);
+    // The tile holds one Field Defense: the unit cannot build again.
+    expect(commands).not.toContainEqual({
+      kind: "BUILD_FIELD_DEFENSE",
+      unitId: unit.id,
+    });
+    const move = required(
+      commands.find(
+        (command) => command.kind === "MOVE" && command.unitId === unit.id,
+      ),
+      "move command missing",
     );
+    const moved = applyCommandV7(fortified.state, state.humanPlayerId, move);
+    expect(moved.accepted).toBe(true);
+    if (!moved.accepted) return;
+    // After the Move it cannot build on its new tile.
     expect(
-      applyCommandV7(fortified.state, state.humanPlayerId, {
-        kind: "MOVE",
+      applyCommandV7(moved.state, state.humanPlayerId, {
+        kind: "BUILD_FIELD_DEFENSE",
         unitId: unit.id,
-        path: [destination],
       }),
     ).toMatchObject({
       accepted: false,
-      error: { code: "UNIT_ALREADY_ACTED" },
       events: [],
     });
   });
@@ -996,7 +1007,7 @@ function occupiedRewardState(
       : [
           { reachedLevel: 2, reward: "SURVEY" as const },
           { reachedLevel: 3, reward: "WALLS" as const },
-          { reachedLevel: 4, reward: "TREASURY_8" as const },
+          { reachedLevel: 4, reward: "TREASURY_6" as const },
         ];
   const candidates =
     reward === "MILITIA"

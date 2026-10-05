@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r45" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r46" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -56,8 +56,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r42",
   "pulp-wars-poc-7r43",
   "pulp-wars-poc-7r44",
+  "pulp-wars-poc-7r45",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r45.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r46.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -269,7 +270,7 @@ export const REWARD_IDS_V7 = Object.freeze([
   "WALLS",
   "MILITIA",
   "BOOM",
-  "TREASURY_8",
+  "TREASURY_6",
   "JUGGERNAUT",
   "TREASURY",
 ] as const);
@@ -684,6 +685,12 @@ export type PopulationContributionSourceV7 =
   | {
       readonly kind: "RESOURCE_ACTION";
       readonly action: "HARVEST_FISH";
+      readonly at: CoordV7;
+    }
+  | {
+      /** Tuning 1 (7r46): the permanent population of a Blast Mountain. */
+      readonly kind: "RESOURCE_ACTION";
+      readonly action: "BLAST_MOUNTAIN";
       readonly at: CoordV7;
     }
   | {

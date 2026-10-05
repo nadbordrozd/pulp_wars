@@ -203,7 +203,7 @@ export function candyStatsV7(
 
 /**
  * Section 5.4, the cap as pips: how many Sugar Frenzy continuations a
- * Rushed Gummy Bear still has (of `SUGAR_FRENZY_MAX_CONTINUATIONS_V7`), from
+ * Rushed Chocolate Bunny still has (of `SUGAR_FRENZY_MAX_CONTINUATIONS_V7`), from
  * its public activation; null for every other unit.
  */
 export function sugarFrenzyPipsV7(
@@ -444,7 +444,7 @@ export function sugarTossUnavailableTextV7(
 const FIELD_DEFENSE_BLOCK_CACHE = new WeakMap<PlayerViewV7, Set<number>>();
 
 /**
- * Section 15.2 "Field Defense unavailable": an own Gumdrop or Marshmallow
+ * Section 15.2 "Field Defense unavailable": an own Toffee Trooper or Marshmallow
  * where a Human Fighter or Guard would be offered Build Field Defense. A
  * Candy viewer's Fortification is Home Sweet Home, so this explains the gap.
  */
@@ -617,7 +617,7 @@ export function candyCommandNameV7(
 
 /**
  * The technology unlock text of a Candy role (section 4): "Confectioner
- * (Frosting, Re-bake)", "Gummy Bear (Sugar Frenzy while Rushed)", from the
+ * (Frosting, Re-bake)", "Chocolate Bunny (Sugar Frenzy while Rushed)", from the
  * role's registered abilities and mechanics.
  */
 export function candyRoleUnlockTextV7(role: UnitRoleIdV7): string {

@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r45`. Role facts resolve through the unit's
+previews under `pulp-wars-poc-7r46`. Role facts resolve through the unit's
 kind (`unitFactionV7`: its owner's faction registration, or its original
 owner's while it is mind-controlled,
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14
@@ -2302,7 +2302,7 @@ As the Candy (an own unit of Candy kind):
      Move) kills a target that no plain plan of the unit kills, and the unit
      does not end in visible lethal reach (the danger estimate without the
      dead target) unless the target is a `CATAPULT`, `CAPTAIN`, or `KNIGHT`
-     role. A Gummy Bear also needs a Sugar Frenzy target next to its new
+     role. A Chocolate Bunny also needs a Sugar Frenzy target next to its new
      tile, or a key kill. A target another Rushed own unit is about to kill
      is left to it. The plan's Move then has the kill tier (1180 or 1280),
      and the kill follows by the ordinary score;
@@ -2333,7 +2333,7 @@ As the Candy (an own unit of Candy kind):
   on a unit that threatens an own city, at 650 when it has no offered
   attack.
 - **Production** (`production`): the first Marshmallow, Gunner, Confectioner,
-  Pie Launcher, and Gummy Bear gain 10; in a threatened city the Gumdrop
+  Pie Launcher, and Chocolate Bunny gain 10; in a threatened city the Toffee Trooper
   gains 12 and the Confectioner and the Pie Launcher cost 30; a Confectioner
   beyond one per six front units and a Pie Launcher beyond one per four cost 20.
 - **Research** (`research`; the free opener keeps the existing scorer):
@@ -2362,7 +2362,7 @@ Golem use the generic Guard and Juggernaut placement. The projection of a
 moved unit (`projectPublicUnits`) now drops the `SUGAR_RUSH` Attack
 modifier with the bonus it recomputes without, so the exact preview adds it
 back under the first-attack rule (the Knight sequence planner of a Rushed
-Gummy Bear reads it).
+Chocolate Bunny reads it).
 
 ### Candy measurements
 
