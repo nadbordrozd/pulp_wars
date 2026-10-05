@@ -244,6 +244,21 @@ export const KIND_READER_CLASSES_V7: Readonly<
   "src/render/dom/gallery-v7.ts::GalleryViewV7.#unitCues": "SEAT",
   "src/render/dom/gallery-v7.ts::GalleryViewV7.#demoSection": "SEAT",
   "src/render/dom/gallery-v7.ts::GalleryViewV7.#startDemo": "SEAT",
+  // Bead pulp_wars-2yc.3 (classified by pulp_wars-2yp): the Terrain tab
+  // reads a column's faction like the rest of the Gallery: whose ground a
+  // cell shows, the cell's colour and name, and the seat the sample board
+  // is built for. The sample is a fresh authored state with one own
+  // Fighter; no unit on it is mind-controlled, so there is no kind to
+  // resolve.
+  "src/render/dom/gallery-v7.ts::GalleryViewV7.#terrainCell": "SEAT",
+  "src/render/dom/gallery-v7.ts::GalleryViewV7.#terrainDetail": "SEAT",
+  "src/render/dom/gallery-v7.ts::GalleryViewV7.#startSample": "SEAT",
+  // Bead pulp_wars-2yc.4 (classified by pulp_wars-2yp): the title scene
+  // draws authored figures, each the registry faction its layout names
+  // (title-scene-v7.ts builds the art subject from that faction; `#draw`
+  // reads it for the owner colour of a masked raster). There is no match
+  // and no live unit behind the scene, hence no controller and no kind.
+  "src/render/dom/title-scene-view-v7.ts::TitleSceneViewV7.#draw": "SEAT",
   "src/render/dom/app-view-v7.ts::commandLabel": "SEAT",
   "src/render/dom/app-view-v7.ts::playerTitle": "SEAT",
   "src/render/dom/app-view-v7.ts::factionBadgeArt": "SEAT",

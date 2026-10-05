@@ -33,6 +33,15 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // state on which nothing is burrowed before its cue plays.
     "src/render/gallery-demo-v7.ts::buildGalleryDemoSceneV7": "BOARD",
     "src/render/gallery-demo-v7.ts::wounded": "BOARD",
+    // Bead pulp_wars-2yc.10 (classified by pulp_wars-2yp): the boundary
+    // sounds read the views' units only to ask whether a promoted unit is
+    // the viewer's (`UNIT_PROMOTED`, the level-up sound). A unit is promoted
+    // by the Promote command or by claiming a Shrine, both of which take a
+    // unit standing on the board before and after; a burrowed unit takes no
+    // command and steps on no tile, so it is never the subject. Deaths,
+    // training and Tunnels are heard from events and presentation steps,
+    // not from this list.
+    "src/audio/sound-events-v7.ts::soundCuesForBoundaryV7": "BOARD",
     // `pulp_wars-737.4`: the curiosity policy reads the board: the visible
     // Monsters, the units that walk to a Fountain, a Shrine, or a Wreck, and
     // the units that defend a center (a burrowed unit takes no errand and
