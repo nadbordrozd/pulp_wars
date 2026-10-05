@@ -52,9 +52,12 @@ alpha may overflow the left, right, or bottom edge. These constraints are
 checked at source scale and at `0.625x`, `1x`, and `1.75x`, DPR1 and DPR2.
 
 All square terrain and improvements share one three-quarter lighting rule: a
-soft key light from the upper-left/northwest, shadow and darker planes toward
-the lower-right/southeast, with the flat cel-shaded treatment required by the
-general art direction. Lighting never implies gameplay state.
+soft key light from the left, shadow and darker planes toward the right,
+with the flat cel-shaded treatment required by the general art direction.
+Lighting never implies gameplay state. This contract first said "from the
+upper-left/northwest"; the user set the sun in the south-west, at the bottom
+left, on 2026-10-05: see
+[ART_DIRECTION.md, Light](ART_DIRECTION.md#light).
 
 ## Transition boundary
 

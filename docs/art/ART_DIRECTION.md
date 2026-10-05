@@ -26,10 +26,46 @@ The game should use a **chunky 2D illustrated strategy-game style**, not faux-3D
 
 The current map presentation follows the
 [square-grid experiment contract](SQUARE_GRID_EXPERIMENT.md): axis-aligned
-128 x 128 CSS-pixel cells, full-footprint ground, upper-left lighting, and
-upward-only overflow for genuinely tall map forms. The diamond measurements
-later in this file remain historical acceptance provenance for unchanged unit
-rasters; they do not override the active square footprint.
+128 x 128 CSS-pixel cells, full-footprint ground, light from the bottom
+left, and upward-only overflow for genuinely tall map forms. The diamond
+measurements later in this file remain historical acceptance provenance for
+unchanged unit rasters; they do not override the active square footprint.
+
+### Light
+
+**The sun is in the south-west, at the bottom left of the screen** (user,
+2026-10-05, stated twice: "the sun is in the south west - bottom left").
+Faces turned to the left or toward the viewer are lit; faces turned to the
+right are in shadow; snow and highlights are brightest on their left side;
+a cast shadow falls up and to the right, behind the thing, and is short.
+This replaces the "upper-left" wording this section and the square-grid
+contract carried before; both put the light on the left.
+
+- New art states the rule in its prompt (the fragment
+  `scripts/art/chibi/fragments/light-south-west.txt`) and is never mirrored:
+  a mirrored sprite is lit from the other side.
+- `scripts/art/lighting-qa.ts` measures a sprite (left half minus right half
+  of every run of paint between outlines, in luma points; +1.5 or more is
+  lit from the left, -1.5 or less from the right). It reads one-material
+  forms well (mountains, rocks). On a unit, a building or a city it mostly
+  reads local colour, so there it lists sprites to look at and is not a
+  verdict.
+
+**Conforming** (measured, bead `pulp_wars-2yc.1`): the mountains (every
+piece of the massif set, checked in the bake), and the faction forest
+clumps (bead `pulp_wars-2yc.2`, none lit from the right).
+
+**Known deviations, not fixed yet.** The measure flags these sprites of
+`public/assets/chibi/` as lit from the right; each needs a look before it is
+called wrong:
+
+| Class         | Sprites | Flagged | Note                                                                                                                                            |
+| ------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `settlements` | 38      | 11      | Mostly lit from the left (mean +8.2). By eye the Dwarf city 2 is lit from the right.                                                            |
+| `buildings`   | 34      | 18      | Mixed, and the measure is confounded by roof and wall colours. The Forge and the Market read as lit from the left by eye.                       |
+| `resources`   | 14      | 7       | Small sprites; mixed.                                                                                                                           |
+| `forest`      | 24      | 7       | The default Forest set stamps its clumps mirrored as well as plain; each tree's highlight is at its top left, so no side is strong (mean +0.8). |
+| `units`       | 143     | 84      | Not a verdict: units face right, and their pale faces and shields sit on their right half.                                                      |
 
 The visual target is somewhere between **board-game pieces, stickers, and simple cartoon sprites**. It should feel playful, readable, slightly ridiculous, and capable of supporting wildly different pulp factions such as pirates, robots, undead, cowboys, ninjas, dinosaurs, aliens, etc.
 

@@ -175,11 +175,19 @@ tall under other Mountains (beads `pulp_wars-e9f` and `pulp_wars-2o7.1`).
 The art is generated: `scripts/art/chibi-mountain-ranges.ts` has its own
 recipes and records (`scripts/art/chibi/mountain-ranges/`), because the
 batch pipeline generates at a class canvas and has no style-image endpoint.
-It derives 28 pieces and the mined mountain under
-`public/assets/chibi/mountains/`, and `art:validate` re-derives them. See
+It derives 27 pieces and the mined mountain under
+`public/assets/chibi/mountains/`, and `art:validate` re-derives them. Since
+bead `pulp_wars-2yc.1` the bake restyles every piece (slate outline, warmer
+rock, cream snow, the foot cut away), mirrors nothing and fails a piece lit
+from the right, and a massif cell draws its own ground (Grass, a faction's
+grass, Snow) and no rocky ground. See
 [COMPOSED_TERRAIN.md](COMPOSED_TERRAIN.md).
 
 ### Runtime ground fringe
+
+Since bead `pulp_wars-2yc.1` this is the fallback only: a Mountain cell
+draws the rocky ground and its fringe while the massif set loads or when it
+fails to load.
 
 The rocky Mountain ground is a square tile. Bead `pulp_wars-6gd.7` softens
 its edge in the renderer, not in the pipeline, so no edge or corner tile

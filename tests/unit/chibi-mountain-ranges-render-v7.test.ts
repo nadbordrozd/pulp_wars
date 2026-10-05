@@ -3,6 +3,7 @@ import type {
   ArtSubjectV7,
   ChibiArtAssetV7,
 } from "../../src/assets/chibi-art-v7";
+import record from "../../src/assets/chibi-mountain-ranges.json";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../src/assets/chibi-mountain-ranges-manifest";
 import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
 import {
@@ -17,14 +18,10 @@ import type {
 import type { ChibiForestRasterEnvironmentV7 } from "../../src/render/canvas/chibi-forest-v7";
 import { chibiCameraZoom } from "../../src/render/canvas/chibi-geometry-v7";
 import {
-  MASSIF_GROUND_V7,
   MASSIF_LOW_UP_V7,
   MASSIF_TALL_UP_V7,
-  MASSIF_TAPER_EAST_V7,
-  MASSIF_TAPER_WEST_V7,
   chibiMassifCellsV7,
   createChibiMassifArtV7,
-  massifGroundPixelsV7,
   packMassifV7,
   type ChibiMassifArtSetV7,
   type MassifPlacementV7,
@@ -120,7 +117,8 @@ describe("massif set", () => {
       );
     }
     expect(ids.size).toBe(CHIBI_MOUNTAIN_ART_SET_V7.pieces.length);
-    expect(counts).toEqual({ low1: 8, low2: 8, tall1: 6, tall2: 6 });
+    // Nothing is mirrored since pulp_wars-2yc.1; one low ridge fewer.
+    expect(counts).toEqual({ low1: 8, low2: 7, tall1: 6, tall2: 6 });
     expect(CHIBI_MOUNTAIN_ART_SET_V7.mined.map((piece) => piece.url)).toEqual([
       expect.stringContaining("chibi-mountain-range-mine-a.png"),
     ]);
@@ -288,82 +286,34 @@ describe("massif cells of a plan", () => {
             ).toBeNull();
     expect(result.get("2,0")?.band).toMatchObject({ column: 0 });
   });
-
-  it("marks the north side of an area and where its cut runs out", () => {
-    const result = cells(board(["gMg", "MMM"]));
-    expect(result.get("1,0")).toMatchObject({ northOpen: true, northTaper: 0 });
-    expect(result.get("1,1")).toMatchObject({ northOpen: false });
-    expect(result.get("0,1")).toMatchObject({
-      northOpen: true,
-      northTaper: MASSIF_TAPER_EAST_V7,
-    });
-    expect(result.get("2,1")).toMatchObject({
-      northOpen: true,
-      northTaper: MASSIF_TAPER_WEST_V7,
-    });
-  });
 });
 
-describe("massif ground", () => {
-  const size = 80;
-  const flat = new Uint8ClampedArray(size * size * 4).fill(200);
-  const alpha = (pixels: Uint8ClampedArray, x: number, y: number): number =>
-    pixels[(y * size + x) * 4 + 3] ?? 0;
-
-  it("darkens the rocky ground towards the rock's own blue-grey", () => {
-    const pixels = massifGroundPixelsV7(flat, size, false, 0);
-    for (let c = 0; c < 3; c += 1)
-      expect(pixels[c]).toBe(
-        Math.round(
-          200 * (1 - MASSIF_GROUND_V7.amount) +
-            (MASSIF_GROUND_V7.tint[c] ?? 0) * MASSIF_GROUND_V7.amount,
-        ),
-      );
-    // Whole: nothing is cut inside an area.
-    for (let i = 3; i < pixels.length; i += 4) expect(pixels[i]).toBe(200);
-  });
-
-  it("cuts the top of the ground on the north side of an area only", () => {
-    for (let variant = 0; variant < MASSIF_GROUND_V7.variants; variant += 1) {
-      const pixels = massifGroundPixelsV7(flat, size, true, variant);
-      for (let x = 0; x < size; x += 1) {
-        expect(alpha(pixels, x, 0)).toBe(0);
-        expect(alpha(pixels, x, size - 1)).toBe(200);
-        expect(
-          alpha(
-            pixels,
-            x,
-            MASSIF_GROUND_V7.topCut + MASSIF_GROUND_V7.topWave + 2,
-          ),
-        ).toBe(200);
-      }
-      // Both ends at the same depth, so the edge runs on over a row.
-      expect(alpha(pixels, 0, MASSIF_GROUND_V7.topCut - 1)).toBe(0);
-      expect(alpha(pixels, 0, MASSIF_GROUND_V7.topCut)).toBe(200);
-      expect(alpha(pixels, size - 1, MASSIF_GROUND_V7.topCut - 1)).toBe(0);
-      expect(alpha(pixels, size - 1, MASSIF_GROUND_V7.topCut)).toBe(200);
+describe("the restyled set (pulp_wars-2yc.1)", () => {
+  it("is lit from the left, piece by piece, and nothing is mirrored", () => {
+    for (const piece of [...record.pieces, ...record.mines]) {
+      // The bake's lighting QA: left half minus right half of every rock
+      // face, in luma points; +1.5 or more is lit from the left.
+      expect(piece.light.faces, piece.id).toBeGreaterThanOrEqual(1.5);
+      for (const part of piece.parts)
+        expect(Object.keys(part), piece.id).not.toContain("flip");
     }
   });
 
-  it("runs the cut out beside a neighbour whose ground is whole", () => {
-    const west = massifGroundPixelsV7(
-      flat,
-      size,
-      true,
-      0,
-      MASSIF_TAPER_WEST_V7,
+  it("records the restyle: slate outline, warm rock, cream snow, a cut foot", () => {
+    const { restyle } = record.derive;
+    expect(restyle.outline).toEqual([78, 68, 70]);
+    expect(restyle.warm).toBeGreaterThan(0);
+    expect(restyle.snow[0]).toBeGreaterThan(restyle.snow[2] ?? 255);
+    expect(restyle.footRows[0]).toBeGreaterThan(0);
+  });
+
+  it("stands the mined mountain's interface master on Grass", () => {
+    expect(record.sources.map((source) => source.path)).toContain(
+      "public/assets/chibi/terrain/chibi-grass-1.png",
     );
-    expect(alpha(west, 0, 0)).toBe(200);
-    expect(alpha(west, size - 1, 0)).toBe(0);
-    const east = massifGroundPixelsV7(
-      flat,
-      size,
-      true,
-      0,
-      MASSIF_TAPER_EAST_V7,
+    expect(record.sources.map((source) => source.path)).not.toContain(
+      "public/assets/chibi/terrain/chibi-mountain-ground-1.png",
     );
-    expect(alpha(east, 0, 0)).toBe(0);
-    expect(alpha(east, size - 1, 0)).toBe(200);
   });
 });
 
@@ -549,12 +499,14 @@ describe("massif drawing", () => {
   const Y = 24;
   const block = board(["MM", "MM"]);
 
-  it("draws a block as darkened grounds, a low ridge with its bands and a tall ridge over it", () => {
+  it("draws a block on Grass, a low ridge with its bands and a tall ridge over it", () => {
     const drawn = named(draw(block));
-    // Every ground is the massif's own, never the plain rocky tile.
+    // A massif stands on the cell's own Grass (pulp_wars-2yc.1), never on
+    // the rocky ground tile, plain or darkened.
     expect(drawn.filter((call) => call[0] === "ground:mountain")).toEqual([]);
+    expect(drawn.filter((call) => call[0] === "surface:80x80")).toEqual([]);
     expect(
-      drawn.filter((call) => call[0] === "surface:80x80").map(rect),
+      drawn.filter((call) => call[0] === "master:grass").map(rect),
     ).toEqual([
       [X, Y, 80, 80],
       [X + 80, Y, 80, 80],
@@ -562,7 +514,7 @@ describe("massif drawing", () => {
       [X + 80, Y + 80, 80, 80],
     ]);
     const pieces = drawn.filter(
-      (call) => call[0] !== "surface:80x80" && !String(call[0]).startsWith("g"),
+      (call) => call[0] !== "master:grass" && !String(call[0]).startsWith("g"),
     );
     expect(pieces).toEqual([
       // The back row: a low ridge, its footprint in the body pass.

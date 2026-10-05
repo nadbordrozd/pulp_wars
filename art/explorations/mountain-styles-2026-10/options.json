@@ -1,0 +1,633 @@
+{
+  "bead": "pulp_wars-2yc.1",
+  "styleImages": [
+    {
+      "file": "style/a-ridge.png",
+      "width": 160,
+      "height": 80,
+      "parts": [
+        {
+          "recipe": "a01-single",
+          "candidate": 0,
+          "left": 0
+        },
+        {
+          "recipe": "a01-single",
+          "candidate": 1,
+          "left": 80
+        }
+      ]
+    },
+    {
+      "file": "style/a-massif.png",
+      "width": 160,
+      "height": 128,
+      "parts": [
+        {
+          "recipe": "a03-tall",
+          "candidate": 0,
+          "left": 1
+        },
+        {
+          "recipe": "a03-tall",
+          "candidate": 3,
+          "left": 81
+        }
+      ]
+    },
+    {
+      "file": "style/b-ridge.png",
+      "width": 160,
+      "height": 84,
+      "parts": [
+        {
+          "recipe": "b01-single",
+          "candidate": 1,
+          "left": 0
+        },
+        {
+          "recipe": "b01-single",
+          "candidate": 0,
+          "left": 80
+        }
+      ]
+    },
+    {
+      "file": "style/b-massif.png",
+      "width": 160,
+      "height": 128,
+      "parts": [
+        {
+          "recipe": "b03-tall",
+          "candidate": 0,
+          "left": 1
+        },
+        {
+          "recipe": "b03-tall",
+          "candidate": 2,
+          "left": 81
+        }
+      ]
+    },
+    {
+      "file": "style/c-ridge.png",
+      "width": 160,
+      "height": 64,
+      "parts": [
+        {
+          "recipe": "c01-single",
+          "candidate": 0,
+          "left": 5
+        },
+        {
+          "recipe": "c01-single",
+          "candidate": 1,
+          "left": 82
+        }
+      ]
+    },
+    {
+      "file": "style/c-massif.png",
+      "width": 160,
+      "height": 128,
+      "parts": [
+        {
+          "recipe": "c03-tall",
+          "candidate": 0,
+          "left": 1
+        },
+        {
+          "recipe": "c03-tall",
+          "candidate": 2,
+          "left": 81
+        }
+      ]
+    },
+    {
+      "file": "style/a2-ridge.png",
+      "width": 160,
+      "height": 80,
+      "parts": [
+        {
+          "recipe": "a11-dome",
+          "candidate": 1,
+          "left": 0
+        },
+        {
+          "recipe": "a11-dome",
+          "candidate": 3,
+          "left": 80
+        }
+      ]
+    },
+    {
+      "file": "style/e-ridge.png",
+      "width": 160,
+      "height": 80,
+      "parts": [
+        {
+          "recipe": "e01-single",
+          "candidate": 1,
+          "left": 0
+        },
+        {
+          "recipe": "e01-single",
+          "candidate": 3,
+          "left": 80
+        }
+      ]
+    },
+    {
+      "file": "style/a2-massif.png",
+      "width": 160,
+      "height": 128,
+      "parts": [
+        {
+          "recipe": "a03-tall",
+          "candidate": 2,
+          "left": 1
+        },
+        {
+          "recipe": "a03-tall",
+          "candidate": 1,
+          "left": 81
+        }
+      ]
+    },
+    {
+      "file": "style/e-massif.png",
+      "width": 160,
+      "height": 128,
+      "parts": [
+        {
+          "recipe": "e02-tall",
+          "candidate": 0,
+          "left": 1
+        },
+        {
+          "recipe": "e02-tall",
+          "candidate": 2,
+          "left": 81
+        }
+      ]
+    },
+    {
+      "file": "style/e-ridge2.png",
+      "width": 160,
+      "height": 80,
+      "parts": [
+        {
+          "recipe": "e01-single",
+          "candidate": 3,
+          "left": 0
+        },
+        {
+          "recipe": "e01-single",
+          "candidate": 0,
+          "left": 80
+        }
+      ]
+    }
+  ],
+  "options": [
+    {
+      "id": "a-storybook",
+      "label": "A. Storybook",
+      "summary": "Rounded warm brown-grey mountains with cream snow caps, ledges, dark brown outlines, pines and bushes at the foot, on meadow instead of grey rock. Round 2: every piece lit from the bottom left, one palette, and domes, tors, whalebacks, uneven pairs, twins and broad mountains beside the cones.",
+      "ground": {
+        "from": "GRASS",
+        "mix": {
+          "colour": [118, 160, 84],
+          "amount": 0.12
+        }
+      },
+      "massifGround": {
+        "amount": 0,
+        "topCut": 0,
+        "topWave": 0,
+        "rimShade": 1
+      },
+      "pieces": {
+        "low1": [
+          {
+            "recipe": "a11-dome",
+            "candidate": 1
+          },
+          {
+            "recipe": "a12-tor",
+            "candidate": 0
+          },
+          {
+            "recipe": "a01-single",
+            "candidate": 0
+          },
+          {
+            "recipe": "a11-dome",
+            "candidate": 3
+          },
+          {
+            "recipe": "a12-tor",
+            "candidate": 3
+          },
+          {
+            "recipe": "a01-single",
+            "candidate": 3
+          },
+          {
+            "recipe": "a11-dome",
+            "candidate": 2
+          },
+          {
+            "recipe": "a12-tor",
+            "candidate": 2
+          }
+        ],
+        "low2": [
+          {
+            "recipe": "a14-whaleback",
+            "candidate": 1,
+            "swap": [
+              [
+                [151, 131, 107],
+                [157, 141, 119]
+              ],
+              [
+                [94, 79, 65],
+                [108, 92, 79]
+              ],
+              [
+                [15, 3, 1],
+                [48, 39, 30]
+              ],
+              [
+                [24, 7, 3],
+                [48, 39, 30]
+              ]
+            ]
+          },
+          {
+            "recipe": "a15-pair",
+            "candidate": 0
+          },
+          {
+            "recipe": "a14-whaleback",
+            "candidate": 0,
+            "swap": [
+              [
+                [151, 131, 107],
+                [157, 141, 119]
+              ],
+              [
+                [94, 79, 65],
+                [108, 92, 79]
+              ],
+              [
+                [15, 3, 1],
+                [48, 39, 30]
+              ],
+              [
+                [24, 7, 3],
+                [48, 39, 30]
+              ]
+            ]
+          },
+          {
+            "recipe": "a15-pair",
+            "candidate": 3
+          },
+          {
+            "recipe": "a14-whaleback",
+            "candidate": 3,
+            "swap": [
+              [
+                [151, 131, 107],
+                [157, 141, 119]
+              ],
+              [
+                [94, 79, 65],
+                [108, 92, 79]
+              ],
+              [
+                [15, 3, 1],
+                [48, 39, 30]
+              ],
+              [
+                [24, 7, 3],
+                [48, 39, 30]
+              ]
+            ]
+          },
+          {
+            "recipe": "a15-pair",
+            "candidate": 2
+          }
+        ],
+        "tall1": [
+          {
+            "recipe": "a03-tall",
+            "candidate": 0
+          },
+          {
+            "recipe": "a16-twin",
+            "candidate": 1
+          },
+          {
+            "recipe": "a03-tall",
+            "candidate": 2
+          },
+          {
+            "recipe": "a16-twin",
+            "candidate": 2
+          },
+          {
+            "recipe": "a03-tall",
+            "candidate": 3
+          },
+          {
+            "recipe": "a03-tall",
+            "candidate": 1
+          }
+        ],
+        "tall2": [
+          {
+            "recipe": "a18-massif",
+            "candidate": 0,
+            "swap": [
+              [
+                [144, 118, 105],
+                [157, 141, 119]
+              ],
+              [
+                [99, 80, 76],
+                [108, 92, 79]
+              ],
+              [
+                [169, 141, 126],
+                [194, 186, 171]
+              ],
+              [
+                [35, 15, 6],
+                [48, 39, 30]
+              ],
+              [
+                [23, 12, 3],
+                [48, 39, 30]
+              ]
+            ]
+          },
+          {
+            "recipe": "a17-massif",
+            "candidate": 0
+          },
+          {
+            "recipe": "a18-massif",
+            "candidate": 2,
+            "swap": [
+              [
+                [144, 118, 105],
+                [157, 141, 119]
+              ],
+              [
+                [99, 80, 76],
+                [108, 92, 79]
+              ],
+              [
+                [169, 141, 126],
+                [194, 186, 171]
+              ],
+              [
+                [35, 15, 6],
+                [48, 39, 30]
+              ],
+              [
+                [23, 12, 3],
+                [48, 39, 30]
+              ]
+            ]
+          },
+          {
+            "recipe": "a06-massif",
+            "candidate": 0
+          },
+          {
+            "recipe": "a18-massif",
+            "candidate": 1,
+            "swap": [
+              [
+                [144, 118, 105],
+                [157, 141, 119]
+              ],
+              [
+                [99, 80, 76],
+                [108, 92, 79]
+              ],
+              [
+                [169, 141, 126],
+                [194, 186, 171]
+              ],
+              [
+                [35, 15, 6],
+                [48, 39, 30]
+              ],
+              [
+                [23, 12, 3],
+                [48, 39, 30]
+              ]
+            ]
+          },
+          {
+            "recipe": "a18-massif",
+            "candidate": 3,
+            "swap": [
+              [
+                [144, 118, 105],
+                [157, 141, 119]
+              ],
+              [
+                [99, 80, 76],
+                [108, 92, 79]
+              ],
+              [
+                [169, 141, 126],
+                [194, 186, 171]
+              ],
+              [
+                [35, 15, 6],
+                [48, 39, 30]
+              ],
+              [
+                [23, 12, 3],
+                [48, 39, 30]
+              ]
+            ]
+          }
+        ],
+        "mine": {
+          "recipe": "a07-mine",
+          "candidate": 0
+        }
+      }
+    },
+    {
+      "id": "e-slate",
+      "label": "E. Slate storybook",
+      "summary": "The storybook forms in the cool rock of a classic mountain: rounded blue-grey slate with ledges, dark slate-blue outlines, white snow caps with pale blue shade, pines and bushes at the foot, on meadow. Every piece lit from the bottom left.",
+      "ground": {
+        "from": "GRASS",
+        "mix": {
+          "colour": [118, 160, 84],
+          "amount": 0.12
+        }
+      },
+      "massifGround": {
+        "amount": 0,
+        "topCut": 0,
+        "topWave": 0,
+        "rimShade": 1
+      },
+      "pieces": {
+        "low1": [
+          {
+            "recipe": "e01-single",
+            "candidate": 3
+          },
+          {
+            "recipe": "e01-single",
+            "candidate": 1
+          },
+          {
+            "recipe": "e01-single",
+            "candidate": 0
+          },
+          {
+            "recipe": "e01-single",
+            "candidate": 2
+          }
+        ],
+        "low2": [
+          {
+            "recipe": "e06-ridge",
+            "candidate": 0,
+            "swap": [
+              [
+                [134, 147, 164],
+                [142, 154, 174]
+              ]
+            ]
+          },
+          {
+            "recipe": "e07-pair",
+            "candidate": 1,
+            "swap": [
+              [
+                [96, 111, 142],
+                [86, 98, 122]
+              ],
+              [
+                [190, 218, 243],
+                [181, 210, 241]
+              ]
+            ]
+          },
+          {
+            "recipe": "e06-ridge",
+            "candidate": 1,
+            "swap": [
+              [
+                [134, 147, 164],
+                [142, 154, 174]
+              ]
+            ]
+          },
+          {
+            "recipe": "e07-pair",
+            "candidate": 0,
+            "swap": [
+              [
+                [96, 111, 142],
+                [86, 98, 122]
+              ],
+              [
+                [190, 218, 243],
+                [181, 210, 241]
+              ]
+            ]
+          },
+          {
+            "recipe": "e06-ridge",
+            "candidate": 3,
+            "swap": [
+              [
+                [134, 147, 164],
+                [142, 154, 174]
+              ]
+            ]
+          }
+        ],
+        "tall1": [
+          {
+            "recipe": "e02-tall",
+            "candidate": 0
+          },
+          {
+            "recipe": "e02-tall",
+            "candidate": 1
+          },
+          {
+            "recipe": "e02-tall",
+            "candidate": 3
+          },
+          {
+            "recipe": "e02-tall",
+            "candidate": 2
+          }
+        ],
+        "tall2": [
+          {
+            "recipe": "e08-massif",
+            "candidate": 0
+          },
+          {
+            "recipe": "e08-massif",
+            "candidate": 3
+          },
+          {
+            "recipe": "e08-massif",
+            "candidate": 2
+          }
+        ],
+        "mine": {
+          "recipe": "e10-mine",
+          "candidate": 0
+        }
+      }
+    },
+    {
+      "id": "d-no-new-art",
+      "label": "D. No new art",
+      "summary": "Today's pieces, redrawn by code: dark slate outlines instead of black, warmer rock, cream snow, a ragged skirt of meadow green at every foot, meadow instead of the grey ground. Round 2: only today's pieces that are lit from the left are used.",
+      "ground": {
+        "from": "GRASS",
+        "mix": {
+          "colour": [118, 160, 84],
+          "amount": 0.12
+        }
+      },
+      "massifGround": {
+        "amount": 0,
+        "topCut": 0,
+        "topWave": 0,
+        "rimShade": 1
+      },
+      "pieces": "CURRENT",
+      "soften": {
+        "outline": [78, 68, 70],
+        "warm": 0.6,
+        "foot": [112, 158, 82],
+        "footDark": [92, 136, 70],
+        "footRows": [5, 11]
+      }
+    }
+  ],
+  "retired": "Round 1 also showed B (painted alpine: b01 to b07) and C (mesa and crag: c01 to c07). The user asked for one consistent light from the bottom left; C is lit from the right in every sample (faces -11 to -31) and both were dropped. Their recipes, records and raw candidates stay as the run's history."
+}

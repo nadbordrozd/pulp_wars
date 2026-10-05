@@ -15,6 +15,10 @@
  * the script writes `<name>-before.png`, `<name>-after.png` and
  * `<name>-pair.png` (the shot's part of both pages side by side, and under
  * it the shot's `zoom` rectangle of both enlarged 3x). No PixelLab call.
+ *
+ * For a change that has no switch, `SWITCH_BEFORE_URL` names a second
+ * server for the "before" side: a checkout of the commit before the change,
+ * with the scenes module copied to the same path.
  */
 import { spawn } from "node:child_process";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
@@ -256,7 +260,7 @@ async function pair(
   const zoomWidth = shot.zoom === undefined ? 0 : shot.zoom[2] * 3;
   const column = Math.max(crop[2], zoomWidth);
   const composites: OverlayOptions[] = [
-    { input: label("BEFORE (switch off)"), left: 0, top: 0 },
+    { input: label("BEFORE"), left: 0, top: 0 },
     { input: label("AFTER"), left: column + gap, top: 0 },
     { input: await cut(before, crop, 1), left: 0, top: head },
     { input: await cut(after, crop, 1), left: column + gap, top: head },
@@ -293,6 +297,9 @@ async function main(): Promise<void> {
     throw new Error("usage: look-switch-review.ts <scenes-module> <out-dir>");
   const out = path.resolve(outArgument);
   const base = process.env.SWITCH_GAME_URL ?? "http://localhost:6593/";
+  // A change without a switch: "before" is another server (a checkout of
+  // the commit before it, with the scenes module copied in).
+  const beforeBase = process.env.SWITCH_BEFORE_URL ?? base;
   const loaded = (await import(pathToFileURL(path.resolve(module)).href)) as {
     readonly SWITCH_PARAMETER: string;
     readonly REVIEW_SHOTS: readonly LookSwitchShot[];
@@ -346,7 +353,15 @@ async function main(): Promise<void> {
       if (only !== undefined && !only.includes(shot.name)) continue;
       const before = path.join(out, `${shot.name}-before.png`);
       const after = path.join(out, `${shot.name}-after.png`);
-      await capture(connection, base, module, parameter, shot, false, before);
+      await capture(
+        connection,
+        beforeBase,
+        module,
+        parameter,
+        shot,
+        false,
+        before,
+      );
       await capture(connection, base, module, parameter, shot, true, after);
       await pair(shot, before, after, path.join(out, `${shot.name}-pair.png`));
     }

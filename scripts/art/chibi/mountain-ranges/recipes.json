@@ -1,5 +1,5 @@
 {
-  "bead": "pulp_wars-2o7.1",
+  "bead": "pulp_wars-2yc.1",
   "shared": {
     "klass": "Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform.",
     "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red, trees, forest, bushes, river, lake, boulders at the foot, separate rocks",
@@ -150,7 +150,7 @@
         "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
       },
       "notes": "A 2x2 massif of a few large peaks: the first massifs were a crowd of small peaks on the board.",
-      "review": "Massifs of three or four peaks about 65 px wide and 110 px tall. Too large beside the first ridges (bead pulp_wars-e9f), they are the scale of the massif set (bead pulp_wars-2o7.1): 0, 1 and 2 are the tall 2x1 ridges, each also mirrored; 3 is 130 px tall, over the 48 px limit, unused. 0 to 3 served as style images."
+      "review": "Massifs of three or four peaks about 65 px wide and 110 px tall. Too large beside the first ridges (bead pulp_wars-e9f), they are the scale of the massif set (bead pulp_wars-2o7.1): 0, 1 and 2 are the tall 2x1 ridges, each also mirrored; 3 is 130 px tall, over the 48 px limit, unused. 0 to 3 served as style images. Since bead pulp_wars-2yc.1 nothing is mirrored: 0, 1 and 2 are used once each."
     },
     {
       "id": "s09-1x2-v2",
@@ -340,7 +340,7 @@
       "klass": "@klass",
       "negative": "@negative",
       "notes": "As s19, styled from another s08 massif.",
-      "review": "Four near-copies of the s08-2 massif at 155 x 92. 0, 1 (mirrored) and 3 are low 2x1 ridges; 2 has boulders at its foot, unused."
+      "review": "Four near-copies of the s08-2 massif at 155 x 92. 0, 1 (mirrored) and 3 are low 2x1 ridges; 2 has boulders at its foot, unused. Since bead pulp_wars-2yc.1 nothing is mirrored: 0 and 3 are low ridges, 1 (used mirrored before) is not."
     },
     {
       "id": "s21-low-single",
@@ -406,7 +406,7 @@
       "klass": "@klass",
       "negative": "@negative",
       "notes": "A lower-topped ridge styled from the s08-0 massif, with the ridge wording of s10.",
-      "review": "0 and 1: copies of s08-0 with the highest peak cut off by the top of the image, unused. 2: a crowd of thin spikes, unused. 3: a broad rounded massif, 156 x 90, used as a low 2x1 ridge and mirrored."
+      "review": "0 and 1: copies of s08-0 with the highest peak cut off by the top of the image, unused. 2: a crowd of thin spikes, unused. 3: a broad rounded massif, 156 x 90, used as a low 2x1 ridge and mirrored. Since bead pulp_wars-2yc.1 nothing is mirrored: 3 is used once."
     },
     {
       "id": "s25-low-ridge-d",
@@ -423,7 +423,7 @@
       "klass": "@klass",
       "negative": "@negative",
       "notes": "A lower-topped ridge styled from the s08-3 massif.",
-      "review": "0: three peaks, 150 x 71, used as a low 2x1 ridge and mirrored. 3: a cluster of five peaks, 150 x 80, used. 1 and 2: the main peak cut off by the top of the image, unused."
+      "review": "0: three peaks, 150 x 71, used as a low 2x1 ridge and mirrored. 3: a cluster of five peaks, 150 x 80, used. 1 and 2: the main peak cut off by the top of the image, unused. Since bead pulp_wars-2yc.1 nothing is mirrored: 0 and 3 are used once each."
     },
     {
       "id": "s26-big-single",
@@ -506,7 +506,114 @@
       "klass": "@klass",
       "negative": "@negative",
       "notes": "Tall singles again, from a broad s26 mountain stretched only to 76 x 100: the s27 spire is a needle on the board.",
-      "review": "Four tall singles, 94 to 107 px: a snowy mountain with a shoulder (0), the same with a third peak in front (1), a monolith (2) and twin peaks (3). All four are tall 1x1 pieces, 0 and 3 mirrored too."
+      "review": "Four tall singles, 94 to 107 px: a snowy mountain with a shoulder (0), the same with a third peak in front (1), a monolith (2) and twin peaks (3). All four are tall 1x1 pieces, 0 and 3 mirrored too. Since bead pulp_wars-2yc.1 nothing is mirrored: the four are used once each."
+    },
+    {
+      "id": "s30-tall-single-c",
+      "width": 80,
+      "height": 124,
+      "seed": 82030,
+      "subject": "@peakWhole",
+      "styleImage": {
+        "recipe": "s26-big-single",
+        "candidate": 9,
+        "enlarge": {
+          "width": 76,
+          "height": 100,
+          "canvasWidth": 80,
+          "canvasHeight": 124
+        }
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "light-south-west"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Bead pulp_wars-2yc.1: a left-lit piece in place of a mirrored one (the sun is at the bottom left, so nothing is mirrored). Tall singles, styled from another s26 mountain.",
+      "review": "Four tall mountains 98 to 105 px, a main peak and a shoulder each, lit from the left (faces +37 to +50). 0 and 3 are tall singles in place of the two mirrored ones."
+    },
+    {
+      "id": "s31-tall-ridge-b",
+      "endpoint": "generate-image-v2",
+      "width": 160,
+      "height": 168,
+      "seed": 82031,
+      "fragments": ["style", "light-south-west"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "@massifBig",
+      "styleImage": {
+        "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
+      },
+      "notes": "Bead pulp_wars-2yc.1: a left-lit piece in place of a mirrored one (the sun is at the bottom left, so nothing is mirrored). Tall ridges: the s08 recipe with another seed.",
+      "review": "Four clusters of rounded snowy cones 136 to 138 px wide, softer in shape than the s08 massifs, lit from the left (faces +7.6 to +37.8). 0 (104 px tall) and 3 (95 px) are tall ridges; 1 and 2 are lower copies."
+    },
+    {
+      "id": "s32-tall-ridge-c",
+      "endpoint": "generate-image-v2",
+      "width": 160,
+      "height": 168,
+      "seed": 82032,
+      "fragments": ["style", "light-south-west"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "subject": "@massifBig",
+      "styleImage": {
+        "recipe": "s08-2x2-v2",
+        "candidate": 1
+      },
+      "notes": "Bead pulp_wars-2yc.1: a left-lit piece in place of a mirrored one (the sun is at the bottom left, so nothing is mirrored). Tall ridges, styled from an s08 massif.",
+      "review": "Four near-identical jagged ridges 147 x 107, lit from the left (faces +10.3 to +26.5). 1 is a tall ridge."
+    },
+    {
+      "id": "s33-low-ridge-e",
+      "width": 160,
+      "height": 92,
+      "seed": 82033,
+      "subject": "@ridge3",
+      "styleImage": {
+        "recipe": "s08-2x2-v2",
+        "candidate": 3
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "light-south-west"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Bead pulp_wars-2yc.1: a left-lit piece in place of a mirrored one (the sun is at the bottom left, so nothing is mirrored). Low ridges: the s25 recipe with another seed.",
+      "review": "0, 2 and 3 fill the 92 px image and are cut at the top. 1 (150 x 81) is whole and is a low ridge; its raw candidate measures flat (faces +1.0), the baked piece +19.5."
+    },
+    {
+      "id": "s34-low-ridge-f",
+      "width": 160,
+      "height": 92,
+      "seed": 82034,
+      "subject": "@ridgeLow",
+      "styleImage": {
+        "recipe": "s08-2x2-v2",
+        "candidate": 2
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "light-south-west"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Bead pulp_wars-2yc.1: a left-lit piece in place of a mirrored one (the sun is at the bottom left, so nothing is mirrored). Low ridges: the s20 recipe with another seed.",
+      "reject": "All four fill the 92 px image and are cut at the top: the style image was a tall massif. Replaced by s35, styled from a low ridge."
+    },
+    {
+      "id": "s35-low-ridge-g",
+      "width": 160,
+      "height": 92,
+      "seed": 82035,
+      "subject": "@ridge3",
+      "styleImage": {
+        "recipe": "s25-low-ridge-d",
+        "candidate": 0
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "light-south-west"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Bead pulp_wars-2yc.1: low ridges styled from an accepted low ridge (s25-0, 150 x 71), so the copies keep its height: s33 and s34, styled from tall massifs, filled the 92 px image and were cut at the top.",
+      "review": "Four ridges 150 px wide and 71 to 78 px tall, the height of their style image. 2 (three peaks over a wall of big blocks) is a low ridge, lit from the left (+17.3). 3 has snow down the whole left face of every peak: on the board it read as three white triangles and is left out. 0 is a near-copy of s25-0 and 1 has a black right peak; both measure lit from the right."
     }
   ],
   "pieces": [
@@ -627,18 +734,6 @@
       "variant": 3,
       "parts": [
         {
-          "recipe": "s20-low-ridge-b",
-          "candidate": 1,
-          "dy": 2,
-          "flip": true
-        }
-      ]
-    },
-    {
-      "shape": "2x1",
-      "variant": 4,
-      "parts": [
-        {
           "recipe": "s25-low-ridge-d",
           "candidate": 3
         }
@@ -646,7 +741,7 @@
     },
     {
       "shape": "2x1",
-      "variant": 5,
+      "variant": 4,
       "parts": [
         {
           "recipe": "s20-low-ridge-b",
@@ -657,23 +752,21 @@
     },
     {
       "shape": "2x1",
-      "variant": 6,
+      "variant": 5,
       "parts": [
         {
-          "recipe": "s24-low-ridge-c",
-          "candidate": 3,
-          "flip": true
+          "recipe": "s33-low-ridge-e",
+          "candidate": 1
         }
       ]
     },
     {
       "shape": "2x1",
-      "variant": 7,
+      "variant": 6,
       "parts": [
         {
-          "recipe": "s25-low-ridge-d",
-          "candidate": 0,
-          "flip": true
+          "recipe": "s35-low-ridge-g",
+          "candidate": 2
         }
       ]
     },
@@ -724,26 +817,24 @@
     {
       "shape": "1x1",
       "variant": 4,
-      "tall": true,
       "parts": [
         {
-          "recipe": "s29-big-single-tall-b",
-          "candidate": 0,
-          "flip": true
+          "recipe": "s30-tall-single-c",
+          "candidate": 0
         }
-      ]
+      ],
+      "tall": true
     },
     {
       "shape": "1x1",
       "variant": 5,
-      "tall": true,
       "parts": [
         {
-          "recipe": "s29-big-single-tall-b",
-          "candidate": 3,
-          "flip": true
+          "recipe": "s30-tall-single-c",
+          "candidate": 3
         }
-      ]
+      ],
+      "tall": true
     },
     {
       "shape": "2x1",
@@ -781,38 +872,35 @@
     {
       "shape": "2x1",
       "variant": 3,
-      "tall": true,
       "parts": [
         {
-          "recipe": "s08-2x2-v2",
-          "candidate": 0,
-          "flip": true
+          "recipe": "s31-tall-ridge-b",
+          "candidate": 0
         }
-      ]
+      ],
+      "tall": true
     },
     {
       "shape": "2x1",
       "variant": 4,
-      "tall": true,
       "parts": [
         {
-          "recipe": "s08-2x2-v2",
-          "candidate": 1,
-          "flip": true
+          "recipe": "s31-tall-ridge-b",
+          "candidate": 3
         }
-      ]
+      ],
+      "tall": true
     },
     {
       "shape": "2x1",
       "variant": 5,
-      "tall": true,
       "parts": [
         {
-          "recipe": "s08-2x2-v2",
-          "candidate": 2,
-          "flip": true
+          "recipe": "s32-tall-ridge-c",
+          "candidate": 1
         }
-      ]
+      ],
+      "tall": true
     }
   ],
   "mines": [

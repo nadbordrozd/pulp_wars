@@ -108,8 +108,10 @@ describe("Gallery terrain presentation", () => {
     const mountainUrls = mountain.flatMap(galleryTerrainRasterUrlsV7);
     for (const piece of CHIBI_MOUNTAIN_ART_SET_V7.pieces)
       expect(mountainUrls, piece.id).toContain(piece.url);
+    // One mountain on Grass first (pulp_wars-2yc.1), then the whole set.
+    expect(mountain[0]?.box.kind).toBe("TILE");
     expect(mountain.length).toBe(
-      galleryTerrainVariantsV7("TERRAIN:MOUNTAIN").length +
+      1 +
         CHIBI_MOUNTAIN_ART_SET_V7.pieces.length +
         CHIBI_MOUNTAIN_ART_SET_V7.mined.length,
     );

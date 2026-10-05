@@ -301,10 +301,7 @@ import {
   isWholeScale,
   snapCameraToDevicePixels,
 } from "./chibi-geometry-v7";
-import {
-  CHIBI_FRINGE_NORTH,
-  chibiMountainFringeEdgesV7,
-} from "./chibi-terrain-fringe-v7";
+import { chibiMountainFringeEdgesV7 } from "./chibi-terrain-fringe-v7";
 import {
   chibiForestCellsV7,
   drawChibiForestBandsV7,
@@ -2527,20 +2524,6 @@ export function drawBoardV7(input: {
           }
           continue;
         }
-        // Under a massif (bead pulp_wars-2o7.1) the rocky ground is its
-        // lower slopes: darker, and cut back on the area's north side.
-        const massifGround = (
-          ground: CanvasImageSource,
-          northOpen: boolean,
-        ): CanvasImageSource =>
-          mountainArt !== null && mountainCell !== null
-            ? (mountainArt.ground(
-                ground,
-                entry.at,
-                northOpen && mountainCell.northOpen,
-                mountainCell.northTaper,
-              ) ?? ground)
-            : ground;
         if (chibi !== null && chibi.kind !== "MISSING") {
           if (pass === "GROUND") {
             context.fillStyle =
@@ -2552,7 +2535,42 @@ export function drawBoardV7(input: {
           // A Mountain bordering other land: Grass, then its rocky ground
           // cut back along those edges, then the body's owning cell (after
           // the Roads when the cell has one). The overflow is unchanged.
+          // A massif (pulp_wars-2yc.1) stands on the cell's own ground, not
+          // on the rocky ground tile: the Grass of its territory, the
+          // faction's grass over it, and Snow and the coast's sand after.
+          const meadow =
+            pass === "GROUND" && mountainArt !== null && mountainCell !== null;
+          const territoryGrass = (): void => {
+            const grass =
+              chibiArt === undefined
+                ? undefined
+                : resolveChibiWithFallbackV7(chibiArt, {
+                    subject: territoryTerrainSubjectV7(
+                      "TERRAIN:GRASS",
+                      entry.territoryGround,
+                    ),
+                    at: entry.at,
+                    deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+                  }).resolution;
+            if (grass?.kind === "READY")
+              drawChibiTerrainV7(context, grass, {
+                centre: { x, y },
+                camera,
+                devicePixelRatio,
+                sceneAlpha,
+                part: "CELL",
+              });
+            drawFactionGrassV7(
+              context,
+              forestFrame,
+              factionGrassArt,
+              entry,
+              factionGrassCells,
+              true,
+            );
+          };
           const fringeEdges =
+            !meadow &&
             pass === "GROUND" &&
             chibi.kind === "READY" &&
             chibi.layers !== undefined &&
@@ -2571,7 +2589,8 @@ export function drawBoardV7(input: {
                   at: entry.at,
                   edges: fringeEdges,
                 }) ?? null);
-          if (
+          if (meadow) territoryGrass();
+          else if (
             fringedGround !== null &&
             chibi.kind === "READY" &&
             chibi.layers !== undefined
@@ -2579,40 +2598,12 @@ export function drawBoardV7(input: {
             const part = { centre: { x, y }, camera, devicePixelRatio };
             // The Grass of the cell's territory (the Undead gloam Grass
             // inside Undead borders, bead pulp_wars-xdh.2).
-            const grass =
-              chibiArt === undefined
-                ? undefined
-                : resolveChibiWithFallbackV7(chibiArt, {
-                    subject: territoryTerrainSubjectV7(
-                      "TERRAIN:GRASS",
-                      entry.territoryGround,
-                    ),
-                    at: entry.at,
-                    deviceScale: chibiMasterScale(camera) * devicePixelRatio,
-                  }).resolution;
-            if (grass?.kind === "READY")
-              drawChibiTerrainV7(context, grass, {
-                ...part,
-                sceneAlpha,
-                part: "CELL",
-              });
-            drawFactionGrassV7(
-              context,
-              forestFrame,
-              factionGrassArt,
-              entry,
-              factionGrassCells,
-              true,
-            );
+            territoryGrass();
             drawChibiTerrainV7(context, chibi, {
               ...part,
               sceneAlpha,
               part: "GROUND",
-              // The top cut only over the Grass drawn just above.
-              image: massifGround(
-                fringedGround,
-                (fringeEdges & CHIBI_FRINGE_NORTH) !== 0,
-              ),
+              image: fringedGround,
             });
             if (layers === undefined)
               drawChibiTerrainV7(context, chibi, {
@@ -2633,7 +2624,7 @@ export function drawBoardV7(input: {
                   ? { part: "CELL" }
                   : {
                       part: "GROUND",
-                      image: massifGround(layers.ground, false),
+                      image: layers.ground,
                     }),
             });
           if (pass === "GROUND")

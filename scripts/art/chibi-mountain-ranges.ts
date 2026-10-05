@@ -40,7 +40,7 @@ import {
   FOREST_SHAPES_V7,
   type ForestShapeV7,
 } from "../../src/render/canvas/chibi-forest-packing-v7";
-import { massifGroundPixelsV7 } from "../../src/render/canvas/chibi-massif-v7";
+import { lightVerdict, lightingOf } from "./lighting-qa";
 
 const CELL = 80;
 /** Rows above the footprint in a low piece's canvas (and a Mine's). */
@@ -105,6 +105,28 @@ const DERIVE = {
   footMax: 5,
   footBottomMax: 3,
   footCorner: 7,
+  /**
+   * The restyle (bead pulp_wars-2yc.1, the user's choice "D - no new art"
+   * of 2026-10-05): the black outline takes a dark slate tone of the rock,
+   * the cool greys move `warm` of the way toward a warm grey-brown, the
+   * snow `snowBlend` of the way toward cream, and the foot of the rock is
+   * cut away in a ragged line `footRows` px high, so the cell's own ground
+   * (Grass of any faction, Snow, the sand of a coast) shows at the foot
+   * and the mountain grows out of it. A Mine keeps its foot (its entrance
+   * and its cart stand there) and its dark tunnel.
+   */
+  restyle: {
+    outline: [78, 68, 70],
+    warm: 0.6,
+    snow: [244, 236, 216],
+    snowBlend: 0.5,
+    snowLuma: 205,
+    footRows: [5, 11],
+    /** Only a column whose lowest paint is this near the bottom has a foot. */
+    footBand: 30,
+    /** A Mine: only pixels this grey are rock (timber and ore keep theirs). */
+    mineRockChroma: 48,
+  },
 };
 const OUTLINE_LUMA = 0.2;
 
@@ -644,16 +666,6 @@ function trimmed(source: Raster): Raster {
   return { width: box.w, height: box.h, data };
 }
 
-function flopped(r: Raster): Raster {
-  const data = new Uint8Array(r.data.length);
-  for (let y = 0; y < r.height; y += 1)
-    for (let x = 0; x < r.width; x += 1)
-      for (let c = 0; c < 4; c += 1)
-        data[(y * r.width + x) * 4 + c] =
-          r.data[(y * r.width + (r.width - 1 - x)) * 4 + c] ?? 0;
-  return { ...r, data };
-}
-
 function paint(target: Raster, stamp: Raster, left: number, top: number): void {
   for (let y = 0; y < stamp.height; y += 1)
     for (let x = 0; x < stamp.width; x += 1) {
@@ -679,6 +691,75 @@ const lumaOf = (r: number, g: number, b: number): number =>
  * `outlineBlend` of the way to the rock around it. The silhouette keeps its
  * black line.
  */
+/**
+ * The restyle of a derived piece (DERIVE.restyle). `mine` keeps the foot,
+ * recolours only the outer outline and warms only grey pixels.
+ */
+export function restyled(source: Raster, mine: boolean): Raster {
+  const spec = DERIVE.restyle;
+  const { width, height } = source;
+  const data = new Uint8Array(source.data);
+  const clear = (x: number, y: number): boolean =>
+    x < 0 ||
+    y < 0 ||
+    x >= width ||
+    y >= height ||
+    (source.data[(y * width + x) * 4 + 3] ?? 0) === 0;
+  for (let x = 0; x < width; x += 1) {
+    let bottom = -1;
+    for (let y = height - 1; y >= 0; y -= 1)
+      if ((source.data[(y * width + x) * 4 + 3] ?? 0) > 0) {
+        bottom = y;
+        break;
+      }
+    const footLow = spec.footRows[0] ?? 0;
+    const footHigh = spec.footRows[1] ?? footLow;
+    const rows = Math.round(
+      footLow +
+        (footHigh - footLow) *
+          (0.5 + 0.5 * Math.sin(x / 5.3) * Math.cos(x / 2.9)),
+    );
+    for (let y = 0; y < height; y += 1) {
+      const offset = (y * width + x) * 4;
+      if ((source.data[offset + 3] ?? 0) === 0) continue;
+      const r = source.data[offset] ?? 0;
+      const g = source.data[offset + 1] ?? 0;
+      const b = source.data[offset + 2] ?? 0;
+      if (!mine && bottom - y < rows && bottom >= height - spec.footBand) {
+        data[offset + 3] = 0;
+        continue;
+      }
+      let colour: readonly [number, number, number] = [r, g, b];
+      const max = Math.max(r, g, b);
+      if (max <= 62) {
+        const edge =
+          clear(x - 1, y) ||
+          clear(x + 1, y) ||
+          clear(x, y - 1) ||
+          clear(x, y + 1);
+        if (!mine || edge) colour = spec.outline as [number, number, number];
+      } else if (mine && max - Math.min(r, g, b) >= spec.mineRockChroma) {
+        // Timber, ore and lamp light: not rock.
+      } else if (0.299 * r + 0.587 * g + 0.114 * b > spec.snowLuma)
+        colour = [
+          Math.round(r + ((spec.snow[0] ?? 0) - r) * spec.snowBlend),
+          Math.round(g + ((spec.snow[1] ?? 0) - g) * spec.snowBlend),
+          Math.round(b + ((spec.snow[2] ?? 0) - b) * spec.snowBlend),
+        ];
+      else
+        colour = [
+          Math.min(255, Math.round(r + (r * 1.1 + 10 - r) * spec.warm)),
+          Math.round(g + (g * 0.99 - g) * spec.warm),
+          Math.round(b + (b * 0.8 - b) * spec.warm),
+        ];
+      data[offset] = colour[0];
+      data[offset + 1] = colour[1];
+      data[offset + 2] = colour[2];
+    }
+  }
+  return { width, height, data };
+}
+
 function softened(source: Raster): Raster {
   const { width, height } = source;
   const data = new Uint8Array(source.data);
@@ -910,6 +991,8 @@ interface DerivedRecord {
     readonly width: number;
     readonly height: number;
     readonly parts: readonly PiecePart[];
+    /** The lighting QA of the piece's rock, in luma points (+ is left). */
+    readonly light: { readonly thirds: number; readonly faces: number };
     readonly sha256: string;
     readonly pixelSha256: string;
   }[];
@@ -982,8 +1065,13 @@ export async function deriveMountainRanges(root: string): Promise<{
       base: number;
     }[] = [];
     for (const [index, part] of spec.parts.entries()) {
-      const whole =
-        part.flip === true ? flopped(await source(part)) : await source(part);
+      // The sun is at the bottom left (the user, 2026-10-05): a mirrored
+      // raster is lit from the other side, so nothing is mirrored.
+      if (part.flip === true)
+        throw new Error(
+          `${spec.shape}${spec.tall === true ? " tall" : ""} ${spec.variant}: a mirrored part is lit from the right`,
+        );
+      const whole = await source(part);
       // A raster the generator clipped gets a rocky foot (`footed`).
       const raster = footed(
         whole,
@@ -1011,14 +1099,21 @@ export async function deriveMountainRanges(root: string): Promise<{
             `${id}: paint at ${px},${py} is outside its footprint or above the band limit`,
           );
     // A Mine is a building: its dark tunnel and beams are not softened.
-    const raster = mine ? canvas : softened(canvas);
+    const raster = restyled(mine ? canvas : softened(canvas), mine);
+    // Lighting QA (scripts/art/lighting-qa.ts): the rock of every piece is
+    // lit from the left.
+    const light = lightingOf(raster, true);
+    if (lightVerdict(light) === "RIGHT")
+      throw new Error(
+        `${id}: lit from the right (faces ${light.faces.toFixed(1)})`,
+      );
     const bytes = await encodePng(raster);
     const relative = `${OUT}/${id}.png`;
     files.set(relative, bytes);
     if (mine) {
       // The master the art registry shows (interface and fallback): the
-      // mined mountain over the rocky ground of its cell.
-      const ground = await load(root, `${TERRAIN}/chibi-mountain-ground-1.png`);
+      // mined mountain on Grass, the ground a massif stands on.
+      const ground = await load(root, `${TERRAIN}/chibi-grass-1.png`);
       const master: Raster = {
         width,
         height,
@@ -1034,12 +1129,8 @@ export async function deriveMountainRanges(root: string): Promise<{
         }
       files.set(`${OUT}/${id}.master.png`, await encodePng(master));
       sources.set(
-        `${TERRAIN}/chibi-mountain-ground-1.png`,
-        sha256(
-          await readFile(
-            path.join(root, `${TERRAIN}/chibi-mountain-ground-1.png`),
-          ),
-        ),
+        `${TERRAIN}/chibi-grass-1.png`,
+        sha256(await readFile(path.join(root, `${TERRAIN}/chibi-grass-1.png`))),
       );
     }
     (mine ? mines : pieces).push({
@@ -1051,6 +1142,10 @@ export async function deriveMountainRanges(root: string): Promise<{
       width,
       height,
       parts: spec.parts,
+      light: {
+        thirds: Math.round(light.thirds * 10) / 10,
+        faces: Math.round(light.faces * 10) / 10,
+      },
       sha256: sha256(bytes),
       pixelSha256: pixelSha256(raster),
     });
@@ -1192,14 +1287,8 @@ async function stats(root: string): Promise<void> {
     return `luma ${percent(mean)}  saturation ${percent(sat / n)}  luma spread ${percent(Math.sqrt(Math.max(0, l2 / n - mean * mean)))}  outline share ${percent(dark / n)}`;
   };
   /** The footprint cells of a piece (or an 80 x 104 body) over the ground. */
-  // Under a massif the board darkens the rocky ground (massifGroundPixelsV7).
-  const slopes: Raster = {
-    width: CELL,
-    height: CELL,
-    data: new Uint8Array(
-      massifGroundPixelsV7(new Uint8ClampedArray(ground.data), CELL, false, 0),
-    ),
-  };
+  // A massif stands on the cell's own ground: Grass here.
+  const slopes = await load(root, `${TERRAIN}/chibi-grass-1.png`);
   const overGround = (
     piece: Raster,
     shape: ForestShapeV7,
@@ -1275,23 +1364,26 @@ async function sheet(root: string, out: string): Promise<void> {
   const record = JSON.parse(
     await readFile(path.join(root, MOUNTAIN_RANGES_RECORD), "utf8"),
   ) as DerivedRecord;
+  // A massif stands on the cell's own ground: Grass on this sheet.
   const ground = await readFile(
-    path.join(root, `${TERRAIN}/chibi-mountain-ground-1.png`),
+    path.join(root, `${TERRAIN}/chibi-grass-1.png`),
   );
   const pad = 16;
   const slotW = 2 * CELL + pad;
-  const slotH = CELL + TALL_UP + pad;
+  const slotH = CELL + TALL_UP + pad + 14;
   const perRow = 6;
   const entries = [
     ...record.pieces.map((piece) => ({
       shape: piece.shape,
       path: piece.path,
       up: piece.tall ? TALL_UP : UP,
+      light: piece.light,
     })),
     ...record.mines.map((piece) => ({
       shape: piece.shape,
       path: piece.path,
       up: UP,
+      light: piece.light,
     })),
   ];
   const width = perRow * slotW + pad;
@@ -1314,6 +1406,14 @@ async function sheet(root: string, out: string): Promise<void> {
       input: path.join(root, entry.path),
       left: ox,
       top: oy - entry.up,
+    });
+    // The lighting QA of the piece: + is lit from the left.
+    composites.push({
+      input: Buffer.from(
+        `<svg width="${2 * CELL}" height="13"><text x="0" y="10" font-family="Helvetica" font-size="10" fill="#10210f">faces ${entry.light.faces >= 0 ? "+" : ""}${entry.light.faces.toFixed(1)}</text></svg>`,
+      ),
+      left: ox,
+      top: oy + CELL + 1,
     });
   }
   const image = await sharp({

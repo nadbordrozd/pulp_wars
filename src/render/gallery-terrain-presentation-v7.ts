@@ -310,9 +310,26 @@ export function galleryTerrainPiecesV7(
       })),
     ];
   }
-  if (row === "MOUNTAIN")
+  if (row === "MOUNTAIN") {
+    // The cell's own picture: a single low mountain of the massif set on
+    // Grass, as the board draws it (pulp_wars-2yc.1), then every piece.
+    const single = CHIBI_MOUNTAIN_ART_SET_V7.pieces.find(
+      (piece) => piece.columns === 1 && !piece.tall,
+    );
     return [
-      ...subjectTiles("TERRAIN:MOUNTAIN"),
+      ...(single === undefined
+        ? subjectTiles("TERRAIN:MOUNTAIN")
+        : [
+            tile("mountain", [
+              subjectLayer("TERRAIN:GRASS"),
+              {
+                kind: "RASTER",
+                url: single.url,
+                width: single.width,
+                height: single.height,
+              },
+            ]),
+          ]),
       ...CHIBI_MOUNTAIN_ART_SET_V7.pieces.map(
         (piece): GalleryTerrainSwatchV7 => ({
           id: piece.id,
@@ -343,6 +360,7 @@ export function galleryTerrainPiecesV7(
         }),
       ),
     ];
+  }
   if (row === "WATER")
     return [
       ...subjectTiles("TERRAIN:SHALLOW_WATER"),

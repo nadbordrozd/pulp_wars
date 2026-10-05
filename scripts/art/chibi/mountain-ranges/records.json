@@ -1791,5 +1791,359 @@
         "sha256": "d9e02d1d61b0845970e80b18684dcbf996623f9126233fe9964fb4acdb1a41a8"
       }
     ]
+  },
+  "s30-tall-single-c": {
+    "id": "s30-tall-single-c",
+    "jobId": "7d087b8c-bdbf-4fe9-98a7-a9e00322ab5e",
+    "at": "2026-10-05T22:02:01.064Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform. Subject: one single large steep cool grey stone mountain: one broad peak with a wide white snow cap and one lower shoulder peak joined to its side, sharing one rock mass with a broad rocky foot, almost as wide and as tall as the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; the whole mountain is inside the image with a thin empty margin on every side, no part of it is cut by the image edge; one large shape; just rock and snow. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red, trees, forest, bushes, river, lake, boulders at the foot, separate rocks.",
+      "image_size": {
+        "width": 80,
+        "height": 124
+      },
+      "no_background": true,
+      "seed": 82030,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: one single large steep cool grey stone mountain: one broad peak with a wide white snow cap and one lower shoulder peak joined to its side, sharing one rock mass with a broad rocky foot, almost as wide and as tall as the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; the whole mountain is inside the image with a thin empty margin on every side, no part of it is cut by the image edge; one large shape; just rock and snow."
+        }
+      ],
+      "style_image": "recipe s26-big-single#9 sha256 cd0e22f3251a17b634957c3c95ae095d69f46f38d8ed9ca683c9ccba7bddc29f enlarged to 76x100 on 80x124, pixels b15780b1fff2c56a7a2d56a7f1d1a403880ca3fdd85d14c1f2ee4c5ac8456951",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s30-tall-single-c-0.png",
+        "sha256": "f44ea7303e4d975255aeac6f30eb17d9b4c3e8b3bf4561a0fbdc29a362808ab1"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s30-tall-single-c-1.png",
+        "sha256": "d6b2861c363b4bd438a920a15db203e83f2e39343eac96c33cee6771b8b79b41"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s30-tall-single-c-2.png",
+        "sha256": "53b64ac0123f2f3d1c19617988df9d0abe65a5f78f78314cf1cf92b0a4183342"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s30-tall-single-c-3.png",
+        "sha256": "706bd7b12b47e77c85f1ebbf444ed8f1b1de13942655dd553f39f30d407deb0e"
+      }
+    ]
+  },
+  "s31-tall-ridge-b": {
+    "id": "s31-tall-ridge-b",
+    "jobId": "8afd8072-c83d-4137-91a8-af7224e57ac4",
+    "at": "2026-10-05T22:03:44.131Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform. Subject: one big mountain massif nearly as tall as the image and as wide as the image: three or four large steep cool grey stone peaks with broad white snow caps that share one single rock mass, joined by high saddles and long ridgelines, big simple rock faces in two grey tones, the same rock, outline and palette as the style image; few large shapes, not many small peaks; just rock and snow. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red, trees, forest, bushes, river, lake, boulders at the foot, separate rocks.",
+      "image_size": {
+        "width": 160,
+        "height": 168
+      },
+      "no_background": true,
+      "seed": 82031,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: one big mountain massif nearly as tall as the image and as wide as the image: three or four large steep cool grey stone peaks with broad white snow caps that share one single rock mass, joined by high saddles and long ridgelines, big simple rock faces in two grey tones, the same rock, outline and palette as the style image; few large shapes, not many small peaks; just rock and snow."
+        }
+      ],
+      "style_image": "file public/assets/chibi/terrain/chibi-mountain-1.body.png sha256 c1042db9a985ea76f2f26df1c9f0df0e9bbf72acada95207968cb18888b32b6e",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.125,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-0.png",
+        "sha256": "50f0e6513d0e12c4fb28b31fad5731ea22457e51e2baed64233f8a085d0dfb63"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-1.png",
+        "sha256": "8d5c28b1df9f5f7eb2d4a1acb9cc029a09b65bb5d05a26e566b7dec2085ca6ea"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-2.png",
+        "sha256": "78f35d12e24bd80485d74499d9989ae261d83c3bf11c1b3858c9c784c13d07dd"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-3.png",
+        "sha256": "524c5565ebf6a67a3958de8f7d1f79e30f156047798307fdcc38b3ab43f0c3e5"
+      }
+    ]
+  },
+  "s32-tall-ridge-c": {
+    "id": "s32-tall-ridge-c",
+    "jobId": "404c018e-f840-4136-94ce-3c81760f360a",
+    "at": "2026-10-05T22:06:20.023Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform. Subject: one big mountain massif nearly as tall as the image and as wide as the image: three or four large steep cool grey stone peaks with broad white snow caps that share one single rock mass, joined by high saddles and long ridgelines, big simple rock faces in two grey tones, the same rock, outline and palette as the style image; few large shapes, not many small peaks; just rock and snow. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red, trees, forest, bushes, river, lake, boulders at the foot, separate rocks.",
+      "image_size": {
+        "width": 160,
+        "height": 168
+      },
+      "no_background": true,
+      "seed": 82032,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: one big mountain massif nearly as tall as the image and as wide as the image: three or four large steep cool grey stone peaks with broad white snow caps that share one single rock mass, joined by high saddles and long ridgelines, big simple rock faces in two grey tones, the same rock, outline and palette as the style image; few large shapes, not many small peaks; just rock and snow."
+        }
+      ],
+      "style_image": "recipe s08-2x2-v2#1 sha256 b5f5cc841e869d22fb22317e611a8d97a14846b2946344d2fc590949a0c62071",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.125,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s32-tall-ridge-c-0.png",
+        "sha256": "4c30ee950afa6ae0f5aa78972d4a9ea66d751ab2109de22927fbff99691e7b3e"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s32-tall-ridge-c-1.png",
+        "sha256": "3641a9bb97797a58654fcaa940b0cdcca9ed42bc59b06051105c0ffd4a91380f"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s32-tall-ridge-c-2.png",
+        "sha256": "2974bc33822eab8479c62da7eb99dc9ed57f8a40faf6f564e2042a54da6e15ad"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s32-tall-ridge-c-3.png",
+        "sha256": "4943118ba0893c52febec4097ee014d12d1e720dfcf2107dd5fac89b789353f5"
+      }
+    ]
+  },
+  "s33-low-ridge-e": {
+    "id": "s33-low-ridge-e",
+    "jobId": "73570e52-0ae0-4574-8fc6-8c9c805a68cc",
+    "at": "2026-10-05T22:07:59.642Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform. Subject: a mountain ridge twice as wide as it is tall: three large steep cool grey stone peaks side by side with broad white snow caps, sharing one rock mass and joined by high saddles, each peak about a third of the image wide, low rocky foothills tapering out to the left edge and the right edge of the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; few large shapes; just rock and snow. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red, trees, forest, bushes, river, lake, boulders at the foot, separate rocks.",
+      "image_size": {
+        "width": 160,
+        "height": 92
+      },
+      "no_background": true,
+      "seed": 82033,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a mountain ridge twice as wide as it is tall: three large steep cool grey stone peaks side by side with broad white snow caps, sharing one rock mass and joined by high saddles, each peak about a third of the image wide, low rocky foothills tapering out to the left edge and the right edge of the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; few large shapes; just rock and snow."
+        }
+      ],
+      "style_image": "recipe s08-2x2-v2#3 sha256 e83db948124468315de64c0b41b4086c405b2faf173bbc2b84b0b7d6e31f0868",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s33-low-ridge-e-0.png",
+        "sha256": "23de2f135bb4e343ecc872327b0c582fb652f129c36754f54fa8610ae1c9bd7d"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s33-low-ridge-e-1.png",
+        "sha256": "854618462e3588343d231c491ff0ef9c329e2c3edf63f0dff0cc669d15f2a097"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s33-low-ridge-e-2.png",
+        "sha256": "7494c022f5c3399f0d9ce7b732b9a3ac07363aa271ea77bbb463cd22a3fbe20f"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s33-low-ridge-e-3.png",
+        "sha256": "0b36a3a952ba0388889738418a8b9a1aceefbb72d825105ee14273ea9d963da2"
+      }
+    ]
+  },
+  "s34-low-ridge-f": {
+    "id": "s34-low-ridge-f",
+    "jobId": "90de469e-70c1-4651-b400-d4ef136a5273",
+    "at": "2026-10-05T22:08:54.164Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform. Subject: a broad low mountain massif, almost twice as wide as it is tall, that fills the whole image: three large steep cool grey stone peaks side by side with broad white snow caps, sharing one rock mass, joined by high saddles, with wide rocky foothills and scree slopes running down to the left edge, the right edge and the bottom edge of the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; few large shapes; just rock and snow. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red, trees, forest, bushes, river, lake, boulders at the foot, separate rocks.",
+      "image_size": {
+        "width": 160,
+        "height": 92
+      },
+      "no_background": true,
+      "seed": 82034,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a broad low mountain massif, almost twice as wide as it is tall, that fills the whole image: three large steep cool grey stone peaks side by side with broad white snow caps, sharing one rock mass, joined by high saddles, with wide rocky foothills and scree slopes running down to the left edge, the right edge and the bottom edge of the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; few large shapes; just rock and snow."
+        }
+      ],
+      "style_image": "recipe s08-2x2-v2#2 sha256 87394a0991d050a51e1fe4bfac6932703cdc5f0e75fb469ebc8d08550c8a3678",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s34-low-ridge-f-0.png",
+        "sha256": "1b63073e07e32a3fee94ce41b6c67d961d1c38fd58afbde8f6168acce806e38a"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s34-low-ridge-f-1.png",
+        "sha256": "64a15bdfb59ec127197078f5a51e40e5b25ae0754b0b5c6a3f5b1770c31ebf41"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s34-low-ridge-f-2.png",
+        "sha256": "d62b6ba5ca7c633b3d0e115f3b9f2d487f0e046e6c2765c527f2ac32effc6fec"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s34-low-ridge-f-3.png",
+        "sha256": "25a9b4c50a71eb7fd4355aa96561237b93fa305224f2a6eab31debef98fa21df"
+      }
+    ]
+  },
+  "s35-low-ridge-g": {
+    "id": "s35-low-ridge-g",
+    "jobId": "c9f398a6-6f77-4484-9801-49f39d55e1da",
+    "at": "2026-10-05T22:11:56.945Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform. Subject: a mountain ridge twice as wide as it is tall: three large steep cool grey stone peaks side by side with broad white snow caps, sharing one rock mass and joined by high saddles, each peak about a third of the image wide, low rocky foothills tapering out to the left edge and the right edge of the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; few large shapes; just rock and snow. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red, trees, forest, bushes, river, lake, boulders at the foot, separate rocks.",
+      "image_size": {
+        "width": 160,
+        "height": 92
+      },
+      "no_background": true,
+      "seed": 82035,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a mountain ridge twice as wide as it is tall: three large steep cool grey stone peaks side by side with broad white snow caps, sharing one rock mass and joined by high saddles, each peak about a third of the image wide, low rocky foothills tapering out to the left edge and the right edge of the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; few large shapes; just rock and snow."
+        }
+      ],
+      "style_image": "recipe s25-low-ridge-d#0 sha256 e7e043b01aed8e9789480e65f96c0157b4b90d15e89c959478520906adaf3ccf",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s35-low-ridge-g-0.png",
+        "sha256": "04b47d0c088f9f0da8694b01fae645afc5a3f85ddec5128e0e8e014affab104d"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s35-low-ridge-g-1.png",
+        "sha256": "83f347b8ec74a9edb621d007c0e26fda8864519f1cd702373396ebd18072596e"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s35-low-ridge-g-2.png",
+        "sha256": "dc6324e9e8e6ac007a7be727704f3f2243b076ec2a6c747a846afea6b6d2fe0d"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s35-low-ridge-g-3.png",
+        "sha256": "664e2157a8a6537f7fed1215f0fa4bb90da8dbe50edbcb42613b29eac889b453"
+      }
+    ]
   }
 }

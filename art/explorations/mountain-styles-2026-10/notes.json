@@ -1,0 +1,20 @@
+{
+  "a-storybook": [
+    "Faction ground: there is no rock base. A conversion stops drawing the rocky ground tile, so the faction's own grass runs under and between the mountains; the pines stay green on red dust or mint, as forests do.",
+    "Snow: the cream caps take the Ice Folk snow caps as today, and the Snow overlay lies on the meadow between the mountains.",
+    "Mines: one edit call dug the Mine into a low single (third scene). Tall and low: unchanged; the samples fit both limits (13 px and 48 px) as generated.",
+    "Nothing is mirrored. To convert the full set (8 + 8 low, 6 + 6 tall, the Mine) with every variant drawn, not mirrored: about 16 to 20 PixelLab calls. One palette held over this round's calls with the anchor as style image; one call of four (the crags) left it and is rejected."
+  ],
+  "e-slate": [
+    "Faction ground: as A: no rock base, the faction's grass under and between the mountains.",
+    "Snow: white caps of its own, so Ice Folk caps add less than on A; the Snow overlay works as today.",
+    "Mines: one edit call dug the Mine into a low single (third scene). Tall and low: unchanged; the samples fit both limits as generated.",
+    "Nothing is mirrored. To convert the full set: about 18 to 24 PixelLab calls; this look drifts more (two ridge calls of four were refused: one left the palette, one was lit from the right)."
+  ],
+  "d-no-new-art": [
+    "Lighting, plainly: 8 of today's 28 pieces are lit from the right. They are the mirrored variants of the bake (two tall singles, three low ridges, three tall ridges). Here each gives way to a piece of its kind that is lit from the left, so the option is consistent, with 4 tall singles and 3 tall ridges where today has 6 and 6.",
+    "Faction ground: as A. The rocky ground tile goes and the faction's grass shows; the green skirt at each foot would take the faction's ground colour.",
+    "Snow and Mines: unchanged; the same treatment on today's mined mountain (third scene). Tall and low: unchanged; the pieces are today's.",
+    "To convert: no PixelLab call for the look. The treatment moves into the bake of scripts/art/chibi-mountain-ranges.ts, which also stops mirroring; to get back to 6 + 6 + 8 distinct variants lit from the left takes about 3 calls."
+  ]
+}

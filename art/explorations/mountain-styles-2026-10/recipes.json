@@ -1,0 +1,602 @@
+{
+  "bead": "pulp_wars-2yc.1",
+  "shared": {
+    "klass": "Class: a mountain for a square-grid strategy map, drawn as one raised terrain feature: one connected mass, calmer and less saturated than units, simple readable shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground slab, no soil square, no tile and no platform.",
+    "klass2": "Class: a mountain for a strategy map, one connected mass, calmer than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it."
+  },
+  "recipes": [
+    {
+      "id": "a01-single",
+      "width": 80,
+      "height": 88,
+      "seed": 91001,
+      "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, sky, clouds, buildings, characters, people, river, lake, text",
+      "subject": "Subject: one single small mountain, a little wider than tall, with two or three soft rounded humps joined into one mass, in a cosy storybook look: chubby, rounded, toy-like forms; warm brown-grey rock (light #a39480, shade #7a6c60) with a few chunky ledges; the outline is a dark brown tone of the rock (#4a3d36), never black; only a small rounded cream-white snow cap on the highest top; the lower third is green foothills: rounded grass-green (#7fae55) slopes with a few tiny round dark-green bushes and one or two tiny pine trees, so the mountain grows out of a meadow and has no grey base; it fills the image from the left edge to the right edge.",
+      "notes": "Style A, storybook: the first singles, no style image.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "Four warm, rounded mountains with cream snow, ledges and small pines and bushes at the foot: the look asked for. 0 (two humps, 79 x 71) is the style anchor and the low single; 1 is a broad three-hump hill; 2 is cut by the right edge; 3 a single dome ringed with pines."
+    },
+    {
+      "id": "b01-single",
+      "width": 80,
+      "height": 88,
+      "seed": 91002,
+      "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, sky, clouds, buildings, characters, people, river, lake, text, trees, bushes, grass",
+      "subject": "Subject: one single mountain with one main pointed peak and a lower shoulder peak joined into one mass, in an elegant painted alpine look: cool blue-violet rock (light #8b93c4, shade #5a6096), broad smooth planes with very few interior lines, large clean white snowfields over the upper half with pale blue (#cfdcf5) snow shadow, the feet dissolve into a low band of pale blue-white mist instead of a hard base; the outline is dark indigo (#2e3160), never black; serene and majestic; it fills the image from the left edge to the right edge.",
+      "notes": "Style B, painted alpine: the first singles, no style image.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "Four blue-violet snowy peaks with a band of swirling mist at the foot, cut square by the image edges. 0 (a peak and a shoulder) is the style anchor and the low single; 1 a single pyramid; 2 and 3 clusters of thin peaks."
+    },
+    {
+      "id": "c01-single",
+      "width": 80,
+      "height": 88,
+      "seed": 91003,
+      "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, sky, clouds, buildings, characters, people, river, lake, text, trees, bushes, grass, snow",
+      "subject": "Subject: one single mesa with a smaller stepped crag at its side joined into one mass, in a bold blocky look like stacked building blocks: flat-topped table mountains and stepped crags with vertical cliff walls in two or three terraces, strong simple planes, sun-lit ochre faces (#cba76c) and slate-blue shadow faces (#5f6b7a), a few horizontal strata lines, a little pale scree at the foot, no snow at all; the outline is dark slate brown (#3a3432), never black; it fills the image from the left edge to the right edge.",
+      "notes": "Style C, mesa and crag: the first singles, no style image.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "Four ochre and slate mesas. 0 (a mesa with a stepped crag, 70 x 58) is the style anchor and the low single; 1 a round mesa with boulders; 2 reads as a ramp with stairs, a building; 3 a striped block with boulders."
+    },
+    {
+      "id": "a02-ridge",
+      "width": 160,
+      "height": 92,
+      "seed": 91010,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text",
+      "styleImage": {
+        "recipe": "a01-single",
+        "candidate": 0
+      },
+      "subject": "Subject: a wide low mountain ridge, twice as wide as it is tall: four or five soft rounded humps of different heights, joined by saddles into one continuous mass that runs from the left edge of the image to the right edge, the same rock, colours, outline, shading and detail as the style image; in a cosy storybook look: chubby rounded warm brown-grey rock with chunky ledges, dark brown outline (never black), small cream snow caps, tiny pines and round bushes at the foot.",
+      "notes": "The low two-cell ridge, styled from the accepted single.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "reject": "The ridges copy the scale of the single: about 100 px wide on the 160 px canvas, too small for two cells. Replaced by a05, whose style image is two singles side by side."
+    },
+    {
+      "id": "a03-tall",
+      "width": 80,
+      "height": 128,
+      "seed": 91011,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text",
+      "styleImage": {
+        "recipe": "a01-single",
+        "candidate": 0,
+        "enlarge": {
+          "width": 78,
+          "height": 120,
+          "canvasWidth": 80,
+          "canvasHeight": 128
+        }
+      },
+      "subject": "Subject: one tall mountain, much taller than it is wide: a high rounded main summit with one lower rounded shoulder, one connected mass that fills the image from the top to the bottom, the same rock, colours, outline, shading and detail as the style image; in a cosy storybook look: chubby rounded warm brown-grey rock with chunky ledges, dark brown outline (never black), small cream snow caps, tiny pines and round bushes at the foot.",
+      "notes": "The tall single; the style image is the single stretched to the tall canvas.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "Four tall mountains about 78 x 110 at the native pixel density, with a shoulder, ledges, pines and bushes: the stretched style image worked. 0, 1 and 3 are the tall singles."
+    },
+    {
+      "id": "a04-massif",
+      "width": 160,
+      "height": 128,
+      "seed": 91012,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text",
+      "styleImage": {
+        "recipe": "a01-single",
+        "candidate": 0,
+        "enlarge": {
+          "width": 140,
+          "height": 124,
+          "canvasWidth": 160,
+          "canvasHeight": 128
+        }
+      },
+      "subject": "Subject: a big mountain massif as wide as the image: three or four large rounded summits of different heights, the highest at the back in the middle, joined into one connected mass that runs from the left edge of the image to the right edge and rises to the top, the same rock, colours, outline, shading and detail as the style image; in a cosy storybook look: chubby rounded warm brown-grey rock with chunky ledges, dark brown outline (never black), small cream snow caps, tiny pines and round bushes at the foot.",
+      "notes": "The tall two-cell massif; the style image is the single enlarged.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "reject": "The style image enlarged to twice its size gave massifs in doubled pixels with a 4 px outline: another pixel density than every other sprite. Replaced by a06, whose style image is two tall singles side by side at native size."
+    },
+    {
+      "id": "b02-ridge",
+      "width": 160,
+      "height": 92,
+      "seed": 91020,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text, trees, bushes, grass",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/b-ridge.png"
+      },
+      "subject": "Subject: a wide low mountain ridge, twice as wide as it is tall: four or five pointed snowy peaks of different heights, joined by saddles into one continuous mass that runs from the left edge of the image to the right edge, the same rock, colours, outline, shading and detail as the style image; in an elegant alpine look: cool blue-violet rock in broad smooth planes, large white snowfields, dark indigo outline (never black), a low band of pale mist at the feet.",
+      "notes": "Styled from two accepted samples side by side at native size, so the result fills both cells at the sprites' pixel density.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "0: a clean snowy ridge 157 px wide with a stray speck under it (cut off in the derivation), the low ridge. 1: greyer rock, off palette. 2: a peak on a white snow slab. 3: heavy black lines. Only 0 is used, mirrored for variety."
+    },
+    {
+      "id": "b03-tall",
+      "width": 80,
+      "height": 128,
+      "seed": 91021,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text, trees, bushes, grass",
+      "styleImage": {
+        "recipe": "b01-single",
+        "candidate": 0,
+        "enlarge": {
+          "width": 78,
+          "height": 120,
+          "canvasWidth": 80,
+          "canvasHeight": 128
+        }
+      },
+      "subject": "Subject: one tall mountain, much taller than it is wide: one high pointed main peak with one lower shoulder peak, one connected mass that fills the image from the top to the bottom, the same rock, colours, outline, shading and detail as the style image; in an elegant alpine look: cool blue-violet rock in broad smooth planes, large white snowfields, dark indigo outline (never black), a low band of pale mist at the feet.",
+      "notes": "The tall single; the style image is the single stretched to the tall canvas.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "Four tall peaks 78 x 119. 0 has no mist and a clean foot; 1, 2 and 3 stand in swirls of mist. 0 and 2 are the tall singles."
+    },
+    {
+      "id": "b04-massif",
+      "width": 160,
+      "height": 128,
+      "seed": 91022,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text, trees, bushes, grass",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/b-massif.png"
+      },
+      "subject": "Subject: a big mountain massif as wide as the image: three or four large pointed snowy peaks of different heights, the highest at the back in the middle, joined into one connected mass that runs from the left edge of the image to the right edge and rises to the top, the same rock, colours, outline, shading and detail as the style image; in an elegant alpine look: cool blue-violet rock in broad smooth planes, large white snowfields, dark indigo outline (never black), a low band of pale mist at the feet.",
+      "notes": "Styled from two accepted samples side by side at native size, so the result fills both cells at the sprites' pixel density.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "0: four sharp peaks, clean, no mist: the tall ridge. 2: a crowd of thin peaks, also used. 1 and 3 carry swirls of mist cut by the image edge."
+    },
+    {
+      "id": "c02-ridge",
+      "width": 160,
+      "height": 92,
+      "seed": 91030,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text, trees, bushes, grass, snow",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/c-ridge.png"
+      },
+      "subject": "Subject: a wide low mountain ridge, twice as wide as it is tall: three or four flat-topped mesas and stepped crags of different heights and widths, joined by saddles into one continuous mass that runs from the left edge of the image to the right edge, the same rock, colours, outline, shading and detail as the style image; in a bold blocky look: flat-topped ochre mesas and stepped crags with slate-blue shadow faces and strata lines, dark slate-brown outline (never black), no snow.",
+      "notes": "Styled from two accepted samples side by side at native size, so the result fills both cells at the sprites' pixel density.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "0: three mesas in a row, 0 and 2 (two mesas with boulders between) are the low ridges; 1 and 3 are lower and read as ruins."
+    },
+    {
+      "id": "c03-tall",
+      "width": 80,
+      "height": 128,
+      "seed": 91031,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text, trees, bushes, grass, snow",
+      "styleImage": {
+        "recipe": "c01-single",
+        "candidate": 0,
+        "enlarge": {
+          "width": 78,
+          "height": 120,
+          "canvasWidth": 80,
+          "canvasHeight": 128
+        }
+      },
+      "subject": "Subject: one tall mountain, much taller than it is wide: one high table mountain rising in three stacked terraces, each step narrower than the one below, one connected mass that fills the image from the top to the bottom, the same rock, colours, outline, shading and detail as the style image; in a bold blocky look: flat-topped ochre mesas and stepped crags with slate-blue shadow faces and strata lines, dark slate-brown outline (never black), no snow.",
+      "notes": "The tall single; the style image is the single stretched to the tall canvas.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "0 and 1: square rock towers with a stepped crag; 2: a three-step ziggurat, close to a building; 3: a rougher tower. 0 and 3 are the tall singles."
+    },
+    {
+      "id": "c04-massif",
+      "width": 160,
+      "height": 128,
+      "seed": 91032,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text, trees, bushes, grass, snow",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/c-massif.png"
+      },
+      "subject": "Subject: a big mountain massif as wide as the image: three large flat-topped mesas of different heights with stepped crags between them, the highest at the back in the middle, joined into one connected mass that runs from the left edge of the image to the right edge and rises to the top, the same rock, colours, outline, shading and detail as the style image; in a bold blocky look: flat-topped ochre mesas and stepped crags with slate-blue shadow faces and strata lines, dark slate-brown outline (never black), no snow.",
+      "notes": "Styled from two accepted samples side by side at native size, so the result fills both cells at the sprites' pixel density.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "Four near-identical groups of three stepped towers 115 px wide; 0 and 3 are the tall ridges. They read as much as fortress blocks as rock."
+    },
+    {
+      "id": "a05-ridge",
+      "width": 160,
+      "height": 92,
+      "seed": 91040,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/a-ridge.png"
+      },
+      "subject": "Subject: a wide low mountain ridge, twice as wide as it is tall: four or five soft rounded humps of different heights, joined by saddles into one continuous mass that runs from the left edge of the image to the right edge, the same rock, colours, outline, shading and detail as the style image; in a cosy storybook look: chubby rounded warm brown-grey rock with chunky ledges, dark brown outline (never black), small cream snow caps, tiny pines and round bushes at the foot.",
+      "notes": "Styled from two accepted samples side by side at native size, so the result fills both cells at the sprites' pixel density.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "Four ridges 150 to 160 px wide at the native density. 1 (two snowy humps with a saddle and pine groups) and 3 (a rounded massif round a pine grove) are whole and are the low ridges; 0 and 2 are rows of cones cut by both image edges."
+    },
+    {
+      "id": "a06-massif",
+      "width": 160,
+      "height": 128,
+      "seed": 91041,
+      "negative": "ground plate, platform, slab, background, sky, buildings, characters, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/a-massif.png"
+      },
+      "subject": "Subject: a big mountain massif as wide as the image: three or four large rounded summits of different heights, the highest at the back in the middle, joined into one connected mass that runs from the left edge of the image to the right edge and rises to the top, the same rock, colours, outline, shading and detail as the style image; in a cosy storybook look: chubby rounded warm brown-grey rock with chunky ledges, dark brown outline (never black), small cream snow caps, tiny pines and round bushes at the foot.",
+      "notes": "Styled from two accepted samples side by side at native size, so the result fills both cells at the sprites' pixel density.",
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "review": "Four near-identical groups of four tall rounded mountains with ledges, pines and bushes, 107 px wide. 0 and 3 are the tall ridges. They fill two thirds of their two cells: a conversion would ask for wider ones."
+    },
+    {
+      "id": "a07-mine",
+      "endpoint": "edit-image-pixen",
+      "width": 80,
+      "height": 88,
+      "seed": 91070,
+      "source": {
+        "recipe": "a01-single",
+        "candidate": 0
+      },
+      "instruction": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the shape, the rock, the colours, the outline and the art style exactly the same, on a transparent background with nothing at all under the mountain.",
+      "notes": "The Mine dug into the style's low single.",
+      "review": "Two near-identical candidates: the two-hump single with a timber-framed entrance and an ore cart; the pines and bushes at its foot are gone. 0 is the option's mined mountain."
+    },
+    {
+      "id": "b07-mine",
+      "endpoint": "edit-image-pixen",
+      "width": 80,
+      "height": 88,
+      "seed": 91071,
+      "source": {
+        "recipe": "b01-single",
+        "candidate": 0
+      },
+      "instruction": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the shape, the rock, the colours, the outline and the art style exactly the same, on a transparent background with nothing at all under the mountain.",
+      "notes": "The Mine dug into the style's low single.",
+      "review": "Two near-identical candidates: the entrance and the cart stand in the mist at the peak's foot. 0 is the option's mined mountain."
+    },
+    {
+      "id": "c07-mine",
+      "endpoint": "edit-image-pixen",
+      "width": 80,
+      "height": 88,
+      "seed": 91072,
+      "source": {
+        "recipe": "c01-single",
+        "candidate": 0
+      },
+      "instruction": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the shape, the rock, the colours, the outline and the art style exactly the same, on a transparent background with nothing at all under the mountain.",
+      "notes": "The Mine dug into the style's low single.",
+      "review": "Two near-identical candidates: the entrance is cut into the stepped crag, with a small cart. 0 is the option's mined mountain."
+    },
+    {
+      "id": "a11-dome",
+      "width": 80,
+      "height": 88,
+      "seed": 92001,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "recipe": "a01-single",
+        "candidate": 0
+      },
+      "subject": "Subject: one single low mountain, clearly wider than tall: one broad rounded dome with a small side hump and a ledge, one connected mass that fills the image from the left edge to the right edge, in a cosy storybook look: chubby rounded warm brown-grey rock (light #9d8d77, shade #6c5c4f) with chunky ledges, dark brown outline (#30271e, never black), small cream snow caps (#efe8cf), tiny pines and round bushes at the foot.",
+      "notes": "Round 2 (the light from the bottom left, one palette, more shapes). Storybook low singles: domes.",
+      "endpoint": "generate-image-v2",
+      "klass": "@klass2",
+      "review": "Four domes in the anchor's palette, all lit from the left (faces +10.5 to +18.1). 0 two humps, 1 a broad dome with a ledge, 2 two humps and a boulder, 3 a lopsided peak with a long left shoulder. All four are low singles."
+    },
+    {
+      "id": "a12-tor",
+      "width": 80,
+      "height": 88,
+      "seed": 92002,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "recipe": "a01-single",
+        "candidate": 0
+      },
+      "subject": "Subject: one single craggy tor: three or four rounded boulder-like rock steps stacked into one lumpy mass with ledges, a blunt top with only a dab of snow, one connected mass that fills the image from the left edge to the right edge, in a cosy storybook look: chubby rounded warm brown-grey rock (light #9d8d77, shade #6c5c4f) with chunky ledges, dark brown outline (#30271e, never black), small cream snow caps (#efe8cf), tiny pines and round bushes at the foot.",
+      "notes": "Storybook low singles: tors, for shape variety beside the domes.",
+      "endpoint": "generate-image-v2",
+      "klass": "@klass2",
+      "review": "Four tors, lit from the left (faces +3.6 to +18.2). 0 a stepped beehive, 1 a low stepped pair, 2 a peak over a slab, 3 a banded beehive with a hump. 0, 2 and 3 are low singles; 1 is the weakest in shading and is left out."
+    },
+    {
+      "id": "e01-single",
+      "width": 80,
+      "height": 88,
+      "seed": 92101,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "subject": "Subject: one single small mountain, a little wider than tall, with two soft rounded humps joined into one mass, in a cosy storybook look in cool slate: chubby rounded blue-grey rock (light #9aa3b5, shade #697189) with chunky ledges, dark slate-blue outline (#2b3042, never black), rounded white snow caps with pale blue shade, tiny dark-green pines and round bushes at the foot; it fills the image from the left edge to the right edge.",
+      "notes": "Option E, slate storybook: the storybook forms in the cool rock of a classic mountain. First singles, no style image.",
+      "endpoint": "generate-image-v2",
+      "klass": "@klass2",
+      "review": "Four slate mountains with white caps, pines and bushes, all lit from the left (faces +7.2 to +35.7). 0 two pointed peaks, 1 a broad double hump, 2 a boulder pile with a dome, 3 two stepped humps. 3 is the style anchor; all four are low singles."
+    },
+    {
+      "id": "a13-crag",
+      "width": 80,
+      "height": 128,
+      "seed": 92003,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "recipe": "a12-tor",
+        "candidate": 0,
+        "enlarge": {
+          "width": 78,
+          "height": 120,
+          "canvasWidth": 80,
+          "canvasHeight": 128
+        }
+      },
+      "subject": "Subject: one tall craggy mountain, much taller than wide: a leaning rock tower of stacked rounded steps with two ledges and a blunt double top, one connected mass that fills the image from top to bottom, in a cosy storybook look: chubby rounded warm brown-grey rock (light #9d8d77, shade #6c5c4f) with chunky ledges, dark brown outline (#30271e, never black), small cream snow caps (#efe8cf), tiny pines and round bushes at the foot.",
+      "notes": "Storybook tall singles: a crag, for variety beside the sugarloaves of a03.",
+      "endpoint": "generate-image-v2",
+      "reject": "Four rock towers that fill the whole 80 x 128 image and are cut at the top and the foot, in a paler sand tone than the set. Lit from the left, but off palette and over the 125 px a tall piece may be."
+    },
+    {
+      "id": "a14-whaleback",
+      "width": 160,
+      "height": 92,
+      "seed": 92004,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/a2-ridge.png"
+      },
+      "subject": "Subject: a wide low mountain ridge, twice as wide as tall: one long whaleback with three humps of clearly different sizes and one deep saddle, one continuous mass that runs from the left edge of the image to the right edge, in a cosy storybook look: chubby rounded warm brown-grey rock (light #9d8d77, shade #6c5c4f) with chunky ledges, dark brown outline (#30271e, never black), small cream snow caps (#efe8cf), tiny pines and round bushes at the foot.",
+      "notes": "Storybook low ridges, styled from two round-2 singles side by side.",
+      "endpoint": "generate-image-v2",
+      "review": "Four long ridges 153 to 155 px wide, in palette, lit from the left (faces +15.6 to +21.6): 0 three humps, 1 a big hump and two small, 2 a low stepped ridge, 3 three humps over boulders. 0, 1 and 3 are low ridges."
+    },
+    {
+      "id": "a15-pair",
+      "width": 160,
+      "height": 92,
+      "seed": 92005,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/a2-ridge.png"
+      },
+      "subject": "Subject: a wide low mountain group, twice as wide as tall: a big broad dome on the left joined by a low rocky saddle to a small craggy tor on the right, with pine groves in the saddle, one continuous mass that runs from the left edge of the image to the right edge, in a cosy storybook look: chubby rounded warm brown-grey rock (light #9d8d77, shade #6c5c4f) with chunky ledges, dark brown outline (#30271e, never black), small cream snow caps (#efe8cf), tiny pines and round bushes at the foot.",
+      "notes": "Storybook low ridges: an uneven pair, so a row of ridges is not a row of equal cones.",
+      "endpoint": "generate-image-v2",
+      "review": "Four uneven pairs 160 px wide with pine groves between: 0 a dome and a tor, 1 a peak with a cave mouth and a small peak (faces only +5.3), 2 two cones, 3 a banded dome and a cone. 0, 2 and 3 are low ridges."
+    },
+    {
+      "id": "e02-tall",
+      "width": 80,
+      "height": 128,
+      "seed": 92102,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "recipe": "e01-single",
+        "candidate": 3,
+        "enlarge": {
+          "width": 78,
+          "height": 120,
+          "canvasWidth": 80,
+          "canvasHeight": 128
+        }
+      },
+      "subject": "Subject: one tall mountain, much taller than wide: a high rounded main summit with one lower shoulder and two ledges, one connected mass that fills the image from top to bottom, in a cosy storybook look in cool slate: chubby rounded blue-grey rock (light #9aa3b5, shade #697189) with chunky ledges, dark slate-blue outline (#2b3042, never black), rounded white snow caps with pale blue shade, tiny dark-green pines and round bushes at the foot.",
+      "notes": "Slate storybook tall singles; the style image is the single stretched to the tall canvas.",
+      "endpoint": "generate-image-v2",
+      "review": "Four tall slate mountains 115 to 123 px, lit from the left (faces +26 to +31): 0 a sugarloaf over boulders, 1 a twin, 2 a pair with a notch, 3 a pointed snowy pair. All four are tall singles."
+    },
+    {
+      "id": "e03-crag",
+      "width": 80,
+      "height": 128,
+      "seed": 92103,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "recipe": "e01-single",
+        "candidate": 0,
+        "enlarge": {
+          "width": 78,
+          "height": 120,
+          "canvasWidth": 80,
+          "canvasHeight": 128
+        }
+      },
+      "subject": "Subject: one tall craggy mountain, much taller than wide: a pointed main peak with a leaning lower peak and a stepped rock shoulder, one connected mass that fills the image from top to bottom, in a cosy storybook look in cool slate: chubby rounded blue-grey rock (light #9aa3b5, shade #697189) with chunky ledges, dark slate-blue outline (#2b3042, never black), rounded white snow caps with pale blue shade, tiny dark-green pines and round bushes at the foot.",
+      "notes": "Slate storybook tall singles: a pointed crag.",
+      "endpoint": "generate-image-v2",
+      "review": "Four near-identical pointed snowy pairs, paler than the anchor, lit from the left. Not used: e02-3 is the same shape in the set's rock."
+    },
+    {
+      "id": "e04-whaleback",
+      "width": 160,
+      "height": 92,
+      "seed": 92104,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/e-ridge.png"
+      },
+      "subject": "Subject: a wide low mountain ridge, twice as wide as tall: one long ridge with three summits of clearly different sizes and one deep saddle, one continuous mass that runs from the left edge of the image to the right edge, in a cosy storybook look in cool slate: chubby rounded blue-grey rock (light #9aa3b5, shade #697189) with chunky ledges, dark slate-blue outline (#2b3042, never black), rounded white snow caps with pale blue shade, tiny dark-green pines and round bushes at the foot.",
+      "notes": "Slate storybook low ridges, styled from two singles side by side.",
+      "endpoint": "generate-image-v2",
+      "reject": "Off the look: dark teal-grey rock with thin strata lines and dense fir rows, another hand than the singles; 0 and 3 are pointed pyramids, 1 and 2 terraced. Lit from the left, but not this option."
+    },
+    {
+      "id": "e05-pair",
+      "width": 160,
+      "height": 92,
+      "seed": 92105,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/e-ridge.png"
+      },
+      "subject": "Subject: a wide low mountain group, twice as wide as tall: a big broad mountain on the left joined by a low rocky saddle to a small craggy tor on the right, with pine groves in the saddle, one continuous mass that runs from the left edge of the image to the right edge, in a cosy storybook look in cool slate: chubby rounded blue-grey rock (light #9aa3b5, shade #697189) with chunky ledges, dark slate-blue outline (#2b3042, never black), rounded white snow caps with pale blue shade, tiny dark-green pines and round bushes at the foot.",
+      "notes": "Slate storybook low ridges: an uneven pair.",
+      "endpoint": "generate-image-v2",
+      "reject": "Boulder piles in the right palette, but lit from the right: the lighting QA measures faces -12.0 to -18.9 on all four. Refused."
+    },
+    {
+      "id": "a16-twin",
+      "width": 80,
+      "height": 124,
+      "seed": 92006,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "recipe": "a03-tall",
+        "candidate": 2
+      },
+      "subject": "Subject: one tall mountain, taller than wide: a broad base rising to two rounded summits of different heights with a notch between them and one ledge, one connected mass, whole, with a little space above its top, in a cosy storybook look: chubby rounded warm brown-grey rock (light #9d8d77, shade #6c5c4f) with chunky ledges, dark brown outline (#30271e, never black), small cream snow caps (#efe8cf), tiny pines and round bushes at the foot.",
+      "notes": "Storybook tall singles: a twin summit, styled from a tall single at its own size.",
+      "endpoint": "generate-image-v2",
+      "review": "Four tall mountains 97 to 109 px in palette, lit from the left (faces +11.1 to +18.9): 0 and 3 a sugarloaf with a small side peak, 1 and 2 twin summits with a notch. 1 and 2 are tall singles."
+    },
+    {
+      "id": "a17-massif",
+      "width": 160,
+      "height": 128,
+      "seed": 92007,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/a2-massif.png"
+      },
+      "subject": "Subject: a big mountain massif as wide as the image: one broad dome on the left, one tall sugarloaf in the middle at the back and one small stepped tor in front on the right, three clearly different shapes joined into one mass, in a cosy storybook look: chubby rounded warm brown-grey rock (light #9d8d77, shade #6c5c4f) with chunky ledges, dark brown outline (#30271e, never black), small cream snow caps (#efe8cf), tiny pines and round bushes at the foot.",
+      "notes": "Storybook tall ridges, styled from two tall singles side by side.",
+      "endpoint": "generate-image-v2",
+      "review": "0 to 2: near-identical groups of two tall mountains and two small ones, in palette, lit from the left (+13.3); 0 is a tall ridge. 3 grew a pale spiky peak and a large fir: off the look."
+    },
+    {
+      "id": "a18-massif",
+      "width": 160,
+      "height": 128,
+      "seed": 92008,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/a2-massif.png"
+      },
+      "subject": "Subject: a big mountain as wide as the image: one wide rounded mountain with a double summit, long sloping shoulders to both sides and a small outlying hump at its right foot, one connected mass, in a cosy storybook look: chubby rounded warm brown-grey rock (light #9d8d77, shade #6c5c4f) with chunky ledges, dark brown outline (#30271e, never black), small cream snow caps (#efe8cf), tiny pines and round bushes at the foot.",
+      "notes": "Storybook tall ridges: one wide mountain, so not every tall ridge is a row of cones.",
+      "endpoint": "generate-image-v2",
+      "review": "Four broad single mountains 146 to 156 px wide with ledges, boulders and pines, each a different shape, lit from the left (faces +4.1 to +27.8): the variety the cones lacked. The call drifted to a redder rock (144,118,105 and 99,80,76); the mock swaps three colours back to the palette. All four are tall ridges."
+    },
+    {
+      "id": "e06-ridge",
+      "width": 160,
+      "height": 92,
+      "seed": 92106,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/e-ridge2.png"
+      },
+      "subject": "Subject: a wide low mountain ridge, twice as wide as tall: one long ridge with three rounded summits of clearly different sizes and one deep saddle, the left face of every summit light and the right face dark, one continuous mass that runs from the left edge of the image to the right edge, in a cosy storybook look in cool slate: chubby rounded blue-grey rock (light #9aa3b5, shade #697189) with chunky ledges, dark slate-blue outline (#2b3042, never black), rounded white snow caps with pale blue shade, tiny dark-green pines and round bushes at the foot.",
+      "notes": "Slate low ridges again: e04 left the palette and e05 was lit from the right.",
+      "endpoint": "generate-image-v2",
+      "review": "Four slate ridges 157 to 160 px wide, lit from the left (faces +12.6 to +14.7), the light tone a shade off the anchor (swapped back in the mock). 0, 1 and 3 are low ridges."
+    },
+    {
+      "id": "e07-pair",
+      "width": 160,
+      "height": 92,
+      "seed": 92107,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/e-ridge2.png"
+      },
+      "subject": "Subject: a wide low mountain group, twice as wide as tall: a big broad snow-capped mountain on the left joined by a low saddle to a smaller pointed peak on the right, the left face of each light and the right face dark, one continuous mass that runs from the left edge of the image to the right edge, in a cosy storybook look in cool slate: chubby rounded blue-grey rock (light #9aa3b5, shade #697189) with chunky ledges, dark slate-blue outline (#2b3042, never black), rounded white snow caps with pale blue shade, tiny dark-green pines and round bushes at the foot.",
+      "notes": "Slate low ridges: an uneven pair.",
+      "endpoint": "generate-image-v2",
+      "review": "Four uneven pairs, lit from the left (faces +10.2 to +16.9). 0 and 1 are low ridges; 2 has a flat volcano-like top; 3 is a little flat in shading."
+    },
+    {
+      "id": "e08-massif",
+      "width": 160,
+      "height": 128,
+      "seed": 92108,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/e-massif.png"
+      },
+      "subject": "Subject: a big mountain massif as wide as the image: one broad mountain on the left, one tall rounded peak in the middle at the back and one small stepped tor in front on the right, three clearly different shapes joined into one mass, in a cosy storybook look in cool slate: chubby rounded blue-grey rock (light #9aa3b5, shade #697189) with chunky ledges, dark slate-blue outline (#2b3042, never black), rounded white snow caps with pale blue shade, tiny dark-green pines and round bushes at the foot.",
+      "notes": "Slate tall ridges, styled from two tall singles side by side.",
+      "endpoint": "generate-image-v2",
+      "review": "Four tall slate groups 158 x 118 to 120, in palette, lit from the left (faces +19.9 to +28.1): 0 and 2 two mountains over boulders, 1 three, 3 three rounded humps. 0, 2 and 3 are tall ridges."
+    },
+    {
+      "id": "e09-massif",
+      "width": 160,
+      "height": 128,
+      "seed": 92109,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass2",
+      "negative": "ground plate, platform, slab, background, buildings, people, text",
+      "styleImage": {
+        "file": "art/explorations/mountain-styles-2026-10/style/e-massif.png"
+      },
+      "subject": "Subject: a big mountain as wide as the image: one wide mountain with a double summit, long sloping shoulders to both sides and a small outlying hump at its right foot, one connected mass, in a cosy storybook look in cool slate: chubby rounded blue-grey rock (light #9aa3b5, shade #697189) with chunky ledges, dark slate-blue outline (#2b3042, never black), rounded white snow caps with pale blue shade, tiny dark-green pines and round bushes at the foot.",
+      "notes": "Slate tall ridges: one wide mountain.",
+      "endpoint": "generate-image-v2",
+      "reject": "Off subject: the same pair four times as seasons and scenes, 1 in pink-brown rock with autumn bushes, 2 with a castle, 3 at night with a campfire. 0 repeats e08-0. Unused."
+    },
+    {
+      "id": "e10-mine",
+      "endpoint": "edit-image-pixen",
+      "width": 80,
+      "height": 88,
+      "seed": 92110,
+      "source": {
+        "recipe": "e01-single",
+        "candidate": 3
+      },
+      "instruction": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the shape, the rock, the colours, the outline, the light from the left and the art style exactly the same, on a transparent background with nothing at all under the mountain.",
+      "notes": "The Mine dug into the slate single.",
+      "review": "Two identical candidates: the entrance and an ore cart at the foot of the slate single; lit from the left (+25.9). 0 is the option's mined mountain."
+    }
+  ]
+}

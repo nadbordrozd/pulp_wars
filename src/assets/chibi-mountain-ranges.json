@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "bead": "pulp_wars-2o7.1",
+  "bead": "pulp_wars-2yc.1",
   "cellPx": 80,
   "overflowPx": 24,
   "derive": {
@@ -13,7 +13,17 @@
     "footMin": 2,
     "footMax": 5,
     "footBottomMax": 3,
-    "footCorner": 7
+    "footCorner": 7,
+    "restyle": {
+      "outline": [78, 68, 70],
+      "warm": 0.6,
+      "snow": [244, 236, 216],
+      "snowBlend": 0.5,
+      "snowLuma": 205,
+      "footRows": [5, 11],
+      "footBand": 30,
+      "mineRockChroma": 48
+    }
   },
   "sources": [
     {
@@ -31,10 +41,6 @@
     {
       "path": "art/pixellab/chibi-raw/mountain-ranges/s20-low-ridge-b-0.png",
       "sha256": "e15b6214eed2df06f126385d2caa944534a080ac46faf22af05bfcab9d0ff48d"
-    },
-    {
-      "path": "art/pixellab/chibi-raw/mountain-ranges/s20-low-ridge-b-1.png",
-      "sha256": "40e1b1b68123febd735aeae74eb220672979d902741e6244795aca80624436e5"
     },
     {
       "path": "art/pixellab/chibi-raw/mountain-ranges/s20-low-ridge-b-3.png",
@@ -105,8 +111,36 @@
       "sha256": "d9e02d1d61b0845970e80b18684dcbf996623f9126233fe9964fb4acdb1a41a8"
     },
     {
-      "path": "public/assets/chibi/terrain/chibi-mountain-ground-1.png",
-      "sha256": "c1c2f2df6900948ff445bb65c8919f537f9f8d10fe909d30dc369494d31e2802"
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s30-tall-single-c-0.png",
+      "sha256": "f44ea7303e4d975255aeac6f30eb17d9b4c3e8b3bf4561a0fbdc29a362808ab1"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s30-tall-single-c-3.png",
+      "sha256": "706bd7b12b47e77c85f1ebbf444ed8f1b1de13942655dd553f39f30d407deb0e"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-0.png",
+      "sha256": "50f0e6513d0e12c4fb28b31fad5731ea22457e51e2baed64233f8a085d0dfb63"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s31-tall-ridge-b-3.png",
+      "sha256": "524c5565ebf6a67a3958de8f7d1f79e30f156047798307fdcc38b3ab43f0c3e5"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s32-tall-ridge-c-1.png",
+      "sha256": "3641a9bb97797a58654fcaa940b0cdcca9ed42bc59b06051105c0ffd4a91380f"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s33-low-ridge-e-1.png",
+      "sha256": "854618462e3588343d231c491ff0ef9c329e2c3edf63f0dff0cc669d15f2a097"
+    },
+    {
+      "path": "art/pixellab/chibi-raw/mountain-ranges/s35-low-ridge-g-2.png",
+      "sha256": "dc6324e9e8e6ac007a7be727704f3f2243b076ec2a6c747a846afea6b6d2fe0d"
+    },
+    {
+      "path": "public/assets/chibi/terrain/chibi-grass-1.png",
+      "sha256": "fe891be7f8725c6a426a2884a9cceaaa529e36dab999d152b9c8477294d0a4c0"
     }
   ],
   "seams": [],
@@ -125,8 +159,12 @@
           "candidate": 0
         }
       ],
-      "sha256": "055d703ac302c0f6c3e629e4c86135e01ad97ebd4e78468f5fd0b78b09e95f3f",
-      "pixelSha256": "7cccaa0ada6d4aa6c6a77206b8a9fcdbcbab4362a487b8d39052187da1951d18"
+      "light": {
+        "thirds": 28.9,
+        "faces": 28.3
+      },
+      "sha256": "546b42b624675ba57abdcfde528e88bcb34ddc4602e79063a2aa9b883f997f52",
+      "pixelSha256": "91633acaaf66d4a342d5f90b3a5549da68e93cd3a73044e92b4125ab767f1600"
     },
     {
       "id": "chibi-mountain-range-1x1-b",
@@ -142,8 +180,12 @@
           "candidate": 1
         }
       ],
-      "sha256": "c7e568905b0d22a2197cb5c448ff274b2e0eb7e112d081d6588d3f9700fe8954",
-      "pixelSha256": "1c7b1b2b087aa141c2a2b4daa84f436e526b5a32df68f81b461ecae26dec21bc"
+      "light": {
+        "thirds": 42.6,
+        "faces": 41.2
+      },
+      "sha256": "06039e86b8c99727ffead391b4e7bf5264eabc2a930f2dc3d83f50beff92dbf0",
+      "pixelSha256": "f136384ae9f68f5f2631b67612600864381f793638763d4d240f099a4cb5eae7"
     },
     {
       "id": "chibi-mountain-range-1x1-c",
@@ -159,8 +201,12 @@
           "candidate": 2
         }
       ],
-      "sha256": "e57bf1f305110c686b59afbfcf9c06e456e4acfb0bdde5ecf4bde548572b70a0",
-      "pixelSha256": "2f35c4ce871fd85c9901103b3c32d9ab0d820379680b4fdc52f2695e040aed0f"
+      "light": {
+        "thirds": 22.5,
+        "faces": 32.5
+      },
+      "sha256": "6aa845f06eef310f700b3d82c77b96469367c4b5900752695aa23e8f628740a6",
+      "pixelSha256": "3e7bb55e9c5d5ec030d58204e8de9cdf7ccb81da58adde5477a074c8886d00ab"
     },
     {
       "id": "chibi-mountain-range-1x1-d",
@@ -176,8 +222,12 @@
           "candidate": 7
         }
       ],
-      "sha256": "2aa23eedd30a576a30ff08aba631e14d8a5303cc570e8a245f3fda51ace817e5",
-      "pixelSha256": "cd1bd825a8075c774a315e56cd1784c835d88c651586bf3a711fda5d4c1eb107"
+      "light": {
+        "thirds": 96.5,
+        "faces": 67.9
+      },
+      "sha256": "8b0195c4f716e273e61166e473663500b29069768a879499d0e049515b449d40",
+      "pixelSha256": "c702ce160b2c5e226225f55121d6b5eece475cb25edacdf212b535d51d919bb0"
     },
     {
       "id": "chibi-mountain-range-1x1-e",
@@ -193,8 +243,12 @@
           "candidate": 9
         }
       ],
-      "sha256": "89eb7d9de9bb44fce8cf11c072c49b02248e20f5448cf672a12c351f3495367e",
-      "pixelSha256": "517b765934a40d0b9ab91a37f3a5afcba2d28e8c8c3cf388b5c3f772552be402"
+      "light": {
+        "thirds": 40,
+        "faces": 28
+      },
+      "sha256": "60dc1d98b4ae46b451c4144a4fbb39abbb112ccfa0bf49bdbc044c20ed18681c",
+      "pixelSha256": "2c5300ed8562af613f644cf2ecde523517f8db7c3b3decceb22625dbd7ee0af8"
     },
     {
       "id": "chibi-mountain-range-1x1-f",
@@ -210,8 +264,12 @@
           "candidate": 10
         }
       ],
-      "sha256": "4267f21908fae090edc4eda24648a0284e4678852796e9f451a6d9fbbc980885",
-      "pixelSha256": "7133359099b87bce1f5a81414e252bbe6d8f37aa63b66a80f2610706fb6f9c1a"
+      "light": {
+        "thirds": 39.7,
+        "faces": 39.3
+      },
+      "sha256": "314cf54dce0902a5478f400895255882791537b2fb65034865bf6bd182f287b1",
+      "pixelSha256": "77b9586c444a8eec24ffe54d47bb2c589c096500dd1a2b3882e3523a0991021d"
     },
     {
       "id": "chibi-mountain-range-1x1-g",
@@ -227,8 +285,12 @@
           "candidate": 12
         }
       ],
-      "sha256": "7f2b17c188e9c38eb56c8bf219d296cd07920babdd0a3de76c9431b2db28530a",
-      "pixelSha256": "1f3a557011ce23c5b0670e21c7ccab46cc3c8fff4f2d2cfd03843cbdf8c70912"
+      "light": {
+        "thirds": 43.3,
+        "faces": 42.9
+      },
+      "sha256": "edd56d7fe8b27c06c4f5a553e49cb02d7e4df76b66d5d066141b71bf99033d7d",
+      "pixelSha256": "7adede1d6eb80f643da51712ebbe61871bfaecde1f621b5b92d7131e52d53784"
     },
     {
       "id": "chibi-mountain-range-1x1-h",
@@ -244,8 +306,12 @@
           "candidate": 14
         }
       ],
-      "sha256": "a4512bdda4f3b27d1b9953ab408b430478f66155d57ffcde6289a634294a11eb",
-      "pixelSha256": "0fe3bca45224b82deb7d77a6e7f2649f984734c45601adaa699df8e2980301a0"
+      "light": {
+        "thirds": 43.3,
+        "faces": 43.5
+      },
+      "sha256": "0d4d7bfe7be0354cbb5242335522334e4b864225044175be1e414a8d2b8ab7a3",
+      "pixelSha256": "c98a6ea68bb3fa59639e00c481b3f0bf7e3e41b8695e091015eb025f471e9759"
     },
     {
       "id": "chibi-mountain-range-2x1-a",
@@ -262,8 +328,12 @@
           "dy": 2
         }
       ],
-      "sha256": "a2e90988601990c3942e6b4cbccc20173e4e0d7f9a2c7fbd52b13922cc6088f7",
-      "pixelSha256": "868d3280ba04e961f8322e7e9cdde29eb8093281f5a69d6572a7d11b0bb26493"
+      "light": {
+        "thirds": 9.1,
+        "faces": 23.2
+      },
+      "sha256": "3934fa7a257368885e1d1a8726979e0cbc227bdfc09bf3bd4cc0d917f462f459",
+      "pixelSha256": "d0dd06add040c2cc9c341fc403de088ee335b87a26f6aa646105ed3e12c66e5d"
     },
     {
       "id": "chibi-mountain-range-2x1-b",
@@ -279,8 +349,12 @@
           "candidate": 3
         }
       ],
-      "sha256": "c94dc75ed362049d617af150b2a9b6a0c7ab11c8e4a61ca0fbd16c26a0793a4a",
-      "pixelSha256": "5ad6d545b622be7dbf5268eaec66cf96724ea7b9f3be2de427720ceca89ce453"
+      "light": {
+        "thirds": 41.4,
+        "faces": 29.3
+      },
+      "sha256": "f24f60f00d7be7f5cf451f927c7ee9affbf7a804e41132cba749f0c360e18bc3",
+      "pixelSha256": "c33d8b5ec41bd5f3b438cd56bf7247f87984b0257c4fc3cbf904950d23cf86cd"
     },
     {
       "id": "chibi-mountain-range-2x1-c",
@@ -296,8 +370,12 @@
           "candidate": 0
         }
       ],
-      "sha256": "eee51eca8cb971dc8bde782109d83bb032d72a99df08186194d01718a82708d0",
-      "pixelSha256": "a3de60f7453adc7325bdaeafa0b3459c143587dc2d827a20eb959aae7a98bfdd"
+      "light": {
+        "thirds": 10.4,
+        "faces": 21.6
+      },
+      "sha256": "7b9a48a7dac7c7fe37509c8f631b1751584a3f23e0b003d16ea394baad68db18",
+      "pixelSha256": "0a823779e4ca0612efd1ba4a3294517ac4ac55863003092e29eb95cec898a1b6"
     },
     {
       "id": "chibi-mountain-range-2x1-d",
@@ -309,14 +387,16 @@
       "height": 104,
       "parts": [
         {
-          "recipe": "s20-low-ridge-b",
-          "candidate": 1,
-          "dy": 2,
-          "flip": true
+          "recipe": "s25-low-ridge-d",
+          "candidate": 3
         }
       ],
-      "sha256": "a9d2e63951c3df528ac46c20dbbd8c76135c0cc14af8bfd13920394e393bc82c",
-      "pixelSha256": "2e6c5002d6bdbe4c80b3d2d9a54412e2e261a21e7980cb9870962d134d5b58c4"
+      "light": {
+        "thirds": 13.8,
+        "faces": 16.6
+      },
+      "sha256": "b82d6b98d868c0a10943cf6f01ba588c040649b632910ca02babc7973a70f5c4",
+      "pixelSha256": "cb2a3fbe7a76b5ce8451a24cd966ead919ba4fa2542269f0b6676ca5a119264a"
     },
     {
       "id": "chibi-mountain-range-2x1-e",
@@ -328,12 +408,17 @@
       "height": 104,
       "parts": [
         {
-          "recipe": "s25-low-ridge-d",
-          "candidate": 3
+          "recipe": "s20-low-ridge-b",
+          "candidate": 3,
+          "dy": 2
         }
       ],
-      "sha256": "54879570bfd2d7fdc19236050c75954e19b94cedd226d7864dc4e8f3fd7a107b",
-      "pixelSha256": "ff171be35ff5b9ba9a4dc37aac9b64fe56808f784f76c58131c4f42f8c1b20e4"
+      "light": {
+        "thirds": 11.9,
+        "faces": 31.2
+      },
+      "sha256": "efb185255cd7d754674decc821a7fada98fafcc888f7ca4c862cc2523c19eb77",
+      "pixelSha256": "59cf2f7286c2adc420357b637143c1aa4e28d263ae046269a71868ef137adcf3"
     },
     {
       "id": "chibi-mountain-range-2x1-f",
@@ -345,13 +430,16 @@
       "height": 104,
       "parts": [
         {
-          "recipe": "s20-low-ridge-b",
-          "candidate": 3,
-          "dy": 2
+          "recipe": "s33-low-ridge-e",
+          "candidate": 1
         }
       ],
-      "sha256": "6949dd97fda60c0e2d7baf14fd0f9dccc4004bd87f45c562908ec2b1bcc6f4f5",
-      "pixelSha256": "a1686d79b1fe2763ec357654bb77dfcad0a2c3f91167f7e287ad2306c52e396f"
+      "light": {
+        "thirds": 4.2,
+        "faces": 19.5
+      },
+      "sha256": "cfa510d15d566f56a053a14ce39303adc5d26df2724711728161869607fa6448",
+      "pixelSha256": "987b522f27f5f54d22956d858df7946d42817ec6ac70bdbaf0ddc3fe0e15dafd"
     },
     {
       "id": "chibi-mountain-range-2x1-g",
@@ -363,31 +451,16 @@
       "height": 104,
       "parts": [
         {
-          "recipe": "s24-low-ridge-c",
-          "candidate": 3,
-          "flip": true
+          "recipe": "s35-low-ridge-g",
+          "candidate": 2
         }
       ],
-      "sha256": "29c6eb69e5ef5e7191fbd3db7a1f70740d5b3e8594d61d39f84e5ce0970d23e2",
-      "pixelSha256": "c6587af6305099defe7ca8b1564cd59bdb6707a1b83db268baceab68793a0989"
-    },
-    {
-      "id": "chibi-mountain-range-2x1-h",
-      "shape": "2x1",
-      "variant": 7,
-      "tall": false,
-      "path": "public/assets/chibi/mountains/chibi-mountain-range-2x1-h.png",
-      "width": 160,
-      "height": 104,
-      "parts": [
-        {
-          "recipe": "s25-low-ridge-d",
-          "candidate": 0,
-          "flip": true
-        }
-      ],
-      "sha256": "fd3563cb34920d1102c2c76aa8eeb997112745db4b06182fedfd8f64f78155e0",
-      "pixelSha256": "8cc12b54b466ee5d54d3dc3dc3981a5afc405e58db85191a4c219aee5bd6be5d"
+      "light": {
+        "thirds": 16.3,
+        "faces": 20.9
+      },
+      "sha256": "670e7a214b8831a0d826f1de6bace32d6a82092ef5aa3184c06a46ed36dea2c3",
+      "pixelSha256": "ddcb08ebb386d6ba97d13a048cda0c74ddad9ba9b5c832e2d596d7fe55d4a432"
     },
     {
       "id": "chibi-mountain-range-1x1-tall-a",
@@ -403,8 +476,12 @@
           "candidate": 0
         }
       ],
-      "sha256": "f7141651234a33970e13ebdfd236c0c94d99daded0c7e90b41468c3acac0edfe",
-      "pixelSha256": "e75f2bb5dfc6e7767bca061e3bef97af1c42a2964589576b9c525034763ae820"
+      "light": {
+        "thirds": 30.1,
+        "faces": 28.7
+      },
+      "sha256": "e2b75a63b327ade160648550bcdf0553e6b8e65cf9d4e9224242479ee6ea9e98",
+      "pixelSha256": "281f075abbf7996f7f5140e129ca43df5aef000631e0b21f95831020ab1c07a0"
     },
     {
       "id": "chibi-mountain-range-1x1-tall-b",
@@ -420,8 +497,12 @@
           "candidate": 3
         }
       ],
-      "sha256": "03ffe6d09d0643da39855a9963bf7da6e90a6d7308797ac68ad79dc18f3d0a16",
-      "pixelSha256": "bbfb11d97e0c9e5f635d173e33e6b46eaf0f3bd7bad26be6666d38152d1fbd17"
+      "light": {
+        "thirds": 30.6,
+        "faces": 26.3
+      },
+      "sha256": "f6ab27ec0609be01f18b7a6af213f4c93908422562eb92414c66a3e7c0a7921e",
+      "pixelSha256": "0c72adb77d7dd040974dd820ef9a0c8fcd47679f5d52ce7f566e17001baf6c2b"
     },
     {
       "id": "chibi-mountain-range-1x1-tall-c",
@@ -437,8 +518,12 @@
           "candidate": 1
         }
       ],
-      "sha256": "c60155f7a1c4b6fe9680beea2115eb766068ccb6039a72ef5e69100b658cd576",
-      "pixelSha256": "7e66c68960913fa142c2bc0ee04456207380f5a041896b81c885cc4b268b0ded"
+      "light": {
+        "thirds": 38.2,
+        "faces": 32.7
+      },
+      "sha256": "b2ec3fbde0b820620c43771364e365219860efbb9721c68a27b8bba7664c0afa",
+      "pixelSha256": "d12418c00bb8cdc5dae2f5f5da40f8f00c6392a4f7a61fe8594a55e71391588c"
     },
     {
       "id": "chibi-mountain-range-1x1-tall-d",
@@ -454,8 +539,12 @@
           "candidate": 2
         }
       ],
-      "sha256": "b89f4c437f840bc142ca26349809eb36c5208136daf95232cd8077c732fe2e0b",
-      "pixelSha256": "0886ac3ebe6e5cf2b74930db11ce67442f64eceacf92830ed03a3c244ed2427b"
+      "light": {
+        "thirds": 59.5,
+        "faces": 49.7
+      },
+      "sha256": "f01c47e5b26cb8823f4b9a2dbb62e13662c0c557776bd40374239492b2d7f23c",
+      "pixelSha256": "9125106545491898964b42762fbc19f93cc0309da668272fcbdbfd42ce775573"
     },
     {
       "id": "chibi-mountain-range-1x1-tall-e",
@@ -467,13 +556,16 @@
       "height": 128,
       "parts": [
         {
-          "recipe": "s29-big-single-tall-b",
-          "candidate": 0,
-          "flip": true
+          "recipe": "s30-tall-single-c",
+          "candidate": 0
         }
       ],
-      "sha256": "c5bd79b66ec8b6d3bc5c3388789ee68eb81238d2bd0049d4d6f726911e4defa7",
-      "pixelSha256": "12ba214b7a633519833ab712af45c5e49f7151cba6f69bf4f047a531a454d0ae"
+      "light": {
+        "thirds": 41.8,
+        "faces": 37.6
+      },
+      "sha256": "2f11c3676e4ab9608260069346620d535573eea8f0a7235a2b417764cd618b49",
+      "pixelSha256": "f4920f459a7c39ddb33d1fe1768a6f145c652a9248494643c4da9f416c6390e8"
     },
     {
       "id": "chibi-mountain-range-1x1-tall-f",
@@ -485,13 +577,16 @@
       "height": 128,
       "parts": [
         {
-          "recipe": "s29-big-single-tall-b",
-          "candidate": 3,
-          "flip": true
+          "recipe": "s30-tall-single-c",
+          "candidate": 3
         }
       ],
-      "sha256": "789ee61c68fb8984300c6626c8dda11622a0a533125acfcf3c4094fa9efa4aa3",
-      "pixelSha256": "c212eba69d53e2af364c37b3ccc75b0f71189d83e7e30171326fbbb9f93b6802"
+      "light": {
+        "thirds": 41.2,
+        "faces": 27.5
+      },
+      "sha256": "70ca705fe6d6aa3a89a0265ee327fb68e6d6c484778926ce053da2cf614a1161",
+      "pixelSha256": "3cd1b8180161a99ee2cd207d3a3d49e8d2842befd5ec185e78d9eb04e13185af"
     },
     {
       "id": "chibi-mountain-range-2x1-tall-a",
@@ -507,8 +602,12 @@
           "candidate": 0
         }
       ],
-      "sha256": "cf20d12e313bff560dea913c50c3b56d244741948d2609f5c934cd3e1be3f077",
-      "pixelSha256": "5798ab85d77adbcf9d765ca389330433b67e72f3b0bf110ddd2ec9d7ef1163df"
+      "light": {
+        "thirds": 33.6,
+        "faces": 28.8
+      },
+      "sha256": "90f4dcbf2100d74369b2f2cd2fb9f2a30d0eb586c3340a6d21b1a6842d66983a",
+      "pixelSha256": "d422e0359ed5e72087e33e63d31668698d8b47a9f4d1a0520391cc94fbcfbac5"
     },
     {
       "id": "chibi-mountain-range-2x1-tall-b",
@@ -524,8 +623,12 @@
           "candidate": 1
         }
       ],
-      "sha256": "3f6114721cb34019658772655a831a715226dc259f2aa20aab6299f9e112303c",
-      "pixelSha256": "b261b8642f167230510234faf97df63739f1d34efad2ac6dd6cf63d2c237ed88"
+      "light": {
+        "thirds": 26.7,
+        "faces": 35.8
+      },
+      "sha256": "b71a0fcbc1984fe8b7bab5cb46dc2c3832f4f5ae73ac430987cc89073fc650bd",
+      "pixelSha256": "03bb1fb24b38776605c858b759232fe76f6e2adfe8b669e5f93577d9ecb0cf05"
     },
     {
       "id": "chibi-mountain-range-2x1-tall-c",
@@ -541,8 +644,12 @@
           "candidate": 2
         }
       ],
-      "sha256": "73432a2498cdda4e4c5af2fed5e5f2d284b0a8dbdb06075e9f64766c9d298790",
-      "pixelSha256": "7e520b240e430e320535a70c5f8542fbbd777d27c8e97fb859b40418e3fef7d9"
+      "light": {
+        "thirds": 9.7,
+        "faces": 15.5
+      },
+      "sha256": "7daf3bc75e1442c3c9a69f7953d1b2ee1edae681164775b9837e93f39276fe35",
+      "pixelSha256": "e2d0d1b0a3f9a879259bcaf694ca20787973e4208e5b6f3bfda9281be97473a1"
     },
     {
       "id": "chibi-mountain-range-2x1-tall-d",
@@ -554,13 +661,16 @@
       "height": 128,
       "parts": [
         {
-          "recipe": "s08-2x2-v2",
-          "candidate": 0,
-          "flip": true
+          "recipe": "s31-tall-ridge-b",
+          "candidate": 0
         }
       ],
-      "sha256": "cca2f567e49e713784e7382cb420b736d6b33c6ff100b2f3beb650e49af76dec",
-      "pixelSha256": "383f714c430ac800169d94e58c824b46609ca31750a3f1a1089a296f50236402"
+      "light": {
+        "thirds": 46,
+        "faces": 33.9
+      },
+      "sha256": "0cb0f0df160f5604a8815d92cdfb9ef622cf31dfefd2bb2ed479c5b9b6852c13",
+      "pixelSha256": "c423403e1ecdf44bb6d8a511b10988bbf4748b20cff61f8a368e76af0f8a065f"
     },
     {
       "id": "chibi-mountain-range-2x1-tall-e",
@@ -572,13 +682,16 @@
       "height": 128,
       "parts": [
         {
-          "recipe": "s08-2x2-v2",
-          "candidate": 1,
-          "flip": true
+          "recipe": "s31-tall-ridge-b",
+          "candidate": 3
         }
       ],
-      "sha256": "a6f198192467c06d5152bb29af625efd171795b5599c33ae15f60675ae675c81",
-      "pixelSha256": "f15ad98f2e68d1c59550cb8ab26baadb3a11c6528b2d4dd35bee81f919c58756"
+      "light": {
+        "thirds": 46.7,
+        "faces": 19.9
+      },
+      "sha256": "906432fc2deb0088e97f9b9f7458fdd1b88d1dcac14ec8a0505dd631b2ee7dd3",
+      "pixelSha256": "503d0cfdc35ef4baa8442e1cc1067fe3df9cbafb832edc433cad8fa46e8c3566"
     },
     {
       "id": "chibi-mountain-range-2x1-tall-f",
@@ -590,13 +703,16 @@
       "height": 128,
       "parts": [
         {
-          "recipe": "s08-2x2-v2",
-          "candidate": 2,
-          "flip": true
+          "recipe": "s32-tall-ridge-c",
+          "candidate": 1
         }
       ],
-      "sha256": "844beaa62e36daee2981d712dd7571e4e612ca6adc5fdb4d8cd92de6de480894",
-      "pixelSha256": "9cccb42df799ba40c406ae4c0e64f12b7296718c55ea390b2e7a22502ea0d77a"
+      "light": {
+        "thirds": 35.3,
+        "faces": 37.2
+      },
+      "sha256": "ef7389b9d32ed41db943741e61e8a5cc55413e3ce84e664376225b58e1748666",
+      "pixelSha256": "1c0aa01f6b395c5104fab030e39d2c4f72ea5dfcefe56a7c45d2bcdc69278017"
     }
   ],
   "mines": [
@@ -614,8 +730,12 @@
           "candidate": 0
         }
       ],
-      "sha256": "909699057c390d9e438b120800e3820cfaad34a6d2195349d10ff2a0ee7d0621",
-      "pixelSha256": "26d85be516555d9697642f1fce9f02a9a7f10f1e47af58be8e4b827a326f91ca"
+      "light": {
+        "thirds": 37.7,
+        "faces": 25.9
+      },
+      "sha256": "eb85abb21092541d5bdba4838e2e7d1f62311dfe5565e1996ce61b36306e7cb4",
+      "pixelSha256": "d03c250611f841361e0447dc47c220da77d1200e59492598d7143cd1d1269560"
     }
   ]
 }

@@ -43,87 +43,6 @@ export const MASSIF_LOW_UP_V7 = 24;
 /** Rows above the footprint in a tall piece's image. */
 export const MASSIF_TALL_UP_V7 = 48;
 
-/**
- * The rocky ground under a massif. The ground tile is a pale grey plane
- * with pebbles; under mountains that fill their cells it should read as
- * their lower slopes, so each pixel moves `amount` of the way to `tint`, a
- * blue-grey between the lit and the shaded rock faces. On the north side of
- * an area (the cell above is not Mountain) the ground also starts lower:
- * its top `topCut` px (plus or minus `topWave`) are cut away behind a
- * darker rim, so the peaks of the back row stand against the land behind
- * them and not against a strip of rock.
- */
-export const MASSIF_GROUND_V7 = {
-  tint: [112, 124, 146],
-  amount: 0.45,
-  topCut: 22,
-  topWave: 7,
-  rimShade: 0.7,
-  /** Length over which the top cut runs out beside a whole ground. */
-  taperPx: 26,
-  /** Distinct top edges, chosen per cell. */
-  variants: 4,
-} as const;
-
-/** Bits of a cell's `northTaper`: the side where the top cut runs out. */
-export const MASSIF_TAPER_WEST_V7 = 1;
-export const MASSIF_TAPER_EAST_V7 = 2;
-
-/** The ground tile's pixels as a massif cell draws them. */
-export function massifGroundPixelsV7(
-  ground: Uint8ClampedArray,
-  size: number,
-  northOpen: boolean,
-  variant: number,
-  taper = 0,
-): Uint8ClampedArray {
-  const spec = MASSIF_GROUND_V7;
-  const pixels = new Uint8ClampedArray(ground);
-  for (let i = 0; i < pixels.length; i += 4)
-    for (let c = 0; c < 3; c += 1)
-      pixels[i + c] = Math.round(
-        (pixels[i + c] ?? 0) * (1 - spec.amount) +
-          (spec.tint[c] ?? 0) * spec.amount,
-      );
-  if (!northOpen) return pixels;
-  // A wavy top edge, the same at both sides of the cell so the edge runs
-  // on over a row of cells.
-  const depth = (x: number): number => {
-    const t = x / (size - 1);
-    let wave = 0;
-    for (let k = 1; k <= 3; k += 1)
-      wave +=
-        Math.sin(
-          2 * Math.PI * k * t + (forestHashV7(k, variant, 5, 0x61) % 628) / 100,
-        ) / k;
-    // Beside a Mountain cell whose ground is whole (its own north is
-    // Mountain) the cut runs out over `taperPx`, so the two grounds meet
-    // without a step.
-    const ramp = (distance: number): number => {
-      const u = Math.min(1, distance / spec.taperPx);
-      return u * u * (3 - 2 * u);
-    };
-    const run =
-      ((taper & MASSIF_TAPER_WEST_V7) !== 0 ? ramp(x) : 1) *
-      ((taper & MASSIF_TAPER_EAST_V7) !== 0 ? ramp(size - 1 - x) : 1);
-    return Math.round(
-      (spec.topCut + Math.sin(Math.PI * t) * wave * spec.topWave * 0.8) * run,
-    );
-  };
-  for (let x = 0; x < size; x += 1) {
-    const cut = depth(x);
-    if (cut <= 0) continue;
-    for (let y = 0; y < Math.min(size, cut + 1); y += 1) {
-      const i = (y * size + x) * 4;
-      if (y < cut) pixels[i + 3] = 0;
-      else
-        for (let c = 0; c < 3; c += 1)
-          pixels[i + c] = Math.round((pixels[i + c] ?? 0) * spec.rimShade);
-    }
-  }
-  return pixels;
-}
-
 /** One piece of the set: `columns` cells wide, low or tall. */
 export interface ChibiMassifPieceAssetV7 {
   readonly id: string;
@@ -272,13 +191,6 @@ interface MassifPlanEntry {
 }
 
 export interface ChibiMassifCellV7 {
-  /** The cell above is neither Mountain nor Mine: the area's north side. */
-  readonly northOpen: boolean;
-  /**
-   * For a `northOpen` cell: the sides (MASSIF_TAPER_*) where the next cell
-   * is Mountain with Mountain above it, so its ground is not cut.
-   */
-  readonly northTaper: number;
   /** A Mine: the index of its mined mountain, else null. */
   readonly mined: number | null;
   /** Pieces drawn at this cell's turn in the body pass (their east cell). */
@@ -308,25 +220,9 @@ export function chibiMassifCellsV7(
     } else if (FEATURE_KINDS.has(entry.kind)) featured.add(at);
   }
   const result = new Map<string, ChibiMassifCellV7>();
-  const rock = (x: number, y: number): boolean =>
-    mountain.has(key(x, y)) || mined.has(key(x, y));
-  const northOpen = (at: string): boolean => {
-    const [x = 0, y = 0] = at.split(",").map(Number);
-    return !rock(x, y - 1);
-  };
-  const northTaper = (at: string): number => {
-    const [x = 0, y = 0] = at.split(",").map(Number);
-    if (rock(x, y - 1)) return 0;
-    return (
-      (rock(x - 1, y) && rock(x - 1, y - 1) ? MASSIF_TAPER_WEST_V7 : 0) |
-      (rock(x + 1, y) && rock(x + 1, y - 1) ? MASSIF_TAPER_EAST_V7 : 0)
-    );
-  };
   for (const at of mined) {
     const [x = 0, y = 0] = at.split(",").map(Number);
     result.set(at, {
-      northOpen: northOpen(at),
-      northTaper: northTaper(at),
       mined: forestHashV7(x, y, 9, 0x3d) % minedCount,
       bodies: [],
       band: null,
@@ -363,8 +259,6 @@ export function chibiMassifCellsV7(
   }
   for (const at of mountain)
     result.set(at, {
-      northOpen: northOpen(at),
-      northTaper: northTaper(at),
       mined: null,
       bodies: bodies.get(at) ?? [],
       band: bands.get(at) ?? null,
@@ -391,17 +285,6 @@ export interface ChibiMassifArtV7 {
     readonly body: CanvasImageSource;
     readonly band: CanvasImageSource;
   } | null;
-  /**
-   * The ground of a massif cell: `ground` (the cell's 80 x 80 ground tile,
-   * already cut along its fringe) as massifGroundPixelsV7 makes it. Null
-   * when the tile cannot be read back; the cell then draws `ground`.
-   */
-  ground(
-    ground: CanvasImageSource,
-    at: { readonly x: number; readonly y: number },
-    northOpen: boolean,
-    northTaper: number,
-  ): CanvasImageSource | null;
 }
 
 const pieceKey = (columns: number, tall: boolean, variant: number): string =>
@@ -505,37 +388,7 @@ export function createChibiMassifArtV7(input: {
       if (body === null || band === null) return null;
       mined.push({ body, band });
     }
-    const grounds = new WeakMap<
-      object,
-      Map<string, CanvasImageSource | null>
-    >();
     return {
-      ground(ground, at, northOpen, northTaper) {
-        const variant = northOpen
-          ? forestHashV7(at.x, at.y, 11, 0x61) % MASSIF_GROUND_V7.variants
-          : 0;
-        const owner = ground as unknown as object;
-        let cached = grounds.get(owner);
-        if (cached === undefined) {
-          cached = new Map();
-          grounds.set(owner, cached);
-        }
-        const taper = northOpen ? northTaper : 0;
-        const id = `${northOpen ? "N" : "-"}${variant}:${taper}`;
-        const known = cached.get(id);
-        if (known !== undefined) return known;
-        const source = environment.readPixels(ground, CELL, CELL);
-        const surface =
-          source === null
-            ? null
-            : environment.createSurface(
-                massifGroundPixelsV7(source, CELL, northOpen, variant, taper),
-                CELL,
-                CELL,
-              );
-        cached.set(id, surface);
-        return surface;
-      },
       counts,
       minedCount: mined.length,
       body: (piece) =>
