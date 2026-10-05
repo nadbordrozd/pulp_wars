@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "batch": "candy-look-chocolatier",
+  "title": "Candy look proposal, direction A (Chocolatier): dark and milk chocolate with caramel gold and cream, the pink only a small trim (exploration, never registered)",
+  "bead": "pulp_wars-jdb.10",
+  "faction": "TEST-CANDY-CHOCOLATIER",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-look-chocolatier-trooper",
+      "subject": "UNIT:CANDY:FIGHTER",
+      "subjectKey": "UNIT:CANDY:FIGHTER/CHOCOLATIER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-look-chocolatier-marshmallow",
+      "subject": "UNIT:CANDY:GUARD",
+      "subjectKey": "UNIT:CANDY:GUARD/CHOCOLATIER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-look-chocolatier-gunner",
+      "subject": "UNIT:CANDY:MARKSMAN",
+      "subjectKey": "UNIT:CANDY:MARKSMAN/CHOCOLATIER",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-look-chocolatier-golem",
+      "subject": "UNIT:CANDY:JUGGERNAUT",
+      "subjectKey": "UNIT:CANDY:JUGGERNAUT/CHOCOLATIER",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-look-chocolatier-city",
+      "subject": "CITY:CANDY:2",
+      "subjectKey": "CITY:CANDY:2/CHOCOLATIER",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 88,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-look-chocolatier-ship",
+      "subject": "UNIT:CANDY:BATTLESHIP",
+      "subjectKey": "UNIT:CANDY:BATTLESHIP/CHOCOLATIER",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-look-chocolatier-portrait",
+      "subject": "PORTRAIT:CANDY:FIGHTER",
+      "subjectKey": "PORTRAIT:CANDY:FIGHTER/CHOCOLATIER",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-look-chocolatier-donut",
+      "subject": "UNIT:CANDY:RAIDER",
+      "subjectKey": "UNIT:CANDY:RAIDER/CHOCOLATIER",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "trooper-a",
+      "asset": "chibi-look-chocolatier-trooper",
+      "endpoint": "edit-image-pixen",
+      "seed": 310101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "fighter-toffee-a",
+        "candidate": 0
+      },
+      "editInstruction": "Dip the toffee soldier in dark chocolate: the lower half of the toffee cube is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge across its middle, so the upper half with the face stays golden toffee; the knob on top and the feet are dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, the chocolate shield, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction CHOCOLATIER: sample trooper."
+    },
+    {
+      "id": "marshmallow-a",
+      "asset": "chibi-look-chocolatier-marshmallow",
+      "endpoint": "edit-image-pixen",
+      "seed": 310102,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "marshmallow-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change three things only. The big biscuit shield becomes a thick slab of dark chocolate bar marked into square blocks #4a2412 with lighter #7a4526 edges. Its feet and the lowest quarter of its body are dipped in dark chocolate with a wavy edge. The pink frosting on its top becomes golden caramel #e0a040. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction CHOCOLATIER: sample marshmallow."
+    },
+    {
+      "id": "gunner-a",
+      "asset": "chibi-look-chocolatier-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 310103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "gunner-machine-mint-a-spit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the base under the glass globe: the mint green base becomes milk chocolate #7a4526, shaded dark chocolate #4a2412, with one caramel gold band #e0a040, round its top edge; its two eyes become cream-white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction CHOCOLATIER: sample gunner."
+    },
+    {
+      "id": "golem-a",
+      "asset": "chibi-look-chocolatier-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 310104,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "rock-candy-golem-r6-mint",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of dark chocolate #4a2412, with lighter milk chocolate #8a5330 facets and small cream highlights; the brown bands at its joints become bright caramel gold #e0a040, dripping; its face becomes pale cream #fff1d0, with dark eyes; the crest on its head is golden toffee crystal. No green is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction CHOCOLATIER: sample golem."
+    },
+    {
+      "id": "city-a",
+      "asset": "chibi-look-chocolatier-city",
+      "endpoint": "edit-image-pixen",
+      "seed": 310105,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "candy-city-2-calm-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a chocolate cake town and change no shape: the pink frosting dripping over the round cake keep becomes dark chocolate glaze #4a2412, over cream sponge; the roofs of the little houses become dark chocolate with white cream piping; the pink gumdrops on the wall become caramel gold #e0a040; doors dark chocolate; the lollipop becomes caramel and cream; one small pink cherry on top of the keep. Keep every shape, the size, outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction CHOCOLATIER: sample city."
+    },
+    {
+      "id": "ship-a",
+      "asset": "chibi-look-chocolatier-ship",
+      "endpoint": "edit-image-pixen",
+      "seed": 310106,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "naval-candy",
+        "recipe": "candy-battleship-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a chocolate cake galleon and change no shape: the hull becomes layers of dark chocolate sponge #4a2412, with thin cream filling stripes and a thick caramel gold rim #e0a040, in place of the pink frosting; the sails stay cream white; the masts become caramel gold and cream stripes; the pennants caramel gold; the cake tower dark chocolate with white cream on top. Nothing pink is left. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction CHOCOLATIER: sample ship."
+    },
+    {
+      "id": "portrait-a",
+      "asset": "chibi-look-chocolatier-portrait",
+      "endpoint": "edit-image-pixen",
+      "seed": 310107,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "portrait-toffee-b",
+        "candidate": 0
+      },
+      "editInstruction": "Dip the toffee cube in dark chocolate: its lower third is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge, so the upper part with the face stays golden toffee; the knob on top is dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction CHOCOLATIER: sample portrait."
+    },
+    {
+      "id": "donut-a",
+      "asset": "chibi-look-chocolatier-donut",
+      "endpoint": "edit-image-pixen",
+      "seed": 310108,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "donut-racer-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412, with a lighter #7a4526 shine and a few tiny cream and gold sprinkles. No pink is left on the donut. Keep the golden dough, the hole, the candy-corn rider, the small wheel, the speed lines, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction CHOCOLATIER: sample donut."
+    },
+    {
+      "id": "marshmallow-b",
+      "asset": "chibi-look-chocolatier-marshmallow",
+      "endpoint": "edit-image-pixen",
+      "seed": 310109,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "marshmallow-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only its arms and legs: the pink arms and the pink legs and feet become dark chocolate #4a2412 with a lighter #7a4526 highlight, as if it had been dipped in chocolate, and the pink dots on its body become cream. No pink is left except its two cheeks. Do not redraw anything else: keep the white body, the caramel top, the face, the chocolate bar shield, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction CHOCOLATIER: sample marshmallow."
+    }
+  ]
+}

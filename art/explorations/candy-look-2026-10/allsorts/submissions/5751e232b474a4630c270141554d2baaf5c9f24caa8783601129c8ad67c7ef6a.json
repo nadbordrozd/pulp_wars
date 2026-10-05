@@ -1,0 +1,36 @@
+{
+  "id": "marshmallow-b",
+  "jobId": "a19935f1-3f8e-434f-bc34-33049bd9b8d8",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-allsorts",
+    "asset": "chibi-look-allsorts-marshmallow",
+    "subject": "UNIT:CANDY:GUARD",
+    "faction": "TEST-CANDY-ALLSORTS",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 310208,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only its arms and legs: the pink arms become white marshmallow like the body, and the pink legs and feet become black liquorice boots #23192b with a pale highlight; the pink dots on its body become white. Do not redraw anything else: keep the white body, the lemon top, the face, the cheeks, the black liquorice wheel shield, the black belt, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only its arms and legs: the pink arms become white marshmallow like the body, and the pink legs and feet become black liquorice boots #23192b with a pale highlight; the pink dots on its body become white. Do not redraw anything else: keep the white body, the lemon top, the face, the cheeks, the black liquorice wheel shield, the black belt, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only its arms and legs: the pink arms become white marshmallow like the body, and the pink legs and feet become black liquorice boots #23192b with a pale highlight; the pink dots on its body become white. Do not redraw anything else: keep the white body, the lemon top, the face, the cheeks, the black liquorice wheel shield, the black belt, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change only its arms and legs: the pink arms become white marshmallow like the body, and the pink legs and feet become black liquorice boots #23192b with a pale highlight; the pink dots on its body become white. Do not redraw anything else: keep the white body, the lemon top, the face, the cheeks, the black liquorice wheel shield, the black belt, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "marshmallow-a",
+      "candidate": 0,
+      "sha256": "c1a82816213eb98a12231d7f0ebb81f23ec768de934c165fa31e6a7858882e23"
+    }
+  }
+}

@@ -3688,9 +3688,10 @@
   display: inline-flex;
   gap: 4px;
   align-items: center;
-  border: 1px solid #ffb8d866;
-  background: #33202a;
-  color: #ffe6f1;
+  /* Chocolatier (pulp_wars-jdb.10): caramel on dark chocolate, cream text. */
+  border: 1px solid #e0a04088;
+  background: #2e1c12;
+  color: #fff1d0;
   white-space: nowrap;
 }
 
@@ -3702,8 +3703,8 @@
 
 .v7-candy-chip[data-unit-status="crashed"],
 .v7-candy-chip[data-unit-status="splatted"] {
-  border-color: #c9b7c066;
-  color: #dccfd5;
+  border-color: #c9bca866;
+  color: #ddd2c2;
 }
 
 .v7-candy-chip[data-unit-status="home-sweet-home"] {
@@ -3720,13 +3721,13 @@
 .v7-candy-pip {
   width: 8px;
   height: 8px;
-  border: 1px solid #ffb8d8;
+  border: 1px solid #e0a040;
   border-radius: 50%;
   background: transparent;
 }
 
 .v7-candy-pip[data-filled="true"] {
-  background: #ffb8d8;
+  background: #e0a040;
 }
 
 .v7-candy-pick {

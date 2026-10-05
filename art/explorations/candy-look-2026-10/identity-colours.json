@@ -1,0 +1,296 @@
+{
+  "today: cotton-candy pink": {
+    "hex": "#ffb8d8",
+    "lightness": 82,
+    "factions": {
+      "Human": [64, 52],
+      "Undead": [93, 78],
+      "Goblin": [96, 85],
+      "Dinosaur": [82, 76],
+      "Martian": [55, 27],
+      "Ice Folk": [60, 29],
+      "Dwarf": [83, 24]
+    },
+    "grounds": {
+      "Grass": [79, 45],
+      "Candy mint grass": [57, 11],
+      "Snow": [56, 24],
+      "Shallow": [50, 4],
+      "Deep": [53, 34],
+      "Mountain": [33, 11]
+    }
+  },
+  "A1 milk chocolate": {
+    "hex": "#8a5330",
+    "lightness": 41,
+    "factions": {
+      "Human": [47, 10],
+      "Undead": [121, 105],
+      "Goblin": [73, 67],
+      "Dinosaur": [57, 40],
+      "Martian": [78, 50],
+      "Ice Folk": [88, 76],
+      "Dwarf": [74, 30]
+    },
+    "grounds": {
+      "Grass": [59, 27],
+      "Candy mint grass": [62, 44],
+      "Snow": [56, 39],
+      "Shallow": [69, 57],
+      "Deep": [64, 56],
+      "Mountain": [51, 47]
+    }
+  },
+  "A2 caramel gold": {
+    "hex": "#d8973f",
+    "lightness": 67,
+    "factions": {
+      "Human": [59, 25],
+      "Undead": [146, 130],
+      "Goblin": [39, 32],
+      "Dinosaur": [37, 10],
+      "Martian": [98, 71],
+      "Ice Folk": [104, 94],
+      "Dwarf": [75, 32]
+    },
+    "grounds": {
+      "Grass": [49, 9],
+      "Candy mint grass": [62, 45],
+      "Snow": [49, 34],
+      "Shallow": [76, 65],
+      "Deep": [89, 83],
+      "Mountain": [64, 61]
+    }
+  },
+  "A3 vanilla cream": {
+    "hex": "#fff1d0",
+    "lightness": 95,
+    "factions": {
+      "Human": [85, 50],
+      "Undead": [132, 103],
+      "Goblin": [68, 64],
+      "Dinosaur": [79, 58],
+      "Martian": [94, 50],
+      "Ice Folk": [69, 60],
+      "Dwarf": [56, 25]
+    },
+    "grounds": {
+      "Grass": [47, 34],
+      "Candy mint grass": [30, 14],
+      "Snow": [24, 15],
+      "Shallow": [38, 28],
+      "Deep": [67, 63],
+      "Mountain": [36, 35]
+    }
+  },
+  "A4 cocoa rose": {
+    "hex": "#c9788f",
+    "lightness": 60,
+    "factions": {
+      "Human": [47, 30],
+      "Undead": [90, 77],
+      "Goblin": [94, 81],
+      "Dinosaur": [73, 67],
+      "Martian": [47, 20],
+      "Ice Folk": [68, 39],
+      "Dwarf": [84, 8]
+    },
+    "grounds": {
+      "Grass": [78, 35],
+      "Candy mint grass": [63, 17],
+      "Snow": [61, 25],
+      "Shallow": [59, 25],
+      "Deep": [50, 23],
+      "Mountain": [37, 14]
+    }
+  },
+  "B1 bubblegum pink": {
+    "hex": "#ff7fbf",
+    "lightness": 70,
+    "factions": {
+      "Human": [50, 47],
+      "Undead": [73, 64],
+      "Goblin": [112, 88],
+      "Dinosaur": [84, 77],
+      "Martian": [27, 17],
+      "Ice Folk": [77, 21],
+      "Dwarf": [107, 19]
+    },
+    "grounds": {
+      "Grass": [101, 44],
+      "Candy mint grass": [83, 14],
+      "Snow": [82, 27],
+      "Shallow": [76, 10],
+      "Deep": [66, 15],
+      "Mountain": [56, 4]
+    }
+  },
+  "B2 allsort turquoise": {
+    "hex": "#22d3c5",
+    "lightness": 77,
+    "factions": {
+      "Human": [121, 47],
+      "Undead": [145, 70],
+      "Goblin": [100, 83],
+      "Dinosaur": [121, 65],
+      "Martian": [122, 16],
+      "Ice Folk": [51, 41],
+      "Dwarf": [23, 23]
+    },
+    "grounds": {
+      "Grass": [49, 48],
+      "Candy mint grass": [25, 11],
+      "Snow": [38, 24],
+      "Shallow": [26, 7],
+      "Deep": [56, 36],
+      "Mountain": [45, 5]
+    }
+  },
+  "B3 liquorice black": {
+    "hex": "#2a2030",
+    "lightness": 14,
+    "factions": {
+      "Human": [77, 33],
+      "Undead": [102, 74],
+      "Goblin": [118, 116],
+      "Dinosaur": [104, 84],
+      "Martian": [79, 44],
+      "Ice Folk": [71, 68],
+      "Dwarf": [81, 55]
+    },
+    "grounds": {
+      "Grass": [85, 72],
+      "Candy mint grass": [76, 67],
+      "Snow": [79, 73],
+      "Shallow": [72, 65],
+      "Deep": [42, 40],
+      "Mountain": [56, 55]
+    }
+  },
+  "B4 sherbet lemon": {
+    "hex": "#fff36b",
+    "lightness": 94,
+    "factions": {
+      "Human": [99, 51],
+      "Undead": [175, 144],
+      "Goblin": [24, 17],
+      "Dinosaur": [67, 27],
+      "Martian": [130, 86],
+      "Ice Folk": [114, 111],
+      "Dwarf": [67, 53]
+    },
+    "grounds": {
+      "Grass": [39, 32],
+      "Candy mint grass": [59, 58],
+      "Snow": [46, 44],
+      "Shallow": [78, 78],
+      "Deep": [106, 106],
+      "Mountain": [78, 75]
+    }
+  },
+  "C1 peach cream": {
+    "hex": "#ffcfa8",
+    "lightness": 86,
+    "factions": {
+      "Human": [69, 39],
+      "Undead": [128, 108],
+      "Goblin": [60, 55],
+      "Dinosaur": [63, 47],
+      "Martian": [86, 51],
+      "Ice Folk": [77, 64],
+      "Dwarf": [64, 15]
+    },
+    "grounds": {
+      "Grass": [49, 22],
+      "Candy mint grass": [40, 12],
+      "Snow": [31, 3],
+      "Shallow": [49, 32],
+      "Deep": [69, 62],
+      "Mountain": [39, 34]
+    }
+  },
+  "C2 toffee tan": {
+    "hex": "#c9a070",
+    "lightness": 69,
+    "factions": {
+      "Human": [62, 21],
+      "Undead": [129, 108],
+      "Goblin": [57, 53],
+      "Dinosaur": [57, 34],
+      "Martian": [86, 49],
+      "Ice Folk": [80, 69],
+      "Dwarf": [59, 8]
+    },
+    "grounds": {
+      "Grass": [41, 7],
+      "Candy mint grass": [41, 23],
+      "Snow": [31, 15],
+      "Shallow": [52, 41],
+      "Deep": [65, 60],
+      "Mountain": [39, 37]
+    }
+  },
+  "C3 butterscotch": {
+    "hex": "#f0c070",
+    "lightness": 80,
+    "factions": {
+      "Human": [70, 33],
+      "Undead": [145, 125],
+      "Goblin": [39, 35],
+      "Dinosaur": [50, 26],
+      "Martian": [100, 67],
+      "Ice Folk": [95, 86],
+      "Dwarf": [65, 25]
+    },
+    "grounds": {
+      "Grass": [41, 8],
+      "Candy mint grass": [49, 34],
+      "Snow": [36, 22],
+      "Shallow": [64, 55],
+      "Deep": [84, 79],
+      "Mountain": [55, 54]
+    }
+  },
+  "C4 mint cream": {
+    "hex": "#c9f5dc",
+    "lightness": 93,
+    "factions": {
+      "Human": [101, 53],
+      "Undead": [137, 91],
+      "Goblin": [80, 74],
+      "Dinosaur": [97, 64],
+      "Martian": [105, 39],
+      "Ice Folk": [58, 53],
+      "Dwarf": [40, 27]
+    },
+    "grounds": {
+      "Grass": [43, 41],
+      "Candy mint grass": [14, 13],
+      "Snow": [19, 19],
+      "Shallow": [22, 22],
+      "Deep": [60, 58],
+      "Mountain": [33, 27]
+    }
+  },
+  "C5 white chocolate": {
+    "hex": "#f4e3c1",
+    "lightness": 91,
+    "factions": {
+      "Human": [81, 46],
+      "Undead": [131, 102],
+      "Goblin": [66, 63],
+      "Dinosaur": [76, 54],
+      "Martian": [92, 47],
+      "Ice Folk": [69, 60],
+      "Dwarf": [54, 21]
+    },
+    "grounds": {
+      "Grass": [44, 30],
+      "Candy mint grass": [29, 10],
+      "Snow": [22, 11],
+      "Shallow": [37, 28],
+      "Deep": [65, 61],
+      "Mountain": [34, 32]
+    }
+  }
+}

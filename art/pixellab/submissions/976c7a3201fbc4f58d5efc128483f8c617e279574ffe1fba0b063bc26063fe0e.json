@@ -1,0 +1,64 @@
+{
+  "id": "gingerbread-a",
+  "jobId": "sync-94e2c8a3-67d8-4bdb-a354-a0447a6c5318",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "candy-look-options",
+    "asset": "chibi-option-juggernaut-gingerbread",
+    "subject": "UNIT:CANDY:JUGGERNAUT",
+    "faction": "TEST-CANDY-CHOC-OPTIONS",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 312201,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "art/explorations/candy-look-2026-10/options/faction.md#prompt-fragment + art/explorations/candy-look-2026-10/options/faction.md#negative-fragment",
+        "text": "Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface.",
+        "negative": "crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-unit.txt + scripts/art/chibi/fragments/class-unit.negative.txt",
+        "text": "Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "art/explorations/candy-look-2026-10/options/subjects.json",
+        "text": "Subject: a huge towering living gingerbread man, far taller than a soldier: a thick biscuit figure of warm gingerbread brown, colour #b8703a, with the classic rounded gingerbread-man outline, a big round head, very broad shoulders, thick arms and thick short legs, all edged with a wavy line of white icing; a face of white icing, two round eyes and a wide determined mouth; three big round gumdrop buttons down its chest in mint green, caramel gold and cherry pink; two huge dark chocolate gauntlet fists, colour #4a2412, and dark chocolate boots; one cream icing bow tie; wide and towering; simple shapes and very few details; the feet are the lowest thing in the image."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The gingerbread man is drawn very large: about 76 pixels wide and 96 pixels tall.",
+        "negative": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, drips, dripping caramel, crystals, muscles, beard, golem, rock"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: a huge towering living gingerbread man, far taller than a soldier: a thick biscuit figure of warm gingerbread brown, colour #b8703a, with the classic rounded gingerbread-man outline, a big round head, very broad shoulders, thick arms and thick short legs, all edged with a wavy line of white icing; a face of white icing, two round eyes and a wide determined mouth; three big round gumdrop buttons down its chest in mint green, caramel gold and cherry pink; two huge dark chocolate gauntlet fists, colour #4a2412, and dark chocolate boots; one cream icing bow tie; wide and towering; simple shapes and very few details; the feet are the lowest thing in the image. The gingerbread man is drawn very large: about 76 pixels wide and 96 pixels tall.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, child, skin, hair, armour of metal, tiny figure, thin, drips, dripping caramel, crystals, muscles, beard, golem, rock",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk chocolate, colour #7a4526, as the dark anchor on every piece (a dipped half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour #e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit wafer; a few small jewel-candy accents in amber, mint green and cherry pink; one hard pure white highlight on every glossy surface. Class: one chunky cute unit figure with a big head, short sturdy body and one oversized signature weapon or tool, thick single-colour black outline, standing ready pose, both feet visible; the feet are the lowest thing in the image. Subject: a huge towering living gingerbread man, far taller than a soldier: a thick biscuit figure of warm gingerbread brown, colour #b8703a, with the classic rounded gingerbread-man outline, a big round head, very broad shoulders, thick arms and thick short legs, all edged with a wavy line of white icing; a face of white icing, two round eyes and a wide determined mouth; three big round gumdrop buttons down its chest in mint green, caramel gold and cherry pink; two huge dark chocolate gauntlet fists, colour #4a2412, and dark chocolate boots; one cream icing bow tie; wide and towering; simple shapes and very few details; the feet are the lowest thing in the image. The gingerbread man is drawn very large: about 76 pixels wide and 96 pixels tall. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body, pink blob, pastel pink frosting everywhere, metal armour, steel, iron, sword, fur, bone, skull, scary, horror, realistic, banana guard, giant humanoid guardian robot with a gumball head, pink-haired princess, lab coat with a crown, peppermint butler, lemon-headed figure, cartoon show character, pedestal, base, plinth, round base, disc, rim, ground plate, platform, stand, terrain slab, dirt slab, grass square, stone block under the subject, isometric block, ground tile, grass, soil, scenery, background, cast shadow on the ground, multiple units, crowd, human, person, child, skin, hair, armour of metal, tiny figure, thin, drips, dripping caramel, crystals, muscles, beard, golem, rock."
+  }
+}

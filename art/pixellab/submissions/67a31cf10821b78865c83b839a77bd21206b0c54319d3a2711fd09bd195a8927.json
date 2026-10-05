@@ -1,0 +1,36 @@
+{
+  "id": "icon-sugar-rush-choc-a",
+  "jobId": "785aaab4-3245-4d78-8500-4c8489db4c1b",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-sugar-rush",
+    "subject": "ICON:ACTION:SUGAR_RUSH",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311115,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink and white swirl of the lollipop becomes a caramel gold #e0a040 and cream swirl with a thin dark chocolate #4a2412 rim; the lightning-bolt stick and the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink and white swirl of the lollipop becomes a caramel gold #e0a040 and cream swirl with a thin dark chocolate #4a2412 rim; the lightning-bolt stick and the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink and white swirl of the lollipop becomes a caramel gold #e0a040 and cream swirl with a thin dark chocolate #4a2412 rim; the lightning-bolt stick and the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink and white swirl of the lollipop becomes a caramel gold #e0a040 and cream swirl with a thin dark chocolate #4a2412 rim; the lightning-bolt stick and the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-sugar-rush-a",
+      "candidate": 0,
+      "sha256": "87187b4a504405d1f2369588149bbe2563ba53ab1a703628bcca0e24bbd50029"
+    }
+  }
+}

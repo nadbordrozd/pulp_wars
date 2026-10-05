@@ -1,0 +1,36 @@
+{
+  "id": "golem-b",
+  "jobId": "3f100bf0-9302-4c39-a45e-8c9772486081",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-allsorts",
+    "asset": "chibi-look-allsorts-golem",
+    "subject": "UNIT:CANDY:JUGGERNAUT",
+    "faction": "TEST-CANDY-ALLSORTS",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 310209,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Make the golem less dark: about half of its black chunks, the chest, the forearms and the shins, become bright white sugar blocks with pale grey shading, so black and white chunks alternate like layered sweets. Do not redraw anything else: keep the other black liquorice chunks, the pink and yellow striped bands, the white face, the pink crest, every shape, the pose, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Make the golem less dark: about half of its black chunks, the chest, the forearms and the shins, become bright white sugar blocks with pale grey shading, so black and white chunks alternate like layered sweets. Do not redraw anything else: keep the other black liquorice chunks, the pink and yellow striped bands, the white face, the pink crest, every shape, the pose, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Make the golem less dark: about half of its black chunks, the chest, the forearms and the shins, become bright white sugar blocks with pale grey shading, so black and white chunks alternate like layered sweets. Do not redraw anything else: keep the other black liquorice chunks, the pink and yellow striped bands, the white face, the pink crest, every shape, the pose, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Make the golem less dark: about half of its black chunks, the chest, the forearms and the shins, become bright white sugar blocks with pale grey shading, so black and white chunks alternate like layered sweets. Do not redraw anything else: keep the other black liquorice chunks, the pink and yellow striped bands, the white face, the pink crest, every shape, the pose, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "golem-a",
+      "candidate": 0,
+      "sha256": "62ef1ab0a0415e99a8f8a03fe5532119334cdd019556297e230f1a71957aaa2c"
+    }
+  }
+}

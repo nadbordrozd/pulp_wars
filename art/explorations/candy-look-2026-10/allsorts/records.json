@@ -1,0 +1,914 @@
+{
+  "schemaVersion": 1,
+  "batch": "candy-look-allsorts",
+  "recipes": {
+    "city-a": {
+      "id": "city-a",
+      "asset": "chibi-look-allsorts-city",
+      "jobId": "30dbc9e5-4dbb-4e26-96e7-c3e53587aa90",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-look-allsorts",
+        "asset": "chibi-look-allsorts-city",
+        "subject": "CITY:CANDY:2",
+        "faction": "TEST-CANDY-ALLSORTS",
+        "recipeClass": "calm-settlement",
+        "requestSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 310205,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour as a liquorice sweet town and change no shape: the round cake keep becomes a stack of layered sweets, bright white sugar and pink #ff8fc0 layers under a black liquorice top #23192b; the roofs of the little houses become black liquorice with a white stripe; the wall becomes black liquorice blocks topped with small lemon yellow #ffe04a and pink beads; the lollipop a pink and white swirl. Keep every shape, the size, outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour as a liquorice sweet town and change no shape: the round cake keep becomes a stack of layered sweets, bright white sugar and pink #ff8fc0 layers under a black liquorice top #23192b; the roofs of the little houses become black liquorice with a white stripe; the wall becomes black liquorice blocks topped with small lemon yellow #ffe04a and pink beads; the lollipop a pink and white swirl. Keep every shape, the size, outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour as a liquorice sweet town and change no shape: the round cake keep becomes a stack of layered sweets, bright white sugar and pink #ff8fc0 layers under a black liquorice top #23192b; the roofs of the little houses become black liquorice with a white stripe; the wall becomes black liquorice blocks topped with small lemon yellow #ffe04a and pink beads; the lollipop a pink and white swirl. Keep every shape, the size, outline and style the same, on a transparent background.",
+        "editInstruction": "Recolour as a liquorice sweet town and change no shape: the round cake keep becomes a stack of layered sweets, bright white sugar and pink #ff8fc0 layers under a black liquorice top #23192b; the roofs of the little houses become black liquorice with a white stripe; the wall becomes black liquorice blocks topped with small lemon yellow #ffe04a and pink beads; the lollipop a pink and white swirl. Keep every shape, the size, outline and style the same, on a transparent background.",
+        "source": {
+          "batch": "direction-candy",
+          "recipe": "candy-city-2-calm-a-edit",
+          "candidate": 0,
+          "sha256": "e970ef9562868872d21d587a25ede4faedacf7d526d765dea4f49221f15241fd"
+        }
+      },
+      "submittedAt": "2026-10-05T16:00:00.507Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 96,
+        "height": 96
+      },
+      "rawSheet": "art/explorations/candy-look-2026-10/allsorts/raw/city-a.png",
+      "rawSheetSha256": "03e13f0911a5d6591d9e355742d2d857aa7aa2405c6096085495d4ca8896ee71",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.0643,
+          "footprintWidthShare": 0.4861,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.0643,
+          "footprintWidthShare": 0.4861,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T16:00:29.511Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Proposal sample, direction B: City 2 as a layered-sweet keep (pink, lemon, black top), houses with black liquorice roofs and a pink swirl lollipop.",
+        "reviewedAt": "2026-10-05T16:08:51.440Z"
+      }
+    },
+    "golem-a": {
+      "id": "golem-a",
+      "asset": "chibi-look-allsorts-golem",
+      "jobId": "c8ef3397-7878-4d97-8858-73e3b0225989",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-look-allsorts",
+        "asset": "chibi-look-allsorts-golem",
+        "subject": "UNIT:CANDY:JUGGERNAUT",
+        "faction": "TEST-CANDY-ALLSORTS",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 310204,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of black liquorice #23192b, with paler #5a4c6e facets and white highlights; the brown bands at its joints become bright stripes of pink #ff8fc0, white and lemon yellow #ffe04a; its face becomes white sugar with dark eyes; the crest on its head is bright pink crystal. No green and no brown is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of black liquorice #23192b, with paler #5a4c6e facets and white highlights; the brown bands at its joints become bright stripes of pink #ff8fc0, white and lemon yellow #ffe04a; its face becomes white sugar with dark eyes; the crest on its head is bright pink crystal. No green and no brown is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of black liquorice #23192b, with paler #5a4c6e facets and white highlights; the brown bands at its joints become bright stripes of pink #ff8fc0, white and lemon yellow #ffe04a; its face becomes white sugar with dark eyes; the crest on its head is bright pink crystal. No green and no brown is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of black liquorice #23192b, with paler #5a4c6e facets and white highlights; the brown bands at its joints become bright stripes of pink #ff8fc0, white and lemon yellow #ffe04a; its face becomes white sugar with dark eyes; the crest on its head is bright pink crystal. No green and no brown is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "batch": "direction-candy",
+          "recipe": "rock-candy-golem-r6-mint",
+          "candidate": 0,
+          "sha256": "153cfd11b6423eda46dd5e79bcd406d0b424a0ed55bad0e9cecf106bb775f887"
+        }
+      },
+      "submittedAt": "2026-10-05T15:59:28.437Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/explorations/candy-look-2026-10/allsorts/raw/golem-a.png",
+      "rawSheetSha256": "1e143c442f6b70601586739a8764ab16236b6d1d82a5e95ec1313139b33d7715",
+      "plateHints": [
+        {
+          "bandRows": 20,
+          "groundShare": 0.0438,
+          "footprintWidthShare": 0.4634,
+          "suspect": false
+        },
+        {
+          "bandRows": 20,
+          "groundShare": 0.0438,
+          "footprintWidthShare": 0.4634,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T16:00:00.501Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Proposal sample, direction B: the Golem as glossy black liquorice with pink and lemon striped bands, a white face and a pink crystal crest. Striking, but the darkest and most menacing piece: it can read as an Undead brute. Identity: a liquorice golem instead of rock candy.",
+        "reviewedAt": "2026-10-05T16:08:51.146Z"
+      }
+    },
+    "golem-b": {
+      "id": "golem-b",
+      "asset": "chibi-look-allsorts-golem",
+      "jobId": "3f100bf0-9302-4c39-a45e-8c9772486081",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-look-allsorts",
+        "asset": "chibi-look-allsorts-golem",
+        "subject": "UNIT:CANDY:JUGGERNAUT",
+        "faction": "TEST-CANDY-ALLSORTS",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 310209,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Make the golem less dark: about half of its black chunks, the chest, the forearms and the shins, become bright white sugar blocks with pale grey shading, so black and white chunks alternate like layered sweets. Do not redraw anything else: keep the other black liquorice chunks, the pink and yellow striped bands, the white face, the pink crest, every shape, the pose, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Make the golem less dark: about half of its black chunks, the chest, the forearms and the shins, become bright white sugar blocks with pale grey shading, so black and white chunks alternate like layered sweets. Do not redraw anything else: keep the other black liquorice chunks, the pink and yellow striped bands, the white face, the pink crest, every shape, the pose, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Make the golem less dark: about half of its black chunks, the chest, the forearms and the shins, become bright white sugar blocks with pale grey shading, so black and white chunks alternate like layered sweets. Do not redraw anything else: keep the other black liquorice chunks, the pink and yellow striped bands, the white face, the pink crest, every shape, the pose, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Make the golem less dark: about half of its black chunks, the chest, the forearms and the shins, become bright white sugar blocks with pale grey shading, so black and white chunks alternate like layered sweets. Do not redraw anything else: keep the other black liquorice chunks, the pink and yellow striped bands, the white face, the pink crest, every shape, the pose, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "recipe": "golem-a",
+          "candidate": 0,
+          "sha256": "62ef1ab0a0415e99a8f8a03fe5532119334cdd019556297e230f1a71957aaa2c"
+        }
+      },
+      "submittedAt": "2026-10-05T16:07:11.878Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/explorations/candy-look-2026-10/allsorts/raw/golem-b.png",
+      "rawSheetSha256": "6aed941ee281ccf1509e4dfba3efedc452531f35646b620411abef7c36ad2f43",
+      "plateHints": [
+        {
+          "bandRows": 20,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4634,
+          "suspect": false
+        },
+        {
+          "bandRows": 20,
+          "groundShare": 0,
+          "footprintWidthShare": 0.4634,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T16:07:51.251Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The lighter alternative: white sugar chest, arms and legs with black fists and boots. It loses the dark anchor and reads as a white brute (the Ice Folk giant's value); kept in the proposal as the option if the black Golem is too dark.",
+        "reviewedAt": "2026-10-05T16:08:51.290Z"
+      }
+    },
+    "gunner-a": {
+      "id": "gunner-a",
+      "asset": "chibi-look-allsorts-gunner",
+      "jobId": "b1c4fb34-e965-47c7-acf0-bd96b16b19a0",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-look-allsorts",
+        "asset": "chibi-look-allsorts-gunner",
+        "subject": "UNIT:CANDY:MARKSMAN",
+        "faction": "TEST-CANDY-ALLSORTS",
+        "recipeClass": "machine",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 310203,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour only the base under the glass globe: the mint green base becomes black liquorice #23192b, with a pale #5a4c6e highlight and one bright band of pink #ff8fc0 and lemon yellow #ffe04a stripes round its top edge; its two eyes become white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour only the base under the glass globe: the mint green base becomes black liquorice #23192b, with a pale #5a4c6e highlight and one bright band of pink #ff8fc0 and lemon yellow #ffe04a stripes round its top edge; its two eyes become white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour only the base under the glass globe: the mint green base becomes black liquorice #23192b, with a pale #5a4c6e highlight and one bright band of pink #ff8fc0 and lemon yellow #ffe04a stripes round its top edge; its two eyes become white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Recolour only the base under the glass globe: the mint green base becomes black liquorice #23192b, with a pale #5a4c6e highlight and one bright band of pink #ff8fc0 and lemon yellow #ffe04a stripes round its top edge; its two eyes become white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "batch": "direction-candy",
+          "recipe": "gunner-machine-mint-a-spit-b",
+          "candidate": 0,
+          "sha256": "8c9c0678c1cf01b2b05d2ae8e325bd7687d2091aa67a0394f91a6c174fd09378"
+        }
+      },
+      "submittedAt": "2026-10-05T15:58:41.404Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/candy-look-2026-10/allsorts/raw/gunner-a.png",
+      "rawSheetSha256": "c62945c1d8a3672dbee9902690242f8e50312a682d7dc6eaca3f16a451549121",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.0966,
+          "footprintWidthShare": 0.8511,
+          "suspect": false
+        },
+        {
+          "bandRows": 14,
+          "groundShare": 0.0966,
+          "footprintWidthShare": 0.8511,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T15:59:28.431Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Proposal sample, direction B: the gumball machine on a black liquorice base with a pink and lemon band and a white grin. Identity unchanged.",
+        "reviewedAt": "2026-10-05T16:08:50.995Z"
+      }
+    },
+    "marshmallow-a": {
+      "id": "marshmallow-a",
+      "asset": "chibi-look-allsorts-marshmallow",
+      "jobId": "6cf173a4-1a33-44c0-8e72-ce3fb4682e4d",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-look-allsorts",
+        "asset": "chibi-look-allsorts-marshmallow",
+        "subject": "UNIT:CANDY:GUARD",
+        "faction": "TEST-CANDY-ALLSORTS",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 310202,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change three things only. The big biscuit shield becomes a big round liquorice wheel: a black coil #23192b, wound in a spiral with a bright pink centre #ff8fc0. A black liquorice band runs round the middle of its body like a belt, and its feet are black. The pink frosting on its top becomes lemon yellow #ffe04a. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change three things only. The big biscuit shield becomes a big round liquorice wheel: a black coil #23192b, wound in a spiral with a bright pink centre #ff8fc0. A black liquorice band runs round the middle of its body like a belt, and its feet are black. The pink frosting on its top becomes lemon yellow #ffe04a. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change three things only. The big biscuit shield becomes a big round liquorice wheel: a black coil #23192b, wound in a spiral with a bright pink centre #ff8fc0. A black liquorice band runs round the middle of its body like a belt, and its feet are black. The pink frosting on its top becomes lemon yellow #ffe04a. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Change three things only. The big biscuit shield becomes a big round liquorice wheel: a black coil #23192b, wound in a spiral with a bright pink centre #ff8fc0. A black liquorice band runs round the middle of its body like a belt, and its feet are black. The pink frosting on its top becomes lemon yellow #ffe04a. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "batch": "direction-candy",
+          "recipe": "marshmallow-a",
+          "candidate": 0,
+          "sha256": "e6cfbc33d4935c3796b50cacf3a0f8657983ba18770e5411ec60adec30504d17"
+        }
+      },
+      "submittedAt": "2026-10-05T15:57:54.463Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/candy-look-2026-10/allsorts/raw/marshmallow-a.png",
+      "rawSheetSha256": "9961859f3d69f6e9824ac31f20be58eae06992ba180d7e504765bbc6f627d6ec",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.0139,
+          "footprintWidthShare": 0.6957,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.0139,
+          "footprintWidthShare": 0.6957,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T15:58:41.399Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The liquorice wheel shield, the belt and the lemon top are right, but the arms and legs stay pink; superseded by its edit marshmallow-b.",
+        "reviewedAt": "2026-10-05T16:08:50.693Z"
+      }
+    },
+    "marshmallow-b": {
+      "id": "marshmallow-b",
+      "asset": "chibi-look-allsorts-marshmallow",
+      "jobId": "a19935f1-3f8e-434f-bc34-33049bd9b8d8",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-look-allsorts",
+        "asset": "chibi-look-allsorts-marshmallow",
+        "subject": "UNIT:CANDY:GUARD",
+        "faction": "TEST-CANDY-ALLSORTS",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 310208,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only its arms and legs: the pink arms become white marshmallow like the body, and the pink legs and feet become black liquorice boots #23192b with a pale highlight; the pink dots on its body become white. Do not redraw anything else: keep the white body, the lemon top, the face, the cheeks, the black liquorice wheel shield, the black belt, every shape, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only its arms and legs: the pink arms become white marshmallow like the body, and the pink legs and feet become black liquorice boots #23192b with a pale highlight; the pink dots on its body become white. Do not redraw anything else: keep the white body, the lemon top, the face, the cheeks, the black liquorice wheel shield, the black belt, every shape, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only its arms and legs: the pink arms become white marshmallow like the body, and the pink legs and feet become black liquorice boots #23192b with a pale highlight; the pink dots on its body become white. Do not redraw anything else: keep the white body, the lemon top, the face, the cheeks, the black liquorice wheel shield, the black belt, every shape, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Change only its arms and legs: the pink arms become white marshmallow like the body, and the pink legs and feet become black liquorice boots #23192b with a pale highlight; the pink dots on its body become white. Do not redraw anything else: keep the white body, the lemon top, the face, the cheeks, the black liquorice wheel shield, the black belt, every shape, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "recipe": "marshmallow-a",
+          "candidate": 0,
+          "sha256": "c1a82816213eb98a12231d7f0ebb81f23ec768de934c165fa31e6a7858882e23"
+        }
+      },
+      "submittedAt": "2026-10-05T16:06:39.310Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/candy-look-2026-10/allsorts/raw/marshmallow-b.png",
+      "rawSheetSha256": "512422a79c49ece0c173b5742d8dcd5eeea98364da1af3f347adcb488591cef9",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7174,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7174,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T16:07:11.871Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Proposal sample, direction B: the Marshmallow all white with black liquorice boots and belt, a lemon slice on top and a black liquorice wheel as its shield. Identity unchanged.",
+        "reviewedAt": "2026-10-05T16:08:50.840Z"
+      }
+    },
+    "portrait-a": {
+      "id": "portrait-a",
+      "asset": "chibi-look-allsorts-portrait",
+      "jobId": "b4758990-e4dc-458c-bc7f-ee1cdc583c9b",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-look-allsorts",
+        "asset": "chibi-look-allsorts-portrait",
+        "subject": "PORTRAIT:CANDY:FIGHTER",
+        "faction": "TEST-CANDY-ALLSORTS",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 310207,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a sandwich of three thick layers, black liquorice #23192b, on top and at the bottom and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob on top is black. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a sandwich of three thick layers, black liquorice #23192b, on top and at the bottom and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob on top is black. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a sandwich of three thick layers, black liquorice #23192b, on top and at the bottom and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob on top is black. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a sandwich of three thick layers, black liquorice #23192b, on top and at the bottom and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob on top is black. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "batch": "direction-candy",
+          "recipe": "portrait-toffee-b",
+          "candidate": 0,
+          "sha256": "6284e4d7ab510139635ee1fb213a85834ae1e7ea7fab501cb0db97388cb95de2"
+        }
+      },
+      "submittedAt": "2026-10-05T16:00:55.407Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/explorations/candy-look-2026-10/allsorts/raw/portrait-a.png",
+      "rawSheetSha256": "77a7a55e90e8b3523ffc9a630b894c330dfd8b0186c1b3061b60a607dde44cea",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7391,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T16:01:39.432Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Proposal sample, direction B: the allsort line unit's portrait (the faction emblem): black, white with the face, black, with pink striped wings.",
+        "reviewedAt": "2026-10-05T16:08:51.739Z"
+      }
+    },
+    "ship-a": {
+      "id": "ship-a",
+      "asset": "chibi-look-allsorts-ship",
+      "jobId": "8c5d8f91-1410-4a65-88ac-1eae087dab64",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-look-allsorts",
+        "asset": "chibi-look-allsorts-ship",
+        "subject": "UNIT:CANDY:BATTLESHIP",
+        "faction": "TEST-CANDY-ALLSORTS",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 88,
+          "height": 96
+        },
+        "seed": 310206,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Recolour as a liquorice galleon and change no shape: the hull becomes black liquorice #23192b, with a paler #5a4c6e highlight and one thick rim of bright pink #ff8fc0 and white stripes in place of the frosting; the sails become white with two bright pink stripes; the masts black; the pennants lemon yellow #ffe04a; the cake tower white sugar with a black top. Keep every shape, the size, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Recolour as a liquorice galleon and change no shape: the hull becomes black liquorice #23192b, with a paler #5a4c6e highlight and one thick rim of bright pink #ff8fc0 and white stripes in place of the frosting; the sails become white with two bright pink stripes; the masts black; the pennants lemon yellow #ffe04a; the cake tower white sugar with a black top. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Recolour as a liquorice galleon and change no shape: the hull becomes black liquorice #23192b, with a paler #5a4c6e highlight and one thick rim of bright pink #ff8fc0 and white stripes in place of the frosting; the sails become white with two bright pink stripes; the masts black; the pennants lemon yellow #ffe04a; the cake tower white sugar with a black top. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Recolour as a liquorice galleon and change no shape: the hull becomes black liquorice #23192b, with a paler #5a4c6e highlight and one thick rim of bright pink #ff8fc0 and white stripes in place of the frosting; the sails become white with two bright pink stripes; the masts black; the pennants lemon yellow #ffe04a; the cake tower white sugar with a black top. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "batch": "naval-candy",
+          "recipe": "candy-battleship-a",
+          "candidate": 0,
+          "sha256": "a0c0fd3bc9ef72b0c3c6ed4e68af0ff7214786ebfc8140bce809fef8bca47610"
+        }
+      },
+      "submittedAt": "2026-10-05T16:00:29.517Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 96
+      },
+      "rawSheet": "art/explorations/candy-look-2026-10/allsorts/raw/ship-a.png",
+      "rawSheetSha256": "d499b65a64fff53aa68c48bdb280f58d1e797cefa3ee89631c915bfd9ca0c640",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        },
+        {
+          "bandRows": 16,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7714,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T16:00:55.401Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Proposal sample, direction B: the Battleship as a black liquorice galleon with a dripping pink rim and pink-striped sails. The pink PixelLab drew is a hot pink near the Martian magenta; a production batch would pin it.",
+        "reviewedAt": "2026-10-05T16:08:51.589Z"
+      }
+    },
+    "trooper-a": {
+      "id": "trooper-a",
+      "asset": "chibi-look-allsorts-trooper",
+      "jobId": "ad1e6730-fa07-4ccb-aecf-a09715f097de",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "candy-look-allsorts",
+        "asset": "chibi-look-allsorts-trooper",
+        "subject": "UNIT:CANDY:FIGHTER",
+        "faction": "TEST-CANDY-ALLSORTS",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 56,
+          "height": 80
+        },
+        "seed": 310201,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a square sandwich of three thick flat layers, black liquorice #23192b, on top and at the bottom, and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob, the feet and the shield are black liquorice. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a square sandwich of three thick flat layers, black liquorice #23192b, on top and at the bottom, and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob, the feet and the shield are black liquorice. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a square sandwich of three thick flat layers, black liquorice #23192b, on top and at the bottom, and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob, the feet and the shield are black liquorice. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a square sandwich of three thick flat layers, black liquorice #23192b, on top and at the bottom, and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob, the feet and the shield are black liquorice. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "batch": "direction-candy",
+          "recipe": "fighter-toffee-a",
+          "candidate": 0,
+          "sha256": "ff0fe723fedf37c63b4e5d4e4856237730ccb92fe0698097c9d3e7be40c5424c"
+        }
+      },
+      "submittedAt": "2026-10-05T15:57:11.491Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 56,
+        "height": 80
+      },
+      "rawSheet": "art/explorations/candy-look-2026-10/allsorts/raw/trooper-a.png",
+      "rawSheetSha256": "1ab523f8263215db96345b9a591d59d95b97622b3fdd7af90e10962a721454fa",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.0702,
+          "footprintWidthShare": 0.7407,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.0702,
+          "footprintWidthShare": 0.7407,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T15:57:54.448Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "Proposal sample, direction B: the line unit as a liquorice allsort, a sandwich of black liquorice, a white sugar layer with the face, and black again, with pink and white wrapper wings. Identity: an allsort instead of a toffee (a rename would follow).",
+        "reviewedAt": "2026-10-05T16:08:50.550Z"
+      }
+    }
+  },
+  "assets": {
+    "chibi-look-allsorts-city": {
+      "id": "chibi-look-allsorts-city",
+      "subject": "CITY:CANDY:2",
+      "assetClass": "SETTLEMENT",
+      "status": "ACCEPTED",
+      "recipe": "city-a",
+      "candidate": 0,
+      "candidateSha256": "4a6c7237710823f47c0d6500ce629422e2273575977e3ab89b4decdbeb43785b",
+      "master": {
+        "path": "art/explorations/candy-look-2026-10/allsorts/assets/settlements/chibi-look-allsorts-city.png",
+        "sha256": "d227e47df26246f03fdbc004af15bb8ecefca195e1be193dee7d16c4d5ef7d62",
+        "pixelSha256": "1eb6c26394eafc8658cc041a97f6fed853b6cb4397f8954455c24622c7bb3b04",
+        "width": 88,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
+        }
+      },
+      "anchor": {
+        "x": 44,
+        "y": 48
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Proposal sample, direction B: City 2 as a layered-sweet keep (pink, lemon, black top), houses with black liquorice roofs and a pink swirl lollipop.",
+      "acceptedAt": "2026-10-05T16:08:51.440Z"
+    },
+    "chibi-look-allsorts-golem": {
+      "id": "chibi-look-allsorts-golem",
+      "subject": "UNIT:CANDY:JUGGERNAUT",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "golem-a",
+      "candidate": 0,
+      "candidateSha256": "62ef1ab0a0415e99a8f8a03fe5532119334cdd019556297e230f1a71957aaa2c",
+      "master": {
+        "path": "art/explorations/candy-look-2026-10/allsorts/assets/units/chibi-look-allsorts-golem.png",
+        "sha256": "62ef1ab0a0415e99a8f8a03fe5532119334cdd019556297e230f1a71957aaa2c",
+        "pixelSha256": "1878565e9156bf4dddb7ab425b80025b86b42cf037c5a006489ed5e269a599a4",
+        "width": 88,
+        "height": 104
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 44,
+        "y": 64
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 24,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 20,
+        "groundShare": 0.0438,
+        "footprintWidthShare": 0.4634,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Proposal sample, direction B: the Golem as glossy black liquorice with pink and lemon striped bands, a white face and a pink crystal crest. Striking, but the darkest and most menacing piece: it can read as an Undead brute. Identity: a liquorice golem instead of rock candy.",
+      "acceptedAt": "2026-10-05T16:08:51.146Z"
+    },
+    "chibi-look-allsorts-gunner": {
+      "id": "chibi-look-allsorts-gunner",
+      "subject": "UNIT:CANDY:MARKSMAN",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "gunner-a",
+      "candidate": 0,
+      "candidateSha256": "7130ffb37fc1823950ab897b6a686dd60543357453fae25f56ec8d33a0c9a52b",
+      "master": {
+        "path": "art/explorations/candy-look-2026-10/allsorts/assets/units/chibi-look-allsorts-gunner.png",
+        "sha256": "7130ffb37fc1823950ab897b6a686dd60543357453fae25f56ec8d33a0c9a52b",
+        "pixelSha256": "0a90279f571404f55a53013665473310da3be9851ecf1e11b707637a2d9a8e15",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 14,
+        "groundShare": 0.0966,
+        "footprintWidthShare": 0.8511,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Proposal sample, direction B: the gumball machine on a black liquorice base with a pink and lemon band and a white grin. Identity unchanged.",
+      "acceptedAt": "2026-10-05T16:08:50.995Z"
+    },
+    "chibi-look-allsorts-marshmallow": {
+      "id": "chibi-look-allsorts-marshmallow",
+      "subject": "UNIT:CANDY:GUARD",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "marshmallow-b",
+      "candidate": 0,
+      "candidateSha256": "298e7bd1e16962d3a2da461a3182cb03e7aac01b292b538d2e6f1f22ef6bbab5",
+      "master": {
+        "path": "art/explorations/candy-look-2026-10/allsorts/assets/units/chibi-look-allsorts-marshmallow.png",
+        "sha256": "298e7bd1e16962d3a2da461a3182cb03e7aac01b292b538d2e6f1f22ef6bbab5",
+        "pixelSha256": "ad478ca529ebb100718ed147f8d08bfba39b8dc4c64f1c95b43749dc9d022bfb",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 13,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7174,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Proposal sample, direction B: the Marshmallow all white with black liquorice boots and belt, a lemon slice on top and a black liquorice wheel as its shield. Identity unchanged.",
+      "acceptedAt": "2026-10-05T16:08:50.840Z"
+    },
+    "chibi-look-allsorts-portrait": {
+      "id": "chibi-look-allsorts-portrait",
+      "subject": "PORTRAIT:CANDY:FIGHTER",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "portrait-a",
+      "candidate": 0,
+      "candidateSha256": "f415342bf51ecca5a1a9b3a65a17fff0df83dfc9e2d0dc8db024344291dfd2a8",
+      "master": {
+        "path": "art/explorations/candy-look-2026-10/allsorts/assets/portraits/chibi-look-allsorts-portrait.png",
+        "sha256": "f415342bf51ecca5a1a9b3a65a17fff0df83dfc9e2d0dc8db024344291dfd2a8",
+        "pixelSha256": "a274f646094a4812765c99632c894dcd18a34fd0aded56f3871aa083e4edd66d",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7391,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Proposal sample, direction B: the allsort line unit's portrait (the faction emblem): black, white with the face, black, with pink striped wings.",
+      "acceptedAt": "2026-10-05T16:08:51.739Z"
+    },
+    "chibi-look-allsorts-ship": {
+      "id": "chibi-look-allsorts-ship",
+      "subject": "UNIT:CANDY:BATTLESHIP",
+      "assetClass": "GIANT_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "ship-a",
+      "candidate": 0,
+      "candidateSha256": "4abea75ee9f672d39af7191ba33e7252e8ff8221e0f3d418e4886989ccb35c49",
+      "master": {
+        "path": "art/explorations/candy-look-2026-10/allsorts/assets/units/chibi-look-allsorts-ship.png",
+        "sha256": "4abea75ee9f672d39af7191ba33e7252e8ff8221e0f3d418e4886989ccb35c49",
+        "pixelSha256": "ff841da417f0649f0565caca4b4e94ab3a8abb8eba4619806f3d9e68435d1d04",
+        "width": 88,
+        "height": 96
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 44,
+        "y": 56
+      },
+      "overflow": {
+        "left": 4,
+        "right": 4,
+        "up": 16,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 16,
+        "groundShare": 0,
+        "footprintWidthShare": 0.7714,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Proposal sample, direction B: the Battleship as a black liquorice galleon with a dripping pink rim and pink-striped sails. The pink PixelLab drew is a hot pink near the Martian magenta; a production batch would pin it.",
+      "acceptedAt": "2026-10-05T16:08:51.589Z"
+    },
+    "chibi-look-allsorts-trooper": {
+      "id": "chibi-look-allsorts-trooper",
+      "subject": "UNIT:CANDY:FIGHTER",
+      "assetClass": "STANDARD_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "trooper-a",
+      "candidate": 0,
+      "candidateSha256": "5f704e0d17f61ce6afc501588ec015abba5e3561e434557b4d659e5918a3c1b6",
+      "master": {
+        "path": "art/explorations/candy-look-2026-10/allsorts/assets/units/chibi-look-allsorts-trooper.png",
+        "sha256": "5f704e0d17f61ce6afc501588ec015abba5e3561e434557b4d659e5918a3c1b6",
+        "pixelSha256": "9ac1a595d8ac548b321de3a3ebe4fd979c1afb1e1dc4d5b6c2f459a1a8822463",
+        "width": 56,
+        "height": 80
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 28,
+        "y": 40
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 10,
+        "groundShare": 0.0702,
+        "footprintWidthShare": 0.7407,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "Proposal sample, direction B: the line unit as a liquorice allsort, a sandwich of black liquorice, a white sugar layer with the face, and black again, with pink and white wrapper wings. Identity: an allsort instead of a toffee (a rename would follow).",
+      "acceptedAt": "2026-10-05T16:08:50.550Z"
+    }
+  }
+}

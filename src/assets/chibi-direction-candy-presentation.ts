@@ -10,24 +10,30 @@
  * (`candy-canvas-v7`, `candy-effects-v7`, `attack-effects-v7`).
  */
 
-/** The faction's colours for code-drawn markers, chips and effects. */
+/**
+ * The faction's colours for code-drawn markers, chips and effects. Since the
+ * Chocolatier look (bead pulp_wars-jdb.10) the accents are caramel gold and
+ * chocolate, as on the sprites; they were cotton-candy pink (`pink`,
+ * `pinkShade`, `pinkDark`). Only `faction` is still pink: the identity
+ * colour of the territory border.
+ */
 export const CANDY_PALETTE_V7 = {
-  /** The faction colour (spec 15.4): the border and the interface. */
+  /** The faction colour (spec 15.4): the territory border, nothing else. */
   faction: "#ffb8d8",
-  /** Glaze, frosting, jelly and crystal, lit (measured on the masters). */
-  pink: "#fba4c7",
-  /** The shadow tone of the pink. */
-  pinkShade: "#b25d80",
-  /** The darkest pink a marker may use: an outline on white. */
-  pinkDark: "#8f4565",
+  /** Caramel and toffee gold, lit: the accent of every code-drawn piece. */
+  caramel: "#e0a040",
+  /** The shadow tone of the caramel. */
+  caramelShade: "#b06a1c",
+  /** Milk chocolate: the outline of a white or caramel marker. */
+  milkChocolate: "#7a4526",
   /** Marshmallow, whipped cream, sugar and the hard shine. */
   white: "#fcf7f5",
   /** Cream shade, vanilla and pale sponge. */
   cream: "#f0d7ba",
-  /** Wafer, graham cracker, donut dough and caramel. */
+  /** Wafer, graham cracker, donut dough and gingerbread. */
   biscuit: "#c8783a",
-  /** Chocolate, gingerbread shade and the feet. */
-  chocolate: "#6d2415",
+  /** Dark chocolate: dips, glazes and the feet. */
+  chocolate: "#4a2412",
   /** The small mint trim. */
   mint: "#8ddab3",
   /** The darkest outline of a marker. */

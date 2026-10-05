@@ -1,0 +1,36 @@
+{
+  "id": "crumbs-choc-a",
+  "jobId": "99bae07a-d1dd-4730-9cdf-335ef12ea60c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-crumbs",
+    "subject": "CRUMBS",
+    "faction": "CANDY",
+    "recipeClass": "resource",
+    "requestSize": {
+      "width": 40,
+      "height": 40
+    },
+    "seed": 311122,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink frosting bits among the crumbs become dark chocolate #4a2412 chips with a lighter #7a4526 shine. No pink is left. Keep the golden biscuit pieces, the crumbs, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink frosting bits among the crumbs become dark chocolate #4a2412 chips with a lighter #7a4526 shine. No pink is left. Keep the golden biscuit pieces, the crumbs, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink frosting bits among the crumbs become dark chocolate #4a2412 chips with a lighter #7a4526 shine. No pink is left. Keep the golden biscuit pieces, the crumbs, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink frosting bits among the crumbs become dark chocolate #4a2412 chips with a lighter #7a4526 shine. No pink is left. Keep the golden biscuit pieces, the crumbs, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "crumbs-b",
+      "candidate": 0,
+      "sha256": "d38306972f8c37380f0ad75331a3c7a782ce86e32fc7b0b69833e3533455cde8"
+    }
+  }
+}

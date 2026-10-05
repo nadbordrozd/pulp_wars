@@ -18,7 +18,7 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "subjectKey": "UNIT:CANDY:FIGHTER/TOFFEE"
+      "subjectKey": "UNIT:CANDY:FIGHTER/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-candy-marshmallow",
@@ -30,7 +30,8 @@
         "height": 80
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:GUARD/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-candy-gummy-bear",
@@ -43,7 +44,7 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "subjectKey": "UNIT:CANDY:KNIGHT/AMBER"
+      "subjectKey": "UNIT:CANDY:KNIGHT/BUNNY"
     },
     {
       "id": "chibi-direction-candy-rock-candy-golem",
@@ -56,7 +57,7 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "subjectKey": "UNIT:CANDY:JUGGERNAUT/MINT"
+      "subjectKey": "UNIT:CANDY:JUGGERNAUT/GINGERBREAD"
     },
     {
       "id": "chibi-direction-candy-donut-racer",
@@ -68,7 +69,8 @@
         "height": 88
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:RAIDER/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-candy-gumball-gunner",
@@ -81,7 +83,7 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "subjectKey": "UNIT:CANDY:MARKSMAN/MACHINE"
+      "subjectKey": "UNIT:CANDY:MARKSMAN/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-candy-confectioner",
@@ -93,7 +95,8 @@
         "height": 80
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:CAPTAIN/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-candy-pie-launcher",
@@ -105,7 +108,8 @@
         "height": 88
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:CATAPULT/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-portrait-candy-gumdrop",
@@ -118,7 +122,7 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "subjectKey": "PORTRAIT:CANDY:FIGHTER/TOFFEE"
+      "subjectKey": "PORTRAIT:CANDY:FIGHTER/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-portrait-candy-marshmallow",
@@ -130,7 +134,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:GUARD/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-portrait-candy-gummy-bear",
@@ -143,7 +148,7 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "subjectKey": "PORTRAIT:CANDY:KNIGHT/AMBER"
+      "subjectKey": "PORTRAIT:CANDY:KNIGHT/BUNNY"
     },
     {
       "id": "chibi-direction-portrait-candy-rock-candy-golem",
@@ -156,7 +161,7 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "subjectKey": "PORTRAIT:CANDY:JUGGERNAUT/MINT"
+      "subjectKey": "PORTRAIT:CANDY:JUGGERNAUT/GINGERBREAD"
     },
     {
       "id": "chibi-direction-portrait-candy-donut-racer",
@@ -168,7 +173,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:RAIDER/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-portrait-candy-gumball-gunner",
@@ -181,7 +187,7 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "subjectKey": "PORTRAIT:CANDY:MARKSMAN/MACHINE"
+      "subjectKey": "PORTRAIT:CANDY:MARKSMAN/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-portrait-candy-confectioner",
@@ -194,7 +200,7 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "subjectKey": "PORTRAIT:CANDY:CAPTAIN/APRON"
+      "subjectKey": "PORTRAIT:CANDY:CAPTAIN/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-portrait-candy-pie-launcher",
@@ -206,12 +212,13 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:CATAPULT/CHOCOLATIER"
     },
     {
       "id": "chibi-direction-candy-city-1",
       "subject": "CITY:CANDY:1",
-      "subjectKey": "CITY:CANDY:1/CALM",
+      "subjectKey": "CITY:CANDY:1/CHOCOLATIER",
       "assetClass": "SETTLEMENT",
       "recipeClass": "calm-settlement",
       "canvas": {
@@ -224,7 +231,7 @@
     {
       "id": "chibi-direction-candy-city-2",
       "subject": "CITY:CANDY:2",
-      "subjectKey": "CITY:CANDY:2/CALM",
+      "subjectKey": "CITY:CANDY:2/CHOCOLATIER",
       "assetClass": "SETTLEMENT",
       "recipeClass": "calm-settlement",
       "canvas": {
@@ -237,7 +244,7 @@
     {
       "id": "chibi-direction-candy-city-3",
       "subject": "CITY:CANDY:3",
-      "subjectKey": "CITY:CANDY:3/CALM",
+      "subjectKey": "CITY:CANDY:3/CHOCOLATIER",
       "assetClass": "SETTLEMENT",
       "recipeClass": "calm-settlement",
       "canvas": {
@@ -312,6 +319,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/candy-chocolate.png",
+        "sha256": "75143d931d1137fc1683400ce61074310ada924f966bffbb4829a545452b1930"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/candy-sugar.png",
         "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
       }
@@ -326,6 +337,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/candy-chocolate.png",
+        "sha256": "75143d931d1137fc1683400ce61074310ada924f966bffbb4829a545452b1930"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/candy-sugar.png",
         "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
       }
@@ -340,6 +355,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/candy-mint-chocolate.png",
+        "sha256": "7ecf246b46f81b1d6b9b9412594f3d393059c7f19b2535ea4bdf7456f7f8bbf3"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/candy-sugar.png",
         "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
       }
@@ -442,6 +461,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/candy-chocolate.png",
+        "sha256": "75143d931d1137fc1683400ce61074310ada924f966bffbb4829a545452b1930"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/candy-sugar.png",
         "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
       }
@@ -456,6 +479,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/candy-chocolate.png",
+        "sha256": "75143d931d1137fc1683400ce61074310ada924f966bffbb4829a545452b1930"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/candy-sugar.png",
         "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
       }
@@ -470,6 +497,10 @@
         "height": 48
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/candy-chocolate.png",
+        "sha256": "75143d931d1137fc1683400ce61074310ada924f966bffbb4829a545452b1930"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/candy-sugar.png",
         "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
       }
@@ -484,6 +515,10 @@
         "height": 40
       },
       "palette": {
+        "path": "scripts/art/chibi/palettes/candy-chocolate.png",
+        "sha256": "75143d931d1137fc1683400ce61074310ada924f966bffbb4829a545452b1930"
+      },
+      "paletteFrom": {
         "path": "scripts/art/chibi/palettes/candy-sugar.png",
         "sha256": "fbaf551ec19deb9e05fe2f3d376ee4acd7c57119c4cea199cd762fd456cc47be"
       }
@@ -1617,6 +1652,548 @@
       },
       "editInstruction": "Change only one thing: erase the two big dark eyes and the mouth drawn inside the glass globe, and fill their place with more small round glossy gumballs, yellow, orange, green, blue, white and pink, so the globe holds only gumballs and has no face. Do not redraw anything else: keep the globe, its highlight, the dark lid, the mint green base with its dot eyes and open mouth, the gold coin knob, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "Bead pulp_wars-2o7.3: portrait-machine-b still has dark eyes inside the globe as well as the face on the base. Imported from art/explorations/candy-redesign-2026-10."
+    },
+    {
+      "id": "marshmallow-choc-a",
+      "asset": "chibi-direction-candy-marshmallow",
+      "endpoint": "edit-image-pixen",
+      "seed": 311101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "marshmallow-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change four things only. The big biscuit shield becomes a thick slab of dark chocolate #4a2412 bar marked into square blocks. The pink frosting on its top becomes golden caramel #e0a040 dripping down its sides. Its pink arms and legs become golden caramel, and its feet dark chocolate #4a2412. The pink dots on its body become cream. No pink is left except its two cheeks. Keep the white marshmallow body, the face, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "pie-launcher-choc-a",
+      "asset": "chibi-direction-candy-pie-launcher",
+      "endpoint": "edit-image-pixen",
+      "seed": 311102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "pie-launcher-a-pie",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the fat pink frosting barrel becomes a chocolate roll cake, dark chocolate #4a2412 with a lighter #7a4526 shine and two caramel gold #e0a040 bands; the pink and white wheels become caramel gold #e0a040 and cream swirl wheels; the pink buttons on the gingerbread cart become cream dots. No pink is left. Keep the gingerbread cart, the white icing lines, the cream pie, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "confectioner-choc-a",
+      "asset": "chibi-direction-candy-confectioner",
+      "endpoint": "edit-image-pixen",
+      "seed": 311103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "confectioner-a-apron",
+        "candidate": 0
+      },
+      "editInstruction": "Change no shape: the pink apron becomes a dark chocolate #4a2412 apron with a cream white frill at its hem; the pink frosting on its head becomes dark chocolate glaze; the baker's hat becomes cream #fff1d0; the whisk handle caramel gold #e0a040; one small cherry-pink bow at its neck is the only pink left. Keep the caramel head, the goggles, the face, the whisk, the arms, the feet, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "portrait-confectioner-choc-a",
+      "asset": "chibi-direction-portrait-candy-confectioner",
+      "endpoint": "edit-image-pixen",
+      "seed": 311104,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-confectioner-r6-apron",
+        "candidate": 0
+      },
+      "editInstruction": "Change no shape: the pink frosting on its head becomes dark chocolate glaze #4a2412; the pink apron at the bottom becomes a dark chocolate #4a2412 apron with a thin cream frill; the baker's hat becomes cream #fff1d0; the whisk handle caramel gold #e0a040; one small cherry-pink bow at its neck is the only pink left. Keep the caramel head, the goggles, the face, the whisk, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "portrait-donut-racer-choc-a",
+      "asset": "chibi-direction-portrait-candy-donut-racer",
+      "endpoint": "edit-image-pixen",
+      "seed": 311105,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-donut-racer-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412 with a lighter #7a4526 shine and a few tiny cream and gold sprinkles; any other pink part becomes cream. No pink is left. Keep the golden dough, the hole, the candy-corn rider, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "portrait-gunner-choc-a",
+      "asset": "chibi-direction-portrait-candy-gumball-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 311106,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-machine-b-noeyes",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the base under the glass globe: the mint green base becomes milk chocolate #7a4526, shaded dark chocolate #4a2412, with one caramel gold #e0a040 band round its top edge; its two eyes become cream-white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knob, the open mouth, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "portrait-marshmallow-choc-a",
+      "asset": "chibi-direction-portrait-candy-marshmallow",
+      "endpoint": "edit-image-pixen",
+      "seed": 311107,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-marshmallow-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink stripe under the biscuit top becomes a thick layer of dark chocolate #4a2412; the pink band at the bottom of the block becomes golden caramel #e0a040 dripping; every other pink trim becomes cream. No pink is left except its two cheeks. Keep the white marshmallow block, the biscuit top, the face, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "portrait-pie-launcher-choc-a",
+      "asset": "chibi-direction-portrait-candy-pie-launcher",
+      "endpoint": "edit-image-pixen",
+      "seed": 311108,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-pie-launcher-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink frosting barrel becomes a chocolate roll cake, dark chocolate #4a2412 with a lighter #7a4526 shine and caramel gold #e0a040 bands; the pink wheels become caramel gold #e0a040 and cream swirl wheels; the pink buttons and trims on the gingerbread cart become cream. No pink is left. Keep the gingerbread cart, the white icing lines, the cream pie, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "candy-city-1-choc-a",
+      "asset": "chibi-direction-candy-city-1",
+      "endpoint": "edit-image-pixen",
+      "seed": 311109,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "candy-city-1-calm-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink and white swirl of the lollipop tree becomes a caramel gold #e0a040 and cream swirl; the pink door becomes dark chocolate #4a2412; the window frames and the edge of the white frosting roof get a thin dark chocolate #4a2412 trim; one tiny cherry-pink dot on the roof top is the only pink. Keep the gingerbread walls, the white frosting roof, every shape, the size, outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "candy-city-3-choc-a",
+      "asset": "chibi-direction-candy-city-3",
+      "endpoint": "edit-image-pixen",
+      "seed": 311110,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "candy-city-3-calm-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a chocolate cake castle and change no shape: the pink frosting on every tier of the big cake becomes dark chocolate glaze #4a2412; the pink tops of the towers and the pink flags become caramel gold #e0a040; the pink sweets on the wall become caramel gold #e0a040; the lollipop becomes caramel and cream; one small cherry on top of the cake is the only pink. Keep the wafer walls, the tower cones, the houses, every shape, the size, outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-bounce-choc-a",
+      "asset": "chibi-direction-icon-action-bounce",
+      "endpoint": "edit-image-pixen",
+      "seed": 311111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-bounce-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: every pink part becomes caramel gold #e0a040 shaded with milk chocolate #7a4526; the biscuit and cream parts and the white motion lines stay as they are. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-frosting-choc-a",
+      "asset": "chibi-direction-icon-action-frosting",
+      "endpoint": "edit-image-pixen",
+      "seed": 311112,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-frosting-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink frosting that the piping bag squeezes out and the pink swirl under it become dark chocolate #4a2412 cream with a lighter #7a4526 shine; the piping bag stays white; its nozzle is caramel gold #e0a040. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-rebake-choc-a",
+      "asset": "chibi-direction-icon-action-rebake",
+      "endpoint": "edit-image-pixen",
+      "seed": 311113,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-rebake-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink handle of the whisk and the pink oven mitt become milk chocolate #7a4526 with dark chocolate #4a2412 shading, and the mitt's cuff cream white; the whisk's wires stay pale grey. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-splat-choc-a",
+      "asset": "chibi-direction-icon-action-splat",
+      "endpoint": "edit-image-pixen",
+      "seed": 311114,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-splat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink glaze on top of the pie becomes dark chocolate #4a2412 sauce with a lighter #7a4526 shine; the white whipped cream blobs stay white; the pink and mint stripe round the crust becomes caramel gold #e0a040. No pink is left. Keep the biscuit crust, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-sugar-rush-choc-a",
+      "asset": "chibi-direction-icon-action-sugar-rush",
+      "endpoint": "edit-image-pixen",
+      "seed": 311115,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-sugar-rush-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink and white swirl of the lollipop becomes a caramel gold #e0a040 and cream swirl with a thin dark chocolate #4a2412 rim; the lightning-bolt stick and the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-sugar-toss-choc-a",
+      "asset": "chibi-direction-icon-action-sugar-toss",
+      "endpoint": "edit-image-pixen",
+      "seed": 311116,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-sugar-toss-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the round pink sweet becomes a golden toffee, caramel gold #e0a040 shaded #b06a1c with one white shine; its wrapper ends become cream white; the curved arrow stays white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-emblem-choc-a",
+      "asset": "chibi-direction-icon-candy-emblem",
+      "endpoint": "edit-image-pixen",
+      "seed": 311117,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-emblem-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a wrapped chocolate and change no shape: the pink wrapper and its two twisted ends become caramel gold #e0a040 foil with cream highlights; the middle of the sweet is dark chocolate #4a2412 with one cream stripe round it. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-crashed-choc-a",
+      "asset": "chibi-direction-icon-status-crashed",
+      "endpoint": "edit-image-pixen",
+      "seed": 311118,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-crashed-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink spiral becomes a dark chocolate #4a2412 spiral winding on a cream #fff1d0 disc; the pink ring round it becomes caramel gold #e0a040; the three stars become cream white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-rushed-choc-a",
+      "asset": "chibi-direction-icon-status-rushed",
+      "endpoint": "edit-image-pixen",
+      "seed": 311119,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-rushed-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink lightning bolt becomes caramel gold #e0a040 with a lighter cream stripe along it and dark chocolate #4a2412 shading on its lower edge; the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-home-choc-a",
+      "asset": "chibi-direction-icon-tech-home-sweet-home",
+      "endpoint": "edit-image-pixen",
+      "seed": 311120,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-home-sweet-home-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink gumdrops on the roof, the pink door and every pink trim of the gingerbread house become dark chocolate #4a2412 and cream; the frosting roof stays white; one small cherry-pink heart above the door is the only pink. Keep the gingerbread walls, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "icon-peppermint-choc-a",
+      "asset": "chibi-direction-icon-tech-peppermint-surprise",
+      "endpoint": "edit-image-pixen",
+      "seed": 311121,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "icon-peppermint-surprise-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a peppermint chocolate and change no shape: the pink top of the round sweet becomes a pale mint green #a8e6cf and white swirl; its sides and base become dark chocolate #4a2412 with a lighter #7a4526 shine; the fuse and the white spark stay. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "crumbs-choc-a",
+      "asset": "chibi-direction-candy-crumbs",
+      "endpoint": "edit-image-pixen",
+      "seed": 311122,
+      "requestSize": {
+        "width": 40,
+        "height": 40
+      },
+      "source": {
+        "recipe": "crumbs-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink frosting bits among the crumbs become dark chocolate #4a2412 chips with a lighter #7a4526 shine. No pink is left. Keep the golden biscuit pieces, the crumbs, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "trooper-a",
+      "asset": "chibi-direction-candy-gumdrop",
+      "endpoint": "edit-image-pixen",
+      "seed": 310101,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "fighter-toffee-a",
+        "candidate": 0
+      },
+      "editInstruction": "Dip the toffee soldier in dark chocolate: the lower half of the toffee cube is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge across its middle, so the upper half with the face stays golden toffee; the knob on top and the feet are dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, the chocolate shield, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): the proposal's sample, imported from art/explorations/candy-look-2026-10/chocolatier."
+    },
+    {
+      "id": "gunner-a",
+      "asset": "chibi-direction-candy-gumball-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 310103,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "gunner-machine-mint-a-spit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the base under the glass globe: the mint green base becomes milk chocolate #7a4526, shaded dark chocolate #4a2412, with one caramel gold band #e0a040, round its top edge; its two eyes become cream-white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): the proposal's sample, imported from art/explorations/candy-look-2026-10/chocolatier."
+    },
+    {
+      "id": "donut-a",
+      "asset": "chibi-direction-candy-donut-racer",
+      "endpoint": "edit-image-pixen",
+      "seed": 310108,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "donut-racer-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412, with a lighter #7a4526 shine and a few tiny cream and gold sprinkles. No pink is left on the donut. Keep the golden dough, the hole, the candy-corn rider, the small wheel, the speed lines, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): the proposal's sample, imported from art/explorations/candy-look-2026-10/chocolatier."
+    },
+    {
+      "id": "city-a",
+      "asset": "chibi-direction-candy-city-2",
+      "endpoint": "edit-image-pixen",
+      "seed": 310105,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "recipe": "candy-city-2-calm-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a chocolate cake town and change no shape: the pink frosting dripping over the round cake keep becomes dark chocolate glaze #4a2412, over cream sponge; the roofs of the little houses become dark chocolate with white cream piping; the pink gumdrops on the wall become caramel gold #e0a040; doors dark chocolate; the lollipop becomes caramel and cream; one small pink cherry on top of the keep. Keep every shape, the size, outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): the proposal's sample, imported from art/explorations/candy-look-2026-10/chocolatier."
+    },
+    {
+      "id": "portrait-a",
+      "asset": "chibi-direction-portrait-candy-gumdrop",
+      "endpoint": "edit-image-pixen",
+      "seed": 310107,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-toffee-b",
+        "candidate": 0
+      },
+      "editInstruction": "Dip the toffee cube in dark chocolate: its lower third is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge, so the upper part with the face stays golden toffee; the knob on top is dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): the proposal's sample, imported from art/explorations/candy-look-2026-10/chocolatier."
+    },
+    {
+      "id": "marshmallow-choc-b",
+      "asset": "chibi-direction-candy-marshmallow",
+      "endpoint": "edit-image-pixen",
+      "seed": 311123,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "marshmallow-choc-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the pink patches that are left on its left side, on its left arm and on its forehead become golden caramel #e0a040 like the rest of its caramel; its two small round cheeks stay pink. Do not redraw anything else: keep the white face, the eyes and smile, the caramel top, the caramel arms and legs, the dark chocolate bar shield, the feet, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "confectioner-choc-b",
+      "asset": "chibi-direction-candy-confectioner",
+      "endpoint": "edit-image-pixen",
+      "seed": 311124,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "confectioner-choc-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the pink baker's hat becomes a cream white baker's hat, colour #fff1d0, shaded pale warm grey. Do not redraw anything else: keep the dark chocolate glaze on the head, the goggles, the face, the dark chocolate apron with its cream frill, the pink bow at the neck, the whisk, the arms, the feet, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "bunny-b",
+      "asset": "chibi-direction-candy-gummy-bear",
+      "endpoint": "create-image-pixen",
+      "seed": 312102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The chocolate rabbit is drawn large: about 60 pixels wide and 76 pixels tall with its ears.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, real rabbit, fur, plush toy, white rabbit, pink ears, carrot, clothes, weapon",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Knight option (a), second seed. The user chose it (pulp_wars-jdb.10); imported from art/explorations/candy-look-2026-10/options."
+    },
+    {
+      "id": "gingerbread-a",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 312201,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The gingerbread man is drawn very large: about 76 pixels wide and 96 pixels tall.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, drips, dripping caramel, crystals, muscles, beard, golem, rock",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Juggernaut option (a), a giant gingerbread man; first seed. The user chose it (pulp_wars-jdb.10); imported from art/explorations/candy-look-2026-10/options."
+    },
+    {
+      "id": "portrait-bunny-a",
+      "asset": "chibi-direction-portrait-candy-gummy-bear",
+      "endpoint": "create-image-pixen",
+      "seed": 313101,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the chocolate rabbit's head with its two tall ears fills the whole square; no legs and no feet.",
+      "negativeAddendum": "full body, legs, feet, real rabbit, fur, plush toy, white rabbit, pink ears, carrot, clothes, weapon, human, person",
+      "notes": "Bead pulp_wars-jdb.10: the Chocolate Bunny's portrait, a fresh creation with the portrait class; first seed."
+    },
+    {
+      "id": "portrait-bunny-b",
+      "asset": "chibi-direction-portrait-candy-gummy-bear",
+      "endpoint": "create-image-pixen",
+      "seed": 313102,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the chocolate rabbit's head with its two tall ears fills the whole square; no legs and no feet.",
+      "negativeAddendum": "full body, legs, feet, real rabbit, fur, plush toy, white rabbit, pink ears, carrot, clothes, weapon, human, person",
+      "notes": "Bead pulp_wars-jdb.10: the Chocolate Bunny's portrait; second seed."
+    },
+    {
+      "id": "portrait-gingerbread-a",
+      "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 313111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the gingerbread man's big round head with its icing grin fills the whole square; no legs and no feet.",
+      "negativeAddendum": "full body, legs, feet, human, person, skin, hair, beard, drips, crystals, golem, rock, weapon",
+      "notes": "Bead pulp_wars-jdb.10: the Gingerbread Giant's portrait, a fresh creation with the portrait class; first seed."
+    },
+    {
+      "id": "portrait-gingerbread-b",
+      "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+      "endpoint": "create-image-pixen",
+      "seed": 313112,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "A close-up: the gingerbread man's big round head with its icing grin fills the whole square; no legs and no feet.",
+      "negativeAddendum": "full body, legs, feet, human, person, skin, hair, beard, drips, crystals, golem, rock, weapon",
+      "notes": "Bead pulp_wars-jdb.10: the Gingerbread Giant's portrait; second seed."
     }
   ]
 }

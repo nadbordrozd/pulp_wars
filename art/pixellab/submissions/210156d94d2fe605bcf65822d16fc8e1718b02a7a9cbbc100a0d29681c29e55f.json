@@ -1,0 +1,36 @@
+{
+  "id": "icon-splat-choc-a",
+  "jobId": "99b8171a-1bcc-419d-b2c6-9556f8f04843",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-splat",
+    "subject": "ICON:ACTION:SPLAT",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311114,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink glaze on top of the pie becomes dark chocolate #4a2412 sauce with a lighter #7a4526 shine; the white whipped cream blobs stay white; the pink and mint stripe round the crust becomes caramel gold #e0a040. No pink is left. Keep the biscuit crust, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink glaze on top of the pie becomes dark chocolate #4a2412 sauce with a lighter #7a4526 shine; the white whipped cream blobs stay white; the pink and mint stripe round the crust becomes caramel gold #e0a040. No pink is left. Keep the biscuit crust, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink glaze on top of the pie becomes dark chocolate #4a2412 sauce with a lighter #7a4526 shine; the white whipped cream blobs stay white; the pink and mint stripe round the crust becomes caramel gold #e0a040. No pink is left. Keep the biscuit crust, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink glaze on top of the pie becomes dark chocolate #4a2412 sauce with a lighter #7a4526 shine; the white whipped cream blobs stay white; the pink and mint stripe round the crust becomes caramel gold #e0a040. No pink is left. Keep the biscuit crust, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-splat-a",
+      "candidate": 0,
+      "sha256": "915ac97a529510a87c19da69aa8e809af69c34ed1fffba2692dc6dc73fa5438a"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "portrait-a",
+  "jobId": "7d52b5ea-c5fa-4f5f-8ab8-ff04368e93fb",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-chocolatier",
+    "asset": "chibi-look-chocolatier-portrait",
+    "subject": "PORTRAIT:CANDY:FIGHTER",
+    "faction": "TEST-CANDY-CHOCOLATIER",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 310107,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Dip the toffee cube in dark chocolate: its lower third is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge, so the upper part with the face stays golden toffee; the knob on top is dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Dip the toffee cube in dark chocolate: its lower third is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge, so the upper part with the face stays golden toffee; the knob on top is dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Dip the toffee cube in dark chocolate: its lower third is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge, so the upper part with the face stays golden toffee; the knob on top is dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Dip the toffee cube in dark chocolate: its lower third is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge, so the upper part with the face stays golden toffee; the knob on top is dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "portrait-toffee-b",
+      "candidate": 0,
+      "sha256": "6284e4d7ab510139635ee1fb213a85834ae1e7ea7fab501cb0db97388cb95de2"
+    }
+  }
+}

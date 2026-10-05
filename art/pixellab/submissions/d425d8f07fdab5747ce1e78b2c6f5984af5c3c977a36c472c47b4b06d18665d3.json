@@ -1,0 +1,36 @@
+{
+  "id": "candy-patrol-boat-choc-a",
+  "jobId": "ce844b04-4114-4cca-8cec-048dc383ad0e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-patrol-boat",
+    "subject": "UNIT:CANDY:PATROL_BOAT",
+    "faction": "CANDY",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 311123,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim with cream drips; the pink and white mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate block hull, the wafer sail, every shape, the size, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim with cream drips; the pink and white mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate block hull, the wafer sail, every shape, the size, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim with cream drips; the pink and white mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate block hull, the wafer sail, every shape, the size, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim with cream drips; the pink and white mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate block hull, the wafer sail, every shape, the size, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "candy-patrol-boat-a-dry",
+      "candidate": 0,
+      "sha256": "77106f6f123f2a443e1a61106a95c0bf2079717f775f37c1417d073af09e1cc9"
+    }
+  }
+}

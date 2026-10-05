@@ -1,0 +1,36 @@
+{
+  "id": "candy-city-1-choc-a",
+  "jobId": "f6386ac4-2fb0-4d6f-8538-27cde340ecb4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-city-1",
+    "subject": "CITY:CANDY:1",
+    "faction": "CANDY",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 311109,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink and white swirl of the lollipop tree becomes a caramel gold #e0a040 and cream swirl; the pink door becomes dark chocolate #4a2412; the window frames and the edge of the white frosting roof get a thin dark chocolate #4a2412 trim; one tiny cherry-pink dot on the roof top is the only pink. Keep the gingerbread walls, the white frosting roof, every shape, the size, outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink and white swirl of the lollipop tree becomes a caramel gold #e0a040 and cream swirl; the pink door becomes dark chocolate #4a2412; the window frames and the edge of the white frosting roof get a thin dark chocolate #4a2412 trim; one tiny cherry-pink dot on the roof top is the only pink. Keep the gingerbread walls, the white frosting roof, every shape, the size, outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink and white swirl of the lollipop tree becomes a caramel gold #e0a040 and cream swirl; the pink door becomes dark chocolate #4a2412; the window frames and the edge of the white frosting roof get a thin dark chocolate #4a2412 trim; one tiny cherry-pink dot on the roof top is the only pink. Keep the gingerbread walls, the white frosting roof, every shape, the size, outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink and white swirl of the lollipop tree becomes a caramel gold #e0a040 and cream swirl; the pink door becomes dark chocolate #4a2412; the window frames and the edge of the white frosting roof get a thin dark chocolate #4a2412 trim; one tiny cherry-pink dot on the roof top is the only pink. Keep the gingerbread walls, the white frosting roof, every shape, the size, outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "candy-city-1-calm-a-edit",
+      "candidate": 0,
+      "sha256": "db5e1539ad99066ff08c32b000353db8bd6e443edd7aeec7976ac5cbed82b0bb"
+    }
+  }
+}

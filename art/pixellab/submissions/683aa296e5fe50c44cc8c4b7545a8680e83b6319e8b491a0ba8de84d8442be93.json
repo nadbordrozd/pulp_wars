@@ -1,0 +1,37 @@
+{
+  "id": "city-a",
+  "jobId": "644d5fa0-2f31-43ac-9e67-36c4133ce62f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-chocolatier",
+    "asset": "chibi-look-chocolatier-city",
+    "subject": "CITY:CANDY:2",
+    "faction": "TEST-CANDY-CHOCOLATIER",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 310105,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour as a chocolate cake town and change no shape: the pink frosting dripping over the round cake keep becomes dark chocolate glaze #4a2412, over cream sponge; the roofs of the little houses become dark chocolate with white cream piping; the pink gumdrops on the wall become caramel gold #e0a040; doors dark chocolate; the lollipop becomes caramel and cream; one small pink cherry on top of the keep. Keep every shape, the size, outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour as a chocolate cake town and change no shape: the pink frosting dripping over the round cake keep becomes dark chocolate glaze #4a2412, over cream sponge; the roofs of the little houses become dark chocolate with white cream piping; the pink gumdrops on the wall become caramel gold #e0a040; doors dark chocolate; the lollipop becomes caramel and cream; one small pink cherry on top of the keep. Keep every shape, the size, outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour as a chocolate cake town and change no shape: the pink frosting dripping over the round cake keep becomes dark chocolate glaze #4a2412, over cream sponge; the roofs of the little houses become dark chocolate with white cream piping; the pink gumdrops on the wall become caramel gold #e0a040; doors dark chocolate; the lollipop becomes caramel and cream; one small pink cherry on top of the keep. Keep every shape, the size, outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour as a chocolate cake town and change no shape: the pink frosting dripping over the round cake keep becomes dark chocolate glaze #4a2412, over cream sponge; the roofs of the little houses become dark chocolate with white cream piping; the pink gumdrops on the wall become caramel gold #e0a040; doors dark chocolate; the lollipop becomes caramel and cream; one small pink cherry on top of the keep. Keep every shape, the size, outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "candy-city-2-calm-a-edit",
+      "candidate": 0,
+      "sha256": "e970ef9562868872d21d587a25ede4faedacf7d526d765dea4f49221f15241fd"
+    }
+  }
+}

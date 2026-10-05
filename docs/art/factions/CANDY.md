@@ -12,6 +12,16 @@ line unit, the Gumball Gunner, the Gummy Bear and the Rock Candy Golem are
 no longer pink, and the prompt fragment below names a whole sweet shop
 (see [the redesign](#redesign-october-2026-the-sweet-shop); the sections
 after it describe the first roster unless they say otherwise).
+**Chocolatier look** since bead `pulp_wars-jdb.10`: the user chose it from
+[the look proposal](../../../art/explorations/candy-look-2026-10/PROPOSAL.md)
+("the chocolate look is delicious"), and the units, portraits, cities,
+ships, icons, markers and effects were converted to it (see
+[the Chocolatier look](#the-chocolatier-look-october-2026); every later
+section describes an earlier look unless it says otherwise). The Knight-
+and Juggernaut-role units were rethought: the user chose the **Chocolate
+Bunny** and the **Gingerbread Giant** in place of the Gummy Bear and the
+Rock Candy Golem (the asset ids keep the old names; the display names are
+changed by the rules bead that owns the role labels).
 **Still open:** the faction emblem is made and not drawn, and the Classic
 and LEGACY looks have no Candy badge (`pulp_wars-jdb.9`; that bead's
 Confectioner portrait was redone here). The Candy rules are folded into
@@ -60,49 +70,142 @@ for looking like a plush toy bear of a film
 ## Prompt fragment
 
 It names only a mood, materials, colours and small motifs: no figure and no
-place. Since bead `pulp_wars-2o7.3` it is the sweet-shop fragment of the
-[redesign](#redesign-october-2026-the-sweet-shop): chocolate, toffee,
-jewel-coloured gummy jelly and peppermint are the body materials and the
-cotton-candy pink is a small trim. The first fragment, which every recipe
-before that bead was generated with (their records keep it), read:
-"cheerful sugary confectionery, bright, glossy and silly. Its fixed
-colours: glossy cotton-candy pink sugar glaze and frosting, colour #ffb8d8,
-shaded with a deeper rose pink #e58fb5; matte marshmallow white and cream;
-warm caramel, pale biscuit wafer and dark chocolate brown; one hard pure
-white highlight on every glossy surface; a few tiny pastel sprinkles and a
-little pale mint green trim."
+place. Since bead `pulp_wars-jdb.10` it is the **Chocolatier** fragment:
+dark and milk chocolate is the dark anchor on every piece, caramel gold and
+vanilla cream carry the light, and mint and cherry pink are small accents.
+Earlier fragments, which the recipes of their beads were generated with
+(the records keep them): the first (bead `pulp_wars-jdb.5`) named "glossy
+cotton-candy pink sugar glaze and frosting, colour #ffb8d8 … matte
+marshmallow white and cream; warm caramel, pale biscuit wafer and dark
+chocolate brown"; the sweet-shop fragment of bead `pulp_wars-2o7.3` named
+chocolate, toffee, "clear jewel-coloured gummy jelly and hard candy in apple
+green, lemon yellow and amber orange; white peppermint with mint green
+stripes; a little liquorice black" with pink "only as a small trim" (it is
+kept in
+[`art/explorations/candy-redesign-2026-10/faction.md`](../../../art/explorations/candy-redesign-2026-10/faction.md)).
 
 ```text
-Faction: a cheerful sweet shop of many different sweets, bright, glossy and
-silly. Its fixed colours: glossy milk and dark chocolate brown; golden
-caramel and toffee; pale biscuit wafer; matte marshmallow white and cream;
-clear jewel-coloured gummy jelly and hard candy in apple green, lemon
-yellow and amber orange; white peppermint with mint green stripes; a little
-liquorice black; cotton-candy pink frosting, colour #ffb8d8, only as a
-small trim; one hard pure white highlight on every glossy surface.
+Faction: a cheerful chocolatier's kingdom of living sweets, rich, glossy and
+silly. Its fixed colours: glossy dark chocolate, colour #4a2412, and milk
+chocolate, colour #7a4526, as the dark anchor on every piece (a dipped
+half, a shield, a glaze, boots, a roof); golden caramel and toffee, colour
+#e0a040; vanilla cream and marshmallow white, colour #fff1d0; pale biscuit
+wafer; a few small jewel-candy accents in amber, mint green and cherry
+pink; one hard pure white highlight on every glossy surface.
 ```
 
 ## Negative fragment
 
 Crimson and red are the Humans and the owner key; magenta and hot pink the
 Martians; purple and violet the Undead; metal, fur and bone the other
-factions' materials. The first list also excluded gold, orange, blue, green
-and lime, which left pink as the only colour a sweet could be; the
-redesign lets the gummies and hard candies have them (the user: "colorful
-gummies"). "All-pink body" and "pink blob" are the user's note. The last
-line is the spec's IP guard, described generically: the root ruled that the
-show's name is not a prompt word. Its gumball entry is now "giant humanoid
-guardian robot with a gumball head", because the user asked for a gumball
-machine as the Gunner: a small squat sweet-shop machine with a face on its
-base, not a guardian.
+factions' materials. "All-pink body", "pink blob" and "pastel pink frosting
+everywhere" are the user's notes on the first look. The last line is the
+spec's IP guard, described generically: the root ruled that the show's name
+is not a prompt word. Its gumball entry is "giant humanoid guardian robot
+with a gumball head", because the user asked for a gumball machine as the
+Gunner: a small squat sweet-shop machine with a face on its base, not a
+guardian.
 
 ```text
 crimson, red, magenta, hot pink, neon pink, purple, violet, all-pink body,
-pink blob, metal armour, steel, iron, sword, fur, bone, skull, scary,
-horror, realistic, banana guard, giant humanoid guardian robot with a
-gumball head, pink-haired princess, lab coat with a crown, peppermint
-butler, lemon-headed figure, cartoon show character
+pink blob, pastel pink frosting everywhere, metal armour, steel, iron,
+sword, fur, bone, skull, scary, horror, realistic, banana guard, giant
+humanoid guardian robot with a gumball head, pink-haired princess, lab coat
+with a crown, peppermint butler, lemon-headed figure, cartoon show
+character
 ```
+
+## The Chocolatier look (October 2026)
+
+Bead `pulp_wars-jdb.10`. The user (2026-10-05): "Propose a new look for
+all of the candy faction. The problem with the original look was that it
+was pink-on-white. It needs a darker color as accent. could be chocolate."
+Of the two directions of
+[the proposal](../../../art/explorations/candy-look-2026-10/PROPOSAL.md)
+the user chose A: "the chocolate look is delicious. but I would regenerate
+the confectioner to fit the others. and the gummy bear looks out of place.
+and the giant is too drippy and not sure what it's supposed to represent.
+let's rethink the last two."
+
+![The Chocolatier roster on Grass, Forest, Mountain and Snow beside the other factions' unit of each role](../../../art/pixellab/reviews/chibi-batch-direction-candy/roster-x4.png)
+
+| Role          | Colour    | Where                                                                           |
+| ------------- | --------- | ------------------------------------------------------------------------------- |
+| Dark anchor   | `#4a2412` | dark chocolate: dips, glazes, hulls, roofs, boots, aprons                       |
+| Mid           | `#7a4526` | milk chocolate: the Gunner's base, shading                                      |
+| Light         | `#e0a040` | caramel and toffee gold: drips, rims, bands, wheels, the Trooper                |
+| Lightest      | `#fff1d0` | vanilla cream: marshmallow, sails, piping, the toque                            |
+| Small accents | n/a       | mint (lollipop, portholes), cherry pink (a bow, cheeks, a cherry), the gumballs |
+
+**Every piece carries chocolate, and no piece is pink on white.** Asset
+ids, canvases and anchors are unchanged, so the game draws the new masters
+with no registry change; `npm run art:unit-shadows-measure` was run. The
+faction identity colour stays cotton-candy pink `#ffb8d8` (the best
+separated of the candidates the proposal measured) and the mint faction
+grass stays.
+
+| Piece                            | Accepted recipe                                                                            | What it shows now                                                                                                                                                                                                                                                                     |
+| -------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Toffee Trooper (`FIGHTER`)       | `trooper-a` (imported)                                                                     | the toffee cube dipped in dark chocolate, cream and gold wrapper wings                                                                                                                                                                                                                |
+| Donut Racer (`RAIDER`)           | `donut-a` (imported)                                                                       | a dark chocolate glaze in place of the pink frosting                                                                                                                                                                                                                                  |
+| Gumball Gunner (`MARKSMAN`)      | `gunner-a` (imported)                                                                      | the gumball machine on a milk chocolate base with caramel bands                                                                                                                                                                                                                       |
+| Marshmallow (`GUARD`)            | `marshmallow-choc-b`                                                                       | dripping caramel, caramel limbs, chocolate boots, a dark chocolate bar as its shield                                                                                                                                                                                                  |
+| Confectioner (`CAPTAIN`)         | `confectioner-choc-b`                                                                      | **regenerated as a chocolatier**: cream toque, chocolate glaze, chocolate apron, a cherry bow                                                                                                                                                                                         |
+| Pie Launcher (`CATAPULT`)        | `pie-launcher-choc-a`                                                                      | a chocolate roll cake as its barrel, caramel swirl wheels                                                                                                                                                                                                                             |
+| Chocolate Bunny (`KNIGHT`)       | `bunny-b` (imported)                                                                       | **new unit** in place of the Gummy Bear: one moulded piece of glossy milk chocolate with tall ears, a caramel gold bow, fists up (62 x 79 px); asset id `chibi-direction-candy-gummy-bear`                                                                                            |
+| Gingerbread Giant (`JUGGERNAUT`) | `gingerbread-a` (imported)                                                                 | **new unit** in place of the Rock Candy Golem: a huge gingerbread man edged with white icing, gumdrop buttons, a grin, dark chocolate gauntlets and boots, a hammer on its back (84 x 102 px, the biggest Candy unit); asset id `chibi-direction-candy-rock-candy-golem`              |
+| Portraits                        | `portrait-a` (imported), `portrait-*-choc-a`, `portrait-bunny-b`, `portrait-gingerbread-b` | all eight units' portraits; the Toffee Trooper's is the faction emblem of the setup form and the Gallery                                                                                                                                                                              |
+| City 1, 2, 3                     | `candy-city-1-choc-a`, `city-a` (imported), `candy-city-3-choc-a`                          | a gingerbread house with chocolate trim; a chocolate cake keep with a cherry; a tiered chocolate cake castle                                                                                                                                                                          |
+| Patrol Boat, Battleship          | `candy-patrol-boat-choc-a`, `ship-a` (imported)                                            | the chocolate-bar boat with a caramel rim; a chocolate cake galleon with cream sails                                                                                                                                                                                                  |
+| Transport, Submarine             | `candy-transport-choc-a`, `candy-submarine-choc-a`                                         | a chocolate-glazed donut raft; the chocolate eclair with a caramel stripe and tower (the submerged form is re-derived)                                                                                                                                                                |
+| Ship portraits                   | `candy-portrait-*-choc-a`, `candy-portrait-battleship-choc-b`                              | as the ships                                                                                                                                                                                                                                                                          |
+| Icons (11 of 12)                 | `icon-*-choc-a`                                                                            | caramel lollipop, toffee, chocolate cream, chocolate whisk and mitt, chocolate pie, gold-foil chocolate emblem, chocolate swirl (Crashed), caramel bolt (Rushed), chocolate gingerbread house, mint chocolate (Peppermint Surprise), caramel spring; the white Splatted cream is kept |
+| Crumbs                           | `crumbs-choc-a`                                                                            | biscuit crumbs with chocolate chips                                                                                                                                                                                                                                                   |
+| Effects (7)                      | their first recipes, re-accepted                                                           | swapped colour for colour from `candy-sugar.png` to `candy-chocolate.png` (the Peppermint pop to `candy-mint-chocolate.png`): a caramel gumball, toffee, caramel buns and spring, a mint burst                                                                                        |
+
+**Code-drawn pieces** follow the look too: `CANDY_PALETTE_V7` names
+`caramel` (`#e0a040`), `caramelShade`, `milkChocolate` and dark
+`chocolate` (`#4a2412`) where it named three pinks, so the Rush path and
+its sparkles, the Crashed swirl, the Rushed bolt, the Crumbs token's rim,
+the cue sparkles and the dock chips and Sugar Frenzy pips are caramel on
+chocolate; the Peppermint dot and sparkles are mint. **Still pink by
+design:** the territory border (`CANDY_PALETTE_V7.faction`, the faction
+identity colour) and the picked-ability outline in the dock, which is that
+colour.
+
+How it was made: 35 PixelLab calls in the production batches (31 for the
+conversion, 4 for the two new units' portraits, two seeds each) and 8 pieces
+imported from the proposal's run (which had cost 18 calls). Every piece is
+an `edit-image-pixen` edit of the accepted sprite with the target colours
+as hex values and "change no shape"; 26 of the 28 first edits were usable
+as they came. Three follow-ups: the Marshmallow kept pink patches until
+they were named; the Confectioner's hat came out pink until one edit asked
+for cream only; the Battleship portrait's yellow-gold masts were within 12
+of the old Gold seat colour, which the naval test forbids, and a second
+seed with amber masts replaced it. The effects needed no call: the palette
+swap of the Undead violet effects (`paletteFrom` and `palette`) re-derives
+them from their accepted candidates.
+
+Measured on the eight unit masters: the roster is 2.1% pink (46% at first,
+15% after the sweet-shop redesign) and 27% chocolate brown (hue 5 to 40,
+saturation at least 0.4, value 0.12 to 0.6); every unit is at least 11%
+chocolate. A test holds both. The roster is now among the darker ones (mean
+L\* 47, 37% of its pixels under L\* 35, about the Humans' values).
+
+**The Chocolate Bunny and the Gingerbread Giant.** The user: "the gummy
+bear looks out of place. and the giant is too drippy and not sure what
+it's supposed to represent. let's rethink the last two", then, of three
+options each: "go with the chocolate bunny and the giant gingerbread man".
+Both are fresh creations of the options run
+[`art/explorations/candy-look-2026-10/options`](../../../art/explorations/candy-look-2026-10/options/)
+(the proposal document has the other options and why), imported under the
+existing asset ids, so the game draws them with no registry change. The
+subject lines are `UNIT:CANDY:KNIGHT/BUNNY` and
+`UNIT:CANDY:JUGGERNAUT/GINGERBREAD` in
+[`subjects/CANDY.json`](../../../scripts/art/chibi/subjects/CANDY.json):
+to iterate on either, add a recipe that edits `bunny-b` or
+`gingerbread-a`, or a new seed of the same subject line. Abilities are
+unchanged (Sugar Frenzy; Push and Bounce).
 
 ## Redesign (October 2026): the sweet shop
 

@@ -1,0 +1,37 @@
+{
+  "id": "trooper-a",
+  "jobId": "ad1e6730-fa07-4ccb-aecf-a09715f097de",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-allsorts",
+    "asset": "chibi-look-allsorts-trooper",
+    "subject": "UNIT:CANDY:FIGHTER",
+    "faction": "TEST-CANDY-ALLSORTS",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 310201,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a square sandwich of three thick flat layers, black liquorice #23192b, on top and at the bottom, and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob, the feet and the shield are black liquorice. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a square sandwich of three thick flat layers, black liquorice #23192b, on top and at the bottom, and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob, the feet and the shield are black liquorice. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a square sandwich of three thick flat layers, black liquorice #23192b, on top and at the bottom, and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob, the feet and the shield are black liquorice. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a square sandwich of three thick flat layers, black liquorice #23192b, on top and at the bottom, and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob, the feet and the shield are black liquorice. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "fighter-toffee-a",
+      "candidate": 0,
+      "sha256": "ff0fe723fedf37c63b4e5d4e4856237730ccb92fe0698097c9d3e7be40c5424c"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "marshmallow-choc-b",
+  "jobId": "b2b11125-eb18-49fb-88d9-272d0a8ec251",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-marshmallow",
+    "subject": "UNIT:CANDY:GUARD",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 311123,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the pink patches that are left on its left side, on its left arm and on its forehead become golden caramel #e0a040 like the rest of its caramel; its two small round cheeks stay pink. Do not redraw anything else: keep the white face, the eyes and smile, the caramel top, the caramel arms and legs, the dark chocolate bar shield, the feet, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the pink patches that are left on its left side, on its left arm and on its forehead become golden caramel #e0a040 like the rest of its caramel; its two small round cheeks stay pink. Do not redraw anything else: keep the white face, the eyes and smile, the caramel top, the caramel arms and legs, the dark chocolate bar shield, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the pink patches that are left on its left side, on its left arm and on its forehead become golden caramel #e0a040 like the rest of its caramel; its two small round cheeks stay pink. Do not redraw anything else: keep the white face, the eyes and smile, the caramel top, the caramel arms and legs, the dark chocolate bar shield, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the pink patches that are left on its left side, on its left arm and on its forehead become golden caramel #e0a040 like the rest of its caramel; its two small round cheeks stay pink. Do not redraw anything else: keep the white face, the eyes and smile, the caramel top, the caramel arms and legs, the dark chocolate bar shield, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "marshmallow-choc-a",
+      "candidate": 0,
+      "sha256": "2b2e881d793c5665b7f29f79cc13fc9b705a64c488485f579eff9e86f931f484"
+    }
+  }
+}

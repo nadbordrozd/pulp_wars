@@ -1,0 +1,36 @@
+{
+  "id": "icon-frosting-choc-a",
+  "jobId": "8adbfe08-b354-4f7e-8ff8-43c3474e14ec",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-frosting",
+    "subject": "ICON:ACTION:CANDY:TEND_WOUNDED",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311112,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink frosting that the piping bag squeezes out and the pink swirl under it become dark chocolate #4a2412 cream with a lighter #7a4526 shine; the piping bag stays white; its nozzle is caramel gold #e0a040. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink frosting that the piping bag squeezes out and the pink swirl under it become dark chocolate #4a2412 cream with a lighter #7a4526 shine; the piping bag stays white; its nozzle is caramel gold #e0a040. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink frosting that the piping bag squeezes out and the pink swirl under it become dark chocolate #4a2412 cream with a lighter #7a4526 shine; the piping bag stays white; its nozzle is caramel gold #e0a040. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink frosting that the piping bag squeezes out and the pink swirl under it become dark chocolate #4a2412 cream with a lighter #7a4526 shine; the piping bag stays white; its nozzle is caramel gold #e0a040. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-frosting-a",
+      "candidate": 0,
+      "sha256": "2e9cb728c0f1908dc618e1b30365d840b0fcce66feddc04c5ec4994918227722"
+    }
+  }
+}

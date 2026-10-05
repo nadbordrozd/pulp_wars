@@ -1,0 +1,37 @@
+{
+  "id": "ship-a",
+  "jobId": "8c5d8f91-1410-4a65-88ac-1eae087dab64",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-allsorts",
+    "asset": "chibi-look-allsorts-ship",
+    "subject": "UNIT:CANDY:BATTLESHIP",
+    "faction": "TEST-CANDY-ALLSORTS",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 310206,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour as a liquorice galleon and change no shape: the hull becomes black liquorice #23192b, with a paler #5a4c6e highlight and one thick rim of bright pink #ff8fc0 and white stripes in place of the frosting; the sails become white with two bright pink stripes; the masts black; the pennants lemon yellow #ffe04a; the cake tower white sugar with a black top. Keep every shape, the size, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour as a liquorice galleon and change no shape: the hull becomes black liquorice #23192b, with a paler #5a4c6e highlight and one thick rim of bright pink #ff8fc0 and white stripes in place of the frosting; the sails become white with two bright pink stripes; the masts black; the pennants lemon yellow #ffe04a; the cake tower white sugar with a black top. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour as a liquorice galleon and change no shape: the hull becomes black liquorice #23192b, with a paler #5a4c6e highlight and one thick rim of bright pink #ff8fc0 and white stripes in place of the frosting; the sails become white with two bright pink stripes; the masts black; the pennants lemon yellow #ffe04a; the cake tower white sugar with a black top. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour as a liquorice galleon and change no shape: the hull becomes black liquorice #23192b, with a paler #5a4c6e highlight and one thick rim of bright pink #ff8fc0 and white stripes in place of the frosting; the sails become white with two bright pink stripes; the masts black; the pennants lemon yellow #ffe04a; the cake tower white sugar with a black top. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "naval-candy",
+      "recipe": "candy-battleship-a",
+      "candidate": 0,
+      "sha256": "a0c0fd3bc9ef72b0c3c6ed4e68af0ff7214786ebfc8140bce809fef8bca47610"
+    }
+  }
+}

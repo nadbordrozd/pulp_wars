@@ -1,0 +1,37 @@
+{
+  "id": "golem-a",
+  "jobId": "c8ef3397-7878-4d97-8858-73e3b0225989",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-allsorts",
+    "asset": "chibi-look-allsorts-golem",
+    "subject": "UNIT:CANDY:JUGGERNAUT",
+    "faction": "TEST-CANDY-ALLSORTS",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 310204,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of black liquorice #23192b, with paler #5a4c6e facets and white highlights; the brown bands at its joints become bright stripes of pink #ff8fc0, white and lemon yellow #ffe04a; its face becomes white sugar with dark eyes; the crest on its head is bright pink crystal. No green and no brown is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of black liquorice #23192b, with paler #5a4c6e facets and white highlights; the brown bands at its joints become bright stripes of pink #ff8fc0, white and lemon yellow #ffe04a; its face becomes white sugar with dark eyes; the crest on its head is bright pink crystal. No green and no brown is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of black liquorice #23192b, with paler #5a4c6e facets and white highlights; the brown bands at its joints become bright stripes of pink #ff8fc0, white and lemon yellow #ffe04a; its face becomes white sugar with dark eyes; the crest on its head is bright pink crystal. No green and no brown is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of black liquorice #23192b, with paler #5a4c6e facets and white highlights; the brown bands at its joints become bright stripes of pink #ff8fc0, white and lemon yellow #ffe04a; its face becomes white sugar with dark eyes; the crest on its head is bright pink crystal. No green and no brown is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "rock-candy-golem-r6-mint",
+      "candidate": 0,
+      "sha256": "153cfd11b6423eda46dd5e79bcd406d0b424a0ed55bad0e9cecf106bb775f887"
+    }
+  }
+}

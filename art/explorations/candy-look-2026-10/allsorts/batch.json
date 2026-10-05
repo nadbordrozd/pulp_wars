@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "batch": "candy-look-allsorts",
+  "title": "Candy look proposal, direction B (Liquorice Allsorts): liquorice black and sugar white with bright pink, lemon and orange layers (exploration, never registered)",
+  "bead": "pulp_wars-jdb.10",
+  "faction": "TEST-CANDY-ALLSORTS",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-look-allsorts-trooper",
+      "subject": "UNIT:CANDY:FIGHTER",
+      "subjectKey": "UNIT:CANDY:FIGHTER/ALLSORTS",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-look-allsorts-marshmallow",
+      "subject": "UNIT:CANDY:GUARD",
+      "subjectKey": "UNIT:CANDY:GUARD/ALLSORTS",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-look-allsorts-gunner",
+      "subject": "UNIT:CANDY:MARKSMAN",
+      "subjectKey": "UNIT:CANDY:MARKSMAN/ALLSORTS",
+      "assetClass": "STANDARD_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 56,
+        "height": 80
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-look-allsorts-golem",
+      "subject": "UNIT:CANDY:JUGGERNAUT",
+      "subjectKey": "UNIT:CANDY:JUGGERNAUT/ALLSORTS",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-look-allsorts-city",
+      "subject": "CITY:CANDY:2",
+      "subjectKey": "CITY:CANDY:2/ALLSORTS",
+      "assetClass": "SETTLEMENT",
+      "recipeClass": "calm-settlement",
+      "canvas": {
+        "width": 88,
+        "height": 88
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-look-allsorts-ship",
+      "subject": "UNIT:CANDY:BATTLESHIP",
+      "subjectKey": "UNIT:CANDY:BATTLESHIP/ALLSORTS",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 88,
+        "height": 96
+      },
+      "ownerColour": false
+    },
+    {
+      "id": "chibi-look-allsorts-portrait",
+      "subject": "PORTRAIT:CANDY:FIGHTER",
+      "subjectKey": "PORTRAIT:CANDY:FIGHTER/ALLSORTS",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "trooper-a",
+      "asset": "chibi-look-allsorts-trooper",
+      "endpoint": "edit-image-pixen",
+      "seed": 310201,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "fighter-toffee-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a square sandwich of three thick flat layers, black liquorice #23192b, on top and at the bottom, and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob, the feet and the shield are black liquorice. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction ALLSORTS: sample trooper."
+    },
+    {
+      "id": "marshmallow-a",
+      "asset": "chibi-look-allsorts-marshmallow",
+      "endpoint": "edit-image-pixen",
+      "seed": 310202,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "marshmallow-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change three things only. The big biscuit shield becomes a big round liquorice wheel: a black coil #23192b, wound in a spiral with a bright pink centre #ff8fc0. A black liquorice band runs round the middle of its body like a belt, and its feet are black. The pink frosting on its top becomes lemon yellow #ffe04a. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction ALLSORTS: sample marshmallow."
+    },
+    {
+      "id": "gunner-a",
+      "asset": "chibi-look-allsorts-gunner",
+      "endpoint": "edit-image-pixen",
+      "seed": 310203,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "gunner-machine-mint-a-spit-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the base under the glass globe: the mint green base becomes black liquorice #23192b, with a pale #5a4c6e highlight and one bright band of pink #ff8fc0 and lemon yellow #ffe04a stripes round its top edge; its two eyes become white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction ALLSORTS: sample gunner."
+    },
+    {
+      "id": "golem-a",
+      "asset": "chibi-look-allsorts-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 310204,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "rock-candy-golem-r6-mint",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change nothing else: every mint green crystal chunk of the golem becomes a block of black liquorice #23192b, with paler #5a4c6e facets and white highlights; the brown bands at its joints become bright stripes of pink #ff8fc0, white and lemon yellow #ffe04a; its face becomes white sugar with dark eyes; the crest on its head is bright pink crystal. No green and no brown is left. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction ALLSORTS: sample golem."
+    },
+    {
+      "id": "city-a",
+      "asset": "chibi-look-allsorts-city",
+      "endpoint": "edit-image-pixen",
+      "seed": 310205,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "candy-city-2-calm-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a liquorice sweet town and change no shape: the round cake keep becomes a stack of layered sweets, bright white sugar and pink #ff8fc0 layers under a black liquorice top #23192b; the roofs of the little houses become black liquorice with a white stripe; the wall becomes black liquorice blocks topped with small lemon yellow #ffe04a and pink beads; the lollipop a pink and white swirl. Keep every shape, the size, outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction ALLSORTS: sample city."
+    },
+    {
+      "id": "ship-a",
+      "asset": "chibi-look-allsorts-ship",
+      "endpoint": "edit-image-pixen",
+      "seed": 310206,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "batch": "naval-candy",
+        "recipe": "candy-battleship-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a liquorice galleon and change no shape: the hull becomes black liquorice #23192b, with a paler #5a4c6e highlight and one thick rim of bright pink #ff8fc0 and white stripes in place of the frosting; the sails become white with two bright pink stripes; the masts black; the pennants lemon yellow #ffe04a; the cake tower white sugar with a black top. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction ALLSORTS: sample ship."
+    },
+    {
+      "id": "portrait-a",
+      "asset": "chibi-look-allsorts-portrait",
+      "endpoint": "edit-image-pixen",
+      "seed": 310207,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "portrait-toffee-b",
+        "candidate": 0
+      },
+      "editInstruction": "Turn the toffee cube into a liquorice allsort sweet: the cube becomes a sandwich of three thick layers, black liquorice #23192b, on top and at the bottom and one bright white sugar layer in the middle with the face on it; the wrapper wings become bright pink #ff8fc0, and white stripes; the knob on top is black. No toffee gold is left. Keep the face, the lollipop, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction ALLSORTS: sample portrait."
+    },
+    {
+      "id": "marshmallow-b",
+      "asset": "chibi-look-allsorts-marshmallow",
+      "endpoint": "edit-image-pixen",
+      "seed": 310208,
+      "requestSize": {
+        "width": 56,
+        "height": 80
+      },
+      "source": {
+        "recipe": "marshmallow-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only its arms and legs: the pink arms become white marshmallow like the body, and the pink legs and feet become black liquorice boots #23192b with a pale highlight; the pink dots on its body become white. Do not redraw anything else: keep the white body, the lemon top, the face, the cheeks, the black liquorice wheel shield, the black belt, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction ALLSORTS: sample marshmallow."
+    },
+    {
+      "id": "golem-b",
+      "asset": "chibi-look-allsorts-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 310209,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "golem-a",
+        "candidate": 0
+      },
+      "editInstruction": "Make the golem less dark: about half of its black chunks, the chest, the forearms and the shins, become bright white sugar blocks with pale grey shading, so black and white chunks alternate like layered sweets. Do not redraw anything else: keep the other black liquorice chunks, the pink and yellow striped bands, the white face, the pink crest, every shape, the pose, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, direction ALLSORTS: sample golem."
+    }
+  ]
+}

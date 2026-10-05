@@ -1,0 +1,37 @@
+{
+  "id": "trooper-a",
+  "jobId": "9656d070-2dcd-43ed-a605-b13c6942f00a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-chocolatier",
+    "asset": "chibi-look-chocolatier-trooper",
+    "subject": "UNIT:CANDY:FIGHTER",
+    "faction": "TEST-CANDY-CHOCOLATIER",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 310101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Dip the toffee soldier in dark chocolate: the lower half of the toffee cube is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge across its middle, so the upper half with the face stays golden toffee; the knob on top and the feet are dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, the chocolate shield, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Dip the toffee soldier in dark chocolate: the lower half of the toffee cube is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge across its middle, so the upper half with the face stays golden toffee; the knob on top and the feet are dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, the chocolate shield, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Dip the toffee soldier in dark chocolate: the lower half of the toffee cube is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge across its middle, so the upper half with the face stays golden toffee; the knob on top and the feet are dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, the chocolate shield, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Dip the toffee soldier in dark chocolate: the lower half of the toffee cube is coated in dark chocolate #4a2412 with a lighter #7a4526 highlight, with a wavy dripping edge across its middle, so the upper half with the face stays golden toffee; the knob on top and the feet are dark chocolate; the wrapper wings become cream white with thin gold stripes. Keep the face, the lollipop, the chocolate shield, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "fighter-toffee-a",
+      "candidate": 0,
+      "sha256": "ff0fe723fedf37c63b4e5d4e4856237730ccb92fe0698097c9d3e7be40c5424c"
+    }
+  }
+}

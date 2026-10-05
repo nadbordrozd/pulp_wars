@@ -1,0 +1,36 @@
+{
+  "id": "portrait-confectioner-choc-a",
+  "jobId": "bfaa81ba-80db-41a4-884b-1b2b9888baf9",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-confectioner",
+    "subject": "PORTRAIT:CANDY:CAPTAIN",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311104,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change no shape: the pink frosting on its head becomes dark chocolate glaze #4a2412; the pink apron at the bottom becomes a dark chocolate #4a2412 apron with a thin cream frill; the baker's hat becomes cream #fff1d0; the whisk handle caramel gold #e0a040; one small cherry-pink bow at its neck is the only pink left. Keep the caramel head, the goggles, the face, the whisk, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change no shape: the pink frosting on its head becomes dark chocolate glaze #4a2412; the pink apron at the bottom becomes a dark chocolate #4a2412 apron with a thin cream frill; the baker's hat becomes cream #fff1d0; the whisk handle caramel gold #e0a040; one small cherry-pink bow at its neck is the only pink left. Keep the caramel head, the goggles, the face, the whisk, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change no shape: the pink frosting on its head becomes dark chocolate glaze #4a2412; the pink apron at the bottom becomes a dark chocolate #4a2412 apron with a thin cream frill; the baker's hat becomes cream #fff1d0; the whisk handle caramel gold #e0a040; one small cherry-pink bow at its neck is the only pink left. Keep the caramel head, the goggles, the face, the whisk, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change no shape: the pink frosting on its head becomes dark chocolate glaze #4a2412; the pink apron at the bottom becomes a dark chocolate #4a2412 apron with a thin cream frill; the baker's hat becomes cream #fff1d0; the whisk handle caramel gold #e0a040; one small cherry-pink bow at its neck is the only pink left. Keep the caramel head, the goggles, the face, the whisk, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-confectioner-r6-apron",
+      "candidate": 0,
+      "sha256": "1b84be5448f194d2cb1bea7d46e92ade5ab61432424951cbddef9247c0f112a3"
+    }
+  }
+}

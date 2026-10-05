@@ -1,0 +1,36 @@
+{
+  "id": "candy-transport-choc-a",
+  "jobId": "e76042c0-6593-4242-96bc-3f466506b803",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-transport",
+    "subject": "UNIT:CANDY:EMBARKED_TRANSPORT",
+    "faction": "CANDY",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 311124,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink frosting on the donut raft becomes glossy dark chocolate glaze #4a2412 with a lighter #7a4526 shine and tiny cream sprinkles; the pink and white candy cane becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the golden dough, the white whipped cream, the oar, every shape, the size, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink frosting on the donut raft becomes glossy dark chocolate glaze #4a2412 with a lighter #7a4526 shine and tiny cream sprinkles; the pink and white candy cane becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the golden dough, the white whipped cream, the oar, every shape, the size, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink frosting on the donut raft becomes glossy dark chocolate glaze #4a2412 with a lighter #7a4526 shine and tiny cream sprinkles; the pink and white candy cane becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the golden dough, the white whipped cream, the oar, every shape, the size, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink frosting on the donut raft becomes glossy dark chocolate glaze #4a2412 with a lighter #7a4526 shine and tiny cream sprinkles; the pink and white candy cane becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the golden dough, the white whipped cream, the oar, every shape, the size, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "candy-transport-a",
+      "candidate": 0,
+      "sha256": "97f053e8a370ac1f028ef8db9321d82dec271a9321807a970d6b692644a8dc96"
+    }
+  }
+}

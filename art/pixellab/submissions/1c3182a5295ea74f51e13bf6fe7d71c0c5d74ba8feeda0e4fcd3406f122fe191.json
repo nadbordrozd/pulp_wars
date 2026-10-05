@@ -1,0 +1,36 @@
+{
+  "id": "candy-portrait-battleship-choc-b",
+  "jobId": "4b5f056f-a5d7-42bb-832b-b62f5d20ad51",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-portrait-battleship",
+    "subject": "PORTRAIT:CANDY:BATTLESHIP",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311190,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour as a chocolate cake galleon and change no shape: the pale hull becomes layers of dark chocolate sponge #4a2412 with thin cream stripes and a caramel gold #e0a040 rim in place of the pink frosting; the sails stay cream white; the masts and pennants become deep amber caramel #d98a1e. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour as a chocolate cake galleon and change no shape: the pale hull becomes layers of dark chocolate sponge #4a2412 with thin cream stripes and a caramel gold #e0a040 rim in place of the pink frosting; the sails stay cream white; the masts and pennants become deep amber caramel #d98a1e. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour as a chocolate cake galleon and change no shape: the pale hull becomes layers of dark chocolate sponge #4a2412 with thin cream stripes and a caramel gold #e0a040 rim in place of the pink frosting; the sails stay cream white; the masts and pennants become deep amber caramel #d98a1e. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour as a chocolate cake galleon and change no shape: the pale hull becomes layers of dark chocolate sponge #4a2412 with thin cream stripes and a caramel gold #e0a040 rim in place of the pink frosting; the sails stay cream white; the masts and pennants become deep amber caramel #d98a1e. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "candy-portrait-battleship-a",
+      "candidate": 0,
+      "sha256": "636075341fa8fdbbf32d0adad84dd5a95e9a24eaca80ab7c08f2c2c29b063994"
+    }
+  }
+}

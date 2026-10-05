@@ -102,7 +102,7 @@ export const CANDY_EFFECT_SUBJECTS_V7: readonly `EFFECT:${CandyEffectIdV7}`[] =
     "EFFECT:BOUNCE",
   ];
 
-const { faction, pink, pinkDark, white, cream, biscuit, outline } =
+const { caramel, milkChocolate, white, cream, biscuit, outline } =
   CANDY_PALETTE_V7;
 
 function clamp01(value: number): number {
@@ -213,7 +213,7 @@ export function drawCandyFeedbackV7(
     context.save();
     context.globalAlpha *= alpha;
     context.fillStyle = colour;
-    context.strokeStyle = pinkDark;
+    context.strokeStyle = milkChocolate;
     context.lineWidth = Math.max(0.8, 1 * zoom);
     context.beginPath();
     for (let index = 0; index < 8; index += 1) {
@@ -229,7 +229,7 @@ export function drawCandyFeedbackV7(
     context.stroke();
     context.restore();
   };
-  /** A dizzy swirl: a pink spiral in a dark casing, turned by `turn`. */
+  /** A dizzy swirl: a caramel spiral in a dark casing, turned by `turn`. */
   const swirl = (
     point: { readonly x: number; readonly y: number },
     radius: number,
@@ -242,7 +242,7 @@ export function drawCandyFeedbackV7(
     context.lineCap = "round";
     for (const [width, colour] of [
       [Math.max(2, 5 * zoom), outline],
-      [Math.max(1, 2.6 * zoom), pink],
+      [Math.max(1, 2.6 * zoom), caramel],
     ] as const) {
       context.lineWidth = width;
       context.strokeStyle = colour;
@@ -309,7 +309,7 @@ export function drawCandyFeedbackV7(
           },
           (index % 2 === 0 ? 9 : 6) * zoom * (1 - 0.4 * progress),
           alpha,
-          index % 3 === 0 ? faction : white,
+          index % 3 === 0 ? caramel : white,
         );
       }
     }
@@ -388,9 +388,9 @@ export function drawCandyFeedbackV7(
       if (progress < SUGAR_TOSS_LANDS_V7) {
         const point = sugarTossPointV7(from, target, progress, 46 * zoom);
         if (!sprite("EFFECT:SUGAR_TOSS", point, 0.8, 1)) {
-          // A wrapped sweet: a pink ball with two twists.
+          // A wrapped sweet: a caramel ball with two twists.
           context.save();
-          context.fillStyle = pink;
+          context.fillStyle = caramel;
           context.strokeStyle = outline;
           context.lineWidth = Math.max(0.8, 1.2 * zoom);
           context.beginPath();
@@ -421,7 +421,7 @@ export function drawCandyFeedbackV7(
             },
             6 * zoom,
             1 - local,
-            index % 2 === 0 ? faction : white,
+            index % 2 === 0 ? caramel : white,
           );
         }
         if (feedback.amount !== undefined && feedback.amount > 0)
@@ -461,7 +461,7 @@ export function drawCandyFeedbackV7(
         context.lineCap = "round";
         for (const [width, colour] of [
           [Math.max(2, 5 * zoom), outline],
-          [Math.max(1, 2.6 * zoom), faction],
+          [Math.max(1, 2.6 * zoom), caramel],
         ] as const) {
           context.lineWidth = width;
           context.strokeStyle = colour;
@@ -493,7 +493,7 @@ export function drawCandyFeedbackV7(
             },
             5 * zoom,
             alpha,
-            index % 2 === 0 ? "#e8485f" : white,
+            index % 2 === 0 ? "#5fb891" : white,
           );
         }
       }
@@ -501,7 +501,7 @@ export function drawCandyFeedbackV7(
         float(
           { x: point.x, y: point.y - (40 + 18 * progress) * zoom },
           `−${feedback.amount}`,
-          "#ffd0d6",
+          "#fff1d0",
           alpha,
         );
     }

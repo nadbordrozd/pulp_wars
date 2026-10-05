@@ -23,11 +23,10 @@ import type {
 const MASTER = 1.6;
 
 const {
-  // The palette's interface colour (the Candy faction colour), by name: it
-  // is a colour, not a seat's faction.
-  faction: cottonCandy,
-  pink,
-  pinkDark,
+  // The Chocolatier accents (bead pulp_wars-jdb.10): the Rush path and
+  // sparkles are caramel gold, not the faction's pink border colour.
+  caramel,
+  milkChocolate,
   white,
   cream,
   biscuit,
@@ -220,7 +219,7 @@ export function drawCandyCrumbsV7(
     }
     if (!highContrast)
       for (const [dx, dy, colour] of [
-        [-3, 1, pink],
+        [-3, 1, caramel],
         [4, 5, mint],
         [-8, 8, white],
       ] as const) {
@@ -279,7 +278,7 @@ export function drawCandyCrumbsV7(
   context.beginPath();
   context.arc(tx, ty, tokenR, 0, Math.PI * 2);
   context.lineWidth = Math.max(1, px(1.4));
-  context.strokeStyle = highContrast ? "#ffffff" : pinkDark;
+  context.strokeStyle = highContrast ? "#ffffff" : milkChocolate;
   context.stroke();
   // Peppermint Surprise: a red-and-white swirl dot on the pile's left.
   if (marker.bite) {
@@ -291,7 +290,7 @@ export function drawCandyCrumbsV7(
     context.fillStyle = highContrast ? "#ffffff" : white;
     context.fill();
     context.lineWidth = Math.max(1, px(1.6));
-    context.strokeStyle = highContrast ? "#000000" : "#d8324f";
+    context.strokeStyle = highContrast ? "#000000" : "#3fa878";
     for (let arm = 0; arm < 3; arm += 1) {
       const start = (arm * Math.PI * 2) / 3;
       context.beginPath();
@@ -438,7 +437,7 @@ export function drawCandyUnitMarkersV7(
     if (swirl !== null)
       raster(context, swirl, x, y, size, options.devicePixelRatio);
     else {
-      // A dizzy swirl: a pink spiral in a dark casing.
+      // A dizzy swirl: a caramel spiral in a dark casing.
       const spiral = (width: number, colour: string): void => {
         context.lineWidth = width;
         context.strokeStyle = colour;
@@ -455,20 +454,20 @@ export function drawCandyUnitMarkersV7(
         context.stroke();
       };
       spiral(Math.max(2, px(4.2)), highContrast ? "#000000" : outline);
-      spiral(Math.max(1, px(2.2)), highContrast ? "#ffffff" : pink);
+      spiral(Math.max(1, px(2.2)), highContrast ? "#ffffff" : caramel);
     }
   }
   if (markers.rushed) {
     const size = px(CANDY_MARKERS_V7.rushed.size);
     const { x, y } = places.rushed;
-    token(context, x, y, size * 0.62, highContrast, pink);
+    token(context, x, y, size * 0.62, highContrast, caramel);
     const bolt = image(options.rushed);
     if (bolt !== null)
       raster(context, bolt, x, y, size, options.devicePixelRatio);
     else {
       // A lightning bolt.
       const u = size / 16;
-      context.fillStyle = highContrast ? "#ffffff" : pink;
+      context.fillStyle = highContrast ? "#ffffff" : caramel;
       context.beginPath();
       context.moveTo(x + 2 * u, y - 7 * u);
       context.lineTo(x - 4 * u, y + 1 * u);
@@ -582,11 +581,7 @@ export function drawCandyBounceArrowV7(
   path();
   context.stroke();
   context.lineWidth = 3.5 * zoom;
-  context.strokeStyle = highContrast
-    ? "#ffffff"
-    : blocked
-      ? cream
-      : cottonCandy;
+  context.strokeStyle = highContrast ? "#ffffff" : blocked ? cream : caramel;
   path();
   context.stroke();
   context.restore();
@@ -601,11 +596,11 @@ export function drawCandyRushSparklesV7(
   highContrast = false,
 ): void {
   context.save();
-  context.fillStyle = highContrast ? "#ffffff" : `${cottonCandy}38`;
+  context.fillStyle = highContrast ? "#ffffff" : `${caramel}38`;
   const half = 60 * zoom;
   if (!highContrast) context.fillRect(x - half, y - half, half * 2, half * 2);
   context.fillStyle = highContrast ? "#ffffff" : white;
-  context.strokeStyle = highContrast ? "#000000" : pinkDark;
+  context.strokeStyle = highContrast ? "#000000" : milkChocolate;
   context.lineWidth = Math.max(0.8, 1 * zoom);
   for (const [dx, dy, r] of [
     [-34, -30, 7],

@@ -54,8 +54,13 @@ import {
   paletteColours,
 } from "../../scripts/art/chibi/raster";
 import {
+  CANDY_CHOCOLATE_PALETTE,
+  CANDY_CHOCOLATE_PALETTE_PATH,
+  CANDY_MINT_CHOCOLATE_PALETTE,
+  CANDY_MINT_CHOCOLATE_PALETTE_PATH,
   CANDY_SUGAR_PALETTE,
   CANDY_SUGAR_PALETTE_PATH,
+  candyPalettePng,
   candySugarPalettePng,
 } from "../../scripts/art/candy-direction/sugar-palette";
 
@@ -497,39 +502,55 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
       const { opaque } = countPixels(master, () => true);
       expect(key / opaque, `${asset.id}: key-colour share`).toBeLessThan(0.08);
     }
-    // The pink is an accent of the roster, not its body colour (bead
-    // pulp_wars-2o7.3, the user: "the whole faction is so dominated by this
-    // pink gum/icing"). The four redesigned units (toffee, the gumball
-    // machine, the amber gummy, the mint rock candy) are not pink; the four
-    // kept ones still show the frosting; the roster as a whole is under a
-    // quarter pink (it was 46%).
-    const redesigned = new Set([
-      "gumdrop",
-      "gumball-gunner",
-      "gummy-bear",
-      "rock-candy-golem",
-    ]);
+    // The Chocolatier look (bead pulp_wars-jdb.10, the user: "It needs a
+    // darker color as accent. could be chocolate"): chocolate is on the
+    // roster as its dark anchor and the pink is a cherry. No unit is more
+    // than a tenth pink (the Confectioner's bow and the cheeks), the roster
+    // as a whole under 5% (it was 46% at first, 15% after pulp_wars-2o7.3),
+    // and chocolate brown is at least a tenth of every one of the eight
+    // units (the Chocolate Bunny and the Gingerbread Giant included) and a
+    // fifth of the roster.
     let rosterPink = 0;
+    let rosterChocolate = 0;
     let rosterOpaque = 0;
     for (const [, name] of UNITS) {
       const asset = byId.get(`chibi-direction-candy-${name}`);
       if (asset === undefined) throw new Error(name);
+      const master = await readRaster(masterFile(asset));
       const pink = countPixels(
-        await readRaster(masterFile(asset)),
+        master,
         (hue, saturation, value) =>
           hue >= 300 && hue <= 358 && saturation >= 0.12 && value >= 0.5,
       );
+      const chocolate = countPixels(
+        master,
+        (hue, saturation, value) =>
+          hue >= 5 &&
+          hue <= 40 &&
+          saturation >= 0.4 &&
+          value >= 0.12 &&
+          value <= 0.6,
+      );
       rosterPink += pink.count;
+      rosterChocolate += chocolate.count;
       rosterOpaque += pink.opaque;
-      const share = pink.count / pink.opaque;
-      if (redesigned.has(name))
-        expect(share, `${name}: pink share`).toBeLessThan(0.1);
-      else expect(share, `${name}: pink share`).toBeGreaterThan(0.15);
+      expect(pink.count / pink.opaque, `${name}: pink share`).toBeLessThan(0.1);
+      expect(
+        chocolate.count / chocolate.opaque,
+        `${name}: chocolate share`,
+      ).toBeGreaterThan(0.1);
     }
-    expect(rosterPink / rosterOpaque, "roster pink share").toBeLessThan(0.25);
+    expect(rosterPink / rosterOpaque, "roster pink share").toBeLessThan(0.05);
+    expect(
+      rosterChocolate / rosterOpaque,
+      "roster chocolate share",
+    ).toBeGreaterThan(0.2);
   });
 
-  it("has a checked-in sugar palette, and every effect pixel is one of its colours", async () => {
+  // Since the Chocolatier look (pulp_wars-jdb.10) each effect is its
+  // accepted candidate mapped to the sugar palette and then swapped colour
+  // for colour to a chocolate palette (`paletteFrom` and `palette`).
+  it("has checked-in sugar and chocolate palettes, and every effect pixel is a colour of its chocolate palette", async () => {
     const png = await readFile(path.join(ROOT, CANDY_SUGAR_PALETTE_PATH));
     expect(png.equals(await candySugarPalettePng())).toBe(true);
     const colours = paletteColours(
@@ -541,14 +562,55 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
           `#${colour.map((value) => value.toString(16).padStart(2, "0")).join("")}`,
       ),
     ).toEqual(CANDY_SUGAR_PALETTE.map((entry) => entry.to));
-    const allowed = new Set(
-      colours.map((colour) => (colour[0] << 16) | (colour[1] << 8) | colour[2]),
-    );
+    const swaps = [
+      [CANDY_CHOCOLATE_PALETTE_PATH, CANDY_CHOCOLATE_PALETTE],
+      [CANDY_MINT_CHOCOLATE_PALETTE_PATH, CANDY_MINT_CHOCOLATE_PALETTE],
+    ] as const;
+    const allowedOf = new Map<string, Set<number>>();
+    for (const [file, palette] of swaps) {
+      expect(
+        (await readFile(path.join(ROOT, file))).equals(
+          await candyPalettePng(palette),
+        ),
+        file,
+      ).toBe(true);
+      // Position for position the sugar palette, with no pink left.
+      expect(palette.length, file).toBe(CANDY_SUGAR_PALETTE.length);
+      for (const entry of palette) {
+        const hsv = rgbToHsv(
+          Number.parseInt(entry.to.slice(1, 3), 16),
+          Number.parseInt(entry.to.slice(3, 5), 16),
+          Number.parseInt(entry.to.slice(5, 7), 16),
+        );
+        expect(
+          hsv.hue >= 300 &&
+            hsv.hue <= 358 &&
+            hsv.saturation >= 0.12 &&
+            hsv.value >= 0.5,
+          `${file} ${entry.to}`,
+        ).toBe(false);
+      }
+      allowedOf.set(
+        file,
+        new Set(
+          paletteColours(await readRaster(path.join(ROOT, file))).map(
+            (colour) => (colour[0] << 16) | (colour[1] << 8) | colour[2],
+          ),
+        ),
+      );
+    }
     const manifest = await loadBatchManifest(ROOT, BATCH);
     for (const [, name] of EFFECTS) {
       const id = `chibi-direction-effect-candy-${name}`;
       const asset = manifest.assets.find((spec) => spec.id === id);
-      expect(asset?.palette?.path, id).toBe(CANDY_SUGAR_PALETTE_PATH);
+      expect(asset?.paletteFrom?.path, id).toBe(CANDY_SUGAR_PALETTE_PATH);
+      expect(asset?.palette?.path, id).toBe(
+        name === "peppermint-pop"
+          ? CANDY_MINT_CHOCOLATE_PALETTE_PATH
+          : CANDY_CHOCOLATE_PALETTE_PATH,
+      );
+      const allowed = allowedOf.get(asset?.palette?.path ?? "");
+      if (allowed === undefined) throw new Error(id);
       const entry = byId.get(id);
       if (entry === undefined) throw new Error(id);
       const master = await readRaster(masterFile(entry));
@@ -630,8 +692,23 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
 
   it("names its code palette and its markers' rasters", () => {
     expect(CANDY_PALETTE_V7.faction).toBe("#ffb8d8");
-    for (const [name, hex] of Object.entries(CANDY_PALETTE_V7))
+    for (const [name, hex] of Object.entries(CANDY_PALETTE_V7)) {
       expect(hex, name).toMatch(/^#[0-9a-f]{6}$/);
+      // Chocolatier (pulp_wars-jdb.10): only the border's identity colour
+      // is pink; the code-drawn markers and cues use caramel and chocolate.
+      if (name === "faction" || name === "outline") continue;
+      const hsv = rgbToHsv(
+        Number.parseInt(hex.slice(1, 3), 16),
+        Number.parseInt(hex.slice(3, 5), 16),
+        Number.parseInt(hex.slice(5, 7), 16),
+      );
+      expect(
+        hsv.hue >= 300 && hsv.hue <= 358 && hsv.saturation >= 0.12,
+        `${name} ${hex} is pink`,
+      ).toBe(false);
+    }
+    expect(CANDY_PALETTE_V7.caramel).toBe("#e0a040");
+    expect(CANDY_PALETTE_V7.chocolate).toBe("#4a2412");
     const subjects = new Set<string>(
       CHIBI_DIRECTION_CANDY_ART_ASSETS_V7.map((asset) => asset.subject),
     );

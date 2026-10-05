@@ -1,0 +1,37 @@
+{
+  "id": "marshmallow-a",
+  "jobId": "6cf173a4-1a33-44c0-8e72-ce3fb4682e4d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-allsorts",
+    "asset": "chibi-look-allsorts-marshmallow",
+    "subject": "UNIT:CANDY:GUARD",
+    "faction": "TEST-CANDY-ALLSORTS",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 310202,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change three things only. The big biscuit shield becomes a big round liquorice wheel: a black coil #23192b, wound in a spiral with a bright pink centre #ff8fc0. A black liquorice band runs round the middle of its body like a belt, and its feet are black. The pink frosting on its top becomes lemon yellow #ffe04a. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change three things only. The big biscuit shield becomes a big round liquorice wheel: a black coil #23192b, wound in a spiral with a bright pink centre #ff8fc0. A black liquorice band runs round the middle of its body like a belt, and its feet are black. The pink frosting on its top becomes lemon yellow #ffe04a. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change three things only. The big biscuit shield becomes a big round liquorice wheel: a black coil #23192b, wound in a spiral with a bright pink centre #ff8fc0. A black liquorice band runs round the middle of its body like a belt, and its feet are black. The pink frosting on its top becomes lemon yellow #ffe04a. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change three things only. The big biscuit shield becomes a big round liquorice wheel: a black coil #23192b, wound in a spiral with a bright pink centre #ff8fc0. A black liquorice band runs round the middle of its body like a belt, and its feet are black. The pink frosting on its top becomes lemon yellow #ffe04a. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "marshmallow-a",
+      "candidate": 0,
+      "sha256": "e6cfbc33d4935c3796b50cacf3a0f8657983ba18770e5411ec60adec30504d17"
+    }
+  }
+}

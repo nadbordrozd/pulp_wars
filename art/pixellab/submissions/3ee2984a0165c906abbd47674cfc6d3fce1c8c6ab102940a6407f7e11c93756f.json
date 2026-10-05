@@ -1,0 +1,36 @@
+{
+  "id": "icon-emblem-choc-a",
+  "jobId": "c8c88425-adf7-4be1-9885-5b0804de1c51",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-candy-emblem",
+    "subject": "ICON:HUD:CANDY:EMBLEM",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311117,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour as a wrapped chocolate and change no shape: the pink wrapper and its two twisted ends become caramel gold #e0a040 foil with cream highlights; the middle of the sweet is dark chocolate #4a2412 with one cream stripe round it. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour as a wrapped chocolate and change no shape: the pink wrapper and its two twisted ends become caramel gold #e0a040 foil with cream highlights; the middle of the sweet is dark chocolate #4a2412 with one cream stripe round it. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour as a wrapped chocolate and change no shape: the pink wrapper and its two twisted ends become caramel gold #e0a040 foil with cream highlights; the middle of the sweet is dark chocolate #4a2412 with one cream stripe round it. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour as a wrapped chocolate and change no shape: the pink wrapper and its two twisted ends become caramel gold #e0a040 foil with cream highlights; the middle of the sweet is dark chocolate #4a2412 with one cream stripe round it. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-emblem-a",
+      "candidate": 0,
+      "sha256": "fa6ab20ba74a3359f3901ee75bee7d60f9d10c42cf2ed79e88424292b9b6c244"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "gunner-a",
+  "jobId": "d8b42579-81aa-45eb-8a5a-c92e803c333d",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-chocolatier",
+    "asset": "chibi-look-chocolatier-gunner",
+    "subject": "UNIT:CANDY:MARKSMAN",
+    "faction": "TEST-CANDY-CHOCOLATIER",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 310103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the base under the glass globe: the mint green base becomes milk chocolate #7a4526, shaded dark chocolate #4a2412, with one caramel gold band #e0a040, round its top edge; its two eyes become cream-white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the base under the glass globe: the mint green base becomes milk chocolate #7a4526, shaded dark chocolate #4a2412, with one caramel gold band #e0a040, round its top edge; its two eyes become cream-white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the base under the glass globe: the mint green base becomes milk chocolate #7a4526, shaded dark chocolate #4a2412, with one caramel gold band #e0a040, round its top edge; its two eyes become cream-white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour only the base under the glass globe: the mint green base becomes milk chocolate #7a4526, shaded dark chocolate #4a2412, with one caramel gold band #e0a040, round its top edge; its two eyes become cream-white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "gunner-machine-mint-a-spit-b",
+      "candidate": 0,
+      "sha256": "8c9c0678c1cf01b2b05d2ae8e325bd7687d2091aa67a0394f91a6c174fd09378"
+    }
+  }
+}

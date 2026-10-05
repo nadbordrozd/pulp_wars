@@ -17,7 +17,8 @@
         "height": 88
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:PATROL_BOAT/CHOCOLATIER"
     },
     {
       "id": "chibi-naval-candy-battleship",
@@ -29,7 +30,8 @@
         "height": 96
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:BATTLESHIP/CHOCOLATIER"
     },
     {
       "id": "chibi-naval-candy-transport",
@@ -41,7 +43,8 @@
         "height": 72
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "UNIT:CANDY:EMBARKED_TRANSPORT/CHOCOLATIER"
     },
     {
       "id": "chibi-naval-candy-portrait-patrol-boat",
@@ -53,7 +56,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:PATROL_BOAT/CHOCOLATIER"
     },
     {
       "id": "chibi-naval-candy-portrait-battleship",
@@ -65,7 +69,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:BATTLESHIP/CHOCOLATIER"
     },
     {
       "id": "chibi-naval-candy-submarine",
@@ -82,7 +87,8 @@
       },
       "ownerColour": false,
       "accent": "candy-pink",
-      "bottomMargin": 8
+      "bottomMargin": 8,
+      "subjectKey": "UNIT:CANDY:SUBMARINE/CHOCOLATIER"
     },
     {
       "id": "chibi-naval-candy-portrait-submarine",
@@ -94,7 +100,8 @@
         "height": 48
       },
       "ownerColour": false,
-      "accent": "candy-pink"
+      "accent": "candy-pink",
+      "subjectKey": "PORTRAIT:CANDY:SUBMARINE/CHOCOLATIER"
     }
   ],
   "recipes": [
@@ -283,6 +290,134 @@
       },
       "editInstruction": "Turn it into a small stubby candy submarine lying level, no longer than the boat's hull is now: remove the mast, the wafer sail and the pennant; the hull becomes one closed short fat capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint portholes in a row; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the thick black outline and style, with nothing under the hull.",
       "notes": "candy-submarine-b is the right submarine but 69 px wide on the 72 px canvas (x 1 to 69): its ends reach the HP bar and seat badge strips. This one asks for a stubby capsule no longer than the boat's hull, lying level."
+    },
+    {
+      "id": "candy-patrol-boat-choc-a",
+      "asset": "chibi-naval-candy-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 311123,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "candy-patrol-boat-a-dry",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim with cream drips; the pink and white mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate block hull, the wafer sail, every shape, the size, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "candy-transport-choc-a",
+      "asset": "chibi-naval-candy-transport",
+      "endpoint": "edit-image-pixen",
+      "seed": 311124,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "candy-transport-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink frosting on the donut raft becomes glossy dark chocolate glaze #4a2412 with a lighter #7a4526 shine and tiny cream sprinkles; the pink and white candy cane becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the golden dough, the white whipped cream, the oar, every shape, the size, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "candy-submarine-choc-a",
+      "asset": "chibi-naval-candy-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 311125,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "candy-submarine-d",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape or place: the pink frosting stripe along the top of the chocolate hull becomes caramel gold #e0a040 with cream drips; the pink tower becomes caramel gold #e0a040; the pink and white periscope becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the dark chocolate hull, the mint portholes, every shape, the size, its place in the image, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "candy-portrait-battleship-choc-a",
+      "asset": "chibi-naval-candy-portrait-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 311126,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "candy-portrait-battleship-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a chocolate cake galleon and change no shape: the pale hull becomes layers of dark chocolate sponge #4a2412 with thin cream stripes and a caramel gold #e0a040 rim in place of the pink frosting; the sails stay cream white; the masts and pennants become caramel gold #e0a040. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "candy-portrait-patrol-boat-choc-a",
+      "asset": "chibi-naval-candy-portrait-patrol-boat",
+      "endpoint": "edit-image-pixen",
+      "seed": 311127,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "candy-portrait-patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim; the pink mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate hull, the wafer sail, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "candy-portrait-submarine-choc-a",
+      "asset": "chibi-naval-candy-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 311128,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "candy-portrait-submarine-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour and change no shape: the pink frosting stripe along the top of the chocolate hull becomes caramel gold #e0a040 with cream drips; the pink tower becomes caramel gold #e0a040; the pink periscope becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the dark chocolate hull, the mint portholes, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): a recolour edit of the accepted piece into dark and milk chocolate, caramel gold and cream."
+    },
+    {
+      "id": "ship-a",
+      "asset": "chibi-naval-candy-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 310106,
+      "requestSize": {
+        "width": 88,
+        "height": 96
+      },
+      "source": {
+        "recipe": "candy-battleship-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a chocolate cake galleon and change no shape: the hull becomes layers of dark chocolate sponge #4a2412, with thin cream filling stripes and a thick caramel gold rim #e0a040, in place of the pink frosting; the sails stay cream white; the masts become caramel gold and cream stripes; the pennants caramel gold; the cake tower dark chocolate with white cream on top. Nothing pink is left. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 (the user chose the Chocolatier look): the proposal's sample, imported from art/explorations/candy-look-2026-10/chocolatier."
+    },
+    {
+      "id": "candy-portrait-battleship-choc-b",
+      "asset": "chibi-naval-candy-portrait-battleship",
+      "endpoint": "edit-image-pixen",
+      "seed": 311190,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "candy-portrait-battleship-a",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour as a chocolate cake galleon and change no shape: the pale hull becomes layers of dark chocolate sponge #4a2412 with thin cream stripes and a caramel gold #e0a040 rim in place of the pink frosting; the sails stay cream white; the masts and pennants become deep amber caramel #d98a1e. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10: a second seed of the Battleship portrait; the first drew 30 pixels of a yellow gold (#e7b63c) within 12 of the Gold seat colour, which the naval test forbids."
     }
   ]
 }

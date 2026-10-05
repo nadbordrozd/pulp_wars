@@ -1,0 +1,53 @@
+{
+  "today": {
+    "meanLightness": 59.8,
+    "darkPercent": 17,
+    "litPercent": 59,
+    "pinkPercent": 17,
+    "whitePercent": 5,
+    "files": [
+      "public/assets/chibi/units/chibi-direction-candy-gumdrop.png",
+      "public/assets/chibi/units/chibi-direction-candy-donut-racer.png",
+      "public/assets/chibi/units/chibi-direction-candy-gumball-gunner.png",
+      "public/assets/chibi/units/chibi-direction-candy-marshmallow.png",
+      "public/assets/chibi/units/chibi-direction-candy-confectioner.png",
+      "public/assets/chibi/units/chibi-direction-candy-pie-launcher.png",
+      "public/assets/chibi/units/chibi-direction-candy-gummy-bear.png",
+      "public/assets/chibi/units/chibi-direction-candy-rock-candy-golem.png"
+    ]
+  },
+  "chocolatier": {
+    "meanLightness": 53.3,
+    "darkPercent": 29,
+    "litPercent": 48,
+    "pinkPercent": 12,
+    "whitePercent": 4,
+    "files": [
+      "art/explorations/candy-look-2026-10/chocolatier/assets/units/chibi-look-chocolatier-trooper.png",
+      "art/explorations/candy-look-2026-10/chocolatier/assets/units/chibi-look-chocolatier-donut.png",
+      "art/explorations/candy-look-2026-10/chocolatier/assets/units/chibi-look-chocolatier-gunner.png",
+      "art/explorations/candy-look-2026-10/chocolatier/assets/units/chibi-look-chocolatier-marshmallow.png",
+      "public/assets/chibi/units/chibi-direction-candy-confectioner.png",
+      "public/assets/chibi/units/chibi-direction-candy-pie-launcher.png",
+      "public/assets/chibi/units/chibi-direction-candy-gummy-bear.png",
+      "art/explorations/candy-look-2026-10/chocolatier/assets/units/chibi-look-chocolatier-golem.png"
+    ]
+  },
+  "allsorts": {
+    "meanLightness": 57.9,
+    "darkPercent": 23,
+    "litPercent": 54,
+    "pinkPercent": 22,
+    "whitePercent": 11,
+    "files": [
+      "art/explorations/candy-look-2026-10/allsorts/assets/units/chibi-look-allsorts-trooper.png",
+      "public/assets/chibi/units/chibi-direction-candy-donut-racer.png",
+      "art/explorations/candy-look-2026-10/allsorts/assets/units/chibi-look-allsorts-gunner.png",
+      "art/explorations/candy-look-2026-10/allsorts/assets/units/chibi-look-allsorts-marshmallow.png",
+      "public/assets/chibi/units/chibi-direction-candy-confectioner.png",
+      "public/assets/chibi/units/chibi-direction-candy-pie-launcher.png",
+      "public/assets/chibi/units/chibi-direction-candy-gummy-bear.png",
+      "art/explorations/candy-look-2026-10/allsorts/assets/units/chibi-look-allsorts-golem.png"
+    ]
+  }
+}

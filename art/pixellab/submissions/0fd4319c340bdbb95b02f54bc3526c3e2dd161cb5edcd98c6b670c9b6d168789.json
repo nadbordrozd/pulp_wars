@@ -1,0 +1,36 @@
+{
+  "id": "portrait-donut-racer-choc-a",
+  "jobId": "bc96db20-61c9-4604-a1b9-e910ced43fbd",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-donut-racer",
+    "subject": "PORTRAIT:CANDY:RAIDER",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311105,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412 with a lighter #7a4526 shine and a few tiny cream and gold sprinkles; any other pink part becomes cream. No pink is left. Keep the golden dough, the hole, the candy-corn rider, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412 with a lighter #7a4526 shine and a few tiny cream and gold sprinkles; any other pink part becomes cream. No pink is left. Keep the golden dough, the hole, the candy-corn rider, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412 with a lighter #7a4526 shine and a few tiny cream and gold sprinkles; any other pink part becomes cream. No pink is left. Keep the golden dough, the hole, the candy-corn rider, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412 with a lighter #7a4526 shine and a few tiny cream and gold sprinkles; any other pink part becomes cream. No pink is left. Keep the golden dough, the hole, the candy-corn rider, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-donut-racer-a",
+      "candidate": 0,
+      "sha256": "3694be19e4979ee91d0b31812e70bb10c5f3a4f0b108084197016d596deff85b"
+    }
+  }
+}

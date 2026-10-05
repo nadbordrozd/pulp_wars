@@ -1,0 +1,37 @@
+{
+  "id": "marshmallow-a",
+  "jobId": "7d9d3595-aaf3-4977-a59f-1d6b7c1b445a",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-chocolatier",
+    "asset": "chibi-look-chocolatier-marshmallow",
+    "subject": "UNIT:CANDY:GUARD",
+    "faction": "TEST-CANDY-CHOCOLATIER",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 310102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change three things only. The big biscuit shield becomes a thick slab of dark chocolate bar marked into square blocks #4a2412 with lighter #7a4526 edges. Its feet and the lowest quarter of its body are dipped in dark chocolate with a wavy edge. The pink frosting on its top becomes golden caramel #e0a040. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change three things only. The big biscuit shield becomes a thick slab of dark chocolate bar marked into square blocks #4a2412 with lighter #7a4526 edges. Its feet and the lowest quarter of its body are dipped in dark chocolate with a wavy edge. The pink frosting on its top becomes golden caramel #e0a040. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change three things only. The big biscuit shield becomes a thick slab of dark chocolate bar marked into square blocks #4a2412 with lighter #7a4526 edges. Its feet and the lowest quarter of its body are dipped in dark chocolate with a wavy edge. The pink frosting on its top becomes golden caramel #e0a040. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change three things only. The big biscuit shield becomes a thick slab of dark chocolate bar marked into square blocks #4a2412 with lighter #7a4526 edges. Its feet and the lowest quarter of its body are dipped in dark chocolate with a wavy edge. The pink frosting on its top becomes golden caramel #e0a040. Do not redraw anything else: keep the white marshmallow body, the face, the cheeks, the arms, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "marshmallow-a",
+      "candidate": 0,
+      "sha256": "e6cfbc33d4935c3796b50cacf3a0f8657983ba18770e5411ec60adec30504d17"
+    }
+  }
+}

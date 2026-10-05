@@ -1,0 +1,37 @@
+{
+  "id": "ship-a",
+  "jobId": "a8449402-324f-419e-ac1f-91795f2aed55",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-chocolatier",
+    "asset": "chibi-look-chocolatier-ship",
+    "subject": "UNIT:CANDY:BATTLESHIP",
+    "faction": "TEST-CANDY-CHOCOLATIER",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 88,
+      "height": 96
+    },
+    "seed": 310106,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour as a chocolate cake galleon and change no shape: the hull becomes layers of dark chocolate sponge #4a2412, with thin cream filling stripes and a thick caramel gold rim #e0a040, in place of the pink frosting; the sails stay cream white; the masts become caramel gold and cream stripes; the pennants caramel gold; the cake tower dark chocolate with white cream on top. Nothing pink is left. Keep every shape, the size, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour as a chocolate cake galleon and change no shape: the hull becomes layers of dark chocolate sponge #4a2412, with thin cream filling stripes and a thick caramel gold rim #e0a040, in place of the pink frosting; the sails stay cream white; the masts become caramel gold and cream stripes; the pennants caramel gold; the cake tower dark chocolate with white cream on top. Nothing pink is left. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour as a chocolate cake galleon and change no shape: the hull becomes layers of dark chocolate sponge #4a2412, with thin cream filling stripes and a thick caramel gold rim #e0a040, in place of the pink frosting; the sails stay cream white; the masts become caramel gold and cream stripes; the pennants caramel gold; the cake tower dark chocolate with white cream on top. Nothing pink is left. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour as a chocolate cake galleon and change no shape: the hull becomes layers of dark chocolate sponge #4a2412, with thin cream filling stripes and a thick caramel gold rim #e0a040, in place of the pink frosting; the sails stay cream white; the masts become caramel gold and cream stripes; the pennants caramel gold; the cake tower dark chocolate with white cream on top. Nothing pink is left. Keep every shape, the size, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "naval-candy",
+      "recipe": "candy-battleship-a",
+      "candidate": 0,
+      "sha256": "a0c0fd3bc9ef72b0c3c6ed4e68af0ff7214786ebfc8140bce809fef8bca47610"
+    }
+  }
+}

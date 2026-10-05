@@ -1,0 +1,36 @@
+{
+  "id": "egg-b-white",
+  "jobId": "02fbf482-23d7-4a9e-a318-4126bcf3d679",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-options",
+    "asset": "chibi-option-juggernaut-egg",
+    "subject": "UNIT:CANDY:JUGGERNAUT",
+    "faction": "TEST-CANDY-CHOC-OPTIONS",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 312223,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the egg itself: the brown chocolate of the egg, with its face, becomes white chocolate, colour #fff1d0, shaded warm cream #e6cfa0, so it is a pale cream egg with two dark dot eyes and a small smile inside its gold foil wrapper. The arms, fists, legs and feet stay dark chocolate, and the gold foil and the cream bow stay as they are. Keep every shape, the pose, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the egg itself: the brown chocolate of the egg, with its face, becomes white chocolate, colour #fff1d0, shaded warm cream #e6cfa0, so it is a pale cream egg with two dark dot eyes and a small smile inside its gold foil wrapper. The arms, fists, legs and feet stay dark chocolate, and the gold foil and the cream bow stay as they are. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the egg itself: the brown chocolate of the egg, with its face, becomes white chocolate, colour #fff1d0, shaded warm cream #e6cfa0, so it is a pale cream egg with two dark dot eyes and a small smile inside its gold foil wrapper. The arms, fists, legs and feet stay dark chocolate, and the gold foil and the cream bow stay as they are. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour only the egg itself: the brown chocolate of the egg, with its face, becomes white chocolate, colour #fff1d0, shaded warm cream #e6cfa0, so it is a pale cream egg with two dark dot eyes and a small smile inside its gold foil wrapper. The arms, fists, legs and feet stay dark chocolate, and the gold foil and the cream bow stay as they are. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "egg-b",
+      "candidate": 0,
+      "sha256": "4f82f40b8cf57fdc7c66d8432e4e986f7bb44bc944f0c12e6bbaabf528a77dff"
+    }
+  }
+}

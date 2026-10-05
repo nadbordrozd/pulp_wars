@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "batch": "candy-look-options",
+  "title": "Candy Chocolatier look, part 2: three concepts each for the Knight-role and the Juggernaut-role unit (exploration, never registered)",
+  "bead": "pulp_wars-jdb.10",
+  "faction": "TEST-CANDY-CHOC-OPTIONS",
+  "dryRun": false,
+  "fixedFactionColours": true,
+  "assets": [
+    {
+      "id": "chibi-option-knight-bunny",
+      "subject": "UNIT:CANDY:KNIGHT",
+      "subjectKey": "UNIT:CANDY:KNIGHT/BUNNY",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-option-knight-rocking-horse",
+      "subject": "UNIT:CANDY:KNIGHT",
+      "subjectKey": "UNIT:CANDY:KNIGHT/ROCKING_HORSE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "machine",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-option-knight-dipped-bear",
+      "subject": "UNIT:CANDY:KNIGHT",
+      "subjectKey": "UNIT:CANDY:KNIGHT/DIPPED_BEAR",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-option-juggernaut-gingerbread",
+      "subject": "UNIT:CANDY:JUGGERNAUT",
+      "subjectKey": "UNIT:CANDY:JUGGERNAUT/GINGERBREAD",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-option-juggernaut-cake",
+      "subject": "UNIT:CANDY:JUGGERNAUT",
+      "subjectKey": "UNIT:CANDY:JUGGERNAUT/CAKE",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    },
+    {
+      "id": "chibi-option-juggernaut-egg",
+      "subject": "UNIT:CANDY:JUGGERNAUT",
+      "subjectKey": "UNIT:CANDY:JUGGERNAUT/EGG",
+      "assetClass": "GIANT_UNIT",
+      "recipeClass": "unit",
+      "canvas": {
+        "width": 88,
+        "height": 104
+      },
+      "ownerColour": false,
+      "accent": "candy-pink"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "bunny-a",
+      "asset": "chibi-option-knight-bunny",
+      "endpoint": "create-image-pixen",
+      "seed": 312101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The chocolate rabbit is drawn large: about 60 pixels wide and 76 pixels tall with its ears.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, real rabbit, fur, plush toy, white rabbit, pink ears, carrot, clothes, weapon",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Knight option (a), a moulded chocolate bunny; first seed."
+    },
+    {
+      "id": "bunny-b",
+      "asset": "chibi-option-knight-bunny",
+      "endpoint": "create-image-pixen",
+      "seed": 312102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The chocolate rabbit is drawn large: about 60 pixels wide and 76 pixels tall with its ears.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, real rabbit, fur, plush toy, white rabbit, pink ears, carrot, clothes, weapon",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Knight option (a), second seed."
+    },
+    {
+      "id": "rocking-horse-a",
+      "asset": "chibi-option-knight-rocking-horse",
+      "endpoint": "create-image-pixen",
+      "seed": 312111,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The rocking horse is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, real horse, fur, knight in armour, wheels, red stripes, pink",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Knight option (b), a toffee lancer on a gingerbread rocking horse; first seed."
+    },
+    {
+      "id": "rocking-horse-b",
+      "asset": "chibi-option-knight-rocking-horse",
+      "endpoint": "create-image-pixen",
+      "seed": 312112,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The rocking horse is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, real horse, fur, knight in armour, wheels, red stripes, pink",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Knight option (b), second seed."
+    },
+    {
+      "id": "dipped-bear-a",
+      "asset": "chibi-option-knight-dipped-bear",
+      "endpoint": "edit-image-pixen",
+      "seed": 312121,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "direction-candy",
+        "recipe": "gummy-bear-r6-orange",
+        "candidate": 0
+      },
+      "editInstruction": "Change no shape: its legs and lower belly are coated in dark chocolate #4a2412 with a wavy dripping edge; a dark chocolate helmet cap covers the top of its head between the ears; one chocolate-bar plate with a caramel gold rim sits on each shoulder; its raised fist wears a dark chocolate glove. The face, chest and arms stay amber jelly. Keep the pose, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Knight option (c), the live amber Gummy Bear made to belong with a chocolate dip and chocolate armour."
+    },
+    {
+      "id": "gingerbread-a",
+      "asset": "chibi-option-juggernaut-gingerbread",
+      "endpoint": "create-image-pixen",
+      "seed": 312201,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The gingerbread man is drawn very large: about 76 pixels wide and 96 pixels tall.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, drips, dripping caramel, crystals, muscles, beard, golem, rock",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Juggernaut option (a), a giant gingerbread man; first seed."
+    },
+    {
+      "id": "gingerbread-b",
+      "asset": "chibi-option-juggernaut-gingerbread",
+      "endpoint": "create-image-pixen",
+      "seed": 312202,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The gingerbread man is drawn very large: about 76 pixels wide and 96 pixels tall.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, drips, dripping caramel, crystals, muscles, beard, golem, rock",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Juggernaut option (a), second seed."
+    },
+    {
+      "id": "cake-a",
+      "asset": "chibi-option-juggernaut-cake",
+      "endpoint": "create-image-pixen",
+      "seed": 312211,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The cake is drawn very large: about 76 pixels wide and 96 pixels tall with its candles.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, plate, cake stand, table, pink frosting, slice missing, crystals, muscles, golem",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Juggernaut option (b), a three-tier chocolate cake colossus; first seed."
+    },
+    {
+      "id": "cake-b",
+      "asset": "chibi-option-juggernaut-cake",
+      "endpoint": "create-image-pixen",
+      "seed": 312212,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The cake is drawn very large: about 76 pixels wide and 96 pixels tall with its candles.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, plate, cake stand, table, pink frosting, slice missing, crystals, muscles, golem",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Juggernaut option (b), second seed."
+    },
+    {
+      "id": "egg-a",
+      "asset": "chibi-option-juggernaut-egg",
+      "endpoint": "create-image-pixen",
+      "seed": 312221,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The egg is drawn very large: about 72 pixels wide and 94 pixels tall.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, bird, chick, nest, basket, real egg, white egg, pink, crystals, muscles, golem",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Juggernaut option (c), a foil-wrapped chocolate Easter egg titan; first seed."
+    },
+    {
+      "id": "egg-b",
+      "asset": "chibi-option-juggernaut-egg",
+      "endpoint": "create-image-pixen",
+      "seed": 312222,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "promptAddendum": "The egg is drawn very large: about 72 pixels wide and 94 pixels tall.",
+      "negativeAddendum": "human, person, child, skin, hair, armour of metal, sword, tiny figure, thin, bird, chick, nest, basket, real egg, white egg, pink, crystals, muscles, golem",
+      "notes": "Bead pulp_wars-jdb.10, part 2: Juggernaut option (c), second seed."
+    },
+    {
+      "id": "egg-b-white",
+      "asset": "chibi-option-juggernaut-egg",
+      "endpoint": "edit-image-pixen",
+      "seed": 312223,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "egg-b",
+        "candidate": 0
+      },
+      "editInstruction": "Recolour only the egg itself: the brown chocolate of the egg, with its face, becomes white chocolate, colour #fff1d0, shaded warm cream #e6cfa0, so it is a pale cream egg with two dark dot eyes and a small smile inside its gold foil wrapper. The arms, fists, legs and feet stay dark chocolate, and the gold foil and the cream bow stay as they are. Keep every shape, the pose, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10, part 2: both egg samples drew a brown face with white eyes and a grin inside a foil hood, which can be misread as a caricature of a person; a white chocolate egg keeps the idea without it."
+    }
+  ]
+}

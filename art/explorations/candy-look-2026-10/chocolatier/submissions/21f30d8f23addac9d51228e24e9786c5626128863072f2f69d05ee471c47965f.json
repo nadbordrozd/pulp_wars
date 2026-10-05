@@ -1,0 +1,36 @@
+{
+  "id": "marshmallow-b",
+  "jobId": "62e29d7b-5fe9-427e-b6ed-fb9bd8c66962",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-chocolatier",
+    "asset": "chibi-look-chocolatier-marshmallow",
+    "subject": "UNIT:CANDY:GUARD",
+    "faction": "TEST-CANDY-CHOCOLATIER",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 310109,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only its arms and legs: the pink arms and the pink legs and feet become dark chocolate #4a2412 with a lighter #7a4526 highlight, as if it had been dipped in chocolate, and the pink dots on its body become cream. No pink is left except its two cheeks. Do not redraw anything else: keep the white body, the caramel top, the face, the chocolate bar shield, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only its arms and legs: the pink arms and the pink legs and feet become dark chocolate #4a2412 with a lighter #7a4526 highlight, as if it had been dipped in chocolate, and the pink dots on its body become cream. No pink is left except its two cheeks. Do not redraw anything else: keep the white body, the caramel top, the face, the chocolate bar shield, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only its arms and legs: the pink arms and the pink legs and feet become dark chocolate #4a2412 with a lighter #7a4526 highlight, as if it had been dipped in chocolate, and the pink dots on its body become cream. No pink is left except its two cheeks. Do not redraw anything else: keep the white body, the caramel top, the face, the chocolate bar shield, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change only its arms and legs: the pink arms and the pink legs and feet become dark chocolate #4a2412 with a lighter #7a4526 highlight, as if it had been dipped in chocolate, and the pink dots on its body become cream. No pink is left except its two cheeks. Do not redraw anything else: keep the white body, the caramel top, the face, the chocolate bar shield, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "marshmallow-a",
+      "candidate": 0,
+      "sha256": "fdef831854ea945b29308c1648f3d704d5fc0b90baec425604e10895dfea13b5"
+    }
+  }
+}

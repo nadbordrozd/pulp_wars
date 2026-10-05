@@ -1,0 +1,36 @@
+{
+  "id": "candy-submarine-choc-a",
+  "jobId": "1191e0ec-2c2d-4bd4-af50-f93b270b2fa2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-submarine",
+    "subject": "UNIT:CANDY:SUBMARINE",
+    "faction": "CANDY",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 311125,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape or place: the pink frosting stripe along the top of the chocolate hull becomes caramel gold #e0a040 with cream drips; the pink tower becomes caramel gold #e0a040; the pink and white periscope becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the dark chocolate hull, the mint portholes, every shape, the size, its place in the image, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape or place: the pink frosting stripe along the top of the chocolate hull becomes caramel gold #e0a040 with cream drips; the pink tower becomes caramel gold #e0a040; the pink and white periscope becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the dark chocolate hull, the mint portholes, every shape, the size, its place in the image, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape or place: the pink frosting stripe along the top of the chocolate hull becomes caramel gold #e0a040 with cream drips; the pink tower becomes caramel gold #e0a040; the pink and white periscope becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the dark chocolate hull, the mint portholes, every shape, the size, its place in the image, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape or place: the pink frosting stripe along the top of the chocolate hull becomes caramel gold #e0a040 with cream drips; the pink tower becomes caramel gold #e0a040; the pink and white periscope becomes caramel gold #e0a040 and cream stripes. No pink is left. Keep the dark chocolate hull, the mint portholes, every shape, the size, its place in the image, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "candy-submarine-d",
+      "candidate": 0,
+      "sha256": "69f69ec4293494ba3f8c4240c99be40fd13b7da267f7493f4e8b6b916bddfb6b"
+    }
+  }
+}

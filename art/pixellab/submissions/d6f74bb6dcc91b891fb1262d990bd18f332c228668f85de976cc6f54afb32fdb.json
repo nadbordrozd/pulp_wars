@@ -1,0 +1,36 @@
+{
+  "id": "icon-peppermint-choc-a",
+  "jobId": "0baac948-a9ce-4a2a-ab6c-a3097b10d9f6",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-tech-peppermint-surprise",
+    "subject": "ICON:TECH:CANDY:EXPLOSIVES",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311121,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour as a peppermint chocolate and change no shape: the pink top of the round sweet becomes a pale mint green #a8e6cf and white swirl; its sides and base become dark chocolate #4a2412 with a lighter #7a4526 shine; the fuse and the white spark stay. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour as a peppermint chocolate and change no shape: the pink top of the round sweet becomes a pale mint green #a8e6cf and white swirl; its sides and base become dark chocolate #4a2412 with a lighter #7a4526 shine; the fuse and the white spark stay. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour as a peppermint chocolate and change no shape: the pink top of the round sweet becomes a pale mint green #a8e6cf and white swirl; its sides and base become dark chocolate #4a2412 with a lighter #7a4526 shine; the fuse and the white spark stay. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour as a peppermint chocolate and change no shape: the pink top of the round sweet becomes a pale mint green #a8e6cf and white swirl; its sides and base become dark chocolate #4a2412 with a lighter #7a4526 shine; the fuse and the white spark stay. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-peppermint-surprise-a",
+      "candidate": 0,
+      "sha256": "6d1c1dcb5597394a6a66f6756d8a3027919c2c2203b70b641a3d7d6ee7cadec0"
+    }
+  }
+}

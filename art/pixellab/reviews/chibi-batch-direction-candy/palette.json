@@ -4,69 +4,69 @@
     {
       "name": "outline",
       "use": "the thick chibi outline",
-      "hex": "#070203",
-      "share": 13.4,
-      "lightness": 0.8
+      "hex": "#0f0406",
+      "share": 22.1,
+      "lightness": 1.8
     },
     {
       "name": "pinkLit",
       "use": "glaze, frosting, jelly and crystal, lit",
-      "hex": "#fba1c8",
-      "share": 6.2,
-      "lightness": 76.1
+      "hex": "#fe9fc6",
+      "share": 0.5,
+      "lightness": 76
     },
     {
       "name": "pinkShade",
       "use": "the shadow tone of the pink",
-      "hex": "#a95879",
-      "share": 11,
-      "lightness": 48
+      "hex": "#75374c",
+      "share": 3.4,
+      "lightness": 31.9
     },
     {
       "name": "white",
       "use": "marshmallow, cream, sugar and the hard shine",
-      "hex": "#f7f8f6",
-      "share": 4.5,
-      "lightness": 97.4
+      "hex": "#f8f3eb",
+      "share": 4,
+      "lightness": 96.1
     },
     {
       "name": "cream",
       "use": "cream shade, vanilla and pale sponge",
-      "hex": "#f2d9ba",
-      "share": 6,
-      "lightness": 87.9
+      "hex": "#f3dfbd",
+      "share": 5.4,
+      "lightness": 89.6
     },
     {
       "name": "biscuit",
       "use": "wafer, graham cracker, donut dough and caramel",
-      "hex": "#d67f29",
-      "share": 22.7,
-      "lightness": 61.2
+      "hex": "#cb7c28",
+      "share": 22,
+      "lightness": 59.2
     },
     {
       "name": "chocolate",
       "use": "chocolate, gingerbread shade and feet",
-      "hex": "#6e2513",
-      "share": 12.8,
-      "lightness": 25.9
+      "hex": "#652918",
+      "share": 33.7,
+      "lightness": 25
     },
     {
       "name": "mint",
       "use": "the small mint trim",
-      "hex": "#55d698",
-      "share": 10.6,
-      "lightness": 77.6
+      "hex": "#78d0aa",
+      "share": 1,
+      "lightness": 77.2
     }
   ],
   "codePalette": {
     "faction": "#ffb8d8",
-    "pink": "#fba4c7",
-    "pinkShade": "#b25d80",
-    "pinkDark": "#8f4565",
+    "caramel": "#e0a040",
+    "caramelShade": "#b06a1c",
+    "milkChocolate": "#7a4526",
     "white": "#fcf7f5",
     "cream": "#f0d7ba",
     "biscuit": "#c8783a",
-    "chocolate": "#6d2415",
+    "chocolate": "#4a2412",
     "mint": "#8ddab3",
     "outline": "#24121a"
   }

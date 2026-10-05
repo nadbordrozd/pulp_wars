@@ -1,0 +1,37 @@
+{
+  "id": "donut-a",
+  "jobId": "af4edb60-1e5c-4d3a-840e-0aeec8f1e3ba",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-chocolatier",
+    "asset": "chibi-look-chocolatier-donut",
+    "subject": "UNIT:CANDY:RAIDER",
+    "faction": "TEST-CANDY-CHOCOLATIER",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 310108,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412, with a lighter #7a4526 shine and a few tiny cream and gold sprinkles. No pink is left on the donut. Keep the golden dough, the hole, the candy-corn rider, the small wheel, the speed lines, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412, with a lighter #7a4526 shine and a few tiny cream and gold sprinkles. No pink is left on the donut. Keep the golden dough, the hole, the candy-corn rider, the small wheel, the speed lines, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412, with a lighter #7a4526 shine and a few tiny cream and gold sprinkles. No pink is left on the donut. Keep the golden dough, the hole, the candy-corn rider, the small wheel, the speed lines, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour only the frosting: the pink frosting dripping over the donut becomes dark chocolate glaze #4a2412, with a lighter #7a4526 shine and a few tiny cream and gold sprinkles. No pink is left on the donut. Keep the golden dough, the hole, the candy-corn rider, the small wheel, the speed lines, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "donut-racer-a",
+      "candidate": 0,
+      "sha256": "5c71f1e2d7ea83db5c7c3d6fa78cdb66ccd001c71a596eb070e260576244add8"
+    }
+  }
+}

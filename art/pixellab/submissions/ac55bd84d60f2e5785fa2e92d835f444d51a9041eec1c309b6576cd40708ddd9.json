@@ -1,0 +1,36 @@
+{
+  "id": "candy-portrait-patrol-boat-choc-a",
+  "jobId": "f996ae34-cf7f-4169-a502-470c477b3be2",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-portrait-patrol-boat",
+    "subject": "PORTRAIT:CANDY:PATROL_BOAT",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311127,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim; the pink mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate hull, the wafer sail, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim; the pink mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate hull, the wafer sail, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim; the pink mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate hull, the wafer sail, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink frosting rim of the chocolate hull becomes a thick caramel gold #e0a040 rim; the pink mast becomes caramel gold #e0a040 and cream stripes; the pink pennant becomes cream white. No pink is left. Keep the dark chocolate hull, the wafer sail, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "candy-portrait-patrol-boat-a",
+      "candidate": 0,
+      "sha256": "d393994025cbd118f71ead99fbfb144d2dfdb3ea164ed7cc62f4ec75ec8beabb"
+    }
+  }
+}

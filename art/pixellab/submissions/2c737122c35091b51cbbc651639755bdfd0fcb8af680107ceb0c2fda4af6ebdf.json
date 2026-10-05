@@ -1,0 +1,36 @@
+{
+  "id": "icon-sugar-toss-choc-a",
+  "jobId": "8beaa1f0-70b4-472e-94c4-9b1f9be7e668",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-sugar-toss",
+    "subject": "ICON:ACTION:SUGAR_TOSS",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311116,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the round pink sweet becomes a golden toffee, caramel gold #e0a040 shaded #b06a1c with one white shine; its wrapper ends become cream white; the curved arrow stays white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the round pink sweet becomes a golden toffee, caramel gold #e0a040 shaded #b06a1c with one white shine; its wrapper ends become cream white; the curved arrow stays white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the round pink sweet becomes a golden toffee, caramel gold #e0a040 shaded #b06a1c with one white shine; its wrapper ends become cream white; the curved arrow stays white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the round pink sweet becomes a golden toffee, caramel gold #e0a040 shaded #b06a1c with one white shine; its wrapper ends become cream white; the curved arrow stays white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-sugar-toss-a-edit",
+      "candidate": 0,
+      "sha256": "438fb58a513fcceb9fb38e0c875ebb6d665982f7af9610c1e474c18efa124487"
+    }
+  }
+}

@@ -1558,6 +1558,31 @@ on every unit now asks for the opposite on the four redrawn ones and for
 under a quarter of the roster. The lineup now misses four of seven pairs
 by the measure (the toffee unit against the Goblin and the Yeti).
 
+**The Chocolatier look (bead `pulp_wars-jdb.10`).** The user chose it from
+the proposal in `art/explorations/candy-look-2026-10/` and the faction was
+converted in place
+([CANDY.md](factions/CANDY.md#the-chocolatier-look-october-2026)): six
+proposal samples were imported and the other pieces are recolour edits of
+the accepted sprites in `direction-candy` and `naval-candy`; the Gummy Bear
+and the Rock Candy Golem were replaced by the Chocolate Bunny and the
+Gingerbread Giant, fresh creations imported from the options run under the
+old asset ids. Two things are
+new to the pipeline's use, neither a new piece:
+
+- **A palette swap in place.** The seven Candy effects name
+  `candy-sugar.png` as `paletteFrom` and `candy-chocolate.png` (the
+  Peppermint pop `candy-mint-chocolate.png`) as `palette`, and their own
+  first recipe was accepted again: the candidate is mapped to the sugar
+  palette as before and swapped colour for colour, with no PixelLab call.
+  `npx tsx scripts/art/candy-direction/sugar-palette.ts` writes the three
+  palettes (a test checks the bytes).
+- **An imported edit whose source is in the same batch.** The proposal's
+  edits name their source as `{ "batch": "direction-candy", … }`; the
+  production recipe names the same recipe without the batch, which `import`
+  accepts and `art:validate` verifies. An exploration recipe whose id is
+  already taken in the production batch (`marshmallow-a`) cannot be
+  imported; that piece was edited again in the batch.
+
 `npm run art:chibi-candy-direction-review` writes
 `art/pixellab/reviews/chibi-batch-direction-candy/`: `lineup-{1x,x3}.png`
 and `lineup.json` (the spec's 32 px lineup with the Dwarf lineup's measures

@@ -1291,7 +1291,7 @@ function drawPieThrow(
       context.fill();
       context.stroke();
       circle(context, -2 * zoom, -5 * zoom, 2.6 * zoom);
-      context.fillStyle = CANDY.pink;
+      context.fillStyle = CANDY.caramel;
       context.fill();
       context.restore();
     }
@@ -1341,7 +1341,7 @@ function drawGumballShot(
       const age = (index + 1) / (shot.trail.length + 1);
       context.globalAlpha = 0.7 * (1 - age);
       circle(context, point.x, point.y, (4 - 2.5 * age) * zoom);
-      context.fillStyle = CANDY.pink;
+      context.fillStyle = CANDY.caramel;
       context.fill();
     });
     context.globalAlpha = 1;
@@ -1357,7 +1357,7 @@ function drawGumballShot(
       )
     ) {
       circle(context, shot.at.x, shot.at.y, 6.5 * zoom);
-      context.fillStyle = CANDY.pink;
+      context.fillStyle = CANDY.caramel;
       context.fill();
       context.strokeStyle = CANDY.outline;
       context.lineWidth = Math.max(1, 2 * zoom);
@@ -1374,7 +1374,7 @@ function drawGumballShot(
     starPath(context, x, y, (14 - 5 * local) * zoom, 5 * zoom, 6, local);
     context.fillStyle = CANDY.white;
     context.fill();
-    context.strokeStyle = CANDY.pinkDark;
+    context.strokeStyle = CANDY.milkChocolate;
     context.lineWidth = Math.max(1, 2 * zoom);
     context.stroke();
     for (let spark = 0; spark < 6; spark += 1) {
@@ -1386,7 +1386,7 @@ function drawGumballShot(
         y + Math.sin(angle) * distance,
         2.2 * zoom,
       );
-      context.fillStyle = spark % 2 === 0 ? CANDY.pink : CANDY.mint;
+      context.fillStyle = spark % 2 === 0 ? CANDY.caramel : CANDY.mint;
       context.fill();
     }
     context.globalAlpha = 1;

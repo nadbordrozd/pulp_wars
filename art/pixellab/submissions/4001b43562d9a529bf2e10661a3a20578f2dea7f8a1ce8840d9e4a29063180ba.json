@@ -1,0 +1,36 @@
+{
+  "id": "confectioner-choc-b",
+  "jobId": "24cd0c52-1a8a-4493-aa10-da26b3ac9344",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-confectioner",
+    "subject": "UNIT:CANDY:CAPTAIN",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 311124,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the pink baker's hat becomes a cream white baker's hat, colour #fff1d0, shaded pale warm grey. Do not redraw anything else: keep the dark chocolate glaze on the head, the goggles, the face, the dark chocolate apron with its cream frill, the pink bow at the neck, the whisk, the arms, the feet, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the pink baker's hat becomes a cream white baker's hat, colour #fff1d0, shaded pale warm grey. Do not redraw anything else: keep the dark chocolate glaze on the head, the goggles, the face, the dark chocolate apron with its cream frill, the pink bow at the neck, the whisk, the arms, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the pink baker's hat becomes a cream white baker's hat, colour #fff1d0, shaded pale warm grey. Do not redraw anything else: keep the dark chocolate glaze on the head, the goggles, the face, the dark chocolate apron with its cream frill, the pink bow at the neck, the whisk, the arms, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the pink baker's hat becomes a cream white baker's hat, colour #fff1d0, shaded pale warm grey. Do not redraw anything else: keep the dark chocolate glaze on the head, the goggles, the face, the dark chocolate apron with its cream frill, the pink bow at the neck, the whisk, the arms, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "confectioner-choc-a",
+      "candidate": 0,
+      "sha256": "fbbecfa363d4c03a91e4bbb4f70890c1e23f497cbd61f4a0396000d4445d4301"
+    }
+  }
+}

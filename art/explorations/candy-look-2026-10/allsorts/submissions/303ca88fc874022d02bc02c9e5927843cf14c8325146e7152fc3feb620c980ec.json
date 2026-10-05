@@ -1,0 +1,37 @@
+{
+  "id": "city-a",
+  "jobId": "30dbc9e5-4dbb-4e26-96e7-c3e53587aa90",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-allsorts",
+    "asset": "chibi-look-allsorts-city",
+    "subject": "CITY:CANDY:2",
+    "faction": "TEST-CANDY-ALLSORTS",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 310205,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour as a liquorice sweet town and change no shape: the round cake keep becomes a stack of layered sweets, bright white sugar and pink #ff8fc0 layers under a black liquorice top #23192b; the roofs of the little houses become black liquorice with a white stripe; the wall becomes black liquorice blocks topped with small lemon yellow #ffe04a and pink beads; the lollipop a pink and white swirl. Keep every shape, the size, outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour as a liquorice sweet town and change no shape: the round cake keep becomes a stack of layered sweets, bright white sugar and pink #ff8fc0 layers under a black liquorice top #23192b; the roofs of the little houses become black liquorice with a white stripe; the wall becomes black liquorice blocks topped with small lemon yellow #ffe04a and pink beads; the lollipop a pink and white swirl. Keep every shape, the size, outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour as a liquorice sweet town and change no shape: the round cake keep becomes a stack of layered sweets, bright white sugar and pink #ff8fc0 layers under a black liquorice top #23192b; the roofs of the little houses become black liquorice with a white stripe; the wall becomes black liquorice blocks topped with small lemon yellow #ffe04a and pink beads; the lollipop a pink and white swirl. Keep every shape, the size, outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour as a liquorice sweet town and change no shape: the round cake keep becomes a stack of layered sweets, bright white sugar and pink #ff8fc0 layers under a black liquorice top #23192b; the roofs of the little houses become black liquorice with a white stripe; the wall becomes black liquorice blocks topped with small lemon yellow #ffe04a and pink beads; the lollipop a pink and white swirl. Keep every shape, the size, outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "candy-city-2-calm-a-edit",
+      "candidate": 0,
+      "sha256": "e970ef9562868872d21d587a25ede4faedacf7d526d765dea4f49221f15241fd"
+    }
+  }
+}

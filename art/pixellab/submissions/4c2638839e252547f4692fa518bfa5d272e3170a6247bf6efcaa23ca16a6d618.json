@@ -1,0 +1,36 @@
+{
+  "id": "icon-bounce-choc-a",
+  "jobId": "36a71d51-7161-4e80-bb6b-6d1093a58d35",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-bounce",
+    "subject": "ICON:ACTION:BOUNCE",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: every pink part becomes caramel gold #e0a040 shaded with milk chocolate #7a4526; the biscuit and cream parts and the white motion lines stay as they are. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: every pink part becomes caramel gold #e0a040 shaded with milk chocolate #7a4526; the biscuit and cream parts and the white motion lines stay as they are. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: every pink part becomes caramel gold #e0a040 shaded with milk chocolate #7a4526; the biscuit and cream parts and the white motion lines stay as they are. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: every pink part becomes caramel gold #e0a040 shaded with milk chocolate #7a4526; the biscuit and cream parts and the white motion lines stay as they are. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-bounce-a",
+      "candidate": 0,
+      "sha256": "e64d806eef486f5db1db0967bd91698fc16f3ac521e74916f987bb5675c2f8fc"
+    }
+  }
+}

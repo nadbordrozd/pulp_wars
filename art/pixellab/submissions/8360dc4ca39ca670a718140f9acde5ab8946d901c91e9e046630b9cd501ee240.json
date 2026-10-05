@@ -1,0 +1,36 @@
+{
+  "id": "candy-city-3-choc-a",
+  "jobId": "0ca5241e-b9f2-4465-858e-f319336b4f78",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-city-3",
+    "subject": "CITY:CANDY:3",
+    "faction": "CANDY",
+    "recipeClass": "calm-settlement",
+    "requestSize": {
+      "width": 96,
+      "height": 96
+    },
+    "seed": 311110,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour as a chocolate cake castle and change no shape: the pink frosting on every tier of the big cake becomes dark chocolate glaze #4a2412; the pink tops of the towers and the pink flags become caramel gold #e0a040; the pink sweets on the wall become caramel gold #e0a040; the lollipop becomes caramel and cream; one small cherry on top of the cake is the only pink. Keep the wafer walls, the tower cones, the houses, every shape, the size, outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour as a chocolate cake castle and change no shape: the pink frosting on every tier of the big cake becomes dark chocolate glaze #4a2412; the pink tops of the towers and the pink flags become caramel gold #e0a040; the pink sweets on the wall become caramel gold #e0a040; the lollipop becomes caramel and cream; one small cherry on top of the cake is the only pink. Keep the wafer walls, the tower cones, the houses, every shape, the size, outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour as a chocolate cake castle and change no shape: the pink frosting on every tier of the big cake becomes dark chocolate glaze #4a2412; the pink tops of the towers and the pink flags become caramel gold #e0a040; the pink sweets on the wall become caramel gold #e0a040; the lollipop becomes caramel and cream; one small cherry on top of the cake is the only pink. Keep the wafer walls, the tower cones, the houses, every shape, the size, outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour as a chocolate cake castle and change no shape: the pink frosting on every tier of the big cake becomes dark chocolate glaze #4a2412; the pink tops of the towers and the pink flags become caramel gold #e0a040; the pink sweets on the wall become caramel gold #e0a040; the lollipop becomes caramel and cream; one small cherry on top of the cake is the only pink. Keep the wafer walls, the tower cones, the houses, every shape, the size, outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "candy-city-3-calm-a-edit",
+      "candidate": 0,
+      "sha256": "8e8267dc811fde37f320e159a947f3dec4a7153b463e19446beb3eeb7a66ea86"
+    }
+  }
+}

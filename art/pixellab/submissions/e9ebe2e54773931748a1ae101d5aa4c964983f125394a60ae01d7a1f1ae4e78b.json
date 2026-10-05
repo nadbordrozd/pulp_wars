@@ -1,0 +1,36 @@
+{
+  "id": "icon-rushed-choc-a",
+  "jobId": "76758eb9-c82a-4bb9-a5bf-5e560dbb95ca",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-status-rushed",
+    "subject": "ICON:STATUS:RUSHED",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311119,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink lightning bolt becomes caramel gold #e0a040 with a lighter cream stripe along it and dark chocolate #4a2412 shading on its lower edge; the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink lightning bolt becomes caramel gold #e0a040 with a lighter cream stripe along it and dark chocolate #4a2412 shading on its lower edge; the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink lightning bolt becomes caramel gold #e0a040 with a lighter cream stripe along it and dark chocolate #4a2412 shading on its lower edge; the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink lightning bolt becomes caramel gold #e0a040 with a lighter cream stripe along it and dark chocolate #4a2412 shading on its lower edge; the sparkles stay white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-rushed-a",
+      "candidate": 0,
+      "sha256": "6f8b08e307a246371a1981df67d7a402fb2ab6341dbd7a1e09e93a873484e637"
+    }
+  }
+}

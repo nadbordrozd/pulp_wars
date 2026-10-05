@@ -1,0 +1,37 @@
+{
+  "id": "dipped-bear-a",
+  "jobId": "ec714320-f10f-4824-bf8b-94edc1f3aa77",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-options",
+    "asset": "chibi-option-knight-dipped-bear",
+    "subject": "UNIT:CANDY:KNIGHT",
+    "faction": "TEST-CANDY-CHOC-OPTIONS",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 312121,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change no shape: its legs and lower belly are coated in dark chocolate #4a2412 with a wavy dripping edge; a dark chocolate helmet cap covers the top of its head between the ears; one chocolate-bar plate with a caramel gold rim sits on each shoulder; its raised fist wears a dark chocolate glove. The face, chest and arms stay amber jelly. Keep the pose, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change no shape: its legs and lower belly are coated in dark chocolate #4a2412 with a wavy dripping edge; a dark chocolate helmet cap covers the top of its head between the ears; one chocolate-bar plate with a caramel gold rim sits on each shoulder; its raised fist wears a dark chocolate glove. The face, chest and arms stay amber jelly. Keep the pose, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change no shape: its legs and lower belly are coated in dark chocolate #4a2412 with a wavy dripping edge; a dark chocolate helmet cap covers the top of its head between the ears; one chocolate-bar plate with a caramel gold rim sits on each shoulder; its raised fist wears a dark chocolate glove. The face, chest and arms stay amber jelly. Keep the pose, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change no shape: its legs and lower belly are coated in dark chocolate #4a2412 with a wavy dripping edge; a dark chocolate helmet cap covers the top of its head between the ears; one chocolate-bar plate with a caramel gold rim sits on each shoulder; its raised fist wears a dark chocolate glove. The face, chest and arms stay amber jelly. Keep the pose, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "gummy-bear-r6-orange",
+      "candidate": 0,
+      "sha256": "a589865df190231b34c70d1abb0aebf4e256559cf131120993a3830ee1ad6a49"
+    }
+  }
+}

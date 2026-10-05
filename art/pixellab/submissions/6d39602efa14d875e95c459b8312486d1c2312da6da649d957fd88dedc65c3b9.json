@@ -1,0 +1,36 @@
+{
+  "id": "pie-launcher-choc-a",
+  "jobId": "965b6677-fde4-48a2-b52b-13626ca96777",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-pie-launcher",
+    "subject": "UNIT:CANDY:CATAPULT",
+    "faction": "CANDY",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 311102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the fat pink frosting barrel becomes a chocolate roll cake, dark chocolate #4a2412 with a lighter #7a4526 shine and two caramel gold #e0a040 bands; the pink and white wheels become caramel gold #e0a040 and cream swirl wheels; the pink buttons on the gingerbread cart become cream dots. No pink is left. Keep the gingerbread cart, the white icing lines, the cream pie, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the fat pink frosting barrel becomes a chocolate roll cake, dark chocolate #4a2412 with a lighter #7a4526 shine and two caramel gold #e0a040 bands; the pink and white wheels become caramel gold #e0a040 and cream swirl wheels; the pink buttons on the gingerbread cart become cream dots. No pink is left. Keep the gingerbread cart, the white icing lines, the cream pie, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the fat pink frosting barrel becomes a chocolate roll cake, dark chocolate #4a2412 with a lighter #7a4526 shine and two caramel gold #e0a040 bands; the pink and white wheels become caramel gold #e0a040 and cream swirl wheels; the pink buttons on the gingerbread cart become cream dots. No pink is left. Keep the gingerbread cart, the white icing lines, the cream pie, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the fat pink frosting barrel becomes a chocolate roll cake, dark chocolate #4a2412 with a lighter #7a4526 shine and two caramel gold #e0a040 bands; the pink and white wheels become caramel gold #e0a040 and cream swirl wheels; the pink buttons on the gingerbread cart become cream dots. No pink is left. Keep the gingerbread cart, the white icing lines, the cream pie, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "pie-launcher-a-pie",
+      "candidate": 0,
+      "sha256": "8953248fe4ea12b2c8e44ee5779065345700879340afc040842beaf52db0c975"
+    }
+  }
+}

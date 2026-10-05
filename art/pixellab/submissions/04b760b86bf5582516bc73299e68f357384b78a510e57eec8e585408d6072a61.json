@@ -1,0 +1,36 @@
+{
+  "id": "portrait-marshmallow-choc-a",
+  "jobId": "409e0ee6-e8ed-4bda-bf0a-833e350be602",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-marshmallow",
+    "subject": "PORTRAIT:CANDY:GUARD",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311107,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink stripe under the biscuit top becomes a thick layer of dark chocolate #4a2412; the pink band at the bottom of the block becomes golden caramel #e0a040 dripping; every other pink trim becomes cream. No pink is left except its two cheeks. Keep the white marshmallow block, the biscuit top, the face, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink stripe under the biscuit top becomes a thick layer of dark chocolate #4a2412; the pink band at the bottom of the block becomes golden caramel #e0a040 dripping; every other pink trim becomes cream. No pink is left except its two cheeks. Keep the white marshmallow block, the biscuit top, the face, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink stripe under the biscuit top becomes a thick layer of dark chocolate #4a2412; the pink band at the bottom of the block becomes golden caramel #e0a040 dripping; every other pink trim becomes cream. No pink is left except its two cheeks. Keep the white marshmallow block, the biscuit top, the face, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink stripe under the biscuit top becomes a thick layer of dark chocolate #4a2412; the pink band at the bottom of the block becomes golden caramel #e0a040 dripping; every other pink trim becomes cream. No pink is left except its two cheeks. Keep the white marshmallow block, the biscuit top, the face, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-marshmallow-a",
+      "candidate": 0,
+      "sha256": "11286a87bd0c8c91bd74af5cc270ed98a7b22b0910d18913d669409f0d8128af"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "icon-home-choc-a",
+  "jobId": "484cd31d-b7e3-4bc3-b8bc-ba0676a9eb71",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-tech-home-sweet-home",
+    "subject": "ICON:TECH:CANDY:FORTIFICATION",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311120,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink gumdrops on the roof, the pink door and every pink trim of the gingerbread house become dark chocolate #4a2412 and cream; the frosting roof stays white; one small cherry-pink heart above the door is the only pink. Keep the gingerbread walls, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink gumdrops on the roof, the pink door and every pink trim of the gingerbread house become dark chocolate #4a2412 and cream; the frosting roof stays white; one small cherry-pink heart above the door is the only pink. Keep the gingerbread walls, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink gumdrops on the roof, the pink door and every pink trim of the gingerbread house become dark chocolate #4a2412 and cream; the frosting roof stays white; one small cherry-pink heart above the door is the only pink. Keep the gingerbread walls, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink gumdrops on the roof, the pink door and every pink trim of the gingerbread house become dark chocolate #4a2412 and cream; the frosting roof stays white; one small cherry-pink heart above the door is the only pink. Keep the gingerbread walls, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-home-sweet-home-a",
+      "candidate": 0,
+      "sha256": "06fc9cefdd76fa53a6c10f31f38fb66ec403510f7adba6f7b3167aee9b9c8ed1"
+    }
+  }
+}

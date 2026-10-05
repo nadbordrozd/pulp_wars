@@ -1,0 +1,36 @@
+{
+  "id": "icon-rebake-choc-a",
+  "jobId": "8f38836e-1e75-46b5-8241-5522337b55e1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-action-rebake",
+    "subject": "ICON:ACTION:REBAKE",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311113,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink handle of the whisk and the pink oven mitt become milk chocolate #7a4526 with dark chocolate #4a2412 shading, and the mitt's cuff cream white; the whisk's wires stay pale grey. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink handle of the whisk and the pink oven mitt become milk chocolate #7a4526 with dark chocolate #4a2412 shading, and the mitt's cuff cream white; the whisk's wires stay pale grey. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink handle of the whisk and the pink oven mitt become milk chocolate #7a4526 with dark chocolate #4a2412 shading, and the mitt's cuff cream white; the whisk's wires stay pale grey. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink handle of the whisk and the pink oven mitt become milk chocolate #7a4526 with dark chocolate #4a2412 shading, and the mitt's cuff cream white; the whisk's wires stay pale grey. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-rebake-b",
+      "candidate": 0,
+      "sha256": "564ed22ce1d561cf06f4ebecccf37f6a2b423550a108a03e3b0bab0ee86dda1c"
+    }
+  }
+}

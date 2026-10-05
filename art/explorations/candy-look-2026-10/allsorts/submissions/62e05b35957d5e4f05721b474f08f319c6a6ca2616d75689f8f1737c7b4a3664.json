@@ -1,0 +1,37 @@
+{
+  "id": "gunner-a",
+  "jobId": "b1c4fb34-e965-47c7-acf0-bd96b16b19a0",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "candy-look-allsorts",
+    "asset": "chibi-look-allsorts-gunner",
+    "subject": "UNIT:CANDY:MARKSMAN",
+    "faction": "TEST-CANDY-ALLSORTS",
+    "recipeClass": "machine",
+    "requestSize": {
+      "width": 56,
+      "height": 80
+    },
+    "seed": 310203,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour only the base under the glass globe: the mint green base becomes black liquorice #23192b, with a pale #5a4c6e highlight and one bright band of pink #ff8fc0 and lemon yellow #ffe04a stripes round its top edge; its two eyes become white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour only the base under the glass globe: the mint green base becomes black liquorice #23192b, with a pale #5a4c6e highlight and one bright band of pink #ff8fc0 and lemon yellow #ffe04a stripes round its top edge; its two eyes become white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour only the base under the glass globe: the mint green base becomes black liquorice #23192b, with a pale #5a4c6e highlight and one bright band of pink #ff8fc0 and lemon yellow #ffe04a stripes round its top edge; its two eyes become white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour only the base under the glass globe: the mint green base becomes black liquorice #23192b, with a pale #5a4c6e highlight and one bright band of pink #ff8fc0 and lemon yellow #ffe04a stripes round its top edge; its two eyes become white dots with black pupils. No mint green is left. Keep the globe and its gumballs, the dark lid, the gold coin knobs, the flying gumball, the feet, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "batch": "direction-candy",
+      "recipe": "gunner-machine-mint-a-spit-b",
+      "candidate": 0,
+      "sha256": "8c9c0678c1cf01b2b05d2ae8e325bd7687d2091aa67a0394f91a6c174fd09378"
+    }
+  }
+}

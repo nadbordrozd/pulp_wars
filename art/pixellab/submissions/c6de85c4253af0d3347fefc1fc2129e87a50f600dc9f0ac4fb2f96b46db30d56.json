@@ -1,0 +1,36 @@
+{
+  "id": "icon-crashed-choc-a",
+  "jobId": "b530af1f-1d32-46aa-8bfa-b3b0675e1afe",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-icon-status-crashed",
+    "subject": "ICON:STATUS:CRASHED",
+    "faction": "CANDY",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 311118,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Recolour and change no shape: the pink spiral becomes a dark chocolate #4a2412 spiral winding on a cream #fff1d0 disc; the pink ring round it becomes caramel gold #e0a040; the three stars become cream white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Recolour and change no shape: the pink spiral becomes a dark chocolate #4a2412 spiral winding on a cream #fff1d0 disc; the pink ring round it becomes caramel gold #e0a040; the three stars become cream white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Recolour and change no shape: the pink spiral becomes a dark chocolate #4a2412 spiral winding on a cream #fff1d0 disc; the pink ring round it becomes caramel gold #e0a040; the three stars become cream white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Recolour and change no shape: the pink spiral becomes a dark chocolate #4a2412 spiral winding on a cream #fff1d0 disc; the pink ring round it becomes caramel gold #e0a040; the three stars become cream white. No pink is left. Keep every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "icon-crashed-a",
+      "candidate": 0,
+      "sha256": "3c86ae261e62d787fa5efe178638addc902b02fc70c476a609172f245609fffd"
+    }
+  }
+}
