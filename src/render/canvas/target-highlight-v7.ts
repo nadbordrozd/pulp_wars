@@ -124,6 +124,8 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   THROW_BOLAS: "ATTACK",
   COLD_SNAP: "ATTACK",
   BOMB_TARGET: "ATTACK",
+  // The naval branch interface: a ship to capture, while Board is aimed.
+  BOARD: "ATTACK",
   HATCH: "SUPPORT",
   SUGAR_TOSS: "SUPPORT",
   BEAM_DOWN_PASSENGER: "SUPPORT",

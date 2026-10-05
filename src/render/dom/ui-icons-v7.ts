@@ -49,7 +49,11 @@ export type UiIconIdV7 =
   | "key"
   // The Mind Control revision (bead pulp_wars-b5f.3): a brain, the badge of
   // a mind-controlled unit.
-  | "brain";
+  | "brain"
+  // The naval branch interface (bead pulp_wars-5ti.7): a grappling hook
+  // (Board, Boardable) and a periscope over a wave (Submerged).
+  | "grapple"
+  | "periscope";
 
 /** The Mind Control brain's two lobes (shared by its outline and parts). */
 const BRAIN_LOBES =
@@ -136,6 +140,12 @@ const PATHS: Readonly<Record<UiIconIdV7, string>> = {
     "M3.5 3.5h17M12 3.5v3.5M12 9.5a5.2 5.2 0 1 0 0 10.4 5.2 5.2 0 0 0 0-10.4ZM15.4 10.4l1.8-1.8",
   key: "M12 10.5 7 6.2a2.6 2.6 0 1 0 0 8.6L12 10.5l5 4.3a2.6 2.6 0 1 0 0-8.6ZM12 10.5v10.5M9.5 18h5",
   brain: BRAIN_LOBES,
+  // The naval branch interface: a hook on a ringed shank, and a periscope
+  // over a wave: LEGACY and stand-in glyphs until the art registers icons.
+  grapple:
+    "M14.5 2.8a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2ZM14.5 6v9a4.5 4.5 0 0 1-9 0v-3M5.5 12l-2.2 2.6M5.5 12l2.4 2.4",
+  periscope:
+    "M10 15V5.5h6V9M3 17.5c1.5-1.6 3-1.6 4.5 0s3 1.6 4.5 0 3-1.6 4.5 0 3 1.6 4.5 0",
 };
 
 /** One shape of a multi-part icon; `fill` may be a fixed colour. */

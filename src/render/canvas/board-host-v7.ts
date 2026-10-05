@@ -583,6 +583,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // The Candy revision: an armed Sugar Rush, a Re-bake or a Sugar Toss
     // likewise.
     const candyPick = model.interaction.candyPick ?? null;
+    // The naval branch interface: an aimed Board likewise.
+    const navalPick = model.interaction.navalPick ?? null;
     const subject =
       unitId !== null
         ? String(unitId)
@@ -596,7 +598,9 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
                 ? `dwarf:${dwarfPick.kind}:${dwarfPick.unitId}:${dwarfPick.kind === "TUNNEL" ? (dwarfPick.to === null ? "" : `${dwarfPick.to.x},${dwarfPick.to.y}`) : dwarfPick.kind === "BOMB_RUN" ? String(dwarfPick.targetUnitId) : ""}`
                 : candyPick !== null
                   ? `candy:${candyPick.kind}:${candyPick.unitId}`
-                  : null;
+                  : navalPick !== null
+                    ? `naval:${navalPick.kind}:${navalPick.unitId}`
+                    : null;
     if (subject === null) {
       this.#kaboomFramedKey = null;
       return;
@@ -611,6 +615,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       iceFolkPick?.unitId ??
       dwarfPick?.unitId ??
       candyPick?.unitId ??
+      navalPick?.unitId ??
       null;
     const pickUnit =
       pickUnitId === null
@@ -620,7 +625,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       (martianPick !== null ||
         iceFolkPick !== null ||
         dwarfPick !== null ||
-        candyPick !== null) &&
+        candyPick !== null ||
+        navalPick !== null) &&
         unitId === null &&
         layEgg === null
         ? [
@@ -2051,6 +2057,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         (interaction.candyPick ?? null) !== null ||
         (interaction.martianPick ?? null) !== null ||
         (interaction.iceFolkPick ?? null) !== null ||
+        (interaction.navalPick ?? null) !== null ||
         (interaction.layEgg ?? null) !== null);
     this.#description.textContent = [
       aimed ? actions.join(", ") : "",
@@ -2304,6 +2311,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       (interaction.candyPick ?? null) !== null ||
       (interaction.martianPick ?? null) !== null ||
       (interaction.iceFolkPick ?? null) !== null ||
+      (interaction.navalPick ?? null) !== null ||
       (interaction.layEgg ?? null) !== null;
     if (!aimed && !model.interactive) return [];
     const cells = new Map<string, CoordV7>();

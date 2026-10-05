@@ -455,6 +455,16 @@ export function corePresentationPlanV7(
         : [];
     }),
   );
+  // The naval branch interface: a Bow Ram's shove slides its target one
+  // tile back the same way (the preview's `ram`), with a splash of spray
+  // where it lands.
+  const ramSources = new Set(
+    envelope.events.flatMap((event) =>
+      event.kind === "COMBAT_RESOLVED" && event.preview.ram
+        ? [event.preview.attackerId]
+        : [],
+    ),
+  );
   const unitAnywhere = (id: number) =>
     before.units.find((unit) => unit.id === id) ??
     after.units.find((unit) => unit.id === id);
@@ -583,7 +593,8 @@ export function corePresentationPlanV7(
       if (neutralTurn) framedMonsters.add(event.unitId);
     } else if (
       event.kind === "UNIT_PUSHED" &&
-      knockbackSources.has(event.sourceUnitId)
+      (knockbackSources.has(event.sourceUnitId) ||
+        ramSources.has(event.sourceUnitId))
     ) {
       // The Dwarf revision: a Knockback slides the target one tile straight
       // back, with a puff of steam where it lands.
@@ -933,8 +944,9 @@ export function corePresentationPlanV7(
       // Revision 19: a Spitter's acid blob arcs the same way.
       const acid =
         attacker.role === "MARKSMAN" && attackerFaction === "DINOSAUR";
-      // Revision 20: a Charge! after a run-up lands with a star flash.
-      const chargeHit = event.preview.runUp > 0;
+      // Revision 20: a Charge! after a run-up lands with a star flash; the
+      // naval branch interface: so does a Bow Ram.
+      const chargeHit = event.preview.runUp > 0 || event.preview.ram;
       // The Ice Folk revision: a Yeti's Rockfall lobs a rock from its peak;
       // a shattered defender stays on the board until it bursts.
       const rockfall = event.preview.rockfallApplied;

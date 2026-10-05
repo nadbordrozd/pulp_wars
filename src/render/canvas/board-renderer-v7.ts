@@ -142,6 +142,16 @@ import {
 } from "./ice-folk-board-plan-v7";
 import { shatterBoardCueV7 } from "./ice-folk-effects-v7";
 import {
+  addNavalPickEntriesV7,
+  addSubmergedReasonEntriesV7,
+  navalAttackTargetExtrasV7,
+  navalPickTargetsV7,
+  navalUnitMarkersV7,
+  type NavalPickV7,
+  type NavalUnitMarkersV7,
+} from "./naval-board-plan-v7";
+import { drawNavalUnitMarkersV7 } from "./naval-canvas-v7";
+import {
   addDwarfPickEntriesV7,
   dwarfAttackTargetExtrasV7,
   dwarfMoundEntriesV7,
@@ -357,6 +367,12 @@ export interface BoardRenderInteractionV7 {
    * become the only map targets; null or omitted aims none.
    */
   readonly candyPick?: CandyPickV7 | null;
+  /**
+   * The naval branch interface (bead pulp_wars-5ti.7): the Board being
+   * aimed by the selected ship. The ships it may capture become the only
+   * map targets; null or omitted aims none.
+   */
+  readonly navalPick?: NavalPickV7 | null;
 }
 
 /** Revision 19: the ID of the legacy code-drawn Egg (no raster exists). */
@@ -419,7 +435,12 @@ export interface MapCommandTargetV7 {
      */
     | "SUGAR_RUSH"
     | "REBAKE"
-    | "SUGAR_TOSS";
+    | "SUGAR_TOSS"
+    /**
+     * The naval branch interface: an enemy ship the selected ship may
+     * capture, while its Board is aimed.
+     */
+    | "BOARD";
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -538,7 +559,8 @@ export interface MapCommandTargetV7 {
   };
   /**
    * The Dwarf revision: where a Steam Cannon's shot knocks its target back
-   * (or that the push is blocked), shown while the target is focused.
+   * (or that the push is blocked), shown while the target is focused. The
+   * naval branch interface: a Bow Ram's shove likewise.
    */
   readonly knockback?: { readonly to: CoordV7; readonly blocked: boolean };
   /**
@@ -738,6 +760,11 @@ export interface BoardRenderPlanEntryV7 {
    * Sweet Home markers and the Sugar Frenzy pips of a visible unit.
    */
   readonly candy?: CandyUnitMarkersV7;
+  /**
+   * UNIT only, the naval branch interface: a submerged Submarine and a
+   * ship at or below its boarding line (any owner).
+   */
+  readonly naval?: NavalUnitMarkersV7;
   /** CRUMBS only, the Candy revision: the role, the turns left, the bite. */
   readonly crumbs?: CandyCrumbsMarkerV7;
   /** CURIOSITY only (bead pulp_wars-737.6): which tile overlay this is. */
@@ -1042,6 +1069,8 @@ export function buildBoardRenderPlanV7(
     const iceFolk = iceFolkMatch ? iceFolkUnitMarkersV7(view, unit) : undefined;
     // The Candy revision: Rushed, Crashed and Splatted on units of any owner.
     const candy = candyMatch ? candyUnitMarkersV7(view, unit) : undefined;
+    // The naval branch interface: Submerged and Boardable, on any ship.
+    const naval = navalUnitMarkersV7(view, unit);
     // The Martian revision: a machine afloat is drawn as itself (never as
     // the transport); the Mind Control revision: a controlled unit keeps its
     // own name and sprite and carries the control halo and brain chip.
@@ -1102,6 +1131,7 @@ export function buildBoardRenderPlanV7(
       ...(ringWitch?.id === unit.id ? { blizzardRing: true as const } : {}),
       ...(dwarf === undefined ? {} : { dwarf }),
       ...(candy === undefined ? {} : { candy }),
+      ...(naval === undefined ? {} : { naval }),
       ...(monster
         ? { monster: { provoked: monsterProvokedV7(view, unit.id) } }
         : {}),
@@ -1300,6 +1330,13 @@ export function buildBoardRenderPlanV7(
     interaction.candyPick.unitId === interaction.selectedUnitId
       ? interaction.candyPick
       : null;
+  // The naval branch interface: likewise while a Board is aimed.
+  const navalPick =
+    interaction.navalPick !== undefined &&
+    interaction.navalPick !== null &&
+    interaction.navalPick.unitId === interaction.selectedUnitId
+      ? interaction.navalPick
+      : null;
   /** The Candy revision: the art of a role the viewer would bake back. */
   const candyGhost = (
     role: UnitRoleIdV7,
@@ -1328,42 +1365,59 @@ export function buildBoardRenderPlanV7(
           ? iceFolkPickTargetsV7(view, commands, iceFolkPick)
           : dwarfPick !== null
             ? dwarfPickTargetsV7(view, commands, dwarfPick)
-            : candyPick !== null
-              ? candyPickTargetsV7(
-                  view,
-                  commands,
-                  candyPick,
-                  // An armed Rush shows the unit's attacks with the bonus.
-                  candyPick.kind === "SUGAR_RUSH"
-                    ? commandMapTargets(
-                        view,
-                        commands.filter((command) => command.kind === "ATTACK"),
-                        candyPick.unitId,
-                        { assumeSugarRush: true },
-                      )
-                    : [],
-                  candyGhost,
-                )
-              : dedupeMapTargets([
-                  ...mapTargets(view, commands, interaction.selectedUnitId),
-                  // Bead pulp_wars-9im: a selected Gunner shows the units
-                  // it may heal beside its Moves and Attacks, unarmed: an
-                  // own unit is never a Move or an Attack target.
-                  ...(unarmedToss === undefined
-                    ? []
-                    : candyPickTargetsV7(
-                        view,
-                        commands,
-                        { kind: "SUGAR_TOSS", unitId: unarmedToss.unitId },
-                        [],
-                        candyGhost,
-                      )),
-                ]);
+            : navalPick !== null
+              ? navalPickTargetsV7(view, commands, navalPick)
+              : candyPick !== null
+                ? candyPickTargetsV7(
+                    view,
+                    commands,
+                    candyPick,
+                    // An armed Rush shows the unit's attacks with the bonus.
+                    candyPick.kind === "SUGAR_RUSH"
+                      ? commandMapTargets(
+                          view,
+                          commands.filter(
+                            (command) => command.kind === "ATTACK",
+                          ),
+                          candyPick.unitId,
+                          { assumeSugarRush: true },
+                        )
+                      : [],
+                    candyGhost,
+                  )
+                : dedupeMapTargets([
+                    ...mapTargets(view, commands, interaction.selectedUnitId),
+                    // Bead pulp_wars-9im: a selected Gunner shows the units
+                    // it may heal beside its Moves and Attacks, unarmed: an
+                    // own unit is never a Move or an Attack target.
+                    ...(unarmedToss === undefined
+                      ? []
+                      : candyPickTargetsV7(
+                          view,
+                          commands,
+                          { kind: "SUGAR_TOSS", unitId: unarmedToss.unitId },
+                          [],
+                          candyGhost,
+                        )),
+                  ]);
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
   if (dwarfPick !== null)
     addDwarfPickEntriesV7(entries, view, commands, dwarfPick);
+  if (navalPick !== null)
+    addNavalPickEntriesV7(entries, view, targets, navalPick);
+  else if (
+    selectedUnitId !== null &&
+    !kaboomPreview &&
+    layEgg === null &&
+    martianPick === null &&
+    iceFolkPick === null &&
+    dwarfPick === null &&
+    candyPick === null
+  )
+    // A Submarine the selected unit cannot attack from where it stands.
+    addSubmergedReasonEntriesV7(entries, view, commands, selectedUnitId);
   for (const target of targets) {
     if (target.family === "LAY_EGG")
       entries.push({
@@ -3211,6 +3265,16 @@ export function drawBoardV7(input: {
               devicePixelRatio,
             },
           );
+          context.restore();
+        }
+        // The naval branch interface: a submerged Submarine's wash and
+        // periscope badge, and a boardable ship's grappling hook.
+        if (entry.kind === "UNIT" && entry.naval !== undefined) {
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawNavalUnitMarkersV7(context, entry.naval, x, y, camera.zoom, {
+            highContrast: input.highContrast ?? false,
+          });
           context.restore();
         }
         // The Ice Folk revision: a Frosted unit's frost glyph in the next
@@ -5413,6 +5477,12 @@ function commandMapTargets(
             : preview.defenderDies || preview.attackerDies
               ? null
               : MONSTER_OUT_OF_REACH_V7;
+      // The naval branch interface: the Bow Ram bonus and its shove, and a
+      // torpedo's "No strike-back".
+      const naval = navalAttackTargetExtrasV7(view, preview, {
+        unansweredNoted:
+          undeadNote !== null && preview?.noRetaliationReason === "UNANSWERED",
+      });
       const noteParts = [
         monsterNote,
         undeadNote,
@@ -5422,6 +5492,7 @@ function commandMapTargets(
         ...(iceFolk?.notes ?? []),
         ...(dwarf?.notes ?? []),
         ...(candy?.notes ?? []),
+        ...(naval?.notes ?? []),
       ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [
@@ -5468,7 +5539,7 @@ function commandMapTargets(
           ...(preview === null
             ? {}
             : {
-                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined && iceFolk?.sweep === undefined ? splashSentence : martian?.pierce === undefined ? "" : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}${iceFolk === null || iceFolk.semantic === null ? "" : ` ${iceFolk.semantic}`}${dwarf === null || dwarf.semantic === null ? "" : ` ${dwarf.semantic}`}${candy === null || candy.semantic === null ? "" : ` ${candy.semantic}`}`,
+                semanticLabel: `Attack preview. Defender fortification level ${preview.fortificationLevel}. Primary damage ${preview.damageToDefender}.${martian?.pierce === undefined && iceFolk?.sweep === undefined ? splashSentence : martian?.pierce === undefined ? "" : ` ${martian.pierce.note}.`}${semanticNote === null ? "" : ` ${semanticNote}`}${martian === null || martian.notes.length + martian.shooter.length === 0 ? "" : ` ${[...martian.notes, ...martian.shooter].join(". ")}.`}${iceFolk === null || iceFolk.semantic === null ? "" : ` ${iceFolk.semantic}`}${dwarf === null || dwarf.semantic === null ? "" : ` ${dwarf.semantic}`}${candy === null || candy.semantic === null ? "" : ` ${candy.semantic}`}${naval === null || naval.semantic === null ? "" : ` ${naval.semantic}`}`,
               }),
           ...(note === null ? {} : { previewNote: note }),
           // The Dwarf revision: the Gunner's and a construct's shooter
@@ -5490,7 +5561,9 @@ function commandMapTargets(
           ...(martian?.pierce === undefined ? {} : { pierce: martian.pierce }),
           ...(iceFolk?.sweep === undefined ? {} : { sweep: iceFolk.sweep }),
           ...(dwarf?.knockback === undefined
-            ? {}
+            ? naval?.knockback === undefined
+              ? {}
+              : { knockback: naval.knockback }
             : { knockback: dwarf.knockback }),
           ...(candy?.bounce === undefined ? {} : { bounce: candy.bounce }),
           ...((undeadMatch || goblinMatch) &&

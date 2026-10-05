@@ -89,7 +89,7 @@ const STAGE_FAMILIES = new Set([
 /** These toggle or adjust an aimed ability without finishing it. */
 const ADJUST_FAMILIES = new Set(["TUNNEL_PASSENGER", "TUNNEL_RIDER"]);
 const ABILITY_BUTTONS =
-  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true']), .v7-selection-dock [data-candy-ability]:not([aria-disabled='true'])";
+  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true']), .v7-selection-dock [data-candy-ability]:not([aria-disabled='true']), .v7-selection-dock [data-naval-ability]:not([aria-disabled='true'])";
 
 /**
  * The fixtures, and steps each sweep must reach (so a fixture that stops
@@ -177,10 +177,14 @@ const FIXTURES: readonly (readonly [
   // Map curiosities (bead pulp_wars-737.6): the Spider, its lair, the
   // Fountain, the Shrine and the Wreck; the provoke warning on Moves.
   ["Curiosities", () => curiositiesUiFixtureV7(), []],
-  // The naval branch engine (bead pulp_wars-5ti.2): two boardable ships
-  // beside one boarder. Board has no dock button until the naval
-  // interface (bead pulp_wars-5ti.7), so the dock lists neither ship.
-  ["Naval boarding", navalBoardingFixtureV7, []],
+  // The naval branch interface (bead pulp_wars-5ti.7): two boardable ships
+  // beside one boarder. One Board button arms it; the ship to capture is
+  // picked on the board, so the dock lists neither ship.
+  [
+    "Naval boarding",
+    navalBoardingFixtureV7,
+    ["naval-board aimed", "naval-board performed"],
+  ],
 ];
 
 const NAVAL_BOARDER = { x: 5, y: 4 } as const;
@@ -211,7 +215,7 @@ beforeEach(() => {
 });
 
 describe("Ruleset 7 player-facing text names no tile coordinates", () => {
-  it("Board is offered by the engine but has no dock button before the naval interface", () => {
+  it("Board has one button whatever the number of boardable ships, and they are picked on the board", () => {
     const controller = new FixtureController(navalBoardingFixtureV7());
     const host = new RecordingBoardHost();
     const app = mount(controller, host);
@@ -232,6 +236,27 @@ describe("Ruleset 7 player-facing text names no tile coordinates", () => {
     expect(
       document.querySelectorAll('[data-action^="command-board"]'),
     ).toHaveLength(0);
+    expect(targetListOffences(controller, host)).toEqual([]);
+    // Unarmed, the two ships are attack targets; armed, they are the two
+    // Board targets, and the dock holds the aiming panel's fixed controls.
+    expect(
+      boardPlan(host).targets.some((target) => target.family === "BOARD"),
+    ).toBe(false);
+    const board = document.querySelectorAll<HTMLButtonElement>(
+      '.v7-selection-dock [data-naval-ability="board"]',
+    );
+    expect(board).toHaveLength(1);
+    required(board[0]).click();
+    const panel = required(
+      document.querySelector<HTMLElement>("[data-v7-naval-pick]"),
+    );
+    expect(panel.classList.contains("v7-board-pick")).toBe(true);
+    expect(panel.dataset.boardTargets).toBe("2");
+    expect(
+      boardPlan(host)
+        .targets.map((target) => target.family)
+        .sort(),
+    ).toEqual(["BOARD", "BOARD"]);
     expect(targetListOffences(controller, host)).toEqual([]);
     app.destroy();
   });
@@ -632,7 +657,7 @@ function targetListOffences(
   const dock = document.querySelector<HTMLElement>(".v7-selection-dock");
   if (dock === null || host.lastModel === null) return offences;
   for (const panel of dock.querySelectorAll<HTMLElement>(
-    "[data-v7-martian-pick], [data-v7-ice-folk-pick], [data-v7-dwarf-pick], [data-v7-candy-pick]",
+    "[data-v7-martian-pick], [data-v7-ice-folk-pick], [data-v7-dwarf-pick], [data-v7-candy-pick], [data-v7-naval-pick]",
   )) {
     if (!panel.classList.contains("v7-board-pick"))
       offences.push("an aiming panel is not a board pick");

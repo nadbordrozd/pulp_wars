@@ -97,6 +97,49 @@ are in [BOARD_TARGETING.md](BOARD_TARGETING.md). In short:
   later section limits the Tend Wounded board labels to Undead matches or
   describes a square outline, this paragraph wins.
 
+### Naval branch: Board, Bow Ram, Submarine, Harbours (bead `pulp_wars-5ti.7`)
+
+The first part of the naval interface (the frozen sea of the Ice Folk is
+its second part). The targeting rules are in
+[BOARD_TARGETING.md section 3.4](BOARD_TARGETING.md#34-board-the-bow-ram-and-the-submarine-bead-pulp_wars-5ti7).
+
+- **Board.** A ship's dock has one Board button (a grappling hook). It
+  arms the capture; the ships that can be taken are then the only marks on
+  the board, each labelled "Take · N HP", and a click, a tap or Enter on
+  one captures it. Escape or Cancel disarms. A notice and a toast say
+  "You boarded Player 2's Patrol Boat" (or "Player 2 boarded your
+  Battleship").
+- **Ship markers and chips.** A ship at or below its boarding line wears a
+  grappling-hook badge on the board and the chip "Boardable" in its dock;
+  a submerged Submarine wears two wave lines and a periscope badge, and
+  the chip "Submerged". Both are shown for every owner.
+- **Attack previews.** A Patrol Boat that moved reads "Bow Ram +1" with
+  "Shoves back" (and an arrow to the tile behind the target) or "Shove
+  blocked"; a Submarine's torpedo reads "take 0" and "No strike-back". A
+  Submarine out of a selected unit's reach reads "Submerged: get
+  adjacent" in grey.
+- **Harbours.** An own Port's tile dock shows its population ("+2" with
+  Harbours, "+1" without, "+0" while blockaded); an active Port or
+  Shipyard also shows "Harbours +1". The Build Port and Build Shipyard
+  buttons show the engine preview's population, which includes Harbours,
+  and say so in their tooltip. An own city with active docks has a
+  "Harbours" row with what they add.
+- **Technology cards.** Seamanship lists "Board: capture an adjacent enemy
+  ship at a third of its HP or less" and "Bow Ram: Patrol Boats that moved
+  hit ships with +1 Attack and shove them back"; Submersibles lists the
+  Submarine, "Harbours: +1 population from every active Port and
+  Shipyard" and one line for Submerged and Torpedo. Shorecraft's note is
+  "Units embark at active Ports".
+- **Help** has an "At sea" list with one sentence for Bow Ram, Board,
+  Submerged, Torpedo and Harbours, in every match whose Naval branch can
+  be researched. The Gallery and the recruitment help name the Patrol
+  Boat's ability "Bow Ram" and the Submarine's "Submerged" and "Torpedo".
+- **Art.** The Board action, the two chips and the two board badges are
+  code-drawn glyphs; the Board button asks the art resolver for
+  `ICON:ACTION:BOARD` first, and the technology cards and the Submarine
+  for their registered subjects, so art registered later appears without
+  a change here.
+
 ### Research prompts (bead `pulp_wars-gl1`)
 
 A tile in the player's own territory whose resource the player cannot use

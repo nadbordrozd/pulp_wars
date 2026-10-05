@@ -33,6 +33,29 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(source).toContain("landing.eventKinds.includes('UNIT_DISEMBARKED')");
   });
 
+  it("picks a Board on the board, rams, and shows a submerged Submarine", () => {
+    // The naval branch interface (bead pulp_wars-5ti.7).
+    const source = readFileSync("scripts/browser-naval-smoke-v7.ts", "utf8");
+    expect(source).toContain("await captureNavalBranchEvidence(");
+    expect(source).toContain("/tests/fixtures/v7-naval-ui.ts");
+    expect(source).toContain("Board must have exactly one dock button");
+    expect(source).toContain("Board must not be a per-target dock command");
+    expect(source).toContain(
+      "document.querySelector('[data-v7-naval-pick].v7-board-pick')?.dataset.boardTargets === '2'",
+    );
+    expect(source).toContain(
+      "trace?.command?.kind !== 'BOARD' || !trace.eventKinds.includes('SHIP_BOARDED')",
+    );
+    expect(source).toContain(
+      "trace?.command?.kind !== 'ATTACK' || !trace.eventKinds.includes('UNIT_PUSHED')",
+    );
+    expect(source).toContain('[data-unit-status="submerged"]');
+    // The board pick comes before the Board is accepted.
+    expect(source.indexOf("naval-board-pick.png")).toBeLessThan(
+      source.indexOf("board pick did not accept BOARD with SHIP_BOARDED"),
+    );
+  });
+
   it("arms transient controls before trusted pointer launch and waits for the native select to close", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     // Default match, its natural outcome, and the default-route Undead and

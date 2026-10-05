@@ -57,6 +57,7 @@ import {
   CITY_LEVEL_INCOME_CAP_V7,
   cityLevelIncomeV7,
   forbiddenTechnologiesV7,
+  dockPopulationV7,
   queryTechnologyTreeV7,
   queryIdleRecoveryV7,
   type CommandV7,
@@ -362,6 +363,26 @@ import {
   type IceFolkPickV7,
 } from "../canvas/ice-folk-board-plan-v7";
 import {
+  BOARDABLE_LABEL_V7,
+  BOARD_LABEL_V7,
+  BOARD_PICK_V7,
+  BOARD_TOOLTIP_V7,
+  BOARD_UNLOCK_V7,
+  HARBOURS_LABEL_V7,
+  NAVAL_HELP_RULES_V7,
+  NAVAL_RAM_UNLOCK_V7,
+  SHORECRAFT_EMBARK_NOTE_V7,
+  SUBMARINE_UNLOCK_NOTE_V7,
+  SUBMERGED_LABEL_V7,
+  SUBMERGED_TOOLTIP_V7,
+  boardUnavailableTextV7,
+  boardableTooltipV7,
+  harboursUnlockTextV7,
+  navalBoundaryNoticeV7,
+  viewerHarbourPopulationV7,
+} from "../naval-presentation-v7";
+import type { NavalPickV7 } from "../canvas/naval-board-plan-v7";
+import {
   ASSEMBLE_LABEL_V7,
   ASSEMBLE_PICK_V7,
   ASSEMBLE_UNLOCK_TEXT_V7,
@@ -617,10 +638,9 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   "SUGAR_RUSH",
   "REBAKE",
   "SUGAR_TOSS",
-  // The naval branch engine (bead pulp_wars-5ti.2): Board is legal in the
-  // engine but has no dock button until the naval interface (bead
-  // pulp_wars-5ti.7) aims it on the board; one button per boardable ship
-  // would break the board-targeting rule (docs/ui/BOARD_TARGETING.md).
+  // The naval branch interface (bead pulp_wars-5ti.7): Board has one
+  // button per ship that arms it; the ship to capture is picked on the
+  // board (docs/ui/BOARD_TARGETING.md section 3.4).
   "BOARD",
 ]);
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
@@ -812,6 +832,12 @@ export class Ruleset7DomAppView {
    * another selection leaves it and sends nothing).
    */
   #candyPick: CandyPickV7 | null = null;
+  /**
+   * The naval branch interface: the Board the selected ship is aiming on
+   * the board (Escape, Cancel or another selection leaves it and sends
+   * nothing).
+   */
+  #navalPick: NavalPickV7 | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   /**
@@ -1066,6 +1092,10 @@ export class Ruleset7DomAppView {
       } else if (this.#candyPick !== null) {
         // The Candy revision: Escape first disarms the Rush or the aiming.
         this.#cancelCandyPick();
+        return;
+      } else if (this.#navalPick !== null) {
+        // The naval branch interface: Escape first disarms Board.
+        this.#cancelNavalPick();
         return;
       } else this.#selection = null;
       this.#render();
@@ -2226,6 +2256,7 @@ export class Ruleset7DomAppView {
           this.#iceFolkPick = null;
           this.#dwarfPick = null;
           this.#candyPick = null;
+          this.#navalPick = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -2618,6 +2649,11 @@ export class Ruleset7DomAppView {
         this.#candyPick.unitId === selectedUnitId
           ? { candyPick: this.#candyPick }
           : {}),
+        // The naval branch interface: the Board being aimed.
+        ...(this.#navalPick !== null &&
+        this.#navalPick.unitId === selectedUnitId
+          ? { navalPick: this.#navalPick }
+          : {}),
       },
     };
   }
@@ -2637,6 +2673,7 @@ export class Ruleset7DomAppView {
       this.#iceFolkPick = null;
       this.#dwarfPick = null;
       this.#candyPick = null;
+      this.#navalPick = null;
       this.#render();
       this.#queueBoardFocus();
     };
@@ -3027,6 +3064,40 @@ export class Ruleset7DomAppView {
       // owner; the sentences are its tooltip and accessible name.
       if (control !== null)
         identityColumn?.append(this.#controlBadge(view, control));
+      // The naval branch interface: a submerged Submarine, its torpedo,
+      // and a ship that can be boarded now, from the public unit stats.
+      if (stats !== undefined && unit.form === "NAVAL") {
+        const navalChip = (
+          label: string,
+          status: string,
+          title: string,
+          icon: UiIconIdV7,
+        ): void => {
+          const cue = el(this.#document, "span", "v7-chip v7-naval-chip");
+          cue.append(
+            uiIconV7(this.#document, icon),
+            text(this.#document, "span", label),
+          );
+          cue.dataset.unitStatus = status;
+          cue.title = title;
+          cue.setAttribute("aria-label", title);
+          identityColumn?.append(cue);
+        };
+        if (stats.submerged)
+          navalChip(
+            SUBMERGED_LABEL_V7,
+            "submerged",
+            SUBMERGED_TOOLTIP_V7,
+            "periscope",
+          );
+        if (stats.boardableAt !== null && unit.hp <= stats.boardableAt)
+          navalChip(
+            BOARDABLE_LABEL_V7,
+            "boardable",
+            boardableTooltipV7(stats.boardableAt),
+            "grapple",
+          );
+      }
       // The Ice Folk revision (section 13.1): the Chill of a unit of any
       // owner (Frozen, Frosted or Thawing), and an Ice Folk unit's Blizzard
       // or Snow, Rockfall reach and Boulder throw, from `stats.chill` and
@@ -3590,6 +3661,8 @@ export class Ruleset7DomAppView {
         ...this.#dwarfActionButtons(view, unit.id),
         // The Candy revision: Sugar Rush, Re-bake and Sugar Toss likewise.
         ...this.#candyActionButtons(view, unit.id),
+        // The naval branch interface: Board likewise.
+        ...this.#navalActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
@@ -3699,7 +3772,8 @@ export class Ruleset7DomAppView {
         this.#martianPickPanel(view, unit.id) ??
         this.#iceFolkPickPanel(view, unit.id) ??
         this.#dwarfPickPanel(view, unit.id) ??
-        this.#candyPickPanel(unit.id);
+        this.#candyPickPanel(unit.id) ??
+        this.#navalPickPanel(unit.id);
       if (martianPanel !== null) {
         dock.dataset.hasActions = "true";
         dock.append(martianPanel);
@@ -3937,6 +4011,25 @@ export class Ruleset7DomAppView {
             );
             details.append(trade);
           }
+        // The naval branch interface (section 5.4): what Harbours adds
+        // to this city's population through its active docks.
+        const harbourDocks =
+          viewerHarbourPopulationV7(view) *
+          view.naval.ownedPorts.filter(
+            (port) => port.cityId === city.id && port.status === "ACTIVE",
+          ).length;
+        if (harbourDocks > 0) {
+          const harbours = el(this.#document, "div", "v7-city-stat");
+          harbours.dataset.stat = "harbours";
+          harbours.title = `${HARBOURS_LABEL_V7}: population from this city's active Ports and Shipyards (included)`;
+          const value = el(this.#document, "dd", "v7-city-income");
+          value.append(
+            economyIcon(this.#document, "population"),
+            `+${harbourDocks}`,
+          );
+          harbours.append(text(this.#document, "dt", HARBOURS_LABEL_V7), value);
+          details.append(harbours);
+        }
         if (
           view.improvementValues.some(
             (value) =>
@@ -4263,6 +4356,44 @@ export class Ruleset7DomAppView {
                 `v7-chip v7-port-state state-${port.status.toLowerCase()}`,
               ),
             );
+            // The naval branch interface (section 5.4): an own Port's
+            // population (a Shipyard's is its value chip above), and the
+            // share of an active dock that Harbours adds.
+            const harbours = viewerHarbourPopulationV7(view);
+            if (tile.improvement === "PORT") {
+              const amount =
+                port.status === "ACTIVE"
+                  ? dockPopulationV7("PORT", harbours)
+                  : 0;
+              const chip = el(
+                this.#document,
+                "p",
+                amount === 0 ? "v7-chip is-idle" : "v7-chip",
+              );
+              chip.dataset.dockPopulation = String(amount);
+              chip.title = "Population";
+              chip.append(
+                economyIcon(this.#document, "population"),
+                `+${amount}`,
+              );
+              chip.setAttribute(
+                "aria-label",
+                `Population +${amount}${amount === 0 ? ", idle" : ""}`,
+              );
+              details.append(chip);
+            }
+            if (harbours > 0 && port.status === "ACTIVE") {
+              const chip = el(this.#document, "p", "v7-chip v7-harbours-chip");
+              chip.dataset.harbours = String(harbours);
+              chip.title = `${HARBOURS_LABEL_V7}: +${harbours} population (included)`;
+              chip.setAttribute("aria-label", chip.title);
+              chip.append(
+                text(this.#document, "span", HARBOURS_LABEL_V7),
+                economyIcon(this.#document, "population"),
+                `+${harbours}`,
+              );
+              details.append(chip);
+            }
             if (view.naval.seaTradeCityIds.includes(port.cityId)) {
               const trade = el(this.#document, "p", "v7-chip");
               trade.title = "Sea trade";
@@ -4591,6 +4722,21 @@ export class Ruleset7DomAppView {
               ),
             }),
           );
+          // The naval branch interface (section 5.4): the preview's
+          // population of a dock already includes the viewer's Harbours.
+          const harbours =
+            view !== null &&
+            (command.kind === "BUILD_PORT" || command.kind === "BUILD_SHIPYARD")
+              ? viewerHarbourPopulationV7(view)
+              : 0;
+          if (harbours > 0) {
+            action.dataset.harbours = String(harbours);
+            action.title = `${HARBOURS_LABEL_V7}: +${harbours} population (included)`;
+            action.setAttribute(
+              "aria-label",
+              `${action.getAttribute("aria-label") ?? ""} · ${HARBOURS_LABEL_V7} +${harbours} included`,
+            );
+          }
         }
       }
       action.disabled = this.#localBusy();
@@ -5123,6 +5269,22 @@ export class Ruleset7DomAppView {
         rules.append(item);
       }
       section.append(text(this.#document, "h3", "Candy"), rules);
+    }
+    // The naval branch interface (section 14.2): one sentence per naval
+    // rule, in a match whose Naval branch can be researched.
+    if (
+      view !== null &&
+      view.setup.mapType !== "DRY_LAND" &&
+      !forbiddenTechnologiesV7(view.setup).has("SEAMANSHIP")
+    ) {
+      const rules = this.#document.createElement("ul");
+      rules.className = "v7-help-tips v7-help-goblin v7-help-naval";
+      for (const [name, sentence] of NAVAL_HELP_RULES_V7) {
+        const item = el(this.#document, "li", "v7-help-rule");
+        item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
+        rules.append(item);
+      }
+      section.append(text(this.#document, "h3", "At sea"), rules);
     }
     // Map curiosities (section 12.1): the four sentences, the bounty and
     // the setup option, each with its legend icon, in a match that was
@@ -6368,6 +6530,7 @@ export class Ruleset7DomAppView {
     this.#iceFolkPick = null;
     this.#dwarfPick = null;
     this.#candyPick = null;
+    this.#navalPick = null;
     let restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -7922,6 +8085,137 @@ export class Ruleset7DomAppView {
   }
 
   /**
+   * The naval branch interface (bead pulp_wars-5ti.7; BOARD_TARGETING.md
+   * section 3.4): the one Board button of an own ship. A ship it may
+   * capture is also a ship it may attack, so the button arms Board (pressed
+   * while aiming) and the prizes are picked on the board. Without an
+   * offered Board, a ship next to an enemy afloat shows the button
+   * disabled with the engine's reason; every other ship shows none.
+   */
+  #navalActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      unit.form !== "NAVAL" ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    const offered = this.#snapshot.offeredCommands.some(
+      (command) => command.kind === "BOARD" && command.unitId === unit.id,
+    );
+    const reason = boardUnavailableTextV7(view, unit, offered);
+    if (!offered && reason === null) return [];
+    const action = button(
+      this.#document,
+      "",
+      "naval-board",
+      "v7-context-action",
+    );
+    action.append(
+      this.#chibiArt("ICON:ACTION:BOARD", CHIBI_DOM_BOXES_V7.action)?.element ??
+        uiIconV7(this.#document, "grapple", "v7-ui-icon v7-command-icon"),
+      text(this.#document, "span", BOARD_LABEL_V7, "v7-action-label"),
+    );
+    action.dataset.navalAbility = "board";
+    if (reason === null) {
+      const aiming = this.#navalPick !== null;
+      action.title = BOARD_TOOLTIP_V7;
+      action.setAttribute(
+        "aria-label",
+        `${BOARD_LABEL_V7}. ${BOARD_TOOLTIP_V7}`,
+      );
+      action.setAttribute("aria-pressed", String(aiming));
+      action.disabled = this.#localBusy();
+      action.onclick = () =>
+        aiming ? this.#cancelNavalPick() : this.#startNavalPick(unit.id);
+    } else {
+      // aria-disabled keeps the reason reachable by keyboard and touch.
+      action.setAttribute("aria-disabled", "true");
+      action.dataset.disabledReason = reason;
+      action.title = reason;
+      action.setAttribute(
+        "aria-label",
+        `${BOARD_LABEL_V7} unavailable. ${reason}`,
+      );
+      action.onclick = () => {
+        this.#notice = `${reason}.`;
+        this.#showToast(`${reason}.`);
+        this.#pendingFocusAction = "naval-board";
+        this.#render();
+      };
+    }
+    return [action];
+  }
+
+  /** Starts aiming the selected ship's Board. */
+  #startNavalPick(unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    this.#navalPick = { kind: "BOARD", unitId };
+    this.#notice = `${BOARD_PICK_V7}.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so Tab and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /** Leaves the aiming, and returns focus to the Board button. */
+  #cancelNavalPick(): void {
+    const pick = this.#navalPick;
+    this.#navalPick = null;
+    this.#pendingFocusAction = pick === null ? null : "naval-board";
+    this.#render();
+  }
+
+  /**
+   * The Board aiming panel in the dock: the action's icon and name, its
+   * "?" and Cancel. The prizes are highlighted and picked on the board,
+   * each with its HP after the capture; the dock lists none. Null (and the
+   * aiming ends) when nothing is offered any more.
+   */
+  #navalPickPanel(unitId: UnitId): HTMLElement | null {
+    const pick = this.#navalPick;
+    if (pick === null || pick.unitId !== unitId) return null;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === "BOARD" && command.unitId === unitId,
+    );
+    if (commands.length === 0) {
+      this.#navalPick = null;
+      return null;
+    }
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-naval-pick v7-board-pick",
+    );
+    panel.dataset.v7NavalPick = "board";
+    panel.dataset.boardTargets = String(commands.length);
+    panel.setAttribute("aria-label", BOARD_PICK_V7);
+    panel.append(
+      this.#pickHead(
+        "ICON:ACTION:BOARD",
+        "grapple",
+        BOARD_LABEL_V7,
+        `${BOARD_PICK_V7}. ${BOARD_TOOLTIP_V7}`,
+      ),
+    );
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "naval-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelNavalPick();
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /**
    * The Candy revision (section 15.1): the Sugar Rush button of an own
    * Candy land unit, the Re-bake button of an own Confectioner and the
    * Sugar Toss button of an own Gunner. With a legal choice it arms the
@@ -9118,12 +9412,12 @@ function effectDescription(
         : // The naval branch (`pulp_wars-5ti.2`; the help sentence of
           // RULESET_7_NAVAL_BRANCH.md section 14.2).
           effect.command === "BOARD"
-          ? "Board: a ship can capture an adjacent enemy ship that has a third of its HP or less"
+          ? BOARD_UNLOCK_V7
           : title(effect.command);
     case "RAM":
-      return "Ram: a Patrol Boat that moved this turn rams boats and transports with +1 Attack and shoves them one tile back";
+      return NAVAL_RAM_UNLOCK_V7;
     case "HARBOURS":
-      return `Harbours: every active Port and Shipyard gives ${effect.population} more population`;
+      return harboursUnlockTextV7(effect.population);
     case "UNIT_ROLE":
       return label(effect.role);
     case "RESOURCE_REVEAL":
@@ -9230,16 +9524,15 @@ function navalTechnologyNotesV7(
   technology: PublicTechnologyNodeV7["id"],
   faction: FactionIdV7,
 ): readonly string[] {
-  if (technology === "SHORECRAFT") return ["Board ships at active Ports"];
+  // "Board" now names the capture of a ship (Seamanship), so putting a
+  // unit to sea is "embark".
+  if (technology === "SHORECRAFT") return [SHORECRAFT_EMBARK_NOTE_V7];
   if (technology === "NAVIGATION")
     return ["Ships can sail deep water", "Active Ports link sea trade"];
   if (technology === "NAVAL_ENGINEERING")
     return ["Battleship: long-range splash damage"];
   // The naval branch (`pulp_wars-5ti.2`; RULESET_7_NAVAL_BRANCH.md 14.2).
-  if (technology === "SUBMERSIBLES")
-    return [
-      "Submarine: can only be attacked from an adjacent tile; attacks only boats and transports, which cannot strike back",
-    ];
+  if (technology === "SUBMERSIBLES") return [SUBMARINE_UNLOCK_NOTE_V7];
   if (technology === "EXPLOSIVES")
     return ["Drill identifies resource-free mountains safe to Blast"];
   if (technology === "ROADS")
@@ -9473,8 +9766,11 @@ function boundaryNoticeV7(
   // Map curiosities: a Fountain heal, a Shrine claim, a salvaged Wreck, the
   // Spider's death and bounty, and the neutral turn.
   const curiosity = curiosityBoundaryNoticeV7(events, before, after);
+  // The naval branch interface: a ship boarded.
+  const naval = navalBoundaryNoticeV7(events, before, after);
   const parts = [
     curiosity?.text ?? null,
+    naval?.text ?? null,
     undead?.text ?? null,
     goblin?.text ?? null,
     dinosaur?.text ?? null,
@@ -9492,7 +9788,8 @@ function boundaryNoticeV7(
     iceFolk === null &&
     dwarf === null &&
     candy === null &&
-    curiosity === null
+    curiosity === null &&
+    naval === null
   )
     return { text: special, toast: special !== null };
   return {
@@ -9506,7 +9803,8 @@ function boundaryNoticeV7(
       iceFolk?.toast === true ||
       dwarf?.toast === true ||
       candy?.toast === true ||
-      curiosity?.toast === true,
+      curiosity?.toast === true ||
+      naval?.toast === true,
   };
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {

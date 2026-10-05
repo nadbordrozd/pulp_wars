@@ -2364,7 +2364,8 @@
   grid-column: 2;
   gap: 0.2rem;
   margin: 0;
-  padding-left: 1.1rem;
+  /* The right padding keeps a long first line clear of the close button. */
+  padding: 0 2rem 0 1.1rem;
   line-height: 1.3;
 }
 
@@ -3439,6 +3440,43 @@
   border: 1px solid #de6f2a55;
   background: #2a1f1a;
   color: #f0d2b4;
+}
+
+/* The naval branch interface (bead pulp_wars-5ti.7): Submerged, Boardable. */
+.v7-naval-chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  border: 1px solid #9fd8f266;
+  background: #10243a;
+  color: #d6f1fb;
+  white-space: nowrap;
+}
+
+.v7-naval-chip .v7-ui-icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  min-width: 0;
+  min-height: 0;
+  color: #9fd8f2;
+}
+
+.v7-naval-chip[data-unit-status="boardable"] .v7-ui-icon {
+  color: #ffd98a;
+}
+
+.v7-naval-pick {
+  border-color: #9fd8f266;
+}
+
+.v7-context-action[data-naval-ability][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.v7-context-action[data-naval-ability][aria-pressed="true"] {
+  border-color: #9fd8f2;
 }
 
 .v7-dwarf-chip {

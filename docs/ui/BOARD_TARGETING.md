@@ -28,8 +28,8 @@ The dock never lists one button, portrait or chip per target.
   free tile, an Attack is on a hostile unit, a heal or a Hatch is on an own
   unit), so a click on each does what its mark says.
 - **Arming where two actions could claim one target.** A Mind Control, a
-  Tractor Beam, a Bolas or a Bomb Run aims at units the unit could also
-  attack; a Tunnel, an Assemble, a Beam Down, a Re-bake or a Sugar Rush
+  Tractor Beam, a Bolas, a Bomb Run or a Board aims at units the unit could
+  also attack; a Tunnel, an Assemble, a Beam Down, a Re-bake or a Sugar Rush
   aims at tiles it could also move to. Each has one button that arms it.
   While it is armed only its targets are highlighted and clickable; Back,
   Cancel, Escape or choosing something else disarms it. The choice between
@@ -198,6 +198,7 @@ area fixed by the rules, or it opens a screen).
 | Build a Monument                                                                                   | (a)   | The tile is selected on the board first; one button per earned achievement (which Monument, not where) |
 | Research prompt                                                                                    | (c)   | Opens the technology screen                                                                            |
 | Ships: Move, Attack, Disembark, Recover                                                            | (a)   | As for every unit                                                                                      |
+| Ships: Board (Seamanship)                                                                          | (a)   | One Board button arms it; the enemy ship to capture is picked on the board (section 3.4)               |
 | Fountain of Youth, Shrine, Sunken Wreck, Spider's lair                                             | (c)   | No action: a unit moves onto or next to it                                                             |
 | Giant Spider                                                                                       | (a)   | An ordinary attack target                                                                              |
 
@@ -205,6 +206,64 @@ No action of class (b) remains. The tile actions are of class (a) by
 selection: the player points at the tile before the dock offers anything,
 so no highlight style is involved. The Monument buttons choose **which**
 Monument stands on the selected tile, which is not a target on the map.
+
+### 3.4 Board, the Bow Ram and the Submarine (bead `pulp_wars-5ti.7`)
+
+The naval branch
+([rules](../product/RULESET_7_NAVAL_BRANCH.md#4-seamanship-ram-and-boarding))
+adds one targeted action and three previews. Code:
+`src/render/naval-presentation-v7.ts` (the words),
+`src/render/canvas/naval-board-plan-v7.ts` (the plan) and
+`src/render/canvas/naval-canvas-v7.ts` (the two ship markers).
+
+- **Board is armed.** A ship that may capture an enemy ship may usually
+  attack it too, so the two actions claim one target and Board follows the
+  arming rule: the dock has **one Board button** (a grappling hook)
+  whatever the number of boardable ships. Unarmed, the selected ship shows
+  its Moves and Attacks as always. Armed (the button is pressed), only the
+  ships the engine offers a `BOARD` on are highlighted, in the **Attack**
+  style, each labelled with the exact result of `previewBoardV7`:
+  **"Take · 4 HP"** (the prize and its HP after the patch, the wording of
+  a Mind Control's "Take · 5 HP"). A click, a tap or Enter on one sends
+  the `BOARD`; Escape, Cancel or another selection disarms and sends
+  nothing; Tab steps through the prizes. The aiming panel holds the "?"
+  and Cancel only.
+- **What tells a capture from an attack.** Three things, none of them a
+  fifth style: the armed button (while it is pressed every mark on the
+  board is a capture), the label ("Take · N HP" where an attack reads
+  "Deal N · take N"), and the **grappling-hook badge** every ship at or
+  below its boarding line wears on the board, for both sides and at all
+  times (`stats.boardableAt`), so a prize is seen before anything is
+  armed. Its dock shows the chip "Boardable".
+- **Reasons.** While Board is armed, an enemy afloat within two tiles that
+  cannot be taken keeps a grey mark with the engine's rejection reason
+  (`boardTargetBlockV7`): "Above 3 HP" (`TARGET_HEALTHY`, with the ship's
+  boarding line), "Not a ship" (`TARGET_IMMUNE`, a transport) or "Too far"
+  (`OUT_OF_RANGE`), as a Mind Control target that cannot be taken does.
+  When no `BOARD` is offered, a ship of a seat with Seamanship that stands
+  next to an enemy afloat shows the Board button disabled with one reason
+  ("No enemy ship here is weak enough", "Only ships can be boarded", "This
+  ship cannot board now"); every other ship has no Board button.
+- **The Bow Ram** is part of an Attack's preview, like a Charge!, a
+  Knockback or a Bounce: the note "Bow Ram +1" and "Shoves back" or "Shove
+  blocked" (the public preview's `ram` and `push`), and, on the focused or
+  only target, the Knockback's arrow to the tile behind the target (a
+  cross when blocked). The hit reuses the Charge! star flash, and the
+  shove the Knockback's slide and puff.
+- **A torpedo** is an ordinary Attack whose preview reads "take 0" and the
+  note "No strike-back" (in a match with an Undead seat the note is that
+  match's "No retaliation", once). Only targets afloat are offered, so a
+  unit on the shore next to a Submarine is not marked.
+- **A submerged Submarine** wears two wave lines over its hull and a
+  periscope badge, for both sides, and its dock the chip "Submerged". It
+  is an Attack target only for a unit next to it (the engine offers no
+  other attack); while a unit that could still attack is selected, a
+  hostile Submarine inside its range but two or more tiles away wears the
+  grey mark "Submerged: get adjacent" instead of an Attack mark.
+- **Names.** The boats' ram is displayed as **Bow Ram** (the Goblin Scrap
+  Buggy's Overrun has been displayed as "Ram" since revision 17); the rule
+  ID stays `RAM`. Shorecraft's note is "Units embark at active Ports",
+  since "Board" now names the capture.
 
 ## 4. The aiming panel
 
@@ -244,6 +303,17 @@ for tools; it is never read out.
   prominent while the button is hovered or focused; a Rally is marked only
   then; no mark is a map target; the dock keeps one button and lists no
   recipient; a click on a marked unit selects it.
+- `tests/unit/naval-presentation-render-v7.test.ts`,
+  `tests/integration/ruleset7-naval-dom.test.ts` and
+  `tests/integration/ruleset7-naval-canvas.test.ts` (section 3.4, scenes in
+  `tests/fixtures/v7-naval-ui.ts`): Board with two prizes (one button, the
+  exact "Take · N HP", a board pick sends the offered command, Escape and
+  Cancel disarm, Tab and Enter on the real board host, the grey reasons),
+  the Bow Ram preview with a shove and a blocked shove, the Submarine's
+  markers, offering and reason, the torpedo preview, and the Harbours
+  numbers. The naval browser smoke (`scripts/browser-naval-smoke-v7.ts`)
+  arms Board, picks the prize on the board at desktop and phone widths,
+  rams, and reads the Submerged chip.
 - `scripts/browser-board-targeting-review-v7.ts` (dev server only)
   captures every style on the faction fixtures, on Grass, Snow, a Forest,
   Mountains and the Undead ground, at desktop and phone widths, the area

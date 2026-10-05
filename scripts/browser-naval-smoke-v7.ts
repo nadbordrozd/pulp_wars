@@ -179,6 +179,10 @@ try {
     connection,
     output.directory,
   );
+  const navalBranch = await captureNavalBranchEvidence(
+    connection,
+    output.directory,
+  );
 
   for (const size of [11, 25] as const) {
     await mountVisual(connection, size);
@@ -238,6 +242,7 @@ try {
         status: "PASS",
         functional,
         mountedUi,
+        navalBranch,
         visuals: {
           boards: [11, 25],
           zooms: ["min", "normal", "max"],
@@ -721,6 +726,202 @@ async function captureMountedUiEvidence(
     actions,
     landingAt,
   };
+}
+
+/**
+ * The naval branch interface (bead pulp_wars-5ti.7): on the mounted fixture
+ * app, Board is armed with its one button and the prize picked on the
+ * board; a Bow Ram shoves its target; a Submarine shows Submerged. Each
+ * scene is a fixture of tests/fixtures/v7-naval-ui.ts.
+ */
+async function captureNavalBranchEvidence(
+  connection: Connection,
+  directory: string,
+): Promise<Record<string, unknown>> {
+  // The app accepts input once the last presentation is over and every
+  // achievement notice (the fixtures explore the whole map) is dismissed.
+  const settle = async (): Promise<void> => {
+    for (let attempt = 0; attempt < 200; attempt += 1) {
+      const ready = await evaluate<boolean>(
+        connection,
+        `(() => {
+          const dismiss = document.querySelector('[data-action="dismiss-achievement"]');
+          if (dismiss instanceof HTMLButtonElement) {
+            dismiss.click();
+            return false;
+          }
+          const end = document.querySelector('[data-action="end-turn"]');
+          return document.querySelector('[data-v7-region="achievement-notice"]') === null && end instanceof HTMLButtonElement && !end.disabled;
+        })()`,
+      );
+      if (ready) return;
+      await delay(50);
+    }
+    throw new Error("The naval branch scene did not settle");
+  };
+  const scene = async (name: string): Promise<Record<string, unknown>> => {
+    await settle();
+    const at = await evaluate<Record<string, unknown>>(
+      connection,
+      `(async () => {
+        const fixtures = await import('/tests/fixtures/v7-naval-ui.ts');
+        const dom = globalThis.__NAVAL_DOM__;
+        dom.boardHost.resetInspectionCycle?.();
+        dom.replaceState(fixtures[${JSON.stringify(name)}]());
+        dom.traces.length = 0;
+        return fixtures.NAVAL_UI_V7;
+      })()`,
+    );
+    await settle();
+    await delay(150);
+    await settle();
+    return at;
+  };
+  const activate = (at: unknown): Promise<unknown> =>
+    evaluate(
+      connection,
+      `globalThis.__NAVAL_DOM__.boardHost.activate(${JSON.stringify(at)})`,
+    );
+
+  // Board: one button arms it, the two prizes are picked on the board.
+  const boarding = await scene("navalBoardingUiFixtureV7");
+  await activate(boarding.boarder);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock [data-action="naval-board"]') instanceof HTMLButtonElement`,
+  );
+  await evaluate(
+    connection,
+    `(() => {
+      const buttons = document.querySelectorAll('.v7-selection-dock [data-naval-ability="board"]');
+      if (buttons.length !== 1) throw new Error('Board must have exactly one dock button');
+      if (document.querySelector('[data-action^="command-board"]') !== null)
+        throw new Error('Board must not be a per-target dock command');
+      buttons[0].click();
+    })()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-naval-pick].v7-board-pick')?.dataset.boardTargets === '2'`,
+  );
+  await delay(200);
+  await capture(connection, "naval-board-pick.png", directory);
+  // The same aiming on a phone: the panel leaves the board in view.
+  await connection.send("Emulation.setDeviceMetricsOverride", {
+    width: 390,
+    height: 844,
+    deviceScaleFactor: 2,
+    mobile: true,
+  });
+  await delay(400);
+  const phonePick = await evaluate<Record<string, unknown>>(
+    connection,
+    `(() => {
+      const panel = document.querySelector('[data-v7-naval-pick].v7-board-pick');
+      const dock = document.querySelector('.v7-selection-dock');
+      if (!(panel instanceof HTMLElement) || !(dock instanceof HTMLElement))
+        throw new Error('the Board aiming panel is missing on a phone');
+      const bounds = dock.getBoundingClientRect();
+      if (bounds.right > innerWidth + 1 || bounds.height > innerHeight * 0.5)
+        throw new Error('the Board aiming dock does not fit a phone');
+      return { dockHeight: Math.round(bounds.height), viewport: innerHeight };
+    })()`,
+  );
+  await capture(connection, "naval-board-pick-phone.png", directory);
+  await connection.send("Emulation.setDeviceMetricsOverride", {
+    width: 1440,
+    height: 1000,
+    deviceScaleFactor: 1,
+    mobile: false,
+  });
+  await delay(300);
+  const prizes = boarding.prizes as readonly unknown[];
+  await activate(prizes[1]);
+  await waitForExpression(
+    connection,
+    `globalThis.__NAVAL_DOM__.traces.length === 1`,
+  );
+  const boarded = await evaluate<Record<string, unknown>>(
+    connection,
+    `(() => {
+      const trace = globalThis.__NAVAL_DOM__.traces[0];
+      if (trace?.command?.kind !== 'BOARD' || !trace.eventKinds.includes('SHIP_BOARDED'))
+        throw new Error('board pick did not accept BOARD with SHIP_BOARDED');
+      const view = globalThis.__NAVAL_DOM__.snapshot().view;
+      const prize = view.units.find((unit) => unit.id === trace.command.targetUnitId);
+      if (prize?.ownerId !== view.viewer.id) throw new Error('the prize did not change owner');
+      return { command: trace.command.kind, prizeHp: prize.hp };
+    })()`,
+  );
+
+  // Bow Ram: the moved Patrol Boat's attack shoves its target.
+  const ram = await scene("navalRamUiFixtureV7");
+  await activate(ram.rammer);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock[data-selection-kind="unit"]') !== null`,
+  );
+  await delay(200);
+  await capture(connection, "naval-ram-preview.png", directory);
+  await activate(ram.rammed);
+  await waitForExpression(
+    connection,
+    `globalThis.__NAVAL_DOM__.traces.length === 1`,
+  );
+  const rammed = await evaluate<Record<string, unknown>>(
+    connection,
+    `(() => {
+      const trace = globalThis.__NAVAL_DOM__.traces[0];
+      if (trace?.command?.kind !== 'ATTACK' || !trace.eventKinds.includes('UNIT_PUSHED'))
+        throw new Error('the ram did not shove its target');
+      return { command: trace.command.kind, shoved: true };
+    })()`,
+  );
+
+  // Submarine: Submerged in the dock of an enemy Submarine.
+  const submarine = await scene("navalSubmarineUiFixtureV7");
+  await activate(submarine.enemySubmarine);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock [data-unit-status="submerged"]') !== null`,
+  );
+  await delay(200);
+  await capture(connection, "naval-submarine-dock.png", directory);
+  const submerged = await evaluate<string>(
+    connection,
+    `document.querySelector('.v7-selection-dock [data-unit-status="submerged"]').textContent`,
+  );
+  // The two new technology cards.
+  const cards: Record<string, unknown> = {};
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="tech"]').click()`,
+  );
+  await delay(150);
+  for (const tech of ["seamanship", "submersibles"] as const) {
+    cards[tech] = await evaluate<readonly string[]>(
+      connection,
+      `(() => {
+        const card = document.querySelector('[data-action="tech-${tech}"]');
+        if (!(card instanceof HTMLButtonElement)) throw new Error('technology card missing: ${tech}');
+        card.click();
+        const detail = document.querySelector('.v7-tech-detail');
+        if (!(detail instanceof HTMLElement)) throw new Error('technology detail missing: ${tech}');
+        const lines = Array.from(detail.querySelectorAll('.v7-tech-unlocks li'), (item) => item.textContent);
+        if (lines.length < 2) throw new Error('technology unlocks missing: ${tech}');
+        document.querySelector('[data-tech-branch="NAVAL"]')?.scrollIntoView({ inline: 'center', block: 'nearest' });
+        return lines;
+      })()`,
+    );
+    await delay(200);
+    await capture(connection, `naval-tech-${tech}.png`, directory);
+  }
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="close-overlay"]').click()`,
+  );
+  await delay(100);
+  return { boarded, phonePick, rammed, submerged, cards };
 }
 
 async function mountVisual(

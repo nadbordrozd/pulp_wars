@@ -1603,6 +1603,43 @@ choice, or reads differently:
     ram or torpedo wording in the attack preview, no grappling-hook badge,
     and no shove arrow yet.
 
+## 21. Naval interface, first part, as built (`pulp_wars-5ti.7`)
+
+The interface of engine step I. It changes no rule and no identity. The
+frozen sea (ice tiles, Freeze, slides, Icebound, Black Ice, the crush) is
+the second part of the bead. Where this differs from
+[section 14.1](#141-surfaces-bead-5ti7):
+
+1. **Board is armed, not a per-ship action.** One Board button per ship
+   arms it; the prizes are picked on the board in the Attack style, each
+   labelled "Take · N HP" from `previewBoardV7`
+   ([board targeting section 3.4](../ui/BOARD_TARGETING.md#34-board-the-bow-ram-and-the-submarine-bead-pulp_wars-5ti7)).
+   `BOARD` stays out of the dock's command buttons.
+2. **Names.** The Patrol Boat's `RAM` is displayed as **Bow Ram**
+   (the Goblin Scrap Buggy's Overrun is displayed as "Ram"); the preview
+   reads "Bow Ram +1". Shorecraft's note "Board ships at active Ports"
+   became "Units embark at active Ports".
+3. **Submarine.** "Drawn low in the water" is two code-drawn wave lines
+   over the hull and a periscope badge (the raster sprite is the art
+   bead's). The reason on a Submarine two or more tiles from a selected
+   unit that could attack it is "Submerged: get adjacent".
+4. **Effects.** A ram's hit reuses the Charge! star flash and its shove
+   the Knockback slide and puff. Boarding has no effect of its own yet:
+   the prize changes to its captor's art and colour when the board
+   redraws, with the notice "{owner} boarded {former owner}'s {ship}".
+   The flag-change effect is left for the second part.
+5. **Torpedo.** The note is "No strike-back"; in a match with an Undead
+   seat the existing "No retaliation" of every unanswered attack stands
+   in its place, so the preview has one line.
+6. **Harbours.** The tile dock of an own Port shows its population, an
+   active dock "Harbours +1", an own city a "Harbours" row, and the Build
+   Port and Build Shipyard buttons the engine preview's population with
+   the tooltip "Harbours: +1 population (included)".
+7. **Icons.** The Board button, the chips and the board badges are
+   code-drawn stand-ins; the technology cards keep the stand-ins of
+   [section 20](#20-engine-step-i-as-built-pulp_wars-5ti2) item 12 until
+   the art bead registers its subjects.
+
 ## Appendix A. Draft, critique, redraft
 
 ### A.1 The first draft

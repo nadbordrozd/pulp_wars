@@ -29,6 +29,12 @@ import {
   iceFolkRecruitNotesV7,
 } from "./ice-folk-presentation-v7";
 import {
+  NAVAL_RAM_RULE_V7,
+  SUBMERGED_RULE_V7,
+  TORPEDO_RULE_V7,
+  navalAbilityNameV7,
+} from "./naval-presentation-v7";
+import {
   dwarfAbilityDescriptionV7,
   dwarfAbilityNameV7,
   dwarfRecruitNotesV7,
@@ -184,15 +190,15 @@ export function roleAbilityDescriptionV7(
       return "May move again after attacking: a fresh full Move if it survives, then it is done for the turn.";
     case "PUSH":
       return "Knocks surviving targets back a tile.";
-    // The naval branch (`pulp_wars-5ti.2`): the help sentences of
-    // docs/product/RULESET_7_NAVAL_BRANCH.md section 14.2, shared by every
-    // faction (plain text until the naval UI bead `pulp_wars-5ti.7`).
+    // The naval branch (`pulp_wars-5ti.2`, `pulp_wars-5ti.7`): the help
+    // sentences of docs/product/RULESET_7_NAVAL_BRANCH.md section 14.2,
+    // shared by every faction.
     case "RAM":
-      return "With Seamanship, a Patrol Boat that moved this turn rams boats and transports with +1 Attack and shoves them one tile back.";
+      return `With Seamanship: ${NAVAL_RAM_RULE_V7.replace(/^A Patrol Boat/, "a Patrol Boat")}`;
     case "SUBMERGED":
-      return "Can only be attacked from an adjacent tile.";
+      return SUBMERGED_RULE_V7;
     case "TORPEDO":
-      return "Attacks only boats and transports, which cannot strike back.";
+      return TORPEDO_RULE_V7;
     default:
       return null;
   }
@@ -218,6 +224,10 @@ export function roleAbilityNameV7(
   const candy = candyAbilityNameV7(ability, faction);
   if (candy !== null) return candy;
   if (ability === "TEND_WOUNDED") return "Tend";
+  // The naval branch interface: the boats' ram is "Bow Ram" (the Goblin
+  // Scrap Buggy's Overrun is displayed as "Ram").
+  const naval = navalAbilityNameV7(ability);
+  if (naval !== null) return naval;
   return title(ability);
 }
 
