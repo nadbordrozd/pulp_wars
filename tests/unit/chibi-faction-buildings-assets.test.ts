@@ -26,6 +26,7 @@ import {
   registryEntry,
   verifyAssetRecord,
 } from "../../scripts/art/chibi/pipeline";
+import { opaqueBounds } from "../../scripts/art/chibi/raster";
 import {
   GLOAM_GRASS_RECORD,
   GLOAM_MASTERS,
@@ -130,7 +131,7 @@ describe("faction building batches", () => {
       expect(chibiOverflowV7(entry), entry.id).toEqual(chibiOverflowV7(today));
       expect(entry.width, entry.id).toBeLessThanOrEqual(80);
       expect(entry.height, entry.id).toBeLessThanOrEqual(80);
-      // A Farm replacement is a seamless 80 x 80 field like the Farm.
+      // A Farm replacement has the Farm's 80 x 80 canvas.
       if (improvement === "FARM")
         expect([entry.width, entry.height], entry.id).toEqual([
           today.width,
@@ -151,6 +152,66 @@ describe("faction building batches", () => {
         CHIBI_ART_ASSETS_V7.some((item) => item.subject === entry.subject),
         entry.id,
       ).toBe(false);
+    }
+  });
+
+  it("draws every Farm look as one whole sprite with ground on every side", async () => {
+    // Bead pulp_wars-2o7.2 (the user: "the sprite cut off at the top and
+    // bottom looks weird ... prioritize that the individual farm looks good
+    // rather than that they connect"): no Farm look reaches an edge of its
+    // tile, the shared Farm included.
+    const farms = [
+      ...CHIBI_DIRECTION_ART_ASSETS_V7,
+      ...CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
+    ].filter((entry) => /^IMPROVEMENT:(?:[A-Z_]+:)?FARM$/.test(entry.subject));
+    expect(farms.map((entry) => entry.id).sort()).toEqual([
+      "chibi-direction-farm",
+      "chibi-dwarf-mushroom-farm",
+      "chibi-ice-folk-frost-garden",
+      "chibi-martian-hydroponic-farm",
+      "chibi-undead-graveyard",
+    ]);
+    for (const entry of farms) {
+      const master = await readRaster(
+        path.join(ROOT, "public", entry.url.replace(/^.*?assets\//, "assets/")),
+      );
+      expect([master.width, master.height], entry.id).toEqual([80, 80]);
+      const box = opaqueBounds(master);
+      if (box === null) throw new Error(`${entry.id}: empty`);
+      expect(box.left, entry.id).toBeGreaterThanOrEqual(3);
+      expect(box.top, entry.id).toBeGreaterThanOrEqual(3);
+      expect(box.right, entry.id).toBeLessThanOrEqual(76);
+      expect(box.bottom, entry.id).toBeLessThanOrEqual(76);
+      // Still a tile-sized piece, not a speck: at least 50 px each way.
+      expect(box.right - box.left + 1, entry.id).toBeGreaterThanOrEqual(50);
+      expect(box.bottom - box.top + 1, entry.id).toBeGreaterThanOrEqual(50);
+    }
+  });
+
+  it("redid the Graveyard and the Mushroom Farm as yards, not rows", async () => {
+    for (const [batch, id, recipe, retired] of [
+      [
+        BATCHES.UNDEAD,
+        "chibi-undead-graveyard",
+        "graveyard-plot-c-edit",
+        "graveyard-pixen-a",
+      ],
+      [
+        BATCHES.DWARF,
+        "chibi-dwarf-mushroom-farm",
+        "mushroom-patch-b-edit",
+        "mushroom-flux-b-edit",
+      ],
+    ] as const) {
+      const manifest = await loadBatchManifest(ROOT, batch);
+      const records = await loadRecords(productionLayout(ROOT, batch), batch);
+      const asset = manifest.assets.find((spec) => spec.id === id);
+      expect(asset?.recipeClass, id).toBe("calm-plot");
+      expect(asset?.cropRows, id).toBeUndefined();
+      expect(records.assets[id]?.recipe, id).toBe(recipe);
+      expect(records.assets[id]?.derivation.kind, id).toBe("seated");
+      // The rows stay in the batch as history.
+      expect(records.recipes[retired]?.rawSheet, id).toBeDefined();
     }
   });
 

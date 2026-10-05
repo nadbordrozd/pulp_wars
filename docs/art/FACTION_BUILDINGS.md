@@ -8,6 +8,11 @@ cards and the Gallery draw and name them by the territory owner: see
 [In the game](#8-in-the-game). Sections 1 to 7 are the proposal and sample
 study of bead `pulp_wars-xdh.1` as the root accepted them (2026-10-04);
 where production changed something (the Bone Mill), section 8 says so.
+**Section 9 supersedes the Farm looks** (bead `pulp_wars-2o7.2`, playtest
+round 6): no Farm is a seamless field any more, the Graveyard and the
+Mushroom Farm were redrawn, and the shared Sawmill was redone. Rule 3's
+"seamless `crop-rows` field" and the row looks of sections 3, 5 and 6 are
+history.
 
 The user's request (2026-10-03): some, not all, building sprites and
 descriptions become faction specific. When the Undead take a city, the
@@ -413,3 +418,79 @@ tests.
   ground.
 - In the classic look and the LEGACY art set a Graveyard is named
   "Graveyard" and drawn as the shared Farm.
+
+## 9. Whole Farms and the redo (bead `pulp_wars-2o7.2`)
+
+The user's playtest notes (2026-10-05): "the farms - the sprite cut off at
+the top and bottom looks weird. let's prioritize that the individual farm
+looks good rather than that they connect. I like the leafy vegetables farm
+sprite. the hydroponic farm is ok. the graveyard tries to imitate the farm
+too closely and ends up looking bad. the rows of identical tombstones are
+not readable. try again. mushroom farm is mediocre. redo it." and "sawmill
+came out looking quite ugly. redo it."
+
+**Why Farms were cut off.** Not the renderer: every Farm master was a
+seamless pattern. The `crop-rows` derivation stamped the beds at a phase of
+half a row, so one bed straddled the tile's top and bottom edges, and ran
+every bed from the left edge to the right. A Farm with no Farm above it
+showed half a bed at its top and bottom.
+
+**The rule now.** Every Farm look is one complete sprite inside its tile
+with ground on every side (a test checks at least 3 px). Neighbouring Farms
+do not join. Canvas (80 x 80), subjects, names, flavour lines and every
+rule are unchanged; nothing in the renderer changed.
+
+| Faction                        | Farm shows                                                                                                                                     | How                                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Human, Goblin, Dinosaur, Candy | Farm: three raised beds of four leafy vegetables each, 67 x 72                                                                                 | the same candidate (`veg-flux-a`) as drawn, seated; no PixelLab call          |
+| Martian                        | Hydroponic Farm: three chrome troughs of four plants under glass domes, 67 x 73                                                                | the same candidate (`hydroponic-edit-a`) as drawn, seated; no PixelLab call   |
+| Ice Folk                       | Frost Garden: three snow banks of four frost cabbages, 64 x 68                                                                                 | the same candidate (`frost-garden-edit-a`) as drawn, seated; no PixelLab call |
+| Undead                         | Graveyard: a low plot of pale earth inside a dark iron fence, a stone cross and two slabs in light slate, a bare tree, a violet flame; 62 x 51 | new: `graveyard-plot-c` → `graveyard-plot-c-edit` (class `calm-plot`)         |
+| Dwarf                          | Mushroom Farm: four big spotted mushrooms of different heights, a spade and a crooked post on a round bed of mulch; 54 x 59                    | new: `mushroom-patch-b` → `mushroom-patch-b-edit` (class `calm-plot`)         |
+
+| Faction                    | Sawmill shows                                                                                                          | How                                                   |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| every faction but Dinosaur | Sawmill: a plank shed under a terracotta roof, a big toothed steel saw blade at its side, three logs and yellow planks | new: `sawmill-mill-a` → `sawmill-mill-a-edit`         |
+| Dinosaur                   | Chopping Block: unchanged (`chopping-block-b`)                                                                         | not part of the complaint; reviewed beside the others |
+
+**PixelLab calls: 17** (12 creations, 5 edits), all through the chibi
+pipeline. Rejected, with the reason in the records:
+
+- Graveyard: `graveyard-plot-a` (small, near-black, on a block),
+  `graveyard-plot-b` and its edit (a crypt with a violet door, but orange
+  earth on a block; the edit turned everything slate), `graveyard-plot-c`
+  (the plan that was kept, before its stones were lightened),
+  `graveyard-plot-d` (the best drawing, but 86 px wide from a 96 px
+  request: it does not fit the tile), `-e` (84 px: a dithered background),
+  `-f` (one grey), `-g` (four stones in a row again).
+- Mushroom Farm: `mushroom-patch-a` (clean but small and plain),
+  `mushroom-patch-b` (kept, before its block was rounded),
+  `mushroom-patch-c` (plain brown caps on a near-black bed).
+- Sawmill: `sawmill-mill-a` (kept, before its blade was redrawn),
+  `sawmill-mill-b` (a cottage with a tiny wheel), `sawmill-mill-c` (a busy
+  house on a plate).
+
+`npm run art:faction-buildings-review` writes
+`farms-sawmills-{x3,1x}.png`: every look on Grass, on Snow and on its
+faction's ground, and as a 2 x 2 block.
+
+![Every Farm and Sawmill look](../../art/pixellab/reviews/faction-buildings-study/farms-sawmills-x3.png)
+
+Weak spots:
+
+- **The Graveyard is the smallest and darkest Farm** (62 x 51): the fence
+  and the tree are near-black, and on the gloam ground at zoom 0.75 the
+  stones are a few pixels each. It has no crypt: the one sample with a
+  crypt could not be cleaned.
+- **Both new yards are drawn in the cities' three-quarter view** (a diamond
+  plot, a round bed), while the vegetable beds are seen from the front; the
+  Mushroom Farm's bed is thick and reads as a slice of tree stump.
+- **The Sawmill is smaller than the one it replaces** (51 x 48, was
+  60 x 58) and has a black outline like the Forge, not the toned outline of
+  the Windmill; its planks lie under the logs like a mat.
+- **The Frost Garden's snow banks still vanish on Snow.**
+- **Roads** under a Farm now show round the plot and between the beds,
+  wherever the sprite is transparent.
+- The technology card of Farming still says "Neighboring farms join into
+  one field" (the engine's `CONNECTED_FARM_VISUALS` effect); that is true
+  only in the classic look now.

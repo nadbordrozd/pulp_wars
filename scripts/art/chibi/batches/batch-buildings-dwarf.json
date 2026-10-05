@@ -10,50 +10,14 @@
       "id": "chibi-dwarf-mushroom-farm",
       "subject": "IMPROVEMENT:DWARF:FARM",
       "assetClass": "BUILDING",
-      "recipeClass": "crop-rows",
+      "recipeClass": "calm-plot",
       "canvas": {
         "width": 80,
         "height": 80
       },
       "ownerColour": false,
-      "cropRows": {
-        "rows": 4,
-        "band": 0,
-        "period": 80,
-        "stamps": [
-          {
-            "left": 5,
-            "width": 70,
-            "at": 0,
-            "band": 0,
-            "rows": [0, 2]
-          },
-          {
-            "left": 29,
-            "width": 10,
-            "at": 70,
-            "band": 0,
-            "rows": [0, 2]
-          },
-          {
-            "left": 5,
-            "width": 70,
-            "at": 0,
-            "band": 2,
-            "rows": [1, 3]
-          },
-          {
-            "left": 29,
-            "width": 10,
-            "at": 70,
-            "band": 2,
-            "rows": [1, 3]
-          }
-        ],
-        "rowOffsets": [0, 6, 40, 46],
-        "saturation": 1,
-        "strawMix": 0
-      }
+      "subjectKey": "IMPROVEMENT:DWARF:FARM/PATCH",
+      "bottomMargin": 5
     },
     {
       "id": "chibi-dwarf-steam-pump",
@@ -99,6 +63,58 @@
       },
       "editInstruction": "Change only the colours of the mushroom caps: every cap becomes a warm tan brown (#b98a55) or a russet brown (#8a5a34) with small cream spots, with no red, no pink and no green caps anywhere. Keep the mushrooms, their cream stalks, the three strips of brown soil, the outline and the art style exactly the same, on a transparent background.",
       "notes": "mushroom-flux-b has the right shapes (three thin beds of six mushrooms) but red and green caps."
+    },
+    {
+      "id": "mushroom-patch-a",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 20711,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image.",
+      "notes": "Bead pulp_wars-2o7.2, first sample of the Mushroom Farm redo (the user: mediocre, redo it): three big mushrooms of different heights on a mulch mound with a crooked sign, not rows."
+    },
+    {
+      "id": "mushroom-patch-b",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 20712,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "Instead of the signpost, one small iron spade with a wooden handle is stuck upright in the mulch. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image.",
+      "notes": "Second sample: a dwarf's spade in place of the sign."
+    },
+    {
+      "id": "mushroom-patch-c",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "endpoint": "create-image-pixen",
+      "seed": 20713,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The mound is ringed by a low border of small grey stones. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image.",
+      "notes": "Third sample: a stone border round the mound."
+    },
+    {
+      "id": "mushroom-patch-b-edit",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "endpoint": "edit-image-pixen",
+      "seed": 20714,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "mushroom-patch-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the thick square block of dark earth under the mushrooms becomes one low flat rounded mound of dark brown mulch, thin, with no tall side walls and no green grass on it. Keep every mushroom, the caps and their cream spots, the cream stalks, the small spade, the crooked wooden signpost, the size, the colours, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "mushroom-patch-b has the character (four big mushrooms of different heights, a spade, a crooked post), but it stands on a thick isometric block of earth."
     },
     {
       "id": "steam-pump-b",

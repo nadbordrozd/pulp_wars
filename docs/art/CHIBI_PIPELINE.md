@@ -1418,6 +1418,51 @@ art/explorations/faction-buildings-2026-10 --ids …`); a chain's first
   the production records, its "after" scenes are the game's own drawing,
   and it captures a captured city and the Gallery's Buildings tab.
 
+### Whole Farms and the Sawmill redo (bead `pulp_wars-2o7.2`)
+
+The user's playtest note: a Farm "cut off at the top and bottom looks
+weird"; one Farm should look good rather than connect to the next. No Farm
+look is a seamless pattern any more
+([what each faction shows](FACTION_BUILDINGS.md#9-whole-farms-and-the-redo-bead-pulp_wars-2o72)).
+Two pipeline pieces:
+
+- **A whole plot.** A `crop-rows` asset that names a `bottomMargin` and no
+  `cropRows` is not stamped: the candidate's own beds, ends and all, are
+  seated like a calm building (centred, `bottomMargin` px above the tile's
+  bottom edge), and the record's derivation is `seated`. The shared Farm
+  (`veg-flux-a`, margin 4), the Hydroponic Farm (`hydroponic-edit-a`, 3)
+  and the Frost Garden (`frost-garden-edit-a`, 6) were accepted again from
+  their recorded candidates this way, with no PixelLab call. A crop-rows
+  asset has stamps or a margin, never both. The stamped derivation
+  (`cropRowsRaster`) stays for a later pattern; no production asset uses it.
+- **The `calm-plot` class**: a small yard on its own patch of earth, in the
+  calm style, seated, no faction layer (`class-calm-plot.txt`; the
+  `calm-building` text forbids ground and asks for one building). The
+  Graveyard and the Mushroom Farm moved to it from `crop-rows`; their old
+  row recipes stay in the batches as history, which is the only reason the
+  class lists Pixflux.
+
+What PixelLab did, for the next yard:
+
+- Pixen draws a yard as an isometric block of earth. "Make the plot a flat
+  thin patch with no thick side walls" in an edit thinned the Graveyard's
+  slab; on the Mushroom Farm the same wording turned the square block into
+  a round bed that is still thick.
+- An edit that recolours "the gravestones and the crypt walls" with hex
+  values recoloured the ground too (`graveyard-plot-b-edit`); naming only
+  the stones worked (`graveyard-plot-c-edit`).
+- "About three quarters of the image wide" gives 48 to 62 px of an 80 px
+  request. A request of 96 px drew the best Graveyard at 86 px, which does
+  not fit the tile; 84 px is not a size Pixen handles (a dithered
+  background). Edits of an 80 px creation are the way.
+- One edit that names one part and its colour by hex ("the dull grey saw
+  blade becomes ... light silver-grey steel (#c9ced6) with sharp pointed
+  teeth") gave the Sawmill its blade and changed nothing else.
+
+`npm run art:faction-buildings-review` also writes `farms-sawmills-x3.png`
+and `farms-sawmills-1x.png`: every Farm and Sawmill look on Grass, on Snow
+and on its faction's territory ground.
+
 ## The Candy batches (bead `pulp_wars-jdb.5`)
 
 Batches `direction-candy` and `naval-candy` hold the direction and the

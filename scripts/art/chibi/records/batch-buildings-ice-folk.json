@@ -70,8 +70,8 @@
       "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Blue-green frost cabbages on thin banks of snow, no soil; the top row is stamped on every row, five cabbages to a tile. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
-        "reviewedAt": "2026-10-04T09:12:37.303Z"
+        "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot: the three snow banks of four cabbages as drawn, seated 6 px above the bottom: 64 x 68 in the 80 x 80 tile. Reviewed at 1:1 and x4.",
+        "reviewedAt": "2026-10-05T12:32:18.845Z"
       }
     }
   },
@@ -86,48 +86,15 @@
       "candidateSha256": "c2ce043ac28fcf9b11ab5a13e49b3eb63e9c6015f885f08ab9b0a8f61d03ee99",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-ice-folk-frost-garden.png",
-        "sha256": "0a2dd108fb2c259579098dc68f7fc8db402f729c12dad917638365ef2b8964aa",
-        "pixelSha256": "c4369cc4c5193fe6957e37f9caaae823a5e3859c713be89a333dd5e4a9a899c7",
+        "sha256": "c2ce043ac28fcf9b11ab5a13e49b3eb63e9c6015f885f08ab9b0a8f61d03ee99",
+        "pixelSha256": "642fe97a62ec80254536090fe301e70b26a8e823a05e30021e40785a98d6b92c",
         "width": 80,
         "height": 80
       },
       "derivation": {
-        "kind": "crop-rows",
-        "cropRows": {
-          "rows": 3,
-          "band": 0,
-          "period": 80,
-          "stamps": [
-            {
-              "left": 8,
-              "width": 16,
-              "at": 0
-            },
-            {
-              "left": 24,
-              "width": 16,
-              "at": 16
-            },
-            {
-              "left": 40,
-              "width": 16,
-              "at": 32
-            },
-            {
-              "left": 56,
-              "width": 16,
-              "at": 48
-            },
-            {
-              "left": 24,
-              "width": 16,
-              "at": 64
-            }
-          ],
-          "rowOffsets": [0, 8, 0],
-          "phase": 0.5,
-          "saturation": 1,
-          "strawMix": 0
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 6
         }
       },
       "anchor": {
@@ -147,8 +114,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Blue-green frost cabbages on thin banks of snow, no soil; the top row is stamped on every row, five cabbages to a tile. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
-      "acceptedAt": "2026-10-04T09:12:37.303Z"
+      "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot: the three snow banks of four cabbages as drawn, seated 6 px above the bottom: 64 x 68 in the 80 x 80 tile. Reviewed at 1:1 and x4.",
+      "acceptedAt": "2026-10-05T12:32:18.845Z"
     }
   }
 }

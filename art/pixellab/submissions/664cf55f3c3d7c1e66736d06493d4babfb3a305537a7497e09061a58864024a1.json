@@ -1,0 +1,36 @@
+{
+  "id": "mushroom-patch-b-edit",
+  "jobId": "f8df98c0-53ad-439c-a1a4-0d6f4beb8d81",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "buildings-dwarf",
+    "asset": "chibi-dwarf-mushroom-farm",
+    "subject": "IMPROVEMENT:DWARF:FARM",
+    "faction": "DWARF",
+    "recipeClass": "calm-plot",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 20714,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the thick square block of dark earth under the mushrooms becomes one low flat rounded mound of dark brown mulch, thin, with no tall side walls and no green grass on it. Keep every mushroom, the caps and their cream spots, the cream stalks, the small spade, the crooked wooden signpost, the size, the colours, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the thick square block of dark earth under the mushrooms becomes one low flat rounded mound of dark brown mulch, thin, with no tall side walls and no green grass on it. Keep every mushroom, the caps and their cream spots, the cream stalks, the small spade, the crooked wooden signpost, the size, the colours, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the thick square block of dark earth under the mushrooms becomes one low flat rounded mound of dark brown mulch, thin, with no tall side walls and no green grass on it. Keep every mushroom, the caps and their cream spots, the cream stalks, the small spade, the crooked wooden signpost, the size, the colours, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the thick square block of dark earth under the mushrooms becomes one low flat rounded mound of dark brown mulch, thin, with no tall side walls and no green grass on it. Keep every mushroom, the caps and their cream spots, the cream stalks, the small spade, the crooked wooden signpost, the size, the colours, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "mushroom-patch-b",
+      "candidate": 0,
+      "sha256": "67594cb6b2f826e6e1c116015dfc5d316cc091fcee64670f0baeab8e80b808a7"
+    }
+  }
+}

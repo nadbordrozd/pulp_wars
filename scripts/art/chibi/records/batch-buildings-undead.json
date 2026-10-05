@@ -357,10 +357,709 @@
         "recipe": "graveyard-pixen-a"
       },
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Three rows of dark slate gravestones with moss and violet flowers; the top row is stamped on every row (the middle row has a stray brown stump). Dark stones, so they do not read as the pale Grave marker. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2). Superseded by graveyard-plot-c-edit.",
+        "reviewedAt": "2026-10-04T09:12:31.186Z"
+      }
+    },
+    "graveyard-plot-a": {
+      "id": "graveyard-plot-a",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "sync-1097dc57-4a62-48c0-9867-9d3ea0f5a830",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20701,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:34:52.874Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-plot-a.png",
+      "rawSheetSha256": "dd77a80be8fa575bde6945335ab7028a629a8baa1e2b04b68acbc8c413cfc0c0",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.037,
+          "footprintWidthShare": 0.8542,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:36:07.081Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads as a graveyard (fence, stones, bare tree) but small (48 x 50), near-black all over and on a thick isometric block of earth with a green rim.",
+        "reviewedAt": "2026-10-05T12:41:02.535Z"
+      }
+    },
+    "graveyard-plot-b": {
+      "id": "graveyard-plot-b",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "sync-2e0c8c5f-3ff0-412b-bb78-07a5c0ae11f9",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20702,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "At the back of the plot stands one small stone crypt with a peaked charcoal roof and a small arched door glowing soft violet. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. At the back of the plot stands one small stone crypt with a peaked charcoal roof and a small arched door glowing soft violet. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. At the back of the plot stands one small stone crypt with a peaked charcoal roof and a small arched door glowing soft violet. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:36:07.083Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-plot-b.png",
+      "rawSheetSha256": "8ebfe3a86fc6ee4023b19b0970d8b8ff08698bb64ce90869c5070c997b997c60",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 0.7241,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:36:54.814Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The most characterful (a crypt with a violet door, a cross, a tree), but orange earth on a thick isometric block; the stones are as dark as the fence. Edited as graveyard-plot-b-edit.",
+        "reviewedAt": "2026-10-05T12:41:02.815Z"
+      }
+    },
+    "graveyard-plot-b-edit": {
+      "id": "graveyard-plot-b-edit",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "7a3a2114-5af4-4fce-9ad4-bb19d2c4dd5f",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20705,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only two things. Make the orange-brown earth a dark dusty grey-brown (#5d5552), a flat thin patch with no thick side walls under it. Make the gravestones and the crypt walls a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082). Keep the crypt, its near-black roof and violet door, the bare tree, the cross, the fence, the size, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only two things. Make the orange-brown earth a dark dusty grey-brown (#5d5552), a flat thin patch with no thick side walls under it. Make the gravestones and the crypt walls a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082). Keep the crypt, its near-black roof and violet door, the bare tree, the cross, the fence, the size, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only two things. Make the orange-brown earth a dark dusty grey-brown (#5d5552), a flat thin patch with no thick side walls under it. Make the gravestones and the crypt walls a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082). Keep the crypt, its near-black roof and violet door, the bare tree, the cross, the fence, the size, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only two things. Make the orange-brown earth a dark dusty grey-brown (#5d5552), a flat thin patch with no thick side walls under it. Make the gravestones and the crypt walls a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082). Keep the crypt, its near-black roof and violet door, the bare tree, the cross, the fence, the size, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "graveyard-plot-b",
+          "candidate": 0,
+          "sha256": "8ebfe3a86fc6ee4023b19b0970d8b8ff08698bb64ce90869c5070c997b997c60"
+        }
+      },
+      "submittedAt": "2026-10-05T12:40:00.474Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-plot-b-edit.png",
+      "rawSheetSha256": "8c6b6c768c992c6181d3f5df6c02c7f17f854b77abe2dc2e1c1823f50397c642",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6724,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6724,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:40:26.712Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The edit turned the whole plot slate blue: the cross and the stones merge into the ground and the block under it stayed. Both candidates are the same.",
+        "reviewedAt": "2026-10-05T12:41:03.124Z"
+      }
+    },
+    "graveyard-plot-c": {
+      "id": "graveyard-plot-c",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "sync-d268343e-7f04-4bc7-af46-f86f41741d5c",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20703,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "A small lantern with a soft violet flame hangs on a short post beside the gap in the fence. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. A small lantern with a soft violet flame hangs on a short post beside the gap in the fence. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. A small lantern with a soft violet flame hangs on a short post beside the gap in the fence. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:36:54.816Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-plot-c.png",
+      "rawSheetSha256": "f0df90c084b72c202c2848c00a72db3cd13cebefb455f9913d6730cd820bd4ea",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5323,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:38:16.841Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The cleanest plan (a low fenced plot, three stones of different shapes, a bare tree, a violet lantern flame), but the stones are nearly as dark as the fence and it stands on a slab with side walls. Edited as graveyard-plot-c-edit.",
+        "reviewedAt": "2026-10-05T12:41:03.432Z"
+      }
+    },
+    "graveyard-plot-c-edit": {
+      "id": "graveyard-plot-c-edit",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "cdec8d34-4af0-42c2-8ee0-9faf48b7ec89",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20704,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only two things. Make the gravestones a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082), clearly lighter than the fence and the earth. Make the plot of earth a flat thin patch with no thick dark side walls under it. Keep the dark iron fence, the bare tree, the violet lantern flame, the size, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only two things. Make the gravestones a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082), clearly lighter than the fence and the earth. Make the plot of earth a flat thin patch with no thick dark side walls under it. Keep the dark iron fence, the bare tree, the violet lantern flame, the size, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only two things. Make the gravestones a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082), clearly lighter than the fence and the earth. Make the plot of earth a flat thin patch with no thick dark side walls under it. Keep the dark iron fence, the bare tree, the violet lantern flame, the size, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only two things. Make the gravestones a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082), clearly lighter than the fence and the earth. Make the plot of earth a flat thin patch with no thick dark side walls under it. Keep the dark iron fence, the bare tree, the violet lantern flame, the size, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "graveyard-plot-c",
+          "candidate": 0,
+          "sha256": "f0df90c084b72c202c2848c00a72db3cd13cebefb455f9913d6730cd820bd4ea"
+        }
+      },
+      "submittedAt": "2026-10-05T12:39:20.873Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-plot-c-edit.png",
+      "rawSheetSha256": "fabdbe09bfd7373bca803980eb7679ee3f99821cd871972b5e5d922c50bf77b9",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5323,
+          "suspect": false
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0,
+          "footprintWidthShare": 0.5323,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:40:00.469Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Three rows of dark slate gravestones with moss and violet flowers; the top row is stamped on every row (the middle row has a stray brown stump). Dark stones, so they do not read as the pale Grave marker. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
-        "reviewedAt": "2026-10-04T09:12:31.186Z"
+        "notes": "Bead pulp_wars-2o7.2, the Graveyard as its own thing: a low fenced plot of pale earth with a stone cross, a tall slab and a short slab in light slate, a bare tree and one violet lantern flame; 62 x 51 in the 80 x 80 tile, ground all round. At 1:1 it reads as a graveyard at a glance (fence + tree + three separate stones); at x4 the stones are three shapes and two tones lighter than the fence. Both candidates are identical.",
+        "reviewedAt": "2026-10-05T12:41:03.751Z"
+      }
+    },
+    "graveyard-plot-d": {
+      "id": "graveyard-plot-d",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "sync-c54e7c71-ac60-4c10-9f9d-f36f05188b12",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 96,
+          "height": 96
+        },
+        "seed": 20706,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of pale dusty earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of pale dusty earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of pale dusty earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:46:44.186Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 96,
+        "height": 96
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-plot-d.png",
+      "rawSheetSha256": "241df042612fa672044406a99274b88086ada0e7a134ebd3913657bcc3bf3ab2",
+      "plateHints": [
+        {
+          "bandRows": 14,
+          "groundShare": 0.6042,
+          "footprintWidthShare": 0.6047,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T12:47:20.976Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The best drawing of the plan (a cross, an obelisk, two slabs in light slate, a bare tree, a lantern), but 86 x 71: it does not fit the 80 x 80 tile, and nothing is resampled.",
+        "reviewedAt": "2026-10-05T12:51:05.963Z"
+      }
+    },
+    "graveyard-plot-e": {
+      "id": "graveyard-plot-e",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "sync-1ad80d31-ab76-405d-be08-51f3e3ed6eea",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 84,
+          "height": 84
+        },
+        "seed": 20706,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of dusty grey-brown earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of dusty grey-brown earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of dusty grey-brown earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:47:44.079Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 84,
+        "height": 84
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-plot-e.png",
+      "rawSheetSha256": "c38b37bf0a9eb6fc37a6cae0ce907aacdbdf00c43f313a1c586fbed3b7821727",
+      "plateHints": [
+        {
+          "bandRows": 16,
+          "groundShare": 0.0436,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:48:35.951Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "At 84 x 84 Pixen filled the whole image with a dark dithered swirl behind the plot: no transparent background.",
+        "reviewedAt": "2026-10-05T12:51:06.715Z"
+      }
+    },
+    "graveyard-plot-f": {
+      "id": "graveyard-plot-f",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "sync-7fa3cfd8-f802-4925-8bdc-0beabaddd2d3",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 84,
+          "height": 84
+        },
+        "seed": 20707,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of dusty grey-brown earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of dusty grey-brown earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of dusty grey-brown earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:48:35.953Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 84,
+        "height": 84
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-plot-f.png",
+      "rawSheetSha256": "c9c8f25d773feb12773399202ebd01545901d63cbc5e2d5c5cbddf57bb5e2d94",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6324,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:49:25.309Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "One grey tone for the stones, the earth and the fence: nothing separates at board size, and it stands on a slab.",
+        "reviewedAt": "2026-10-05T12:51:07.595Z"
+      }
+    },
+    "graveyard-plot-g": {
+      "id": "graveyard-plot-g",
+      "asset": "chibi-undead-graveyard",
+      "jobId": "sync-7ac08476-72fa-4cfc-8bca-bec99ffb7d2f",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-undead",
+        "asset": "chibi-undead-graveyard",
+        "subject": "IMPROVEMENT:UNDEAD:FARM",
+        "faction": "UNDEAD",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20706,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/UNDEAD.json",
+            "text": "Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of pale dusty earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about nine tenths of the image wide and touches no edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of pale dusty earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about nine tenths of the image wide and touches no edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a tiny old graveyard: one small square plot of dark grey-brown earth enclosed by a low crooked fence of thin dark iron railings with pointed posts and an open gap at the front; inside it stand three big gravestones of clearly different shapes, well apart from each other: one stone cross, one tall pointed slab and one short leaning slab with a square top, all of dark slate-grey stone with a lighter slate-grey face; in the back corner one bare leafless tree with a few twisted near-black branches, taller than the stones. Dark slate grey, lighter slate grey, charcoal and dusty grey-brown, with a little soft violet; no green, no bones, no skulls. Graveyard only. The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of pale dusty earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about nine tenths of the image wide and touches no edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:49:45.988Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-undead/graveyard-plot-g.png",
+      "rawSheetSha256": "bdc42e70408828aee33b7a0470b4711dfdb07adc6986743755ee3ee292d7a57a",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.0483,
+          "footprintWidthShare": 0.6852,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:50:48.696Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Lighter stones, but four of them side by side in a row (the fault the redo is for), pink earth and only 54 x 50. graveyard-plot-c-edit stays the accepted Graveyard.",
+        "reviewedAt": "2026-10-05T12:51:08.225Z"
       }
     }
   },
@@ -411,73 +1110,20 @@
       "subject": "IMPROVEMENT:UNDEAD:FARM",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
-      "recipe": "graveyard-pixen-a",
+      "recipe": "graveyard-plot-c-edit",
       "candidate": 0,
-      "candidateSha256": "bbc7472ec223bfafbeb889ae7dca9ea0a5e323305515579990c0a3f44ae919f8",
+      "candidateSha256": "e04b1db55106813c3e2fffc1b1c6d5cedc9c1d40b185be70db718bd840198691",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-undead-graveyard.png",
-        "sha256": "0849245dbec80cb3ca26bd35b87b0898eb39ed48ea1a91b114030cea0fc3fb24",
-        "pixelSha256": "aabc6ed2251e1a08b690be09ae24ef21345bdacfbec20d56f65154811812ccb3",
+        "sha256": "7fb3e33898348b79582722246eecf644b02295a9f6eafb37c101311983ba99ec",
+        "pixelSha256": "83166e7186cf6682ab2da98eb510d089860b441f9ab7bf91858662c9bd5525fe",
         "width": 80,
         "height": 80
       },
       "derivation": {
-        "kind": "crop-rows",
-        "cropRows": {
-          "rows": 3,
-          "band": 0,
-          "period": 80,
-          "stamps": [
-            {
-              "left": 2,
-              "width": 16,
-              "at": 0
-            },
-            {
-              "left": 18,
-              "width": 15,
-              "at": 16
-            },
-            {
-              "left": 17,
-              "width": 1,
-              "at": 31
-            },
-            {
-              "left": 33,
-              "width": 16,
-              "at": 32
-            },
-            {
-              "left": 49,
-              "width": 14,
-              "at": 48
-            },
-            {
-              "left": 48,
-              "width": 1,
-              "at": 62
-            },
-            {
-              "left": 48,
-              "width": 1,
-              "at": 63
-            },
-            {
-              "left": 63,
-              "width": 15,
-              "at": 64
-            },
-            {
-              "left": 62,
-              "width": 1,
-              "at": 79
-            }
-          ],
-          "rowOffsets": [0, 8, 0],
-          "phase": 0.5,
-          "saturation": 1,
-          "strawMix": 0
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 5
         }
       },
       "anchor": {
@@ -497,8 +1143,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Three rows of dark slate gravestones with moss and violet flowers; the top row is stamped on every row (the middle row has a stray brown stump). Dark stones, so they do not read as the pale Grave marker. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
-      "acceptedAt": "2026-10-04T09:12:31.186Z"
+      "notes": "Bead pulp_wars-2o7.2, the Graveyard as its own thing: a low fenced plot of pale earth with a stone cross, a tall slab and a short slab in light slate, a bare tree and one violet lantern flame; 62 x 51 in the 80 x 80 tile, ground all round. At 1:1 it reads as a graveyard at a glance (fence + tree + three separate stones); at x4 the stones are three shapes and two tones lighter than the fence. Both candidates are identical.",
+      "acceptedAt": "2026-10-05T12:41:03.751Z"
     }
   }
 }

@@ -1564,8 +1564,12 @@ async function deriveClassMaster(
   const classKind = CHIBI_CLASS_RECIPES[asset.recipeClass].derivation;
   // An as-is asset that names a bottom margin is seated (bead
   // pulp_wars-wrn.2): moved by whole pixels onto that margin.
+  // A crop-rows asset with a bottom margin and no stamps is a whole plot
+  // (bead pulp_wars-2o7.2): the candidate's own beds, seated the same way.
   const kind =
-    classKind === "as-is" && asset.bottomMargin !== undefined
+    (classKind === "as-is" ||
+      (classKind === "crop-rows" && asset.cropRows === undefined)) &&
+    asset.bottomMargin !== undefined
       ? "seated"
       : classKind;
   if (kind === "seamless-crop") {

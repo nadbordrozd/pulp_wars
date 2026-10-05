@@ -1,0 +1,36 @@
+{
+  "id": "sawmill-mill-a-edit",
+  "jobId": "ddc44551-9f16-41f6-af7b-d0af0d8a8925",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-sawmill",
+    "subject": "IMPROVEMENT:SAWMILL",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 20724,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: the dull grey saw blade becomes one big round circular saw blade of light silver-grey steel (#c9ced6) with sharp pointed teeth all round its rim and a small dark hub hole, as tall as the wall of the shed, standing upright in front of the left side of the shed. Keep the shed, its terracotta roof, the stack of logs, the yellow planks, the colours, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: the dull grey saw blade becomes one big round circular saw blade of light silver-grey steel (#c9ced6) with sharp pointed teeth all round its rim and a small dark hub hole, as tall as the wall of the shed, standing upright in front of the left side of the shed. Keep the shed, its terracotta roof, the stack of logs, the yellow planks, the colours, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: the dull grey saw blade becomes one big round circular saw blade of light silver-grey steel (#c9ced6) with sharp pointed teeth all round its rim and a small dark hub hole, as tall as the wall of the shed, standing upright in front of the left side of the shed. Keep the shed, its terracotta roof, the stack of logs, the yellow planks, the colours, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: the dull grey saw blade becomes one big round circular saw blade of light silver-grey steel (#c9ced6) with sharp pointed teeth all round its rim and a small dark hub hole, as tall as the wall of the shed, standing upright in front of the left side of the shed. Keep the shed, its terracotta roof, the stack of logs, the yellow planks, the colours, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "sawmill-mill-a",
+      "candidate": 0,
+      "sha256": "94be22ae3917543c7a3385468ade28727b7e35d5834b2788137e6a90b966f335"
+    }
+  }
+}

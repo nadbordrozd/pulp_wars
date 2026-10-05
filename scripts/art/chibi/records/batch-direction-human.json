@@ -3511,10 +3511,319 @@
       ],
       "completedAt": "2026-10-02T08:48:18.599Z",
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "A big solid light steel saw blade with teeth in a wooden frame and a stack of cut logs beside it: reads as a sawmill at 1:1. No plate. Superseded by sawmill-mill-a-edit.",
+        "reviewedAt": "2026-10-02T08:51:48.866Z"
+      }
+    },
+    "sawmill-mill-a": {
+      "id": "sawmill-mill-a",
+      "asset": "chibi-direction-sawmill",
+      "jobId": "sync-dabbcc1e-2732-4fe2-8d6a-b70b72cef4e3",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-sawmill",
+        "subject": "IMPROVEMENT:SAWMILL",
+        "faction": "ORIGINAL",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 20721,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-building.txt + scripts/art/chibi/fragments/class-calm-building.negative.txt",
+            "text": "Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The sawmill is drawn large and fills most of the image, touching no edge."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only. The sawmill is drawn large and fills most of the image, touching no edge.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only. The sawmill is drawn large and fills most of the image, touching no edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character."
+      },
+      "submittedAt": "2026-10-05T12:38:38.402Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/sawmill-mill-a.png",
+      "rawSheetSha256": "94be22ae3917543c7a3385468ade28727b7e35d5834b2788137e6a90b966f335",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.4941,
+          "footprintWidthShare": 0.9808,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T12:39:22.359Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The clean, chunky one: a plank shed with a terracotta roof, a stack of three logs and a pile of planks. Its blade is a dull grey half disc that does not read at board size. Edited as sawmill-mill-a-edit.",
+        "reviewedAt": "2026-10-05T12:44:24.150Z"
+      }
+    },
+    "sawmill-mill-a-edit": {
+      "id": "sawmill-mill-a-edit",
+      "asset": "chibi-direction-sawmill",
+      "jobId": "ddc44551-9f16-41f6-af7b-d0af0d8a8925",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-sawmill",
+        "subject": "IMPROVEMENT:SAWMILL",
+        "faction": "ORIGINAL",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 20724,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: the dull grey saw blade becomes one big round circular saw blade of light silver-grey steel (#c9ced6) with sharp pointed teeth all round its rim and a small dark hub hole, as tall as the wall of the shed, standing upright in front of the left side of the shed. Keep the shed, its terracotta roof, the stack of logs, the yellow planks, the colours, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: the dull grey saw blade becomes one big round circular saw blade of light silver-grey steel (#c9ced6) with sharp pointed teeth all round its rim and a small dark hub hole, as tall as the wall of the shed, standing upright in front of the left side of the shed. Keep the shed, its terracotta roof, the stack of logs, the yellow planks, the colours, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: the dull grey saw blade becomes one big round circular saw blade of light silver-grey steel (#c9ced6) with sharp pointed teeth all round its rim and a small dark hub hole, as tall as the wall of the shed, standing upright in front of the left side of the shed. Keep the shed, its terracotta roof, the stack of logs, the yellow planks, the colours, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: the dull grey saw blade becomes one big round circular saw blade of light silver-grey steel (#c9ced6) with sharp pointed teeth all round its rim and a small dark hub hole, as tall as the wall of the shed, standing upright in front of the left side of the shed. Keep the shed, its terracotta roof, the stack of logs, the yellow planks, the colours, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "sawmill-mill-a",
+          "candidate": 0,
+          "sha256": "94be22ae3917543c7a3385468ade28727b7e35d5834b2788137e6a90b966f335"
+        }
+      },
+      "submittedAt": "2026-10-05T12:41:47.164Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/sawmill-mill-a-edit.png",
+      "rawSheetSha256": "d7c249eb57b59b4184b78238ae5dfb0725b25d060507aaeed4314be0682e14bf",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.3866,
+          "footprintWidthShare": 0.9412,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.3866,
+          "footprintWidthShare": 0.9412,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T12:42:28.224Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "A big solid light steel saw blade with teeth in a wooden frame and a stack of cut logs beside it: reads as a sawmill at 1:1. No plate.",
-        "reviewedAt": "2026-10-02T08:51:48.866Z"
+        "notes": "Bead pulp_wars-2o7.2, the Sawmill redone (the user: quite ugly): one chunky plank shed under a terracotta roof, one big steel circular saw blade with clear teeth standing at its side, a stack of three logs and a pile of yellow planks; 51 x 48 in the 72 x 72 canvas. The blade, the logs and the shed are three separate shapes at 1:1; the old one was a house with a disc stuck on its wall. The pile of planks lies flat under the logs like a mat (the plate hint); it is planks, not ground. Both candidates are identical.",
+        "reviewedAt": "2026-10-05T12:44:24.834Z"
+      }
+    },
+    "sawmill-mill-b": {
+      "id": "sawmill-mill-b",
+      "asset": "chibi-direction-sawmill",
+      "jobId": "sync-f98d69e0-b895-43cf-b476-e8a1e6c0e6d4",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-sawmill",
+        "subject": "IMPROVEMENT:SAWMILL",
+        "faction": "ORIGINAL",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 20722,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-building.txt + scripts/art/chibi/fragments/class-calm-building.negative.txt",
+            "text": "Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "One big wooden water wheel with paddles is mounted on the side wall of the mill house. The sawmill is drawn large and fills most of the image, touching no edge."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only. One big wooden water wheel with paddles is mounted on the side wall of the mill house. The sawmill is drawn large and fills most of the image, touching no edge.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only. One big wooden water wheel with paddles is mounted on the side wall of the mill house. The sawmill is drawn large and fills most of the image, touching no edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character."
+      },
+      "submittedAt": "2026-10-05T12:39:22.363Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/sawmill-mill-b.png",
+      "rawSheetSha256": "f15df6280f86939edc8030ff4ee6b2cd18182e8cbd85a760841c46703fc3d9a6",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.1393,
+          "footprintWidthShare": 0.9184,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:40:19.265Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A pale timber-framed house on a ground plate; the water wheel is a small dark ring at its foot and there is no saw blade: it reads as a cottage.",
+        "reviewedAt": "2026-10-05T12:44:24.356Z"
+      }
+    },
+    "sawmill-mill-c": {
+      "id": "sawmill-mill-c",
+      "asset": "chibi-direction-sawmill",
+      "jobId": "sync-c217f3aa-33d2-43b1-bf6b-fc8b63c4f5fd",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "direction-human",
+        "asset": "chibi-direction-sawmill",
+        "subject": "IMPROVEMENT:SAWMILL",
+        "faction": "ORIGINAL",
+        "recipeClass": "calm-building",
+        "requestSize": {
+          "width": 72,
+          "height": 72
+        },
+        "seed": 20723,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-building.txt + scripts/art/chibi/fragments/class-calm-building.negative.txt",
+            "text": "Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/SHARED.json",
+            "text": "Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The mill house is open-sided: its roof stands on four thick oak posts with the sawing bench and the big saw blade under it. The sawmill is drawn large and fills most of the image, touching no edge."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only. The mill house is open-sided: its roof stands on four thick oak posts with the sawing bench and the big saw blade under it. The sawmill is drawn large and fills most of the image, touching no edge.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only. The mill house is open-sided: its roof stands on four thick oak posts with the sawing bench and the big saw blade under it. The sawmill is drawn large and fills most of the image, touching no edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character."
+      },
+      "submittedAt": "2026-10-05T12:40:19.267Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 72
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-human/sawmill-mill-c.png",
+      "rawSheetSha256": "11b3f17684f906da57b4e52b94d42998b3c35a108de1951e60bf2df64f2685c8",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.4257,
+          "footprintWidthShare": 0.9032,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T12:41:16.280Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A big detailed house with a hole in its roof and a teal wheel on a stone plate: busy and muddy, not the open shed that was asked for.",
+        "reviewedAt": "2026-10-05T12:44:24.586Z"
       }
     },
     "shipyard-b-a": {
@@ -3692,8 +4001,8 @@
       "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Mixed vegetable beds, the Farm the user chose (bead pulp_wars-9s0.7: 'let's go with veggies for farms'). The Pixflux candidate's three raised beds are kept as drawn, colours unchanged; the crop-rows derivation spreads the plants of each bed 20 px apart with plain soil columns between them, so every bed runs from edge to edge. The beds stand at a pitch of 80 / 3 px moved down half a pitch (phase 0.5), in the candidate's order starting with its third bed: the two shorter beds lie either side of a 5 px gap on the cell's centre line (y 37 to 41), where an east-west Road shows, and the tallest bed straddles the top and bottom edges, so Farms still tile without a seam and a single Farm ends in part of a bed at its top and bottom.",
-        "reviewedAt": "2026-10-02T14:03:22.811Z"
+        "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot. The crop-rows stamps cut a bed in half at the tile's top and bottom edge; the user asked for a complete farm on its tile. The candidate's own three beds with their ends, seated 4 px above the bottom: 67 x 72 in the 80 x 80 tile, grass all round. Reviewed at 1:1 and x4.",
+        "reviewedAt": "2026-10-05T12:32:18.015Z"
       }
     },
     "village-a": {
@@ -4527,436 +4836,15 @@
       "candidateSha256": "99d23ea79dc1291fbd9d1d03b827b32aabda408c17fb0aa15bbd5adb57a331c4",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-direction-farm.png",
-        "sha256": "721796d46a5004fe44863a36e9e44f9990eb83cadbbff8ec32c0149c481e1332",
-        "pixelSha256": "77e592c499ff7e6cf72265c8855eb4394d5e0633ccf9dee391360f24f2406c56",
+        "sha256": "99d23ea79dc1291fbd9d1d03b827b32aabda408c17fb0aa15bbd5adb57a331c4",
+        "pixelSha256": "3465f749cc56987bb5e371f5128c831483e3cc79a9bb29bc239a6f438f020273",
         "width": 80,
         "height": 80
       },
       "derivation": {
-        "kind": "crop-rows",
-        "cropRows": {
-          "rows": 3,
-          "band": 0,
-          "period": 80,
-          "stamps": [
-            {
-              "left": 23,
-              "width": 1,
-              "at": 0,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 1,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 8,
-              "width": 16,
-              "at": 2,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 18,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 19,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 20,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 21,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 24,
-              "width": 16,
-              "at": 22,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 38,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 39,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 40,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 41,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 40,
-              "width": 16,
-              "at": 42,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 58,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 59,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 60,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 61,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 56,
-              "width": 16,
-              "at": 62,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 78,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 23,
-              "width": 1,
-              "at": 79,
-              "band": 0,
-              "rows": [1]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 0,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 1,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 8,
-              "width": 16,
-              "at": 2,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 18,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 19,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 20,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 21,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 24,
-              "width": 16,
-              "at": 22,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 38,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 39,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 40,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 41,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 40,
-              "width": 16,
-              "at": 42,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 58,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 59,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 60,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 61,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 56,
-              "width": 16,
-              "at": 62,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 78,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 25,
-              "width": 1,
-              "at": 79,
-              "band": 1,
-              "rows": [2]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 0,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 1,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 2,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 8,
-              "width": 32,
-              "at": 3,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 35,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 36,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 37,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 38,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 39,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 40,
-              "width": 16,
-              "at": 40,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 56,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 57,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 58,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 59,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 60,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 56,
-              "width": 16,
-              "at": 61,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 77,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 78,
-              "band": 2,
-              "rows": [0]
-            },
-            {
-              "left": 57,
-              "width": 1,
-              "at": 79,
-              "band": 2,
-              "rows": [0]
-            }
-          ],
-          "rowOffsets": [0, 0, 0],
-          "phase": 0.5,
-          "saturation": 1,
-          "strawMix": 0
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 4
         }
       },
       "anchor": {
@@ -4976,8 +4864,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Mixed vegetable beds, the Farm the user chose (bead pulp_wars-9s0.7: 'let's go with veggies for farms'). The Pixflux candidate's three raised beds are kept as drawn, colours unchanged; the crop-rows derivation spreads the plants of each bed 20 px apart with plain soil columns between them, so every bed runs from edge to edge. The beds stand at a pitch of 80 / 3 px moved down half a pitch (phase 0.5), in the candidate's order starting with its third bed: the two shorter beds lie either side of a 5 px gap on the cell's centre line (y 37 to 41), where an east-west Road shows, and the tallest bed straddles the top and bottom edges, so Farms still tile without a seam and a single Farm ends in part of a bed at its top and bottom.",
-      "acceptedAt": "2026-10-02T14:03:22.811Z"
+      "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot. The crop-rows stamps cut a bed in half at the tile's top and bottom edge; the user asked for a complete farm on its tile. The candidate's own three beds with their ends, seated 4 px above the bottom: 67 x 72 in the 80 x 80 tile, grass all round. Reviewed at 1:1 and x4.",
+      "acceptedAt": "2026-10-05T12:32:18.015Z"
     },
     "chibi-direction-fighter": {
       "id": "chibi-direction-fighter",
@@ -5805,13 +5693,13 @@
       "subject": "IMPROVEMENT:SAWMILL",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
-      "recipe": "sawmill-c-a-edit-2",
+      "recipe": "sawmill-mill-a-edit",
       "candidate": 0,
-      "candidateSha256": "69c7243c8784ca411b0e9a866dd15596786a998920d8832f15ee47e3a5bb3b0e",
+      "candidateSha256": "f39ea32c8924af15f1e426c125bd5da1d49a12af74124bac09fcdc342f3a0aae",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-direction-sawmill.png",
-        "sha256": "89eacb1acf79e7b8c72ed12e40ede119ac893914909db734aa178719528434a1",
-        "pixelSha256": "06c63cf105590200340f7cda03174a105eaaeca3e8f79b7f3570e6e5f41301bb",
+        "sha256": "892baf84f8b04c51ed244cd71fe77831750aa9abbb7eb7cc58649a0a1947c4b9",
+        "pixelSha256": "d45bec14b770616d6d2f916122525eab7cadf2cdc007ac73a51741e622e9b74b",
         "width": 72,
         "height": 72
       },
@@ -5838,8 +5726,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "A big solid light steel saw blade with teeth in a wooden frame and a stack of cut logs beside it: reads as a sawmill at 1:1. No plate.",
-      "acceptedAt": "2026-10-02T08:51:48.866Z"
+      "notes": "Bead pulp_wars-2o7.2, the Sawmill redone (the user: quite ugly): one chunky plank shed under a terracotta roof, one big steel circular saw blade with clear teeth standing at its side, a stack of three logs and a pile of yellow planks; 51 x 48 in the 72 x 72 canvas. The blade, the logs and the shed are three separate shapes at 1:1; the old one was a house with a disc stuck on its wall. The pile of planks lies flat under the logs like a mat (the plate hint); it is planks, not ground. Both candidates are identical.",
+      "acceptedAt": "2026-10-05T12:44:24.833Z"
     },
     "chibi-direction-shipyard": {
       "id": "chibi-direction-shipyard",

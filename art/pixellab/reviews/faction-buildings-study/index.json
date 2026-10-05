@@ -11,14 +11,14 @@
   "command": "npm run art:faction-buildings-review",
   "note": "The faction building looks as the game draws them (bead pulp_wars-xdh.2). The scene-*-after and scene-*-captured captures are the live look of the real board host; scene-*-before hides the faction art from the direction registry, so it is the board before the faction looks (scripts/art/faction-buildings/scene.ts). The masters are the production batches' accepted recipes.",
   "masters": {
-    "chibi-undead-graveyard": "graveyard-pixen-a",
+    "chibi-undead-graveyard": "graveyard-plot-c-edit",
     "chibi-undead-bone-mill": "bone-mill-edit-d",
     "chibi-martian-solar-array": "solar-b-edit-c",
     "chibi-martian-hydroponic-farm": "hydroponic-edit-a",
     "chibi-dinosaur-grinding-stone": "grindstone-a",
     "chibi-dinosaur-chopping-block": "chopping-block-b",
     "chibi-ice-folk-frost-garden": "frost-garden-edit-a",
-    "chibi-dwarf-mushroom-farm": "mushroom-flux-b-edit",
+    "chibi-dwarf-mushroom-farm": "mushroom-patch-b-edit",
     "chibi-dwarf-steam-pump": "steam-pump-b"
   },
   "undeadGrass": {
@@ -71,6 +71,8 @@
     "before-after-contact.png",
     "buildings-1x.png",
     "buildings-x3.png",
+    "farms-sawmills-1x.png",
+    "farms-sawmills-x3.png",
     "gallery-buildings-desktop.png",
     "gallery-buildings-farm-desktop.png",
     "gallery-buildings-farm-phone.png",

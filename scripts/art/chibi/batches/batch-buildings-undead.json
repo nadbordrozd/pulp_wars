@@ -10,68 +10,14 @@
       "id": "chibi-undead-graveyard",
       "subject": "IMPROVEMENT:UNDEAD:FARM",
       "assetClass": "BUILDING",
-      "recipeClass": "crop-rows",
+      "recipeClass": "calm-plot",
       "canvas": {
         "width": 80,
         "height": 80
       },
       "ownerColour": false,
-      "cropRows": {
-        "rows": 3,
-        "band": 0,
-        "period": 80,
-        "stamps": [
-          {
-            "left": 2,
-            "width": 16,
-            "at": 0
-          },
-          {
-            "left": 18,
-            "width": 15,
-            "at": 16
-          },
-          {
-            "left": 17,
-            "width": 1,
-            "at": 31
-          },
-          {
-            "left": 33,
-            "width": 16,
-            "at": 32
-          },
-          {
-            "left": 49,
-            "width": 14,
-            "at": 48
-          },
-          {
-            "left": 48,
-            "width": 1,
-            "at": 62
-          },
-          {
-            "left": 48,
-            "width": 1,
-            "at": 63
-          },
-          {
-            "left": 63,
-            "width": 15,
-            "at": 64
-          },
-          {
-            "left": 62,
-            "width": 1,
-            "at": 79
-          }
-        ],
-        "rowOffsets": [0, 8, 0],
-        "phase": 0.5,
-        "saturation": 1,
-        "strawMix": 0
-      }
+      "subjectKey": "IMPROVEMENT:UNDEAD:FARM/PLOT",
+      "bottomMargin": 5
     },
     {
       "id": "chibi-undead-bone-mill",
@@ -100,6 +46,122 @@
       },
       "negativeAddendum": "skull, skeleton, bones, zombie, coffin, open grave, white headstone, pale headstone, round-topped tombstone, ghost, fog, candles, pumpkin, green plants, vegetables, cabbages, tree stumps, logs, pink, grass",
       "notes": "Pixflux drew pink slabs on grass (flux-a) and stumps and pumpkins (flux-b). Pixen, with a subject of dark pointed slate gravestones instead of crosses on mounds."
+    },
+    {
+      "id": "graveyard-plot-a",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 20701,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image.",
+      "notes": "Bead pulp_wars-2o7.2, first sample of the Graveyard as its own thing (the user: the rows of identical tombstones imitate the farm and are not readable): a fenced plot, three different stones, a bare tree."
+    },
+    {
+      "id": "graveyard-plot-b",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 20702,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "At the back of the plot stands one small stone crypt with a peaked charcoal roof and a small arched door glowing soft violet. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image.",
+      "notes": "Second sample: the plot with a little crypt at the back."
+    },
+    {
+      "id": "graveyard-plot-c",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 20703,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "A small lantern with a soft violet flame hangs on a short post beside the gap in the fence. The whole graveyard is drawn large, about three quarters of the image wide, and touches no edge of the image.",
+      "notes": "Third sample: the plot with a violet lantern at the gate."
+    },
+    {
+      "id": "graveyard-plot-c-edit",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "edit-image-pixen",
+      "seed": 20704,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "graveyard-plot-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things. Make the gravestones a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082), clearly lighter than the fence and the earth. Make the plot of earth a flat thin patch with no thick dark side walls under it. Keep the dark iron fence, the bare tree, the violet lantern flame, the size, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "graveyard-plot-c reads as a fenced graveyard at a glance and is the cleanest of the three, but its stones are nearly as dark as its fence and it stands on a slab with side walls."
+    },
+    {
+      "id": "graveyard-plot-b-edit",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "edit-image-pixen",
+      "seed": 20705,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "source": {
+        "recipe": "graveyard-plot-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only two things. Make the orange-brown earth a dark dusty grey-brown (#5d5552), a flat thin patch with no thick side walls under it. Make the gravestones and the crypt walls a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082). Keep the crypt, its near-black roof and violet door, the bare tree, the cross, the fence, the size, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "graveyard-plot-b has the most character (a crypt with a violet door, a cross, a tree), but its earth is orange and it stands on a thick isometric block."
+    },
+    {
+      "id": "graveyard-plot-d",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 20706,
+      "requestSize": {
+        "width": 96,
+        "height": 96
+      },
+      "promptAddendum": "The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of pale dusty earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image.",
+      "notes": "A larger try of the accepted plan (graveyard-plot-c-edit is 62 x 51 and its stones are small on the board): requested at 96 x 96, to be seated in the 80 x 80 tile if it fits."
+    },
+    {
+      "id": "graveyard-plot-e",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 20706,
+      "requestSize": {
+        "width": 84,
+        "height": 84
+      },
+      "promptAddendum": "The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of dusty grey-brown earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image.",
+      "notes": "graveyard-plot-d again at 84 x 84, so that the same design fits the 80 x 80 tile; the earth asked greyer."
+    },
+    {
+      "id": "graveyard-plot-f",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 20707,
+      "requestSize": {
+        "width": 84,
+        "height": 84
+      },
+      "promptAddendum": "The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of dusty grey-brown earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about three quarters of the image wide and touches no edge of the image.",
+      "notes": "A second seed of graveyard-plot-e."
+    },
+    {
+      "id": "graveyard-plot-g",
+      "asset": "chibi-undead-graveyard",
+      "endpoint": "create-image-pixen",
+      "seed": 20706,
+      "requestSize": {
+        "width": 80,
+        "height": 80
+      },
+      "promptAddendum": "The gravestones are a light slate blue-grey, clearly lighter than the dark fence, and big: each about a third of the image tall. The earth is a flat thin patch of pale dusty earth with no side walls. A small lantern with a soft violet flame stands beside the gap in the fence. The whole graveyard is about nine tenths of the image wide and touches no edge of the image.",
+      "notes": "The text of graveyard-plot-d at the tile size, asked nine tenths wide (the 80 x 80 samples came out 48 to 62 px wide)."
     },
     {
       "id": "bone-mill-edit-a",

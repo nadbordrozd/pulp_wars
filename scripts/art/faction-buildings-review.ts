@@ -14,6 +14,9 @@
  * - `buildings-{x3,1x}.png`: one row per faction building: the shared
  *   building on Grass, the accepted production master on its faction's
  *   ground (a Farm also as a 3 x 3 block), and the faction's City 2.
+ * - `farms-sawmills-{x3,1x}.png` (bead pulp_wars-2o7.2): every Farm and
+ *   Sawmill look with the factions that show it, alone on Grass, on Snow
+ *   and on its faction's territory ground, and as a 2 x 2 block there.
  * - `grass-x2.png`: the three Grass tiles and Forest, each Undead grass
  *   candidate's tiles and Forest, and for each a 6 x 3 field whose left half
  *   is the shared Grass and right half the candidate, as at a territory
@@ -376,6 +379,175 @@ async function buildingsSheet(
         left: left + Math.round(((96 - size.width) / 2) * scale),
         top: top + header + tile * 3 - size.height * scale,
       });
+    }
+  }
+  await sharp({
+    create: { width, height, channels: 4, background: "#1d2226" },
+  })
+    .composite(composites)
+    .png({ compressionLevel: 9 })
+    .toFile(path.join(OUT, name));
+  written.push(name);
+  console.log(`wrote ${name}`);
+}
+
+/**
+ * Every Farm and Sawmill look the game draws (bead pulp_wars-2o7.2), with
+ * the factions that show it.
+ */
+const FARM_SAWMILL_LOOKS: readonly {
+  readonly label: string;
+  readonly factions: string;
+  readonly file: string;
+  readonly territory: "GRASS" | "GLOAM" | "SNOW";
+}[] = [
+  {
+    label: "Farm",
+    factions: "Human, Goblin, Dinosaur, Candy",
+    file: "public/assets/chibi/buildings/chibi-direction-farm.png",
+    territory: "GRASS",
+  },
+  {
+    label: "Graveyard",
+    factions: "Undead",
+    file: "public/assets/chibi/buildings/chibi-undead-graveyard.png",
+    territory: "GLOAM",
+  },
+  {
+    label: "Hydroponic Farm",
+    factions: "Martian",
+    file: "public/assets/chibi/buildings/chibi-martian-hydroponic-farm.png",
+    territory: "GRASS",
+  },
+  {
+    label: "Frost Garden",
+    factions: "Ice Folk",
+    file: "public/assets/chibi/buildings/chibi-ice-folk-frost-garden.png",
+    territory: "SNOW",
+  },
+  {
+    label: "Mushroom Farm",
+    factions: "Dwarf",
+    file: "public/assets/chibi/buildings/chibi-dwarf-mushroom-farm.png",
+    territory: "GRASS",
+  },
+  {
+    label: "Sawmill",
+    factions: "every faction but Dinosaur",
+    file: "public/assets/chibi/buildings/chibi-direction-sawmill.png",
+    territory: "GRASS",
+  },
+  {
+    label: "Chopping Block",
+    factions: "Dinosaur",
+    file: "public/assets/chibi/buildings/chibi-dinosaur-chopping-block.png",
+    territory: "GRASS",
+  },
+];
+
+/** The Ice Folk Snow: a 42% wash of #f5f8fc over the Grass. */
+async function snowed(image: Buffer): Promise<Buffer> {
+  const { width = 0, height = 0 } = await sharp(image).metadata();
+  return sharp(image)
+    .composite([
+      {
+        input: {
+          create: {
+            width,
+            height,
+            channels: 4,
+            background: { r: 245, g: 248, b: 252, alpha: 0.42 },
+          },
+        },
+      },
+    ])
+    .png()
+    .toBuffer();
+}
+
+/**
+ * `farms-sawmills-{x3,1x}.png`: each Farm and Sawmill look alone on Grass,
+ * on Snow and on its faction's territory ground, and as a 2 x 2 block on
+ * that ground (neighbouring Farms no longer join: each is a whole sprite).
+ */
+async function farmsSawmillsSheet(scale: number, name: string): Promise<void> {
+  const tile = 80 * scale;
+  const gap = 8 * scale;
+  const header = 22 * Math.max(1, scale / 2);
+  const side = 230;
+  const columns = [
+    { label: "Grass", width: tile },
+    { label: "Snow", width: tile },
+    { label: "Territory", width: tile },
+    { label: "2 x 2, territory", width: tile * 2 },
+  ];
+  const rowHeight = tile * 2 + gap;
+  const width = side + columns.reduce((sum, c) => sum + c.width + gap, gap);
+  const height = header + FARM_SAWMILL_LOOKS.length * rowHeight + gap;
+  const composites: OverlayOptions[] = [];
+  let x = side + gap;
+  for (const column of columns) {
+    composites.push({
+      input: label(column.label, column.width, header, 13),
+      left: x,
+      top: 0,
+    });
+    x += column.width + gap;
+  }
+  const gloam = [1, 2, 3].map((index) =>
+    undeadGrassFile(RECOMMENDED_UNDEAD_GRASS, index),
+  );
+  for (const [index, look] of FARM_SAWMILL_LOOKS.entries()) {
+    const top = header + index * rowHeight;
+    composites.push({
+      input: label(look.label, side, 22, 13),
+      left: 4,
+      top,
+    });
+    composites.push({
+      input: label(look.factions, side, 22, 11),
+      left: 4,
+      top: top + 20,
+    });
+    type Cells = { columns: number; rows: number };
+    // The Snow lies under the building, not over it.
+    const onSnow = async (cells: Cells): Promise<Buffer> => {
+      const ground = await snowed(
+        await onGround(GRASS_TODAY, null, scale, cells),
+      );
+      const size = await sizeOf(look.file);
+      const sprite = await scaled(look.file, scale);
+      const sprites: OverlayOptions[] = [];
+      for (let row = 0; row < cells.rows; row += 1)
+        for (let column = 0; column < cells.columns; column += 1)
+          sprites.push({
+            input: sprite,
+            left: column * tile + Math.round(((80 - size.width) / 2) * scale),
+            top: row * tile + Math.round((80 - size.height) * scale),
+          });
+      return sharp(ground).composite(sprites).png().toBuffer();
+    };
+    const territory = (cells: Cells): Promise<Buffer> =>
+      look.territory === "SNOW"
+        ? onSnow(cells)
+        : onGround(
+            look.territory === "GLOAM" ? gloam : GRASS_TODAY,
+            look.file,
+            scale,
+            cells,
+            true,
+          );
+    const one = { columns: 1, rows: 1 };
+    let left = side + gap;
+    for (const input of [
+      await onGround(GRASS_TODAY, look.file, scale),
+      await onSnow(one),
+      await territory(one),
+      await territory({ columns: 2, rows: 2 }),
+    ]) {
+      composites.push({ input, left, top });
+      const { width: placed = 0 } = await sharp(input).metadata();
+      left += placed + gap;
     }
   }
   await sharp({
@@ -1010,6 +1182,8 @@ async function main(): Promise<void> {
   const masters = await acceptedMasters();
   await buildingsSheet(3, "buildings-x3.png", masters);
   await buildingsSheet(1, "buildings-1x.png", masters);
+  await farmsSawmillsSheet(3, "farms-sawmills-x3.png");
+  await farmsSawmillsSheet(1, "farms-sawmills-1x.png");
   await grassSheet();
   const captures = sceneCaptures();
   if (!process.argv.includes("--skip-capture")) {

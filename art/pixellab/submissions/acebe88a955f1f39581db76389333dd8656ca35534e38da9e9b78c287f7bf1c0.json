@@ -1,0 +1,57 @@
+{
+  "id": "sawmill-mill-c",
+  "jobId": "sync-c217f3aa-33d2-43b1-bf6b-fc8b63c4f5fd",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "direction-human",
+    "asset": "chibi-direction-sawmill",
+    "subject": "IMPROVEMENT:SAWMILL",
+    "faction": "ORIGINAL",
+    "recipeClass": "calm-building",
+    "requestSize": {
+      "width": 72,
+      "height": 72
+    },
+    "seed": 20723,
+    "noBackground": true,
+    "options": {
+      "outline": "selective outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+        "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-calm-building.txt + scripts/art/chibi/fragments/class-calm-building.negative.txt",
+        "text": "Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+        "negative": "pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The mill house is open-sided: its roof stands on four thick oak posts with the sawing bench and the big saw blade under it. The sawmill is drawn large and fills most of the image, touching no edge."
+      }
+    ],
+    "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only. The mill house is open-sided: its roof stands on four thick oak posts with the sawing bench and the big saw blade under it. The sawmill is drawn large and fills most of the image, touching no edge.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character",
+    "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one single small building map piece with a simple clear silhouette, flat colours and a thin outline in a darker tone of each colour (never black), big simple shapes, no decoration. It stands directly on the empty transparent background with no ground, soil, grass or platform under it; the bottom of the building is the lowest thing in the image. Materials: pale grey-beige stone, cream plaster with dark oak timber framing, oak planks and calm dusty terracotta-red roof tiles (a muted brick red, never bright red); every colour is muted and a little pale, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little sawmill: one small chunky mill house of oak planks with a steep dusty terracotta roof and a wide open doorway; in front of the doorway one big round steel circular saw blade with clear pointed teeth stands upright in a low oak sawing bench, with a pale log lying on the bench; beside the house a neat pyramid stack of three pale cut logs showing their round pale ends and a tidy low pile of long pale yellow planks; compact and chunky, the house, the blade, the logs and the planks each easy to tell apart. Buildings only. The mill house is open-sided: its roof stands on four thick oak posts with the sawing bench and the big saw blade under it. The sawmill is drawn large and fills most of the image, touching no edge. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, base, plinth, round base, disc, rim, ground plate, platform, terrain slab, dirt slab, grass square, isometric block, ground tile, grass, soil, scenery, background, people, crowd, second building, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character."
+  }
+}

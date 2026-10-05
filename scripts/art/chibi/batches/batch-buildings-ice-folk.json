@@ -16,42 +16,7 @@
         "height": 80
       },
       "ownerColour": false,
-      "cropRows": {
-        "rows": 3,
-        "band": 0,
-        "period": 80,
-        "stamps": [
-          {
-            "left": 8,
-            "width": 16,
-            "at": 0
-          },
-          {
-            "left": 24,
-            "width": 16,
-            "at": 16
-          },
-          {
-            "left": 40,
-            "width": 16,
-            "at": 32
-          },
-          {
-            "left": 56,
-            "width": 16,
-            "at": 48
-          },
-          {
-            "left": 24,
-            "width": 16,
-            "at": 64
-          }
-        ],
-        "rowOffsets": [0, 8, 0],
-        "phase": 0.5,
-        "saturation": 1,
-        "strawMix": 0
-      }
+      "bottomMargin": 6
     }
   ],
   "recipes": [

@@ -9,7 +9,10 @@ import { chibiArtUrl } from "./chibi-art-manifest";
  * The nine buildings are the batches `buildings-undead`, `-martian`,
  * `-dinosaur`, `-ice-folk` and `-dwarf` (imported from the exploration run
  * `art/explorations/faction-buildings-2026-10`; the Bone Mill was redone
- * with a lighter slate tower). Like the shared calm set they carry no owner
+ * with a lighter slate tower). Since bead pulp_wars-2o7.2 every Farm look
+ * is one whole sprite with ground round it: the Graveyard (a fenced plot)
+ * and the Mushroom Farm (big mushrooms on a mulch bed) were redrawn, the
+ * Hydroponic Farm and the Frost Garden refitted. Like the shared calm set they carry no owner
  * colour and no mask. Their subjects are `IMPROVEMENT:<FACTION>:<ID>`
  * (factionImprovementSubjectV7): the board asks with the faction that owns
  * the improvement's territory, so a captured city's buildings change look.

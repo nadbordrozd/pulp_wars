@@ -70,8 +70,8 @@
       "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "The accepted Farm's vegetables in chrome troughs, each plant under a glass dome; the top trough is stamped on every row, five domes to a tile. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
-        "reviewedAt": "2026-10-04T09:12:33.754Z"
+        "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot (the user: keep the hydroponic farm, fix the cropping). The three troughs with their ends as drawn, seated 3 px above the bottom: 67 x 73 in the 80 x 80 tile. Reviewed at 1:1 and x4.",
+        "reviewedAt": "2026-10-05T12:32:18.411Z"
       }
     },
     "solar-b": {
@@ -244,58 +244,15 @@
       "candidateSha256": "cf468ad9228bea7238cdf552af01598c0746c06b671e02321b272da7ca3c5ccb",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-martian-hydroponic-farm.png",
-        "sha256": "33095522cd017c2149ba7b30e302e70892dd04744d64c2155ab4d5af3e1426e1",
-        "pixelSha256": "e449e66ed754fddf0cea487a7cdd005ba608e3c93ecb7b31117dcc773385222f",
+        "sha256": "8f9d52959887ee6441a444d1d69bfca7317d00cd83af273b2b28a21581e56795",
+        "pixelSha256": "09e42c05923ec4452767fe8be44b161bd0f173eed75173ec3f3e0ed408f2baaa",
         "width": 80,
         "height": 80
       },
       "derivation": {
-        "kind": "crop-rows",
-        "cropRows": {
-          "rows": 3,
-          "band": 0,
-          "period": 80,
-          "stamps": [
-            {
-              "left": 9,
-              "width": 16,
-              "at": 0
-            },
-            {
-              "left": 25,
-              "width": 16,
-              "at": 16
-            },
-            {
-              "left": 41,
-              "width": 16,
-              "at": 32
-            },
-            {
-              "left": 57,
-              "width": 14,
-              "at": 48
-            },
-            {
-              "left": 56,
-              "width": 1,
-              "at": 62
-            },
-            {
-              "left": 56,
-              "width": 1,
-              "at": 63
-            },
-            {
-              "left": 25,
-              "width": 16,
-              "at": 64
-            }
-          ],
-          "rowOffsets": [0, 32, 16],
-          "phase": 0.5,
-          "saturation": 1,
-          "strawMix": 0
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 3
         }
       },
       "anchor": {
@@ -315,8 +272,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "The accepted Farm's vegetables in chrome troughs, each plant under a glass dome; the top trough is stamped on every row, five domes to a tile. Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
-      "acceptedAt": "2026-10-04T09:12:33.754Z"
+      "notes": "Bead pulp_wars-2o7.2: the same candidate as a whole plot (the user: keep the hydroponic farm, fix the cropping). The three troughs with their ends as drawn, seated 3 px above the bottom: 67 x 73 in the 80 x 80 tile. Reviewed at 1:1 and x4.",
+      "acceptedAt": "2026-10-05T12:32:18.411Z"
     },
     "chibi-martian-solar-array": {
       "id": "chibi-martian-solar-array",

@@ -66,6 +66,12 @@ export type ChibiRecipeClass =
   | "calm-building"
   /** A city or the Village in the same calm style, with no owner colour. */
   | "calm-settlement"
+  /**
+   * A small yard that carries its own patch of ground, in the calm style
+   * (bead pulp_wars-2o7.2): the Undead Graveyard and the Dwarf Mushroom
+   * Farm, complete sprites on their tile and no longer rows of crops.
+   */
+  | "calm-plot"
   /** The Farm as a seamless full-cell pattern of crop rows with gaps. */
   | "crop-rows"
   /**
@@ -420,6 +426,27 @@ export const CHIBI_CLASS_RECIPES: Readonly<
       "create-image-pixen": { ...PIECE_OPTIONS, outline: "selective outline" },
     },
   },
+  // A faction's version of the Farm that is not a field (bead
+  // pulp_wars-2o7.2, the user: the graveyard "tries to imitate the farm too
+  // closely", "rows of identical tombstones are not readable"): one small
+  // yard with a few big things on its own patch of earth. The calm-building
+  // text forbids ground and asks for one building, so the class has its own
+  // text; seated like a calm building, with tile ground left all round.
+  // Pixflux is listed only for the retired crop-rows recipes these assets
+  // keep as history; new recipes use Pixen.
+  "calm-plot": {
+    camera: "three-quarter",
+    style: "calm",
+    factionLayer: false,
+    assetClasses: ["BUILDING"],
+    generators: ["create-image-pixen", "create-image-pixflux"],
+    editPass: true,
+    noBackground: true,
+    derivation: "seated",
+    options: {
+      "create-image-pixen": { ...PIECE_OPTIONS, outline: "selective outline" },
+    },
+  },
   // The Rift (bead pulp_wars-9s0.5): a crack drawn into a strip of three
   // ground tiles. An edit of the ground strip (recipe `groundStrip`) keeps
   // the grass; the rift-strip derivation keeps only the crack over the
@@ -650,7 +677,13 @@ export interface ChibiAssetSpec {
    * margin puts its hull on the shared ship's waterline by whole pixels.
    */
   readonly bottomMargin?: number;
-  /** crop-rows only: how the candidate's crop row becomes the tile. */
+  /**
+   * crop-rows only: how the candidate's crop row becomes the tile. A
+   * crop-rows asset that names a `bottomMargin` instead is a whole plot
+   * (bead pulp_wars-2o7.2): the candidate's own beds, ends and all, seated
+   * like a calm building, so the Farm is a complete sprite on its tile with
+   * ground round it and does not continue into its neighbours.
+   */
   readonly cropRows?: CropRowsSpec;
   /**
    * rift-strip only (bead pulp_wars-9s0.5): the strip's crack mask and this
@@ -1267,10 +1300,11 @@ export function batchManifestProblems(
     if (asset.bottomMargin !== undefined) {
       if (
         classRecipe.derivation !== "seated" &&
-        classRecipe.derivation !== "as-is"
+        classRecipe.derivation !== "as-is" &&
+        classRecipe.derivation !== "crop-rows"
       )
         problems.push(
-          `${label}: bottomMargin is only for seated and as-is classes`,
+          `${label}: bottomMargin is only for seated, as-is and crop-rows classes`,
         );
       if (owned)
         problems.push(`${label}: bottomMargin is only for unowned assets`);
@@ -1279,8 +1313,17 @@ export function batchManifestProblems(
     }
     if (classRecipe.derivation === "crop-rows") {
       const rows = asset.cropRows;
-      if (rows === undefined)
-        problems.push(`${label}: a crop-rows asset needs cropRows`);
+      // A whole plot (bead pulp_wars-2o7.2): no stamps, the candidate's own
+      // beds seated on a bottom margin.
+      if (rows === undefined) {
+        if (asset.bottomMargin === undefined)
+          problems.push(
+            `${label}: a crop-rows asset needs cropRows, or a bottomMargin for a whole plot`,
+          );
+      } else if (asset.bottomMargin !== undefined)
+        problems.push(
+          `${label}: a crop-rows asset has cropRows or a bottomMargin, not both`,
+        );
       else {
         if (
           !Number.isInteger(rows.period) ||

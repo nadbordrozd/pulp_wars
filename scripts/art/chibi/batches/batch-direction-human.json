@@ -281,7 +281,7 @@
         "height": 72
       },
       "ownerColour": false,
-      "subjectKey": "IMPROVEMENT:SAWMILL/CALM"
+      "subjectKey": "IMPROVEMENT:SAWMILL/MILL"
     },
     {
       "id": "chibi-direction-market",
@@ -318,430 +318,7 @@
       },
       "ownerColour": false,
       "subjectKey": "IMPROVEMENT:FARM/VEGGIES",
-      "cropRows": {
-        "rows": 3,
-        "band": 0,
-        "period": 80,
-        "stamps": [
-          {
-            "left": 23,
-            "width": 1,
-            "at": 0,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 1,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 8,
-            "width": 16,
-            "at": 2,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 18,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 19,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 20,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 21,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 24,
-            "width": 16,
-            "at": 22,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 38,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 39,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 40,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 41,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 40,
-            "width": 16,
-            "at": 42,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 58,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 59,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 60,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 61,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 56,
-            "width": 16,
-            "at": 62,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 78,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 23,
-            "width": 1,
-            "at": 79,
-            "band": 0,
-            "rows": [1]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 0,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 1,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 8,
-            "width": 16,
-            "at": 2,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 18,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 19,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 20,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 21,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 24,
-            "width": 16,
-            "at": 22,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 38,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 39,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 40,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 41,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 40,
-            "width": 16,
-            "at": 42,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 58,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 59,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 60,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 61,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 56,
-            "width": 16,
-            "at": 62,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 78,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 25,
-            "width": 1,
-            "at": 79,
-            "band": 1,
-            "rows": [2]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 0,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 1,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 2,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 8,
-            "width": 32,
-            "at": 3,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 35,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 36,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 37,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 38,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 39,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 40,
-            "width": 16,
-            "at": 40,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 56,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 57,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 58,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 59,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 60,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 56,
-            "width": 16,
-            "at": 61,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 77,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 78,
-            "band": 2,
-            "rows": [0]
-          },
-          {
-            "left": 57,
-            "width": 1,
-            "at": 79,
-            "band": 2,
-            "rows": [0]
-          }
-        ],
-        "rowOffsets": [0, 0, 0],
-        "phase": 0.5,
-        "saturation": 1,
-        "strawMix": 0
-      }
+      "bottomMargin": 4
     },
     {
       "id": "chibi-direction-city-1",
@@ -1468,6 +1045,58 @@
       },
       "editInstruction": "Replace the dark spoked wheel with one big solid round steel saw blade: a plain flat light silver-grey disc with a small dark hub hole in its middle and sharp triangular teeth all around its rim, with no spokes and no holes, standing upright in the same wooden frame, as big as the wheel was. Keep the building, the roofs, the wooden frame, the stack of logs, the colours, outline and art style exactly the same, on a transparent background.",
       "notes": "sawmill-c-a-edit is clean, but its blade is a dark spoked ring that reads as a cogwheel or a water wheel, the demo's weakness again."
+    },
+    {
+      "id": "sawmill-mill-a",
+      "asset": "chibi-direction-sawmill",
+      "endpoint": "create-image-pixen",
+      "seed": 20721,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The sawmill is drawn large and fills most of the image, touching no edge.",
+      "notes": "Bead pulp_wars-2o7.2, first sample of the Sawmill redo (the user: quite ugly, redo it; the old one is a house with a saw disc stuck on its side): a mill house, the blade in a bench in front of its door, logs and planks."
+    },
+    {
+      "id": "sawmill-mill-b",
+      "asset": "chibi-direction-sawmill",
+      "endpoint": "create-image-pixen",
+      "seed": 20722,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "One big wooden water wheel with paddles is mounted on the side wall of the mill house. The sawmill is drawn large and fills most of the image, touching no edge.",
+      "notes": "Second sample: with a water wheel on the side wall."
+    },
+    {
+      "id": "sawmill-mill-c",
+      "asset": "chibi-direction-sawmill",
+      "endpoint": "create-image-pixen",
+      "seed": 20723,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "promptAddendum": "The mill house is open-sided: its roof stands on four thick oak posts with the sawing bench and the big saw blade under it. The sawmill is drawn large and fills most of the image, touching no edge.",
+      "notes": "Third sample: an open-sided shed with the bench under the roof."
+    },
+    {
+      "id": "sawmill-mill-a-edit",
+      "asset": "chibi-direction-sawmill",
+      "endpoint": "edit-image-pixen",
+      "seed": 20724,
+      "requestSize": {
+        "width": 72,
+        "height": 72
+      },
+      "source": {
+        "recipe": "sawmill-mill-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: the dull grey saw blade becomes one big round circular saw blade of light silver-grey steel (#c9ced6) with sharp pointed teeth all round its rim and a small dark hub hole, as tall as the wall of the shed, standing upright in front of the left side of the shed. Keep the shed, its terracotta roof, the stack of logs, the yellow planks, the colours, the outline and the art style exactly the same, on a transparent background.",
+      "notes": "sawmill-mill-a is the clean, chunky one (a plank shed, a log stack, planks), but its blade is a dull grey half disc that does not read at board size."
     },
     {
       "id": "market-c-a-edit",

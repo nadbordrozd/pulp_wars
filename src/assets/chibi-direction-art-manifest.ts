@@ -23,8 +23,10 @@ import { CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7 } from "./chibi-naval-submarine
  * Production art of the new visual direction (bead pulp_wars-3tq.5, batch
  * `direction-human`; see docs/art/VISUAL_DIRECTION_2026-10.md, "Production").
  * Every Human unit and portrait in the faction's fixed crimson and gold, the
- * shared improvement set in the calm building style, the Farm as crop rows,
- * Human City 1-3 and the neutral Village.
+ * shared improvement set in the calm building style, the Farm as one whole
+ * plot of three vegetable beds (bead pulp_wars-2o7.2: it no longer runs
+ * into its neighbours; the Sawmill was redone in the same bead), Human
+ * City 1-3 and the neutral Village.
  *
  * The entries use the same subjects as the current art in
  * chibi-art-manifest.ts but live in their own list, so nothing here is a

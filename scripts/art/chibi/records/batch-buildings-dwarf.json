@@ -154,10 +154,319 @@
         "recipe": "mushroom-flux-b-edit"
       },
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Tan and brown mushrooms on thin peat beds; the russet-red middle row is not used (rows are stamped from the first and third bed). Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2). Superseded by mushroom-patch-b-edit.",
+        "reviewedAt": "2026-10-04T09:12:38.461Z"
+      }
+    },
+    "mushroom-patch-a": {
+      "id": "mushroom-patch-a",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "jobId": "sync-94627052-3182-4977-919d-0ef41fcf9576",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-dwarf",
+        "asset": "chibi-dwarf-mushroom-farm",
+        "subject": "IMPROVEMENT:DWARF:FARM",
+        "faction": "DWARF",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20711,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: a little mushroom patch: one low rounded mound of dark brown peat mulch with three big chunky mushrooms of clearly different heights growing out of it, well apart from each other: one tall mushroom with a broad domed russet-brown cap, one middle-sized mushroom with a round warm tan cap, and one short squat mushroom with a flat tan cap; thick pale cream stalks, a few big cream spots on the caps, and two tiny cream button mushrooms at their feet; beside them one small crooked wooden signpost stuck in the mulch. Warm tan, russet brown, pale cream and dark peat brown only; no red caps, no green. Mushrooms, mound and signpost only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little mushroom patch: one low rounded mound of dark brown peat mulch with three big chunky mushrooms of clearly different heights growing out of it, well apart from each other: one tall mushroom with a broad domed russet-brown cap, one middle-sized mushroom with a round warm tan cap, and one short squat mushroom with a flat tan cap; thick pale cream stalks, a few big cream spots on the caps, and two tiny cream button mushrooms at their feet; beside them one small crooked wooden signpost stuck in the mulch. Warm tan, russet brown, pale cream and dark peat brown only; no red caps, no green. Mushrooms, mound and signpost only. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little mushroom patch: one low rounded mound of dark brown peat mulch with three big chunky mushrooms of clearly different heights growing out of it, well apart from each other: one tall mushroom with a broad domed russet-brown cap, one middle-sized mushroom with a round warm tan cap, and one short squat mushroom with a flat tan cap; thick pale cream stalks, a few big cream spots on the caps, and two tiny cream button mushrooms at their feet; beside them one small crooked wooden signpost stuck in the mulch. Warm tan, russet brown, pale cream and dark peat brown only; no red caps, no green. Mushrooms, mound and signpost only. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:38:38.401Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/mushroom-patch-a.png",
+      "rawSheetSha256": "f5271b98b5f65491894c352951ffe37a1996dbe0ee85b91561bd38bcbe74d934",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.2275,
+          "footprintWidthShare": 0.8043,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:39:54.959Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Clean and readable (three spotted mushrooms, a crooked sign, a thin slab), but small (46 x 47) and the least characterful of the three.",
+        "reviewedAt": "2026-10-05T12:44:23.147Z"
+      }
+    },
+    "mushroom-patch-b": {
+      "id": "mushroom-patch-b",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "jobId": "sync-5e6ac410-c2b8-4e34-a1e3-cb69454187fc",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-dwarf",
+        "asset": "chibi-dwarf-mushroom-farm",
+        "subject": "IMPROVEMENT:DWARF:FARM",
+        "faction": "DWARF",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20712,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: a little mushroom patch: one low rounded mound of dark brown peat mulch with three big chunky mushrooms of clearly different heights growing out of it, well apart from each other: one tall mushroom with a broad domed russet-brown cap, one middle-sized mushroom with a round warm tan cap, and one short squat mushroom with a flat tan cap; thick pale cream stalks, a few big cream spots on the caps, and two tiny cream button mushrooms at their feet; beside them one small crooked wooden signpost stuck in the mulch. Warm tan, russet brown, pale cream and dark peat brown only; no red caps, no green. Mushrooms, mound and signpost only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Instead of the signpost, one small iron spade with a wooden handle is stuck upright in the mulch. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little mushroom patch: one low rounded mound of dark brown peat mulch with three big chunky mushrooms of clearly different heights growing out of it, well apart from each other: one tall mushroom with a broad domed russet-brown cap, one middle-sized mushroom with a round warm tan cap, and one short squat mushroom with a flat tan cap; thick pale cream stalks, a few big cream spots on the caps, and two tiny cream button mushrooms at their feet; beside them one small crooked wooden signpost stuck in the mulch. Warm tan, russet brown, pale cream and dark peat brown only; no red caps, no green. Mushrooms, mound and signpost only. Instead of the signpost, one small iron spade with a wooden handle is stuck upright in the mulch. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little mushroom patch: one low rounded mound of dark brown peat mulch with three big chunky mushrooms of clearly different heights growing out of it, well apart from each other: one tall mushroom with a broad domed russet-brown cap, one middle-sized mushroom with a round warm tan cap, and one short squat mushroom with a flat tan cap; thick pale cream stalks, a few big cream spots on the caps, and two tiny cream button mushrooms at their feet; beside them one small crooked wooden signpost stuck in the mulch. Warm tan, russet brown, pale cream and dark peat brown only; no red caps, no green. Mushrooms, mound and signpost only. Instead of the signpost, one small iron spade with a wooden handle is stuck upright in the mulch. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:39:54.960Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/mushroom-patch-b.png",
+      "rawSheetSha256": "67594cb6b2f826e6e1c116015dfc5d316cc091fcee64670f0baeab8e80b808a7",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.1129,
+          "footprintWidthShare": 0.963,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:41:23.228Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The design to keep: four big mushrooms of clearly different heights, a steel spade and a crooked post, 54 x 60. It stands on a thick isometric block of earth with a tuft of green. Edited as mushroom-patch-b-edit.",
+        "reviewedAt": "2026-10-05T12:44:23.325Z"
+      }
+    },
+    "mushroom-patch-b-edit": {
+      "id": "mushroom-patch-b-edit",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "jobId": "f8df98c0-53ad-439c-a1a4-0d6f4beb8d81",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "buildings-dwarf",
+        "asset": "chibi-dwarf-mushroom-farm",
+        "subject": "IMPROVEMENT:DWARF:FARM",
+        "faction": "DWARF",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20714,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: the thick square block of dark earth under the mushrooms becomes one low flat rounded mound of dark brown mulch, thin, with no tall side walls and no green grass on it. Keep every mushroom, the caps and their cream spots, the cream stalks, the small spade, the crooked wooden signpost, the size, the colours, the outline and the art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: the thick square block of dark earth under the mushrooms becomes one low flat rounded mound of dark brown mulch, thin, with no tall side walls and no green grass on it. Keep every mushroom, the caps and their cream spots, the cream stalks, the small spade, the crooked wooden signpost, the size, the colours, the outline and the art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: the thick square block of dark earth under the mushrooms becomes one low flat rounded mound of dark brown mulch, thin, with no tall side walls and no green grass on it. Keep every mushroom, the caps and their cream spots, the cream stalks, the small spade, the crooked wooden signpost, the size, the colours, the outline and the art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: the thick square block of dark earth under the mushrooms becomes one low flat rounded mound of dark brown mulch, thin, with no tall side walls and no green grass on it. Keep every mushroom, the caps and their cream spots, the cream stalks, the small spade, the crooked wooden signpost, the size, the colours, the outline and the art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "mushroom-patch-b",
+          "candidate": 0,
+          "sha256": "67594cb6b2f826e6e1c116015dfc5d316cc091fcee64670f0baeab8e80b808a7"
+        }
+      },
+      "submittedAt": "2026-10-05T12:42:57.436Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/mushroom-patch-b-edit.png",
+      "rawSheetSha256": "eec8fd3664e71412a10228e1d49407a2d28977e6d313c468cfaa88b9efae5ac7",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.142,
+          "footprintWidthShare": 0.963,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.142,
+          "footprintWidthShare": 0.963,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:43:55.782Z",
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Tan and brown mushrooms on thin peat beds; the russet-red middle row is not used (rows are stamped from the first and third bed). Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
-        "reviewedAt": "2026-10-04T09:12:38.461Z"
+        "notes": "Bead pulp_wars-2o7.2, the Mushroom Farm redone: four big spotted mushrooms of different heights (russet and tan caps, cream stalks), button mushrooms, a small spade and a crooked post on one round bed of dark mulch; 54 x 59 in the 80 x 80 tile, ground all round. The edit rounded the square block and removed the green; the bed is still thick (it reads as a slice of tree stump) and the spade lost its steel. At 1:1 it reads as mushrooms at a glance. Both candidates are identical.",
+        "reviewedAt": "2026-10-05T12:44:23.742Z"
+      }
+    },
+    "mushroom-patch-c": {
+      "id": "mushroom-patch-c",
+      "asset": "chibi-dwarf-mushroom-farm",
+      "jobId": "sync-200c41d2-0af5-44d5-ac25-ef3902425c67",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "buildings-dwarf",
+        "asset": "chibi-dwarf-mushroom-farm",
+        "subject": "IMPROVEMENT:DWARF:FARM",
+        "faction": "DWARF",
+        "recipeClass": "calm-plot",
+        "requestSize": {
+          "width": 80,
+          "height": 80
+        },
+        "seed": 20713,
+        "noBackground": true,
+        "options": {
+          "outline": "selective outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style-calm.txt + scripts/art/chibi/fragments/style-calm.negative.txt",
+            "text": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-calm-plot.txt + scripts/art/chibi/fragments/class-calm-plot.negative.txt",
+            "text": "Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour.",
+            "negative": "pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: a little mushroom patch: one low rounded mound of dark brown peat mulch with three big chunky mushrooms of clearly different heights growing out of it, well apart from each other: one tall mushroom with a broad domed russet-brown cap, one middle-sized mushroom with a round warm tan cap, and one short squat mushroom with a flat tan cap; thick pale cream stalks, a few big cream spots on the caps, and two tiny cream button mushrooms at their feet; beside them one small crooked wooden signpost stuck in the mulch. Warm tan, russet brown, pale cream and dark peat brown only; no red caps, no green. Mushrooms, mound and signpost only."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The mound is ringed by a low border of small grey stones. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image."
+          }
+        ],
+        "prompt": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little mushroom patch: one low rounded mound of dark brown peat mulch with three big chunky mushrooms of clearly different heights growing out of it, well apart from each other: one tall mushroom with a broad domed russet-brown cap, one middle-sized mushroom with a round warm tan cap, and one short squat mushroom with a flat tan cap; thick pale cream stalks, a few big cream spots on the caps, and two tiny cream button mushrooms at their feet; beside them one small crooked wooden signpost stuck in the mulch. Warm tan, russet brown, pale cream and dark peat brown only; no red caps, no green. Mushrooms, mound and signpost only. The mound is ringed by a low border of small grey stones. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid",
+        "description": "Style: flat-shaded minimalist pixel art for a turn-based strategy board game map, like a tiny simple board-game building token: very simple blocky shapes, large areas of one flat muted colour, at most one slightly darker shadow tone per material, no texture and no small details, calm low contrast, a pale desaturated palette; it must stay quiet behind the game's units. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Class: one small self-contained yard map piece for one square tile of a strategy game map: one compact low patch of bare earth with a few big simple things standing on it, each clearly apart from the others, with a clear outer silhouette, flat colours and a thin outline in a darker tone of each colour (never black). The patch is small and low, clearly smaller than the image, and everything round it is empty transparent background: no grass, no lawn, no landscape, no thick slab and no isometric block under it. Every colour is muted, each material shaded with one slightly darker tone of its own colour. No flag, no banner and nothing painted in a team colour. Subject: a little mushroom patch: one low rounded mound of dark brown peat mulch with three big chunky mushrooms of clearly different heights growing out of it, well apart from each other: one tall mushroom with a broad domed russet-brown cap, one middle-sized mushroom with a round warm tan cap, and one short squat mushroom with a flat tan cap; thick pale cream stalks, a few big cream spots on the caps, and two tiny cream button mushrooms at their feet; beside them one small crooked wooden signpost stuck in the mulch. Warm tan, russet brown, pale cream and dark peat brown only; no red caps, no green. Mushrooms, mound and signpost only. The mound is ringed by a low border of small grey stones. The mushrooms are drawn large: the tall one is about two thirds of the image tall. Nothing touches an edge of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thick black outline, black outline, individual bricks, individual roof tiles, shingles, wood grain, cracks, highlights, glossy, low-poly 3D, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, pedestal, plinth, round base, disc, rim, platform, thick slab, isometric block, ground tile, grass, lawn, landscape, scenery, background, people, crowd, house, flag, banner, pennant, heraldry, bright red, neon, saturated colours, soldier, person, character, rows of identical things, grid."
+      },
+      "submittedAt": "2026-10-05T12:41:23.230Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 80,
+        "height": 80
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-buildings-dwarf/mushroom-patch-c.png",
+      "rawSheetSha256": "9d9e3ada163d9c7593e0f6a256d1eb0a865b4d33d0bfc91678b05cdc043eb2c8",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.147,
+          "footprintWidthShare": 0.9778,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T12:42:03.883Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "One tall mushroom over a dark round bed with a red and grey rim: the caps are plain brown with no spots, the bed is nearly black and the smaller mushrooms are lost in it.",
+        "reviewedAt": "2026-10-05T12:44:23.520Z"
       }
     },
     "steam-pump-b": {
@@ -254,55 +563,20 @@
       "subject": "IMPROVEMENT:DWARF:FARM",
       "assetClass": "BUILDING",
       "status": "ACCEPTED",
-      "recipe": "mushroom-flux-b-edit",
+      "recipe": "mushroom-patch-b-edit",
       "candidate": 0,
-      "candidateSha256": "4ab25ae508a1b3256060320e53bdb9a570b9da8e78dc6ccddaaab6df4b05164c",
+      "candidateSha256": "9fa18be7fc0cab84a454ccb362394d93bcfee9d9a8221831eda12038d5d834aa",
       "master": {
         "path": "public/assets/chibi/buildings/chibi-dwarf-mushroom-farm.png",
-        "sha256": "0a5fb31ce0df5458fbb12a946dbde12128d38347e7cee933e4d828cd39d519d6",
-        "pixelSha256": "56393d7af46b44c7065d9e2df4e3df5713bf6aade1ed0d02402afea720317051",
+        "sha256": "f9bc9558f23f4e1ab05f49af8fa9651bde234f2e74a4787a39e64f1f8d45ef9c",
+        "pixelSha256": "f6314c20fe4c71b4408e8961eaa32cfe401bff9823a746a8a10b6142f383b7cc",
         "width": 80,
         "height": 80
       },
       "derivation": {
-        "kind": "crop-rows",
-        "cropRows": {
-          "rows": 4,
-          "band": 0,
-          "period": 80,
-          "stamps": [
-            {
-              "left": 5,
-              "width": 70,
-              "at": 0,
-              "band": 0,
-              "rows": [0, 2]
-            },
-            {
-              "left": 29,
-              "width": 10,
-              "at": 70,
-              "band": 0,
-              "rows": [0, 2]
-            },
-            {
-              "left": 5,
-              "width": 70,
-              "at": 0,
-              "band": 2,
-              "rows": [1, 3]
-            },
-            {
-              "left": 29,
-              "width": 10,
-              "at": 70,
-              "band": 2,
-              "rows": [1, 3]
-            }
-          ],
-          "rowOffsets": [0, 6, 40, 46],
-          "saturation": 1,
-          "strawMix": 0
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 5
         }
       },
       "anchor": {
@@ -322,8 +596,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Tan and brown mushrooms on thin peat beds; the russet-red middle row is not used (rows are stamped from the first and third bed). Reviewed again at 1:1 and x4 for production (bead pulp_wars-xdh.2).",
-      "acceptedAt": "2026-10-04T09:12:38.461Z"
+      "notes": "Bead pulp_wars-2o7.2, the Mushroom Farm redone: four big spotted mushrooms of different heights (russet and tan caps, cream stalks), button mushrooms, a small spade and a crooked post on one round bed of dark mulch; 54 x 59 in the 80 x 80 tile, ground all round. The edit rounded the square block and removed the green; the bed is still thick (it reads as a slice of tree stump) and the spade lost its steel. At 1:1 it reads as mushrooms at a glance. Both candidates are identical.",
+      "acceptedAt": "2026-10-05T12:44:23.742Z"
     },
     "chibi-dwarf-steam-pump": {
       "id": "chibi-dwarf-steam-pump",

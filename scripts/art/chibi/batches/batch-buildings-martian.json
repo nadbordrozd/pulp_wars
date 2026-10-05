@@ -27,52 +27,7 @@
         "height": 80
       },
       "ownerColour": false,
-      "cropRows": {
-        "rows": 3,
-        "band": 0,
-        "period": 80,
-        "stamps": [
-          {
-            "left": 9,
-            "width": 16,
-            "at": 0
-          },
-          {
-            "left": 25,
-            "width": 16,
-            "at": 16
-          },
-          {
-            "left": 41,
-            "width": 16,
-            "at": 32
-          },
-          {
-            "left": 57,
-            "width": 14,
-            "at": 48
-          },
-          {
-            "left": 56,
-            "width": 1,
-            "at": 62
-          },
-          {
-            "left": 56,
-            "width": 1,
-            "at": 63
-          },
-          {
-            "left": 25,
-            "width": 16,
-            "at": 64
-          }
-        ],
-        "rowOffsets": [0, 32, 16],
-        "phase": 0.5,
-        "saturation": 1,
-        "strawMix": 0
-      }
+      "bottomMargin": 3
     }
   ],
   "recipes": [

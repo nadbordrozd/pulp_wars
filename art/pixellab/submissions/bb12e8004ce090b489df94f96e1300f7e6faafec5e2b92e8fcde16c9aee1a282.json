@@ -1,0 +1,36 @@
+{
+  "id": "graveyard-plot-b-edit",
+  "jobId": "7a3a2114-5af4-4fce-9ad4-bb19d2c4dd5f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "buildings-undead",
+    "asset": "chibi-undead-graveyard",
+    "subject": "IMPROVEMENT:UNDEAD:FARM",
+    "faction": "UNDEAD",
+    "recipeClass": "calm-plot",
+    "requestSize": {
+      "width": 80,
+      "height": 80
+    },
+    "seed": 20705,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only two things. Make the orange-brown earth a dark dusty grey-brown (#5d5552), a flat thin patch with no thick side walls under it. Make the gravestones and the crypt walls a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082). Keep the crypt, its near-black roof and violet door, the bare tree, the cross, the fence, the size, the outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only two things. Make the orange-brown earth a dark dusty grey-brown (#5d5552), a flat thin patch with no thick side walls under it. Make the gravestones and the crypt walls a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082). Keep the crypt, its near-black roof and violet door, the bare tree, the cross, the fence, the size, the outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only two things. Make the orange-brown earth a dark dusty grey-brown (#5d5552), a flat thin patch with no thick side walls under it. Make the gravestones and the crypt walls a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082). Keep the crypt, its near-black roof and violet door, the bare tree, the cross, the fence, the size, the outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only two things. Make the orange-brown earth a dark dusty grey-brown (#5d5552), a flat thin patch with no thick side walls under it. Make the gravestones and the crypt walls a lighter slate blue-grey (#8b92a3) with a mid slate shade (#6a7082). Keep the crypt, its near-black roof and violet door, the bare tree, the cross, the fence, the size, the outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "graveyard-plot-b",
+      "candidate": 0,
+      "sha256": "8ebfe3a86fc6ee4023b19b0970d8b8ff08698bb64ce90869c5070c997b997c60"
+    }
+  }
+}

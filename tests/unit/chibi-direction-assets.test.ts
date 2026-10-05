@@ -35,6 +35,7 @@ import {
   opaqueBounds,
   periodMismatch,
   seatedRaster,
+  type CropRowsSpec,
 } from "../../scripts/art/chibi/raster";
 import { loadSubmissionReceipt } from "../../scripts/art/pixellab-recovery";
 
@@ -277,7 +278,7 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
     }
   });
 
-  it("the Farm tiles without a seam, with a gap on the centre line for a Road", async () => {
+  it("the Farm is one whole plot of three beds with ground on every side", async () => {
     // The vegetable beds the user chose (bead pulp_wars-9s0.7), the only
     // Farm: the comparison's lettuce and cabbage masters are gone.
     const farms = CHIBI_DIRECTION_ART_ASSETS_V7.filter(
@@ -299,39 +300,32 @@ describe("production art of the new visual direction (pulp_wars-3tq.5)", () => {
     const master = await readRaster(
       path.join(ROOT, `public/assets/chibi/buildings/${farm.id}.png`),
     );
-    // Top and bottom line of each run of crop lines. Three raised beds, kept
-    // as the candidate drew them (21 to 24 px), at a pitch of 80 / 3 px and
-    // moved down half a pitch: the first and last run are the two halves of
-    // the bed that straddles the top and bottom edges.
+    // Top and bottom line of each run of crop lines: the three raised beds
+    // exactly as the candidate drew them, ends and all. Since bead
+    // pulp_wars-2o7.2 (the user: "the sprite cut off at the top and bottom
+    // looks weird ... prioritize that the individual farm looks good rather
+    // than that they connect") no bed straddles the tile's edge.
     const bands = cropBands(master);
     expect(bands.map((band) => [band.top, band.bottom])).toEqual([
-      [0, 11],
-      [16, 36],
-      [42, 63],
-      [68, 79],
+      [4, 25],
+      [28, 51],
+      [55, 75],
     ]);
+    // The plot is whole: grass shows on every side of it.
+    expect(opaqueBounds(master)).toEqual({
+      left: 6,
+      right: 72,
+      top: 4,
+      bottom: 75,
+    });
     const opaque = (x: number, y: number): boolean =>
       (master.data[(y * master.width + x) * 4 + 3] ?? 0) >= 128;
-    const filled = (y: number): number =>
-      Array.from({ length: master.width }, (_, x) => opaque(x, y)).filter(
-        Boolean,
-      ).length;
-    // The strip of soil under each bed runs unbroken from edge to edge: no
-    // margin makes a seam between side-by-side Farms.
-    for (const band of bands.slice(0, 3))
-      for (let y = band.bottom - 2; y <= band.bottom; y += 1)
-        expect(filled(y), `soil row ${y}`).toBe(80);
-    // The bed on the edge continues in the Farm above and below, and the
-    // tile repeats exactly.
-    expect(filled(79)).toBeGreaterThan(0);
-    expect(filled(0)).toBeGreaterThan(0);
-    expect(periodMismatch(master, 80, 80)).toBe(0);
-    // A gap of 5 px lies on the cell's centre line, where an east-west Road
-    // runs; the other two gaps are 4 px.
-    for (const y of [37, 38, 39, 40, 41, 12, 13, 14, 15, 64, 65, 66, 67])
-      expect(filled(y), `row ${y}`).toBe(0);
-    expect(opaqueBounds(master)?.left).toBe(0);
-    expect(opaqueBounds(master)?.right).toBe(79);
+    for (let index = 0; index < 80; index += 1) {
+      expect(opaque(index, 0), `top ${index}`).toBe(false);
+      expect(opaque(index, 79), `bottom ${index}`).toBe(false);
+      expect(opaque(0, index), `left ${index}`).toBe(false);
+      expect(opaque(79, index), `right ${index}`).toBe(false);
+    }
     // No player or faction colour: greens and browns only, nothing blue or
     // violet (the darkest outline is a near-black teal).
     for (let index = 0; index < master.data.length; index += 4) {
@@ -594,39 +588,67 @@ describe("pipeline support for the new visual direction (pulp_wars-3tq.5)", asyn
     expect(() =>
       cropRowsRaster(candidate, size, { ...spec, phase: 1 }),
     ).toThrow(/phase/);
-    // The batch manifest refuses a negative trim and a phase outside 0..1,
-    // and accepts three rows.
+    // The Farm itself is a whole plot since bead pulp_wars-2o7.2: a
+    // crop-rows asset with a bottom margin and no stamps (seated). The
+    // manifest still takes a stamped Farm of three rows, and refuses a
+    // negative trim, a phase outside 0..1, both a margin and stamps, and
+    // neither.
     const farm = manifest.assets.find(
       (asset) => asset.id === "chibi-direction-farm",
     );
-    expect(farm?.cropRows?.rows).toBe(3);
-    expect(farm?.cropRows?.phase).toBe(0.5);
-    expect(
+    expect(farm?.recipeClass).toBe("crop-rows");
+    expect(farm?.cropRows).toBeUndefined();
+    expect(farm?.bottomMargin).toBe(4);
+    const stamped: CropRowsSpec = {
+      rows: 3,
+      band: 0,
+      period: 80,
+      stamps: [{ left: 8, width: 16, at: 0 }],
+      phase: 0.5,
+      saturation: 1,
+      strawMix: 0,
+    };
+    const withFarm = (
+      change: (
+        asset: (typeof manifest.assets)[number],
+      ) => (typeof manifest.assets)[number],
+    ): string[] =>
       batchManifestProblems(
         {
           ...manifest,
           assets: manifest.assets.map((asset) =>
-            asset.id === farm?.id && asset.cropRows !== undefined
-              ? { ...asset, cropRows: { ...asset.cropRows, phase: 1.5 } }
-              : asset,
+            asset.id === farm?.id ? change(asset) : asset,
           ),
         },
         fragments,
         BATCH,
-      ).some((problem) => problem.includes("phase")),
-    ).toBe(true);
-    const broken = {
-      ...manifest,
-      assets: manifest.assets.map((asset) =>
-        asset.id === farm?.id && asset.cropRows !== undefined
-          ? { ...asset, cropRows: { ...asset.cropRows, trimBottom: -1 } }
-          : asset,
-      ),
+      );
+    type Asset = (typeof manifest.assets)[number];
+    const noMargin = (asset: Asset): Asset => {
+      const copy: { -readonly [K in keyof Asset]: Asset[K] } = { ...asset };
+      delete copy.bottomMargin;
+      return copy;
     };
+    const rows = (cropRows: CropRowsSpec) =>
+      withFarm((asset) => ({ ...noMargin(asset), cropRows }));
+    expect(rows(stamped)).toEqual([]);
     expect(
-      batchManifestProblems(broken, fragments, BATCH).some((problem) =>
+      rows({ ...stamped, phase: 1.5 }).some((problem) =>
+        problem.includes("phase"),
+      ),
+    ).toBe(true);
+    expect(
+      rows({ ...stamped, trimBottom: -1 }).some((problem) =>
         problem.includes("trimBottom"),
       ),
+    ).toBe(true);
+    expect(
+      withFarm((asset) => ({ ...asset, cropRows: stamped })).some((problem) =>
+        problem.includes("not both"),
+      ),
+    ).toBe(true);
+    expect(
+      withFarm(noMargin).some((problem) => problem.includes("needs cropRows")),
     ).toBe(true);
   });
 
