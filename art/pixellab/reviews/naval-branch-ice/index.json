@@ -1,0 +1,15 @@
+{
+  "bead": "pulp_wars-5ti.6",
+  "batch": "naval-branch",
+  "command": "npm run art:naval-branch-ice-review",
+  "note": "Composed from the checked-in rasters with the pure functions the board will call (seaIceTileV7 for the edge at open water and the snow dusting of permanent ice, iceFolkSnowCapsV7 for the rime of an icebound hull). The engine has no ice state yet, so the board host draws none of this.",
+  "files": [
+    "ice-scene-1x.png",
+    "ice-scene-x2.png",
+    "ice-tiles-x3.png",
+    "ice-tiling-1x.png",
+    "icebound-sheet-1x.png",
+    "icebound-sheet-x3.png",
+    "readability.json"
+  ]
+}

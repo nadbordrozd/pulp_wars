@@ -1,0 +1,36 @@
+{
+  "id": "goblin-submarine-a-dry",
+  "jobId": "152498f4-b436-46bf-a777-a10437be71da",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-submarine",
+    "subject": "UNIT:GOBLIN:SUBMARINE",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the pale blue water puddle and the wave lines under the barrel, so the bottom of the wooden barrel is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the barrel, the tin hoops and patches, the goblin in the hatch window, the porthole, the periscope pipe, the yellow hazard sign, shapes, colours, thick black outline and art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the pale blue water puddle and the wave lines under the barrel, so the bottom of the wooden barrel is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the barrel, the tin hoops and patches, the goblin in the hatch window, the porthole, the periscope pipe, the yellow hazard sign, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the pale blue water puddle and the wave lines under the barrel, so the bottom of the wooden barrel is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the barrel, the tin hoops and patches, the goblin in the hatch window, the porthole, the periscope pipe, the yellow hazard sign, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the pale blue water puddle and the wave lines under the barrel, so the bottom of the wooden barrel is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the barrel, the tin hoops and patches, the goblin in the hatch window, the porthole, the periscope pipe, the yellow hazard sign, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "goblin-submarine-a",
+      "candidate": 0,
+      "sha256": "ef4ca1993be9308688662b972909cfb18b21bb0c9cc2fe14bc8dd27368a2e9a7"
+    }
+  }
+}

@@ -23,6 +23,13 @@
  * - MIXED: a sea of Shallow and Deep Water with the six factions' ships
  *   mixed together, two coastal cities, so the factions are told apart ship
  *   by ship.
+ * - SUBMARINES (bead pulp_wars-5ti.6): seven players, one per seafaring
+ *   faction (Human, Undead, Goblin, Dinosaur, Martian, Dwarf, Candy), each
+ *   with a coastal City 2, its Patrol Boat docked at a Port, then its
+ *   Submarine and its Battleship on Shallow Water, and on Deep Water a
+ *   damaged Submarine, its transport and a third Submarine: every
+ *   Submarine beside its fleet's other ships. `classic: true` draws the
+ *   same scene in the Classic look (the shared ships in the owner's colour).
  */
 import type {
   CityId,
@@ -41,7 +48,7 @@ import { liveBoardLookV7 } from "../../../src/render/canvas/live-board-look-v7";
 
 type Tile = PlayerViewV7["board"]["tiles"][number];
 
-export type NavalSceneKindV7 = "COAST" | "MIXED";
+export type NavalSceneKindV7 = "COAST" | "MIXED" | "SUBMARINES";
 
 /** The six factions in review order, one seat each. */
 export const NAVAL_SCENE_FACTIONS_V7: readonly FactionIdV7[] = [
@@ -59,7 +66,28 @@ const COLOURS: readonly PlayerColorV7[] = [
   "VIOLET",
   "TEAL",
   "CORAL",
+  "GOLD",
 ];
+
+/** The seven seafaring factions of the SUBMARINES scene, one seat each. */
+export const SUBMARINE_SCENE_FACTIONS_V7: readonly FactionIdV7[] = [
+  "ORIGINAL",
+  "UNDEAD",
+  "GOBLIN",
+  "DINOSAUR",
+  "MARTIAN",
+  "DWARF",
+  "CANDY",
+];
+
+/** The factions of a scene, by seat. */
+export function navalSceneFactionsV7(
+  kind: NavalSceneKindV7,
+): readonly FactionIdV7[] {
+  return kind === "SUBMARINES"
+    ? SUBMARINE_SCENE_FACTIONS_V7
+    : NAVAL_SCENE_FACTIONS_V7;
+}
 
 /** The role and form of a scene unit of each naval sprite. */
 const NAVAL_UNIT_V7: Readonly<
@@ -70,11 +98,14 @@ const NAVAL_UNIT_V7: Readonly<
 > = {
   PATROL_BOAT: { role: "PATROL_BOAT", form: "NAVAL" },
   BATTLESHIP: { role: "BATTLESHIP", form: "NAVAL" },
+  SUBMARINE: { role: "SUBMARINE", form: "NAVAL" },
+  SUBMARINE_SUBMERGED: { role: "SUBMARINE", form: "NAVAL" },
   EMBARKED_TRANSPORT: { role: "FIGHTER", form: "EMBARKED" },
 };
 const ROLE_LETTER: Readonly<Record<string, NavalArtRoleV7>> = {
   P: "PATROL_BOAT",
   B: "BATTLESHIP",
+  S: "SUBMARINE",
   T: "EMBARKED_TRANSPORT",
 };
 
@@ -85,10 +116,10 @@ const TERRAIN: Readonly<Record<string, TerrainIdV7>> = {
 };
 
 /**
- * One cell: `<terrain><territory seat 0-5 or ->` then `/`-separated items:
+ * One cell: `<terrain><territory seat 0-6 or ->` then `/`-separated items:
  * `city<level>` (a city of the territory's seat), `port` (a Port), or a
- * ship `<P|B|T>:<seat>` (Patrol Boat, Battleship, transport), damaged with
- * a trailing `*`.
+ * ship `<P|B|S|T>:<seat>` (Patrol Boat, Battleship, Submarine, transport),
+ * damaged with a trailing `*`.
  */
 function coastLayout(): string[][] {
   return NAVAL_SCENE_FACTIONS_V7.map((_, seat) => [
@@ -99,6 +130,18 @@ function coastLayout(): string[][] {
     `d-/P:${seat}*`,
     `d-/B:${seat}*`,
     `d-/T:${seat}`,
+  ]);
+}
+
+function submarineLayout(): string[][] {
+  return SUBMARINE_SCENE_FACTIONS_V7.map((_, seat) => [
+    `g${seat}/city2`,
+    `s${seat}/port/P:${seat}`,
+    `s${seat}/S:${seat}`,
+    `s${seat}/B:${seat}`,
+    `d-/S:${seat}*`,
+    `d-/T:${seat}`,
+    `d-/S:${seat}`,
   ]);
 }
 
@@ -172,7 +215,13 @@ export function navalSceneViewV7(
   readonly capitalAt: CoordV7;
   readonly offeredCommands: readonly CommandV7[];
 } {
-  const layout = kind === "COAST" ? coastLayout() : mixedLayout();
+  const layout =
+    kind === "COAST"
+      ? coastLayout()
+      : kind === "SUBMARINES"
+        ? submarineLayout()
+        : mixedLayout();
+  const factions = navalSceneFactionsV7(kind);
   const rows = layout.length;
   const columns = layout[0]?.length ?? 0;
   if (live.board.width < columns || live.board.height < rows)
@@ -200,7 +249,7 @@ export function navalSceneViewV7(
     ),
   };
   const firstFreeId = Math.max(...live.players.map((player) => player.id)) + 1;
-  const players = NAVAL_SCENE_FACTIONS_V7.map((faction, index) => ({
+  const players = factions.map((faction, index) => ({
     ...viewer,
     id: (index === 0 ? viewerId : firstFreeId + index) as PlayerId,
     seat: index,
@@ -362,7 +411,7 @@ export function navalSceneViewV7(
  */
 export function showNavalSceneV7(
   live: PlayerViewV7,
-  options: { readonly kind: NavalSceneKindV7 },
+  options: { readonly kind: NavalSceneKindV7; readonly classic?: boolean },
 ): { readonly host: CanvasBoardHostV7; readonly canvas: HTMLCanvasElement } {
   document
     .querySelectorAll("[data-chibi-review-scene]")
@@ -397,7 +446,7 @@ export function showNavalSceneV7(
     presentationPaused: true,
     highContrast: false,
     artSet: "CHIBI",
-    ...liveBoardLookV7("CHIBI"),
+    ...liveBoardLookV7("CHIBI", options.classic === true),
   });
   const canvas = container.querySelector("canvas.board-canvas-v7");
   if (!(canvas instanceof HTMLCanvasElement))

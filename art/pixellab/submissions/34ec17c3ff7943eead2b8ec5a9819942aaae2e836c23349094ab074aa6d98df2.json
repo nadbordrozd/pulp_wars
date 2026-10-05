@@ -1,0 +1,37 @@
+{
+  "id": "submarine-a",
+  "jobId": "e723325b-68bc-44cb-8e62-70e85b5775f5",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-branch",
+    "asset": "chibi-submarine",
+    "subject": "UNIT:SUBMARINE",
+    "faction": "ORIGINAL",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98001,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale straw-yellow birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and the small red pennant; a red tail fin at the stern. Keep the hull's place, waterline, size, thick black outline and style, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale straw-yellow birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and the small red pennant; a red tail fin at the stern. Keep the hull's place, waterline, size, thick black outline and style, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale straw-yellow birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and the small red pennant; a red tail fin at the stern. Keep the hull's place, waterline, size, thick black outline and style, with nothing under the hull.",
+    "editInstruction": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale straw-yellow birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and the small red pennant; a red tail fin at the stern. Keep the hull's place, waterline, size, thick black outline and style, with nothing under the hull.",
+    "source": {
+      "batch": "4",
+      "recipe": "patrol-boat-a-edit",
+      "candidate": 0,
+      "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+    }
+  }
+}

@@ -336,6 +336,341 @@
         "reviewedAt": "2026-10-04T09:28:45.905Z"
       }
     },
+    "candy-portrait-submarine-a": {
+      "id": "candy-portrait-submarine-a",
+      "asset": "chibi-naval-candy-portrait-submarine",
+      "jobId": "17462773-ec06-4c7b-b3a8-364786de7498",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-portrait-submarine",
+        "subject": "PORTRAIT:CANDY:SUBMARINE",
+        "faction": "CANDY",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 98711,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small tower with a candy-cane periscope. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small tower with a candy-cane periscope. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small tower with a candy-cane periscope. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small tower with a candy-cane periscope. Nothing red. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "candy-portrait-patrol-boat-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "d393994025cbd118f71ead99fbfb144d2dfdb3ea164ed7cc62f4ec75ec8beabb"
+        }
+      },
+      "submittedAt": "2026-10-05T09:47:14.040Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-portrait-submarine-a.png",
+      "rawSheetSha256": "cecaada8eb98598f11f882eb1c464d68f8f56d94aa2f374067b1484fd8dfcde9",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.276,
+          "footprintWidthShare": 0.9524,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.276,
+          "footprintWidthShare": 0.9524,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:47:45.249Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The chocolate capsule at 48 px: pink frosting, three mint portholes, a small tower and the candy-cane periscope.",
+        "reviewedAt": "2026-10-05T09:48:05.839Z"
+      }
+    },
+    "candy-submarine-a": {
+      "id": "candy-submarine-a",
+      "asset": "chibi-naval-candy-submarine",
+      "jobId": "7b64311f-7e45-499e-a19f-13e6c0821d87",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-submarine",
+        "subject": "UNIT:CANDY:SUBMARINE",
+        "faction": "CANDY",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98701,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat eclair-shaped hull of the same dark chocolate #5a3423 with a thick stripe of pale pink frosting #ffb8d8 along its top; on top a round pink gumdrop conning tower with a pink and white striped candy-cane periscope; two round pale mint candy portholes; a swirl lollipop at the stern. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat eclair-shaped hull of the same dark chocolate #5a3423 with a thick stripe of pale pink frosting #ffb8d8 along its top; on top a round pink gumdrop conning tower with a pink and white striped candy-cane periscope; two round pale mint candy portholes; a swirl lollipop at the stern. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat eclair-shaped hull of the same dark chocolate #5a3423 with a thick stripe of pale pink frosting #ffb8d8 along its top; on top a round pink gumdrop conning tower with a pink and white striped candy-cane periscope; two round pale mint candy portholes; a swirl lollipop at the stern. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat eclair-shaped hull of the same dark chocolate #5a3423 with a thick stripe of pale pink frosting #ffb8d8 along its top; on top a round pink gumdrop conning tower with a pink and white striped candy-cane periscope; two round pale mint candy portholes; a swirl lollipop at the stern. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "candy-patrol-boat-a-dry",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "77106f6f123f2a443e1a61106a95c0bf2079717f775f37c1417d073af09e1cc9"
+        }
+      },
+      "submittedAt": "2026-10-05T09:38:01.960Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-submarine-a.png",
+      "rawSheetSha256": "bd56ac841b9f15eb51de5fcc8f5e92c296601829bfc80db085094b1b16d4d5f7",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.2287,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.2287,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T09:38:33.443Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A square chocolate block on a frosted slab with a gumdrop on top: reads as a cake, not a submarine.",
+        "reviewedAt": "2026-10-05T09:41:00.622Z"
+      }
+    },
+    "candy-submarine-b": {
+      "id": "candy-submarine-b",
+      "asset": "chibi-naval-candy-submarine",
+      "jobId": "ddf108bc-f408-45a2-97f6-3bc5673580c1",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-submarine",
+        "subject": "UNIT:CANDY:SUBMARINE",
+        "faction": "CANDY",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98702,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "candy-patrol-boat-a-dry",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "77106f6f123f2a443e1a61106a95c0bf2079717f775f37c1417d073af09e1cc9"
+        }
+      },
+      "submittedAt": "2026-10-05T09:40:06.058Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-submarine-b.png",
+      "rawSheetSha256": "60da13060ff4cd8a5188a0374d14234c39570ba28407d7b96512810317f406bf",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.3059,
+          "footprintWidthShare": 0.7971,
+          "suspect": true
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0.3059,
+          "footprintWidthShare": 0.7971,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:40:37.227Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right submarine, but 69 px wide on the 72 px canvas (x 1 to 69): its ends reach the HP bar and seat badge strips.",
+        "reviewedAt": "2026-10-05T10:22:23.844Z"
+      }
+    },
+    "candy-submarine-c": {
+      "id": "candy-submarine-c",
+      "asset": "chibi-naval-candy-submarine",
+      "jobId": "fa04e333-1327-47fe-857e-e2c8aba76bdd",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-submarine",
+        "subject": "UNIT:CANDY:SUBMARINE",
+        "faction": "CANDY",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98703,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a small stubby candy submarine lying level, no longer than the boat's hull is now: remove the mast, the wafer sail and the pennant; the hull becomes one closed short fat capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint portholes in a row; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a small stubby candy submarine lying level, no longer than the boat's hull is now: remove the mast, the wafer sail and the pennant; the hull becomes one closed short fat capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint portholes in a row; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a small stubby candy submarine lying level, no longer than the boat's hull is now: remove the mast, the wafer sail and the pennant; the hull becomes one closed short fat capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint portholes in a row; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a small stubby candy submarine lying level, no longer than the boat's hull is now: remove the mast, the wafer sail and the pennant; the hull becomes one closed short fat capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint portholes in a row; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "candy-patrol-boat-a-dry",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "77106f6f123f2a443e1a61106a95c0bf2079717f775f37c1417d073af09e1cc9"
+        }
+      },
+      "submittedAt": "2026-10-05T10:20:43.147Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-submarine-c.png",
+      "rawSheetSha256": "78f79cd2f2a87b5eabf4d9d6bd9264ec38bd9be93833b795cb589c4b1b2c9b34",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0,
+          "footprintWidthShare": 1,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T10:21:19.691Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A tilted capsule 64 px wide and 59 px tall: bigger than the fleet's Patrol Boat hull; candy-submarine-d is level and smaller.",
+        "reviewedAt": "2026-10-05T10:22:24.101Z"
+      }
+    },
+    "candy-submarine-d": {
+      "id": "candy-submarine-d",
+      "asset": "chibi-naval-candy-submarine",
+      "jobId": "d72949e7-4be0-407e-afbc-14bb0a4ac103",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-candy",
+        "asset": "chibi-naval-candy-submarine",
+        "subject": "UNIT:CANDY:SUBMARINE",
+        "faction": "CANDY",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98704,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a small stubby candy submarine lying level, no longer than the boat's hull is now: remove the mast, the wafer sail and the pennant; the hull becomes one closed short fat capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint portholes in a row; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a small stubby candy submarine lying level, no longer than the boat's hull is now: remove the mast, the wafer sail and the pennant; the hull becomes one closed short fat capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint portholes in a row; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a small stubby candy submarine lying level, no longer than the boat's hull is now: remove the mast, the wafer sail and the pennant; the hull becomes one closed short fat capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint portholes in a row; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a small stubby candy submarine lying level, no longer than the boat's hull is now: remove the mast, the wafer sail and the pennant; the hull becomes one closed short fat capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint portholes in a row; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "candy-patrol-boat-a-dry",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "77106f6f123f2a443e1a61106a95c0bf2079717f775f37c1417d073af09e1cc9"
+        }
+      },
+      "submittedAt": "2026-10-05T10:21:19.694Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-candy/candy-submarine-d.png",
+      "rawSheetSha256": "ec7ed7820c77a3eb90f9b29531ccf6d1a8da09e491fdb77ed3bc07b7b6dd65d5",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.4518,
+          "footprintWidthShare": 1,
+          "suspect": true
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.4518,
+          "footprintWidthShare": 1,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T10:22:06.440Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A level stubby dark chocolate capsule 60 px long with dripping pink frosting, three mint portholes in a row, a frosted tower and the candy-cane periscope. The shared Submarine's anchor.",
+        "reviewedAt": "2026-10-05T10:22:49.749Z"
+      }
+    },
     "candy-transport-a": {
       "id": "candy-transport-a",
       "asset": "chibi-naval-candy-transport",
@@ -680,6 +1015,141 @@
       },
       "notes": "The chocolate-bar boat, whole.",
       "acceptedAt": "2026-10-04T09:28:45.905Z"
+    },
+    "chibi-naval-candy-portrait-submarine": {
+      "id": "chibi-naval-candy-portrait-submarine",
+      "subject": "PORTRAIT:CANDY:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "candy-portrait-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "6e213c66f2a64cdc192bb92963142ad5f9e46fbe89f7702da649c13d268199df",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-candy-portrait-submarine.png",
+        "sha256": "4c8130c8e6cd262fd2cefadf30e521478b105127ba7859dc6ce7551fee3cd59f",
+        "pixelSha256": "1d00031d098d27c184aa516a190af9b698c56914ea89856f3691109478450c6c",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 69,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.276,
+        "footprintWidthShare": 0.9524,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The chocolate capsule at 48 px: pink frosting, three mint portholes, a small tower and the candy-cane periscope.",
+      "acceptedAt": "2026-10-05T09:48:05.839Z"
+    },
+    "chibi-naval-candy-submarine": {
+      "id": "chibi-naval-candy-submarine",
+      "subject": "UNIT:CANDY:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "candy-submarine-d",
+      "candidate": 0,
+      "candidateSha256": "69f69ec4293494ba3f8c4240c99be40fd13b7da267f7493f4e8b6b916bddfb6b",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-candy-submarine.png",
+        "sha256": "0fd4ae0e2983f226121067721ac390dfc758460fed0b411057e70fc21c3c3d2d",
+        "pixelSha256": "7765ebf8c8616fb45cabcede8301a3f8eca91b9506c36982c52ec165628c08e6",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 8
+        },
+        "accent": {
+          "preset": "candy-pink",
+          "spec": {
+            "band": {
+              "hueFrom": 310,
+              "hueTo": 356,
+              "saturationMin": 0.3,
+              "valueMin": 0.3,
+              "hueCentre": 340
+            },
+            "hue": 334,
+            "hueSpread": 0.25,
+            "saturation": {
+              "scale": 0.55,
+              "add": 0.08,
+              "max": 0.5
+            },
+            "value": {
+              "scale": 0.6,
+              "add": 0.42
+            }
+          },
+          "accentPixels": 323,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A level stubby dark chocolate capsule 60 px long with dripping pink frosting, three mint portholes in a row, a frosted tower and the candy-cane periscope. The shared Submarine's anchor.",
+      "acceptedAt": "2026-10-05T10:22:49.749Z"
     },
     "chibi-naval-candy-transport": {
       "id": "chibi-naval-candy-transport",

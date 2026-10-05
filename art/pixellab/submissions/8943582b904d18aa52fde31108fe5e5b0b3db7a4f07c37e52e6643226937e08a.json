@@ -1,0 +1,64 @@
+{
+  "id": "dwarf-submarine-b",
+  "jobId": "sync-02482dbb-8d0f-4145-8300-20191aadeeae",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "naval-dwarf",
+    "asset": "chibi-naval-dwarf-submarine",
+    "subject": "UNIT:DWARF:SUBMARINE",
+    "faction": "DWARF",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98202,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "low top-down",
+      "direction": "south-east"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+        "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+      },
+      {
+        "layer": "faction",
+        "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+        "text": "Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears.",
+        "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-ship.txt + scripts/art/chibi/fragments/class-ship.negative.txt",
+        "text": "Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image.",
+        "negative": "water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/DWARF.json",
+        "text": "Subject: Submarine of the Dwarves, a chunky cute small steam submersible seen from the front-right, long and low with no mast and no sail: one short fat closed cigar-shaped hull of soot-black riveted iron plates with light warm grey bands, bright copper fittings, a low round conning tower with a copper hatch wheel, one short copper funnel puffing a little white steam, two round portholes glowing bright signal green, and a small copper propeller at the stern; simple shapes and very few details."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The submarine is drawn large and fills most of the width of the image.",
+        "negative": "mast, sail, oars, flag, wood, planks, red, paddle wheel, person, character"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Submarine of the Dwarves, a chunky cute small steam submersible seen from the front-right, long and low with no mast and no sail: one short fat closed cigar-shaped hull of soot-black riveted iron plates with light warm grey bands, bright copper fittings, a low round conning tower with a copper hatch wheel, one short copper funnel puffing a little white steam, two round portholes glowing bright signal green, and a small copper propeller at the stern; simple shapes and very few details. The submarine is drawn large and fills most of the width of the image.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd, mast, sail, oars, flag, wood, planks, paddle wheel, person, character",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Submarine of the Dwarves, a chunky cute small steam submersible seen from the front-right, long and low with no mast and no sail: one short fat closed cigar-shaped hull of soot-black riveted iron plates with light warm grey bands, bright copper fittings, a low round conning tower with a copper hatch wheel, one short copper funnel puffing a little white steam, two round portholes glowing bright signal green, and a small copper propeller at the stern; simple shapes and very few details. The submarine is drawn large and fills most of the width of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd, mast, sail, oars, flag, wood, planks, paddle wheel, person, character."
+  }
+}

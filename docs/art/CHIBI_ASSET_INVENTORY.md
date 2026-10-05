@@ -656,6 +656,32 @@ See [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md).
 `ICE_FOLK`. 30 assets from 48 recipes (48 PixelLab calls). A self-launched
 Martian machine afloat stays drawn as itself and has no naval sprite.
 
+## Naval branch art: batch `naval-branch` and the Submarines (bead `pulp_wars-5ti.6`)
+
+See [NAVAL_FACTIONS.md](NAVAL_FACTIONS.md#the-naval-branch-art-bead-pulp_wars-5ti6).
+The shared assets are in
+[`chibi-art-manifest.ts`](../../src/assets/chibi-art-manifest.ts) (both
+looks), the faction ones in
+[`chibi-naval-submarine-art-manifest.ts`](../../src/assets/chibi-naval-submarine-art-manifest.ts)
+(the live look).
+
+| Subjects                                                         | Assets                                          | Class and canvas                    | Drawn today              |
+| ---------------------------------------------------------------- | ----------------------------------------------- | ----------------------------------- | ------------------------ |
+| `UNIT:SUBMARINE` (Classic)                                       | `chibi-submarine` (owner mask)                  | `LARGE_UNIT`, 72 x 88, anchor 32,48 | yes                      |
+| `PORTRAIT:SUBMARINE` (Classic)                                   | `chibi-portrait-submarine` (owner mask)         | `PORTRAIT`, 48 x 48                 | yes                      |
+| `UNIT:SUBMARINE`, `UNIT:<FACTION>:SUBMARINE`                     | `chibi-naval-<faction>-submarine`               | `LARGE_UNIT`, 72 x 88, anchor 32,48 | yes                      |
+| `PORTRAIT:SUBMARINE`, `PORTRAIT:<FACTION>:SUBMARINE`             | `chibi-naval-<faction>-portrait-submarine`      | `PORTRAIT`, 48 x 48                 | yes                      |
+| `UNIT:SUBMARINE_SUBMERGED`, `UNIT:<FACTION>:SUBMARINE_SUBMERGED` | `chibi-naval-<faction>-submarine-submerged`     | `LARGE_UNIT`, 72 x 88, anchor 32,48 | yes (derived; live look) |
+| `ICON:TECH:SEAMANSHIP`, `ICON:TECH:SUBMERSIBLES`                 | `chibi-icon-tech-seamanship`, `…-submersibles`  | `ICON`, 48 x 48                     | yes (technology cards)   |
+| `ICON:ACTION:RAM`, `ICON:ACTION:BOARD`, `ICON:ACTION:TORPEDO`    | `chibi-icon-action-ram`, `…-board`, `…-torpedo` | `ICON`, 48 x 48                     | yes (Board, unit info)   |
+| `TERRAIN:ICE_SHALLOW`                                            | `chibi-ice-shallow-1`, `chibi-ice-shallow-2`    | `TERRAIN`, 80 x 80                  | no (no ice state yet)    |
+| `TERRAIN:ICE_DEEP`                                               | `chibi-ice-deep-1`, `chibi-ice-deep-2`          | `TERRAIN`, 80 x 80                  | no (no ice state yet)    |
+| `OVERLAY:ICEBOUND`                                               | `chibi-overlay-icebound`                        | `BUILDING`, 80 x 40, anchor 40,0    | no (no ice state yet)    |
+
+`<faction>` is `human`, `undead`, `goblin`, `dinosaur`, `martian`, `dwarf`
+or `candy`; the Ice Folk have no Submarine. 26 PixelLab assets from 58
+recipes, and 7 derived submerged sprites.
+
 ## Steampunk Dwarf production art: batches `direction-dwarf` and `naval-dwarf` (bead `pulp_wars-78i.5`)
 
 A seventh faction's art, made before the faction was in the game and

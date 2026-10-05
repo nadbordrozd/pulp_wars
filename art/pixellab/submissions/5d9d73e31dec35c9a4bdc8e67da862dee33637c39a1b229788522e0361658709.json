@@ -1,0 +1,37 @@
+{
+  "id": "candy-submarine-b",
+  "jobId": "ddf108bc-f408-45a2-97f6-3bc5673580c1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-submarine",
+    "subject": "UNIT:CANDY:SUBMARINE",
+    "faction": "CANDY",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98702,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "editInstruction": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat cigar-shaped capsule, rounded at both ends, of the same dark chocolate #5a3423 with pale pink frosting #ffb8d8 dripping along its top and three round pale mint candy portholes along its side; on top one small pink gumdrop tower with a candy-cane periscope. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "source": {
+      "recipe": "candy-patrol-boat-a-dry",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "77106f6f123f2a443e1a61106a95c0bf2079717f775f37c1417d073af09e1cc9"
+    }
+  }
+}

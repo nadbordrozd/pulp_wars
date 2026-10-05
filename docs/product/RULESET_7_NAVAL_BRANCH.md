@@ -1193,6 +1193,30 @@ art bead retires them). [NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md) gains
 the Submarine rows. Review: extend `npm run art:chibi-naval-faction-review`
 with the Submarines and add an ice-tile review to the terrain evidence.
 
+**As built (`pulp_wars-5ti.6`).** The art is described in
+[NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#the-naval-branch-art-bead-pulp_wars-5ti6).
+Where it differs from the table:
+
+- **Seven Submarines and the Classic one**, not six: the Candy have one
+  ([section 20](#20-engine-step-i-as-built-pulp_wars-5ti2), item 1). The
+  Ice Folk have none; until step II theirs is the Classic one in the
+  owner's colour.
+- **Riding low** is a second sprite per faction, derived by script from
+  the surfaced one (sunk 7 rows, foam at the waterline); the live look
+  draws it for a submerged Submarine, without the code-drawn wave lines.
+- **Icons:** Seamanship and Submersibles have dedicated technology icons,
+  and Ram, Board and Torpedo have icons (the table named none).
+- **Ice:** each of the two tiles has two variants and no edge rasters: the
+  edge at open water and the snow dusting of permanent ice are cut in code
+  (`seaIceTileV7`).
+- **Icebound:** one raster overlay, the lower half of the ship's cell,
+  reviewed on the three hulls of the seven seafaring factions (21).
+- **Review:** the ice review is its own command,
+  `npm run art:naval-branch-ice-review`.
+
+The ice tiles and the overlay are registered and not drawn; what remains is listed in
+[NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#what-remains-to-wire).
+
 ## 15. Headless support, measurement, tuning bounds, and balance acceptance
 
 ### 15.1 Headless support
@@ -1591,9 +1615,12 @@ choice, or reads differently:
     train a Submarine, ram by moving and attacking, or pick an offered
     `BOARD` only as its general scoring happens to; the rules of
     [section 13.1](#131-seafaring-seats-bead-5ti4) are `pulp_wars-5ti.4`.
-12. **Stand-ins until the art and interface beads.** A Submarine draws its
-    faction's Patrol Boat sprite and portrait; Seamanship shows the Patrol
-    Boat and Submersibles the Shipyard on their technology cards; `BOARD` has
+12. **Stand-ins until the art and interface beads.** Until the art bead
+    (`pulp_wars-5ti.6`, [section 14.3](#143-what-the-art-bead-must-draw-bead-5ti6),
+    "As built") a Submarine drew its faction's Patrol Boat sprite and
+    portrait, and Seamanship showed the Patrol Boat and Submersibles the
+    Shipyard on their technology cards; since then each has its own art
+    (LEGACY keeps the stand-ins). `BOARD` has
     **no control in the interface** until `pulp_wars-5ti.7` aims it on the
     board (one dock button per boardable ship would break
     [the board-targeting rule](../ui/BOARD_TARGETING.md)): the engine offers

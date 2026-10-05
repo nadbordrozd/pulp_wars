@@ -1,0 +1,36 @@
+{
+  "id": "portrait-submarine-a-red",
+  "jobId": "f61f809a-22cd-46b9-a320-562af9b79e9e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-branch",
+    "asset": "chibi-portrait-submarine",
+    "subject": "PORTRAIT:SUBMARINE",
+    "faction": "ORIGINAL",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 98012,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the red parts: make the bright red conning tower on top wider and taller, about twice as big, with a bigger bright red pennant on its pole, and make the bright red tail fin at the stern bigger. Keep the pale birch hull, the steel bands, the three round glass portholes, the size, the thick black outline and the art style exactly the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only the red parts: make the bright red conning tower on top wider and taller, about twice as big, with a bigger bright red pennant on its pole, and make the bright red tail fin at the stern bigger. Keep the pale birch hull, the steel bands, the three round glass portholes, the size, the thick black outline and the art style exactly the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only the red parts: make the bright red conning tower on top wider and taller, about twice as big, with a bigger bright red pennant on its pole, and make the bright red tail fin at the stern bigger. Keep the pale birch hull, the steel bands, the three round glass portholes, the size, the thick black outline and the art style exactly the same, on a transparent background.",
+    "editInstruction": "Change only the red parts: make the bright red conning tower on top wider and taller, about twice as big, with a bigger bright red pennant on its pole, and make the bright red tail fin at the stern bigger. Keep the pale birch hull, the steel bands, the three round glass portholes, the size, the thick black outline and the art style exactly the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-submarine-a",
+      "candidate": 0,
+      "sha256": "4c616c6ed74c89d5e8fc2c05f5f8b0e023e7af8a2637b9134bd3ce532f031ebb"
+    }
+  }
+}

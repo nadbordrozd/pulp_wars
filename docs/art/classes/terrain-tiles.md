@@ -499,3 +499,15 @@ simpler than units and cities.
 
 The checked-in production and rejection record is
 [`art/pixellab/reviews/candy-terrain/README.md`](../../../art/pixellab/reviews/candy-terrain/README.md).
+
+## Sea ice (naval branch, bead `pulp_wars-5ti.6`)
+
+The Ice Folk sea ice is a layer over a water tile, not a terrain: one
+opaque seamless 80 x 80 sheet per water depth (`TERRAIN:ICE_SHALLOW`,
+`TERRAIN:ICE_DEEP`), flat like the waters, two variants each, with no
+cracks, holes or floes drawn in (melting is the board's crack overlay). A
+sheet must stay clear of both waters, of Snow on Grass and of the other
+ice (measured: at least 17 CIE76 from each). Its edge at open water and the
+snow dusting of permanent ice are cut in code (`seaIceTileV7`), so there
+are no edge rasters. See
+[NAVAL_FACTIONS.md](../NAVAL_FACTIONS.md#the-sea-ice).

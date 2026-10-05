@@ -14,15 +14,27 @@
  *   the dock panel); the columns are today's shared sprite through the
  *   runtime recolour for a Coral and a Teal player, then the Human, Undead,
  *   Goblin, Dinosaur, Martian and Ice Folk sprite;
+ * - `submarine-sheet-{x4,1x}.png` (bead pulp_wars-5ti.6): the Submarine of
+ *   the shared (Classic) set for a Coral and a Teal player and of the seven
+ *   seafaring factions (Human, Undead, Goblin, Dinosaur, Martian, Dwarf,
+ *   Candy) on Shallow and on Deep Water, the same riding low in the water
+ *   (the derived `-submerged` sprites), its portrait, and under them the
+ *   same fleet's Patrol Boat, Battleship and transport, so each Submarine
+ *   is seen beside the ships it must be told apart from;
  * - `readability.json`: each faction's ships against the two water colours
  *   and how far apart the six factions' ships are, measured on the masters;
+ *   `submarines` holds the same for the seven Submarines, with each one's
+ *   size beside its fleet's Patrol Boat;
  * - `scene-{coast,mixed}-{desktop,phone}-zoom-{1,0.75}.png`: the scenes of
  *   scripts/art/naval-factions/scene.ts drawn by the real board host in the
  *   live look the game draws since bead pulp_wars-w5j.3 (the naval art
  *   wired in, no base plates or rings): each faction's ships on Shallow
  *   and Deep Water beside its coastal city, its Patrol Boat docked at a
  *   Port, the Human (viewer's) ships with the ready ring, some damaged; and
- *   the six fleets mixed;
+ *   the six fleets mixed; `scene-submarines-*` is the SUBMARINES scene (the
+ *   seven seafaring fleets, each Submarine beside its Patrol Boat,
+ *   Battleship and transport), and `scene-submarines-classic-*` the same in
+ *   the Classic look;
  * - `index.json`.
  *
  * Captures start Vite on port 6530 unless `--port` says otherwise, need
@@ -67,9 +79,26 @@ const FACTIONS: readonly (readonly [FactionIdV7, string, string])[] = [
   ["MARTIAN", "Martian", "martian"],
   ["ICE_FOLK", "Ice Folk", "ice-folk"],
 ];
+/**
+ * The seven seafaring factions of the Submarine sheet (bead
+ * pulp_wars-5ti.6): the Ice Folk have no Submarine, the Dwarves and the
+ * Candy do.
+ */
+const SUBMARINE_FACTIONS: readonly (readonly [FactionIdV7, string, string])[] =
+  [
+    ["ORIGINAL", "Human", "human"],
+    ["UNDEAD", "Undead", "undead"],
+    ["GOBLIN", "Goblin", "goblin"],
+    ["DINOSAUR", "Dinosaur", "dinosaur"],
+    ["MARTIAN", "Martian", "martian"],
+    ["DWARF", "Dwarf", "dwarf"],
+    ["CANDY", "Candy", "candy"],
+  ];
 const ROLE_KEY: Readonly<Record<NavalArtRoleV7, string>> = {
   PATROL_BOAT: "patrol-boat",
   BATTLESHIP: "battleship",
+  SUBMARINE: "submarine",
+  SUBMARINE_SUBMERGED: "submarine-submerged",
   EMBARKED_TRANSPORT: "transport",
 };
 
@@ -120,7 +149,9 @@ function navalFile(
   role: NavalArtRoleV7,
   kind: "UNIT" | "PORTRAIT",
 ): string {
-  const slug = FACTIONS.find(([id]) => id === faction)?.[2];
+  const slug = [...FACTIONS, ...SUBMARINE_FACTIONS].find(
+    ([id]) => id === faction,
+  )?.[2];
   if (slug === undefined) throw new Error(`no naval art for ${faction}`);
   return kind === "UNIT"
     ? chibi(`units/chibi-naval-${slug}-${ROLE_KEY[role]}`)
@@ -248,6 +279,141 @@ const PAPER: Rgb = [30, 33, 40];
 const PANEL: Rgb = [38, 44, 52];
 const GAP = 8;
 
+const NAVAL_CANVAS_HEIGHT: Readonly<Record<NavalArtRoleV7, number>> = {
+  PATROL_BOAT: 88,
+  BATTLESHIP: 96,
+  SUBMARINE: 88,
+  SUBMARINE_SUBMERGED: 88,
+  EMBARKED_TRANSPORT: 72,
+};
+
+/**
+ * The Submarine sheet (bead pulp_wars-5ti.6): the shared Submarine for two
+ * players and the seven factions' Submarines on both waters, the portraits,
+ * and each fleet's other ships under its Submarine.
+ */
+async function submarineSheet(scale: number, name: string): Promise<void> {
+  const shallow = await readRaster(chibi("terrain/chibi-shallow-water-1"));
+  const deep = await readRaster(chibi("terrain/chibi-deep-water-1"));
+  const columns = [
+    { label: "Classic, Coral", colour: RULESET7_PLAYER_COLORS.CORAL },
+    { label: "Classic, Teal", colour: RULESET7_PLAYER_COLORS.TEAL },
+    ...SUBMARINE_FACTIONS.map(([, label]) => ({ label, colour: null })),
+  ];
+  const rows: {
+    readonly title: string;
+    readonly role: NavalArtRoleV7;
+    readonly kind: "UNIT" | "PORTRAIT";
+    readonly today: string;
+    readonly ground: RgbaRaster | null;
+  }[] = [
+    {
+      title: "Submarine, Shallow",
+      role: "SUBMARINE",
+      kind: "UNIT",
+      today: "units/chibi-submarine",
+      ground: shallow,
+    },
+    {
+      title: "Submarine, Deep",
+      role: "SUBMARINE",
+      kind: "UNIT",
+      today: "units/chibi-submarine",
+      ground: deep,
+    },
+    // The Classic look has no submerged raster: it draws the surfaced one.
+    {
+      title: "Submerged, Shallow",
+      role: "SUBMARINE_SUBMERGED",
+      kind: "UNIT",
+      today: "units/chibi-submarine",
+      ground: shallow,
+    },
+    {
+      title: "Submerged, Deep",
+      role: "SUBMARINE_SUBMERGED",
+      kind: "UNIT",
+      today: "units/chibi-submarine",
+      ground: deep,
+    },
+    {
+      title: "Submarine portrait",
+      role: "SUBMARINE",
+      kind: "PORTRAIT",
+      today: "portraits/chibi-portrait-submarine",
+      ground: null,
+    },
+    {
+      title: "Patrol Boat, Shallow",
+      role: "PATROL_BOAT",
+      kind: "UNIT",
+      today: "units/chibi-patrol-boat",
+      ground: shallow,
+    },
+    {
+      title: "Battleship, Deep",
+      role: "BATTLESHIP",
+      kind: "UNIT",
+      today: "units/chibi-battleship",
+      ground: deep,
+    },
+    {
+      title: "Transport, Shallow",
+      role: "EMBARKED_TRANSPORT",
+      kind: "UNIT",
+      today: "units/chibi-embarked-transport",
+      ground: shallow,
+    },
+  ];
+  const cellW = 88 * scale + GAP;
+  const titleW = scale >= 4 ? 260 : 190;
+  const headerH = 26;
+  const heights = rows.map(
+    (row) => (row.kind === "UNIT" ? NAVAL_CANVAS_HEIGHT[row.role] : 48) * scale,
+  );
+  const width = titleW + columns.length * cellW + GAP;
+  const height =
+    headerH + heights.reduce((sum, value) => sum + value + GAP, 0) + GAP;
+  const canvas = blank(width, height, PAPER);
+  const labels: Label[] = columns.map((column, index) => ({
+    text: column.label,
+    left: titleW + index * cellW,
+    top: 4,
+    size: scale >= 4 ? 16 : 12,
+  }));
+  let top = headerH;
+  for (const [rowIndex, row] of rows.entries()) {
+    const rowHeight = heights[rowIndex] ?? 0;
+    labels.push({
+      text: row.title,
+      left: 8,
+      top: top + rowHeight / 2 - 8,
+      size: scale >= 4 ? 16 : 11,
+    });
+    for (const [index, column] of columns.entries()) {
+      const sprite =
+        column.colour === null
+          ? await readRaster(
+              navalFile(
+                SUBMARINE_FACTIONS[index - 2]?.[0] ?? "ORIGINAL",
+                row.role,
+                row.kind,
+              ),
+            )
+          : await recoloured(row.today, column.colour);
+      const left = titleW + index * cellW;
+      const ground =
+        row.ground === null
+          ? blank(sprite.width * scale, sprite.height * scale, PANEL)
+          : tiled(row.ground, sprite.width * scale, sprite.height * scale);
+      blit(canvas, ground, left, top);
+      blit(canvas, sprite, left, top, scale);
+    }
+    top += rowHeight + GAP;
+  }
+  await writeSheet(name, canvas, labels);
+}
+
 async function navalSheet(scale: number, name: string): Promise<void> {
   const shallow = await readRaster(chibi("terrain/chibi-shallow-water-1"));
   const deep = await readRaster(chibi("terrain/chibi-deep-water-1"));
@@ -269,11 +435,7 @@ async function navalSheet(scale: number, name: string): Promise<void> {
   const cellW = 88 * scale + GAP;
   const titleW = scale >= 4 ? 260 : 190;
   const headerH = 26;
-  const canvasHeight: Readonly<Record<NavalArtRoleV7, number>> = {
-    PATROL_BOAT: 88,
-    BATTLESHIP: 96,
-    EMBARKED_TRANSPORT: 72,
-  };
+  const canvasHeight = NAVAL_CANVAS_HEIGHT;
   const heights = rows.map(
     (row) =>
       (row.sprite.kind === "UNIT" ? canvasHeight[row.sprite.role] : 48) * scale,
@@ -580,6 +742,97 @@ async function readability(): Promise<void> {
     }
     distinct[sprite.role] = matrix;
   }
+  // The Submarines (bead pulp_wars-5ti.6): each one against the waters,
+  // its size beside its fleet's Patrol Boat (a low hull with no sail), and
+  // how far apart the seven are.
+  const bounds = (
+    raster: RgbaRaster,
+  ): { width: number; height: number; bottom: number } => {
+    let left = raster.width;
+    let right = -1;
+    let topRow = raster.height;
+    let bottom = -1;
+    for (let y = 0; y < raster.height; y += 1)
+      for (let x = 0; x < raster.width; x += 1)
+        if ((raster.data[(y * raster.width + x) * 4 + 3] ?? 0) >= 128) {
+          left = Math.min(left, x);
+          right = Math.max(right, x);
+          topRow = Math.min(topRow, y);
+          bottom = Math.max(bottom, y);
+        }
+    return { width: right - left + 1, height: bottom - topRow + 1, bottom };
+  };
+  const submarineMeasures = new Map<string, ReturnType<typeof swatches>>();
+  const submarines: Record<string, unknown>[] = [];
+  for (const [faction, label] of SUBMARINE_FACTIONS) {
+    const raster = await readRaster(navalFile(faction, "SUBMARINE", "UNIT"));
+    const boat = await readRaster(navalFile(faction, "PATROL_BOAT", "UNIT"));
+    const measure = swatches(raster);
+    submarineMeasures.set(label, measure);
+    const own = bounds(raster);
+    const patrol = bounds(boat);
+    submarines.push({
+      faction,
+      label,
+      opaquePixels: measure.body + measure.outline,
+      outlineShare: round1(
+        (measure.outline / Math.max(1, measure.body + measure.outline)) * 100,
+      ),
+      bodyMean: hexOf(measure.mean),
+      mainColours: measure.swatches
+        .slice(0, 5)
+        .map((swatch) => `${hexOf(swatch.rgb)} ${round1(swatch.share * 100)}%`),
+      size: `${own.width} x ${own.height}`,
+      patrolBoatSize: `${patrol.width} x ${patrol.height}`,
+      heightShareOfPatrolBoat: round1((own.height / patrol.height) * 100),
+      waterlineRow: own.bottom,
+      patrolBoatWaterlineRow: patrol.bottom,
+      paletteDistanceToPatrolBoat: round1(
+        paletteDistance(measure.swatches, swatches(boat).swatches),
+      ),
+      water: Object.fromEntries(
+        Object.entries(waters).map(([name, colour]) => [
+          name,
+          {
+            bodyMeanDeltaE: round1(deltaE(measure.mean, colour)),
+            bodyMeanContrast: round1(contrast(measure.mean, colour)),
+            bodyShareWithin12: round1(
+              measure.swatches
+                .filter((swatch) => deltaE(swatch.rgb, colour) < 12)
+                .reduce((sum, swatch) => sum + swatch.share, 0) * 100,
+            ),
+          },
+        ]),
+      ),
+    });
+  }
+  const submarineMatrix: Record<
+    string,
+    Record<string, { normal: number; deuteranopia: number }>
+  > = {};
+  let weakestSubmarines: {
+    pair: string;
+    normal: number;
+    deuteranopia: number;
+  } | null = null;
+  for (const [, aLabel] of SUBMARINE_FACTIONS) {
+    submarineMatrix[aLabel] = {};
+    for (const [, bLabel] of SUBMARINE_FACTIONS) {
+      if (aLabel === bLabel) continue;
+      const left = submarineMeasures.get(aLabel)?.swatches ?? [];
+      const right = submarineMeasures.get(bLabel)?.swatches ?? [];
+      const entry = {
+        normal: round1(paletteDistance(left, right)),
+        deuteranopia: round1(paletteDistance(left, right, deuteranope)),
+      };
+      (submarineMatrix[aLabel] ?? {})[bLabel] = entry;
+      if (
+        aLabel < bLabel &&
+        (weakestSubmarines === null || entry.normal < weakestSubmarines.normal)
+      )
+        weakestSubmarines = { pair: `${aLabel} / ${bLabel}`, ...entry };
+    }
+  }
   const json = {
     bead: "pulp_wars-w5j.2",
     measure:
@@ -592,6 +845,13 @@ async function readability(): Promise<void> {
     factions: perFaction,
     distinguishability: distinct,
     weakestPair: weakest,
+    submarines: {
+      bead: "pulp_wars-5ti.6",
+      note: "The seven seafaring factions' Submarines (the Ice Folk have none). Size is the opaque bounds; the waterline row is the lowest opaque row of the 72 x 88 canvas.",
+      factions: submarines,
+      distinguishability: submarineMatrix,
+      weakestPair: weakestSubmarines,
+    },
   };
   await writeFile(
     path.join(OUT, "readability.json"),
@@ -726,7 +986,12 @@ const VIEWPORTS = [
   { name: "phone", width: 390, height: 844, dpr: 3, mobile: true },
 ] as const;
 const ZOOMS = ["1", "0.75"] as const;
-const SCENES = ["COAST", "MIXED"] as const;
+const SCENES = [
+  { kind: "COAST", classic: false, name: "coast" },
+  { kind: "MIXED", classic: false, name: "mixed" },
+  { kind: "SUBMARINES", classic: false, name: "submarines" },
+  { kind: "SUBMARINES", classic: true, name: "submarines-classic" },
+] as const;
 const SCENE = `globalThis.__NAVAL_SCENE__`;
 
 async function captureAll(baseUrl: string): Promise<void> {
@@ -809,7 +1074,7 @@ async function captureAll(baseUrl: string): Promise<void> {
       for (const scene of SCENES) {
         await evaluate(
           connection,
-          `(async () => { const module = await import('/scripts/art/naval-factions/scene.ts'); ${SCENE} = module.showNavalSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, ${JSON.stringify({ kind: scene })}); return true; })()`,
+          `(async () => { const module = await import('/scripts/art/naval-factions/scene.ts'); ${SCENE} = module.showNavalSceneV7(globalThis.__PULP_WARS_APP__.controller.snapshot().view, ${JSON.stringify({ kind: scene.kind, classic: scene.classic })}); return true; })()`,
         );
         for (const step of ZOOMS) {
           for (let attempt = 0; attempt < 6; attempt += 1) {
@@ -829,7 +1094,7 @@ async function captureAll(baseUrl: string): Promise<void> {
           );
           if (zoomStep !== step)
             throw new Error(`scene could not reach zoom ${step}: ${zoomStep}`);
-          const name = `scene-${scene.toLowerCase()}-${viewport.name}-zoom-${step}.png`;
+          const name = `scene-${scene.name}-${viewport.name}-zoom-${step}.png`;
           shots.push({ name, png: await settledScreenshot(connection) });
           console.log(`captured ${name}`);
         }
@@ -891,6 +1156,8 @@ async function main(): Promise<void> {
   await mkdir(OUT, { recursive: true });
   await navalSheet(4, "naval-sheet-x4.png");
   await navalSheet(1, "naval-sheet-1x.png");
+  await submarineSheet(4, "submarine-sheet-x4.png");
+  await submarineSheet(1, "submarine-sheet-1x.png");
   // The 1:1 sheet at zoom step 0.75, resampled as the board does.
   const native = sharp(path.join(OUT, "naval-sheet-1x.png"));
   const { width = 0, height = 0 } = await native.metadata();
@@ -925,8 +1192,13 @@ async function main(): Promise<void> {
           "naval-dinosaur",
           "naval-martian",
           "naval-ice-folk",
+          "naval-branch",
+          "naval-dwarf",
+          "naval-candy",
         ],
         command: "npm run art:chibi-naval-faction-review",
+        submarines:
+          "Bead pulp_wars-5ti.6: submarine-sheet-*, the `submarines` section of readability.json and the scene-submarines-* captures cover the shared Submarine and the seven seafaring factions' (batches naval-branch and naval-<faction>, the Dwarf and Candy ones included).",
         note: "The scene-* captures draw the live look the game draws since bead pulp_wars-w5j.3: the naval art wired in under the subjects the game asks for, no base plates or rings, the viewer's (Human) ships with the ready ring, Patrol Boats docked at Ports and some ships damaged (scripts/art/naval-factions/scene.ts).",
         files,
       },
@@ -941,8 +1213,11 @@ async function main(): Promise<void> {
     for (const file of files.filter(
       (name) =>
         name.startsWith("naval-sheet") ||
+        name.startsWith("submarine-sheet") ||
         name === "readability.json" ||
-        /^scene-(coast|mixed)-(desktop|phone)-zoom-1\.png$/.test(name) ||
+        /^scene-(coast|mixed|submarines|submarines-classic)-(desktop|phone)-zoom-1\.png$/.test(
+          name,
+        ) ||
         name === "scene-mixed-desktop-zoom-0.75.png",
     ))
       await copyFile(path.join(OUT, file), path.join(copyTo, file));

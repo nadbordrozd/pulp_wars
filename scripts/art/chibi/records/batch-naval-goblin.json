@@ -956,6 +956,294 @@
         "reviewedAt": "2026-10-03T08:13:09.784Z"
       }
     },
+    "goblin-portrait-submarine-a": {
+      "id": "goblin-portrait-submarine-a",
+      "asset": "chibi-naval-goblin-portrait-submarine",
+      "jobId": "b2f74cf3-3b49-4a78-b195-296f0134ea9b",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-portrait-submarine",
+        "subject": "PORTRAIT:GOBLIN:SUBMARINE",
+        "faction": "GOBLIN",
+        "recipeClass": "icon",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 98111,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with tin hoops and a riveted tin patch, with one round glass porthole and a crooked tin periscope pipe on top; remove the mast and the sail; keep the lime green goblin peeking out of a hatch window; one hazard yellow patch. No water. Keep the size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with tin hoops and a riveted tin patch, with one round glass porthole and a crooked tin periscope pipe on top; remove the mast and the sail; keep the lime green goblin peeking out of a hatch window; one hazard yellow patch. No water. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with tin hoops and a riveted tin patch, with one round glass porthole and a crooked tin periscope pipe on top; remove the mast and the sail; keep the lime green goblin peeking out of a hatch window; one hazard yellow patch. No water. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with tin hoops and a riveted tin patch, with one round glass porthole and a crooked tin periscope pipe on top; remove the mast and the sail; keep the lime green goblin peeking out of a hatch window; one hazard yellow patch. No water. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-patrol-boat-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "6ff9ad028ea262377841723ceecec4f34352d4bb28ac62f8f1118b0d286ca1ad"
+        }
+      },
+      "submittedAt": "2026-10-05T09:42:45.076Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-portrait-submarine-a.png",
+      "rawSheetSha256": "a57b0241368a74d8967c44510d8ca71c3645d1096e072249fb265834980e46cc",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.375,
+          "footprintWidthShare": 0.9,
+          "suspect": true
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.375,
+          "footprintWidthShare": 0.9,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:43:16.530Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The diving barrel at 48 px: planks, tin hoops, a big porthole, the goblin at the hatch window, a periscope pipe and a hazard sign.",
+        "reviewedAt": "2026-10-05T09:44:07.646Z"
+      }
+    },
+    "goblin-submarine-a": {
+      "id": "goblin-submarine-a",
+      "asset": "chibi-naval-goblin-submarine",
+      "jobId": "06373e1d-6706-490f-97c6-7b17a09ea771",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-submarine",
+        "subject": "UNIT:GOBLIN:SUBMARINE",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98101,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with riveted tin patches and tin hoops, with one round glass porthole and a crooked tin periscope pipe; remove the mast, the sail and the rocket; keep the lime green goblin peeking out of an open hatch on top and one hazard yellow patch. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with riveted tin patches and tin hoops, with one round glass porthole and a crooked tin periscope pipe; remove the mast, the sail and the rocket; keep the lime green goblin peeking out of an open hatch on top and one hazard yellow patch. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with riveted tin patches and tin hoops, with one round glass porthole and a crooked tin periscope pipe; remove the mast, the sail and the rocket; keep the lime green goblin peeking out of an open hatch on top and one hazard yellow patch. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with riveted tin patches and tin hoops, with one round glass porthole and a crooked tin periscope pipe; remove the mast, the sail and the rocket; keep the lime green goblin peeking out of an open hatch on top and one hazard yellow patch. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "patrol-boat-a-edit-2",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "90eac39a2b8d623278a61d8326eb472fee83b3544abff2b23b3d214d4f2c431d"
+        }
+      },
+      "submittedAt": "2026-10-05T09:27:09.878Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-submarine-a.png",
+      "rawSheetSha256": "4e8a7d7c258a41f1e699c7b07f7a1366f93583008542c97e10518fb6d627c1e2",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.2541,
+          "footprintWidthShare": 0.9474,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2541,
+          "footprintWidthShare": 0.9474,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:27:48.658Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right diving barrel, but with a pale water puddle under it; goblin-submarine-a-dry removes it.",
+        "reviewedAt": "2026-10-05T09:34:11.233Z"
+      }
+    },
+    "goblin-submarine-a-dry": {
+      "id": "goblin-submarine-a-dry",
+      "asset": "chibi-naval-goblin-submarine",
+      "jobId": "152498f4-b436-46bf-a777-a10437be71da",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-submarine",
+        "subject": "UNIT:GOBLIN:SUBMARINE",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98103,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the pale blue water puddle and the wave lines under the barrel, so the bottom of the wooden barrel is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the barrel, the tin hoops and patches, the goblin in the hatch window, the porthole, the periscope pipe, the yellow hazard sign, shapes, colours, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the pale blue water puddle and the wave lines under the barrel, so the bottom of the wooden barrel is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the barrel, the tin hoops and patches, the goblin in the hatch window, the porthole, the periscope pipe, the yellow hazard sign, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the pale blue water puddle and the wave lines under the barrel, so the bottom of the wooden barrel is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the barrel, the tin hoops and patches, the goblin in the hatch window, the porthole, the periscope pipe, the yellow hazard sign, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the pale blue water puddle and the wave lines under the barrel, so the bottom of the wooden barrel is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the barrel, the tin hoops and patches, the goblin in the hatch window, the porthole, the periscope pipe, the yellow hazard sign, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "recipe": "goblin-submarine-a",
+          "candidate": 0,
+          "sha256": "ef4ca1993be9308688662b972909cfb18b21bb0c9cc2fe14bc8dd27368a2e9a7"
+        }
+      },
+      "submittedAt": "2026-10-05T09:32:53.000Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-submarine-a-dry.png",
+      "rawSheetSha256": "922e362808392f32bfa3addfb2832827b67bf9f6fbf9fe1742f6224554941258",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.2981,
+          "footprintWidthShare": 0.8772,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.2981,
+          "footprintWidthShare": 0.8772,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:33:39.897Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A diving barrel of the fleet's planks, tin hoops and patches with the lime goblin at the hatch window, a porthole, a periscope pipe and a hazard sign; water removed; seated on the fleet's waterline. The shared Submarine's anchor.",
+        "reviewedAt": "2026-10-05T10:22:48.692Z"
+      }
+    },
+    "goblin-submarine-b": {
+      "id": "goblin-submarine-b",
+      "asset": "chibi-naval-goblin-submarine",
+      "jobId": "sync-cf2037cc-1d00-4587-a208-c675ab02a6ee",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-goblin",
+        "asset": "chibi-naval-goblin-submarine",
+        "subject": "UNIT:GOBLIN:SUBMARINE",
+        "faction": "GOBLIN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98102,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/GOBLIN.md#prompt-fragment + docs/art/factions/GOBLIN.md#negative-fragment",
+            "text": "Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots.",
+            "negative": "gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-ship.txt + scripts/art/chibi/fragments/class-ship.negative.txt",
+            "text": "Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image.",
+            "negative": "water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/GOBLIN.json",
+            "text": "Subject: Submarine of the Goblins, a chunky cute small ramshackle diving barrel seen from the front-right, low with no mast and no sail: one big fat wooden barrel lying on its side, of weathered grey-tan planks patched with riveted light grey tin plates and bound with tin hoops, one round glass porthole, a crooked tin periscope pipe, a small tin propeller at the back, one hazard yellow patch, and a little bright lime green goblin with huge pointed ears peeking out of the open hatch on top; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The barrel submarine is drawn large and fills most of the width of the image.",
+            "negative": "mast, sail, oars, flag, red, blue water, dark brown, orange"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Submarine of the Goblins, a chunky cute small ramshackle diving barrel seen from the front-right, low with no mast and no sail: one big fat wooden barrel lying on its side, of weathered grey-tan planks patched with riveted light grey tin plates and bound with tin hoops, one round glass porthole, a crooked tin periscope pipe, a small tin propeller at the back, one hazard yellow patch, and a little bright lime green goblin with huge pointed ears peeking out of the open hatch on top; simple shapes and very few details. The barrel submarine is drawn large and fills most of the width of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd, mast, sail, oars, flag, red, blue water, dark brown, orange",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: rowdy, cheerful scrap-heap raiders, loud and silly, never grim. Bright sunny colours with clear light and dark: pale sand-buff leather straps and patched hide, colour #d0b073; light grey tin scrap with rivets, colour #9aa5a8; weathered grey-tan planks; bold hazard yellow paint, colour #fdd20f, daubed on plates, rims and anything that explodes; dark brown only for belts and boots. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Submarine of the Goblins, a chunky cute small ramshackle diving barrel seen from the front-right, low with no mast and no sail: one big fat wooden barrel lying on its side, of weathered grey-tan planks patched with riveted light grey tin plates and bound with tin hoops, one round glass porthole, a crooked tin periscope pipe, a small tin propeller at the back, one hazard yellow patch, and a little bright lime green goblin with huge pointed ears peeking out of the open hatch on top; simple shapes and very few details. The barrel submarine is drawn large and fills most of the width of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, gun, rifle, pistol, musket, cannon, modern car, rubber tyres, chrome, headlights, neon, glowing green, cyan glow, purple magic glow, skull, bones, blood, gore, horror, dark gloomy colours, black leather, dark brown leather, dark gunmetal armour, red cloth, orange leather, copper, brass, gold armour, grey skin, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd, mast, sail, oars, flag, red, blue water, dark brown, orange."
+      },
+      "submittedAt": "2026-10-05T09:27:48.661Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-goblin/goblin-submarine-b.png",
+      "rawSheetSha256": "a4e36365895f4bd94a7cfe241fa82d60572af0c3314effcb201d4176feeda7bf",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.2084,
+          "footprintWidthShare": 0.8246,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T09:29:33.738Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fresh creation: a good goblin on top, but shaded and detailed beyond the fleet's flat style, with a chrome-like steel hull and little plank or tin.",
+        "reviewedAt": "2026-10-05T09:34:11.488Z"
+      }
+    },
     "goblin-transport-crew-edit-a": {
       "id": "goblin-transport-crew-edit-a",
       "asset": "chibi-naval-goblin-transport",
@@ -1944,6 +2232,123 @@
       },
       "notes": "Redesign, direction A: the patrol boat shown whole, tin hull patches, pale sail, lime goblin.",
       "acceptedAt": "2026-10-04T09:09:42.713Z"
+    },
+    "chibi-naval-goblin-portrait-submarine": {
+      "id": "chibi-naval-goblin-portrait-submarine",
+      "subject": "PORTRAIT:GOBLIN:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "goblin-portrait-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "3c5f7f1eaaf9b7851baa7f90bf92eaf89e964c3f4e9a01e1211508480683daf6",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-goblin-portrait-submarine.png",
+        "sha256": "3c5f7f1eaaf9b7851baa7f90bf92eaf89e964c3f4e9a01e1211508480683daf6",
+        "pixelSha256": "708bdb8c55fdc116e916e9c7f026ba179b1bd183d4d4049f4e57da12bc7a5dd3",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "goblin-hazard",
+          "spec": {
+            "band": {
+              "hueFrom": 26,
+              "hueTo": 47,
+              "saturationMin": 0.8,
+              "valueMin": 0.7,
+              "hueCentre": 40
+            },
+            "hue": 49,
+            "hueSpread": 0.35
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.375,
+        "footprintWidthShare": 0.9,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The diving barrel at 48 px: planks, tin hoops, a big porthole, the goblin at the hatch window, a periscope pipe and a hazard sign.",
+      "acceptedAt": "2026-10-05T09:44:07.646Z"
+    },
+    "chibi-naval-goblin-submarine": {
+      "id": "chibi-naval-goblin-submarine",
+      "subject": "UNIT:GOBLIN:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "goblin-submarine-a-dry",
+      "candidate": 0,
+      "candidateSha256": "3f81fb6fc8d14dfc9dbe4677fa35bad47171e53a45de74aad659aaf81ac6184a",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-goblin-submarine.png",
+        "sha256": "f1fa6b54c16420c3ceeef12388bfa43523c11d84a237b5f74609940def14db04",
+        "pixelSha256": "3ab4606b3197606856ec164de026536fea9c299a1831ba5d52826fcf57c2fadb",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 8
+        },
+        "accent": {
+          "preset": "goblin-hazard",
+          "spec": {
+            "band": {
+              "hueFrom": 26,
+              "hueTo": 47,
+              "saturationMin": 0.8,
+              "valueMin": 0.7,
+              "hueCentre": 40
+            },
+            "hue": 49,
+            "hueSpread": 0.35
+          },
+          "accentPixels": 38,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A diving barrel of the fleet's planks, tin hoops and patches with the lime goblin at the hatch window, a porthole, a periscope pipe and a hazard sign; water removed; seated on the fleet's waterline. The shared Submarine's anchor.",
+      "acceptedAt": "2026-10-05T10:22:48.692Z"
     },
     "chibi-naval-goblin-transport": {
       "id": "chibi-naval-goblin-transport",

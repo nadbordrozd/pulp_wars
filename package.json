@@ -81,6 +81,7 @@
     "art:chibi-candy-direction-review": "tsx scripts/art/chibi-candy-direction-review.ts",
     "art:chibi-dinosaur-direction-review": "tsx scripts/art/chibi-dinosaur-direction-review.ts",
     "art:chibi-naval-faction-review": "tsx scripts/art/chibi-naval-faction-review.ts",
+    "art:naval-branch-ice-review": "tsx scripts/art/naval-branch-ice-review.ts",
     "art:faction-colours-review": "tsx scripts/art/faction-colours-review.ts",
     "art:faction-looks-review": "tsx scripts/art/faction-looks-review.ts",
     "art:attack-effects-review": "tsx scripts/art/attack-effects-review.ts",

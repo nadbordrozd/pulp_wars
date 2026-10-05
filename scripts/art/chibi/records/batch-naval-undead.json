@@ -270,6 +270,140 @@
         "reviewedAt": "2026-10-03T08:04:14.286Z"
       }
     },
+    "undead-portrait-submarine-a": {
+      "id": "undead-portrait-submarine-a",
+      "asset": "chibi-naval-undead-portrait-submarine",
+      "jobId": "71c341a0-bb05-4372-a7d0-10bacd32807c",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-undead",
+        "asset": "chibi-naval-undead-portrait-submarine",
+        "subject": "PORTRAIT:UNDEAD:SUBMARINE",
+        "faction": "UNDEAD",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 98411,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood with pale grey barnacle studs, the ivory bone rail and a skull on the bow; on deck a low humped black cabin with a row of windows glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood with pale grey barnacle studs, the ivory bone rail and a skull on the bow; on deck a low humped black cabin with a row of windows glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood with pale grey barnacle studs, the ivory bone rail and a skull on the bow; on deck a low humped black cabin with a row of windows glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood with pale grey barnacle studs, the ivory bone rail and a skull on the bow; on deck a low humped black cabin with a row of windows glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "undead-portrait-patrol-boat-ghost-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "7e1d15ce990820723962fb4a240e0771bb19760c23433870cc043d7234e06503"
+        }
+      },
+      "submittedAt": "2026-10-05T09:45:11.195Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-undead/undead-portrait-submarine-a.png",
+      "rawSheetSha256": "b953f5336e3aa55fbf5572cf89a765a1509fc88e16f6206e7c6bdb1a95df52a7",
+      "plateHints": [
+        {
+          "bandRows": 5,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6136,
+          "suspect": false
+        },
+        {
+          "bandRows": 5,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6136,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T09:45:49.700Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The drowned galley at 48 px: a long low black hull with the bone rail and skull, violet-lit cabin windows and a violet lantern on a crooked pole.",
+        "reviewedAt": "2026-10-05T09:48:04.953Z"
+      }
+    },
+    "undead-submarine-a": {
+      "id": "undead-submarine-a",
+      "asset": "chibi-naval-undead-submarine",
+      "jobId": "119be03d-b6ad-48bb-8004-162d5b2b3099",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-undead",
+        "asset": "chibi-naval-undead-submarine",
+        "subject": "UNIT:UNDEAD:SUBMARINE",
+        "faction": "UNDEAD",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98401,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood, crusted with pale grey barnacles, with the ivory bone rail and the big skull figurehead on the bow; on deck a low humped black cabin with two round portholes glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood, crusted with pale grey barnacles, with the ivory bone rail and the big skull figurehead on the bow; on deck a low humped black cabin with two round portholes glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood, crusted with pale grey barnacles, with the ivory bone rail and the big skull figurehead on the bow; on deck a low humped black cabin with two round portholes glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood, crusted with pale grey barnacles, with the ivory bone rail and the big skull figurehead on the bow; on deck a low humped black cabin with two round portholes glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "undead-patrol-boat-ghost-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "75c2c5990a3c882292ee6502d878643e646a7758428f380092895b2fcba77b9a"
+        }
+      },
+      "submittedAt": "2026-10-05T09:35:59.050Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-undead/undead-submarine-a.png",
+      "rawSheetSha256": "d7848edf571f512eb5e0e6d9f1c8966d5be4971113209f07e0fe078c2a8cfd7b",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6552,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0,
+          "footprintWidthShare": 0.6552,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T09:36:54.483Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A long low closed black hull with barnacle studs, the bone rail and skull at the bow, a humped cabin with violet-lit windows and a violet lantern on a crooked pole; no mast or sail. The shared Submarine's anchor.",
+        "reviewedAt": "2026-10-05T10:22:48.430Z"
+      }
+    },
     "undead-transport-ghost-a": {
       "id": "undead-transport-ghost-a",
       "asset": "chibi-naval-undead-transport",
@@ -606,6 +740,137 @@
       },
       "notes": "The cog portrait as a ghost ship: black hull, bone rail, a skull at the bow, a tattered dark sail and a violet light.",
       "acceptedAt": "2026-10-03T08:04:14.286Z"
+    },
+    "chibi-naval-undead-portrait-submarine": {
+      "id": "chibi-naval-undead-portrait-submarine",
+      "subject": "PORTRAIT:UNDEAD:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "undead-portrait-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "52847edcf1a0f3760f10eb26c4625ac9b074036a6be795d145c4eb053c36542c",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-undead-portrait-submarine.png",
+        "sha256": "378b21592456723ed916c4d762b5d7191036e7df6f110ea4d6853d40b270ae00",
+        "pixelSha256": "5ada4b641473381cd35e90f1b8140f30569fe64dc74651e1fa88920fbd2067e2",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "undead-violet",
+          "spec": {
+            "band": {
+              "hueFrom": 250,
+              "hueTo": 320,
+              "saturationMin": 0.4,
+              "valueMin": 0.2,
+              "hueCentre": 285
+            },
+            "hue": 274,
+            "hueSpread": 0.5,
+            "trim": {
+              "maxAccentNeighbours": 2,
+              "minDarkNeighbours": 3,
+              "darkValueMax": 0.3,
+              "saturationMax": 0.62,
+              "valueMin": 0.96
+            }
+          },
+          "accentPixels": 19,
+          "trimPixels": 7
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 5,
+        "groundShare": 0,
+        "footprintWidthShare": 0.6136,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The drowned galley at 48 px: a long low black hull with the bone rail and skull, violet-lit cabin windows and a violet lantern on a crooked pole.",
+      "acceptedAt": "2026-10-05T09:48:04.953Z"
+    },
+    "chibi-naval-undead-submarine": {
+      "id": "chibi-naval-undead-submarine",
+      "subject": "UNIT:UNDEAD:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "undead-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "ecbde095d25df448c32279497cfd40e0673259de8ce844ffee710544b8dac0f1",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-undead-submarine.png",
+        "sha256": "575c867d2a43c3138c2542dc953690389ff9d80e50f42c30cabdde84cff69e6f",
+        "pixelSha256": "eae8f59138ed32e8eee47c993af8a9012ad66b81a128103bf10541a881285c3b",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 8
+        },
+        "accent": {
+          "preset": "undead-violet",
+          "spec": {
+            "band": {
+              "hueFrom": 250,
+              "hueTo": 320,
+              "saturationMin": 0.4,
+              "valueMin": 0.2,
+              "hueCentre": 285
+            },
+            "hue": 274,
+            "hueSpread": 0.5,
+            "trim": {
+              "maxAccentNeighbours": 2,
+              "minDarkNeighbours": 3,
+              "darkValueMax": 0.3,
+              "saturationMax": 0.62,
+              "valueMin": 0.96
+            }
+          },
+          "accentPixels": 120,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A long low closed black hull with barnacle studs, the bone rail and skull at the bow, a humped cabin with violet-lit windows and a violet lantern on a crooked pole; no mast or sail. The shared Submarine's anchor.",
+      "acceptedAt": "2026-10-05T10:22:48.430Z"
     },
     "chibi-naval-undead-transport": {
       "id": "chibi-naval-undead-transport",

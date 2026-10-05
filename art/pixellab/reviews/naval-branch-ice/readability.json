@@ -1,0 +1,70 @@
+{
+  "bead": "pulp_wars-5ti.6",
+  "measure": "Mean tile colours and their CIE76 difference (about 10 is clear at a glance, 20 and more are different colours). Snow on Grass is the Ice Folk Snow overlay over the Grass tile. A seam is the mean difference between the touching pixel rows of two tiles (0: the same colours meet).",
+  "colours": {
+    "iceOverShallow": "#d3eff3",
+    "iceOverDeep": "#a9c6e6",
+    "permanentIceOverShallow": "#d8f1f4",
+    "permanentIceOverDeep": "#b5ceea",
+    "shallowWater": "#8fd3dc",
+    "deepWater": "#4277a5",
+    "grass": "#89b75b",
+    "snowOnGrass": "#b8d3a2"
+  },
+  "distances": {
+    "iceOverShallow": {
+      "iceOverDeep": 20.4,
+      "permanentIceOverShallow": 1.5,
+      "permanentIceOverDeep": 16.9,
+      "shallowWater": 17.3,
+      "deepWater": 51.2,
+      "grass": 56.6,
+      "snowOnGrass": 30.4
+    },
+    "iceOverDeep": {
+      "iceOverShallow": 20.4,
+      "permanentIceOverShallow": 21.4,
+      "permanentIceOverDeep": 3.8,
+      "shallowWater": 18.3,
+      "deepWater": 32.5,
+      "grass": 67.4,
+      "snowOnGrass": 43.5
+    },
+    "permanentIceOverShallow": {
+      "iceOverShallow": 1.5,
+      "iceOverDeep": 21.4,
+      "permanentIceOverDeep": 17.8,
+      "shallowWater": 18.7,
+      "deepWater": 52.3,
+      "grass": 56.6,
+      "snowOnGrass": 30.2
+    },
+    "permanentIceOverDeep": {
+      "iceOverShallow": 16.9,
+      "iceOverDeep": 3.8,
+      "permanentIceOverShallow": 17.8,
+      "shallowWater": 17.5,
+      "deepWater": 36.1,
+      "grass": 65.7,
+      "snowOnGrass": 41.1
+    }
+  },
+  "seams": {
+    "shallow 1 beside 1": 0,
+    "shallow 1 above 1": 0,
+    "shallow 1 beside 2": 0,
+    "shallow 1 above 2": 0,
+    "shallow 2 beside 1": 0.2,
+    "shallow 2 above 1": 0,
+    "shallow 2 beside 2": 0.2,
+    "shallow 2 above 2": 0,
+    "deep 1 beside 1": 0.1,
+    "deep 1 above 1": 0,
+    "deep 1 beside 2": 0.1,
+    "deep 1 above 2": 0,
+    "deep 2 beside 1": 0,
+    "deep 2 above 1": 0,
+    "deep 2 beside 2": 0,
+    "deep 2 above 2": 0
+  }
+}

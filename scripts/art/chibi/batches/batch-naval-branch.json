@@ -1,0 +1,708 @@
+{
+  "schemaVersion": 1,
+  "batch": "naval-branch",
+  "title": "The naval branch: the shared (Classic) Submarine and its portrait, the Seamanship and Submersibles technology icons, and the Ram, Board and Torpedo icons",
+  "bead": "pulp_wars-5ti.6",
+  "faction": "ORIGINAL",
+  "dryRun": false,
+  "assets": [
+    {
+      "id": "chibi-submarine",
+      "subject": "UNIT:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      }
+    },
+    {
+      "id": "chibi-portrait-submarine",
+      "subject": "PORTRAIT:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-tech-seamanship",
+      "subject": "ICON:TECH:SEAMANSHIP",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-tech-submersibles",
+      "subject": "ICON:TECH:SUBMERSIBLES",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-ram",
+      "subject": "ICON:ACTION:RAM",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-board",
+      "subject": "ICON:ACTION:BOARD",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-icon-action-torpedo",
+      "subject": "ICON:ACTION:TORPEDO",
+      "assetClass": "ICON",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      }
+    },
+    {
+      "id": "chibi-ice-shallow-1",
+      "subject": "TERRAIN:ICE_SHALLOW",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "cropRegion": {
+        "left": 0,
+        "top": 0,
+        "width": 80,
+        "height": 160
+      }
+    },
+    {
+      "id": "chibi-ice-shallow-2",
+      "subject": "TERRAIN:ICE_SHALLOW",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "cropRegion": {
+        "left": 80,
+        "top": 0,
+        "width": 80,
+        "height": 160
+      },
+      "fieldRecipe": "ice-shallow-1-c"
+    },
+    {
+      "id": "chibi-ice-deep-1",
+      "subject": "TERRAIN:ICE_DEEP",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "cropRegion": {
+        "left": 0,
+        "top": 0,
+        "width": 80,
+        "height": 160
+      }
+    },
+    {
+      "id": "chibi-ice-deep-2",
+      "subject": "TERRAIN:ICE_DEEP",
+      "assetClass": "TERRAIN",
+      "recipeClass": "terrain",
+      "canvas": {
+        "width": 80,
+        "height": 80
+      },
+      "cropRegion": {
+        "left": 80,
+        "top": 0,
+        "width": 80,
+        "height": 160
+      },
+      "fieldRecipe": "ice-deep-1-j"
+    },
+    {
+      "id": "chibi-overlay-icebound",
+      "subject": "OVERLAY:ICEBOUND",
+      "assetClass": "BUILDING",
+      "recipeClass": "naval-overlay",
+      "canvas": {
+        "width": 80,
+        "height": 40
+      },
+      "anchor": {
+        "x": 40,
+        "y": 0
+      },
+      "ownerColour": false,
+      "bottomMargin": 2
+    }
+  ],
+  "recipes": [
+    {
+      "id": "submarine-a",
+      "asset": "chibi-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98001,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "patrol-boat-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale straw-yellow birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and the small red pennant; a red tail fin at the stern. Keep the hull's place, waterline, size, thick black outline and style, with nothing under the hull.",
+      "notes": "The batch-4 cog as a wooden submarine on the same footprint and waterline; the red tower, pennant and fin are the owner area."
+    },
+    {
+      "id": "submarine-b",
+      "asset": "chibi-submarine",
+      "endpoint": "create-image-pixen",
+      "seed": 98002,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The submarine is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "mast, sail, oars, cannon, sailor, person, character, brown wood, dark brown hull, red-brown, orange wood, modern grey warship",
+      "notes": "A fresh creation beside the edit, in case the edit keeps the cog's open hull."
+    },
+    {
+      "id": "submarine-c",
+      "asset": "chibi-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98003,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "4",
+        "recipe": "patrol-boat-a-edit",
+        "candidate": 0
+      },
+      "editInstruction": "Replace the boat with a small old-fashioned wooden submarine lying low at the very bottom of the image, exactly where the boat's hull is now: a closed fat cigar-shaped hull of pale straw-yellow birch planks with light steel bands and two round glass portholes; on top a short round bright red conning tower with a thin steel periscope and a small red pennant; a red tail fin. No mast, no sail. The upper half of the image stays empty. Keep the thick black outline and style.",
+      "notes": "submarine-a is the right submarine but the edit centred it: its keel is 22 px above the canvas bottom, 14 px above the cog's waterline, and an owned asset cannot be seated (bottomMargin is for unowned assets). This asks for it at the cog's hull position."
+    },
+    {
+      "id": "portrait-submarine-a",
+      "asset": "chibi-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98011,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "5",
+        "recipe": "portrait-patrol-boat-a",
+        "candidate": 0
+      },
+      "editInstruction": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and a small red pennant; a red tail fin at the stern. Keep the size, thick black outline and art style the same, on a transparent background.",
+      "notes": "The batch-5 Patrol Boat portrait with the map sprite's change."
+    },
+    {
+      "id": "portrait-submarine-a-red",
+      "asset": "chibi-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98012,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-submarine-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the red parts: make the bright red conning tower on top wider and taller, about twice as big, with a bigger bright red pennant on its pole, and make the bright red tail fin at the stern bigger. Keep the pale birch hull, the steel bands, the three round glass portholes, the size, the thick black outline and the art style exactly the same, on a transparent background.",
+      "notes": "portrait-submarine-a is the right portrait, but its red owner area is 10.9% of the sprite, under the mask QA floor (COVERAGE_LOW); a bigger tower, pennant and fin."
+    },
+    {
+      "id": "icon-tech-seamanship-a",
+      "asset": "chibi-icon-tech-seamanship",
+      "endpoint": "create-image-pixen",
+      "seed": 98021,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, sailor, hand, ship, boat, water, anchor",
+      "notes": "A fresh creation with the icon class, as the batch-5 technology and action icons."
+    },
+    {
+      "id": "icon-tech-submersibles-a",
+      "asset": "chibi-icon-tech-submersibles",
+      "endpoint": "create-image-pixen",
+      "seed": 98022,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, diver, body, face, eyes, fish, water, bubbles, brass, bronze, copper, gold",
+      "notes": "A fresh creation with the icon class, as the batch-5 technology and action icons."
+    },
+    {
+      "id": "icon-action-ram-a",
+      "asset": "chibi-icon-action-ram",
+      "endpoint": "create-image-pixen",
+      "seed": 98023,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, sailor, sail, mast, whole ship, water, waves, animal, sheep",
+      "notes": "A fresh creation with the icon class, as the batch-5 technology and action icons."
+    },
+    {
+      "id": "icon-action-board-a",
+      "asset": "chibi-icon-action-board",
+      "endpoint": "create-image-pixen",
+      "seed": 98024,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, hand, ship, boat, water, anchor, fish hook, fish",
+      "notes": "A fresh creation with the icon class, as the batch-5 technology and action icons."
+    },
+    {
+      "id": "icon-action-torpedo-a",
+      "asset": "chibi-icon-action-torpedo",
+      "endpoint": "create-image-pixen",
+      "seed": 98025,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "negativeAddendum": "person, submarine, ship, boat, water surface, waves, explosion, fire, rocket flame, fish, shark",
+      "notes": "A fresh creation with the icon class, as the batch-5 technology and action icons."
+    },
+    {
+      "id": "ice-shallow-1-a",
+      "asset": "chibi-ice-shallow-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98031,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-shallow.png",
+        "sha256": "6925e9f8da0ef5f0f6c75ae3b6086cab5d7f1ccceae93d3c21b8d713dda9e114"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, fissures, broken ice, ice floes, holes, puddles, snowflakes, footprints, dark water",
+      "notes": "Ice over Shallow Water forced to the pale turquoise-white palette (#d3eff3 base): a flat field for two seamless windows."
+    },
+    {
+      "id": "overlay-icebound-a",
+      "asset": "chibi-overlay-icebound",
+      "endpoint": "create-image-pixen",
+      "seed": 98041,
+      "requestSize": {
+        "width": 80,
+        "height": 40
+      },
+      "notes": "A fresh creation: the pack ice at the foot of an icebound hull."
+    },
+    {
+      "id": "ice-shallow-1-b",
+      "asset": "chibi-ice-shallow-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98033,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-shallow.png",
+        "sha256": "6925e9f8da0ef5f0f6c75ae3b6086cab5d7f1ccceae93d3c21b8d713dda9e114"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, fissures, broken ice, ice floes, holes, puddles, snowflakes, footprints, dark water, circles, rings, bubbles, dots",
+      "notes": "ice-shallow-1-a drew the frost patches as white rings that read as bubbles; the subject now asks for short straight shine lines and scratches."
+    },
+    {
+      "id": "ice-deep-1-b",
+      "asset": "chibi-ice-deep-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98034,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep.png",
+        "sha256": "d2248b1255df7ec3fe6e8944e4d4ee789e565af62d3d69d664fbf5bfa5bc61d3"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, fissures, broken ice, ice floes, holes, puddles, snowflakes, footprints, dark water, circles, rings, bubbles, dots",
+      "notes": "The shine-line wording of ice-shallow-1-b on the deep palette (ice-deep-1-a was not generated)."
+    },
+    {
+      "id": "icon-action-ram-b",
+      "asset": "chibi-icon-action-ram",
+      "endpoint": "create-image-pixen",
+      "seed": 98026,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The item is drawn large and fills most of the image.",
+      "negativeAddendum": "person, sailor, sail, mast, whole ship, water, waves, animal, sheep, bowl, cup",
+      "notes": "icon-action-ram-a drew a small tub with a mast stump and a tiny spike; this one asks for the bow alone, drawn large."
+    },
+    {
+      "id": "icon-action-torpedo-b",
+      "asset": "chibi-icon-action-torpedo",
+      "endpoint": "create-image-pixen",
+      "seed": 98027,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The item is drawn large and fills most of the image.",
+      "negativeAddendum": "person, submarine, ship, boat, water surface, waves, explosion, fire, rocket flame, fish, shark, barrel, wood, planks, brown",
+      "notes": "icon-action-torpedo-a drew a short wooden barrel with a blue band; this one rules out wood and asks for it drawn large."
+    },
+    {
+      "id": "ice-shallow-1-c",
+      "asset": "chibi-ice-shallow-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98035,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-shallow.png",
+        "sha256": "6925e9f8da0ef5f0f6c75ae3b6086cab5d7f1ccceae93d3c21b8d713dda9e114"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, bubbles, dots",
+      "notes": "ice-shallow-1-b drew a network of white cracks (melting ice is the code-drawn crack stage, not the base tile); the subject now asks for the sparse scratch dashes ice-deep-1-b drew."
+    },
+    {
+      "id": "ice-shallow-2-a",
+      "asset": "chibi-ice-shallow-2",
+      "endpoint": "create-image-pixflux",
+      "seed": 98036,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-shallow.png",
+        "sha256": "6925e9f8da0ef5f0f6c75ae3b6086cab5d7f1ccceae93d3c21b8d713dda9e114"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, bubbles, dots",
+      "notes": "A second field for the second variant."
+    },
+    {
+      "id": "ice-deep-2-a",
+      "asset": "chibi-ice-deep-2",
+      "endpoint": "create-image-pixflux",
+      "seed": 98037,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep.png",
+        "sha256": "d2248b1255df7ec3fe6e8944e4d4ee789e565af62d3d69d664fbf5bfa5bc61d3"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, bubbles, dots",
+      "notes": "A second field for the second variant, with holes ruled out (ice-deep-1-b drew two fishing holes)."
+    },
+    {
+      "id": "icon-action-board-b",
+      "asset": "chibi-icon-action-board",
+      "endpoint": "create-image-pixen",
+      "seed": 98028,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The item is drawn large and fills most of the image.",
+      "negativeAddendum": "person, hand, ship, boat, water, fish hook, fishing, fish, bait, single hook",
+      "notes": "icon-action-board-a drew a single fish hook; this one asks for a three-pronged grapnel on a coil of rope."
+    },
+    {
+      "id": "icon-action-ram-c",
+      "asset": "chibi-icon-action-ram",
+      "endpoint": "create-image-pixen",
+      "seed": 98029,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The item is drawn large and fills most of the image.",
+      "negativeAddendum": "person, sailor, sail, mast, whole ship, water, waves, animal, sheep, bowl, cup, drill",
+      "notes": "A second seed beside icon-action-ram-b, whose spike on a round wooden disc reads a little like a drill."
+    },
+    {
+      "id": "ice-deep-2-b",
+      "asset": "chibi-ice-deep-2",
+      "endpoint": "create-image-pixflux",
+      "seed": 98038,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep.png",
+        "sha256": "d2248b1255df7ec3fe6e8944e4d4ee789e565af62d3d69d664fbf5bfa5bc61d3"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen",
+      "notes": "ice-deep-2-a drew two ice stumps standing on the sheet; a new seed with stumps and posts ruled out."
+    },
+    {
+      "id": "icon-action-board-c",
+      "asset": "chibi-icon-action-board",
+      "endpoint": "create-image-pixen",
+      "seed": 98030,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The item is drawn large and fills most of the image.",
+      "negativeAddendum": "person, hand, ship, boat, water, fish hook, fishing, fish, bait, single hook, anchor, anchor ring, chain",
+      "notes": "icon-action-board-b drew a ship's anchor wrapped in rope; this one asks for an open four-pronged claw on a trailing rope."
+    },
+    {
+      "id": "icon-action-board-d",
+      "asset": "chibi-icon-action-board",
+      "endpoint": "create-image-pixen",
+      "seed": 98039,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "promptAddendum": "The item is drawn large and fills most of the image.",
+      "negativeAddendum": "person, hand, ship, boat, water, fish hook, fishing, fish, bait, single hook, anchor, anchor ring, chain",
+      "notes": "A second seed of icon-action-board-c."
+    },
+    {
+      "id": "ice-deep-2-c",
+      "asset": "chibi-ice-deep-2",
+      "endpoint": "create-image-pixflux",
+      "seed": 98040,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep.png",
+        "sha256": "d2248b1255df7ec3fe6e8944e4d4ee789e565af62d3d69d664fbf5bfa5bc61d3"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen",
+      "notes": "ice-deep-2-b drew small crescents that read as ripples on open water; the subject now asks for the straight scratch dashes of the shallow ice, and arcs are ruled out."
+    },
+    {
+      "id": "ice-deep-2-d",
+      "asset": "chibi-ice-deep-2",
+      "endpoint": "create-image-pixflux",
+      "seed": 98042,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep.png",
+        "sha256": "d2248b1255df7ec3fe6e8944e4d4ee789e565af62d3d69d664fbf5bfa5bc61d3"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen",
+      "notes": "ice-deep-2-b drew small crescents that read as ripples on open water; the subject now asks for the straight scratch dashes of the shallow ice, and arcs are ruled out."
+    },
+    {
+      "id": "ice-deep-1-c",
+      "asset": "chibi-ice-deep-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98043,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep-blue.png",
+        "sha256": "e8d18855c8a255867712b81ed26f3adf4bd0c056ae1f67064ef4dbac1a0cb27b"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen, stripes, bands",
+      "notes": "The first deep palette's sheets all came out in its lightest colour (#d9e8f7), as pale as the ice over the lagoon; the bluer palette has no colour lighter than #bfd5ee, so the sheet keeps the open sea's blue (#a9c6e6)."
+    },
+    {
+      "id": "ice-deep-1-d",
+      "asset": "chibi-ice-deep-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98044,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep-blue.png",
+        "sha256": "e8d18855c8a255867712b81ed26f3adf4bd0c056ae1f67064ef4dbac1a0cb27b"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen, stripes, bands",
+      "notes": "The first deep palette's sheets all came out in its lightest colour (#d9e8f7), as pale as the ice over the lagoon; the bluer palette has no colour lighter than #bfd5ee, so the sheet keeps the open sea's blue (#a9c6e6)."
+    },
+    {
+      "id": "ice-deep-1-e",
+      "asset": "chibi-ice-deep-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98045,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep-blue.png",
+        "sha256": "e8d18855c8a255867712b81ed26f3adf4bd0c056ae1f67064ef4dbac1a0cb27b"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen, stripes, bands",
+      "notes": "The first deep palette's sheets all came out in its lightest colour (#d9e8f7), as pale as the ice over the lagoon; the bluer palette has no colour lighter than #bfd5ee, so the sheet keeps the open sea's blue (#a9c6e6)."
+    },
+    {
+      "id": "ice-deep-1-f",
+      "asset": "chibi-ice-deep-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98046,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep-sea.png",
+        "sha256": "e58b6de95f5a4e7909853651fa62b722b67b7301daa352affb9d275ab195f019"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen, stripes, bands",
+      "notes": "The second deep palette's sheets again came out in its lightest colour (#bfd5ee); in this palette the base #a9c6e6 is the lightest colour and the only other one is the darker scratch."
+    },
+    {
+      "id": "ice-deep-1-g",
+      "asset": "chibi-ice-deep-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98047,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep-sea.png",
+        "sha256": "e58b6de95f5a4e7909853651fa62b722b67b7301daa352affb9d275ab195f019"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen, stripes, bands",
+      "notes": "The second deep palette's sheets again came out in its lightest colour (#bfd5ee); in this palette the base #a9c6e6 is the lightest colour and the only other one is the darker scratch."
+    },
+    {
+      "id": "ice-deep-1-h",
+      "asset": "chibi-ice-deep-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98048,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep-sea.png",
+        "sha256": "e58b6de95f5a4e7909853651fa62b722b67b7301daa352affb9d275ab195f019"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen, stripes, bands",
+      "notes": "The second deep palette's sheets again came out in its lightest colour (#bfd5ee); in this palette the base #a9c6e6 is the lightest colour and the only other one is the darker scratch."
+    },
+    {
+      "id": "ice-deep-1-i",
+      "asset": "chibi-ice-deep-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98049,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep-blue.png",
+        "sha256": "e8d18855c8a255867712b81ed26f3adf4bd0c056ae1f67064ef4dbac1a0cb27b"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, stumps, posts, pillars, ice blocks, snowmen, stripes, bands, white sheet, very pale",
+      "notes": "The third palette's sheets are the right blue (#a9c6e6) but perfectly flat, with no mark at all. The subject now says sky-blue ice with lighter frost specks, on the second palette, whose lighter colour can be the specks."
+    },
+    {
+      "id": "ice-deep-1-j",
+      "asset": "chibi-ice-deep-1",
+      "endpoint": "create-image-pixflux",
+      "seed": 98050,
+      "requestSize": {
+        "width": 160,
+        "height": 160
+      },
+      "colorImage": {
+        "path": "scripts/art/chibi/palettes/sea-ice-deep-blue.png",
+        "sha256": "e8d18855c8a255867712b81ed26f3adf4bd0c056ae1f67064ef4dbac1a0cb27b"
+      },
+      "negativeAddendum": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, stumps, posts, pillars, ice blocks, snowmen, stripes, bands, white sheet, very pale",
+      "notes": "The third palette's sheets are the right blue (#a9c6e6) but perfectly flat, with no mark at all. The subject now says sky-blue ice with lighter frost specks, on the second palette, whose lighter colour can be the specks."
+    },
+    {
+      "id": "overlay-icebound-b",
+      "asset": "chibi-overlay-icebound",
+      "endpoint": "create-image-pixen",
+      "seed": 98051,
+      "requestSize": {
+        "width": 80,
+        "height": 40
+      },
+      "promptAddendum": "The strip is short: it fills the full width of the image but only the lower third of its height.",
+      "negativeAddendum": "tall iceberg, mountain range, tall peaks, spikes taller than they are wide",
+      "notes": "overlay-icebound-a is a good ridge but 28 px tall: over a ship it hides two thirds of a Patrol Boat's hull and nearly all of a Submarine's. This asks for a strip about a third as tall."
+    },
+    {
+      "id": "overlay-icebound-c",
+      "asset": "chibi-overlay-icebound",
+      "endpoint": "create-image-pixen",
+      "seed": 98052,
+      "requestSize": {
+        "width": 80,
+        "height": 40
+      },
+      "promptAddendum": "The strip is short: it fills the full width of the image but only the lower third of its height.",
+      "negativeAddendum": "tall iceberg, mountain range, tall peaks, spikes taller than they are wide",
+      "notes": "overlay-icebound-a is a good ridge but 28 px tall: over a ship it hides two thirds of a Patrol Boat's hull and nearly all of a Submarine's. This asks for a strip about a third as tall."
+    },
+    {
+      "id": "overlay-icebound-d",
+      "asset": "chibi-overlay-icebound",
+      "endpoint": "create-image-pixen",
+      "seed": 98053,
+      "requestSize": {
+        "width": 80,
+        "height": 40
+      },
+      "promptAddendum": "The strip is short: it fills the full width of the image but only the lower third of its height.",
+      "negativeAddendum": "tall iceberg, mountain range, tall peaks, spikes taller than they are wide",
+      "notes": "overlay-icebound-a is a good ridge but 28 px tall: over a ship it hides two thirds of a Patrol Boat's hull and nearly all of a Submarine's. This asks for a strip about a third as tall."
+    }
+  ]
+}

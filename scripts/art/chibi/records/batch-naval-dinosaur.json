@@ -336,6 +336,207 @@
         "reviewedAt": "2026-10-03T08:03:06.172Z"
       }
     },
+    "dinosaur-portrait-submarine-a": {
+      "id": "dinosaur-portrait-submarine-a",
+      "asset": "chibi-naval-dinosaur-portrait-submarine",
+      "jobId": "1ea25c85-f052-4323-806b-103eebbc6fd7",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-portrait-submarine",
+        "subject": "PORTRAIT:DINOSAUR:SUBMARINE",
+        "faction": "DINOSAUR",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 98511,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end; keep the blue orange-striped plesiosaur head at the bow end; on top a small hatch covered with sandy hide with dark brown spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end; keep the blue orange-striped plesiosaur head at the bow end; on top a small hatch covered with sandy hide with dark brown spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end; keep the blue orange-striped plesiosaur head at the bow end; on top a small hatch covered with sandy hide with dark brown spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end; keep the blue orange-striped plesiosaur head at the bow end; on top a small hatch covered with sandy hide with dark brown spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "dinosaur-portrait-patrol-boat-primal-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "3a3164c2d31fe47dc84b30a5019dfa083873aef2586ef52b462849eb03261883"
+        }
+      },
+      "submittedAt": "2026-10-05T09:45:49.982Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-portrait-submarine-a.png",
+      "rawSheetSha256": "3dceed20b87afddcad265dbe2ed6465f135e56e57c30ea4d5e1e6155b05fb5cc",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.5542,
+          "footprintWidthShare": 0.9487,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.5542,
+          "footprintWidthShare": 0.9487,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:46:42.059Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The log submersible at 48 px: a bark log with the blue orange-striped head at its end, the spotted hide hatch and the bone reed.",
+        "reviewedAt": "2026-10-05T09:48:05.252Z"
+      }
+    },
+    "dinosaur-submarine-a": {
+      "id": "dinosaur-submarine-a",
+      "asset": "chibi-naval-dinosaur-submarine",
+      "jobId": "46c897bb-b119-4437-9afa-04012d6d149e",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-submarine",
+        "subject": "UNIT:DINOSAUR:SUBMARINE",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98501,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed fat log of the same tawny wood, carved like a plesiosaur, with the blue orange-striped head at the bow and two short carved wooden flippers on its side; on its back a hatch covered with sandy brown hide with big dark brown spots and a bone-white breathing reed standing up. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed fat log of the same tawny wood, carved like a plesiosaur, with the blue orange-striped head at the bow and two short carved wooden flippers on its side; on its back a hatch covered with sandy brown hide with big dark brown spots and a bone-white breathing reed standing up. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed fat log of the same tawny wood, carved like a plesiosaur, with the blue orange-striped head at the bow and two short carved wooden flippers on its side; on its back a hatch covered with sandy brown hide with big dark brown spots and a bone-white breathing reed standing up. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed fat log of the same tawny wood, carved like a plesiosaur, with the blue orange-striped head at the bow and two short carved wooden flippers on its side; on its back a hatch covered with sandy brown hide with big dark brown spots and a bone-white breathing reed standing up. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "dinosaur-patrol-boat-primal-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff"
+        }
+      },
+      "submittedAt": "2026-10-05T09:36:54.795Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-submarine-a.png",
+      "rawSheetSha256": "b2e5637372ee71d65a4ba7cb83426a3c44610b1fad473eda2d1953e8da03788d",
+      "plateHints": [
+        {
+          "bandRows": 10,
+          "groundShare": 0.5847,
+          "footprintWidthShare": 0.8657,
+          "suspect": true
+        },
+        {
+          "bandRows": 10,
+          "groundShare": 0.5847,
+          "footprintWidthShare": 0.8657,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:37:24.688Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "Reads as a swimming turtle: a domed hide shell on four flippers with a living head, the animal the naval branch rules out.",
+        "reviewedAt": "2026-10-05T09:40:59.727Z"
+      }
+    },
+    "dinosaur-submarine-b": {
+      "id": "dinosaur-submarine-b",
+      "asset": "chibi-naval-dinosaur-submarine",
+      "jobId": "e9705c83-e77e-4ccb-bd3c-a99d1c70c4f4",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dinosaur",
+        "asset": "chibi-naval-dinosaur-submarine",
+        "subject": "UNIT:DINOSAUR:SUBMARINE",
+        "faction": "DINOSAUR",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98502,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a stone-age log submarine: remove the mast, sail and feathers; the open canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end with tree rings at the stern; keep the carved blue orange-striped plesiosaur head at the bow; on top a small hatch covered with sandy hide with dark spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a stone-age log submarine: remove the mast, sail and feathers; the open canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end with tree rings at the stern; keep the carved blue orange-striped plesiosaur head at the bow; on top a small hatch covered with sandy hide with dark spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a stone-age log submarine: remove the mast, sail and feathers; the open canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end with tree rings at the stern; keep the carved blue orange-striped plesiosaur head at the bow; on top a small hatch covered with sandy hide with dark spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a stone-age log submarine: remove the mast, sail and feathers; the open canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end with tree rings at the stern; keep the carved blue orange-striped plesiosaur head at the bow; on top a small hatch covered with sandy hide with dark spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "dinosaur-patrol-boat-primal-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff"
+        }
+      },
+      "submittedAt": "2026-10-05T09:39:24.094Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dinosaur/dinosaur-submarine-b.png",
+      "rawSheetSha256": "2ae691c866bc15969f037602b8a850bbd030694ce74a93946ec30fa7b4348994",
+      "plateHints": [
+        {
+          "bandRows": 12,
+          "groundShare": 0.283,
+          "footprintWidthShare": 0.9032,
+          "suspect": true
+        },
+        {
+          "bandRows": 12,
+          "groundShare": 0.283,
+          "footprintWidthShare": 0.9032,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:40:05.777Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A closed tree-trunk log with bark and a sawn end, the blue orange-striped plesiosaur head at the bow end, a spotted hide hatch and a bone reed on top; a log boat with no limbs. The shared Submarine's anchor.",
+        "reviewedAt": "2026-10-05T10:22:48.956Z"
+      }
+    },
     "dinosaur-transport-neck-edit-a": {
       "id": "dinosaur-transport-neck-edit-a",
       "asset": "chibi-naval-dinosaur-transport",
@@ -646,6 +847,91 @@
       },
       "notes": "The cog portrait as a dugout: spotted sandy hide sail, blue plesiosaur head with orange stripes at the bow, an orange feather pennant.",
       "acceptedAt": "2026-10-03T08:03:06.172Z"
+    },
+    "chibi-naval-dinosaur-portrait-submarine": {
+      "id": "chibi-naval-dinosaur-portrait-submarine",
+      "subject": "PORTRAIT:DINOSAUR:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-portrait-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "d97408b4204ad4cfde95965c457585e70ab743375e0bd964ddd176895159f7bc",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-dinosaur-portrait-submarine.png",
+        "sha256": "d97408b4204ad4cfde95965c457585e70ab743375e0bd964ddd176895159f7bc",
+        "pixelSha256": "2fcc1401fda6ecfdf69c7d01d07e9b9c4412ac22e158a359224bdb931505a135",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.5542,
+        "footprintWidthShare": 0.9487,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The log submersible at 48 px: a bark log with the blue orange-striped head at its end, the spotted hide hatch and the bone reed.",
+      "acceptedAt": "2026-10-05T09:48:05.252Z"
+    },
+    "chibi-naval-dinosaur-submarine": {
+      "id": "chibi-naval-dinosaur-submarine",
+      "subject": "UNIT:DINOSAUR:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dinosaur-submarine-b",
+      "candidate": 0,
+      "candidateSha256": "59be609b76e347d2beda94dd8641ad363f46bbe1678dcfb6ba47fd7b97de9ffc",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-dinosaur-submarine.png",
+        "sha256": "43e1a780af42aaf9ab2d0b37d76afa5e1c845cb799eadeb596d9d6dd8f336579",
+        "pixelSha256": "4cf0eabdbecffe9387626e96125cf0381bb005792eb594b867f74f2f7f603684",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 8
+        }
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A closed tree-trunk log with bark and a sawn end, the blue orange-striped plesiosaur head at the bow end, a spotted hide hatch and a bone reed on top; a log boat with no limbs. The shared Submarine's anchor.",
+      "acceptedAt": "2026-10-05T10:22:48.956Z"
     },
     "chibi-naval-dinosaur-transport": {
       "id": "chibi-naval-dinosaur-transport",

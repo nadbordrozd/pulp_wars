@@ -17,6 +17,7 @@ import { CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7 } from "../../src/assets/chibi-di
 import { MARTIAN_FLYER_PRESENTATION_V7 } from "../../src/assets/chibi-direction-martian-presentation";
 import { CHIBI_DIRECTION_UNDEAD_ART_ASSETS_V7 } from "../../src/assets/chibi-direction-undead-art-manifest";
 import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-faction-art-manifest";
+import { CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-submarine-art-manifest";
 import {
   drawBoardV7,
   type BoardRenderPlanEntryV7,
@@ -105,6 +106,8 @@ const LIVE_ASSETS: readonly ChibiArtAssetV7[] = [
   ...CHIBI_DIRECTION_DWARF_ART_ASSETS_V7,
   ...CHIBI_DIRECTION_CANDY_ART_ASSETS_V7,
   ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
+  // The Submarines riding low in the water (bead pulp_wars-5ti.6).
+  ...CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7.map((entry) => entry.asset),
   // The neutral Giant Spider (bead pulp_wars-737.6).
   ...CHIBI_CURIOSITIES_ART_ASSETS_V7,
 ];

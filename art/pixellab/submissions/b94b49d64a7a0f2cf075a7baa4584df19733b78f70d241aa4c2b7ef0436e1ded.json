@@ -1,0 +1,37 @@
+{
+  "id": "candy-submarine-a",
+  "jobId": "7b64311f-7e45-499e-a19f-13e6c0821d87",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-candy",
+    "asset": "chibi-naval-candy-submarine",
+    "subject": "UNIT:CANDY:SUBMARINE",
+    "faction": "CANDY",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98701,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat eclair-shaped hull of the same dark chocolate #5a3423 with a thick stripe of pale pink frosting #ffb8d8 along its top; on top a round pink gumdrop conning tower with a pink and white striped candy-cane periscope; two round pale mint candy portholes; a swirl lollipop at the stern. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat eclair-shaped hull of the same dark chocolate #5a3423 with a thick stripe of pale pink frosting #ffb8d8 along its top; on top a round pink gumdrop conning tower with a pink and white striped candy-cane periscope; two round pale mint candy portholes; a swirl lollipop at the stern. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat eclair-shaped hull of the same dark chocolate #5a3423 with a thick stripe of pale pink frosting #ffb8d8 along its top; on top a round pink gumdrop conning tower with a pink and white striped candy-cane periscope; two round pale mint candy portholes; a swirl lollipop at the stern. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "editInstruction": "Turn it into a candy submarine: remove the mast, the wafer sail and the pennant; the hull becomes one closed fat eclair-shaped hull of the same dark chocolate #5a3423 with a thick stripe of pale pink frosting #ffb8d8 along its top; on top a round pink gumdrop conning tower with a pink and white striped candy-cane periscope; two round pale mint candy portholes; a swirl lollipop at the stern. Nothing red. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "source": {
+      "recipe": "candy-patrol-boat-a-dry",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "77106f6f123f2a443e1a61106a95c0bf2079717f775f37c1417d073af09e1cc9"
+    }
+  }
+}

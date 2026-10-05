@@ -354,6 +354,14 @@ describe("the Submarine on the board plan", () => {
     ).toEqual(
       [NAVAL_UI_V7.enemySubmarine, NAVAL_UI_V7.ownSubmarine].map(at).sort(),
     );
+    // Each asks for its low-riding sprite (bead pulp_wars-5ti.6); a ship
+    // that is not submerged asks for its ordinary one.
+    for (const entry of built.entries)
+      if (entry.kind === "UNIT")
+        expect(
+          entry.artSubject?.endsWith(":SUBMARINE_SUBMERGED") ?? false,
+          at(entry.at),
+        ).toBe(entry.naval?.submerged === true);
   });
 
   it("offers it only to an adjacent attacker and says why to a far one", () => {
@@ -526,6 +534,22 @@ describe("naval markers on the canvas", () => {
     expect(calls.filter((call) => call === "stroke").length).toBe(7);
     expect(calls.at(0)).toBe("save");
     expect(calls.at(-1)).toBe("restore");
+  });
+
+  it("draws only the periscope badge when the sprite itself shows the waterline (pulp_wars-5ti.6)", () => {
+    const { context, calls, arcs } = recorder();
+    drawNavalUnitMarkersV7(
+      context,
+      { submerged: true, boardable: false },
+      100,
+      200,
+      1,
+      { wash: false },
+    );
+    const frame = NAVAL_MARKER_FRAME_V7.submerged;
+    expect(arcs).toEqual([[100 + frame.x, 200 + frame.y, frame.radius]]);
+    // The badge's rim, its periscope and its own small wave: no wash.
+    expect(calls.filter((call) => call === "stroke").length).toBe(3);
   });
 
   it("draws the hook badge of a boardable ship at the zoom", () => {

@@ -270,6 +270,228 @@
         "reviewedAt": "2026-10-03T11:01:10.990Z"
       }
     },
+    "dwarf-portrait-submarine-a": {
+      "id": "dwarf-portrait-submarine-a",
+      "asset": "chibi-naval-dwarf-portrait-submarine",
+      "jobId": "7205cae9-85ff-4492-be2f-c0b609bcd392",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-portrait-submarine",
+        "subject": "PORTRAIT:DWARF:SUBMARINE",
+        "faction": "DWARF",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 98211,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low square conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low square conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low square conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low square conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "dwarf-portrait-patrol-boat-steam-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "d5cb91df6f521a50d23a9568558748ada011dd27b6551a5616b4db0e92820461"
+        }
+      },
+      "submittedAt": "2026-10-05T09:43:16.808Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/dwarf-portrait-submarine-a.png",
+      "rawSheetSha256": "7bf39d0438c4db381d35a93ff3ab40ac45979bf0b1f9a640f8b06210a4725f0c",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0.0116,
+          "footprintWidthShare": 0.9756,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0.0116,
+          "footprintWidthShare": 0.9756,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T09:43:48.046Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The steam submersible at 48 px: soot-iron cigar hull, green portholes, a square tower with a copper funnel and steam, a copper propeller.",
+        "reviewedAt": "2026-10-05T09:44:07.924Z"
+      }
+    },
+    "dwarf-submarine-a": {
+      "id": "dwarf-submarine-a",
+      "asset": "chibi-naval-dwarf-submarine",
+      "jobId": "89f34efd-d1bb-412e-a55b-df607917585f",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-submarine",
+        "subject": "UNIT:DWARF:SUBMARINE",
+        "faction": "DWARF",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98201,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low round conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low round conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low round conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low round conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "dwarf-patrol-boat-steam-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "f33218742fe952d64210d1ed45bba34f51db3620a66ed2a4fbc326d0743da62e"
+        }
+      },
+      "submittedAt": "2026-10-05T09:29:34.062Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/dwarf-submarine-a.png",
+      "rawSheetSha256": "2e74bd3eaaae18bd9af09e85bfb37fa82b2e632db274a347a976e0c3ebe9a48e",
+      "plateHints": [
+        {
+          "bandRows": 11,
+          "groundShare": 0.0097,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        },
+        {
+          "bandRows": 11,
+          "groundShare": 0.0097,
+          "footprintWidthShare": 0.9677,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T09:30:00.137Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A soot-iron cigar hull with grey bands, a low tower with a copper hatch wheel and a short funnel with steam, two green portholes and a copper propeller: the Patrol Boat's materials, no sail or paddle wheel; seated on the waterline. The shared Submarine's anchor.",
+        "reviewedAt": "2026-10-05T10:22:49.485Z"
+      }
+    },
+    "dwarf-submarine-b": {
+      "id": "dwarf-submarine-b",
+      "asset": "chibi-naval-dwarf-submarine",
+      "jobId": "sync-02482dbb-8d0f-4145-8300-20191aadeeae",
+      "request": {
+        "endpoint": "create-image-pixen",
+        "model": "create-image-pixen",
+        "batch": "naval-dwarf",
+        "asset": "chibi-naval-dwarf-submarine",
+        "subject": "UNIT:DWARF:SUBMARINE",
+        "faction": "DWARF",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98202,
+        "noBackground": true,
+        "options": {
+          "outline": "single color black outline",
+          "detail": "low detail",
+          "view": "low top-down",
+          "direction": "south-east"
+        },
+        "layers": [
+          {
+            "layer": "style",
+            "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+            "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+            "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+          },
+          {
+            "layer": "camera",
+            "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+            "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+          },
+          {
+            "layer": "faction",
+            "source": "docs/art/factions/DWARF.md#prompt-fragment + docs/art/factions/DWARF.md#negative-fragment",
+            "text": "Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears.",
+            "negative": "brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic"
+          },
+          {
+            "layer": "class",
+            "source": "scripts/art/chibi/fragments/class-ship.txt + scripts/art/chibi/fragments/class-ship.negative.txt",
+            "text": "Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image.",
+            "negative": "water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd"
+          },
+          {
+            "layer": "subject",
+            "source": "scripts/art/chibi/subjects/DWARF.json",
+            "text": "Subject: Submarine of the Dwarves, a chunky cute small steam submersible seen from the front-right, long and low with no mast and no sail: one short fat closed cigar-shaped hull of soot-black riveted iron plates with light warm grey bands, bright copper fittings, a low round conning tower with a copper hatch wheel, one short copper funnel puffing a little white steam, two round portholes glowing bright signal green, and a small copper propeller at the stern; simple shapes and very few details."
+          },
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "The submarine is drawn large and fills most of the width of the image.",
+            "negative": "mast, sail, oars, flag, wood, planks, red, paddle wheel, person, character"
+          }
+        ],
+        "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Submarine of the Dwarves, a chunky cute small steam submersible seen from the front-right, long and low with no mast and no sail: one short fat closed cigar-shaped hull of soot-black riveted iron plates with light warm grey bands, bright copper fittings, a low round conning tower with a copper hatch wheel, one short copper funnel puffing a little white steam, two round portholes glowing bright signal green, and a small copper propeller at the stern; simple shapes and very few details. The submarine is drawn large and fills most of the width of the image.",
+        "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd, mast, sail, oars, flag, wood, planks, paddle wheel, person, character",
+        "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Faction: sturdy cheerful steampunk craft of the deep mountain forges. Its fixed colours: soot-black riveted iron with a thin light warm grey highlight along every lit edge; bright polished copper pipes, boilers and bands, colour #c27c3a; dark brown leather straps and aprons; small puffs of pure white steam from smokestacks; small details of rivets and gears. Class: one chunky cute boat map piece, a single small wooden vessel with a big simple hull, thick single-colour black outline, big simple shapes. It floats on the empty transparent background: nothing is drawn under or around the hull, no water, no waves and no shadow; the bottom of the hull is the lowest thing in the image. Subject: Submarine of the Dwarves, a chunky cute small steam submersible seen from the front-right, long and low with no mast and no sail: one short fat closed cigar-shaped hull of soot-black riveted iron plates with light warm grey bands, bright copper fittings, a low round conning tower with a copper hatch wheel, one short copper funnel puffing a little white steam, two round portholes glowing bright signal green, and a small copper propeller at the stern; simple shapes and very few details. The submarine is drawn large and fills most of the width of the image. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, brass, gold, yellow, bright orange, fire, flames, red, crimson, green, lime, purple, violet, magenta, pink, blue, cyan, glowing lights, white beard, grey beard, blond beard, rust, wooden planks, robe, hood, cloak, magic, skull, medieval knight, sword, bow, scary, horror, realistic, water, sea, waves, ripples, foam, splash, wake, reflection, shadow, island, rock, pedestal, base, plinth, disc, rim, ground plate, platform, dock, pier, jetty, ground tile, grass, soil, scenery, background, second boat, fleet, crowd, mast, sail, oars, flag, wood, planks, paddle wheel, person, character."
+      },
+      "submittedAt": "2026-10-05T09:30:00.139Z",
+      "candidateCount": 1,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-dwarf/dwarf-submarine-b.png",
+      "rawSheetSha256": "72c7aefa1a89e72a702b06b3570b95254a0464e0e607bab8226c10b151ef4d58",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0.1106,
+          "footprintWidthShare": 0.7969,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T09:30:43.914Z",
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A fresh creation: busy copper pipework and two steam plumes, more detailed and more copper than the fleet's soot iron; the edit is the calmer piece.",
+        "reviewedAt": "2026-10-05T09:34:12.000Z"
+      }
+    },
     "dwarf-transport-steam-a": {
       "id": "dwarf-transport-steam-a",
       "asset": "chibi-naval-dwarf-transport",
@@ -578,6 +800,123 @@
       },
       "notes": "The Patrol Boat portrait as the iron steam tug: copper stack, steam, paddle wheel, green lamp.",
       "acceptedAt": "2026-10-03T11:01:10.990Z"
+    },
+    "chibi-naval-dwarf-portrait-submarine": {
+      "id": "chibi-naval-dwarf-portrait-submarine",
+      "subject": "PORTRAIT:DWARF:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "dwarf-portrait-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "e7e4d383ee4eb52d5b8e1c78c163367952887b8cdf6817ca1fdc129951e918f6",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-dwarf-portrait-submarine.png",
+        "sha256": "e7e4d383ee4eb52d5b8e1c78c163367952887b8cdf6817ca1fdc129951e918f6",
+        "pixelSha256": "c35a39f5fe9ccb07ddf0f8fc21f1743630294c69b9bb6083fe49a30eec6ab4e2",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0.0116,
+        "footprintWidthShare": 0.9756,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The steam submersible at 48 px: soot-iron cigar hull, green portholes, a square tower with a copper funnel and steam, a copper propeller.",
+      "acceptedAt": "2026-10-05T09:44:07.924Z"
+    },
+    "chibi-naval-dwarf-submarine": {
+      "id": "chibi-naval-dwarf-submarine",
+      "subject": "UNIT:DWARF:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "dwarf-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "dfecdb43c90fe73f7a4e70b03866e006df25fc3c4bd6fd325a906f202e81d82c",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-dwarf-submarine.png",
+        "sha256": "f64e5201d73d8bcc815ea6f6d8e349dd13a9cd5177d484a27d704363f47f90f8",
+        "pixelSha256": "804ea71324692700afd9ff5510f510074791285b6a344ba49f2a10c5cb436e72",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 8
+        },
+        "accent": {
+          "preset": "dwarf-copper",
+          "spec": {
+            "band": {
+              "hueFrom": 340,
+              "hueTo": 9,
+              "saturationMin": 0.45,
+              "valueMin": 0.2,
+              "hueCentre": 4
+            },
+            "hue": 13,
+            "hueSpread": 0.25
+          },
+          "accentPixels": 0,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A soot-iron cigar hull with grey bands, a low tower with a copper hatch wheel and a short funnel with steam, two green portholes and a copper propeller: the Patrol Boat's materials, no sail or paddle wheel; seated on the waterline. The shared Submarine's anchor.",
+      "acceptedAt": "2026-10-05T10:22:49.485Z"
     },
     "chibi-naval-dwarf-transport": {
       "id": "chibi-naval-dwarf-transport",

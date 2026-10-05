@@ -1,0 +1,37 @@
+{
+  "id": "dinosaur-submarine-b",
+  "jobId": "e9705c83-e77e-4ccb-bd3c-a99d1c70c4f4",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-submarine",
+    "subject": "UNIT:DINOSAUR:SUBMARINE",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98502,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a stone-age log submarine: remove the mast, sail and feathers; the open canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end with tree rings at the stern; keep the carved blue orange-striped plesiosaur head at the bow; on top a small hatch covered with sandy hide with dark spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a stone-age log submarine: remove the mast, sail and feathers; the open canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end with tree rings at the stern; keep the carved blue orange-striped plesiosaur head at the bow; on top a small hatch covered with sandy hide with dark spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a stone-age log submarine: remove the mast, sail and feathers; the open canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end with tree rings at the stern; keep the carved blue orange-striped plesiosaur head at the bow; on top a small hatch covered with sandy hide with dark spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "editInstruction": "Turn it into a stone-age log submarine: remove the mast, sail and feathers; the open canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end with tree rings at the stern; keep the carved blue orange-striped plesiosaur head at the bow; on top a small hatch covered with sandy hide with dark spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "source": {
+      "recipe": "dinosaur-patrol-boat-primal-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff"
+    }
+  }
+}

@@ -7,7 +7,10 @@ import type { NavalUnitMarkersV7 } from "./naval-board-plan-v7";
  *
  * - **Submerged:** two wave lines washing over the hull (the boat sits low
  *   in the water, above its HP bar) and a periscope badge in the piece's
- *   upper right corner.
+ *   upper right corner. In the live look the Submarine is drawn with its
+ *   low-riding raster (bead pulp_wars-5ti.6: the hull sunk, foam at the
+ *   waterline), so the board passes `wash: false` there and only the badge
+ *   is drawn; the Classic look and LEGACY keep the wash.
  * - **Boardable:** a grappling-hook badge under it, on a ship of any owner
  *   at or below its boarding line.
  *
@@ -77,9 +80,14 @@ export function drawNavalUnitMarkersV7(
   x: number,
   y: number,
   zoom: number,
-  options: { readonly highContrast?: boolean } = {},
+  options: {
+    readonly highContrast?: boolean;
+    /** False when the sprite itself shows the waterline. Default true. */
+    readonly wash?: boolean;
+  } = {},
 ): void {
   const highContrast = options.highContrast ?? false;
+  const washed = options.wash ?? true;
   const frame = NAVAL_MARKER_FRAME_V7;
   context.save();
   context.setLineDash([]);
@@ -88,7 +96,7 @@ export function drawNavalUnitMarkersV7(
   if (markers.submerged) {
     // The wash over the hull's foot.
     const wash = frame.wash;
-    for (const row of [0, 1]) {
+    for (const row of washed ? [0, 1] : []) {
       const waveY = y + (wash.top + row * wash.gap) * zoom;
       const inset = row * 8 * zoom;
       for (const [colour, width] of [

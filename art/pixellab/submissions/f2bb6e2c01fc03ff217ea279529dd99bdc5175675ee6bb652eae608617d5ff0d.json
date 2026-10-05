@@ -1,0 +1,37 @@
+{
+  "id": "submarine-c",
+  "jobId": "a299c876-6f38-4e84-817c-e1afab0f7c54",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-branch",
+    "asset": "chibi-submarine",
+    "subject": "UNIT:SUBMARINE",
+    "faction": "ORIGINAL",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98003,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Replace the boat with a small old-fashioned wooden submarine lying low at the very bottom of the image, exactly where the boat's hull is now: a closed fat cigar-shaped hull of pale straw-yellow birch planks with light steel bands and two round glass portholes; on top a short round bright red conning tower with a thin steel periscope and a small red pennant; a red tail fin. No mast, no sail. The upper half of the image stays empty. Keep the thick black outline and style."
+      }
+    ],
+    "prompt": "Replace the boat with a small old-fashioned wooden submarine lying low at the very bottom of the image, exactly where the boat's hull is now: a closed fat cigar-shaped hull of pale straw-yellow birch planks with light steel bands and two round glass portholes; on top a short round bright red conning tower with a thin steel periscope and a small red pennant; a red tail fin. No mast, no sail. The upper half of the image stays empty. Keep the thick black outline and style.",
+    "negativePrompt": "",
+    "description": "Replace the boat with a small old-fashioned wooden submarine lying low at the very bottom of the image, exactly where the boat's hull is now: a closed fat cigar-shaped hull of pale straw-yellow birch planks with light steel bands and two round glass portholes; on top a short round bright red conning tower with a thin steel periscope and a small red pennant; a red tail fin. No mast, no sail. The upper half of the image stays empty. Keep the thick black outline and style.",
+    "editInstruction": "Replace the boat with a small old-fashioned wooden submarine lying low at the very bottom of the image, exactly where the boat's hull is now: a closed fat cigar-shaped hull of pale straw-yellow birch planks with light steel bands and two round glass portholes; on top a short round bright red conning tower with a thin steel periscope and a small red pennant; a red tail fin. No mast, no sail. The upper half of the image stays empty. Keep the thick black outline and style.",
+    "source": {
+      "batch": "4",
+      "recipe": "patrol-boat-a-edit",
+      "candidate": 0,
+      "sha256": "d712c28b91c8ef3e04b9ae6c0f05ae77f27b5f76ae6f7817868a852d92546bd1"
+    }
+  }
+}

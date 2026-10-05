@@ -1,0 +1,37 @@
+{
+  "id": "martian-portrait-submarine-a",
+  "jobId": "19878975-8586-4d12-b929-7a4fb5f451a7",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-martian",
+    "asset": "chibi-naval-martian-portrait-submarine",
+    "subject": "PORTRAIT:MARTIAN:SUBMARINE",
+    "faction": "MARTIAN",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 98611,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "recipe": "martian-portrait-patrol-boat-antenna-edit-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "bd8baf56275374df24be36d0e05d40dc8edc4957a356fdf0b8a6b054db46ba26"
+    }
+  }
+}

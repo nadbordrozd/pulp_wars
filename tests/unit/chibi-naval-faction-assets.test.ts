@@ -18,6 +18,7 @@ import {
   CHIBI_NAVAL_FACTION_ART_ASSETS_V7,
   navalFactionArtSubjectV7,
   type NavalArtRoleV7,
+  type NavalPortraitRoleV7,
 } from "../../src/assets/chibi-naval-faction-art-manifest";
 import type { FactionIdV7 } from "../../src/engine/index";
 import { CHIBI_OVERLAY_FRAME_V7 } from "../../src/render/canvas/board-renderer-v7";
@@ -72,7 +73,14 @@ const SPRITES: readonly (readonly [
     "portrait-battleship",
     "chibi-portrait-battleship",
   ],
+  // The Submarine of the naval branch (bead pulp_wars-5ti.6): every
+  // seafaring faction's, so not the Ice Folk's (they lose their ships).
+  ["UNIT", "SUBMARINE", "submarine", "chibi-submarine"],
+  ["PORTRAIT", "SUBMARINE", "portrait-submarine", "chibi-portrait-submarine"],
 ];
+/** The Ice Folk have no Submarine raster (RULESET_7_NAVAL_BRANCH.md, 14.3). */
+const hasSprite = (faction: FactionIdV7, role: NavalArtRoleV7): boolean =>
+  !(faction === "ICE_FOLK" && role === "SUBMARINE");
 
 const masterFile = (asset: { readonly url: string }): string =>
   path.join(ROOT, "public", asset.url.replace(/^.*?assets\//, "assets/"));
@@ -101,7 +109,7 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
       ["CANDY", "candy"] as const,
     ]
       .flatMap(([faction, slug]) =>
-        SPRITES.map(
+        SPRITES.filter(([, role]) => hasSprite(faction, role)).map(
           ([kind, role, suffix]) =>
             `${faction} ${kind} ${role} chibi-naval-${slug}-${suffix} ${navalFactionArtSubjectV7(faction, kind, role)}`,
         ),
@@ -113,7 +121,9 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
           `${entry.faction} ${entry.kind} ${entry.role} ${entry.asset.id} ${entry.asset.subject}`,
       ).sort(),
     ).toEqual(expected);
-    expect(expected).toHaveLength(40);
+    // 40 rasters of the eight fleets, and the Submarine and its portrait of
+    // the seven seafaring factions (bead pulp_wars-5ti.6).
+    expect(expected).toHaveLength(54);
     // The Humans keep the shared subjects; the others get their own.
     expect(navalFactionArtSubjectV7("ORIGINAL", "UNIT", "PATROL_BOAT")).toBe(
       "UNIT:PATROL_BOAT",
@@ -150,10 +160,7 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
     for (const entry of CHIBI_NAVAL_FACTION_ART_ASSETS_V7) {
       const subject =
         entry.kind === "PORTRAIT"
-          ? portraitSubjectV7(
-              entry.role as Exclude<NavalArtRoleV7, "EMBARKED_TRANSPORT">,
-              entry.faction,
-            )
+          ? portraitSubjectV7(entry.role as NavalPortraitRoleV7, entry.faction)
           : entry.role === "EMBARKED_TRANSPORT"
             ? unitArtSubjectV7({
                 role: "FIGHTER",
@@ -161,7 +168,7 @@ describe("faction-styled naval art (pulp_wars-w5j.2)", () => {
                 faction: entry.faction,
               })
             : unitArtSubjectV7({
-                role: entry.role,
+                role: entry.role as NavalPortraitRoleV7,
                 form: "NAVAL",
                 faction: entry.faction,
               });

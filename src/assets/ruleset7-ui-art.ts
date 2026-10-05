@@ -32,8 +32,8 @@ export const RULESET7_UNIT_ART_IDS = {
   JUGGERNAUT: "unit-original-juggernaut",
   PATROL_BOAT: "unit-original-patrol-boat",
   BATTLESHIP: "unit-original-battleship",
-  // The naval branch engine (bead pulp_wars-5ti.2): STAND-IN, the Patrol
-  // Boat's art, until the Submarine art of bead pulp_wars-5ti.6.
+  // The naval branch: LEGACY has no Submarine art of its own and keeps the
+  // Patrol Boat's (the CHIBI set has the Submarine, bead pulp_wars-5ti.6).
   SUBMARINE: "unit-original-patrol-boat",
 } as const satisfies Readonly<Record<UnitRoleIdV7, string>>;
 
@@ -48,7 +48,7 @@ export const RULESET7_PORTRAIT_ART_IDS = {
   JUGGERNAUT: "portrait-original-juggernaut",
   PATROL_BOAT: "unit-original-patrol-boat",
   BATTLESHIP: "unit-original-battleship",
-  // STAND-IN (bead pulp_wars-5ti.2), as above.
+  // LEGACY stand-in, as above.
   SUBMARINE: "unit-original-patrol-boat",
 } as const satisfies Readonly<Record<UnitRoleIdV7, string>>;
 
@@ -82,9 +82,9 @@ export const RULESET7_TECH_ART_IDS = {
   SHORECRAFT: RULESET7_LOGISTICS_ART_IDS.PORT,
   NAVIGATION: "terrain-ruleset7-water-deep",
   NAVAL_ENGINEERING: "unit-original-battleship",
-  // The naval branch engine (bead pulp_wars-5ti.2): STAND-INS until beads
-  // pulp_wars-5ti.6 and 5ti.7: the Patrol Boat (the rammer) and the
-  // Shipyard (Harbours).
+  // The naval branch: LEGACY stand-ins, the Patrol Boat (the rammer) and
+  // the Shipyard (Harbours); the CHIBI set has dedicated icons (bead
+  // pulp_wars-5ti.6).
   SEAMANSHIP: "unit-original-patrol-boat",
   SUBMERSIBLES: RULESET7_REVISION9_IMPROVEMENT_ART_IDS.SHIPYARD,
 } as const satisfies Readonly<Record<TechnologyIdV7, string>>;

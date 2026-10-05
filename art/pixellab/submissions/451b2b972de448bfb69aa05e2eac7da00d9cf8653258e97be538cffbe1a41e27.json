@@ -1,0 +1,37 @@
+{
+  "id": "dwarf-submarine-a",
+  "jobId": "89f34efd-d1bb-412e-a55b-df607917585f",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dwarf",
+    "asset": "chibi-naval-dwarf-submarine",
+    "subject": "UNIT:DWARF:SUBMARINE",
+    "faction": "DWARF",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98201,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low round conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low round conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low round conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "editInstruction": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low round conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "source": {
+      "recipe": "dwarf-patrol-boat-steam-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "f33218742fe952d64210d1ed45bba34f51db3620a66ed2a4fbc326d0743da62e"
+    }
+  }
+}

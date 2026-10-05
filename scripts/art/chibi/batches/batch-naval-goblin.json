@@ -74,6 +74,35 @@
       "ownerColour": false,
       "subjectKey": "PORTRAIT:GOBLIN:BATTLESHIP/LIME",
       "accent": "goblin-hazard"
+    },
+    {
+      "id": "chibi-naval-goblin-submarine",
+      "subject": "UNIT:GOBLIN:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "ownerColour": false,
+      "accent": "goblin-hazard",
+      "bottomMargin": 8
+    },
+    {
+      "id": "chibi-naval-goblin-portrait-submarine",
+      "subject": "PORTRAIT:GOBLIN:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "icon",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "goblin-hazard"
     }
   ],
   "recipes": [
@@ -438,6 +467,69 @@
       },
       "editInstruction": "Recolour only one small part: the little goblin's pink face and head become bright lime green, colour #86c232, with a lighter #acdc55 nose and cheeks, like his green ear; no pink, no red and no salmon is left on the goblin. Do not redraw anything else: keep the hull, the tin plates, the sails, the lookout tower, the two yellow flags, the barrels, the firework spark, the colours, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "Production fix 2 (bead pulp_wars-wrn.2): battleship-a-edit-2 made both flags yellow and the ear green, but turned the goblin's face pink."
+    },
+    {
+      "id": "goblin-submarine-a",
+      "asset": "chibi-naval-goblin-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98101,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "patrol-boat-a-edit-2",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with riveted tin patches and tin hoops, with one round glass porthole and a crooked tin periscope pipe; remove the mast, the sail and the rocket; keep the lime green goblin peeking out of an open hatch on top and one hazard yellow patch. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+      "notes": "The accepted Goblin Patrol Boat as a diving barrel, so the planks, tin and goblin stay the fleet's."
+    },
+    {
+      "id": "goblin-submarine-b",
+      "asset": "chibi-naval-goblin-submarine",
+      "endpoint": "create-image-pixen",
+      "seed": 98102,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The barrel submarine is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "mast, sail, oars, flag, red, blue water, dark brown, orange",
+      "notes": "A fresh creation beside the edit."
+    },
+    {
+      "id": "goblin-submarine-a-dry",
+      "asset": "chibi-naval-goblin-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98103,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "goblin-submarine-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the pale blue water puddle and the wave lines under the barrel, so the bottom of the wooden barrel is the lowest thing in the image, with nothing under it; do not redraw anything else. Keep the barrel, the tin hoops and patches, the goblin in the hatch window, the porthole, the periscope pipe, the yellow hazard sign, shapes, colours, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "goblin-submarine-a is the right diving barrel, but the edit drew pale water under it (the board draws the water)."
+    },
+    {
+      "id": "goblin-portrait-submarine-a",
+      "asset": "chibi-naval-goblin-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-patrol-boat-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with tin hoops and a riveted tin patch, with one round glass porthole and a crooked tin periscope pipe on top; remove the mast and the sail; keep the lime green goblin peeking out of a hatch window; one hazard yellow patch. No water. Keep the size, thick black outline and art style the same, on a transparent background.",
+      "notes": "The accepted Goblin Patrol Boat portrait with the map sprite's change."
     }
   ]
 }

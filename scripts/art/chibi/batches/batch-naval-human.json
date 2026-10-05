@@ -66,6 +66,35 @@
       },
       "ownerColour": false,
       "subjectKey": "PORTRAIT:BATTLESHIP/HERALDIC"
+    },
+    {
+      "id": "chibi-naval-human-submarine",
+      "subject": "UNIT:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "UNIT:SUBMARINE/HERALDIC",
+      "bottomMargin": 8
+    },
+    {
+      "id": "chibi-naval-human-portrait-submarine",
+      "subject": "PORTRAIT:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "subjectKey": "PORTRAIT:SUBMARINE/HERALDIC"
     }
   ],
   "recipes": [
@@ -153,6 +182,40 @@
       "editInstruction": "Change only the colours of the sails and pennants: the red sails become deep crimson cloth, colour #a8202c with #6e1018 shadows, each with one big gold-yellow cross in its middle; the pennants become crimson with gold-yellow tips. Keep the hull, the grey castles, masts, ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "The accepted batch-5 Battleship portrait with the Human crimson and gold.",
       "asset": "chibi-naval-human-portrait-battleship"
+    },
+    {
+      "id": "human-submarine-heraldic-a",
+      "asset": "chibi-naval-human-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98301,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "batch": "naval-branch",
+        "recipe": "submarine-c",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge; add a thin gold-yellow trim line along the top of the hull. Keep the pale wooden hull, steel bands, portholes, periscope, shape, size, thick black outline and art style exactly the same.",
+      "notes": "The accepted shared Submarine with the Human crimson and gold on its tower, pennant and fin, as the Human Patrol Boat is the shared cog recoloured."
+    },
+    {
+      "id": "human-portrait-submarine-heraldic-a",
+      "asset": "chibi-naval-human-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98311,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "batch": "naval-branch",
+        "recipe": "portrait-submarine-a-red",
+        "candidate": 0
+      },
+      "editInstruction": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge. Keep the pale wooden hull, steel bands, portholes, shape, size, thick black outline and art style exactly the same, on a transparent background.",
+      "notes": "The accepted shared Submarine portrait with the Human crimson and gold."
     }
   ]
 }

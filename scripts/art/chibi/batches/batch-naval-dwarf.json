@@ -66,6 +66,35 @@
       },
       "ownerColour": false,
       "accent": "dwarf-copper"
+    },
+    {
+      "id": "chibi-naval-dwarf-submarine",
+      "subject": "UNIT:DWARF:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper",
+      "bottomMargin": 8
+    },
+    {
+      "id": "chibi-naval-dwarf-portrait-submarine",
+      "subject": "PORTRAIT:DWARF:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "dwarf-copper"
     }
   ],
   "recipes": [
@@ -153,6 +182,53 @@
       },
       "editInstruction": "Turn it into a steam ironclad: the hull becomes soot-black riveted iron #3a3835 with a light grey #8a8580 rim; the grey castles become squat iron gun turrets; the red sails and pennants become two tall copper #d06a2a smokestacks puffing white steam; add small bright green #2bd94a lamps. Nothing red. Keep the ship shape, size, thick black outline and art style the same, on a transparent background.",
       "notes": "The batch-5 Battleship portrait with the map sprite's changes."
+    },
+    {
+      "id": "dwarf-submarine-a",
+      "asset": "chibi-naval-dwarf-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98201,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "dwarf-patrol-boat-steam-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low round conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+      "notes": "The accepted Dwarf Patrol Boat as a steam submersible: soot iron and copper as the fleet's."
+    },
+    {
+      "id": "dwarf-submarine-b",
+      "asset": "chibi-naval-dwarf-submarine",
+      "endpoint": "create-image-pixen",
+      "seed": 98202,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "promptAddendum": "The submarine is drawn large and fills most of the width of the image.",
+      "negativeAddendum": "mast, sail, oars, flag, wood, planks, red, paddle wheel, person, character",
+      "notes": "A fresh creation beside the edit."
+    },
+    {
+      "id": "dwarf-portrait-submarine-a",
+      "asset": "chibi-naval-dwarf-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98211,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "dwarf-portrait-patrol-boat-steam-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a steam submarine: the hull becomes one closed fat cigar-shaped hull of the same soot-black riveted iron with light grey bands; remove the paddle wheel; the tall smokestack becomes a low square conning tower with a copper hatch wheel and one short copper funnel puffing a little white steam; two round portholes glowing bright green #2bd94a; a small copper propeller at the stern. Keep the size, thick black outline and art style the same, on a transparent background.",
+      "notes": "The accepted Dwarf Patrol Boat portrait with the map sprite's change."
     }
   ]
 }

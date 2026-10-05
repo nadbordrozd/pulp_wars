@@ -1,0 +1,57 @@
+{
+  "id": "overlay-icebound-d",
+  "jobId": "sync-839fbe1c-f4d8-4d27-a217-dd93555af3d1",
+  "request": {
+    "endpoint": "create-image-pixen",
+    "model": "create-image-pixen",
+    "batch": "naval-branch",
+    "asset": "chibi-overlay-icebound",
+    "subject": "OVERLAY:ICEBOUND",
+    "faction": "ORIGINAL",
+    "recipeClass": "naval-overlay",
+    "requestSize": {
+      "width": 80,
+      "height": 40
+    },
+    "seed": 98053,
+    "noBackground": true,
+    "options": {
+      "outline": "single color black outline",
+      "detail": "low detail",
+      "view": "side"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-flat.txt",
+        "text": "Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-naval-overlay.txt + scripts/art/chibi/fragments/class-naval-overlay.negative.txt",
+        "text": "Class: one bold chunky board overlay sprite for a turn-based strategy game map, a single low wide heap of sea ice with a big simple jagged silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 40 pixels. Colours: pale blue-white ice with light ice-blue shading and a few white highlights, nothing else. The ice floats alone on the empty transparent background: nothing at all is drawn behind or under it, no water and no ship.",
+        "negative": "ship, boat, hull, mast, sail, water, sea, waves, splash, ground, ground tile, grass, island, rock, stone, mountain, pedestal, plate, base, shadow, snowman, igloo, character, person, creature, penguin, icon frame, badge, border, background scenery, text, letters, numbers, red, orange, yellow, green, purple, brown"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: one very low and very wide strip of small jagged pack-ice chunks seen from the front, like the ice that grips the waterline of a ship frozen into the sea: a flat row of small chunky ice blocks and short pointed shards side by side, about six times as wide as it is tall, all nearly the same low height with one slightly taller shard at each end, flat along its bottom; ice only."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "The strip is short: it fills the full width of the image but only the lower third of its height.",
+        "negative": "tall iceberg, mountain range, tall peaks, spikes taller than they are wide"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one bold chunky board overlay sprite for a turn-based strategy game map, a single low wide heap of sea ice with a big simple jagged silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 40 pixels. Colours: pale blue-white ice with light ice-blue shading and a few white highlights, nothing else. The ice floats alone on the empty transparent background: nothing at all is drawn behind or under it, no water and no ship. Subject: one very low and very wide strip of small jagged pack-ice chunks seen from the front, like the ice that grips the waterline of a ship frozen into the sea: a flat row of small chunky ice blocks and short pointed shards side by side, about six times as wide as it is tall, all nearly the same low height with one slightly taller shard at each end, flat along its bottom; ice only. The strip is short: it fills the full width of the image but only the lower third of its height.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ship, boat, hull, mast, sail, water, sea, waves, splash, ground, ground tile, grass, island, rock, stone, mountain, pedestal, plate, base, shadow, snowman, igloo, character, person, creature, penguin, icon frame, badge, border, background scenery, red, orange, yellow, green, purple, brown, tall iceberg, mountain range, tall peaks, spikes taller than they are wide",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: seen straight from the front, flat, with no floor, no ground and no perspective, the one shape centred on a transparent background, filling most of the square with a small margin, nothing cropped. Class: one bold chunky board overlay sprite for a turn-based strategy game map, a single low wide heap of sea ice with a big simple jagged silhouette, thick single-colour black outline, big simple shapes and flat colours with one shadow tone, very few details; it must read at a glance at 40 pixels. Colours: pale blue-white ice with light ice-blue shading and a few white highlights, nothing else. The ice floats alone on the empty transparent background: nothing at all is drawn behind or under it, no water and no ship. Subject: one very low and very wide strip of small jagged pack-ice chunks seen from the front, like the ice that grips the waterline of a ship frozen into the sea: a flat row of small chunky ice blocks and short pointed shards side by side, about six times as wide as it is tall, all nearly the same low height with one slightly taller shard at each end, flat along its bottom; ice only. The strip is short: it fills the full width of the image but only the lower third of its height. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ship, boat, hull, mast, sail, water, sea, waves, splash, ground, ground tile, grass, island, rock, stone, mountain, pedestal, plate, base, shadow, snowman, igloo, character, person, creature, penguin, icon frame, badge, border, background scenery, red, orange, yellow, green, purple, brown, tall iceberg, mountain range, tall peaks, spikes taller than they are wide."
+  }
+}

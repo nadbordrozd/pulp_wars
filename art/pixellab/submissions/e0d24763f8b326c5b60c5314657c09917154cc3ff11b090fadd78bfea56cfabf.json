@@ -1,0 +1,37 @@
+{
+  "id": "human-submarine-heraldic-a",
+  "jobId": "a9117e98-8f76-4b94-ac69-61bb796ce378",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-human",
+    "asset": "chibi-naval-human-submarine",
+    "subject": "UNIT:SUBMARINE",
+    "faction": "ORIGINAL",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98301,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge; add a thin gold-yellow trim line along the top of the hull. Keep the pale wooden hull, steel bands, portholes, periscope, shape, size, thick black outline and art style exactly the same."
+      }
+    ],
+    "prompt": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge; add a thin gold-yellow trim line along the top of the hull. Keep the pale wooden hull, steel bands, portholes, periscope, shape, size, thick black outline and art style exactly the same.",
+    "negativePrompt": "",
+    "description": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge; add a thin gold-yellow trim line along the top of the hull. Keep the pale wooden hull, steel bands, portholes, periscope, shape, size, thick black outline and art style exactly the same.",
+    "editInstruction": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge; add a thin gold-yellow trim line along the top of the hull. Keep the pale wooden hull, steel bands, portholes, periscope, shape, size, thick black outline and art style exactly the same.",
+    "source": {
+      "batch": "naval-branch",
+      "recipe": "submarine-c",
+      "candidate": 0,
+      "sha256": "d0a99202abd9cad8c432b2f605ede1d47d96cf03b01a0bf4d1cc6689c5c38cc3"
+    }
+  }
+}

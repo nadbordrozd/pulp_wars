@@ -66,6 +66,35 @@
       },
       "ownerColour": false,
       "accent": "martian-magenta"
+    },
+    {
+      "id": "chibi-naval-martian-submarine",
+      "subject": "UNIT:MARTIAN:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta",
+      "bottomMargin": 8
+    },
+    {
+      "id": "chibi-naval-martian-portrait-submarine",
+      "subject": "PORTRAIT:MARTIAN:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "martian-magenta"
     }
   ],
   "recipes": [
@@ -228,6 +257,40 @@
       "editInstruction": "Replace only the tall curved chrome fin on top: it becomes a thin chrome antenna mast with a small glowing hot magenta orb on its tip. Keep the chrome hull, the glass dome, the magenta lights, size, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "martian-portrait-patrol-boat-chrome-a has the curved fin the map sprite no longer has; the map sprite carries an antenna with a magenta orb.",
       "asset": "chibi-naval-martian-portrait-patrol-boat"
+    },
+    {
+      "id": "martian-submarine-a",
+      "asset": "chibi-naval-martian-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98601,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "martian-patrol-boat-chrome-a-edit",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; remove the tall antenna mast; a big clear glass dome on top, one large round glass porthole on the side, two small fins, a short antenna with a glowing hot magenta tip, and a row of small glowing hot magenta lights around its middle. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+      "notes": "The accepted Martian Patrol Boat as a round bathysphere: chrome, glass and magenta as the fleet's, a ball instead of a saucer."
+    },
+    {
+      "id": "martian-portrait-submarine-a",
+      "asset": "chibi-naval-martian-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98611,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "martian-portrait-patrol-boat-antenna-edit-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background.",
+      "notes": "The accepted Martian Patrol Boat portrait with the map sprite's change."
     }
   ]
 }

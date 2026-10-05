@@ -1,5 +1,21 @@
 # Naval Asset Contract
 
+## Naval branch overlay: the Submarine and the Icebound pack ice
+
+The [naval branch](../../product/RULESET_7_NAVAL_BRANCH.md#143-what-the-art-bead-must-draw-bead-5ti6)
+adds a third ship and one overlay
+([NAVAL_FACTIONS.md](../NAVAL_FACTIONS.md#the-naval-branch-art-bead-pulp_wars-5ti6)):
+
+- **Submarine.** The Patrol Boat's canvas (72 x 88), class (`LARGE_UNIT`)
+  and waterline (keel 8 px above the canvas bottom), no mast and no sail, a
+  closed hull lower than the fleet's Patrol Boat, in the fleet's own
+  materials. Every Submarine map sprite is anchored at (32, 48), so its
+  long hull clears the HP bar and seat badge strips. No water under the
+  hull: riding low is a derived sprite, not a drawn sea.
+- **Icebound.** One faction-less overlay of pale blue-white pack ice on the
+  lower half of the ship's cell (80 x 40), low enough to leave the hull in
+  view: at most about 18 px tall.
+
 ## Ruleset-7 revision-11 Port and Fish overlay
 
 The approved

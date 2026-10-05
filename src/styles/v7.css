@@ -3130,15 +3130,22 @@
   opacity: 0.55;
 }
 
-/* Revision 20: the Charge! ability line carries the former Stampede icon. */
-.v7-unit-ability[data-ability="charge"] {
+/*
+ * Revision 20: the Charge! ability line carries the former Stampede icon.
+ * The naval branch art (pulp_wars-5ti.6): so do Bow Ram and Torpedo.
+ */
+.v7-unit-ability[data-ability="charge"],
+.v7-unit-ability[data-ability="ram"],
+.v7-unit-ability[data-ability="torpedo"] {
   grid-template-columns: auto 1fr;
   column-gap: 0.4rem;
   align-items: start;
 }
 
 .v7-unit-ability[data-ability="charge"] > img,
-.v7-unit-ability[data-ability="charge"] > svg {
+.v7-unit-ability[data-ability="charge"] > svg,
+.v7-unit-ability[data-ability="ram"] > img,
+.v7-unit-ability[data-ability="torpedo"] > img {
   grid-row: 1 / span 2;
   width: 1.75rem;
   height: 1.75rem;

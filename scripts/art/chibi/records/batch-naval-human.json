@@ -270,6 +270,140 @@
         "reviewedAt": "2026-10-03T07:55:49.723Z"
       }
     },
+    "human-portrait-submarine-heraldic-a": {
+      "id": "human-portrait-submarine-heraldic-a",
+      "asset": "chibi-naval-human-portrait-submarine",
+      "jobId": "c22deff6-ce7b-4615-8c50-8e568e5c5a54",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-human",
+        "asset": "chibi-naval-human-portrait-submarine",
+        "subject": "PORTRAIT:SUBMARINE",
+        "faction": "ORIGINAL",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 98311,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge. Keep the pale wooden hull, steel bands, portholes, shape, size, thick black outline and art style exactly the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge. Keep the pale wooden hull, steel bands, portholes, shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge. Keep the pale wooden hull, steel bands, portholes, shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "editInstruction": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge. Keep the pale wooden hull, steel bands, portholes, shape, size, thick black outline and art style exactly the same, on a transparent background.",
+        "source": {
+          "batch": "naval-branch",
+          "recipe": "portrait-submarine-a-red",
+          "candidate": 0,
+          "sha256": "727b908efcffda815024d4a900083c8203cfbd13c2606082dccb36a08649454a"
+        }
+      },
+      "submittedAt": "2026-10-05T09:53:09.449Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-human/human-portrait-submarine-heraldic-a.png",
+      "rawSheetSha256": "245c952444acd6a4960f3fb39ac725af92a372c3579ebdc40f214cd32d31b41d",
+      "plateHints": [
+        {
+          "bandRows": 7,
+          "groundShare": 0.2935,
+          "footprintWidthShare": 0.9512,
+          "suspect": true
+        },
+        {
+          "bandRows": 7,
+          "groundShare": 0.2935,
+          "footprintWidthShare": 0.9512,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:53:50.943Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The shared Submarine portrait with a crimson tower carrying a gold cross, a gold-tipped pennant and a gold-edged fin.",
+        "reviewedAt": "2026-10-05T10:09:22.848Z"
+      }
+    },
+    "human-submarine-heraldic-a": {
+      "id": "human-submarine-heraldic-a",
+      "asset": "chibi-naval-human-submarine",
+      "jobId": "a9117e98-8f76-4b94-ac69-61bb796ce378",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-human",
+        "asset": "chibi-naval-human-submarine",
+        "subject": "UNIT:SUBMARINE",
+        "faction": "ORIGINAL",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98301,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge; add a thin gold-yellow trim line along the top of the hull. Keep the pale wooden hull, steel bands, portholes, periscope, shape, size, thick black outline and art style exactly the same."
+          }
+        ],
+        "prompt": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge; add a thin gold-yellow trim line along the top of the hull. Keep the pale wooden hull, steel bands, portholes, periscope, shape, size, thick black outline and art style exactly the same.",
+        "negativePrompt": "",
+        "description": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge; add a thin gold-yellow trim line along the top of the hull. Keep the pale wooden hull, steel bands, portholes, periscope, shape, size, thick black outline and art style exactly the same.",
+        "editInstruction": "Change only the colours of the red parts: the red conning tower becomes deep crimson, colour #a8202c with #6e1018 shadows, with one gold-yellow cross on its side and a thin gold-yellow rim; the red pennant becomes crimson with a gold-yellow tip; the red tail fin becomes crimson with a gold-yellow edge; add a thin gold-yellow trim line along the top of the hull. Keep the pale wooden hull, steel bands, portholes, periscope, shape, size, thick black outline and art style exactly the same.",
+        "source": {
+          "batch": "naval-branch",
+          "recipe": "submarine-c",
+          "candidate": 0,
+          "sha256": "d0a99202abd9cad8c432b2f605ede1d47d96cf03b01a0bf4d1cc6689c5c38cc3"
+        }
+      },
+      "submittedAt": "2026-10-05T09:35:22.053Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-human/human-submarine-heraldic-a.png",
+      "rawSheetSha256": "918b20d0a4871ecf8ad6225f596b2762c56b8fc74e5d9c5d917ff88599c63e48",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.3939,
+          "footprintWidthShare": 0.9833,
+          "suspect": true
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.3939,
+          "footprintWidthShare": 0.9833,
+          "suspect": true
+        }
+      ],
+      "completedAt": "2026-10-05T09:35:58.741Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The shared Submarine with a deep crimson tower carrying a gold cross, a gold-tipped crimson pennant and a crimson fin with a gold edge; hull, bands and portholes unchanged. The shared Submarine's anchor.",
+        "reviewedAt": "2026-10-05T10:22:48.166Z"
+      }
+    },
     "human-transport-heraldic-a": {
       "id": "human-transport-heraldic-a",
       "asset": "chibi-naval-human-transport",
@@ -514,6 +648,91 @@
       },
       "notes": "The batch-5 cog portrait with a crimson sail, a gold cross and gold border, a crimson pennant; hull and outline unchanged.",
       "acceptedAt": "2026-10-03T07:55:49.723Z"
+    },
+    "chibi-naval-human-portrait-submarine": {
+      "id": "chibi-naval-human-portrait-submarine",
+      "subject": "PORTRAIT:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "human-portrait-submarine-heraldic-a",
+      "candidate": 0,
+      "candidateSha256": "7d561af89ae862bf23a3505c43b52b683a4d792d9df82940407923f285d861d8",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-human-portrait-submarine.png",
+        "sha256": "7d561af89ae862bf23a3505c43b52b683a4d792d9df82940407923f285d861d8",
+        "pixelSha256": "c88cae4a5ca36cf296acf7ba91c07e8d21536be3b20ea31253857e913aae6dc7",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is"
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 7,
+        "groundShare": 0.2935,
+        "footprintWidthShare": 0.9512,
+        "suspect": true
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The shared Submarine portrait with a crimson tower carrying a gold cross, a gold-tipped pennant and a gold-edged fin.",
+      "acceptedAt": "2026-10-05T10:09:22.848Z"
+    },
+    "chibi-naval-human-submarine": {
+      "id": "chibi-naval-human-submarine",
+      "subject": "UNIT:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "human-submarine-heraldic-a",
+      "candidate": 0,
+      "candidateSha256": "5abcbdf721b775d68b4ffa2ac42f03f70b7fdbb154bddfb4f127b28025161c6d",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-human-submarine.png",
+        "sha256": "13cc7c487ef7fc030276979dee327619c253d5bf867328dfdb120877053f4ebe",
+        "pixelSha256": "6208b0727d8c9d5ee1dd74136efc3889b6462342d28cc4ab3edc0577b3dd6b8c",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 8
+        }
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The shared Submarine with a deep crimson tower carrying a gold cross, a gold-tipped crimson pennant and a crimson fin with a gold edge; hull, bands and portholes unchanged. The shared Submarine's anchor.",
+      "acceptedAt": "2026-10-05T10:22:48.166Z"
     },
     "chibi-naval-human-transport": {
       "id": "chibi-naval-human-transport",

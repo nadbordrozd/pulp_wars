@@ -1,0 +1,37 @@
+{
+  "id": "dinosaur-submarine-a",
+  "jobId": "46c897bb-b119-4437-9afa-04012d6d149e",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-dinosaur",
+    "asset": "chibi-naval-dinosaur-submarine",
+    "subject": "UNIT:DINOSAUR:SUBMARINE",
+    "faction": "DINOSAUR",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98501,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed fat log of the same tawny wood, carved like a plesiosaur, with the blue orange-striped head at the bow and two short carved wooden flippers on its side; on its back a hatch covered with sandy brown hide with big dark brown spots and a bone-white breathing reed standing up. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed fat log of the same tawny wood, carved like a plesiosaur, with the blue orange-striped head at the bow and two short carved wooden flippers on its side; on its back a hatch covered with sandy brown hide with big dark brown spots and a bone-white breathing reed standing up. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed fat log of the same tawny wood, carved like a plesiosaur, with the blue orange-striped head at the bow and two short carved wooden flippers on its side; on its back a hatch covered with sandy brown hide with big dark brown spots and a bone-white breathing reed standing up. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "editInstruction": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed fat log of the same tawny wood, carved like a plesiosaur, with the blue orange-striped head at the bow and two short carved wooden flippers on its side; on its back a hatch covered with sandy brown hide with big dark brown spots and a bone-white breathing reed standing up. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "source": {
+      "recipe": "dinosaur-patrol-boat-primal-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "33bc841993cf9f60dae1d1221ecff4ac0017cb01a6e154ecee9b8d249829f7ff"
+    }
+  }
+}

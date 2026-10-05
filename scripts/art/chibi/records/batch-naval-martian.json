@@ -556,6 +556,140 @@
         "reviewedAt": "2026-10-03T08:13:17.742Z"
       }
     },
+    "martian-portrait-submarine-a": {
+      "id": "martian-portrait-submarine-a",
+      "asset": "chibi-naval-martian-portrait-submarine",
+      "jobId": "19878975-8586-4d12-b929-7a4fb5f451a7",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-martian",
+        "asset": "chibi-naval-martian-portrait-submarine",
+        "subject": "PORTRAIT:MARTIAN:SUBMARINE",
+        "faction": "MARTIAN",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 98611,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "editInstruction": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; a big clear glass dome on top with a short antenna with a glowing hot magenta tip, one large round glass porthole on the side, two small fins, and a row of small glowing hot magenta lights around its middle. Keep the size, thick black outline and art style the same, on a transparent background.",
+        "source": {
+          "recipe": "martian-portrait-patrol-boat-antenna-edit-a",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "bd8baf56275374df24be36d0e05d40dc8edc4957a356fdf0b8a6b054db46ba26"
+        }
+      },
+      "submittedAt": "2026-10-05T09:46:42.344Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-martian/martian-portrait-submarine-a.png",
+      "rawSheetSha256": "3c5b031c60ca1abf2120f9f12141bf3b3f1a6a40457ca3e7bd584e3fc01db55d",
+      "plateHints": [
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9459,
+          "suspect": false
+        },
+        {
+          "bandRows": 8,
+          "groundShare": 0,
+          "footprintWidthShare": 0.9459,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T09:47:13.642Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "The bathysphere at 48 px: a chrome ball with a gunmetal underside, a glass dome and side porthole, a magenta light band and a magenta-tipped antenna.",
+        "reviewedAt": "2026-10-05T09:48:05.544Z"
+      }
+    },
+    "martian-submarine-a": {
+      "id": "martian-submarine-a",
+      "asset": "chibi-naval-martian-submarine",
+      "jobId": "01f3cff3-85d2-4596-bb9a-7ad13ec90040",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "naval-martian",
+        "asset": "chibi-naval-martian-submarine",
+        "subject": "UNIT:MARTIAN:SUBMARINE",
+        "faction": "MARTIAN",
+        "recipeClass": "ship",
+        "requestSize": {
+          "width": 72,
+          "height": 88
+        },
+        "seed": 98601,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; remove the tall antenna mast; a big clear glass dome on top, one large round glass porthole on the side, two small fins, a short antenna with a glowing hot magenta tip, and a row of small glowing hot magenta lights around its middle. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+          }
+        ],
+        "prompt": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; remove the tall antenna mast; a big clear glass dome on top, one large round glass porthole on the side, two small fins, a short antenna with a glowing hot magenta tip, and a row of small glowing hot magenta lights around its middle. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "negativePrompt": "",
+        "description": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; remove the tall antenna mast; a big clear glass dome on top, one large round glass porthole on the side, two small fins, a short antenna with a glowing hot magenta tip, and a row of small glowing hot magenta lights around its middle. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "editInstruction": "Turn it into a chrome bathysphere submarine: the long hull becomes one round ball-shaped hull of the same polished chrome with a dark gunmetal underside; remove the tall antenna mast; a big clear glass dome on top, one large round glass porthole on the side, two small fins, a short antenna with a glowing hot magenta tip, and a row of small glowing hot magenta lights around its middle. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+        "source": {
+          "recipe": "martian-patrol-boat-chrome-a-edit",
+          "candidate": 0,
+          "sibling": true,
+          "sha256": "5b286197c97f50005569d26d639c6a4ed65fd4ad8f50f633e0c018fea5df08d7"
+        }
+      },
+      "submittedAt": "2026-10-05T09:37:24.968Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 72,
+        "height": 88
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-naval-martian/martian-submarine-a.png",
+      "rawSheetSha256": "9e6acaea82622ea2c101cca4c025a53ea58785e9754256b62f520370ddde97a5",
+      "plateHints": [
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        },
+        {
+          "bandRows": 13,
+          "groundShare": 0,
+          "footprintWidthShare": 0.8667,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T09:38:01.438Z",
+      "review": {
+        "verdict": "ACCEPTED",
+        "candidate": 0,
+        "notes": "A round chrome bathysphere with a gunmetal underside, a glass dome, a big side porthole, fins, a magenta-tipped antenna and a magenta light band; clearly not the saucer Patrol Boat. The shared Submarine's anchor.",
+        "reviewedAt": "2026-10-05T10:22:49.221Z"
+      }
+    },
     "martian-transport-cargo-edit-a": {
       "id": "martian-transport-cargo-edit-a",
       "asset": "chibi-naval-martian-transport",
@@ -930,6 +1064,123 @@
       },
       "notes": "The chrome hover-boat portrait with a glass dome, magenta rim lights and a thin antenna with a magenta orb, matching the map sprite.",
       "acceptedAt": "2026-10-03T08:12:45.930Z"
+    },
+    "chibi-naval-martian-portrait-submarine": {
+      "id": "chibi-naval-martian-portrait-submarine",
+      "subject": "PORTRAIT:MARTIAN:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "status": "ACCEPTED",
+      "recipe": "martian-portrait-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "14f19af0fd5c783c70f66bf8f7b5d939a9c5b8825d53ee63adb47b7a6a919e18",
+      "master": {
+        "path": "public/assets/chibi/portraits/chibi-naval-martian-portrait-submarine.png",
+        "sha256": "7eb0db15c6f726e91409633a5babf3a171483c0038fd5877f3f7669026856624",
+        "pixelSha256": "29f20437ed586f3edbdef7ae7662c8c98796c4606f1daeabe1f59151017c62cc",
+        "width": 48,
+        "height": 48
+      },
+      "derivation": {
+        "kind": "as-is",
+        "accent": {
+          "preset": "martian-magenta",
+          "spec": {
+            "band": {
+              "hueFrom": 285,
+              "hueTo": 350,
+              "saturationMin": 0.4,
+              "valueMin": 0.25,
+              "hueCentre": 320
+            },
+            "hue": 322,
+            "hueSpread": 0.2
+          },
+          "accentPixels": 27,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 24,
+        "y": 24
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 0,
+        "down": 0
+      },
+      "plateCheck": {
+        "bandRows": 8,
+        "groundShare": 0,
+        "footprintWidthShare": 0.9459,
+        "suspect": false
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "The bathysphere at 48 px: a chrome ball with a gunmetal underside, a glass dome and side porthole, a magenta light band and a magenta-tipped antenna.",
+      "acceptedAt": "2026-10-05T09:48:05.544Z"
+    },
+    "chibi-naval-martian-submarine": {
+      "id": "chibi-naval-martian-submarine",
+      "subject": "UNIT:MARTIAN:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "status": "ACCEPTED",
+      "recipe": "martian-submarine-a",
+      "candidate": 0,
+      "candidateSha256": "ed4d63f4db5b72641b49f18bcf42ac37e9d585192a0d9f9bb25808fbe4660d6b",
+      "master": {
+        "path": "public/assets/chibi/units/chibi-naval-martian-submarine.png",
+        "sha256": "f92d8708a59d39d9f5b1f596d3b50ab84330ef81bcb1e608de6b7b0925a29c8a",
+        "pixelSha256": "336e2a34d4d3be5e478b0ce8165f807b73a035428a52f8f0578dedaf62219e0d",
+        "width": 72,
+        "height": 88
+      },
+      "derivation": {
+        "kind": "seated",
+        "seat": {
+          "bottomMargin": 8
+        },
+        "accent": {
+          "preset": "martian-magenta",
+          "spec": {
+            "band": {
+              "hueFrom": 285,
+              "hueTo": 350,
+              "saturationMin": 0.4,
+              "valueMin": 0.25,
+              "hueCentre": 320
+            },
+            "hue": 322,
+            "hueSpread": 0.2
+          },
+          "accentPixels": 66,
+          "trimPixels": 0
+        }
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "overflow": {
+        "left": 0,
+        "right": 0,
+        "up": 8,
+        "down": 0
+      },
+      "reviewChecks": {
+        "native": true,
+        "enlarged": true,
+        "owners": true,
+        "noPlate": true,
+        "camera": true
+      },
+      "notes": "A round chrome bathysphere with a gunmetal underside, a glass dome, a big side porthole, fins, a magenta-tipped antenna and a magenta light band; clearly not the saucer Patrol Boat. The shared Submarine's anchor.",
+      "acceptedAt": "2026-10-05T10:22:49.221Z"
     },
     "chibi-naval-martian-transport": {
       "id": "chibi-naval-martian-transport",

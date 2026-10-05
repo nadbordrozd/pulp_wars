@@ -6,9 +6,13 @@
     "naval-goblin",
     "naval-dinosaur",
     "naval-martian",
-    "naval-ice-folk"
+    "naval-ice-folk",
+    "naval-branch",
+    "naval-dwarf",
+    "naval-candy"
   ],
   "command": "npm run art:chibi-naval-faction-review",
+  "submarines": "Bead pulp_wars-5ti.6: submarine-sheet-*, the `submarines` section of readability.json and the scene-submarines-* captures cover the shared Submarine and the seven seafaring factions' (batches naval-branch and naval-<faction>, the Dwarf and Candy ones included).",
   "note": "The scene-* captures draw the live look the game draws since bead pulp_wars-w5j.3: the naval art wired in under the subjects the game asks for, no base plates or rings, the viewer's (Human) ships with the ready ring, Patrol Boats docked at Ports and some ships damaged (scripts/art/naval-factions/scene.ts).",
   "files": [
     "naval-sheet-1x.png",
@@ -22,6 +26,16 @@
     "scene-mixed-desktop-zoom-0.75.png",
     "scene-mixed-desktop-zoom-1.png",
     "scene-mixed-phone-zoom-0.75.png",
-    "scene-mixed-phone-zoom-1.png"
+    "scene-mixed-phone-zoom-1.png",
+    "scene-submarines-classic-desktop-zoom-0.75.png",
+    "scene-submarines-classic-desktop-zoom-1.png",
+    "scene-submarines-classic-phone-zoom-0.75.png",
+    "scene-submarines-classic-phone-zoom-1.png",
+    "scene-submarines-desktop-zoom-0.75.png",
+    "scene-submarines-desktop-zoom-1.png",
+    "scene-submarines-phone-zoom-0.75.png",
+    "scene-submarines-phone-zoom-1.png",
+    "submarine-sheet-1x.png",
+    "submarine-sheet-x4.png"
   ]
 }

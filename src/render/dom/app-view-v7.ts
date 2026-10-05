@@ -3383,6 +3383,19 @@ export class Ruleset7DomAppView {
                 ),
             );
           }
+          // The naval branch art (bead pulp_wars-5ti.6): the Bow Ram and
+          // Torpedo lines carry their icons in the same slot, when the art
+          // set has them (LEGACY keeps the plain line).
+          if (ability === "RAM" || ability === "TORPEDO") {
+            const icon = this.#chibiArt(
+              `ICON:ACTION:${ability}`,
+              CHIBI_DOM_BOXES_V7.action,
+            )?.element;
+            if (icon !== undefined) {
+              entry.dataset.ability = ability.toLowerCase();
+              entry.append(icon);
+            }
+          }
           entry.append(
             text(
               this.#document,

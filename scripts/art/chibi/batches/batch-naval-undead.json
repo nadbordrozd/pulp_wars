@@ -66,6 +66,35 @@
       },
       "ownerColour": false,
       "accent": "undead-violet"
+    },
+    {
+      "id": "chibi-naval-undead-submarine",
+      "subject": "UNIT:UNDEAD:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "ownerColour": false,
+      "accent": "undead-violet",
+      "bottomMargin": 8
+    },
+    {
+      "id": "chibi-naval-undead-portrait-submarine",
+      "subject": "PORTRAIT:UNDEAD:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false,
+      "accent": "undead-violet"
     }
   ],
   "recipes": [
@@ -151,6 +180,40 @@
       },
       "editInstruction": "Turn it into a spooky ghost galleon: the hull becomes near-black charcoal wood, colour #2a2a30, with pale ivory bone ribs and a skull on the bow; the grey castles become black wood; the red sails become tattered dark charcoal grey cloth, colour #5a5660, with torn zigzag edges; the pennants become black rags; small lanterns glow bright violet. Keep the ship shape, size, thick black outline and art style exactly the same, on a transparent background.",
       "asset": "chibi-naval-undead-portrait-battleship"
+    },
+    {
+      "id": "undead-submarine-a",
+      "asset": "chibi-naval-undead-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98401,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "undead-patrol-boat-ghost-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood, crusted with pale grey barnacles, with the ivory bone rail and the big skull figurehead on the bow; on deck a low humped black cabin with two round portholes glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+      "notes": "The accepted Undead Patrol Boat sunk to its deck: no mast, a closed barnacled hull, violet lights low on the hull."
+    },
+    {
+      "id": "undead-portrait-submarine-a",
+      "asset": "chibi-naval-undead-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98411,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "undead-portrait-patrol-boat-ghost-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood with pale grey barnacle studs, the ivory bone rail and a skull on the bow; on deck a low humped black cabin with a row of windows glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, thick black outline and art style the same, on a transparent background.",
+      "notes": "The accepted Undead Patrol Boat portrait with the map sprite's change."
     }
   ]
 }

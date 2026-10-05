@@ -61,6 +61,33 @@
         "height": 48
       },
       "ownerColour": false
+    },
+    {
+      "id": "chibi-naval-dinosaur-submarine",
+      "subject": "UNIT:DINOSAUR:SUBMARINE",
+      "assetClass": "LARGE_UNIT",
+      "recipeClass": "ship",
+      "canvas": {
+        "width": 72,
+        "height": 88
+      },
+      "anchor": {
+        "x": 32,
+        "y": 48
+      },
+      "ownerColour": false,
+      "bottomMargin": 8
+    },
+    {
+      "id": "chibi-naval-dinosaur-portrait-submarine",
+      "subject": "PORTRAIT:DINOSAUR:SUBMARINE",
+      "assetClass": "PORTRAIT",
+      "recipeClass": "portrait",
+      "canvas": {
+        "width": 48,
+        "height": 48
+      },
+      "ownerColour": false
     }
   ],
   "recipes": [
@@ -178,6 +205,57 @@
       "editInstruction": "Recolour only the dark maroon red lines and shadows of the log hull: they become dark brown wood, colour #4a2c14, not red and not maroon. Keep the spotted hide sails, the blue plesiosaur head with orange stripes, the feathers, size, thick black outline and art style exactly the same, on a transparent background.",
       "notes": "dinosaur-portrait-battleship-primal-a is right, but the hull's dark lines are maroon (hue 353): 8.4% of its pixels fall in the owner key's band.",
       "asset": "chibi-naval-dinosaur-portrait-battleship"
+    },
+    {
+      "id": "dinosaur-submarine-a",
+      "asset": "chibi-naval-dinosaur-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98501,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "dinosaur-patrol-boat-primal-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed fat log of the same tawny wood, carved like a plesiosaur, with the blue orange-striped head at the bow and two short carved wooden flippers on its side; on its back a hatch covered with sandy brown hide with big dark brown spots and a bone-white breathing reed standing up. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+      "notes": "The accepted Dinosaur Patrol Boat closed into a log submersible: the carved plesiosaur prow stays, the hide moves from the sail to the hatch."
+    },
+    {
+      "id": "dinosaur-submarine-b",
+      "asset": "chibi-naval-dinosaur-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98502,
+      "requestSize": {
+        "width": 72,
+        "height": 88
+      },
+      "source": {
+        "recipe": "dinosaur-patrol-boat-primal-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a stone-age log submarine: remove the mast, sail and feathers; the open canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end with tree rings at the stern; keep the carved blue orange-striped plesiosaur head at the bow; on top a small hatch covered with sandy hide with dark spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+      "notes": "dinosaur-submarine-a reads as a swimming turtle (a domed hide shell on four flippers), the living animal the naval branch rules out; this one asks for a plain closed log with a sawn end and no limbs."
+    },
+    {
+      "id": "dinosaur-portrait-submarine-a",
+      "asset": "chibi-naval-dinosaur-portrait-submarine",
+      "endpoint": "edit-image-pixen",
+      "seed": 98511,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "dinosaur-portrait-patrol-boat-primal-a",
+        "candidate": 0,
+        "sibling": true
+      },
+      "editInstruction": "Turn it into a stone-age log submarine: remove the mast, the sail and the feathers; the canoe becomes one closed long tree-trunk log of the same tawny wood with dark bark and a flat sawn end; keep the blue orange-striped plesiosaur head at the bow end; on top a small hatch covered with sandy hide with dark brown spots and a tall bone-white reed. No legs, no flippers: a log boat. Keep the size, thick black outline and art style the same, on a transparent background.",
+      "notes": "The accepted Dinosaur Patrol Boat portrait with the map sprite's change."
     }
   ]
 }

@@ -34,9 +34,8 @@ import {
  * its map sprite in the dock, as in LEGACY.
  */
 
-// The naval branch engine (bead pulp_wars-5ti.2): the Submarine is a ship;
-// its portrait is the Patrol Boat's until bead pulp_wars-5ti.6
-// (navalArtRoleForV7).
+// The naval branch (beads pulp_wars-5ti.2 and 5ti.6): the Submarine is a
+// ship with a portrait of its own per faction (navalArtRoleForV7).
 const NAVAL_ROLES: readonly UnitRoleIdV7[] = [
   "PATROL_BOAT",
   "BATTLESHIP",
@@ -138,11 +137,11 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
   SHORECRAFT: "IMPROVEMENT:PORT",
   NAVIGATION: "ICON:TECH:NAVIGATION",
   NAVAL_ENGINEERING: "UNIT:BATTLESHIP",
-  // The naval branch engine (bead pulp_wars-5ti.2): STAND-INS until the UI
-  // and art beads (pulp_wars-5ti.6, 5ti.7): Seamanship shows the Patrol
-  // Boat (the rammer) and Submersibles the Shipyard (Harbours).
-  SEAMANSHIP: "UNIT:PATROL_BOAT",
-  SUBMERSIBLES: "IMPROVEMENT:SHIPYARD",
+  // The naval branch (bead pulp_wars-5ti.6): dedicated icons shared by
+  // every faction, the ship's wheel with a grappling hook (Ram and Board)
+  // and the diving helmet (the Submarine and Harbours).
+  SEAMANSHIP: "ICON:TECH:SEAMANSHIP",
+  SUBMERSIBLES: "ICON:TECH:SUBMERSIBLES",
 } as const satisfies Readonly<Record<TechnologyIdV7, ArtSubjectV7>>;
 
 /**
@@ -206,9 +205,6 @@ export function technologySubjectV7(
   // pulp_wars-w5j.3).
   if (subject === "UNIT:BATTLESHIP")
     return navalArtSubjectV7(faction, "UNIT", "BATTLESHIP");
-  // Seamanship (the stand-in above) shows the faction's own Patrol Boat.
-  if (subject === "UNIT:PATROL_BOAT")
-    return navalArtSubjectV7(faction, "UNIT", "PATROL_BOAT");
   return subject;
 }
 

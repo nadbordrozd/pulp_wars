@@ -17,6 +17,7 @@ import {
 } from "./chibi-faction-buildings-art-manifest";
 import { CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7 } from "./chibi-mountain-ranges-manifest";
 import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "./chibi-naval-faction-art-manifest";
+import { CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7 } from "./chibi-naval-submarine-art-manifest";
 
 /**
  * Production art of the new visual direction (bead pulp_wars-3tq.5, batch
@@ -566,6 +567,9 @@ export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
     // --- Naval, every faction (pulp_wars-w5j.2 art, wired in by
     // pulp_wars-w5j.3): the Human entries take the shared ship subjects.
     ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
+    // --- The Submarines riding low in the water (pulp_wars-5ti.6): derived
+    // from the surfaced sprites, drawn for a submerged Submarine.
+    ...CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7.map((entry) => entry.asset),
     // --- Faction building looks and the Undead territory ground
     // (pulp_wars-xdh.2) ---
     ...CHIBI_FACTION_BUILDING_ART_ASSETS_V7,

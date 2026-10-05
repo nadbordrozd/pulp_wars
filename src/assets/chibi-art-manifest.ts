@@ -1667,6 +1667,119 @@ export const CHIBI_ART_ASSETS_V7: readonly ChibiArtAssetV7[] = [
     height: 48,
     url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-stampede.png"),
   },
+  // --- The naval branch (bead pulp_wars-5ti.6, batch `naval-branch`): the
+  // shared Submarine of the Classic look and its portrait (the conning
+  // tower, pennant and tail fin are the owner area), the Seamanship and
+  // Submersibles technology icons and the Ram, Board and Torpedo icons. ---
+  {
+    id: "chibi-submarine",
+    subject: "UNIT:SUBMARINE",
+    assetClass: "LARGE_UNIT",
+    width: 72,
+    height: 88,
+    url: chibiArtUrl("assets/chibi/units/chibi-submarine.png"),
+    ownerMaskUrl: chibiArtUrl("assets/chibi/units/chibi-submarine.mask.png"),
+    // Drawn 4 px right of the class placement, so the tail fin clears the
+    // HP bar and seat badge strips (SUBMARINE_ANCHOR_V7).
+    anchor: { x: 32, y: 48 },
+  },
+  {
+    id: "chibi-portrait-submarine",
+    subject: "PORTRAIT:SUBMARINE",
+    assetClass: "PORTRAIT",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/portraits/chibi-portrait-submarine.png"),
+    ownerMaskUrl: chibiArtUrl(
+      "assets/chibi/portraits/chibi-portrait-submarine.mask.png",
+    ),
+  },
+  {
+    id: "chibi-icon-tech-seamanship",
+    subject: "ICON:TECH:SEAMANSHIP",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-tech-seamanship.png"),
+  },
+  {
+    id: "chibi-icon-tech-submersibles",
+    subject: "ICON:TECH:SUBMERSIBLES",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-tech-submersibles.png"),
+  },
+  {
+    id: "chibi-icon-action-ram",
+    subject: "ICON:ACTION:RAM",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-ram.png"),
+  },
+  {
+    id: "chibi-icon-action-board",
+    subject: "ICON:ACTION:BOARD",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-board.png"),
+  },
+  {
+    id: "chibi-icon-action-torpedo",
+    subject: "ICON:ACTION:TORPEDO",
+    assetClass: "ICON",
+    width: 48,
+    height: 48,
+    url: chibiArtUrl("assets/chibi/icons/chibi-icon-action-torpedo.png"),
+  },
+  // --- The Ice Folk sea ice (bead pulp_wars-5ti.6, the same batch): the ice
+  // over Shallow and Deep Water, two windows of one field each, and the
+  // Icebound pack ice at the foot of a ship frozen in (the lower half of
+  // the ship's cell). Registered for the Ice Folk engine step: no state
+  // names an ice tile yet, so nothing asks for these subjects today. ---
+  {
+    id: "chibi-ice-shallow-1",
+    subject: "TERRAIN:ICE_SHALLOW",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-ice-shallow-1.png"),
+  },
+  {
+    id: "chibi-ice-shallow-2",
+    subject: "TERRAIN:ICE_SHALLOW",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-ice-shallow-2.png"),
+  },
+  {
+    id: "chibi-ice-deep-1",
+    subject: "TERRAIN:ICE_DEEP",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-ice-deep-1.png"),
+  },
+  {
+    id: "chibi-ice-deep-2",
+    subject: "TERRAIN:ICE_DEEP",
+    assetClass: "TERRAIN",
+    width: 80,
+    height: 80,
+    url: chibiArtUrl("assets/chibi/terrain/chibi-ice-deep-2.png"),
+  },
+  {
+    id: "chibi-overlay-icebound",
+    subject: "OVERLAY:ICEBOUND",
+    assetClass: "BUILDING",
+    width: 80,
+    height: 40,
+    url: chibiArtUrl("assets/chibi/buildings/chibi-overlay-icebound.png"),
+    anchor: { x: 40, y: 0 },
+  },
 ];
 
 export function chibiArtUrl(path: string): string {

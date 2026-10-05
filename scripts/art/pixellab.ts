@@ -33,6 +33,7 @@ import { validateChibiProduction } from "./chibi/pipeline";
 import { gloamGrassProblems } from "./faction-buildings/gloam-grass";
 import { forestPieceProblems } from "./chibi-forest-pieces";
 import { mountainRangeProblems } from "./chibi-mountain-ranges";
+import { submergedSubmarineProblems } from "./naval-branch/submerged";
 
 type ArtClass = "units" | "terrain" | "buildings" | "ui";
 type Stage = "sample" | "batch";
@@ -696,6 +697,9 @@ async function main(): Promise<void> {
       // The composed mountain ranges (pulp_wars-e9f): derived from the
       // recorded PixelLab candidates.
       ...(await mountainRangeProblems(ROOT)),
+      // The submerged Submarines (pulp_wars-5ti.6): derived from the
+      // accepted surfaced sprites.
+      ...(await submergedSubmarineProblems(ROOT)),
     ];
     if (chibiProblems.length > 0)
       throw new Error(

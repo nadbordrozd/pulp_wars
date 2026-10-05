@@ -44,6 +44,10 @@ drawn as itself over the water and needs none
 So the bead made **30 rasters**: six factions x (Patrol Boat, Battleship,
 transport, two portraits).
 
+The **Submarine** of the naval branch (role `SUBMARINE`, Submersibles) and
+its portrait came later, with the branch's icons and the Ice Folk sea ice:
+see [the naval branch art](#the-naval-branch-art-bead-pulp_wars-5ti6).
+
 ## The designs
 
 Every piece keeps the canvas, class and anchor of the shared piece it
@@ -322,3 +326,271 @@ kind, role)` names them (the shared subject for the Humans);
 8. **Review.** `npm run art:chibi-naval-faction-review` was rerun; its
    scene registers nothing of its own and draws the live look as the game
    does (see [Evidence](#evidence)).
+
+## The naval branch art (bead `pulp_wars-5ti.6`)
+
+Art of the [naval branch](../product/RULESET_7_NAVAL_BRANCH.md#143-what-the-art-bead-must-draw-bead-5ti6):
+the Submarine of every seafaring faction and of the Classic look, with its
+portrait; the two technology icons and the Ram, Board and Torpedo icons;
+the Ice Folk sea ice over both waters and the Icebound pack ice. 26 PixelLab
+assets from 58 recipes (58 calls: 24 accepted, 34 rejected, each with its
+reason in the records), and 7 sprites derived by script.
+
+![The Submarine of the Classic look for two players and of the seven seafaring factions, surfaced and riding low, its portrait, and each fleet's other ships](../../art/pixellab/reviews/chibi-batch-naval-factions/submarine-sheet-x4.png)
+
+### The Submarines
+
+| Faction  | Submarine                                                                                                                | Tell beside its own fleet                         |
+| -------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| Classic  | a pale birch cigar hull with steel bands and two portholes; conning tower, pennant and tail fin in the owner's colour    | no sail: a tower and a fin                        |
+| Human    | the shared Submarine with a crimson tower carrying a gold cross, a gold-tipped pennant and a gold-edged fin              | as the Classic one, in crimson and gold           |
+| Undead   | a long low closed black hull with barnacle studs, the bone rail and skull, a humped cabin with violet windows, lantern   | violet windows low on the hull, no mast           |
+| Goblin   | a diving barrel of the fleet's planks and tin hoops, the lime goblin at the hatch window, a periscope pipe, hazard sign  | a barrel on its side with one big porthole        |
+| Dinosaur | a closed tree-trunk log with bark and a sawn end, the plesiosaur head at the bow end, a spotted hide hatch, a bone reed  | a log with no sail; the hide is on the hatch      |
+| Martian  | a round chrome bathysphere: gunmetal underside, glass dome, a big side porthole, fins, magenta light band and antenna    | a ball, where the Patrol Boat is a flat saucer    |
+| Dwarf    | a soot-iron cigar hull with grey bands, a low tower with a copper hatch wheel and a short funnel, two green portholes    | green portholes on a long hull, no paddle wheel   |
+| Candy    | a level stubby dark chocolate capsule with dripping pink frosting, three mint portholes, a tower, a candy-cane periscope | a capsule with portholes; the periscope is a cane |
+
+Decisions:
+
+1. **Eight, not seven.** The overlay's table lists six factions and the
+   Classic one; the Candy joined later as a seafaring faction
+   ([section 20](../product/RULESET_7_NAVAL_BRANCH.md#20-engine-step-i-as-built-pulp_wars-5ti2)),
+   so it has one too. Its design is this bead's: the fleet's chocolate and
+   pink frosting as a capsule.
+2. **The Ice Folk have none.** They lose their ships in engine step II.
+   Until then an Ice Folk Submarine (they may train one in step I) is drawn
+   as the shared Submarine in the owner's colour, the fallback of any
+   faction naval subject without a raster.
+3. **Every map sprite is an edit of that fleet's accepted Patrol Boat**
+   ("Turn it into …", a `sibling` source in the same batch), so planks, tin,
+   chrome and chocolate are the fleet's own; the Human one is the shared
+   Submarine recoloured, as the Human Patrol Boat is the shared cog. A fresh
+   creation was tried beside the first three edits and rejected each time:
+   more detailed and shaded than the fleet's flat style.
+4. **The Dwarf one is soot iron and copper**, as the Dwarf fleet is; the
+   overlay's "brass" is the copper of the fleet's fittings.
+5. **The Goblin is lime**, as the redrawn fleet's crew (the overlay's
+   "olive" predates the redesign).
+6. **The Dinosaur one is a log**, not an animal: the first edit read as a
+   swimming turtle on four flippers and was rejected; the accepted one asks
+   for "no legs, no flippers: a log boat".
+7. **Portraits** are edits of each fleet's Patrol Boat portrait with the
+   same instruction (the Classic one of the batch-5 portrait). The Classic
+   portrait's red tower, pennant and fin were enlarged by a second edit: the
+   first had 10.9% owner colour, under the mask QA floor.
+8. **Anchor.** A Submarine is longer than a cog's hull (57 to 62 px on the
+   72 px canvas), so every Submarine map sprite, shared and faction,
+   surfaced and submerged, is anchored at (32, 48): drawn 4 px right of the
+   class placement, clear of the HP bar and seat badge strips
+   (`SUBMARINE_ANCHOR_V7`; a test holds it). The first Candy Submarine was
+   69 px wide and was replaced by a stubbier one.
+9. **Waterline.** The shared one is an edit that asked for the submarine
+   "lying low at the very bottom of the image, exactly where the boat's hull
+   is now" (an owned asset cannot be seated), which put its keel on the cog's
+   row; the faction ones name `bottomMargin: 8`, the Patrol Boat's.
+
+Measured on the masters
+([`readability.json`](../../art/pixellab/reviews/chibi-batch-naval-factions/readability.json),
+`submarines`): each Submarine is 46 to 66 px tall against 69 to 74 px for
+its fleet's Patrol Boat (63% to 93% of it; the Goblin barrel and the Martian
+ball are the tallest). Against the water (body mean, CIE76): 51 to 73 on
+Shallow and 37 to 73 on Deep Water, except the Martian chrome, 26 and 24,
+with 19% of its body within 12 of Shallow Water, the fleet's known weak
+spot. Between factions the closest Submarines are the Dwarf and the Goblin
+(palette distance 14.1; 8.6 for a deuteranope: dark hulls both), then the
+Dinosaur and the Human (15.9; 8.2: warm wood both); shape tells them apart
+(a barrel, a long black hull; a log, a cigar with a tower).
+
+### Riding low: the submerged sprites
+
+The overlay asks for a Submarine "drawn low in the water" and names no
+second raster, so that look is **derived by script** from each accepted
+sprite, with no PixelLab call
+([`submerged.ts`](../../scripts/art/naval-branch/submerged.ts)): the sprite
+sinks 7 rows, the waterline staying on the row every ship shares; the hull
+under it is kept as a ghost at alpha 72, so the tile's water shows through
+it whatever its depth; one row of pale foam (`#f1fbff`) is drawn where the
+hull meets the water, with a broken row under it. The seven faction sprites
+have one (`chibi-naval-<faction>-submarine-submerged`, subject
+`UNIT:<FACTION>:SUBMARINE_SUBMERGED`, the Humans' `UNIT:SUBMARINE_SUBMERGED`);
+`npm run art:validate` re-derives them. The Classic look has none (its
+registry holds only accepted pipeline assets) and draws the shared
+Submarine surfaced.
+
+**Drawn by the board in the live look**: the board passes `submerged: true`
+to `unitArtSubjectV7` for a Submarine whose public stats say it is submerged,
+and draws the low-riding sprite with the periscope badge of the naval
+interface; the code-drawn wave lines are left out there, because the sprite
+already shows its waterline. The Classic look and LEGACY have no low-riding
+raster and keep the whole Submarine under the wave lines and the badge. The
+dock, the Gallery and every portrait keep the whole Submarine.
+
+### Icons
+
+| Subject                  | Asset                          | Drawing                                                    |
+| ------------------------ | ------------------------------ | ---------------------------------------------------------- |
+| `ICON:TECH:SEAMANSHIP`   | `chibi-icon-tech-seamanship`   | a ship's wheel with a small grappling hook hanging on it   |
+| `ICON:TECH:SUBMERSIBLES` | `chibi-icon-tech-submersibles` | a round steel diving helmet with glass windows             |
+| `ICON:ACTION:RAM`        | `chibi-icon-action-ram`        | a steel ram spike on a riveted collar, yellow impact marks |
+| `ICON:ACTION:BOARD`      | `chibi-icon-action-board`      | a three-pronged grappling hook on a trailing rope          |
+| `ICON:ACTION:TORPEDO`    | `chibi-icon-action-torpedo`    | a steel torpedo with yellow bands and two bubbles          |
+
+One set for every faction, in the shared set like the batch-5 technology
+and action icons (no faction has its own technology icons except for
+Fortification and Explosives, whose names and rules differ by faction). The
+two technology cards show their icons (`technologySubjectV7`); they showed
+the Patrol Boat and the Shipyard as stand-ins. The Board button of the dock
+resolves `ICON:ACTION:BOARD` (its code-drawn hook is the fallback), and the
+Bow Ram and Torpedo lines of a selected ship's information carry
+`ICON:ACTION:RAM` and `ICON:ACTION:TORPEDO` in the icon slot the Charge!
+line has. The Help list "At sea" and the Gallery's ability list have no
+icon slot, so they show none.
+
+### The sea ice
+
+![A mock map: Snow on land, both waters, melting and permanent ice over each, ships frozen in, free ships and units on the ice](../../art/pixellab/reviews/naval-branch-ice/ice-scene-x2.png)
+
+Ice is a layer over a water tile, in two looks so the water's depth stays
+readable under it: **ice over Shallow Water** (`TERRAIN:ICE_SHALLOW`, a pale
+turquoise white, `#d3eff3`, with sparse frost specks) and **ice over Deep
+Water** (`TERRAIN:ICE_DEEP`, sky blue, `#a9c6e6`, with faint rings like air
+frozen in). Each has two variants, two windows of one PixelLab field, so a
+frozen sea does not repeat tile by tile. They are flat sheets like the two
+waters, with no cracks: the melting stages are cracks the board draws over
+them.
+
+| Measured (CIE76, mean tile colour) | Shallow Water | Deep Water | Snow on Grass | the other ice |
+| ---------------------------------- | ------------- | ---------- | ------------- | ------------- |
+| Ice over Shallow Water             | 17.3          | 51.2       | 30.4          | 20.4          |
+| Ice over Deep Water                | 18.3          | 32.5       | 43.5          | 20.4          |
+
+Every pair is past "clear at a glance" (10); the two ices are different
+colours (20.4). Seams between the tiles of an ice measure 0 to 0.2.
+
+What a sheet cannot carry is its edge. `seaIceTileV7`
+([`sea-ice-v7.ts`](../../src/assets/sea-ice-v7.ts)), pure like the Snow
+tiles, cuts it: on each side where the ice meets **open water** the sheet
+stops 2 to 6 wavy pixels short behind a pale rim with a darker line, and a
+corner between two such sides is rounded; a side that meets more ice or the
+shore is left whole, so ice joins ice without a seam and reaches the land.
+`permanent` (ice inside its owner's territory) dusts the sheet with a faint
+wash, four small snow drifts and a few sparkles, all inside the tile's
+margin: snow where melting ice has cracks.
+
+**Icebound.** `OVERLAY:ICEBOUND` (`chibi-overlay-icebound`, 80 x 40, anchor
+(40, 0): the lower half of the ship's cell, drawn over the hull) is a low
+strip of pack ice 66 px wide and 18 px tall with a jagged crest. With the
+existing Frosted rime on the hull's top edges it is the frost crust of the
+overlay; it grips the foot of every hull and leaves a Submarine's portholes
+in view. The first, a 28 px ridge, hid two thirds of a Patrol Boat's hull
+and was rejected.
+
+![The Icebound overlay over the three hulls of the seven seafaring factions, each beside the free ship](../../art/pixellab/reviews/naval-branch-ice/icebound-sheet-x3.png)
+
+What PixelLab taught on the ice: with a forced palette (`colorImage`) the
+sheet comes out in the **lightest** colour of the palette when the subject
+says "pale", whatever share the palette gives it, so the deep ice's first
+two palettes gave sheets as pale as the lagoon's ice; a palette with the
+wanted base as its lightest colour gives a perfectly flat tile; the
+accepted one says "sky-blue ice" on a palette with one lighter colour for
+the marks. "Frost patches" came out as rings, "shine lines" as a network of
+cracks, and one field had fishing holes and another ice stumps.
+
+### How it was made
+
+Batch `naval-branch` (faction `ORIGINAL`, not `fixedFactionColours`: the
+shared Submarine and its portrait are owned) holds the shared Submarine and
+portrait, the five icons, the four ice tiles and the overlay: 12 assets
+from 37 recipes. The seven faction Submarines and portraits are later
+assets of the existing batches `naval-<faction>` (`naval-dwarf` and
+`naval-candy` included): 14 assets from 21 recipes. Recipes and subject
+lines are where the other naval ones are.
+
+### Wiring
+
+Done in this bead:
+
+1. **Subjects.** `NavalArtRoleV7` has `SUBMARINE` and
+   `SUBMARINE_SUBMERGED`; `navalArtRoleForV7` returns a ship role's own
+   art role, so `unitArtSubjectV7` and `portraitSubjectV7` return
+   `UNIT:<FACTION>:SUBMARINE` and `PORTRAIT:<FACTION>:SUBMARINE` (the
+   Humans' `UNIT:SUBMARINE`, `PORTRAIT:SUBMARINE`). `ICON:ACTION:RAM`,
+   `ICON:ACTION:TORPEDO`, `TERRAIN:ICE_SHALLOW`, `TERRAIN:ICE_DEEP` and
+   `OVERLAY:ICEBOUND` are `NavalBranchArtSubjectV7`.
+2. **Registries.** The faction Submarines and portraits are the last
+   entries of `CHIBI_NAVAL_FACTION_ART_ASSETS_V7`
+   ([`chibi-naval-submarine-art-manifest.ts`](../../src/assets/chibi-naval-submarine-art-manifest.ts)),
+   so the live look draws them on the board, in the dock, on the training
+   card and in the Gallery. The shared Submarine, its portrait, the icons,
+   the ice tiles and the overlay are in the shared manifest
+   ([`chibi-art-manifest.ts`](../../src/assets/chibi-art-manifest.ts)), so
+   the Classic look has them too. The submerged sprites are in the live
+   registry only.
+3. **Fallbacks.** A faction's Submarine subject without a raster falls
+   back to the shared Submarine in the owner's colour (the Ice Folk; a
+   failed load); a submerged subject without one to the shared Submarine
+   surfaced. LEGACY has no Submarine art and keeps the Patrol Boat's, and
+   the Patrol Boat and the Shipyard on the two technology cards.
+4. **Shadows.** The unit shadow table has the new unit subjects
+   (`npm run art:unit-shadows-measure`); ships have no shadow, the table
+   places their ready ring.
+5. **Board and dock (after the naval UI of `pulp_wars-5ti.7`).** The
+   board renderer asks for the low-riding sprite and drops the wave lines
+   over it (`drawNavalUnitMarkersV7`'s `wash`); the unit information adds
+   the Ram and Torpedo icons.
+
+### What remains to wire
+
+Nothing below is drawn today; each waits for the frozen-sea engine (step
+II).
+
+1. **An icebound Submarine** is not submerged: the engine's `submerged`
+   stat will say so, and the board then draws the whole sprite again.
+2. **Ice tiles.** When the engine has `ice` (step II), the board draws,
+   over the water tile, `seaIceTileV7(sheet, openWater, variant, permanent)`
+   of the tile's depth (`seaIceArtSubjectV7`), cached per combination like
+   the Snow tiles, then the code-drawn melting cracks.
+3. **Icebound.** Over a ship frozen in: the Frosted rime of its sprite,
+   then `OVERLAY:ICEBOUND` on the lower half of its cell.
+4. **Ice Folk technology names.** Seamanship and Submersibles are Black
+   Ice and Glacier for the Ice Folk after step II; their cards then show a
+   ship's wheel and a diving helmet until they get icons of their own.
+
+### Evidence
+
+`npm run art:chibi-naval-faction-review` now also writes
+`submarine-sheet-{x4,1x}.png`, the `submarines` section of
+`readability.json`, and `scene-submarines-*` and
+`scene-submarines-classic-*`: the seven seafaring fleets drawn by the real
+board host, each Submarine beside its Patrol Boat, Battleship and
+transport, in the live look and in the Classic look.
+
+![The seven seafaring fleets with their Submarines, drawn by the board host in the live look](../../art/pixellab/reviews/chibi-batch-naval-factions/scene-submarines-desktop-zoom-1.png)
+
+`npm run art:naval-branch-ice-review` writes
+[`art/pixellab/reviews/naval-branch-ice/`](../../art/pixellab/reviews/naval-branch-ice/):
+`ice-tiles-x3.png`, `ice-tiling-1x.png`, `ice-scene-{1x,x2}.png`,
+`icebound-sheet-{1x,x3}.png`, `readability.json` and `index.json`. It makes
+no browser capture: no state names an ice tile yet, so its sheets are
+composed from the rasters with the functions the board will call.
+
+### Weak spots
+
+- **The Martian Submarine on Shallow Water** is the lowest contrast of the
+  set (26; the Martian fleet's chrome), and beside its Patrol Boat it is
+  told by shape alone (a ball, a saucer): both are chrome with a glass dome
+  and an antenna.
+- **The Dwarf Submarine on Deep Water** is a black hull on dark blue; its
+  green portholes, copper propeller and steam carry it.
+- **The Human Submarine's crimson tower** is small, and its gold cross is
+  a few pixels: at board size it is the Classic Submarine with a dark red
+  tower.
+- **The Dinosaur head** sits in the log's sawn end and reads as a creature
+  looking out of the log more than as a carved prow.
+- **The submerged foam** follows the row of the keel, so on a sprite drawn
+  at an angle (the Undead hull) it spans only the lowest part of the hull.
+- **The deep ice's rings** are faint; the tile is nearly flat at board
+  size, and the two variants of each ice differ little.
+- **The Seamanship wheel** is brown wood, darker than the pale birch of the
+  other shared icons.

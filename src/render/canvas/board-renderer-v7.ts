@@ -250,6 +250,7 @@ import type {
 import {
   chibiOverflowV7,
   cityArtSubjectV7,
+  navalArtRoleOfSubjectV7,
   territoryGroundV7,
   territoryTerrainSubjectV7,
   unitArtSubjectV7,
@@ -1108,7 +1109,15 @@ export function buildBoardRenderPlanV7(
       // Human sprite plus the faction badge.
       artSubject: monster
         ? "UNIT:MONSTER_GIANT_SPIDER"
-        : unitArtSubjectV7({ ...unit, faction, machine }),
+        : // A submerged Submarine asks for its low-riding sprite (bead
+          // pulp_wars-5ti.6); without one (the Classic look, a faction with
+          // no Submarine art) it falls back to the whole Submarine.
+          unitArtSubjectV7({
+            ...unit,
+            faction,
+            machine,
+            submerged: naval?.submerged === true,
+          }),
       label: monster
         ? SPIDER_LABEL_V7
         : unit.form === "EMBARKED" && machine
@@ -3268,12 +3277,20 @@ export function drawBoardV7(input: {
           context.restore();
         }
         // The naval branch interface: a submerged Submarine's wash and
-        // periscope badge, and a boardable ship's grappling hook.
+        // periscope badge, and a boardable ship's grappling hook. A
+        // Submarine drawn with its low-riding raster already shows its
+        // waterline (foam, the hull under it a ghost), so it gets no wash;
+        // the Classic look, LEGACY and a stand-in keep it.
         if (entry.kind === "UNIT" && entry.naval !== undefined) {
           context.save();
           context.globalAlpha = sceneAlpha;
           drawNavalUnitMarkersV7(context, entry.naval, x, y, camera.zoom, {
             highContrast: input.highContrast ?? false,
+            wash: !(
+              factionArt &&
+              navalArtRoleOfSubjectV7(entry.artSubject) ===
+                "SUBMARINE_SUBMERGED"
+            ),
           });
           context.restore();
         }

@@ -79,6 +79,18 @@ export async function liveUnitAssetsV7(): Promise<ChibiArtAssetV7[]> {
         }[]
       ).map((entry) => entry.asset),
     );
+    // The Submarines riding low (bead pulp_wars-5ti.6): derived sprites of
+    // the live registry with a waterline of their own.
+    const submerged = await server.ssrLoadModule(
+      "/src/assets/chibi-naval-submarine-art-manifest.ts",
+    );
+    assets.push(
+      ...(
+        submerged.CHIBI_SUBMERGED_SUBMARINE_ART_ASSETS_V7 as readonly {
+          readonly asset: ChibiArtAssetV7;
+        }[]
+      ).map((entry) => entry.asset),
+    );
     const human = await server.ssrLoadModule(
       "/src/assets/chibi-direction-art-manifest.ts",
     );

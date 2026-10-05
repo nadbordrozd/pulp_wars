@@ -1,0 +1,37 @@
+{
+  "id": "portrait-submarine-a",
+  "jobId": "a07a290b-1769-4aba-83c6-7f9737ab556c",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-branch",
+    "asset": "chibi-portrait-submarine",
+    "subject": "PORTRAIT:SUBMARINE",
+    "faction": "ORIGINAL",
+    "recipeClass": "icon",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 98011,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and a small red pennant; a red tail fin at the stern. Keep the size, thick black outline and art style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and a small red pennant; a red tail fin at the stern. Keep the size, thick black outline and art style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and a small red pennant; a red tail fin at the stern. Keep the size, thick black outline and art style the same, on a transparent background.",
+    "editInstruction": "Turn it into a small old-fashioned wooden submarine: the open hull becomes one closed fat cigar-shaped hull of the same pale birch planks with light steel bands and two round glass portholes; remove the mast and the sail; on top a short round conning tower painted bright red with a thin steel periscope and a small red pennant; a red tail fin at the stern. Keep the size, thick black outline and art style the same, on a transparent background.",
+    "source": {
+      "batch": "5",
+      "recipe": "portrait-patrol-boat-a",
+      "candidate": 0,
+      "sha256": "2eae5e8a9b5db75fbf9e7eea584b23d21fb1b0f7f70d5384c9cd87d2200dde12"
+    }
+  }
+}

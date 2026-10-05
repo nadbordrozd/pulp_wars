@@ -24,6 +24,7 @@ import {
   CANDY_PALETTE_V7,
 } from "../../src/assets/chibi-direction-candy-presentation";
 import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-faction-art-manifest";
+import { CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-submarine-art-manifest";
 import type { FactionIdV7 } from "../../src/engine/index";
 import {
   ACCENT_PRESETS,
@@ -171,6 +172,14 @@ const NAVAL_MASTERS = CHIBI_DIRECTION_CANDY_NAVAL_ART_ASSETS_V7.map((entry) =>
   asRegistered(entry.asset),
 );
 const ALL_MASTERS = [...CHIBI_DIRECTION_CANDY_ART_ASSETS_V7, ...NAVAL_MASTERS];
+/**
+ * The Candy Submarine and its portrait (bead pulp_wars-5ti.6): later
+ * assets of the naval batch, listed with every faction's Submarine in
+ * chibi-naval-submarine-art-manifest.ts and checked by the naval test.
+ */
+const SUBMARINE_MASTERS = CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7.filter(
+  (entry) => entry.faction === "CANDY",
+).map((entry) => asRegistered(entry.asset));
 
 describe("Candy production art (pulp_wars-jdb.5)", () => {
   const byId = new Map(
@@ -329,7 +338,7 @@ describe("Candy production art (pulp_wars-jdb.5)", () => {
   it("matches the accepted records of both batches: no mask, no owner area", async () => {
     for (const [batch, entries] of [
       [BATCH, CHIBI_DIRECTION_CANDY_ART_ASSETS_V7],
-      [NAVAL_BATCH, NAVAL_MASTERS],
+      [NAVAL_BATCH, [...NAVAL_MASTERS, ...SUBMARINE_MASTERS]],
     ] as const) {
       const manifest = await loadBatchManifest(ROOT, batch);
       expect(

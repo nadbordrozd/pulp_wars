@@ -38,7 +38,7 @@ export type ArtSubjectV7 =
    */
   | FactionImprovementSubjectV7
   | FactionTerrainSubjectV7
-  | `UNIT:${UnitRoleIdV7 | "EMBARKED_TRANSPORT"}`
+  | `UNIT:${UnitRoleIdV7 | "EMBARKED_TRANSPORT" | "SUBMARINE_SUBMERGED"}`
   | `UNIT:UNDEAD:${UndeadArtRoleV7}`
   /** Revision 17: the Goblin units (bead pulp_wars-0ao.8, GOBLIN.md). */
   | `UNIT:GOBLIN:${GoblinArtRoleV7}`
@@ -72,7 +72,37 @@ export type ArtSubjectV7 =
   | NavalFactionArtSubjectV7
   | DwarfArtSubjectV7
   | CuriosityArtSubjectV7
-  | CandyArtSubjectV7;
+  | CandyArtSubjectV7
+  | NavalBranchArtSubjectV7;
+
+/**
+ * Art of the naval branch beyond the ships (bead pulp_wars-5ti.6,
+ * docs/product/RULESET_7_NAVAL_BRANCH.md section 14.3). `ICON:ACTION:RAM`
+ * and `ICON:ACTION:TORPEDO` are the icons of the Ram and Torpedo abilities
+ * (Board is a command, so its icon is `ICON:ACTION:BOARD`; Seamanship and
+ * Submersibles are `ICON:TECH:<ID>`). `TERRAIN:ICE_SHALLOW` and
+ * `TERRAIN:ICE_DEEP` are the Ice Folk sea ice over each water, and
+ * `OVERLAY:ICEBOUND` the pack ice at the foot of a ship frozen in: an
+ * 80 x 40 raster on the lower half of the ship's cell, drawn over the
+ * hull. The three ice subjects are registered for the Ice Folk engine step
+ * (the state `ice` is not in the engine yet); nothing asks for them today.
+ */
+export type NavalBranchArtSubjectV7 =
+  | `ICON:ACTION:${"RAM" | "TORPEDO"}`
+  | `TERRAIN:${SeaIceArtIdV7}`
+  | "OVERLAY:ICEBOUND";
+
+/** The two looks of sea ice: over Shallow Water and over Deep Water. */
+export type SeaIceArtIdV7 = "ICE_SHALLOW" | "ICE_DEEP";
+
+/** The sea ice subject of a water terrain (the tile under the ice). */
+export function seaIceArtSubjectV7(
+  terrain: "SHALLOW_WATER" | "DEEP_WATER",
+): ArtSubjectV7 {
+  return terrain === "SHALLOW_WATER"
+    ? "TERRAIN:ICE_SHALLOW"
+    : "TERRAIN:ICE_DEEP";
+}
 
 /**
  * Map curiosity art subjects (bead pulp_wars-737.5,
@@ -105,14 +135,28 @@ export type CuriosityEffectIdV7 =
 
 /**
  * The naval sprites a player sees (bead pulp_wars-w5j.2, NAVAL_FACTIONS.md):
- * the two warships and the embarked transport, which any land unit afloat
- * draws.
+ * the two warships, the Submarine of the naval branch (bead pulp_wars-5ti.6)
+ * and the embarked transport, which any land unit afloat draws.
+ * `SUBMARINE_SUBMERGED` is the Submarine riding low in the water: a map
+ * sprite derived from the surfaced one (scripts/art/naval-branch/submerged.ts),
+ * which the board draws in place of it (unitArtSubjectV7's `submerged`).
  */
 export type NavalArtRoleV7 =
-  "PATROL_BOAT" | "BATTLESHIP" | "EMBARKED_TRANSPORT";
+  | "PATROL_BOAT"
+  | "BATTLESHIP"
+  | "SUBMARINE"
+  | "SUBMARINE_SUBMERGED"
+  | "EMBARKED_TRANSPORT";
 
-/** Naval roles with an interface portrait (the transport has none). */
-export type NavalPortraitRoleV7 = Exclude<NavalArtRoleV7, "EMBARKED_TRANSPORT">;
+/** Naval sprites of the map only: neither has an interface portrait. */
+export type NavalMapOnlyArtRoleV7 =
+  "EMBARKED_TRANSPORT" | "SUBMARINE_SUBMERGED";
+
+/** Naval roles with an interface portrait. */
+export type NavalPortraitRoleV7 = Exclude<
+  NavalArtRoleV7,
+  NavalMapOnlyArtRoleV7
+>;
 
 /** Every faction but the Humans, whose ships keep the shared subjects. */
 export type NavalArtFactionV7 = Exclude<FactionIdV7, "ORIGINAL">;
@@ -132,18 +176,21 @@ export type NavalFactionArtSubjectV7 =
 const NAVAL_ART_ROLES_V7: readonly NavalArtRoleV7[] = [
   "PATROL_BOAT",
   "BATTLESHIP",
+  "SUBMARINE",
+  "SUBMARINE_SUBMERGED",
   "EMBARKED_TRANSPORT",
 ];
 
 /**
- * The naval branch engine (bead pulp_wars-5ti.2,
- * docs/product/RULESET_7_NAVAL_BRANCH.md section 14.3): the naval art role
- * a ship role draws. STAND-IN until the Submarine art of bead
- * pulp_wars-5ti.6: a Submarine draws its faction's Patrol Boat sprite and
- * portrait (its label, stats, and info panel say "Submarine").
+ * The naval art role a ship role draws: its own. Since the Submarine art
+ * of bead pulp_wars-5ti.6 (docs/product/RULESET_7_NAVAL_BRANCH.md section
+ * 14.3) a Submarine draws its faction's Submarine sprite and portrait; until
+ * then it drew the Patrol Boat's. A faction without a Submarine raster (the
+ * Ice Folk, who lose their ships in engine step II) falls back to the
+ * shared Submarine like any naval subject (chibiFallbackSubjectV7).
  */
 export function navalArtRoleForV7(role: NavalRoleIdV7): NavalPortraitRoleV7 {
-  return role === "SUBMARINE" ? "PATROL_BOAT" : role;
+  return role;
 }
 
 /**
@@ -506,12 +553,20 @@ const SHARED_ART_ROLES_V7: readonly UnitRoleIdV7[] = [
  * the unit's kind (`unitFactionV7`), so a mind-controlled unit draws its
  * own sprite, and its own faction's transport when embarked; the control
  * halo and brain chip say who controls it.
+ *
+ * The naval branch (bead pulp_wars-5ti.6): with `submerged`, a Submarine
+ * afloat takes its faction's `SUBMARINE_SUBMERGED` sprite, the hull riding
+ * low with foam at the waterline. It is for a board that draws the unit on
+ * its water tile; the dock, the Gallery and every portrait keep the whole
+ * (surfaced) Submarine, and so does a caller that does not ask. The board
+ * asks for a Submarine whose public stats say it is submerged.
  */
 export function unitArtSubjectV7(unit: {
   readonly role: UnitRoleIdV7;
   readonly form: UnitFormV7;
   readonly faction: FactionIdV7;
   readonly machine?: boolean;
+  readonly submerged?: boolean;
 }): ArtSubjectV7 {
   if (
     unit.form === "EMBARKED" &&
@@ -524,6 +579,12 @@ export function unitArtSubjectV7(unit: {
     return navalArtSubjectV7(unit.faction, "UNIT", "EMBARKED_TRANSPORT");
   // Revision 19: one Egg sprite for every role inside.
   if (unit.form === "EGG") return "UNIT:DINOSAUR:EGG";
+  if (
+    unit.role === "SUBMARINE" &&
+    unit.form === "NAVAL" &&
+    unit.submerged === true
+  )
+    return navalArtSubjectV7(unit.faction, "UNIT", "SUBMARINE_SUBMERGED");
   if (SHARED_ART_ROLES_V7.includes(unit.role))
     return navalArtSubjectV7(
       unit.faction,
@@ -597,6 +658,11 @@ export function chibiFallbackSubjectV7(
   if (subject === "UNIT:DINOSAUR:EGG") return null;
   if (subject === "UNIT:DWARF:MOUND" || subject === "UNIT:DWARF:MOUND_RIDER")
     return null;
+  // A Submarine riding low (bead pulp_wars-5ti.6) without its own raster
+  // (the Classic look, a faction with no Submarine art) is drawn surfaced:
+  // the shared Submarine in the owner's colour.
+  if (navalArtRoleOfSubjectV7(subject) === "SUBMARINE_SUBMERGED")
+    return "UNIT:SUBMARINE";
   const naval = navalSharedSubjectV7(subject);
   if (naval !== null) return naval;
   if (

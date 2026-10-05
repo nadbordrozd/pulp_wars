@@ -1,0 +1,37 @@
+{
+  "id": "undead-submarine-a",
+  "jobId": "119be03d-b6ad-48bb-8004-162d5b2b3099",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-undead",
+    "asset": "chibi-naval-undead-submarine",
+    "subject": "UNIT:UNDEAD:SUBMARINE",
+    "faction": "UNDEAD",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98401,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood, crusted with pale grey barnacles, with the ivory bone rail and the big skull figurehead on the bow; on deck a low humped black cabin with two round portholes glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood, crusted with pale grey barnacles, with the ivory bone rail and the big skull figurehead on the bow; on deck a low humped black cabin with two round portholes glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood, crusted with pale grey barnacles, with the ivory bone rail and the big skull figurehead on the bow; on deck a low humped black cabin with two round portholes glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "editInstruction": "Turn it into a drowned ghost galley submarine: remove the mast, the sail and the rag; the hull becomes long, low and closed, of the same near-black wood, crusted with pale grey barnacles, with the ivory bone rail and the big skull figurehead on the bow; on deck a low humped black cabin with two round portholes glowing bright violet; one small violet lantern on a short crooked pole. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "source": {
+      "recipe": "undead-patrol-boat-ghost-a",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "75c2c5990a3c882292ee6502d878643e646a7758428f380092895b2fcba77b9a"
+    }
+  }
+}

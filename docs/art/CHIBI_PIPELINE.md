@@ -1141,6 +1141,52 @@ Vite's `import.meta.env`. Its captures start Vite on port 6530 unless
 `--port` says otherwise and need `CHROME_PATH`; `--copy-to DIR` copies the
 key sheets and captures.
 
+## The naval branch batch (bead `pulp_wars-5ti.6`)
+
+Batch `naval-branch` (faction `ORIGINAL`) holds the shared Submarine and its
+portrait (owned: the tower, pennant and fin are the mask), the Seamanship
+and Submersibles icons, the Ram, Board and Torpedo icons, the four sea-ice
+tiles and the Icebound overlay; each faction's Submarine and portrait are
+later assets of its `naval-<faction>` batch. 26 assets from 58 recipes, all
+new PixelLab calls. See
+[NAVAL_FACTIONS.md](NAVAL_FACTIONS.md#the-naval-branch-art-bead-pulp_wars-5ti6).
+What it added:
+
+- **Recipe class `naval-overlay`** (`class-naval-overlay.txt`): a board
+  overlay drawn over a ship, a `BUILDING` asset with the flat camera, no
+  faction layer and no owner colour. Its one asset, `OVERLAY:ICEBOUND`, is
+  80 x 40 with `anchor` (40, 0) and `bottomMargin: 2`: the lower half of
+  the ship's cell, seated on its bottom edge. The manifest's subject
+  pattern accepts `OVERLAY:ICEBOUND`.
+- **Sibling sources.** Each faction Submarine is an edit of that fleet's
+  accepted Patrol Boat, another asset of the same batch:
+  `"source": { "recipe": "…", "candidate": 0, "sibling": true }`.
+- **An edit can place a sprite.** Edits do not move one, but "Replace the
+  boat with … lying low at the very bottom of the image, exactly where the
+  boat's hull is now … The upper half of the image stays empty" drew the
+  shared Submarine on the cog's waterline (the first edit centred it, 14 px
+  high; an owned asset cannot name `bottomMargin`).
+- **An explicit `anchor`** on the eight Submarine map sprites, (32, 48):
+  the pipeline records it and `registry` prints it.
+- **Sea-ice palettes.** `sea-ice-shallow.png`, `sea-ice-deep.png`,
+  `sea-ice-deep-blue.png` and `sea-ice-deep-sea.png` are written by
+  `npx tsx scripts/art/naval-branch/ice-palettes.ts` (a test checks the
+  bytes); the accepted tiles use the first and the third, the other two
+  are the `colorImage` of rejected recipes. Pixflux paints a sheet in the
+  palette's lightest colour when the subject says "pale".
+- **Derived, not generated:** the seven submerged Submarines
+  (`chibi-naval-<faction>-submarine-submerged.png`) are written by
+  `npx tsx scripts/art/naval-branch/submerged.ts` from the accepted masters,
+  and `npm run art:validate` re-derives them
+  (`submergedSubmarineProblems`), like the forest pieces and the mountain
+  ranges. They are in no batch record.
+
+`npm run art:naval-branch-ice-review` writes
+`art/pixellab/reviews/naval-branch-ice/` (tiles, tiling, a mock map, the
+overlay on 21 hulls, `readability.json`); it composes rasters and starts no
+browser. `npm run art:chibi-naval-faction-review` has the Submarine sheet,
+measures and scenes.
+
 ## The Rift (bead `pulp_wars-9s0.5`)
 
 Batch `rift` holds the six Rift pieces

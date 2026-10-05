@@ -1,0 +1,61 @@
+{
+  "id": "ice-deep-2-d",
+  "jobId": "sync-bb1dca6c-473b-49ba-8b09-d36fe4b107ec",
+  "request": {
+    "endpoint": "create-image-pixflux",
+    "model": "create-image-pixflux",
+    "batch": "naval-branch",
+    "asset": "chibi-ice-deep-2",
+    "subject": "TERRAIN:ICE_DEEP",
+    "faction": "ORIGINAL",
+    "recipeClass": "terrain",
+    "requestSize": {
+      "width": 160,
+      "height": 160
+    },
+    "seed": 98042,
+    "noBackground": false,
+    "options": {
+      "shading": "flat shading",
+      "detail": "low detail",
+      "view": "high top-down"
+    },
+    "layers": [
+      {
+        "layer": "style",
+        "source": "scripts/art/chibi/fragments/style.txt + scripts/art/chibi/fragments/style.negative.txt",
+        "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful.",
+        "negative": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject"
+      },
+      {
+        "layer": "camera",
+        "source": "scripts/art/chibi/fragments/camera-top-down.txt",
+        "text": "Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient."
+      },
+      {
+        "layer": "class",
+        "source": "scripts/art/chibi/fragments/class-terrain.txt + scripts/art/chibi/fragments/class-terrain.negative.txt",
+        "text": "Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image.",
+        "negative": "border, frame, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated"
+      },
+      {
+        "layer": "subject",
+        "source": "scripts/art/chibi/subjects/SHARED.json",
+        "text": "Subject: a flat seamless texture of a frozen open sea seen from directly above: one flat even sheet of smooth pale steel-blue ice everywhere, with a few tiny short straight horizontal scratch dashes in a slightly darker blue scattered evenly and sparsely, nothing else; solid unbroken ice only, no cracks, no lines joining each other, no holes, no circles, no bubbles, no open water, no snow drifts and no land anywhere."
+      },
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "",
+        "negative": "trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen"
+      }
+    ],
+    "prompt": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a flat seamless texture of a frozen open sea seen from directly above: one flat even sheet of smooth pale steel-blue ice everywhere, with a few tiny short straight horizontal scratch dashes in a slightly darker blue scattered evenly and sparsely, nothing else; solid unbroken ice only, no cracks, no lines joining each other, no holes, no circles, no bubbles, no open water, no snow drifts and no land anywhere.",
+    "negativePrompt": "photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated, trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen",
+    "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: straight top-down view of flat ground filling the whole canvas edge to edge, no perspective, no horizon, no lighting gradient. Class: calm terrain ground for a strategy map, less saturated than the pieces placed on it, flat colour fills with two or three close tones, low detail, a few small features scattered evenly, the same everywhere with no single focal object. The ground continues past all four edges of the image. Subject: a flat seamless texture of a frozen open sea seen from directly above: one flat even sheet of smooth pale steel-blue ice everywhere, with a few tiny short straight horizontal scratch dashes in a slightly darker blue scattered evenly and sparsely, nothing else; solid unbroken ice only, no cracks, no lines joining each other, no holes, no circles, no bubbles, no open water, no snow drifts and no land anywhere. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, border, hedge, outline around the image, vignette, dark corners, light spot, lighting gradient, path, road, buildings, characters, people, perspective, horizon, red, tile edge, square island, neon, oversaturated, trees, bushes, rocks, animals, boats, shore, beach, sand, island, cliff, land, river bank, foam lines, fish, cracks, crack network, fissures, broken ice, ice floes, holes, ice fishing hole, pits, craters, puddles, snowflakes, footprints, dark water, circles, rings, arcs, crescents, bubbles, dots, stumps, posts, pillars, ice blocks, snowmen.",
+    "colorImage": {
+      "path": "scripts/art/chibi/palettes/sea-ice-deep.png",
+      "sha256": "d2248b1255df7ec3fe6e8944e4d4ee789e565af62d3d69d664fbf5bfa5bc61d3"
+    }
+  }
+}

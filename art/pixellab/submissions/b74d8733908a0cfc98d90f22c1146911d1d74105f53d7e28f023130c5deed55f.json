@@ -1,0 +1,37 @@
+{
+  "id": "goblin-submarine-a",
+  "jobId": "06373e1d-6706-490f-97c6-7b17a09ea771",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "naval-goblin",
+    "asset": "chibi-naval-goblin-submarine",
+    "subject": "UNIT:GOBLIN:SUBMARINE",
+    "faction": "GOBLIN",
+    "recipeClass": "ship",
+    "requestSize": {
+      "width": 72,
+      "height": 88
+    },
+    "seed": 98101,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with riveted tin patches and tin hoops, with one round glass porthole and a crooked tin periscope pipe; remove the mast, the sail and the rocket; keep the lime green goblin peeking out of an open hatch on top and one hazard yellow patch. Keep the size, waterline, thick black outline and style, with nothing under the hull."
+      }
+    ],
+    "prompt": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with riveted tin patches and tin hoops, with one round glass porthole and a crooked tin periscope pipe; remove the mast, the sail and the rocket; keep the lime green goblin peeking out of an open hatch on top and one hazard yellow patch. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "negativePrompt": "",
+    "description": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with riveted tin patches and tin hoops, with one round glass porthole and a crooked tin periscope pipe; remove the mast, the sail and the rocket; keep the lime green goblin peeking out of an open hatch on top and one hazard yellow patch. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "editInstruction": "Turn it into a goblin diving barrel submarine: the boat becomes one big fat closed wooden barrel lying on its side, of the same grey-tan planks with riveted tin patches and tin hoops, with one round glass porthole and a crooked tin periscope pipe; remove the mast, the sail and the rocket; keep the lime green goblin peeking out of an open hatch on top and one hazard yellow patch. Keep the size, waterline, thick black outline and style, with nothing under the hull.",
+    "source": {
+      "recipe": "patrol-boat-a-edit-2",
+      "candidate": 0,
+      "sibling": true,
+      "sha256": "90eac39a2b8d623278a61d8326eb472fee83b3544abff2b23b3d214d4f2c431d"
+    }
+  }
+}

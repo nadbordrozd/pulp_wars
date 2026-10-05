@@ -24,6 +24,7 @@ import {
   CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7,
   DWARF_FLAG_ANCHORS_V7,
 } from "../../src/assets/chibi-direction-dwarf-art-manifest";
+import { CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-submarine-art-manifest";
 import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "../../src/assets/chibi-naval-faction-art-manifest";
 import {
   commandSubjectV7,
@@ -390,11 +391,17 @@ describe("Steampunk Dwarf production art (pulp_wars-78i.5)", () => {
   it("matches the accepted records of both batches: no mask, no owner area", async () => {
     for (const [batch, entries] of [
       [BATCH, CHIBI_DIRECTION_DWARF_ART_ASSETS_V7],
+      // The naval batch also holds the Dwarf Submarine and its portrait
+      // (bead pulp_wars-5ti.6), listed with every faction's Submarine in
+      // chibi-naval-submarine-art-manifest.ts.
       [
         NAVAL_BATCH,
-        CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7.map((entry) =>
-          asRegistered(entry.asset),
-        ),
+        [
+          ...CHIBI_DIRECTION_DWARF_NAVAL_ART_ASSETS_V7,
+          ...CHIBI_NAVAL_SUBMARINE_ART_ASSETS_V7.filter(
+            (entry) => entry.faction === "DWARF",
+          ),
+        ].map((entry) => asRegistered(entry.asset)),
       ],
     ] as const) {
       const manifest = await loadBatchManifest(ROOT, batch);

@@ -85,7 +85,13 @@ export type ChibiRecipeClass =
   /** An 80 x 80 tile overlay: the lair web, the Fountain, the Shrine, the Wreck. */
   | "curiosity-site"
   /** A legend icon, an effect sprite or a board marker of a curiosity. */
-  | "curiosity-item";
+  | "curiosity-item"
+  /**
+   * A board overlay drawn over a ship (bead pulp_wars-5ti.6, the Icebound
+   * pack ice): faction-less ice, a BUILDING asset on the lower half of the
+   * ship's cell.
+   */
+  | "naval-overlay";
 
 export type ChibiEndpoint =
   "create-image-pixen" | "create-image-pixflux" | "edit-image-pixen";
@@ -526,6 +532,27 @@ export const CHIBI_CLASS_RECIPES: Readonly<
         outline: "single color black outline",
         detail: "low detail",
         view: "low top-down",
+      },
+    },
+  },
+  // The Icebound pack ice (bead pulp_wars-5ti.6): one low heap of ice seen
+  // from the front, drawn over the foot of any faction's hull. No faction
+  // layer (the ice is the sea's, whoever froze it) and no owner colour; the
+  // flat camera, as for the status markers, keeps Pixen from drawing a
+  // floor under it. Seated on the cell's bottom edge by `bottomMargin`.
+  "naval-overlay": {
+    camera: "flat",
+    factionLayer: false,
+    assetClasses: ["BUILDING"],
+    generators: ["create-image-pixen"],
+    editPass: true,
+    noBackground: true,
+    derivation: "as-is",
+    options: {
+      "create-image-pixen": {
+        outline: "single color black outline",
+        detail: "low detail",
+        view: "side",
       },
     },
   },
@@ -1119,7 +1146,7 @@ export function requestBody(
 }
 
 const SUBJECT_PATTERN =
-  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY)$/;
+  /^(TERRAIN|RESOURCE|IMPROVEMENT|UNIT|PORTRAIT):[A-Z_]+$|^(UNIT|PORTRAIT|IMPROVEMENT):(UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):[A-Z_]+$|^ICON:(TECH|ACTION|REWARD|HUD):(UNDEAD:|GOBLIN:|DINOSAUR:|MARTIAN:|ICE_FOLK:|DWARF:|CANDY:)?[A-Z_]+$|^ICON:STATUS:(SHIELD|COOLING|CHILLED|FROZEN|CLOCKWORK|DUG_IN|RUSHED|CRASHED|SPLATTED)$|^CITY:((UNDEAD|GOBLIN|DINOSAUR|MARTIAN|ICE_FOLK|DWARF|CANDY):)?[123]$|^SITE:VILLAGE$|^TREASURE$|^GRAVE$|^CRUMBS$|^STATUS:(PLAGUED|BITTEN|PROVOKED)$|^EFFECT:[A-Z_]+$|^CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK)$|^ICON:CURIOSITY:(WEB|FOUNTAIN|SHRINE|WRECK|BOUNTY)$|^OVERLAY:ICEBOUND$/;
 const ID_PATTERN = /^chibi-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RECIPE_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA_PATTERN = /^[a-f0-9]{64}$/;
