@@ -42,9 +42,9 @@ interface Scene {
 const MOUNTAIN_SCENES: readonly Scene[] = [
   { pair: 1, fixture: "sceneM1", zoomIn: 1 },
   { pair: 2, fixture: "sceneM2", zoomIn: 1 },
-  { pair: 3, fixture: "sceneM3", zoomIn: 1, drag: [0, 60] },
+  { pair: 3, fixture: "sceneM3", zoomIn: 1, drag: [-80, -330] },
   { pair: 4, fixture: "sceneM4", zoomIn: 0 },
-  { pair: 5, fixture: "sceneM5", zoomIn: 1, drag: [0, 60] },
+  { pair: 5, fixture: "sceneM5", zoomIn: 1, drag: [-80, -330] },
 ];
 
 const FOREST_SCENES: readonly Scene[] = [

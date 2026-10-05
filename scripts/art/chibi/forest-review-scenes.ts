@@ -268,19 +268,20 @@ export function minedV7(state: GameStateV7): GameStateV7 {
 }
 
 /**
- * Seeds for the mountain scenes: seed 7 has the densest 12 x 8 window of
- * Mountains of the first 80 seeds (58 cells); seed 77 has the most
- * Mountains around the human capital (14 within two cells).
+ * Seeds for the mountain scenes, on map revision V3 (picked with
+ * mountain-review-seed-search.ts over seeds 1 to 200): seed 96 has the
+ * densest 12 x 8 window of Mountains (62 cells, at 0,4); seed 189 has the
+ * most Mountains around the human capital (14 within two cells).
  */
-export const MOUNTAIN_SCENE_SEEDS_V7 = { heavy: 7, capital: 77 };
+export const MOUNTAIN_SCENE_SEEDS_V7 = { heavy: 96, capital: 189 };
 
 /** M1: a mountain-heavy 12 x 8 window. */
 export const sceneM1 = (): GameStateV7 =>
   revealedV7(startStateV7(MOUNTAIN_SCENE_SEEDS_V7.heavy), {
-    x0: 4,
-    y0: 2,
-    x1: 15,
-    y1: 9,
+    x0: 0,
+    y0: 4,
+    x1: 11,
+    y1: 11,
   });
 /** M2: Forest against Mountains (scene B). */
 export const sceneM2 = sceneB;

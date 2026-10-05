@@ -275,6 +275,7 @@ import {
   drawChibiForestBodiesV7,
   drawChibiForestFloorV7,
   drawChibiForestGladeV7,
+  drawChibiForestMinedV7,
   type ChibiForestArtV7,
   type ChibiComposedTerrainV7,
   type ChibiForestCellV7,
@@ -2156,7 +2157,20 @@ export function drawBoardV7(input: {
           !mountainCell.clearing &&
           pass !== "GROUND"
         ) {
-          if (pass === "TALL_BODY")
+          if (mountainCell.mined !== null)
+            // A Mine: the range-style mined mountain, at the saturation
+            // of the buildings.
+            drawChibiForestMinedV7(
+              context,
+              { camera, devicePixelRatio, sceneAlpha },
+              mountainArt,
+              entry.at,
+              mountainCell.mined,
+              pass === "TALL_BODY" ? "BODY" : "BAND",
+              forestSnow,
+              (image) => atSaturation(entry, image),
+            );
+          else if (pass === "TALL_BODY")
             drawChibiForestBodiesV7(
               context,
               { camera, devicePixelRatio, sceneAlpha },
@@ -6065,6 +6079,7 @@ function forestCellsOf(
     art.variants,
     art.clumps.length,
     terrain,
+    art.mined.length,
   );
   byTerrain.set(terrain, { art, cells });
   return cells;

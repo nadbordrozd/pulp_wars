@@ -15,6 +15,7 @@ import {
   CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
   CHIBI_UNDEAD_GROUND_ART_ASSETS_V7,
 } from "./chibi-faction-buildings-art-manifest";
+import { CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7 } from "./chibi-mountain-ranges-manifest";
 import { CHIBI_NAVAL_FACTION_ART_ASSETS_V7 } from "./chibi-naval-faction-art-manifest";
 
 /**
@@ -568,6 +569,8 @@ export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
     // --- Faction building looks and the Undead territory ground
     // (pulp_wars-xdh.2) ---
     ...CHIBI_FACTION_BUILDING_ART_ASSETS_V7,
+    // --- The range-style mined mountain (pulp_wars-6kn) ---
+    ...CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7,
     ...CHIBI_UNDEAD_GROUND_ART_ASSETS_V7,
     // --- Map curiosities (pulp_wars-737.5 art, wired in by pulp_wars-737.6):
     // the neutral Giant Spider, the tile overlays, icons, effects, marker.

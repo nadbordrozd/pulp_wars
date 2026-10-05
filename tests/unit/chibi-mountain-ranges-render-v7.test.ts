@@ -5,6 +5,7 @@ import type {
 } from "../../src/assets/chibi-art-v7";
 import type { ChibiForestArtSetV7 } from "../../src/assets/chibi-forest-pieces-manifest";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../src/assets/chibi-mountain-ranges-manifest";
+import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
 import {
   drawBoardV7,
   type BoardRenderPlanEntryV7,
@@ -66,7 +67,7 @@ function board(rows: readonly string[], ox = 0, oy = 0): Entry[] {
 const COUNTS: ForestVariantCountsV7 = {
   "1x1": 2,
   "2x1": 4,
-  "1x2": 2,
+  "1x2": 3,
   "2x2": 3,
   "L-NW": 0,
   "L-NE": 0,
@@ -76,6 +77,25 @@ const COUNTS: ForestVariantCountsV7 = {
 
 const cells = (entries: readonly Entry[]) =>
   chibiForestCellsV7(entries, COUNTS, 0, "MOUNTAIN");
+
+describe("mined mountain in the art registry", () => {
+  it("is what the live look shows for a Mine, in the interface too", () => {
+    const registry = chibiDirectionArtRegistryV7();
+    const variants = registry.variants("TERRAIN:MINED_MOUNTAIN");
+    expect(variants.map((asset) => asset.id)).toEqual([
+      "chibi-mountain-range-mine-a",
+    ]);
+    const [mine] = variants;
+    expect(mine).toMatchObject({
+      assetClass: "TALL_TERRAIN",
+      width: 80,
+      height: 104,
+    });
+    expect(mine?.url).toContain("chibi-mountain-range-mine-a.master.png");
+    expect(mine?.layers?.bodyUrl).toContain("chibi-mountain-range-mine-a.png");
+    expect(mine?.layers?.groundUrl).toContain("chibi-mountain-ground-1.png");
+  });
+});
 
 describe("mountain range set", () => {
   it("ships ranges of four shapes and no join pieces", () => {
@@ -92,10 +112,14 @@ describe("mountain range set", () => {
     expect(Object.fromEntries(counts)).toEqual({
       "1x1": 2,
       "2x1": 4,
-      "1x2": 2,
+      "1x2": 3,
       "2x2": 3,
     });
     expect(CHIBI_MOUNTAIN_ART_SET_V7.clumps).toEqual([]);
+    // One mined mountain in the range style (bead pulp_wars-6kn).
+    expect(CHIBI_MOUNTAIN_ART_SET_V7.mined?.map((piece) => piece.url)).toEqual([
+      expect.stringContaining("chibi-mountain-range-mine-a.png"),
+    ]);
   });
 });
 
@@ -143,28 +167,24 @@ describe("range cover", () => {
       "2x1",
       "1x1",
     ]);
-    // One-cell-wide ranges: a north-south ridge for about a third of the
-    // column pairs, single mountains for the rest.
-    const columns = packRangeCoverV7(
-      grid(Array.from({ length: 12 }, () => "M.M.M.M.M.M.M.M.M.M.M.M")),
-      COUNTS,
-    );
-    const ridges = columns.filter((piece) => piece.shape === "1x2").length;
-    const singles = columns.filter((piece) => piece.shape === "1x1").length;
-    expect(ridges * 2 + singles).toBe(144);
-    expect(ridges).toBeGreaterThan(10);
-    expect(ridges).toBeLessThan(40);
-    // A full 12 x 12 area: massifs and ridges, no single mountain at all.
+    // One-cell-wide ranges are north-south ridges; a single mountain only
+    // where the three ridge variants are all taken by neighbours or the
+    // column has an odd cell left.
+    const column = packRangeCoverV7(grid(["M", "M", "M", "M", "M"]), COUNTS);
+    expect(column.map((piece) => piece.shape)).toEqual(["1x2", "1x2", "1x1"]);
+    expect(column[0]?.variant).not.toBe(column[1]?.variant);
+    // A full 12 x 12 area mixes massifs and rows of ridges, with no
+    // single mountain and no north-south ridge.
     const full = packRangeCoverV7(
       grid(Array.from({ length: 12 }, () => "M".repeat(12))),
       COUNTS,
     );
     const shapes = full.map((piece) => piece.shape);
-    expect(shapes).toContain("2x2");
-    expect(shapes).toContain("2x1");
-    expect(
-      shapes.filter((shape) => shape === "1x1").length,
-    ).toBeLessThanOrEqual(6);
+    const massifs = shapes.filter((shape) => shape === "2x2").length;
+    const ridges = shapes.filter((shape) => shape === "2x1").length;
+    expect(massifs).toBeGreaterThanOrEqual(8);
+    expect(ridges).toBeGreaterThanOrEqual(8);
+    expect(massifs * 4 + ridges * 2).toBe(144);
   });
 });
 
@@ -245,38 +265,54 @@ describe("mountain cells of a plan", () => {
     }
   });
 
-  it("keeps the single mountain on a cell with a feature or Ore", () => {
-    const feature = (kind: Entry["kind"], x: number, y: number): Entry => ({
-      key: `${kind}:${x},${y}`,
-      kind,
-      layer: 3,
-      at: { x, y },
-      assetId: "feature",
-    });
+  const feature = (kind: Entry["kind"], x: number, y: number): Entry => ({
+    key: `${kind}:${x},${y}`,
+    kind,
+    layer: 3,
+    at: { x, y },
+    assetId: "feature",
+  });
+
+  it("draws a feature cell as a single range-style mountain, outside every range", () => {
     const packed = cells([
       ...board(["MMMM", "MMMM"]),
       feature("RESOURCE", 0, 0),
       feature("CURIOSITY", 3, 1),
     ]);
-    for (const key of ["0,0", "3,1"]) {
-      expect(packed.get(key)).toMatchObject({ clearing: true, glade: false });
-      expect(packed.get(key)?.bodies).toEqual([]);
+    for (const [x, y] of [
+      [0, 0],
+      [3, 1],
+    ] as const) {
+      const cell = packed.get(`${x},${y}`);
+      expect(cell).toMatchObject({
+        clearing: false,
+        glade: false,
+        mined: null,
+      });
+      expect(cell?.bodies).toEqual([
+        { shape: "1x1", x, y, variant: (x + y) % 2 },
+      ]);
     }
-    for (const cell of packed.values())
-      for (const piece of cell.bodies) {
-        const covered = forestPlacementCellsV7(piece);
-        expect(covered).not.toContainEqual([0, 0]);
-        expect(covered).not.toContainEqual([3, 1]);
-      }
-    // No join touches a clearing.
-    expect(
-      chibiForestCellsV7(
-        [...board(["MMMM", "MMMM"]), feature("RESOURCE", 0, 0)],
-        COUNTS,
-        2,
-        "MOUNTAIN",
-      ).get("0,0"),
-    ).toMatchObject({ eastSeam: null, northSeam: null });
+    const all = [...packed.values()].flatMap((cell) => cell.bodies);
+    const covering = (x: number, y: number): number =>
+      all.filter((piece) =>
+        forestPlacementCellsV7(piece).some(([cx, cy]) => cx === x && cy === y),
+      ).length;
+    for (let y = 0; y < 2; y += 1)
+      for (let x = 0; x < 4; x += 1) expect(covering(x, y)).toBe(1);
+  });
+
+  it("gives a Mine's cell a mined mountain when the set has one", () => {
+    const entries = board(["Mm", "MM"]);
+    expect(cells(entries).has("1,0")).toBe(false);
+    const withMines = chibiForestCellsV7(entries, COUNTS, 0, "MOUNTAIN", 2);
+    const mine = withMines.get("1,0");
+    expect(mine).toMatchObject({ clearing: false, bodies: [], bands: [] });
+    expect([0, 1]).toContain(mine?.mined);
+    // No range covers the Mine's cell.
+    for (const cell of withMines.values())
+      for (const piece of cell.bodies)
+        expect(forestPlacementCellsV7(piece)).not.toContainEqual([1, 0]);
   });
 });
 
@@ -504,15 +540,31 @@ describe("composed mountain drawing", () => {
     );
   });
 
-  it("draws a Mine as today's mined mountain, outside every range", () => {
+  it("draws a Mine as the range-style mined mountain over its old ground", () => {
     const entries = board(["Mm", "MM"], ox, oy);
     const drawn = named(draw(entries));
+    // The Mine's cell: its ground as before, then the mined mountain's
+    // cell part after the Roads and its band in the foreground.
+    expect(drawn).toContainEqual([
+      "ground:mine",
+      0,
+      0,
+      80,
+      80,
+      X + 80,
+      Y,
+      80,
+      80,
+    ]);
+    const kinds = drawn.map((call) => call[0]);
+    expect(kinds).not.toContain("body:mine");
+    expect(kinds).not.toContain("master:mine");
+    expect(drawn).toContainEqual(["surface:80x80", X + 80, Y, 80, 80]);
+    expect(drawn).toContainEqual(["surface:80x24", X + 80, Y - 24, 80, 24]);
+    expect(kinds).not.toContain("surface:160x160");
+    // Without the set, the old mined mountain is drawn as before.
     const before = named(draw(entries, { mountainArt: null }));
-    const mine = (calls: unknown[][]): unknown[][] =>
-      calls.filter((call) => String(call[0]).endsWith(":mine"));
-    expect(mine(drawn).length).toBeGreaterThan(0);
-    expect(mine(drawn)).toEqual(mine(before));
-    expect(drawn.map((call) => call[0])).not.toContain("surface:160x160");
+    expect(before.map((call) => call[0])).toContain("master:mine");
   });
 
   it("caps only the Snow cells of a range", () => {

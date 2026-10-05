@@ -127,6 +127,11 @@ interface RecipeFile {
   /** The accepted pieces: which reviewed rasters make each one. */
   readonly pieces?: readonly PieceSpec[];
   /**
+   * Mined mountains (bead pulp_wars-6kn): 1 x 1 pieces, each a range-style
+   * single mountain with a Mine dug into it, drawn on a Mine's cell.
+   */
+  readonly mines?: readonly PieceSpec[];
+  /**
    * Join pieces: low foothills the board draws on the edge between two
    * range pieces, under both, so two ranges read as one.
    */
@@ -664,6 +669,8 @@ interface DerivedRecord {
     readonly sha256: string;
     readonly pixelSha256: string;
   }[];
+  /** Mined mountains: 1 x 1 pieces drawn on a Mountain cell with a Mine. */
+  readonly mines: DerivedRecord["pieces"];
   readonly pieces: readonly {
     readonly id: string;
     readonly shape: ForestShapeV7;
@@ -721,7 +728,12 @@ export async function deriveMountainRanges(root: string): Promise<{
     return trimmed(await load(root, relative));
   };
   const pieces: DerivedRecord["pieces"][number][] = [];
-  for (const spec of file.pieces ?? []) {
+  const mines: DerivedRecord["pieces"][number][] = [];
+  const specs = [
+    ...(file.pieces ?? []).map((spec) => ({ spec, mine: false })),
+    ...(file.mines ?? []).map((spec) => ({ spec, mine: true })),
+  ];
+  for (const { spec, mine } of specs) {
     const rows = FOREST_SHAPES_V7[spec.shape];
     const width = (rows[0]?.length ?? 1) * CELL;
     const height = rows.length * CELL + UP;
@@ -749,7 +761,7 @@ export async function deriveMountainRanges(root: string): Promise<{
       });
     }
     placed.sort((a, b) => a.base - b.base);
-    const id = `chibi-mountain-range-${spec.shape.toLowerCase()}-${String.fromCharCode(97 + spec.variant)}`;
+    const id = `chibi-mountain-range-${mine ? "mine" : spec.shape.toLowerCase()}-${String.fromCharCode(97 + spec.variant)}`;
     for (const part of placed) paint(canvas, part.raster, part.left, part.top);
     for (let py = 0; py < height; py += 1)
       for (let px = 0; px < width; px += 1)
@@ -760,11 +772,39 @@ export async function deriveMountainRanges(root: string): Promise<{
           throw new Error(
             `${id}: paint at ${px},${py} is outside its footprint or above the band limit`,
           );
-    const raster = softened(canvas);
+    // A Mine is a building: its dark tunnel and beams are not softened.
+    const raster = mine ? canvas : softened(canvas);
     const bytes = await encodePng(raster);
     const relative = `${OUT}/${id}.png`;
     files.set(relative, bytes);
-    pieces.push({
+    if (mine) {
+      // The master the art registry shows (interface and fallback): the
+      // mined mountain over the rocky ground of its cell.
+      const ground = await load(root, `${TERRAIN}/chibi-mountain-ground-1.png`);
+      const master: Raster = {
+        width,
+        height,
+        data: new Uint8Array(raster.data),
+      };
+      for (let y = 0; y < CELL; y += 1)
+        for (let x = 0; x < CELL; x += 1) {
+          const to = ((y + UP) * width + x) * 4;
+          if ((master.data[to + 3] ?? 0) >= 128) continue;
+          const from = (y * CELL + x) * 4;
+          for (let c = 0; c < 4; c += 1)
+            master.data[to + c] = ground.data[from + c] ?? 0;
+        }
+      files.set(`${OUT}/${id}.master.png`, await encodePng(master));
+      sources.set(
+        `${TERRAIN}/chibi-mountain-ground-1.png`,
+        sha256(
+          await readFile(
+            path.join(root, `${TERRAIN}/chibi-mountain-ground-1.png`),
+          ),
+        ),
+      );
+    }
+    (mine ? mines : pieces).push({
       id,
       shape: spec.shape,
       variant: spec.variant,
@@ -806,6 +846,7 @@ export async function deriveMountainRanges(root: string): Promise<{
         .map(([file2, hash]) => ({ path: file2, sha256: hash })),
       seams,
       pieces,
+      mines,
     },
     files,
   };
@@ -961,6 +1002,7 @@ async function sheet(root: string, out: string): Promise<void> {
   const perRow = 6;
   const entries = [
     ...record.pieces.map((piece) => ({ shape: piece.shape, path: piece.path })),
+    ...record.mines.map((piece) => ({ shape: piece.shape, path: piece.path })),
     ...record.seams.map((seam) => ({ shape: "1x1" as const, path: seam.path })),
   ];
   const width = perRow * slotW + pad;

@@ -226,21 +226,23 @@ export function packRangeCoverV7(
     if (!has(x, y)) continue;
     const east = has(x + 1, y);
     const south = has(x, y + 1);
-    const roll = forestHashV7(x, y, 3, 0x29) % 4;
     let shape: ForestShapeV7 = "1x1";
-    if (variants["2x2"] > 0 && east && south && has(x + 1, y + 1) && roll !== 0)
+    // A massif on about half of the squares; the others become two rows
+    // of ridges, so a deep area alternates massifs and ridge rows.
+    if (
+      variants["2x2"] > 0 &&
+      east &&
+      south &&
+      has(x + 1, y + 1) &&
+      (variants["2x1"] === 0 || forestHashV7(x, y, 3, 0x29) % 2 === 0)
+    )
       shape = "2x2";
     else if (variants["2x1"] > 0 && east) shape = "2x1";
     // A north-south ridge for about a third of the column pairs, and
     // never beside or under another of the same variant (its orientation):
     // the rest of a column is single mountains.
     let column: number | null = null;
-    if (
-      shape === "1x1" &&
-      variants["1x2"] > 0 &&
-      south &&
-      forestHashV7(x, y, 5, 0x29) % 3 === 0
-    ) {
+    if (shape === "1x1" && variants["1x2"] > 0 && south && true) {
       const near = new Set(
         [
           [x - 1, y],

@@ -22,7 +22,8 @@
     "ridgeNS": "Subject: a mountain ridge running away from the viewer in the middle of the image, with wide empty space left and right: two large steep cool grey stone peaks with broad white snow caps, the far peak higher up in the image and partly hidden behind the near peak, joined by one long ridgeline and shared rock faces into a single rock mass, the ridge only a third of the image wide and almost as tall as the image, two blue-grey tones, the same rock, outline and palette as the style image; just rock and snow.",
     "foothill": "Subject: a low rocky foothill: a small wide mound of cool grey stone with two low rounded bumps and no snow, much wider than it is tall, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; just rock.",
     "peakSmall": "Subject: one small mountain: a single steep cool grey stone peak with a white snow cap and one lower shoulder peak joined to its side, sharing one rock mass, about two thirds of the image wide, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; whole mountain inside the image with empty space around it; just rock and snow.",
-    "spineNarrow2": "Subject: a tall narrow mountain range in the middle of the image with wide empty space left and right: one continuous ridge of four steep cool grey stone peaks one behind the other running straight from the bottom of the image to the top, joined by saddles into a single rock mass, only a quarter of the image wide, small white snow caps, two grey tones, the same rock, outline and palette as the style image; just rock and snow."
+    "spineNarrow2": "Subject: a tall narrow mountain range in the middle of the image with wide empty space left and right: one continuous ridge of four steep cool grey stone peaks one behind the other running straight from the bottom of the image to the top, joined by saddles into a single rock mass, only a quarter of the image wide, small white snow caps, two grey tones, the same rock, outline and palette as the style image; just rock and snow.",
+    "digMine": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain."
   },
   "recipes": [
     {
@@ -130,7 +131,7 @@
         "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
       },
       "notes": "A 1x2 spine asked for on a wide canvas with empty sides, so nothing is cut at 80 px; only candidates at most 80 px wide can be used.",
-      "review": "0: a ridge of five peaks running away from the viewer, 77 px wide, used for both 1x2 pieces (the second mirrored). 1 to 3: 94 or 95 px wide, too wide for one column, unused."
+      "review": "0: a ridge of five peaks running diagonally away from the viewer, 77 px wide; it was the 1x2 piece until bead pulp_wars-6kn replaced it with a true north-south ridge. 1 to 3: too wide for one column. Unused."
     },
     {
       "id": "s08-2x2-v2",
@@ -244,7 +245,7 @@
         "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
       },
       "notes": "Single mountains in the scale of the s01 ridges.",
-      "review": "Sixteen single mountains at the ridge scale. 4 (a jagged peak with foothills) and 7 (a peak with two shoulders) are used as the 1x1 pieces; most others are the old cluster of four rounded peaks again."
+      "review": "Sixteen single mountains at the ridge scale. 4 and 7 are the 1x1 pieces and the mountains the Mines were dug into; 1, 4, 7 and 12 make the north-south ridges."
     },
     {
       "id": "s15-2x1-v2",
@@ -276,6 +277,33 @@
         "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
       },
       "review": "Four ridges lying across the image, 115 px wide: not a one-column ridge. Unused."
+    },
+    {
+      "id": "s17-mine-a",
+      "endpoint": "edit-image-pixen",
+      "width": 80,
+      "height": 80,
+      "seed": 82017,
+      "source": {
+        "recipe": "s14-1x1-v2",
+        "candidate": 4
+      },
+      "instruction": "@digMine",
+      "notes": "Bead pulp_wars-6kn: the mined mountain in the range style, the batch-3 Mine edit applied to a range-style single mountain.",
+      "review": "Two near-identical candidates: the jagged single mountain with a small timber-framed entrance and an ore cart. On the board the entrance is too small and dark to read as a Mine at a glance. Unused."
+    },
+    {
+      "id": "s18-mine-b",
+      "endpoint": "edit-image-pixen",
+      "width": 80,
+      "height": 80,
+      "seed": 82018,
+      "source": {
+        "recipe": "s14-1x1-v2",
+        "candidate": 7
+      },
+      "instruction": "@digMine",
+      "review": "Two near-identical candidates: the shouldered single mountain with a large timber-framed entrance and an ore cart, close to the old Mine. 0 is the mined mountain."
     }
   ],
   "pieces": [
@@ -345,22 +373,74 @@
       "variant": 0,
       "parts": [
         {
-          "recipe": "s07-1x2-v2",
-          "candidate": 0,
-          "dy": -28
+          "recipe": "s14-1x1-v2",
+          "candidate": 1,
+          "row": 0,
+          "dy": 1,
+          "dx": -7
+        },
+        {
+          "recipe": "s14-1x1-v2",
+          "candidate": 4,
+          "dy": -41,
+          "dx": 7
+        },
+        {
+          "recipe": "s14-1x1-v2",
+          "candidate": 7,
+          "dy": -3,
+          "dx": -7
         }
       ],
-      "notes": "A ridge running north to south."
+      "notes": "A north-south ridge: three generated single mountains in a gentle zigzag, each overlapping the foot of the one behind it."
     },
     {
       "shape": "1x2",
       "variant": 1,
       "parts": [
         {
-          "recipe": "s07-1x2-v2",
-          "candidate": 0,
-          "dy": -28,
-          "flip": true
+          "recipe": "s14-1x1-v2",
+          "candidate": 4,
+          "row": 0,
+          "dy": 1,
+          "dx": 7
+        },
+        {
+          "recipe": "s14-1x1-v2",
+          "candidate": 7,
+          "dy": -41,
+          "dx": -7
+        },
+        {
+          "recipe": "s14-1x1-v2",
+          "candidate": 12,
+          "dy": -3,
+          "dx": 7
+        }
+      ]
+    },
+    {
+      "shape": "1x2",
+      "variant": 2,
+      "parts": [
+        {
+          "recipe": "s14-1x1-v2",
+          "candidate": 12,
+          "row": 0,
+          "dy": 1,
+          "dx": -7
+        },
+        {
+          "recipe": "s14-1x1-v2",
+          "candidate": 1,
+          "dy": -41,
+          "dx": 7
+        },
+        {
+          "recipe": "s14-1x1-v2",
+          "candidate": 4,
+          "dy": -3,
+          "dx": -7
         }
       ]
     },
@@ -372,17 +452,17 @@
           "recipe": "s15-2x1-v2",
           "candidate": 1,
           "row": 0,
-          "dy": 38,
-          "dx": 4
+          "dy": 24,
+          "dx": 6
         },
         {
           "recipe": "s15-2x1-v2",
           "candidate": 0,
-          "dx": -4,
-          "dy": -12
+          "dy": -8,
+          "dx": -6
         }
       ],
-      "notes": "A massif: two ridges of the same scale one behind the other, the front one overlapping the foot of the back one."
+      "notes": "A massif: two generated ridges, the front one overlapping the foot of the back one and shifted sideways, with rocky ground at its foot."
     },
     {
       "shape": "2x2",
@@ -390,16 +470,16 @@
       "parts": [
         {
           "recipe": "s01-2x1-v2",
-          "candidate": 0,
+          "candidate": 2,
           "row": 0,
-          "dy": 38,
-          "dx": -4
+          "dy": 24,
+          "dx": -6
         },
         {
           "recipe": "s15-2x1-v2",
           "candidate": 3,
-          "dx": 4,
-          "dy": -12
+          "dy": -8,
+          "dx": 6
         }
       ]
     },
@@ -411,14 +491,26 @@
           "recipe": "s15-2x1-v2",
           "candidate": 2,
           "row": 0,
-          "dy": 38,
-          "dx": 4
+          "dy": 24,
+          "dx": 6
         },
         {
           "recipe": "s01-2x1-v2",
-          "candidate": 2,
-          "dx": -4,
-          "dy": -12
+          "candidate": 0,
+          "dy": -8,
+          "dx": -6
+        }
+      ]
+    }
+  ],
+  "mines": [
+    {
+      "shape": "1x1",
+      "variant": 0,
+      "parts": [
+        {
+          "recipe": "s18-mine-b",
+          "candidate": 0
         }
       ]
     }

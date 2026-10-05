@@ -995,5 +995,53 @@
         "sha256": "6d16c06875a358b6c6ae218cd0706b123bca6f6c92fdcccaf3fbaee7a1e5be43"
       }
     ]
+  },
+  "s17-mine-a": {
+    "id": "s17-mine-a",
+    "jobId": "03ae70d0-9399-4be5-8670-4cdd3cf610c6",
+    "at": "2026-10-05T01:02:56.200Z",
+    "request": {
+      "endpoint": "edit-image-pixen",
+      "image": "recipe s14-1x1-v2#4 sha256 55e7382191e3c8f55cfedb3b4e48d12fe7761a0a4dd1f7d3d9b1e483257fee80",
+      "description": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+      "width": 80,
+      "height": 80,
+      "seed": 82017,
+      "no_background": true
+    },
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s17-mine-a-0.png",
+        "sha256": "cab93fb5e8d3024b70d14c737d87e6de2770f6181aebbc9dc39a82cc4a98979a"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s17-mine-a-1.png",
+        "sha256": "cab93fb5e8d3024b70d14c737d87e6de2770f6181aebbc9dc39a82cc4a98979a"
+      }
+    ]
+  },
+  "s18-mine-b": {
+    "id": "s18-mine-b",
+    "jobId": "6291668a-8e4f-4bba-9397-918ed3681f8a",
+    "at": "2026-10-05T01:04:52.502Z",
+    "request": {
+      "endpoint": "edit-image-pixen",
+      "image": "recipe s14-1x1-v2#7 sha256 c2ca2831029d17d4cfacd188e43ba8dcffb9b91f3b0ad01c7bd35e82da900f71",
+      "description": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+      "width": 80,
+      "height": 80,
+      "seed": 82018,
+      "no_background": true
+    },
+    "candidates": [
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s18-mine-b-0.png",
+        "sha256": "8b9a2bd8f5836b7b46e4d181bea480023fcfdf4c744aad660c70e05388073c62"
+      },
+      {
+        "file": "art/pixellab/chibi-raw/mountain-ranges/s18-mine-b-1.png",
+        "sha256": "8b9a2bd8f5836b7b46e4d181bea480023fcfdf4c744aad660c70e05388073c62"
+      }
+    ]
   }
 }
