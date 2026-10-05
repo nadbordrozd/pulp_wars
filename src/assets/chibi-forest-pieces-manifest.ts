@@ -31,8 +31,6 @@ export interface ChibiForestClumpAssetV7 {
 export interface ChibiForestArtSetV7 {
   readonly pieces: readonly ChibiForestPieceAssetV7[];
   readonly clumps: readonly ChibiForestClumpAssetV7[];
-  /** Mountains only: the mined mountains, 80 x 104 each. */
-  readonly mined?: readonly { readonly id: string; readonly url: string }[];
 }
 
 const publicUrl = (file: string): string =>

@@ -3,7 +3,6 @@ import type {
   ArtSubjectV7,
   ChibiArtAssetV7,
 } from "../../src/assets/chibi-art-v7";
-import type { ChibiForestArtSetV7 } from "../../src/assets/chibi-forest-pieces-manifest";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../src/assets/chibi-mountain-ranges-manifest";
 import { chibiDirectionArtRegistryV7 } from "../../src/assets/chibi-direction-art-manifest";
 import {
@@ -15,24 +14,30 @@ import type {
   ChibiBoardArtV7,
   ChibiResolutionV7,
 } from "../../src/render/canvas/chibi-art-resolver-v7";
-import {
-  FOREST_SHAPES_V7,
-  forestPlacementCellsV7,
-  packRangeCoverV7,
-  type ForestVariantCountsV7,
-} from "../../src/render/canvas/chibi-forest-packing-v7";
-import {
-  chibiForestCellsV7,
-  createChibiForestArtV7,
-  type ChibiForestRasterEnvironmentV7,
-} from "../../src/render/canvas/chibi-forest-v7";
+import type { ChibiForestRasterEnvironmentV7 } from "../../src/render/canvas/chibi-forest-v7";
 import { chibiCameraZoom } from "../../src/render/canvas/chibi-geometry-v7";
+import {
+  MASSIF_GROUND_V7,
+  MASSIF_LOW_UP_V7,
+  MASSIF_TALL_UP_V7,
+  MASSIF_TAPER_EAST_V7,
+  MASSIF_TAPER_WEST_V7,
+  chibiMassifCellsV7,
+  createChibiMassifArtV7,
+  massifGroundPixelsV7,
+  packMassifV7,
+  type ChibiMassifArtSetV7,
+  type MassifPlacementV7,
+  type MassifVariantCountsV7,
+} from "../../src/render/canvas/chibi-massif-v7";
 import type { IceFolkBoardArtV7 } from "../../src/render/canvas/ice-folk-canvas-v7";
 
 /**
- * pulp_wars-e9f (docs/art/COMPOSED_TERRAIN.md): a group of Mountain cells
- * is drawn as ranges of multi-tile pieces, with the packing and drawing of
- * the composed forests. Mines and other features keep the single mountain.
+ * pulp_wars-e9f and pulp_wars-2o7.1 (docs/art/COMPOSED_TERRAIN.md): a group
+ * of Mountain cells is drawn as one massif. Every row is covered by ridges
+ * and single mountains that fill their cells; a piece under another plain
+ * Mountain is tall and rises over the row behind; Mines and feature cells
+ * keep a mountain of their own and nothing covers them.
  */
 
 type Entry = BoardRenderPlanEntryV7;
@@ -64,19 +69,17 @@ function board(rows: readonly string[], ox = 0, oy = 0): Entry[] {
   );
 }
 
-const COUNTS: ForestVariantCountsV7 = {
-  "1x1": 2,
-  "2x1": 4,
-  "1x2": 3,
-  "2x2": 3,
-  "L-NW": 0,
-  "L-NE": 0,
-  "L-SW": 0,
-  "L-SE": 0,
-};
+const COUNTS: MassifVariantCountsV7 = { low1: 8, low2: 8, tall1: 6, tall2: 6 };
 
-const cells = (entries: readonly Entry[]) =>
-  chibiForestCellsV7(entries, COUNTS, 0, "MOUNTAIN");
+const cells = (entries: readonly Entry[], mined = 0) =>
+  chibiMassifCellsV7(entries, COUNTS, mined);
+
+const coords = (rows: readonly string[]): [number, number][] =>
+  rows.flatMap((row, y) =>
+    [...row].flatMap((mark, x): [number, number][] =>
+      mark === "M" ? [[x, y]] : [],
+    ),
+  );
 
 describe("mined mountain in the art registry", () => {
   it("is what the live look shows for a Mine, in the interface too", () => {
@@ -97,226 +100,272 @@ describe("mined mountain in the art registry", () => {
   });
 });
 
-describe("mountain range set", () => {
-  it("ships ranges of four shapes and no join pieces", () => {
-    const counts = new Map<string, number>();
+describe("massif set", () => {
+  it("ships low and tall ridges and single mountains, and one mined mountain", () => {
+    const counts = { low1: 0, low2: 0, tall1: 0, tall2: 0 };
+    const ids = new Set<string>();
     for (const piece of CHIBI_MOUNTAIN_ART_SET_V7.pieces) {
-      counts.set(piece.shape, (counts.get(piece.shape) ?? 0) + 1);
-      const rows = FOREST_SHAPES_V7[piece.shape];
-      expect(piece.width).toBe((rows[0]?.length ?? 0) * 80);
-      expect(piece.height).toBe(rows.length * 80 + 24);
+      ids.add(piece.id);
+      const slot = `${piece.tall ? "tall" : "low"}${piece.columns}` as const;
+      // Variants of a kind are numbered from 0 without a gap.
+      expect(piece.variant).toBe(counts[slot]);
+      counts[slot] += 1;
+      expect(piece.width).toBe(piece.columns * 80);
+      expect(piece.height).toBe(
+        80 + (piece.tall ? MASSIF_TALL_UP_V7 : MASSIF_LOW_UP_V7),
+      );
+      expect(piece.id.includes("-tall-")).toBe(piece.tall);
       expect(piece.url).toContain(
         "assets/chibi/mountains/chibi-mountain-range-",
       );
     }
-    expect(Object.fromEntries(counts)).toEqual({
-      "1x1": 2,
-      "2x1": 4,
-      "1x2": 3,
-      "2x2": 3,
-    });
-    expect(CHIBI_MOUNTAIN_ART_SET_V7.clumps).toEqual([]);
-    // One mined mountain in the range style (bead pulp_wars-6kn).
-    expect(CHIBI_MOUNTAIN_ART_SET_V7.mined?.map((piece) => piece.url)).toEqual([
+    expect(ids.size).toBe(CHIBI_MOUNTAIN_ART_SET_V7.pieces.length);
+    expect(counts).toEqual({ low1: 8, low2: 8, tall1: 6, tall2: 6 });
+    expect(CHIBI_MOUNTAIN_ART_SET_V7.mined.map((piece) => piece.url)).toEqual([
       expect.stringContaining("chibi-mountain-range-mine-a.png"),
     ]);
   });
 });
 
-describe("range cover", () => {
-  const grid = (rows: readonly string[]): [number, number][] =>
-    rows.flatMap((row, y) =>
-      [...row].flatMap((mark, x): [number, number][] =>
-        mark === "M" ? [[x, y]] : [],
+describe("massif cover", () => {
+  const area = [
+    "MMMMM..M",
+    "MMMM.MMM",
+    ".MMMMMM.",
+    "MM..MMMM",
+    "M.MMMMMM",
+    "MMMMMM.M",
+  ];
+  const packed = packMassifV7(coords(area), COUNTS);
+  const covered = (piece: MassifPlacementV7): string[] =>
+    Array.from(
+      { length: piece.columns },
+      (_, column) => `${piece.x + column},${piece.y}`,
+    );
+
+  it("covers every cell exactly once, deterministically", () => {
+    const seen = packed.flatMap(covered);
+    expect([...seen].sort()).toEqual(
+      coords(area)
+        .map(([x, y]) => `${x},${y}`)
+        .sort(),
+    );
+    expect(new Set(seen).size).toBe(seen.length);
+    expect(packMassifV7(coords(area).reverse(), COUNTS)).toEqual(packed);
+  });
+
+  it("makes a piece tall exactly when every cell above it is Mountain", () => {
+    const plain = new Set(coords(area).map(([x, y]) => `${x},${y}`));
+    for (const piece of packed) {
+      const above = Array.from({ length: piece.columns }, (_, column) =>
+        plain.has(`${piece.x + column},${piece.y - 1}`),
+      );
+      expect(piece.tall, `${piece.x},${piece.y}`).toBe(above.every(Boolean));
+      expect(piece.variant).toBeLessThan(
+        piece.columns === 2
+          ? piece.tall
+            ? COUNTS.tall2
+            : COUNTS.low2
+          : piece.tall
+            ? COUNTS.tall1
+            : COUNTS.low1,
+      );
+    }
+    // The top row of an area is always low.
+    expect(packed.filter((piece) => piece.y === 0 && piece.tall)).toEqual([]);
+  });
+
+  it("uses ridges wherever two cells lie side by side, laid like bricks", () => {
+    // A run of two is one ridge; three is a ridge and a single.
+    expect(
+      packMassifV7(coords(["MM"]), COUNTS).map((piece) => piece.columns),
+    ).toEqual([2]);
+    expect(
+      packMassifV7(coords(["MMM"]), COUNTS)
+        .map((piece) => piece.columns)
+        .sort(),
+    ).toEqual([1, 2]);
+    // The user's block, two wide and three deep: one ridge per row, the
+    // two front rows tall.
+    expect(
+      packMassifV7(coords(["MM", "MM", "MM"]), COUNTS).map((piece) => [
+        piece.x,
+        piece.y,
+        piece.columns,
+        piece.tall,
+      ]),
+    ).toEqual([
+      [0, 0, 2, false],
+      [0, 1, 2, true],
+      [0, 2, 2, true],
+    ]);
+    // Four wide: the ridges of one row start a cell off those of the next.
+    const wide = packMassifV7(coords(["MMMM", "MMMM"]), COUNTS);
+    const starts = (y: number): number[] =>
+      wide
+        .filter((piece) => piece.y === y && piece.columns === 2)
+        .map((piece) => piece.x);
+    expect(starts(0)).not.toEqual(starts(1));
+    // Without ridges in the set, every cell is a single mountain.
+    expect(
+      packMassifV7(coords(["MMM"]), { ...COUNTS, low2: 0, tall2: 0 }).map(
+        (piece) => piece.columns,
       ),
-    );
-
-  it("covers every cell exactly once, deterministically, without Ls", () => {
-    let state = 7;
-    const random = (): number => {
-      state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-      return state / 0x1_0000_0000;
-    };
-    for (let round = 0; round < 40; round += 1) {
-      const rows = Array.from({ length: 12 }, () =>
-        Array.from({ length: 12 }, () => (random() < 0.6 ? "M" : ".")).join(""),
-      );
-      const cellsIn = grid(rows);
-      const pieces = packRangeCoverV7(cellsIn, COUNTS);
-      expect(packRangeCoverV7([...cellsIn].reverse(), COUNTS)).toEqual(pieces);
-      const covered = new Map<string, number>();
-      for (const piece of pieces) {
-        expect(piece.shape.startsWith("L")).toBe(false);
-        expect(piece.variant).toBeLessThan(COUNTS[piece.shape]);
-        for (const [x, y] of forestPlacementCellsV7(piece))
-          covered.set(`${x},${y}`, (covered.get(`${x},${y}`) ?? 0) + 1);
-      }
-      expect(covered.size).toBe(cellsIn.length);
-      for (const count of covered.values()) expect(count).toBe(1);
-      for (const [x, y] of cellsIn) expect(covered.has(`${x},${y}`)).toBe(true);
-    }
+    ).toEqual([1, 1, 1]);
   });
 
-  it("chains ridges along a row and keeps singles rare", () => {
-    // A one-cell-high range of nine cells: four ridges and one single.
-    const row = packRangeCoverV7(grid(["MMMMMMMMM"]), COUNTS);
-    expect(row.map((piece) => piece.shape)).toEqual([
-      "2x1",
-      "2x1",
-      "2x1",
-      "2x1",
-      "1x1",
-    ]);
-    // One-cell-wide ranges are north-south ridges; a single mountain only
-    // where the three ridge variants are all taken by neighbours or the
-    // column has an odd cell left.
-    const column = packRangeCoverV7(grid(["M", "M", "M", "M", "M"]), COUNTS);
-    expect(column.map((piece) => piece.shape)).toEqual(["1x2", "1x2", "1x1"]);
-    expect(column[0]?.variant).not.toBe(column[1]?.variant);
-    // A full 12 x 12 area mixes massifs and rows of ridges, with no
-    // single mountain and no north-south ridge.
-    const full = packRangeCoverV7(
-      grid(Array.from({ length: 12 }, () => "M".repeat(12))),
-      COUNTS,
-    );
-    const shapes = full.map((piece) => piece.shape);
-    const massifs = shapes.filter((shape) => shape === "2x2").length;
-    const ridges = shapes.filter((shape) => shape === "2x1").length;
-    expect(massifs).toBeGreaterThanOrEqual(8);
-    expect(ridges).toBeGreaterThanOrEqual(8);
-    expect(massifs * 4 + ridges * 2).toBe(144);
-  });
-});
-
-describe("range cover neighbours", () => {
-  it("never puts two like north-south ridges or two like singles side by side", () => {
-    let state = 31;
-    const random = (): number => {
-      state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-      return state / 0x1_0000_0000;
-    };
-    for (let round = 0; round < 40; round += 1) {
-      const cellsIn: [number, number][] = [];
-      for (let y = 0; y < 12; y += 1)
-        for (let x = 0; x < 12; x += 1)
-          if (random() < 0.45) cellsIn.push([x, y]);
-      const at = new Map<string, string>();
-      packRangeCoverV7(cellsIn, COUNTS).forEach((piece, index) => {
-        for (const [x, y] of forestPlacementCellsV7(piece))
-          at.set(`${x},${y}`, `${piece.shape}#${piece.variant}@${index}`);
-      });
-      for (const [key, value] of at) {
-        const [x = 0, y = 0] = key.split(",").map(Number);
-        const [kind, index] = value.split("@");
-        if (kind?.startsWith("2x")) continue;
-        for (const [dx, dy] of [
-          [1, 0],
-          [0, 1],
-        ] as const) {
-          const other = at.get(`${x + dx},${y + dy}`);
-          if (other === undefined) continue;
-          const [otherKind, otherIndex] = other.split("@");
-          if (otherIndex !== index) expect(otherKind).not.toBe(kind);
-        }
-      }
+  it("never repeats a piece beside or under itself", () => {
+    const at = new Map<string, MassifPlacementV7>();
+    for (const piece of packed)
+      for (const cell of covered(piece)) at.set(cell, piece);
+    const same = (a: MassifPlacementV7, b: MassifPlacementV7): boolean =>
+      a !== b &&
+      a.columns === b.columns &&
+      a.tall === b.tall &&
+      a.variant === b.variant;
+    for (const piece of packed) {
+      const west = at.get(`${piece.x - 1},${piece.y}`);
+      const north = at.get(`${piece.x},${piece.y - 1}`);
+      if (west !== undefined) expect(same(piece, west)).toBe(false);
+      if (north !== undefined) expect(same(piece, north)).toBe(false);
     }
   });
 });
 
-describe("mountain cells of a plan", () => {
-  it("packs Mountains only, deterministically", () => {
-    const entries = board(["MMFg", "MMMM", "gMM?"]);
-    const packed = cells(entries);
-    expect([...packed.keys()].sort()).toEqual(
-      ["0,0", "0,1", "1,0", "1,1", "1,2", "2,1", "2,2", "3,1"].sort(),
+describe("massif cells of a plan", () => {
+  it("covers Mountains only, never fog, Grass, Forest or a Mine", () => {
+    const entries = board(["MMg", "MmF", "MM?"]);
+    const result = cells(entries, 1);
+    expect([...result.keys()].sort()).toEqual(
+      ["0,0", "1,0", "0,1", "1,1", "0,2", "1,2"].sort(),
     );
-    expect([...cells(entries).entries()]).toEqual([...packed.entries()]);
-    // Forest cells are not Mountain cells and the reverse.
-    expect([
-      ...chibiForestCellsV7(entries, COUNTS, 0, "FOREST").keys(),
-    ]).toEqual(["2,0"]);
-  });
-
-  it("never packs a range over fog, Grass, Forest or a Mine", () => {
-    let state = 99;
-    const random = (): number => {
-      state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-      return state / 0x1_0000_0000;
-    };
-    for (let round = 0; round < 30; round += 1) {
-      const rows = Array.from({ length: 10 }, () =>
-        Array.from({ length: 10 }, () => {
-          const roll = random();
-          return roll < 0.55
-            ? "M"
-            : roll < 0.65
-              ? "m"
-              : roll < 0.78
-                ? "?"
-                : roll < 0.9
-                  ? "g"
-                  : "F";
-        }).join(""),
-      );
-      for (const cell of cells(board(rows)).values())
-        for (const piece of cell.bodies)
-          for (const [x, y] of forestPlacementCellsV7(piece))
-            expect(rows[y]?.[x]).toBe("M");
+    expect(result.get("1,1")).toMatchObject({ mined: 0, bodies: [] });
+    for (const [at, cell] of result) {
+      if (at === "1,1") continue;
+      expect(cell.mined).toBeNull();
     }
+    const drawn = [...result.values()].flatMap((cell) => cell.bodies);
+    for (const piece of drawn)
+      for (let column = 0; column < piece.columns; column += 1)
+        expect(["0,0", "1,0", "0,1", "0,2", "1,2"]).toContain(
+          `${piece.x + column},${piece.y}`,
+        );
+    // Without a mined mountain in the set, the Mine keeps its old art.
+    expect(cells(entries, 0).has("1,1")).toBe(false);
   });
 
-  const feature = (kind: Entry["kind"], x: number, y: number): Entry => ({
-    key: `${kind}:${x},${y}`,
-    kind,
-    layer: 3,
-    at: { x, y },
-    assetId: "feature",
-  });
-
-  it("draws a feature cell as a single range-style mountain, outside every range", () => {
-    const packed = cells([
-      ...board(["MMMM", "MMMM"]),
-      feature("RESOURCE", 0, 0),
-      feature("CURIOSITY", 3, 1),
+  it("keeps the piece south of a Mine or a feature low, so nothing covers them", () => {
+    const entries = [
+      ...board(["MmM", "MMM"]),
+      {
+        key: "resource:2,0",
+        kind: "RESOURCE",
+        layer: 3,
+        at: { x: 2, y: 0 },
+      } as Entry,
+    ];
+    const result = cells(entries, 1);
+    // The feature cell: a low single mountain of its own.
+    expect(result.get("2,0")?.bodies).toEqual([
+      expect.objectContaining({ x: 2, y: 0, columns: 1, tall: false }),
     ]);
-    for (const [x, y] of [
-      [0, 0],
-      [3, 1],
-    ] as const) {
-      const cell = packed.get(`${x},${y}`);
-      expect(cell).toMatchObject({
-        clearing: false,
-        glade: false,
-        mined: null,
-      });
-      expect(cell?.bodies).toEqual([
-        { shape: "1x1", x, y, variant: (x + y) % 2 },
-      ]);
-    }
-    const all = [...packed.values()].flatMap((cell) => cell.bodies);
-    const covering = (x: number, y: number): number =>
-      all.filter((piece) =>
-        forestPlacementCellsV7(piece).some(([cx, cy]) => cx === x && cy === y),
-      ).length;
-    for (let y = 0; y < 2; y += 1)
-      for (let x = 0; x < 4; x += 1) expect(covering(x, y)).toBe(1);
-  });
-
-  it("gives a Mine's cell a mined mountain when the set has one", () => {
-    const entries = board(["Mm", "MM"]);
-    expect(cells(entries).has("1,0")).toBe(false);
-    const withMines = chibiForestCellsV7(entries, COUNTS, 0, "MOUNTAIN", 2);
-    const mine = withMines.get("1,0");
-    expect(mine).toMatchObject({ clearing: false, bodies: [], bands: [] });
-    expect([0, 1]).toContain(mine?.mined);
-    // No range covers the Mine's cell.
-    for (const cell of withMines.values())
+    const south = [...result.values()]
+      .flatMap((cell) => cell.bodies)
+      .filter((piece) => piece.y === 1);
+    const over = (x: number): MassifPlacementV7 | undefined =>
+      south.find((piece) => x >= piece.x && x < piece.x + piece.columns);
+    // Under the plain Mountain the piece may be tall; under the Mine and
+    // under the Ore it is low.
+    expect(over(1)?.tall).toBe(false);
+    expect(over(2)?.tall).toBe(false);
+    // A low piece draws its band in the foreground; a tall one has none.
+    for (const cell of result.values())
       for (const piece of cell.bodies)
-        expect(forestPlacementCellsV7(piece)).not.toContainEqual([1, 0]);
+        if (piece.tall)
+          for (let column = 0; column < piece.columns; column += 1)
+            expect(
+              result.get(`${piece.x + column},${piece.y}`)?.band,
+            ).toBeNull();
+    expect(result.get("2,0")?.band).toMatchObject({ column: 0 });
+  });
+
+  it("marks the north side of an area and where its cut runs out", () => {
+    const result = cells(board(["gMg", "MMM"]));
+    expect(result.get("1,0")).toMatchObject({ northOpen: true, northTaper: 0 });
+    expect(result.get("1,1")).toMatchObject({ northOpen: false });
+    expect(result.get("0,1")).toMatchObject({
+      northOpen: true,
+      northTaper: MASSIF_TAPER_EAST_V7,
+    });
+    expect(result.get("2,1")).toMatchObject({
+      northOpen: true,
+      northTaper: MASSIF_TAPER_WEST_V7,
+    });
   });
 });
 
-// ------------------------------------------------------------- drawing
+describe("massif ground", () => {
+  const size = 80;
+  const flat = new Uint8ClampedArray(size * size * 4).fill(200);
+  const alpha = (pixels: Uint8ClampedArray, x: number, y: number): number =>
+    pixels[(y * size + x) * 4 + 3] ?? 0;
+
+  it("darkens the rocky ground towards the rock's own blue-grey", () => {
+    const pixels = massifGroundPixelsV7(flat, size, false, 0);
+    for (let c = 0; c < 3; c += 1)
+      expect(pixels[c]).toBe(
+        Math.round(
+          200 * (1 - MASSIF_GROUND_V7.amount) +
+            (MASSIF_GROUND_V7.tint[c] ?? 0) * MASSIF_GROUND_V7.amount,
+        ),
+      );
+    // Whole: nothing is cut inside an area.
+    for (let i = 3; i < pixels.length; i += 4) expect(pixels[i]).toBe(200);
+  });
+
+  it("cuts the top of the ground on the north side of an area only", () => {
+    for (let variant = 0; variant < MASSIF_GROUND_V7.variants; variant += 1) {
+      const pixels = massifGroundPixelsV7(flat, size, true, variant);
+      for (let x = 0; x < size; x += 1) {
+        expect(alpha(pixels, x, 0)).toBe(0);
+        expect(alpha(pixels, x, size - 1)).toBe(200);
+        expect(
+          alpha(
+            pixels,
+            x,
+            MASSIF_GROUND_V7.topCut + MASSIF_GROUND_V7.topWave + 2,
+          ),
+        ).toBe(200);
+      }
+      // Both ends at the same depth, so the edge runs on over a row.
+      expect(alpha(pixels, 0, MASSIF_GROUND_V7.topCut - 1)).toBe(0);
+      expect(alpha(pixels, 0, MASSIF_GROUND_V7.topCut)).toBe(200);
+      expect(alpha(pixels, size - 1, MASSIF_GROUND_V7.topCut - 1)).toBe(0);
+      expect(alpha(pixels, size - 1, MASSIF_GROUND_V7.topCut)).toBe(200);
+    }
+  });
+
+  it("runs the cut out beside a neighbour whose ground is whole", () => {
+    const west = massifGroundPixelsV7(
+      flat,
+      size,
+      true,
+      0,
+      MASSIF_TAPER_WEST_V7,
+    );
+    expect(alpha(west, 0, 0)).toBe(200);
+    expect(alpha(west, size - 1, 0)).toBe(0);
+    const east = massifGroundPixelsV7(
+      flat,
+      size,
+      true,
+      0,
+      MASSIF_TAPER_EAST_V7,
+    );
+    expect(alpha(east, 0, 0)).toBe(0);
+    expect(alpha(east, size - 1, 0)).toBe(200);
+  });
+});
 
 interface FakeImage {
   readonly url?: string;
@@ -350,10 +399,10 @@ function fakeEnvironment(deferred = false): {
 }
 
 function art(
-  set: ChibiForestArtSetV7 = CHIBI_MOUNTAIN_ART_SET_V7,
+  set: ChibiMassifArtSetV7 = CHIBI_MOUNTAIN_ART_SET_V7,
   deferred = false,
 ) {
-  return createChibiForestArtV7({
+  return createChibiMassifArtV7({
     ...fakeEnvironment(deferred),
     redraw: vi.fn(),
     set,
@@ -387,10 +436,17 @@ const ASSETS = [
 ] as const satisfies readonly ChibiArtAssetV7[];
 
 function fakeChibi(): ChibiBoardArtV7 {
+  const layers = new Map<string, { ground: unknown; body: unknown }>();
   return {
     resolve: (request): ChibiResolutionV7 => {
       const asset = ASSETS.find((item) => item.subject === request.subject);
       if (asset === undefined) return { kind: "MISSING" };
+      // One ground object per asset, as the resolver keeps its rasters.
+      let own = layers.get(asset.id);
+      if (own === undefined) {
+        own = { ground: { ground: asset.id }, body: { body: asset.id } };
+        layers.set(asset.id, own);
+      }
       return {
         kind: "READY",
         asset,
@@ -401,8 +457,8 @@ function fakeChibi(): ChibiBoardArtV7 {
         ...("layers" in asset
           ? {
               layers: {
-                ground: { ground: asset.id } as unknown as CanvasImageSource,
-                body: { body: asset.id } as unknown as CanvasImageSource,
+                ground: own.ground as CanvasImageSource,
+                body: own.body as CanvasImageSource,
               },
             }
           : {}),
@@ -477,54 +533,63 @@ const kindOf = (image: unknown): string => {
   if (fake.ground !== undefined) return `ground:${fake.ground}`;
   if (fake.body !== undefined) return `body:${fake.body}`;
   if (fake.master !== undefined) return `master:${fake.master}`;
-  if (fake.url !== undefined)
-    return fake.url.includes("join") ? "join" : "image";
+  if (fake.url !== undefined) return "image";
   return `surface:${fake.width}x${fake.height}`;
 };
 const named = (calls: unknown[][]): unknown[][] =>
   calls.map((call) => [kindOf(call[0]), ...call.slice(1)]);
 
-/** An origin whose lone 2 x 2 block the cover packs as one massif. */
-function fullBlock(): { readonly ox: number; readonly oy: number } {
-  for (let oy = 0; oy < 12; oy += 1)
-    for (let ox = 0; ox < 12; ox += 1) {
-      const pieces = packRangeCoverV7(
-        [
-          [ox, oy],
-          [ox + 1, oy],
-          [ox, oy + 1],
-          [ox + 1, oy + 1],
-        ],
-        COUNTS,
-      );
-      if (pieces.length === 1 && pieces[0]?.shape === "2x2") return { ox, oy };
-    }
-  throw new Error("no origin packs as a 2 x 2 range");
-}
+/** The destination rectangle of a draw call (5 or 9 arguments). */
+const rect = (call: unknown[]): number[] =>
+  (call.length === 5 ? call.slice(1) : call.slice(5)) as number[];
 
-describe("composed mountain drawing", () => {
-  const { ox, oy } = fullBlock();
-  const X = ox * 80;
-  const Y = 24 + oy * 80;
-  const block = board(["MM", "MM"], ox, oy);
+describe("massif drawing", () => {
+  // Cell (x, y) has its top-left corner at (x * 80, 24 + y * 80).
+  const X = 0;
+  const Y = 24;
+  const block = board(["MM", "MM"]);
 
-  it("draws a full block as its four grounds and one 2 x 2 range", () => {
+  it("draws a block as darkened grounds, a low ridge with its bands and a tall ridge over it", () => {
     const drawn = named(draw(block));
-    // The ground of every cell is drawn as before (the rocky tile).
-    expect(drawn.filter((call) => call[0] === "ground:mountain").length).toBe(
-      4,
-    );
-    // No single mountain body, no shade: the range and its band only.
+    // Every ground is the massif's own, never the plain rocky tile.
+    expect(drawn.filter((call) => call[0] === "ground:mountain")).toEqual([]);
     expect(
-      drawn.filter((call) => !String(call[0]).startsWith("ground")),
+      drawn.filter((call) => call[0] === "surface:80x80").map(rect),
     ).toEqual([
-      ["surface:160x160", X, Y, 160, 160],
-      ["surface:160x24", X, Y - 24, 160, 24],
+      [X, Y, 80, 80],
+      [X + 80, Y, 80, 80],
+      [X, Y + 80, 80, 80],
+      [X + 80, Y + 80, 80, 80],
+    ]);
+    const pieces = drawn.filter(
+      (call) => call[0] !== "surface:80x80" && !String(call[0]).startsWith("g"),
+    );
+    expect(pieces).toEqual([
+      // The back row: a low ridge, its footprint in the body pass.
+      ["surface:160x80", X, Y, 160, 80],
+      // The front row: a tall ridge, drawn whole, 48 px over the back row.
+      ["surface:160x128", X, Y + 80 - 48, 160, 128],
+      // The low ridge's bands, cell by cell, in the foreground.
+      ["surface:80x24", X, Y - 24, 80, 24],
+      ["surface:80x24", X + 80, Y - 24, 80, 24],
+    ]);
+  });
+
+  it("draws the user's 2 x 3 block as three ridges, each front row over the one behind", () => {
+    const drawn = named(draw(board(["MM", "MM", "MM"])));
+    expect(
+      drawn
+        .filter((call) => String(call[0]).startsWith("surface:160"))
+        .map((call) => [call[0], ...rect(call)]),
+    ).toEqual([
+      ["surface:160x80", X, Y, 160, 80],
+      ["surface:160x128", X, Y + 32, 160, 128],
+      ["surface:160x128", X, Y + 112, 160, 128],
     ]);
   });
 
   it("keeps the single mountain while the set loads or is missing", () => {
-    const single = [terrain(ox, oy, "TERRAIN:MOUNTAIN")];
+    const single = [terrain(0, 0, "TERRAIN:MOUNTAIN")];
     const expected = named(draw(single, { mountainArt: null }));
     expect(expected.map((call) => call[0])).toContain("master:mountain");
     expect(
@@ -540,34 +605,24 @@ describe("composed mountain drawing", () => {
     );
   });
 
-  it("draws a Mine as the range-style mined mountain over its old ground", () => {
-    const entries = board(["Mm", "MM"], ox, oy);
+  it("draws a Mine as the mined mountain, and keeps the row south of it low", () => {
+    const entries = board(["Mm", "MM"]);
     const drawn = named(draw(entries));
-    // The Mine's cell: its ground as before, then the mined mountain's
-    // cell part after the Roads and its band in the foreground.
-    expect(drawn).toContainEqual([
-      "ground:mine",
-      0,
-      0,
-      80,
-      80,
-      X + 80,
-      Y,
-      80,
-      80,
-    ]);
     const kinds = drawn.map((call) => call[0]);
     expect(kinds).not.toContain("body:mine");
     expect(kinds).not.toContain("master:mine");
+    // The Mine's cell part after the Roads and its band in the foreground.
     expect(drawn).toContainEqual(["surface:80x80", X + 80, Y, 80, 80]);
     expect(drawn).toContainEqual(["surface:80x24", X + 80, Y - 24, 80, 24]);
-    expect(kinds).not.toContain("surface:160x160");
+    // Nothing tall rises over the Mine: the ridge south of it is low.
+    expect(kinds).not.toContain("surface:160x128");
+    expect(drawn).toContainEqual(["surface:160x80", X, Y + 80, 160, 80]);
     // Without the set, the old mined mountain is drawn as before.
     const before = named(draw(entries, { mountainArt: null }));
     expect(before.map((call) => call[0])).toContain("master:mine");
   });
 
-  it("caps only the Snow cells of a range", () => {
+  it("caps only the Snow columns of a piece", () => {
     const iceFolkArt = {
       snowTile: () => null,
       caps: (image: CanvasImageSource) =>
@@ -575,15 +630,15 @@ describe("composed mountain drawing", () => {
       casing: () => null,
     } as unknown as IceFolkBoardArtV7;
     const mixed = block.map((entry) =>
-      entry.at.x === ox && entry.at.y === oy
-        ? { ...entry, snow: { edges: 0, variant: 0 } }
-        : entry,
+      entry.at.x === 0 ? { ...entry, snow: { edges: 0, variant: 0 } } : entry,
     );
     expect(
       named(draw(mixed, { iceFolkArt })).filter((call) => call[0] === "caps"),
     ).toEqual([
+      // The low ridge's west column, then the tall ridge's, then the band.
       ["caps", 0, 0, 80, 80, X, Y, 80, 80],
-      ["caps", 0, 0, 80, 24, X, Y - 24, 80, 24],
+      ["caps", 0, 0, 80, 128, X, Y + 32, 80, 128],
+      ["caps", X, Y - 24, 80, 24],
     ]);
   });
 
@@ -595,13 +650,22 @@ describe("composed mountain drawing", () => {
     expect(drawn.length).toBeGreaterThan(size * size);
   });
 
-  it("never draws a range over a cell that has no Mountain entry", () => {
-    for (const call of draw(board(["MM?", "MM?", "???"], ox, oy))) {
-      const [x, y, w, h] = call.length === 5 ? call.slice(1) : call.slice(5);
-      expect(x as number).toBeGreaterThanOrEqual(X);
-      expect((x as number) + (w as number)).toBeLessThanOrEqual(X + 160);
-      expect(y as number).toBeGreaterThanOrEqual(Y - 24);
-      expect((y as number) + (h as number)).toBeLessThanOrEqual(Y + 160);
+  it("never draws rock over a cell that has no Mountain entry, beyond the old 24 px band", () => {
+    const rows = ["MM?", "MMg", "?MM"];
+    const mountain = new Set(coords(rows).map(([x, y]) => `${x},${y}`));
+    for (const call of named(draw(board(rows)))) {
+      if (!String(call[0]).startsWith("surface")) continue;
+      const [x = 0, y = 0, w = 0, h = 0] = rect(call);
+      for (let cx = Math.floor(x / 80); cx * 80 < x + w; cx += 1) {
+        // The lowest row the draw reaches is its footprint; a band (24 px
+        // tall) lies over the row above the cell it belongs to.
+        const footRow = Math.floor((y + h - (h === 24 ? 0 : 1) - 24) / 80);
+        expect(mountain.has(`${cx},${footRow}`)).toBe(true);
+        const top = y - 24 - footRow * 80;
+        // Above its footprint: a 24 px band, or Mountain all the way up.
+        if (top < -24) expect(mountain.has(`${cx},${footRow - 1}`)).toBe(true);
+        expect(top).toBeGreaterThanOrEqual(-48);
+      }
     }
   });
 });

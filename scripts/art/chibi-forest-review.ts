@@ -42,9 +42,11 @@ interface Scene {
 const MOUNTAIN_SCENES: readonly Scene[] = [
   { pair: 1, fixture: "sceneM1", zoomIn: 1 },
   { pair: 2, fixture: "sceneM2", zoomIn: 1 },
-  { pair: 3, fixture: "sceneM3", zoomIn: 1, drag: [-80, -330] },
+  { pair: 3, fixture: "sceneM3", zoomIn: 1, drag: [-70, -80] },
   { pair: 4, fixture: "sceneM4", zoomIn: 0 },
-  { pair: 5, fixture: "sceneM5", zoomIn: 1, drag: [-80, -330] },
+  { pair: 5, fixture: "sceneM5", zoomIn: 1, drag: [-70, -80] },
+  // Drawn blocks (bead pulp_wars-2o7.1): 2 x 3, 3 x 2, a column, a row.
+  { pair: 6, fixture: "sceneM6", zoomIn: 1, drag: [120, 300] },
 ];
 
 const FOREST_SCENES: readonly Scene[] = [

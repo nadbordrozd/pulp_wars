@@ -40,9 +40,13 @@ import {
   FOREST_SHAPES_V7,
   type ForestShapeV7,
 } from "../../src/render/canvas/chibi-forest-packing-v7";
+import { massifGroundPixelsV7 } from "../../src/render/canvas/chibi-massif-v7";
 
 const CELL = 80;
+/** Rows above the footprint in a low piece's canvas (and a Mine's). */
 const UP = 24;
+/** Rows above the footprint in a tall piece's canvas (pulp_wars-2o7.1). */
+const TALL_UP = 48;
 const TERRAIN = "public/assets/chibi/terrain";
 const OUT = "public/assets/chibi/mountains";
 const DIR = "scripts/art/chibi/mountain-ranges";
@@ -66,7 +70,34 @@ void SEAM_IDS;
  *   outer silhouette) moves towards the rock around it, as the composed
  *   forests do, so a range sits behind units and buildings.
  */
-const DERIVE = { bandLimit: 13, baseInset: 3, outlineBlend: 0.45 };
+const DERIVE = {
+  bandLimit: 13,
+  /**
+   * A tall piece (bead pulp_wars-2o7.1) stands only under another plain
+   * Mountain cell, so its peaks may rise this far over the row behind.
+   */
+  tallLimit: 48,
+  baseInset: 3,
+  outlineBlend: 0.45,
+  /**
+   * The foot cut of a raster the generator clipped at its image edge
+   * (`footed`): the rock steps in 2 to 5 px from a clipped side and 0 to 3
+   * px from a clipped bottom, in steps 3 to 6 px long, and the corner
+   * between two cut edges is taken off over `footCorner` px.
+   */
+  /**
+   * Calming (bead pulp_wars-2o7.1): the massif pieces cover two thirds of
+   * their cells, so every rock and snow pixel (not the outline) moves this
+   * far towards `calmTone`, a mid blue-grey. Less contrast between the lit
+   * and the shaded faces keeps a mountain area behind the units.
+   */
+  calm: 0.14,
+  calmTone: [146, 154, 168],
+  footMin: 2,
+  footMax: 5,
+  footBottomMax: 3,
+  footCorner: 7,
+};
 const OUTLINE_LUMA = 0.2;
 
 type Endpoint = "create-image-pixen" | "edit-image-pixen" | "generate-image-v2";
@@ -75,6 +106,21 @@ interface ImageSource {
   readonly recipe?: string;
   readonly candidate?: number;
   readonly file?: string;
+  /**
+   * A style image made larger (bead pulp_wars-2o7.1): the source trimmed
+   * to its opaque box, resized without smoothing to `width` x `height` and
+   * stood at the bottom centre of a transparent `canvasWidth` x
+   * `canvasHeight` canvas, 2 px above its edge. The generator copies the
+   * scale of its style image, so this is how a small accepted mountain
+   * becomes the pattern for one that fills its cell. Only a style image:
+   * no master is ever resampled.
+   */
+  readonly enlarge?: {
+    readonly width: number;
+    readonly height: number;
+    readonly canvasWidth: number;
+    readonly canvasHeight: number;
+  };
 }
 
 interface Recipe {
@@ -113,9 +159,18 @@ interface PiecePart {
   readonly flip?: true;
 }
 
+/** The canvas rows above a piece's footprint. */
+const upOf = (spec: { readonly tall?: true }): number =>
+  spec.tall === true ? TALL_UP : UP;
+
 interface PieceSpec {
   readonly shape: ForestShapeV7;
   readonly variant: number;
+  /**
+   * A tall piece: drawn only where every cell above it is a plain Mountain,
+   * its peaks rising up to `tallLimit` px over that row.
+   */
+  readonly tall?: true;
   readonly parts: readonly PiecePart[];
   readonly notes?: string;
 }
@@ -230,6 +285,35 @@ async function resolveImage(
   records: Records,
   source: ImageSource,
 ): Promise<{ bytes: Buffer; label: string }> {
+  if (source.enlarge !== undefined) {
+    const { enlarge, ...plain } = source;
+    const original = await resolveImage(root, records, plain);
+    const box = await sharp(original.bytes).trim({ threshold: 0 }).toBuffer();
+    const resized = await sharp(box)
+      .resize(enlarge.width, enlarge.height, { kernel: "nearest", fit: "fill" })
+      .toBuffer();
+    const bytes = await sharp({
+      create: {
+        width: enlarge.canvasWidth,
+        height: enlarge.canvasHeight,
+        channels: 4,
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      },
+    })
+      .composite([
+        {
+          input: resized,
+          left: Math.round((enlarge.canvasWidth - enlarge.width) / 2),
+          top: enlarge.canvasHeight - 2 - enlarge.height,
+        },
+      ])
+      .png()
+      .toBuffer();
+    return {
+      bytes,
+      label: `${original.label} enlarged to ${enlarge.width}x${enlarge.height} on ${enlarge.canvasWidth}x${enlarge.canvasHeight}, pixels ${pixelSha256(await readRaster(bytes))}`,
+    };
+  }
   if (source.recipe !== undefined) {
     const candidate = records[source.recipe]?.candidates[source.candidate ?? 0];
     if (candidate === undefined)
@@ -633,7 +717,142 @@ function softened(source: Raster): Raster {
         );
       }
     }
+  // Calming: rock and snow move towards the mid tone; the outline stays.
+  for (let y = 0; y < height; y += 1)
+    for (let x = 0; x < width; x += 1) {
+      if (!opaque(x, y) || outline(x, y)) continue;
+      const i = (y * width + x) * 4;
+      for (let c = 0; c < 3; c += 1) {
+        const from = data[i + c] ?? 0;
+        data[i + c] = Math.round(
+          from + ((DERIVE.calmTone[c] ?? 0) - from) * DERIVE.calm,
+        );
+      }
+    }
   return { width, height, data };
+}
+
+/** A stable hash of two integers and a salt, in [0, 1). */
+function unit(a: number, b: number, salt: number): number {
+  let value =
+    Math.imul(a + 0x9e37, 0x85ebca6b) ^ Math.imul(b + salt, 0xc2b2ae35);
+  value = Math.imul(value ^ (value >>> 15), 0x2c1b3c6d);
+  value = Math.imul(value ^ (value >>> 12), 0x297a2d39);
+  return ((value ^ (value >>> 15)) >>> 0) / 0x1_0000_0000;
+}
+
+/**
+ * The foot of a clipped raster (bead pulp_wars-2o7.1). A generated mountain
+ * that fills its image is cut by the image edge: its slopes end in a
+ * straight vertical line and its foot in a straight horizontal one, with no
+ * outline. On a trimmed raster such an edge is a long run of opaque pixels
+ * in its first or last column or its last row. `footed` gives each clipped
+ * edge a rocky contour instead: the rock steps back from the edge by a few
+ * pixels in short steps, the corner between two cut edges is taken off, and
+ * every rock pixel that now meets the open air gets the outline's colour.
+ * A raster with its whole silhouette inside the image is returned as it is.
+ */
+export function footed(source: Raster, salt: number): Raster {
+  const { width, height } = source;
+  const opaqueAt = (data: Uint8Array, x: number, y: number): boolean =>
+    x >= 0 &&
+    y >= 0 &&
+    x < width &&
+    y < height &&
+    (data[(y * width + x) * 4 + 3] ?? 0) >= 128;
+  const column = (x: number): number => {
+    let count = 0;
+    for (let y = 0; y < height; y += 1)
+      if (opaqueAt(source.data, x, y)) count += 1;
+    return count;
+  };
+  let bottomRun = 0;
+  for (let x = 0; x < width; x += 1)
+    if (opaqueAt(source.data, x, height - 1)) bottomRun += 1;
+  const clippedLeft = column(0) >= 12;
+  const clippedRight = column(width - 1) >= 12;
+  const clippedBottom = bottomRun >= width * 0.5;
+  if (!clippedLeft && !clippedRight && !clippedBottom) return source;
+  const data = new Uint8Array(source.data);
+  /** A stepped inset along an edge: steps 3 to 6 px long. */
+  const profile = (
+    length: number,
+    side: number,
+    min: number,
+    max: number,
+  ): number[] => {
+    const out: number[] = [];
+    let step = 0;
+    while (out.length < length) {
+      const run = 3 + Math.floor(unit(step, side, salt) * 4);
+      const inset =
+        min + Math.floor(unit(step, side + 11, salt) * (max - min + 1));
+      for (let i = 0; i < run && out.length < length; i += 1) out.push(inset);
+      step += 1;
+    }
+    return out;
+  };
+  const left = profile(height, 1, DERIVE.footMin, DERIVE.footMax);
+  const right = profile(height, 2, DERIVE.footMin, DERIVE.footMax);
+  const bottom = profile(width, 3, 0, DERIVE.footBottomMax);
+  const corner = DERIVE.footCorner;
+  for (let y = 0; y < height; y += 1)
+    for (let x = 0; x < width; x += 1) {
+      const fromBottom = height - 1 - y;
+      const cut =
+        (clippedLeft && x < (left[y] ?? 0)) ||
+        (clippedRight && width - 1 - x < (right[y] ?? 0)) ||
+        (clippedBottom && fromBottom < (bottom[x] ?? 0)) ||
+        (clippedBottom && clippedLeft && x + fromBottom < corner) ||
+        (clippedBottom && clippedRight && width - 1 - x + fromBottom < corner);
+      if (cut) data[(y * width + x) * 4 + 3] = 0;
+    }
+  // The darkest colour of the raster is its outline.
+  let ink: [number, number, number] = [0, 0, 0];
+  let darkest = Number.POSITIVE_INFINITY;
+  for (let i = 0; i < source.data.length; i += 4) {
+    if ((source.data[i + 3] ?? 0) < 128) continue;
+    const luma = lumaOf(
+      source.data[i] ?? 0,
+      source.data[i + 1] ?? 0,
+      source.data[i + 2] ?? 0,
+    );
+    if (luma < darkest) {
+      darkest = luma;
+      ink = [
+        source.data[i] ?? 0,
+        source.data[i + 1] ?? 0,
+        source.data[i + 2] ?? 0,
+      ];
+    }
+  }
+  const cutData = new Uint8Array(data);
+  for (let y = 0; y < height; y += 1)
+    for (let x = 0; x < width; x += 1) {
+      if (!opaqueAt(cutData, x, y)) continue;
+      // Only where the cut (not the original silhouette) opened the rock.
+      const opened = (
+        [
+          [1, 0],
+          [-1, 0],
+          [0, 1],
+          [0, -1],
+        ] as const
+      ).some(
+        ([dx, dy]) =>
+          !opaqueAt(cutData, x + dx, y + dy) &&
+          (opaqueAt(source.data, x + dx, y + dy) ||
+            x + dx < 0 ||
+            x + dx >= width ||
+            y + dy >= height),
+      );
+      if (!opened) continue;
+      const i = (y * width + x) * 4;
+      data[i] = ink[0];
+      data[i + 1] = ink[1];
+      data[i + 2] = ink[2];
+    }
+  return trimmed({ width, height, data });
 }
 
 /** Whether canvas pixel (px, py) of a piece may hold paint. */
@@ -641,14 +860,16 @@ export function mountainPieceAllows(
   shape: ForestShapeV7,
   px: number,
   py: number,
+  tall = false,
 ): boolean {
   const rows = FOREST_SHAPES_V7[shape];
+  const up = tall ? TALL_UP : UP;
+  const limit = tall ? DERIVE.tallLimit : DERIVE.bandLimit;
   const cx = Math.floor(px / CELL);
   const top = rows.findIndex((row) => row[cx] === "#");
   if (top < 0) return false;
-  if (py >= top * CELL + UP - DERIVE.bandLimit && py < top * CELL + UP)
-    return true;
-  return py >= UP && rows[Math.floor((py - UP) / CELL)]?.[cx] === "#";
+  if (py >= top * CELL + up - limit && py < top * CELL + up) return true;
+  return py >= up && rows[Math.floor((py - up) / CELL)]?.[cx] === "#";
 }
 
 interface DerivedRecord {
@@ -675,6 +896,8 @@ interface DerivedRecord {
     readonly id: string;
     readonly shape: ForestShapeV7;
     readonly variant: number;
+    /** A tall piece: 48 rows above its footprint, not 24. */
+    readonly tall: boolean;
     readonly path: string;
     readonly width: number;
     readonly height: number;
@@ -735,8 +958,10 @@ export async function deriveMountainRanges(root: string): Promise<{
   ];
   for (const { spec, mine } of specs) {
     const rows = FOREST_SHAPES_V7[spec.shape];
+    const up = upOf(spec);
+    const tall = spec.tall === true;
     const width = (rows[0]?.length ?? 1) * CELL;
-    const height = rows.length * CELL + UP;
+    const height = rows.length * CELL + up;
     const canvas: Raster = {
       width,
       height,
@@ -748,11 +973,16 @@ export async function deriveMountainRanges(root: string): Promise<{
       top: number;
       base: number;
     }[] = [];
-    for (const part of spec.parts) {
-      const raster =
+    for (const [index, part] of spec.parts.entries()) {
+      const whole =
         part.flip === true ? flopped(await source(part)) : await source(part);
+      // A raster the generator clipped gets a rocky foot (`footed`).
+      const raster = footed(
+        whole,
+        spec.variant * 31 + index * 7 + (tall ? 3 : 0) + (mine ? 5 : 0),
+      );
       const row = part.row ?? rows.length - 1;
-      const base = UP + (row + 1) * CELL - DERIVE.baseInset + (part.dy ?? 0);
+      const base = up + (row + 1) * CELL - DERIVE.baseInset + (part.dy ?? 0);
       placed.push({
         raster,
         left: Math.round((width - raster.width) / 2) + (part.dx ?? 0),
@@ -761,13 +991,13 @@ export async function deriveMountainRanges(root: string): Promise<{
       });
     }
     placed.sort((a, b) => a.base - b.base);
-    const id = `chibi-mountain-range-${mine ? "mine" : spec.shape.toLowerCase()}-${String.fromCharCode(97 + spec.variant)}`;
+    const id = `chibi-mountain-range-${mine ? "mine" : spec.shape.toLowerCase()}${tall ? "-tall" : ""}-${String.fromCharCode(97 + spec.variant)}`;
     for (const part of placed) paint(canvas, part.raster, part.left, part.top);
     for (let py = 0; py < height; py += 1)
       for (let px = 0; px < width; px += 1)
         if (
           (canvas.data[(py * width + px) * 4 + 3] ?? 0) > 0 &&
-          !mountainPieceAllows(spec.shape, px, py)
+          !mountainPieceAllows(spec.shape, px, py, tall)
         )
           throw new Error(
             `${id}: paint at ${px},${py} is outside its footprint or above the band limit`,
@@ -808,6 +1038,7 @@ export async function deriveMountainRanges(root: string): Promise<{
       id,
       shape: spec.shape,
       variant: spec.variant,
+      tall,
       path: relative,
       width,
       height,
@@ -953,39 +1184,82 @@ async function stats(root: string): Promise<void> {
     return `luma ${percent(mean)}  saturation ${percent(sat / n)}  luma spread ${percent(Math.sqrt(Math.max(0, l2 / n - mean * mean)))}  outline share ${percent(dark / n)}`;
   };
   /** The footprint cells of a piece (or an 80 x 104 body) over the ground. */
-  const overGround = (piece: Raster, shape: ForestShapeV7): Raster => {
+  // Under a massif the board darkens the rocky ground (massifGroundPixelsV7).
+  const slopes: Raster = {
+    width: CELL,
+    height: CELL,
+    data: new Uint8Array(
+      massifGroundPixelsV7(new Uint8ClampedArray(ground.data), CELL, false, 0),
+    ),
+  };
+  const overGround = (
+    piece: Raster,
+    shape: ForestShapeV7,
+    up: number = UP,
+    under: Raster = ground,
+  ): Raster => {
     const rows = FOREST_SHAPES_V7[shape];
-    const data = new Uint8Array(piece.width * (piece.height - UP) * 4);
-    for (let y = 0; y < piece.height - UP; y += 1)
+    const data = new Uint8Array(piece.width * (piece.height - up) * 4);
+    for (let y = 0; y < piece.height - up; y += 1)
       for (let x = 0; x < piece.width; x += 1) {
         if (rows[Math.floor(y / CELL)]?.[Math.floor(x / CELL)] !== "#")
           continue;
         const out = (y * piece.width + x) * 4;
-        const from = ((y + UP) * piece.width + x) * 4;
-        const under = ((y % CELL) * CELL + (x % CELL)) * 4;
+        const from = ((y + up) * piece.width + x) * 4;
+        const at = ((y % CELL) * CELL + (x % CELL)) * 4;
         const rock = (piece.data[from + 3] ?? 0) >= 128;
         for (let c = 0; c < 3; c += 1)
           data[out + c] = rock
             ? (piece.data[from + c] ?? 0)
-            : (ground.data[under + c] ?? 0);
+            : (under.data[at + c] ?? 0);
         data[out + 3] = 255;
       }
-    return { width: piece.width, height: piece.height - UP, data };
+    return { width: piece.width, height: piece.height - up, data };
   };
+  /** Share of the footprint the rock covers (the rest is rocky ground). */
+  const cover = (pieces: readonly DerivedRecord["pieces"][number][]) =>
+    Promise.all(
+      pieces.map(async (piece) => {
+        const raster = await load(root, piece.path);
+        const up = piece.tall ? TALL_UP : UP;
+        let rock = 0;
+        for (let y = up; y < raster.height; y += 1)
+          for (let x = 0; x < raster.width; x += 1)
+            if ((raster.data[(y * raster.width + x) * 4 + 3] ?? 0) >= 128)
+              rock += 1;
+        return rock / (raster.width * (raster.height - up));
+      }),
+    );
   const old: Raster[] = [];
   for (const id of ["chibi-mountain-1", "chibi-mountain-3"])
     old.push(overGround(await load(root, `${TERRAIN}/${id}.body.png`), "1x1"));
   console.log(`old Mountain cell (single on ground)  ${tone(old)}`);
   const all: Raster[] = [];
-  for (const shape of ["1x1", "2x1", "1x2", "2x2"] as const) {
-    const cells: Raster[] = [];
-    for (const piece of record.pieces)
-      if (piece.shape === shape)
-        cells.push(overGround(await load(root, piece.path), shape));
-    all.push(...cells);
-    console.log(`${`${shape} pieces on ground`.padEnd(37)} ${tone(cells)}`);
-  }
-  console.log(`${"all pieces on ground".padEnd(37)} ${tone(all)}`);
+  for (const shape of ["1x1", "2x1"] as const)
+    for (const tall of [false, true]) {
+      const pieces = record.pieces.filter(
+        (piece) => piece.shape === shape && piece.tall === tall,
+      );
+      if (pieces.length === 0) continue;
+      const cells: Raster[] = [];
+      for (const piece of pieces)
+        cells.push(
+          overGround(
+            await load(root, piece.path),
+            shape,
+            tall ? TALL_UP : UP,
+            slopes,
+          ),
+        );
+      all.push(...cells);
+      const shares = await cover(pieces);
+      const share =
+        shares.reduce((sum, value) => sum + value, 0) / shares.length;
+      console.log(
+        `${`${shape}${tall ? " tall" : ""} pieces on their ground`.padEnd(37)} ${tone(cells)}  rock covers ${(share * 100).toFixed(0)}% of the footprint`,
+      );
+    }
+  console.log(`${"all pieces on their ground".padEnd(37)} ${tone(all)}`);
 }
 
 /** A contact sheet of the checked-in pieces over the rocky ground. */
@@ -998,19 +1272,26 @@ async function sheet(root: string, out: string): Promise<void> {
   );
   const pad = 16;
   const slotW = 2 * CELL + pad;
-  const slotH = 2 * CELL + UP + pad;
+  const slotH = CELL + TALL_UP + pad;
   const perRow = 6;
   const entries = [
-    ...record.pieces.map((piece) => ({ shape: piece.shape, path: piece.path })),
-    ...record.mines.map((piece) => ({ shape: piece.shape, path: piece.path })),
-    ...record.seams.map((seam) => ({ shape: "1x1" as const, path: seam.path })),
+    ...record.pieces.map((piece) => ({
+      shape: piece.shape,
+      path: piece.path,
+      up: piece.tall ? TALL_UP : UP,
+    })),
+    ...record.mines.map((piece) => ({
+      shape: piece.shape,
+      path: piece.path,
+      up: UP,
+    })),
   ];
   const width = perRow * slotW + pad;
   const height = Math.ceil(entries.length / perRow) * slotH + pad;
   const composites: OverlayOptions[] = [];
   for (const [index, entry] of entries.entries()) {
     const ox = pad + (index % perRow) * slotW;
-    const oy = pad + Math.floor(index / perRow) * slotH + UP;
+    const oy = pad + Math.floor(index / perRow) * slotH + TALL_UP;
     FOREST_SHAPES_V7[entry.shape].forEach((row, dy) =>
       [...row].forEach((mark, dx) => {
         if (mark === "#")
@@ -1024,7 +1305,7 @@ async function sheet(root: string, out: string): Promise<void> {
     composites.push({
       input: path.join(root, entry.path),
       left: ox,
-      top: oy - (entry.path.includes("join") ? 0 : UP),
+      top: oy - entry.up,
     });
   }
   const image = await sharp({

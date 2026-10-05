@@ -9,7 +9,6 @@ import {
   forestPlacementCellsV7,
   forestShapeRectsV7,
   packForestBlockV7,
-  packRangeCoverV7,
   type ForestPlacementV7,
   type ForestShapeV7,
   type ForestVariantCountsV7,
@@ -61,13 +60,6 @@ const CLEARING_KINDS: ReadonlySet<string> = new Set([
   "FIELD_DEFENSE",
 ]);
 
-/**
- * The terrains drawn as composed pieces: Forest (bead pulp_wars-maw.3) and
- * Mountain ranges (bead pulp_wars-e9f). A Mined Mountain is its own terrain
- * subject, so a Mine's cell is never part of a range.
- */
-export type ChibiComposedTerrainV7 = "FOREST" | "MOUNTAIN";
-
 interface ForestPlanEntry {
   readonly kind: string;
   readonly at: { readonly x: number; readonly y: number };
@@ -88,8 +80,6 @@ export interface ChibiForestCellV7 {
   readonly clearing: boolean;
   /** A packed cell with a resource: a patch of open ground under it. */
   readonly glade: boolean;
-  /** A Mine's cell: which mined mountain it draws, or null. */
-  readonly mined: number | null;
   /** Floor fringe: edges that face a cell without composed Forest. */
   readonly edges: number;
   /** The seam clump on this cell's east edge, drawn under both pieces. */
@@ -115,49 +105,20 @@ export function chibiForestCellsV7(
   entries: readonly ForestPlanEntry[],
   variants: ForestVariantCountsV7,
   clumpCount: number,
-  terrain: ChibiComposedTerrainV7 = "FOREST",
-  minedCount = 0,
 ): ReadonlyMap<string, ChibiForestCellV7> {
-  const subject = `TERRAIN:${terrain}`;
-  const mined = new Set<string>();
+  const subject = "TERRAIN:FOREST";
   const forest = new Set<string>();
   const featured = new Set<string>();
   const resources = new Set<string>();
   for (const entry of entries) {
-    // A resource opens a glade in a Forest; on a Mountain (Ore) the cell
-    // is a single mountain, like any other feature cell.
-    if (
-      terrain === "MOUNTAIN" &&
-      minedCount > 0 &&
-      entry.kind === "TERRAIN" &&
-      entry.artSubject === "TERRAIN:MINED_MOUNTAIN"
-    )
-      mined.add(key(entry.at.x, entry.at.y));
-    if (entry.kind === "RESOURCE")
-      (terrain === "FOREST" ? resources : featured).add(
-        key(entry.at.x, entry.at.y),
-      );
+    // A resource opens a glade: its cell is packed like any other.
+    if (entry.kind === "RESOURCE") resources.add(key(entry.at.x, entry.at.y));
     if (entry.kind === "TERRAIN") {
       if (entry.artSubject === subject) forest.add(key(entry.at.x, entry.at.y));
     } else if (CLEARING_KINDS.has(entry.kind))
       featured.add(key(entry.at.x, entry.at.y));
   }
   const result = new Map<string, ChibiForestCellV7>();
-  // A Mine's cell (bead pulp_wars-6kn): the range-style mined mountain,
-  // never part of a range.
-  for (const at of mined) {
-    const [x = 0, y = 0] = at.split(",").map(Number);
-    result.set(at, {
-      clearing: false,
-      glade: false,
-      mined: forestHashV7(x, y, 9, 0x3d) % minedCount,
-      edges: 0,
-      eastSeam: null,
-      northSeam: null,
-      bodies: [],
-      bands: [],
-    });
-  }
   if (forest.size === 0) return result;
   const packable = (x: number, y: number): boolean => {
     const at = key(x, y);
@@ -166,30 +127,9 @@ export function chibiForestCellsV7(
   const pieceOf = new Map<string, ForestPlacementV7>();
   const bodies = new Map<string, ForestPlacementV7[]>();
   const bands = new Map<string, ChibiForestBandV7[]>();
-  // Forests pack per 2 x 2 block (local); mountain ranges take a
-  // region-wide cover, so ridges line up into long ranges.
+  // Forests pack per 2 x 2 block, so a change stays local.
   const placements: ForestPlacementV7[] = [];
-  if (terrain === "MOUNTAIN") {
-    const cells = [...forest].map(
-      (at) => at.split(",").map(Number) as [number, number],
-    );
-    placements.push(
-      ...packRangeCoverV7(
-        cells.filter(([x, y]) => packable(x, y)),
-        variants,
-      ),
-      // A feature cell (Ore, a Treasure, a curiosity...) is a single
-      // mountain in the range style, outside every range.
-      ...cells
-        .filter(([x, y]) => !packable(x, y))
-        .map(([x, y]) => ({
-          shape: "1x1" as const,
-          x,
-          y,
-          variant: (x + y) % Math.max(1, variants["1x1"]),
-        })),
-    );
-  } else {
+  {
     const blocks = new Set<string>();
     for (const at of forest) {
       const [x = 0, y = 0] = at.split(",").map(Number);
@@ -229,8 +169,6 @@ export function chibiForestCellsV7(
       }
     }
   }
-  const ridge = (piece: ForestPlacementV7): boolean =>
-    piece.shape === "2x1" || piece.shape === "2x2";
   const pick = (x: number, y: number, salt: number): number =>
     clumpCount <= 0 ? 0 : forestHashV7(x, y, salt, 0x3d) % clumpCount;
   for (const at of forest) {
@@ -246,21 +184,15 @@ export function chibiForestCellsV7(
     result.set(at, {
       clearing: own === undefined,
       glade: own !== undefined && resources.has(at),
-      mined: null,
       edges,
       eastSeam:
         clumpCount > 0 &&
         own !== undefined &&
         east !== undefined &&
-        east !== own &&
-        // A range joins only where two ridges meet end to end.
-        (terrain === "FOREST" || (ridge(own) && ridge(east)))
+        east !== own
           ? pick(x, y, 1)
           : null,
-      // Ranges join along a row only: a foothill between two rows would
-      // stand in front of the northern range's foot.
       northSeam:
-        terrain === "FOREST" &&
         clumpCount > 0 &&
         own !== undefined &&
         north !== undefined &&
@@ -309,11 +241,6 @@ export interface ChibiForestClumpV7 {
 export interface ChibiForestArtV7 {
   readonly variants: ForestVariantCountsV7;
   readonly clumps: readonly ChibiForestClumpV7[];
-  /** Mined mountains: the cell part and the band above it of each. */
-  readonly mined: readonly {
-    readonly body: CanvasImageSource;
-    readonly band: CanvasImageSource;
-  }[];
   /** The footprint of a piece, one raster per rectangle of cells. */
   body(shape: ForestShapeV7, variant: number): readonly ChibiForestPartV7[];
   /** The 24 px band above `columns` cells starting at `column`, `row`. */
@@ -497,17 +424,6 @@ export function createChibiForestArtV7(input: {
       if (image === undefined) return null;
       clumps.push({ image, width: clump.width, height: clump.height });
     }
-    const mined: { body: CanvasImageSource; band: CanvasImageSource }[] = [];
-    for (const piece of set.mined ?? []) {
-      const image = images.get(piece.url);
-      if (image === undefined) return null;
-      const pixels = environment.readPixels(image, CELL, CELL + UP);
-      if (pixels === null) return null;
-      const body = slice(pixels, CELL, 0, UP, CELL, CELL);
-      const band = slice(pixels, CELL, 0, 0, CELL, UP);
-      if (body === null || band === null) return null;
-      mined.push({ body, band });
-    }
     if (variants["1x1"] === 0) return null;
     const plain = new Uint8ClampedArray(CELL * CELL * 4);
     for (let i = 0; i < plain.length; i += 4) plain.set(FLOOR_RGBA, i);
@@ -516,7 +432,6 @@ export function createChibiForestArtV7(input: {
     return {
       variants,
       clumps,
-      mined,
       glade(ground, variant) {
         const shape = variant % CHIBI_FOREST_GLADE_VARIANTS;
         let cached = glades.get(ground);
@@ -580,7 +495,6 @@ export function createChibiForestArtV7(input: {
         const urls = [
           ...set.pieces.map((piece) => piece.url),
           ...set.clumps.map((clump: ChibiForestClumpAssetV7) => clump.url),
-          ...(set.mined ?? []).map((piece) => piece.url),
         ];
         pending = urls.length;
         if (pending === 0) failed = true;
@@ -827,34 +741,6 @@ export function drawChibiForestBodiesV7(
         CELL,
       );
     }
-}
-
-/**
- * A Mine's cell (bead pulp_wars-6kn): the mined mountain's cell part, or
- * the band above it. `tint` is the building saturation of the live look.
- */
-export function drawChibiForestMinedV7(
-  context: CanvasRenderingContext2D,
-  frame: DrawFrame,
-  art: ChibiForestArtV7,
-  at: { readonly x: number; readonly y: number },
-  index: number,
-  part: "BODY" | "BAND",
-  snow: ChibiForestSnowV7 | null,
-  tint: (image: CanvasImageSource) => CanvasImageSource,
-): void {
-  const mined = art.mined[index];
-  if (mined === undefined) return;
-  const image = tint(part === "BODY" ? mined.body : mined.band);
-  const top = part === "BODY" ? 0 : -UP;
-  const height = part === "BODY" ? CELL : UP;
-  blit(
-    context,
-    frame,
-    image,
-    chibiForestRectV7(frame, at, { x: 0, y: top, width: CELL, height }),
-  );
-  blitCaps(context, frame, snow, image, at, 1, 1, top, height);
 }
 
 /** The glade of a resource cell: open ground over the trees (foreground). */

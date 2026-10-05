@@ -268,20 +268,21 @@ export function minedV7(state: GameStateV7): GameStateV7 {
 }
 
 /**
- * Seeds for the mountain scenes, on map revision V3 (picked with
- * mountain-review-seed-search.ts over seeds 1 to 200): seed 96 has the
- * densest 12 x 8 window of Mountains (62 cells, at 0,4); seed 189 has the
- * most Mountains around the human capital (14 within two cells).
+ * Seeds for the mountain scenes, on map revision V4 (picked again with
+ * mountain-review-seed-search.ts over seeds 1 to 150 for bead
+ * pulp_wars-2o7.1; the V3 seeds 96 and 189 lost their Mountains): seed 78
+ * has the densest 12 x 8 window of Mountains (54 cells, at 0,3); seed 31 has
+ * the most Mountains around the human capital (18 within two cells).
  */
-export const MOUNTAIN_SCENE_SEEDS_V7 = { heavy: 96, capital: 189 };
+export const MOUNTAIN_SCENE_SEEDS_V7 = { heavy: 78, capital: 31 };
 
 /** M1: a mountain-heavy 12 x 8 window. */
 export const sceneM1 = (): GameStateV7 =>
   revealedV7(startStateV7(MOUNTAIN_SCENE_SEEDS_V7.heavy), {
     x0: 0,
-    y0: 4,
+    y0: 3,
     x1: 11,
-    y1: 11,
+    y1: 10,
   });
 /** M2: Forest against Mountains (scene B). */
 export const sceneM2 = sceneB;
@@ -294,3 +295,94 @@ export const sceneM4 = (): GameStateV7 =>
 /** M5: an Ice Folk capital among Mountains, for Snow. */
 export const sceneM5 = (): GameStateV7 =>
   aroundCapital(startStateV7(MOUNTAIN_SCENE_SEEDS_V7.capital, "ICE_FOLK"), 3);
+
+// ------------------------------ mountains as massifs (pulp_wars-2o7.1)
+
+/**
+ * M6: drawn blocks of Mountains on open Grass, the shapes the user named:
+ * a block two cells wide and three deep, a block three wide and two deep, a
+ * column, a row and a single mountain, with copies of the starting unit
+ * north of a block, on one and south of one. The 9 x 7 window is the one
+ * farthest from the two capitals that holds no city; a village in it
+ * keeps its cell.
+ */
+const BLOCK_SCENE_V7 = [
+  ".........",
+  ".MM..MMM.",
+  ".MM..MMM.",
+  ".MM......",
+  "....M.MMM",
+  ".M..M....",
+  "....M....",
+] as const;
+const BLOCK_SCENE_UNITS_V7: readonly (readonly [number, number])[] = [
+  [1, 0],
+  [2, 2],
+  [6, 3],
+  [3, 2],
+];
+
+export const sceneM6 = (): GameStateV7 => {
+  const state = startStateV7(MOUNTAIN_SCENE_SEEDS_V7.capital);
+  const columns = BLOCK_SCENE_V7[0].length;
+  const rows = BLOCK_SCENE_V7.length;
+  const inWindow = (at: CoordV7, x0: number, y0: number): boolean =>
+    at.x >= x0 && at.x < x0 + columns && at.y >= y0 && at.y < y0 + rows;
+  let best: { x0: number; y0: number; score: number } | null = null;
+  for (let y0 = 0; y0 + rows <= state.board.height; y0 += 1)
+    for (let x0 = 0; x0 + columns <= state.board.width; x0 += 1) {
+      if (
+        state.cities.some((city) => inWindow(city.at, x0, y0)) ||
+        state.units.some((unit) => inWindow(unit.at, x0, y0))
+      )
+        continue;
+      const score = Math.min(
+        ...state.cities.map(
+          (city) =>
+            Math.abs(city.at.x - (x0 + columns / 2)) +
+            Math.abs(city.at.y - (y0 + rows / 2)),
+        ),
+      );
+      if (best === null || score > best.score) best = { x0, y0, score };
+    }
+  if (best === null) throw new Error("no free window for the block scene");
+  const { x0, y0 } = best;
+  const template = state.units.find(
+    (unit) => unit.ownerId === state.humanPlayerId,
+  );
+  let nextId = Math.max(...state.units.map((unit) => Number(unit.id))) + 1;
+  return revealedV7(
+    {
+      ...state,
+      units:
+        template === undefined
+          ? state.units
+          : [
+              ...state.units,
+              ...BLOCK_SCENE_UNITS_V7.map(([x, y]) => ({
+                ...template,
+                id: nextId++ as typeof template.id,
+                at: { x: x0 + x, y: y0 + y },
+              })),
+            ],
+      board: {
+        ...state.board,
+        tiles: state.board.tiles.map((tile) =>
+          inWindow(tile.at, x0, y0) && tile.site === null
+            ? {
+                ...tile,
+                terrain:
+                  BLOCK_SCENE_V7[tile.at.y - y0]?.[tile.at.x - x0] === "M"
+                    ? ("MOUNTAIN" as const)
+                    : ("GRASS" as const),
+                resource: null,
+                improvement: null,
+                road: false,
+              }
+            : tile,
+        ),
+      },
+    },
+    { x0, y0, x1: x0 + columns - 1, y1: y0 + rows - 1 },
+  );
+};

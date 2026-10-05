@@ -300,19 +300,28 @@ import {
   isWholeScale,
   snapCameraToDevicePixels,
 } from "./chibi-geometry-v7";
-import { chibiMountainFringeEdgesV7 } from "./chibi-terrain-fringe-v7";
+import {
+  CHIBI_FRINGE_NORTH,
+  chibiMountainFringeEdgesV7,
+} from "./chibi-terrain-fringe-v7";
 import {
   chibiForestCellsV7,
   drawChibiForestBandsV7,
   drawChibiForestBodiesV7,
   drawChibiForestFloorV7,
   drawChibiForestGladeV7,
-  drawChibiForestMinedV7,
   type ChibiForestArtV7,
-  type ChibiComposedTerrainV7,
   type ChibiForestCellV7,
   type ChibiForestSnowV7,
 } from "./chibi-forest-v7";
+import {
+  chibiMassifCellsV7,
+  drawChibiMassifBandV7,
+  drawChibiMassifBodiesV7,
+  drawChibiMassifMinedV7,
+  type ChibiMassifArtV7,
+  type ChibiMassifCellV7,
+} from "./chibi-massif-v7";
 import { drawLegacyRiftV7, riftPieceV7 } from "./rift-presentation-v7";
 import { factionColourV7 } from "./faction-colours-v7";
 import {
@@ -1892,7 +1901,7 @@ export function drawBoardV7(input: {
    * the machinery of the composed forests. Omitted, or while it loads,
    * every Mountain cell draws its single mountain as before.
    */
-  readonly mountainArt?: { resolve(): ChibiForestArtV7 | null };
+  readonly mountainArt?: { resolve(): ChibiMassifArtV7 | null };
   /**
    * The Mind Control revision: the control halo's pulse clock in ms (0, the
    * default, and reduced motion draw it static in the faction colour).
@@ -2142,16 +2151,14 @@ export function drawBoardV7(input: {
   const forestArt =
     chibiArt === undefined ? null : (input.forestArt?.resolve() ?? null);
   const forestCells =
-    forestArt === null ? null : forestCellsOf(input.plan, forestArt, "FOREST");
+    forestArt === null ? null : forestCellsOf(input.plan, forestArt);
   if (forestCells !== null)
     for (const key of forestCells.keys()) splitCells.add(key);
   // Composed mountain ranges (pulp_wars-e9f), the same way.
   const mountainArt =
     chibiArt === undefined ? null : (input.mountainArt?.resolve() ?? null);
   const mountainCells =
-    mountainArt === null
-      ? null
-      : forestCellsOf(input.plan, mountainArt, "MOUNTAIN");
+    mountainArt === null ? null : massifCellsOf(input.plan, mountainArt);
   if (mountainCells !== null)
     for (const key of mountainCells.keys()) splitCells.add(key);
   const iceFolkArt = input.iceFolkArt;
@@ -2337,20 +2344,19 @@ export function drawBoardV7(input: {
             : null;
         // A composed Mountain cell (pulp_wars-e9f): its ground is drawn as
         // before; a range piece replaces the single mountain's body.
-        const mountainCell: ChibiForestCellV7 | null =
+        const mountainCell: ChibiMassifCellV7 | null =
           mountainArt !== null && layers !== undefined
             ? (mountainCells?.get(coordKey(entry.at)) ?? null)
             : null;
         if (
           mountainArt !== null &&
           mountainCell !== null &&
-          !mountainCell.clearing &&
           pass !== "GROUND"
         ) {
           if (mountainCell.mined !== null)
             // A Mine: the range-style mined mountain, at the saturation
             // of the buildings.
-            drawChibiForestMinedV7(
+            drawChibiMassifMinedV7(
               context,
               { camera, devicePixelRatio, sceneAlpha },
               mountainArt,
@@ -2361,19 +2367,22 @@ export function drawBoardV7(input: {
               (image) => atSaturation(entry, image),
             );
           else if (pass === "TALL_BODY")
-            drawChibiForestBodiesV7(
+            // Low pieces: the footprint. Tall pieces (bead pulp_wars-2o7.1):
+            // the whole mountain, peaks over the row behind included, under
+            // every unit and building.
+            drawChibiMassifBodiesV7(
               context,
               { camera, devicePixelRatio, sceneAlpha },
               mountainArt,
-              entry.at,
               mountainCell,
               forestSnow,
             );
           else
-            drawChibiForestBandsV7(
+            drawChibiMassifBandV7(
               context,
               { camera, devicePixelRatio, sceneAlpha },
               mountainArt,
+              entry.at,
               mountainCell,
               forestSnow,
             );
@@ -2456,6 +2465,20 @@ export function drawBoardV7(input: {
           }
           continue;
         }
+        // Under a massif (bead pulp_wars-2o7.1) the rocky ground is its
+        // lower slopes: darker, and cut back on the area's north side.
+        const massifGround = (
+          ground: CanvasImageSource,
+          northOpen: boolean,
+        ): CanvasImageSource =>
+          mountainArt !== null && mountainCell !== null
+            ? (mountainArt.ground(
+                ground,
+                entry.at,
+                northOpen && mountainCell.northOpen,
+                mountainCell.northTaper,
+              ) ?? ground)
+            : ground;
         if (chibi !== null && chibi.kind !== "MISSING") {
           if (pass === "GROUND") {
             context.fillStyle =
@@ -2515,7 +2538,11 @@ export function drawBoardV7(input: {
               ...part,
               sceneAlpha,
               part: "GROUND",
-              image: fringedGround,
+              // The top cut only over the Grass drawn just above.
+              image: massifGround(
+                fringedGround,
+                (fringeEdges & CHIBI_FRINGE_NORTH) !== 0,
+              ),
             });
             if (layers === undefined)
               drawChibiTerrainV7(context, chibi, {
@@ -2534,7 +2561,10 @@ export function drawBoardV7(input: {
                 ? { part: "OVERFLOW" }
                 : layers === undefined
                   ? { part: "CELL" }
-                  : { part: "GROUND", image: layers.ground }),
+                  : {
+                      part: "GROUND",
+                      image: massifGround(layers.ground, false),
+                    }),
             });
           // The shade under a composed forest, over its ground.
           if (pass === "GROUND" && forestArt !== null && forestCell !== null)
@@ -6377,41 +6407,51 @@ export function farmPresentationV7(
   return result;
 }
 
+const massifCellsByPlan = new WeakMap<
+  BoardRenderPlanV7,
+  {
+    readonly art: ChibiMassifArtV7;
+    readonly cells: ReadonlyMap<string, ChibiMassifCellV7>;
+  }
+>();
+
+/** The massif roles of a plan's Mountain cells, computed once per plan. */
+function massifCellsOf(
+  plan: BoardRenderPlanV7,
+  art: ChibiMassifArtV7,
+): ReadonlyMap<string, ChibiMassifCellV7> {
+  const cached = massifCellsByPlan.get(plan);
+  if (cached?.art === art) return cached.cells;
+  const cells = chibiMassifCellsV7(plan.entries, art.counts, art.minedCount);
+  massifCellsByPlan.set(plan, { art, cells });
+  return cells;
+}
+
 /**
  * The composed-forest roles of a plan's cells, packed once per plan and
  * piece set (a plan is drawn many times: every animation frame redraws it).
  */
-const composedCellsByPlan = new WeakMap<
+const forestCellsByPlan = new WeakMap<
   BoardRenderPlanV7,
-  Map<
-    ChibiComposedTerrainV7,
-    {
-      readonly art: ChibiForestArtV7;
-      readonly cells: ReadonlyMap<string, ChibiForestCellV7>;
-    }
-  >
+  {
+    readonly art: ChibiForestArtV7;
+    readonly cells: ReadonlyMap<string, ChibiForestCellV7>;
+  }
 >();
 
+/** The forest roles of a plan's Forest cells, computed once per plan. */
 function forestCellsOf(
   plan: BoardRenderPlanV7,
   art: ChibiForestArtV7,
-  terrain: ChibiComposedTerrainV7,
 ): ReadonlyMap<string, ChibiForestCellV7> {
-  let byTerrain = composedCellsByPlan.get(plan);
-  if (byTerrain === undefined) {
-    byTerrain = new Map();
-    composedCellsByPlan.set(plan, byTerrain);
-  }
-  const cached = byTerrain.get(terrain);
+  const cached = forestCellsByPlan.get(plan);
   if (cached?.art === art) return cached.cells;
   const cells = chibiForestCellsV7(
     plan.entries,
     art.variants,
     art.clumps.length,
-    terrain,
-    art.mined.length,
   );
-  byTerrain.set(terrain, { art, cells });
+  forestCellsByPlan.set(plan, { art, cells });
   return cells;
 }
 

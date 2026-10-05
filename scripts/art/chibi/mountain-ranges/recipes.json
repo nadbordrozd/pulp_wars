@@ -1,5 +1,5 @@
 {
-  "bead": "pulp_wars-e9f",
+  "bead": "pulp_wars-2o7.1",
   "shared": {
     "klass": "Class: a mountain range for a square-grid strategy map, drawn as one raised terrain feature: one continuous ridge of connected rocky peaks that share a single rock mass, calmer and less saturated than units, thick single-colour black outline, simple shapes, no face and no eyes. It stands on the empty transparent background: nothing is drawn under it, no ground, no grass, no soil, no slab, no tile and no platform.",
     "negative": "ground plate, platform, grass square, soil patch, slab, isometric block, background, buildings, characters, people, red, trees, forest, bushes, river, lake, boulders at the foot, separate rocks",
@@ -23,7 +23,10 @@
     "foothill": "Subject: a low rocky foothill: a small wide mound of cool grey stone with two low rounded bumps and no snow, much wider than it is tall, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; just rock.",
     "peakSmall": "Subject: one small mountain: a single steep cool grey stone peak with a white snow cap and one lower shoulder peak joined to its side, sharing one rock mass, about two thirds of the image wide, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; whole mountain inside the image with empty space around it; just rock and snow.",
     "spineNarrow2": "Subject: a tall narrow mountain range in the middle of the image with wide empty space left and right: one continuous ridge of four steep cool grey stone peaks one behind the other running straight from the bottom of the image to the top, joined by saddles into a single rock mass, only a quarter of the image wide, small white snow caps, two grey tones, the same rock, outline and palette as the style image; just rock and snow.",
-    "digMine": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain."
+    "digMine": "Dig a mine into the foot of the mountain: add a square mine entrance framed with pale birch timber beams around a dark tunnel in the front rock face, and a small mine cart heaped with grey ore beside it. Keep the peaks, snow, grey rock, outline and art style exactly the same, on a transparent background with nothing at all under the mountain.",
+    "ridgeLow": "Subject: a broad low mountain massif, almost twice as wide as it is tall, that fills the whole image: three large steep cool grey stone peaks side by side with broad white snow caps, sharing one rock mass, joined by high saddles, with wide rocky foothills and scree slopes running down to the left edge, the right edge and the bottom edge of the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; few large shapes; just rock and snow.",
+    "peakFill": "Subject: one single large steep cool grey stone mountain that fills the whole image: one broad peak with a wide white snow cap and one lower shoulder peak joined to its side, its rocky foothills and scree slopes running down to the left edge, the right edge and the bottom edge of the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; one large shape; just rock and snow.",
+    "peakWhole": "Subject: one single large steep cool grey stone mountain: one broad peak with a wide white snow cap and one lower shoulder peak joined to its side, sharing one rock mass with a broad rocky foot, almost as wide and as tall as the image, big simple rock faces in two blue-grey tones, the same rock, outline and palette as the style image; the whole mountain is inside the image with a thin empty margin on every side, no part of it is cut by the image edge; one large shape; just rock and snow."
   },
   "recipes": [
     {
@@ -40,7 +43,7 @@
         "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
       },
       "notes": "Sample: the style-image route that gave the best forest pieces in the research.",
-      "review": "0 and 2: clean ridges of joined snow-capped peaks, used (2x1 d, and in the 2x2 massifs). 1: a diagonal massif, unused. 3: a cluster of separate rounded peaks, unused."
+      "review": "Ridges of joined snow-capped peaks at the first set's scale (peaks 30 to 40 px wide). The first range set (bead pulp_wars-e9f) used 0 and 2; the massif set (bead pulp_wars-2o7.1) uses none: unused."
     },
     {
       "id": "s02-2x2-v2",
@@ -147,7 +150,7 @@
         "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
       },
       "notes": "A 2x2 massif of a few large peaks: the first massifs were a crowd of small peaks on the board.",
-      "review": "Massifs of three or four peaks about 65 px wide and 110 px tall. They were the 2x2 pieces of the first set, but next to the ridges they read as mountains of twice the scale. Unused; s08-0 served as a style image for s10 to s13."
+      "review": "Massifs of three or four peaks about 65 px wide and 110 px tall. Too large beside the first ridges (bead pulp_wars-e9f), they are the scale of the massif set (bead pulp_wars-2o7.1): 0, 1 and 2 are the tall 2x1 ridges, each also mirrored; 3 is 130 px tall, over the 48 px limit, unused. 0 to 3 served as style images."
     },
     {
       "id": "s09-1x2-v2",
@@ -196,7 +199,7 @@
         "candidate": 0
       },
       "notes": "Single peaks in the range style and scale.",
-      "reject": "Crops of the style massif, cut at every image edge."
+      "reject": "Crops of the style massif, cut at every image edge. Candidate 1 was tried as a tall single with a cut foot and dropped for the whole silhouettes of s29."
     },
     {
       "id": "s12-1x2-v2",
@@ -245,7 +248,7 @@
         "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
       },
       "notes": "Single mountains in the scale of the s01 ridges.",
-      "review": "Sixteen single mountains at the ridge scale. 4 and 7 are the 1x1 pieces and the mountains the Mines were dug into; 1, 4, 7 and 12 make the north-south ridges."
+      "review": "Sixteen single mountains 61 px wide, the first set's 1x1 pieces and north-south ridges. Unused in the massif set."
     },
     {
       "id": "s15-2x1-v2",
@@ -261,7 +264,7 @@
         "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
       },
       "notes": "More ridges by the s01 recipe, another seed.",
-      "review": "Four clean blue-grey ridges of five peaks, all used (2x1 a, b, c and in the 2x2 massifs)."
+      "review": "Four ridges at the first set's scale, all used by it. Unused in the massif set."
     },
     {
       "id": "s16-1x2-v2",
@@ -303,7 +306,207 @@
         "candidate": 7
       },
       "instruction": "@digMine",
-      "review": "Two near-identical candidates: the shouldered single mountain with a large timber-framed entrance and an ore cart, close to the old Mine. 0 is the mined mountain."
+      "review": "The first set's mined mountain (a 61 px mountain). Replaced by s28."
+    },
+    {
+      "id": "s19-low-ridge-a",
+      "width": 160,
+      "height": 92,
+      "seed": 82019,
+      "subject": "@ridgeLow",
+      "styleImage": {
+        "recipe": "s08-2x2-v2",
+        "candidate": 1
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Bead pulp_wars-2o7.1: a lower-topped ridge at the scale of the s08 massifs, for the top row of an area (at most 13 px above its cell). A style image that fills its canvas is copied at the requested size, which is what is wanted here.",
+      "review": "Four wide low ridges, 68 to 90 px tall, but in another hand: flat pyramids on a diamond base in a dull teal grey, beside the blue-shadowed s08 massifs. Tried on the board and dropped; unused."
+    },
+    {
+      "id": "s20-low-ridge-b",
+      "width": 160,
+      "height": 92,
+      "seed": 82020,
+      "subject": "@ridgeLow",
+      "styleImage": {
+        "recipe": "s08-2x2-v2",
+        "candidate": 2
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "As s19, styled from another s08 massif.",
+      "review": "Four near-copies of the s08-2 massif at 155 x 92. 0, 1 (mirrored) and 3 are low 2x1 ridges; 2 has boulders at its foot, unused."
+    },
+    {
+      "id": "s21-low-single",
+      "width": 80,
+      "height": 84,
+      "seed": 82021,
+      "subject": "@peakFill",
+      "styleImage": {
+        "recipe": "s11-1x1-v2",
+        "candidate": 1
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Single mountains at the massif scale that fill their cell, sixteen candidates at 80 x 84.",
+      "review": "Sixteen singles that fill 80 x 84, most of them cut by the image edge at both sides and the foot (the reason for the foot cut of `footed`). Used on the board first, then replaced by the whole silhouettes of s26; unused."
+    },
+    {
+      "id": "s22-whole-single",
+      "width": 80,
+      "height": 84,
+      "seed": 82022,
+      "subject": "@peakWhole",
+      "styleImage": {
+        "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Single mountains that fill the cell with their whole silhouette inside the image: most of the s21 candidates are cut by the image edge.",
+      "review": "Sixteen whole single mountains, every one 61 px wide: the scale of the style image (the old single mountain) is copied whatever the subject says. Too small to fill a cell; 3 and 4 serve as style images, enlarged, for s26 and s27."
+    },
+    {
+      "id": "s23-whole-single-tall",
+      "width": 80,
+      "height": 124,
+      "seed": 82023,
+      "subject": "@peakWhole",
+      "styleImage": {
+        "file": "public/assets/chibi/terrain/chibi-mountain-1.body.png"
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Tall single mountains (up to 48 px over the row behind), for a single cell under another Mountain.",
+      "reject": "Four 61 px mountains at the bottom of a tall canvas: the style image's scale again."
+    },
+    {
+      "id": "s24-low-ridge-c",
+      "width": 160,
+      "height": 92,
+      "seed": 82024,
+      "subject": "@ridge3",
+      "styleImage": {
+        "recipe": "s08-2x2-v2",
+        "candidate": 0
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "A lower-topped ridge styled from the s08-0 massif, with the ridge wording of s10.",
+      "review": "0 and 1: copies of s08-0 with the highest peak cut off by the top of the image, unused. 2: a crowd of thin spikes, unused. 3: a broad rounded massif, 156 x 90, used as a low 2x1 ridge and mirrored."
+    },
+    {
+      "id": "s25-low-ridge-d",
+      "width": 160,
+      "height": 92,
+      "seed": 82025,
+      "subject": "@ridge3",
+      "styleImage": {
+        "recipe": "s08-2x2-v2",
+        "candidate": 3
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "A lower-topped ridge styled from the s08-3 massif.",
+      "review": "0: three peaks, 150 x 71, used as a low 2x1 ridge and mirrored. 3: a cluster of five peaks, 150 x 80, used. 1 and 2: the main peak cut off by the top of the image, unused."
+    },
+    {
+      "id": "s26-big-single",
+      "width": 80,
+      "height": 84,
+      "seed": 82026,
+      "subject": "@peakWhole",
+      "styleImage": {
+        "recipe": "s22-whole-single",
+        "candidate": 4,
+        "enlarge": {
+          "width": 76,
+          "height": 78,
+          "canvasWidth": 80,
+          "canvasHeight": 84
+        }
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "s22 and s23 copied the scale of the old single mountain (61 px). Here the style image is an s22 mountain enlarged to 76 x 78, so the copies fill the cell.",
+      "review": "Sixteen whole single mountains 76 px wide: the enlarged style image works. 0, 1, 2, 7, 9, 10, 12 and 14 are the low 1x1 pieces; 0 is the mountain the Mine is dug into and the style image of s29. 3, 11, 13 and 15 are low hills, 4 a needle, 5 a mesa, 6 and 8 clusters of small peaks: unused."
+    },
+    {
+      "id": "s27-big-single-tall",
+      "width": 80,
+      "height": 124,
+      "seed": 82027,
+      "subject": "@peakWhole",
+      "styleImage": {
+        "recipe": "s22-whole-single",
+        "candidate": 3,
+        "enlarge": {
+          "width": 76,
+          "height": 114,
+          "canvasWidth": 80,
+          "canvasHeight": 124
+        }
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Tall singles from a style image stretched to 76 x 114.",
+      "review": "0: a needle 114 px tall with a shoulder, used at first and dropped (it read as a spike among mountains). 1: a mountain with small spikes at its foot, unused. 2: a brown volcano with smoke, and 3: twin peaks with trees and a lake: off subject."
+    },
+    {
+      "id": "s28-mine-big",
+      "endpoint": "edit-image-pixen",
+      "width": 80,
+      "height": 84,
+      "seed": 82028,
+      "source": {
+        "recipe": "s26-big-single",
+        "candidate": 0
+      },
+      "instruction": "@digMine",
+      "notes": "The Mine dug into a single mountain of the massif scale.",
+      "review": "Two near-identical candidates: the broad single mountain with a timber-framed entrance and an ore cart at its foot. 0 is the mined mountain."
+    },
+    {
+      "id": "s29-big-single-tall-b",
+      "width": 80,
+      "height": 124,
+      "seed": 82029,
+      "subject": "@peakWhole",
+      "styleImage": {
+        "recipe": "s26-big-single",
+        "candidate": 0,
+        "enlarge": {
+          "width": 76,
+          "height": 100,
+          "canvasWidth": 80,
+          "canvasHeight": 124
+        }
+      },
+      "endpoint": "generate-image-v2",
+      "fragments": ["style", "camera-three-quarter"],
+      "klass": "@klass",
+      "negative": "@negative",
+      "notes": "Tall singles again, from a broad s26 mountain stretched only to 76 x 100: the s27 spire is a needle on the board.",
+      "review": "Four tall singles, 94 to 107 px: a snowy mountain with a shoulder (0), the same with a third peak in front (1), a monolith (2) and twin peaks (3). All four are tall 1x1 pieces, 0 and 3 mirrored too."
     }
   ],
   "pieces": [
@@ -312,19 +515,79 @@
       "variant": 0,
       "parts": [
         {
-          "recipe": "s14-1x1-v2",
-          "candidate": 4
+          "recipe": "s26-big-single",
+          "candidate": 0
         }
       ],
-      "notes": "Single mountains generated at the scale of the ridges."
+      "notes": "Low single mountains: whole silhouettes 76 px wide that fill the cell, at most 13 px above it."
     },
     {
       "shape": "1x1",
       "variant": 1,
       "parts": [
         {
-          "recipe": "s14-1x1-v2",
+          "recipe": "s26-big-single",
+          "candidate": 1
+        }
+      ]
+    },
+    {
+      "shape": "1x1",
+      "variant": 2,
+      "parts": [
+        {
+          "recipe": "s26-big-single",
+          "candidate": 2
+        }
+      ]
+    },
+    {
+      "shape": "1x1",
+      "variant": 3,
+      "parts": [
+        {
+          "recipe": "s26-big-single",
           "candidate": 7
+        }
+      ]
+    },
+    {
+      "shape": "1x1",
+      "variant": 4,
+      "parts": [
+        {
+          "recipe": "s26-big-single",
+          "candidate": 9
+        }
+      ]
+    },
+    {
+      "shape": "1x1",
+      "variant": 5,
+      "parts": [
+        {
+          "recipe": "s26-big-single",
+          "candidate": 10
+        }
+      ]
+    },
+    {
+      "shape": "1x1",
+      "variant": 6,
+      "parts": [
+        {
+          "recipe": "s26-big-single",
+          "candidate": 12
+        }
+      ]
+    },
+    {
+      "shape": "1x1",
+      "variant": 7,
+      "parts": [
+        {
+          "recipe": "s26-big-single",
+          "candidate": 14
         }
       ]
     },
@@ -333,8 +596,9 @@
       "variant": 0,
       "parts": [
         {
-          "recipe": "s15-2x1-v2",
-          "candidate": 0
+          "recipe": "s20-low-ridge-b",
+          "candidate": 0,
+          "dy": 2
         }
       ]
     },
@@ -343,8 +607,8 @@
       "variant": 1,
       "parts": [
         {
-          "recipe": "s15-2x1-v2",
-          "candidate": 1
+          "recipe": "s24-low-ridge-c",
+          "candidate": 3
         }
       ]
     },
@@ -353,8 +617,8 @@
       "variant": 2,
       "parts": [
         {
-          "recipe": "s15-2x1-v2",
-          "candidate": 3
+          "recipe": "s25-low-ridge-d",
+          "candidate": 0
         }
       ]
     },
@@ -363,142 +627,190 @@
       "variant": 3,
       "parts": [
         {
-          "recipe": "s01-2x1-v2",
+          "recipe": "s20-low-ridge-b",
+          "candidate": 1,
+          "dy": 2,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "shape": "2x1",
+      "variant": 4,
+      "parts": [
+        {
+          "recipe": "s25-low-ridge-d",
+          "candidate": 3
+        }
+      ]
+    },
+    {
+      "shape": "2x1",
+      "variant": 5,
+      "parts": [
+        {
+          "recipe": "s20-low-ridge-b",
+          "candidate": 3,
+          "dy": 2
+        }
+      ]
+    },
+    {
+      "shape": "2x1",
+      "variant": 6,
+      "parts": [
+        {
+          "recipe": "s24-low-ridge-c",
+          "candidate": 3,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "shape": "2x1",
+      "variant": 7,
+      "parts": [
+        {
+          "recipe": "s25-low-ridge-d",
+          "candidate": 0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "shape": "1x1",
+      "variant": 0,
+      "tall": true,
+      "parts": [
+        {
+          "recipe": "s29-big-single-tall-b",
           "candidate": 0
         }
       ]
     },
     {
-      "shape": "1x2",
-      "variant": 0,
-      "parts": [
-        {
-          "recipe": "s14-1x1-v2",
-          "candidate": 1,
-          "row": 0,
-          "dy": 1,
-          "dx": -7
-        },
-        {
-          "recipe": "s14-1x1-v2",
-          "candidate": 4,
-          "dy": -41,
-          "dx": 7
-        },
-        {
-          "recipe": "s14-1x1-v2",
-          "candidate": 7,
-          "dy": -3,
-          "dx": -7
-        }
-      ],
-      "notes": "A north-south ridge: three generated single mountains in a gentle zigzag, each overlapping the foot of the one behind it."
-    },
-    {
-      "shape": "1x2",
+      "shape": "1x1",
       "variant": 1,
+      "tall": true,
       "parts": [
         {
-          "recipe": "s14-1x1-v2",
-          "candidate": 4,
-          "row": 0,
-          "dy": 1,
-          "dx": 7
-        },
-        {
-          "recipe": "s14-1x1-v2",
-          "candidate": 7,
-          "dy": -41,
-          "dx": -7
-        },
-        {
-          "recipe": "s14-1x1-v2",
-          "candidate": 12,
-          "dy": -3,
-          "dx": 7
+          "recipe": "s29-big-single-tall-b",
+          "candidate": 3
         }
       ]
     },
     {
-      "shape": "1x2",
+      "shape": "1x1",
       "variant": 2,
+      "tall": true,
       "parts": [
         {
-          "recipe": "s14-1x1-v2",
-          "candidate": 12,
-          "row": 0,
-          "dy": 1,
-          "dx": -7
-        },
-        {
-          "recipe": "s14-1x1-v2",
-          "candidate": 1,
-          "dy": -41,
-          "dx": 7
-        },
-        {
-          "recipe": "s14-1x1-v2",
-          "candidate": 4,
-          "dy": -3,
-          "dx": -7
+          "recipe": "s29-big-single-tall-b",
+          "candidate": 1
         }
       ]
     },
     {
-      "shape": "2x2",
-      "variant": 0,
+      "shape": "1x1",
+      "variant": 3,
+      "tall": true,
       "parts": [
         {
-          "recipe": "s15-2x1-v2",
-          "candidate": 1,
-          "row": 0,
-          "dy": 24,
-          "dx": 6
-        },
-        {
-          "recipe": "s15-2x1-v2",
-          "candidate": 0,
-          "dy": -8,
-          "dx": -6
+          "recipe": "s29-big-single-tall-b",
+          "candidate": 2
         }
-      ],
-      "notes": "A massif: two generated ridges, the front one overlapping the foot of the back one and shifted sideways, with rocky ground at its foot."
+      ]
     },
     {
-      "shape": "2x2",
-      "variant": 1,
+      "shape": "1x1",
+      "variant": 4,
+      "tall": true,
       "parts": [
         {
-          "recipe": "s01-2x1-v2",
-          "candidate": 2,
-          "row": 0,
-          "dy": 24,
-          "dx": -6
-        },
+          "recipe": "s29-big-single-tall-b",
+          "candidate": 0,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "shape": "1x1",
+      "variant": 5,
+      "tall": true,
+      "parts": [
         {
-          "recipe": "s15-2x1-v2",
+          "recipe": "s29-big-single-tall-b",
           "candidate": 3,
-          "dy": -8,
-          "dx": 6
+          "flip": true
         }
       ]
     },
     {
-      "shape": "2x2",
-      "variant": 2,
+      "shape": "2x1",
+      "variant": 0,
+      "tall": true,
       "parts": [
         {
-          "recipe": "s15-2x1-v2",
-          "candidate": 2,
-          "row": 0,
-          "dy": 24,
-          "dx": 6
-        },
+          "recipe": "s08-2x2-v2",
+          "candidate": 0
+        }
+      ]
+    },
+    {
+      "shape": "2x1",
+      "variant": 1,
+      "tall": true,
+      "parts": [
         {
-          "recipe": "s01-2x1-v2",
+          "recipe": "s08-2x2-v2",
+          "candidate": 1
+        }
+      ]
+    },
+    {
+      "shape": "2x1",
+      "variant": 2,
+      "tall": true,
+      "parts": [
+        {
+          "recipe": "s08-2x2-v2",
+          "candidate": 2
+        }
+      ]
+    },
+    {
+      "shape": "2x1",
+      "variant": 3,
+      "tall": true,
+      "parts": [
+        {
+          "recipe": "s08-2x2-v2",
           "candidate": 0,
-          "dy": -8,
-          "dx": -6
+          "flip": true
+        }
+      ]
+    },
+    {
+      "shape": "2x1",
+      "variant": 4,
+      "tall": true,
+      "parts": [
+        {
+          "recipe": "s08-2x2-v2",
+          "candidate": 1,
+          "flip": true
+        }
+      ]
+    },
+    {
+      "shape": "2x1",
+      "variant": 5,
+      "tall": true,
+      "parts": [
+        {
+          "recipe": "s08-2x2-v2",
+          "candidate": 2,
+          "flip": true
         }
       ]
     }
@@ -509,7 +821,7 @@
       "variant": 0,
       "parts": [
         {
-          "recipe": "s18-mine-b",
+          "recipe": "s28-mine-big",
           "candidate": 0
         }
       ]

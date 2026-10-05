@@ -161,6 +161,10 @@ import type { ChibiArtRegistryV7 } from "../../assets/chibi-art-v7";
 import { CHIBI_FOREST_ART_SET_V7 } from "../../assets/chibi-forest-pieces-manifest";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../assets/chibi-mountain-ranges-manifest";
 import {
+  createChibiMassifArtV7,
+  type ChibiMassifArtV7,
+} from "./chibi-massif-v7";
+import {
   createChibiForestArtV7,
   type ChibiForestArtV7,
 } from "./chibi-forest-v7";
@@ -305,7 +309,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /** The Ice Folk Snow tiles, snow caps, rime and casings, built once. */
   readonly #iceFolkArt: IceFolkBoardArtV7;
   readonly #forestArt: { resolve(): ChibiForestArtV7 | null };
-  readonly #mountainArt: { resolve(): ChibiForestArtV7 | null };
+  readonly #mountainArt: { resolve(): ChibiMassifArtV7 | null };
   /** The Blizzard's slow ambient redraw (a timer, not every frame). */
   #blizzardTimer: number | null = null;
   /** The unit being shattered on the board, cased in ice until it bursts. */
@@ -424,11 +428,12 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             redraw: () => this.#draw(),
             set: CHIBI_FOREST_ART_SET_V7,
           });
-    // Composed mountain ranges (pulp_wars-e9f): the multi-tile range pieces.
+    // Mountains as massifs (pulp_wars-e9f, pulp_wars-2o7.1): ridges and
+    // single mountains that fill their cells, tall under other Mountains.
     this.#mountainArt =
       options.composedMountains === false
         ? { resolve: () => null }
-        : createChibiForestArtV7({
+        : createChibiMassifArtV7({
             environment: browserChibiRasterEnvironmentV7(documentRoot),
             redraw: () => this.#draw(),
             set: CHIBI_MOUNTAIN_ART_SET_V7,
