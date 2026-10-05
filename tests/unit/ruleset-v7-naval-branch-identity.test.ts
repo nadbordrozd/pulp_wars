@@ -59,6 +59,14 @@ import {
 // 7r43, the two technologies, the Submarine role, the `BOARD` command, the
 // `SHIP_BOARDED` event, Dry Land, missions, and the Showcase.
 
+/**
+ * The factions with ships: every faction but the Ice Folk, whose tree has
+ * the frozen sea instead (tests/unit/ruleset-v7-frozen-sea-identity.test.ts).
+ */
+const SEAFARING_FACTIONS = FACTION_IDS_V7.filter(
+  (faction) => faction !== "ICE_FOLK",
+);
+
 const NAVAL_BRANCH = [
   "SHORECRAFT",
   "NAVIGATION",
@@ -67,15 +75,21 @@ const NAVAL_BRANCH = [
   "SUBMERSIBLES",
 ] as const satisfies readonly TechnologyIdV7[];
 
-describe("the naval branch identity (7r43)", () => {
-  it("is 7r43 with 7r42 last in the gap-free prior list and its save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r42");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(42);
+// The identity of this step was `7r43`. Engine step II (`pulp_wars-5ti.3`,
+// tests/unit/ruleset-v7-frozen-sea-identity.test.ts) made it a prior
+// identity; the current one is pinned there.
+describe("the naval branch identity (7r43, engine step I)", () => {
+  it("put 7r43 right after 7r42 in the gap-free prior list, with both save keys obsolete", () => {
+    expect(PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r43")).toBe(
+      PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r42") + 1,
+    );
+    expect(PRIOR_RULESET_7_IDS.indexOf("pulp-wars-poc-7r42")).toBe(41);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r43.current");
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toContain(
       "pulpWars.save.v7r42.current",
+    );
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toContain(
+      "pulpWars.save.v7r43.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
   });
@@ -85,7 +99,7 @@ describe("the naval branch identity (7r43)", () => {
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r43");
+    expect(state.rulesetId).toBe(RULESET_7_ID);
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r42" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
@@ -192,7 +206,7 @@ describe("the naval branch shapes", () => {
 describe("the five-node Naval branch in every tree", () => {
   it("registers Seamanship and Submersibles with the Settlement shape, the Human unlocks, and the ordinary costs for every faction", () => {
     expect(() => assertRuleset7Registry()).not.toThrow();
-    for (const faction of FACTION_IDS_V7) {
+    for (const faction of SEAFARING_FACTIONS) {
       const tree = factionTreeV7(faction);
       const naval = tree.nodes.filter((node) => node.branch === "NAVAL");
       expect(
@@ -211,7 +225,7 @@ describe("the five-node Naval branch in every tree", () => {
       ]);
       const node = (id: TechnologyIdV7) =>
         tree.nodes.find((entry) => entry.id === id);
-      // Step I: every tree (the Ice Folk's too, until step II) has the
+      // Every seafaring tree (the Ice Folk tree has the frozen sea) has the
       // Human unlocks.
       expect(node("SEAMANSHIP")?.unlocks, faction).toEqual([
         { kind: "RAM" },
@@ -241,7 +255,7 @@ describe("the five-node Naval branch in every tree", () => {
   });
 
   it("registers the same Submarine and the rammer Patrol Boat for every faction", () => {
-    for (const faction of FACTION_IDS_V7) {
+    for (const faction of SEAFARING_FACTIONS) {
       expect(effectiveRoleRuleV7("SUBMARINE", faction), faction).toEqual({
         role: "SUBMARINE",
         label: "Submarine",
@@ -287,7 +301,7 @@ describe("the five-node Naval branch in every tree", () => {
   });
 
   it("derives ram, boarding, the Submarine, and Harbours from the capabilities, never from a raw technology", () => {
-    for (const faction of FACTION_IDS_V7) {
+    for (const faction of SEAFARING_FACTIONS) {
       const none = technologyCapabilitiesV7(["SHORECRAFT"], faction);
       expect([none.ram, none.boarding, none.harbourPopulation]).toEqual([
         false,
@@ -316,7 +330,7 @@ describe("the five-node Naval branch in every tree", () => {
   });
 
   it("shows the branch in the public technology tree with states, prerequisites, and costs", () => {
-    for (const faction of FACTION_IDS_V7) {
+    for (const faction of SEAFARING_FACTIONS) {
       const other: FactionIdV7 = faction === "ORIGINAL" ? "UNDEAD" : "ORIGINAL";
       const state = navalArenaV7({
         factions: [faction, other],
@@ -485,7 +499,7 @@ describe("the naval branch on Dry Land, in missions, and in the Showcase", () =>
     });
     const factions: readonly FactionIdV7[] = [
       "ORIGINAL",
-      "ICE_FOLK",
+      "DWARF",
       "CANDY",
       "MARTIAN",
     ];

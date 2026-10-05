@@ -318,6 +318,10 @@ export function buildMissionStateV7(
       )
         fail(`a unit blockades another seat's dock at ${coordText(at)}`);
       const naval = NAVAL_ROLES_V7.has(written.role);
+      // The frozen sea (naval branch section 8.11): the Ice Folk have no
+      // ships.
+      if (naval && player.faction === "ICE_FOLK")
+        fail(`an Ice Folk seat has no ships (at ${coordText(at)})`);
       const mechanics = roleMechanicsV7(written.role, player.faction);
       const navigation = player.researchedTechs.includes("NAVIGATION");
       const standable = naval
@@ -333,6 +337,7 @@ export function buildMissionStateV7(
             ).mountainMovement,
             navigation,
             mountainBorn: mechanics.mountainBorn,
+            ice: false,
           });
       if (!standable)
         fail(`the ${written.role} at ${coordText(at)} cannot stand there`);
@@ -517,6 +522,8 @@ export function buildMissionStateV7(
     treasureChests: chests,
     // RULESET_7_MAP_CURIOSITIES.md section 3: never on an authored board.
     curiosities: [],
+    // The frozen sea: an authored board starts without ice.
+    ice: [],
     monsters: [],
     graves: sortedCoords(mission.graves ?? []),
     plagued: [],

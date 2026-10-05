@@ -330,7 +330,9 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/reducer.ts::resolveNeutralTurnV7": "BOARD",
     "src/engine/v7/reducer.ts::resetTurnUnits": "BOARD",
     "src/engine/v7/reducer.ts::resolveCityCenterSpawnV7": "BOARD",
-    "src/engine/v7/reducer.ts::resolveStartTurnPlagueAndChainV7": "BOARD",
+    // `pulp_wars-5ti.3`: the death-blast chain of a Start Turn step (the
+    // Plague and the ice crush share it) reads who stands on the board.
+    "src/engine/v7/reducer.ts::withDeathBlastChainV7": "BOARD",
     // The Mind Control revision: a released unit reveals its sight where it
     // stands on the board (a burrowed one reveals nothing).
     "src/engine/v7/reducer.ts::revealReleasedUnitsV7": "BOARD",
@@ -489,6 +491,18 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/engine/v7/query.ts::previewSugarTossV7": "BOARD",
     "src/engine/v7/query.ts::publicSugarTossTargetsV7": "BOARD",
     "src/engine/v7/state-schema.ts::candyListsValid": "BOARD",
+    // The frozen sea (`pulp_wars-5ti.3`): ice holds, traps, Chills, and
+    // crushes what stands on the board; a Freeze and its preview read the
+    // board. No Ice Folk unit is afloat anywhere, a mound included, so the
+    // state check also reads the `burrowed` list.
+    "src/engine/v7/ice.ts::resolveThawV7": "BOARD",
+    "src/engine/v7/ice.ts::resolveBlackIceV7": "BOARD",
+    "src/engine/v7/ice.ts::resolveIceCrushV7": "BOARD",
+    "src/engine/v7/query.ts::publicFreezeSetV7": "BOARD",
+    "src/engine/v7/query.ts::previewFreezeV7": "BOARD",
+    "src/engine/v7/reducer.ts::applyFreeze": "BOARD",
+    "src/engine/v7/reducer.ts::resolveStartTurnIceV7": "BOARD",
+    "src/engine/v7/state-schema.ts::iceValid": "ALL",
     "src/headless/candy-telemetry-v7.ts::recordCandyV7": "BOARD",
     "src/render/dom/app-view-v7.ts::candyCommandLabelV7": "BOARD",
     // The Candy UI (`pulp_wars-jdb.6`): the dock, the board plan and the

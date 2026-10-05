@@ -129,9 +129,13 @@ function missionStateHash(state: GameStateV7): string {
     crumbs,
     splattedThisTurn,
     tossedThisTurn,
+    ice,
     ...rest
   } = state;
   expect([monsters, beamedThisTurn, tractorUsedThisTurn]).toEqual([[], [], []]);
+  // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in every
+  // initial mission state and left out too.
+  expect(ice).toEqual([]);
   expect([sugarRush, crumbs, splattedThisTurn, tossedThisTurn]).toEqual([
     [],
     [],
@@ -193,11 +197,15 @@ function preCuriosityMissionStateHash(state: GameStateV7): string {
     crumbs,
     splattedThisTurn,
     tossedThisTurn,
+    ice,
     ...rest
   } = state;
   const { curiosities: option, ...setup } = state.setup;
   expect([curiosities, monsters, option]).toEqual([[], [], false]);
   expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);
+  // The frozen sea (`pulp_wars-5ti.3`) added the `ice` list, empty in every
+  // initial mission state and left out too.
+  expect(ice).toEqual([]);
   expect([sugarRush, crumbs, splattedThisTurn, tossedThisTurn]).toEqual([
     [],
     [],

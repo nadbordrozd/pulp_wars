@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r43.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r44");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r44.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r42 and preserves the r43 save", () => {
+  it("cleans obsolete keys through v7r43 and preserves the r44 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r42.current",
+      "pulpWars.save.v7r43.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(42);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(43);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -180,7 +180,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r40.current", "r40"],
       ["pulpWars.save.v7r41.current", "r41"],
       ["pulpWars.save.v7r42.current", "r42"],
-      [SAVE_STORAGE_KEY_V7, "r43"],
+      ["pulpWars.save.v7r43.current", "r43"],
+      [SAVE_STORAGE_KEY_V7, "r44"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -217,8 +218,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r40.current",
         "pulpWars.save.v7r41.current",
         "pulpWars.save.v7r42.current",
+        "pulpWars.save.v7r43.current",
       ],
-      removedCount: 31,
+      removedCount: 32,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1803,8 +1805,12 @@ describe("ruleset-7 all-Human parity digests", () => {
           bounceTo,
           ram,
           torpedo,
+          iceCover,
+          icebound,
           ...previewWithoutSplash
         } = event.preview;
+        // The frozen sea (pulp_wars-5ti.3): two neutral fields.
+        expect([iceCover, icebound]).toEqual([false, false]);
         // The naval branch (pulp_wars-5ti.2): two neutral fields.
         expect([ram, torpedo]).toEqual([false, false]);
         // The Candy revision (pulp_wars-jdb.3): four neutral fields.
@@ -1979,6 +1985,10 @@ describe("ruleset-7 all-Human parity digests", () => {
               key === "curiosities" &&
               (item === false || (Array.isArray(item) && item.length === 0))
             )
+              return undefined;
+            // pulp_wars-5ti.3: the empty ice list of state and view (an
+            // all-Human match never Freezes).
+            if (key === "ice" && Array.isArray(item) && item.length === 0)
               return undefined;
             // pulp_wars-737.3: the empty Monster list of state and view.
             if (key === "monsters" && Array.isArray(item) && item.length === 0)

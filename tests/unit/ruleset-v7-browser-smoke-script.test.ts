@@ -571,8 +571,8 @@ describe("Ruleset 7 browser smoke script", () => {
     expect(probe).toContain(
       "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY",
     );
-    expect(probe).toContain("table.cells !== 97");
-    expect(probe).toContain("table.empty !== 7");
+    expect(probe).toContain("table.cells !== 93");
+    expect(probe).toContain("table.empty !== 11");
     expect(probe).toContain("filtered.cells.length !== 7");
     expect(probe).toContain(`.v7-gallery-chip[data-value="GOBLIN"]`);
     expect(probe).toContain('storedFilters.unitRows?.join() !== "CATAPULT"');
@@ -946,7 +946,7 @@ function preview(maximumSliceMilliseconds = 20): PreviewEvidenceV7 {
       fastForwardObserved: true,
       hostTicks: 2,
     },
-    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r43", commandIndex: 3 },
+    persisted: { version: 7, rulesetId: "pulp-wars-poc-7r44", commandIndex: 3 },
     ordinaryBoundary: {
       controllerOwnProperties: [],
       snapshotHasStateHash: false,

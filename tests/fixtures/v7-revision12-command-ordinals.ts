@@ -37,6 +37,7 @@ const LATER_COMMAND_KINDS: readonly string[] = [
   "TRACTOR_BEAM",
   "THROW_BOLAS",
   "COLD_SNAP",
+  "FREEZE",
   "TUNNEL",
   "BOMB_RUN",
   "ASSEMBLE",

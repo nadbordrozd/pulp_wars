@@ -88,7 +88,9 @@ describe("ruleset-7 late public query performance", () => {
       // three (was 845cbd…b1a9); the revision-12-ordinal value is unchanged.
       // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
       // moving every later kind forward by one (was 6f1e43…b43d).
-      "056a9c9f7c1876befbdb94ba6aa25eda58021efbaf92eba31406adfed10221e1",
+      // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after COLD_SNAP,
+      // moving every later kind forward by one (was 056a9c…21e1).
+      "b3c6666c263a5f008bd17d97f4de467f961bae5cac0d730b891a3e2d6a5e2787",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); with revision-12 ordinals the value is unchanged.

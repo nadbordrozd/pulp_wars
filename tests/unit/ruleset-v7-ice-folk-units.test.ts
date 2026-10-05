@@ -11,7 +11,7 @@ import {
 import { checkedV7 } from "../fixtures/v7-builders";
 import { applyOkV7, seatIdV7, unitAtV7 } from "../fixtures/v7-goblin-arena";
 import { iceFieldV7 } from "../fixtures/v7-ice-folk";
-import { offeredV7, playV7, rejectedV7 } from "../fixtures/v7-martian";
+import { offeredV7, rejectedV7 } from "../fixtures/v7-martian";
 import {
   activeIdV7,
   at,
@@ -103,25 +103,7 @@ describe("Mountain-born (section 7.1)", () => {
     ).toBe("MOUNTAIN_STOPS_MOVE");
   });
 
-  it("lands on a Mountain, advances onto one, and is pushed onto one without Engineering", () => {
-    // Landing.
-    const landing = mountainV7(
-      iceFieldV7(
-        [
-          { seat: 0, role: "FIGHTER", at: at(5, 2), form: "EMBARKED" },
-          { seat: 1, role: "FIGHTER", at: at(1, 1) },
-        ],
-        { techs: { 0: ["SHORECRAFT"] }, water: [at(5, 2)] },
-      ),
-      at(5, 3),
-    );
-    const disembark: CommandV7 = {
-      kind: "DISEMBARK",
-      unitId: unitAtV7(landing, at(5, 2)).id,
-      at: at(5, 3),
-    };
-    expect(offeredV7(landing, "DISEMBARK")).toContainEqual(disembark);
-    playV7(landing, disembark);
+  it("advances onto a Mountain and is pushed onto one without Engineering (no landing: an Ice Folk unit never embarks since the frozen sea)", () => {
     // The advance after a kill.
     const advance = mountainV7(
       iceFieldV7(
@@ -511,7 +493,7 @@ describe("Prowl (section 7.7)", () => {
     ).toBe("ZOC_STOPS_MOVE");
   });
 
-  it("never ends a Move, lands, or advances on a settlement center it does not own", () => {
+  it("never ends a Move or advances on a settlement center it does not own (no landing: an Ice Folk unit never embarks since the frozen sea)", () => {
     const state = iceFieldV7(
       [
         { seat: 0, role: "KNIGHT", at: at(4, 4) },
@@ -548,22 +530,6 @@ describe("Prowl (section 7.7)", () => {
     );
     const run = attackV7(village, at(4, 4), at(5, 5));
     expect(run.combat).toMatchObject({ defenderDies: true, advances: false });
-    // Landing: never on a foreign center.
-    const sea = iceFieldV7(
-      [
-        { seat: 0, role: "KNIGHT", at: at(5, 4), form: "EMBARKED" },
-        { seat: 1, role: "FIGHTER", at: at(1, 1) },
-      ],
-      { water: [at(5, 4)] },
-    );
-    const land: CommandV7 = {
-      kind: "DISEMBARK",
-      unitId: unitAtV7(sea, at(5, 4)).id,
-      at: at(5, 5),
-    };
-    expect(offeredV7(sea, "DISEMBARK")).not.toContainEqual(land);
-    expect(applyCommandV7(sea, activeIdV7(sea), land).accepted).toBe(false);
-    expect(checkedV7(sea).chilled).toEqual([]);
   });
 });
 

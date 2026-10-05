@@ -104,7 +104,39 @@ export function boardBlockTextV7(
 ): string {
   if (reason === "TARGET_IMMUNE") return "Not a ship";
   if (reason === "OUT_OF_RANGE") return "Too far";
+  // Row 10 (`pulp_wars-5ti.3`): a prize on Deep Water needs Navigation.
+  if (reason === "DEEP_WATER") return BOARD_BLOCK_DEEP_WATER_V7;
   return boardableAt === null ? "Too healthy" : `Above ${boardableAt} HP`;
+}
+
+/** The grey reason on a weak ship that stands on Deep Water. */
+export const BOARD_BLOCK_DEEP_WATER_V7 = "Needs Navigation";
+/** Why a ship next to a weak ship on Deep Water has no Board to aim. */
+export const BOARD_NEEDS_NAVIGATION_V7 =
+  "Taking a ship on Deep Water needs Navigation";
+/** Why an icebound ship has no Board to aim (the frozen sea). */
+export const BOARD_ICEBOUND_V7 = "Icebound: this ship cannot board";
+
+/**
+ * The engine's Board target rule (`boardTargetBlockV7`) read from the view,
+ * with the facts of the public command query: the target's explored tile
+ * and the viewer's Navigation.
+ */
+export function viewBoardTargetBlockV7(
+  view: PlayerViewV7,
+  boarder: Pick<PublicUnitV7, "at">,
+  target: PublicUnitV7,
+): BoardTargetBlockV7 | null {
+  const tile = view.board.tiles.find(
+    (candidate) =>
+      candidate.at.x === target.at.x && candidate.at.y === target.at.y,
+  );
+  return boardTargetBlockV7(
+    boarder,
+    target,
+    tile?.explored === true ? tile.terrain : undefined,
+    view.viewer.researchedTechs.includes("NAVIGATION"),
+  );
 }
 
 const chebyshev = (a: CoordV7, b: CoordV7): number =>
@@ -161,11 +193,17 @@ export function boardUnavailableTextV7(
       chebyshev(candidate.at, unit.at) === 1,
   );
   if (adjacent.length === 0) return null;
+  // The frozen sea (`pulp_wars-5ti.3`): an icebound ship never boards.
+  if (
+    view.unitStats.find((entry) => entry.unitId === unit.id)?.icebound === true
+  )
+    return BOARD_ICEBOUND_V7;
   const blocks = adjacent.map((candidate) =>
-    boardTargetBlockV7(unit, candidate),
+    viewBoardTargetBlockV7(view, unit, candidate),
   );
   // A ship that could be taken stands there: the boarder itself cannot act.
   if (blocks.includes(null)) return BOARD_ALREADY_ACTED_V7;
+  if (blocks.includes("DEEP_WATER")) return BOARD_NEEDS_NAVIGATION_V7;
   return blocks.includes("TARGET_HEALTHY")
     ? BOARD_NO_WEAK_SHIP_V7
     : BOARD_NOT_A_SHIP_V7;

@@ -57,19 +57,33 @@ export const REVISION_21_ACHIEVEMENT_REQUIRED_V7 = Object.freeze({
  * canonical state alone. Conqueror has no stored counter: its count is 1 once
  * the entitlement is unlocked (the capture itself unlocks it) and 0 before.
  * An Egg is a unit with no kills and is not a naval unit, so it never counts.
+ *
+ * The naval branch, the frozen sea
+ * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.11): an Ice Folk seat
+ * has no ships, so its Sea Dog counts its land-form units standing on ice
+ * instead (a land-form unit stands on a water tile only on ice), against
+ * the same number (`ICE_SEA_DOG_UNITS_V7`).
  */
 export function revision21AchievementCountsV7(
-  state: Pick<GameStateV7, "players" | "cities" | "units">,
+  state: Pick<GameStateV7, "players" | "cities" | "units" | "board">,
   playerId: PlayerId,
 ): Readonly<Record<Revision21AchievementIdV7, number>> {
   const player = state.players.find((candidate) => candidate.id === playerId);
   let cities = 0;
   for (const city of state.cities) if (city.ownerId === playerId) cities += 1;
+  const iceFolk = player?.faction === "ICE_FOLK";
   let ships = 0;
   let kills = 0;
   for (const unit of state.units) {
     if (unit.ownerId !== playerId || unit.hp <= 0) continue;
-    if (unit.form === "NAVAL") ships += 1;
+    if (
+      iceFolk
+        ? unit.form === "LAND" &&
+          state.board.tiles[unit.at.y * state.board.width + unit.at.x]
+            ?.biome === null
+        : unit.form === "NAVAL"
+    )
+      ships += 1;
     if (unit.kills > kills) kills = unit.kills;
   }
   return {

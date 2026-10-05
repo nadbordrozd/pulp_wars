@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r43 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r43.current");
-    expect(PRIOR_RULESET_7_IDS.at(-27)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(42);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-27)).toBe(
+  it("keeps r16 among the prior identities after the r44 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r44");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r44.current");
+    expect(PRIOR_RULESET_7_IDS.at(-28)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(43);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-28)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -747,7 +747,16 @@ describe("ruleset-7 Goblin technology", () => {
       GOBLIN: { COMMERCE: "Plunder" },
       DINOSAUR: { FORTIFICATION: "Nesting", EXPLOSIVES: "Wallbreaker" },
       MARTIAN: { FORTIFICATION: "Force Fields", EXPLOSIVES: "Disintegrator" },
-      ICE_FOLK: { FORTIFICATION: "Deep Winter", EXPLOSIVES: "Brittle" },
+      ICE_FOLK: {
+        FORTIFICATION: "Deep Winter",
+        EXPLOSIVES: "Brittle",
+        // The frozen sea (naval branch section 2.2).
+        SHORECRAFT: "Rime",
+        NAVIGATION: "Pack Ice",
+        NAVAL_ENGINEERING: "Icebound",
+        SEAMANSHIP: "Black Ice",
+        SUBMERSIBLES: "Glacier",
+      },
       DWARF: { FORTIFICATION: "Dig In", EXPLOSIVES: "Blasting Charges" },
       CANDY: {
         FORTIFICATION: "Home Sweet Home",

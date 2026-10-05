@@ -106,6 +106,7 @@ describe("the Rift terrain (section 2)", () => {
         engineering,
         navigation: true,
         mountainBorn,
+        ice: false,
       });
     expect(enter("FLY", false)).toBe(true);
     expect(enter("FLY", false, false)).toBe(true);

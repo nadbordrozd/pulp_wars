@@ -19,6 +19,7 @@ import { isResourceRevealedV7, unitRoleRuleV7 } from "../rules/ruleset-v7";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { spatialContributionAtV7 } from "./spatial-economy";
 import { knownWinterV7 } from "./ice-folk";
+import { iceIsPermanentV7 } from "./ice";
 import { crumbsBiteV7 } from "./candy";
 import type {
   BoardSizeV7,
@@ -35,6 +36,7 @@ import type {
   FactionIdV7,
   FactionTreeIdV7,
   GameStateV7,
+  IceTileV7,
   ImprovementIdV7,
   MatchOutcomeV7,
   MatchSetupV7,
@@ -257,6 +259,13 @@ export interface PlayerViewV7 {
    */
   readonly curiosities: readonly CuriosityV7[];
   /**
+   * The naval branch, the frozen sea
+   * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.3): the ice on tiles
+   * the viewer has explored, sorted by (y, x). Ice is public like a unit on
+   * an explored tile: the viewer sees it appear and melt there.
+   */
+  readonly ice: readonly PublicIceTileV7[];
+  /**
    * Map curiosities (section 8.8): every visible Monster (a unit in
    * `units` owned by the neutral owner) with its home and its `provokedBy`
    * filtered to the units the viewer can see, sorted by unit ID.
@@ -339,6 +348,15 @@ export interface PlayerViewV7 {
  */
 export interface PublicCrumbsV7 extends CrumbsV7 {
   readonly bite: number;
+}
+
+/**
+ * The frozen sea (naval branch section 8.3): an ice tile in a player's
+ * view. `permanent`: the tile is in its owner's territory, where the ice
+ * never counts down.
+ */
+export interface PublicIceTileV7 extends IceTileV7 {
+  readonly permanent: boolean;
 }
 
 /** The Dwarf revision (section 5.2): a mound in a player's view. */
@@ -779,6 +797,16 @@ export function viewForV7(
     curiosities: state.curiosities
       .filter((curiosity) => explored.has(key(curiosity.at)))
       .map((curiosity) => ({ kind: curiosity.kind, at: curiosity.at })),
+    // The frozen sea (naval branch section 8.3): ice is public on an
+    // explored tile, with its owner, its countdown, and `permanent`.
+    ice: state.ice
+      .filter((entry) => explored.has(key(entry.at)))
+      .map((entry) => ({
+        at: entry.at,
+        ownerId: entry.ownerId,
+        turnsLeft: entry.turnsLeft,
+        permanent: iceIsPermanentV7(state, entry),
+      })),
     monsters: state.monsters
       .filter((entry) => visibleUnitIds.has(entry.unitId))
       .map((entry) => ({

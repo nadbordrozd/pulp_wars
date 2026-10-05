@@ -38,6 +38,30 @@ export function riftAtV7(
   );
 }
 
+/**
+ * Whether nothing rises on the tile at `at`: a Rift (RULESET_7_RIFT.md
+ * section 4), or a water tile. A land-form unit stands on water only on ice
+ * (the frozen sea, docs/product/RULESET_7_NAVAL_BRANCH.md section 8.3), and
+ * a death on ice is a water death: no Infect or Bitten rising (and no Grave
+ * or Crumbs, which never lie on water).
+ */
+export function noRisingAtV7(
+  board: Parameters<typeof riftAtV7>[0],
+  at: CoordV7,
+): boolean {
+  if (at.x < 0 || at.y < 0 || at.x >= board.width || at.y >= board.height)
+    return false;
+  const tile = board.tiles[at.y * board.width + at.x];
+  return (
+    tile !== undefined &&
+    tile.at.x === at.x &&
+    tile.at.y === at.y &&
+    (tile.terrain === "RIFT" ||
+      tile.terrain === "SHALLOW_WATER" ||
+      tile.terrain === "DEEP_WATER")
+  );
+}
+
 /** The Rift tiles of a board in (y, x) order. */
 export function riftTilesV7(board: BoardStateV7): readonly CoordV7[] {
   return board.tiles

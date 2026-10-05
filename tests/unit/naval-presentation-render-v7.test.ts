@@ -31,6 +31,8 @@ import {
 } from "../../src/render/canvas/target-highlight-v7";
 import {
   BOARD_ALREADY_ACTED_V7,
+  BOARD_ICEBOUND_V7,
+  BOARD_NEEDS_NAVIGATION_V7,
   BOARD_NO_WEAK_SHIP_V7,
   NAVAL_HELP_RULES_V7,
   NAVAL_RAM_LABEL_V7,
@@ -168,6 +170,8 @@ describe("Board on the board plan", () => {
     expect(boardBlockTextV7("TARGET_IMMUNE", null)).toBe("Not a ship");
     expect(boardBlockTextV7("OUT_OF_RANGE", 3)).toBe("Too far");
     expect(boardBlockTextV7("TARGET_HEALTHY", 8)).toBe("Above 8 HP");
+    // Row 10 (`pulp_wars-5ti.3`): a prize on Deep Water without Navigation.
+    expect(boardBlockTextV7("DEEP_WATER", 3)).toBe("Needs Navigation");
   });
 
   it("explains a Board that is not offered only where a ship could be boarded", () => {
@@ -199,6 +203,39 @@ describe("Board on the board plan", () => {
         false,
       ),
     ).toBe(BOARD_NO_WEAK_SHIP_V7);
+    // The frozen sea (`pulp_wars-5ti.3`): the prizes stand on Deep Water
+    // and the viewer has no Navigation; an icebound boarder says so.
+    const deepView = {
+      ...view,
+      viewer: {
+        ...view.viewer,
+        researchedTechs: view.viewer.researchedTechs.filter(
+          (tech) => tech !== "NAVIGATION",
+        ),
+      },
+      board: {
+        ...view.board,
+        tiles: view.board.tiles.map((tile) =>
+          NAVAL_UI_V7.prizes.some(
+            (prize) => prize.x === tile.at.x && prize.y === tile.at.y,
+          )
+            ? { ...tile, terrain: "DEEP_WATER" as const }
+            : tile,
+        ),
+      },
+    };
+    expect(boardUnavailableTextV7(deepView, boarder, false)).toBe(
+      BOARD_NEEDS_NAVIGATION_V7,
+    );
+    const frozenView = {
+      ...view,
+      unitStats: view.unitStats.map((entry) =>
+        entry.unitId === boarder.id ? { ...entry, icebound: true } : entry,
+      ),
+    };
+    expect(boardUnavailableTextV7(frozenView, boarder, false)).toBe(
+      BOARD_ICEBOUND_V7,
+    );
     // Nothing afloat next to a ship: no button at all.
     const alone = viewOf(navalSubmarineUiFixtureV7());
     expect(

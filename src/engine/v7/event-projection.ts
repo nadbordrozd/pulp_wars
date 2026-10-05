@@ -179,6 +179,41 @@ export function projectEventsV7(
         });
       continue;
     }
+    // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 12):
+    // WATER_FROZEN and ICE_MELTED go to every viewer with the tiles it has
+    // explored (before or after the command) and the units it owns or can
+    // see, and are dropped when no tile is left; a viewer that cannot see
+    // the freezing unit gets `unitId` null. UNITS_CRUSHED is projected like
+    // Plague damage.
+    if (event.kind === "WATER_FROZEN" || event.kind === "ICE_MELTED") {
+      const seen = (unitId: UnitId): boolean =>
+        ownedBeforeOrAfter(unitId) ||
+        beforeVisible.has(unitId) ||
+        afterVisible.has(unitId);
+      const tiles = event.tiles.filter((at) =>
+        coordVisible(beforeState, afterState, viewerId, at),
+      );
+      if (tiles.length === 0) continue;
+      if (event.kind === "ICE_MELTED")
+        projected.push({ ...event, tiles, freed: event.freed.filter(seen) });
+      else
+        projected.push({
+          ...event,
+          unitId:
+            event.unitId !== null && seen(event.unitId) ? event.unitId : null,
+          tiles,
+          icebound: event.icebound.filter(seen),
+        });
+      continue;
+    }
+    if (event.kind === "UNITS_CRUSHED") {
+      const results = event.results.filter(
+        (entry) =>
+          ownedBeforeOrAfter(entry.unitId) || beforeVisible.has(entry.unitId),
+      );
+      if (results.length > 0) projected.push({ ...event, results });
+      continue;
+    }
     // The Dwarf revision (section 13.11): a tunnel is projected to its
     // actor and to every viewer that explored one of its tiles (the others
     // hidden); a surfacing like a Rally (the results the viewer owns or can
@@ -623,6 +658,9 @@ function unitIds(event: DomainEventV7): readonly UnitId[] {
     case "UNIT_MIND_CONTROLLED":
     case "SHIP_BOARDED":
       return [event.unitId, event.targetUnitId];
+    // The frozen sea: projected before this switch; the freezing unit.
+    case "WATER_FROZEN":
+      return event.unitId === null ? [] : [event.unitId];
     case "UNIT_SPAWN_DISPLACED":
       return [event.spawnedUnitId, event.displacedUnitId];
     case "UNIT_INFECTED":

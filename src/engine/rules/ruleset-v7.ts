@@ -10,6 +10,7 @@ import {
   RULESET_7_ID,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  isNavalRoleV7,
   type CommandKindV7,
   type FactionIdV7,
   type FactionTreeIdV7,
@@ -204,6 +205,28 @@ export type TechnologyUnlockV7 =
    * Shipyard of the owner gives `population` more live population.
    */
   | { readonly kind: "HARBOURS"; readonly population: 1 }
+  /**
+   * The naval branch, the frozen sea (section 8.4): the owner's units
+   * Freeze Shallow Water (Rime, the Ice Folk `SHORECRAFT`), or Deep Water
+   * too (Pack Ice, the Ice Folk `NAVIGATION`).
+   */
+  | { readonly kind: "FREEZE"; readonly depth: "SHALLOW" | "DEEP" }
+  /**
+   * The frozen sea (section 8.9): Icebound (the Ice Folk
+   * `NAVAL_ENGINEERING`), a Freeze locks a hostile afloat unit in the ice.
+   */
+  | { readonly kind: "ICEBOUND" }
+  /**
+   * The frozen sea (section 8.8): Black Ice (the Ice Folk `SEAMANSHIP`),
+   * hostile land units on the owner's ice are Chilled at its Start Turn.
+   */
+  | { readonly kind: "BLACK_ICE" }
+  /**
+   * The frozen sea (section 8.10): Glacier (the Ice Folk `SUBMERSIBLES`),
+   * the ice the owner makes lasts `iceTurns` of its turns and its units on
+   * ice have Snow cover.
+   */
+  | { readonly kind: "GLACIER"; readonly iceTurns: 5 }
   | { readonly kind: "FIRST_HOSTILE_CAPTURE_SPOILS"; readonly coins: 2 };
 
 export interface TechnologyNodeV7 {
@@ -304,7 +327,10 @@ export type UnitRoleAbilityV7 =
   // Torpedo.
   | "RAM"
   | "SUBMERGED"
-  | "TORPEDO";
+  | "TORPEDO"
+  // The naval branch, the frozen sea (section 8.4): every Ice Folk land
+  // role Freezes.
+  | "FREEZE";
 
 /**
  * The Martian revision (section 7): how a land-form unit moves. `STRIDE`
@@ -2000,7 +2026,24 @@ export const MARTIAN_BASELINE_V1_TREE: FactionTechnologyTreeV7 = deepFreeze({
  * Fortification (displayed as Deep Winter) grants `DEEP_WINTER` instead of
  * `BUILD_FIELD_DEFENSE`, and Explosives (displayed as Brittle) keeps both of
  * its unlocks and adds `BRITTLE`.
+ *
+ * The naval branch, the frozen sea
+ * (docs/product/RULESET_7_NAVAL_BRANCH.md section 2.2): the five Naval nodes
+ * keep their IDs, tiers, prerequisites, and economic unlocks, lose every
+ * ship, the Ram, and Board, and gain the ice unlocks of
+ * `ICE_FOLK_NAVAL_UNLOCKS_V7`. They display as Rime, Pack Ice, Icebound,
+ * Black Ice, and Glacier.
  */
+const ICE_FOLK_NAVAL_UNLOCKS_V7: Readonly<
+  Partial<Record<TechnologyIdV7, readonly TechnologyUnlockV7[]>>
+> = deepFreeze({
+  SHORECRAFT: [{ kind: "FREEZE", depth: "SHALLOW" }],
+  NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
+  NAVAL_ENGINEERING: [{ kind: "ICEBOUND" }],
+  SEAMANSHIP: [{ kind: "BLACK_ICE" }],
+  SUBMERSIBLES: [{ kind: "GLACIER", iceTurns: 5 }],
+});
+/** The Ice Folk technology nodes (see the comment above). */
 export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
   deepFreeze(
     ORIGINAL_BASELINE_V5_NODES.map((original) =>
@@ -2018,11 +2061,20 @@ export const ICE_FOLK_BASELINE_V1_NODES: readonly TechnologyNodeV7[] =
                 : unlock.kind === "COMMAND" &&
                     unlock.command === "BUILD_FIELD_DEFENSE"
                   ? [{ kind: "DEEP_WINTER" }]
-                  : [unlock],
+                  : // The frozen sea (naval branch sections 2.2 and 8.11):
+                    // the Ice Folk tree unlocks no ship, no Ram, and no
+                    // Board.
+                    (unlock.kind === "UNIT_ROLE" &&
+                        isNavalRoleV7(unlock.role)) ||
+                      unlock.kind === "RAM" ||
+                      (unlock.kind === "COMMAND" && unlock.command === "BOARD")
+                    ? []
+                    : [unlock],
           ),
           ...(original.id === "EXPLOSIVES"
             ? [{ kind: "BRITTLE" } as const]
             : []),
+          ...(ICE_FOLK_NAVAL_UNLOCKS_V7[original.id] ?? []),
         ],
       ),
     ),
@@ -2046,7 +2098,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "MOUNTAIN_BORN", "ROCKFALL"],
+    abilities: ["ATTACK", "CAPTURE", "MOUNTAIN_BORN", "ROCKFALL", "FREEZE"],
   }),
   RAIDER: role({
     role: "RAIDER",
@@ -2062,7 +2114,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 2,
     technology: "SCOUTING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "CHARGE", "BOLAS"],
+    abilities: ["ATTACK", "CAPTURE", "CHARGE", "BOLAS", "FREEZE"],
   }),
   MARKSMAN: role({
     role: "MARKSMAN",
@@ -2078,7 +2130,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "MARKSMANSHIP",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "COLD_BLOOD"],
+    abilities: ["ATTACK", "CAPTURE", "COLD_BLOOD", "FREEZE"],
   }),
   GUARD: role({
     role: "GUARD",
@@ -2094,7 +2146,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "DRILL",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE"],
+    abilities: ["ATTACK", "CAPTURE", "SWEEP", "TRAMPLE", "FREEZE"],
   }),
   CAPTAIN: role({
     role: "CAPTAIN",
@@ -2110,7 +2162,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "ADMINISTRATION",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "BLIZZARD", "COLD_SNAP"],
+    abilities: ["ATTACK", "BLIZZARD", "COLD_SNAP", "FREEZE"],
   }),
   CATAPULT: role({
     role: "CATAPULT",
@@ -2126,7 +2178,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "SAWMILLING",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "BOULDERS", "MOUNTAIN_BORN"],
+    abilities: ["ATTACK", "BOULDERS", "MOUNTAIN_BORN", "FREEZE"],
   }),
   KNIGHT: role({
     role: "KNIGHT",
@@ -2142,7 +2194,7 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: "CHIVALRY",
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "PROWL"],
+    abilities: ["ATTACK", "PROWL", "FREEZE"],
   }),
   JUGGERNAUT: role({
     role: "JUGGERNAUT",
@@ -2158,7 +2210,14 @@ export const ICE_FOLK_ROLE_RULES_V7: Readonly<
     sightRadius: 1,
     technology: null,
     mayUsePrimaryActionAfterMove: true,
-    abilities: ["ATTACK", "CAPTURE", "PUSH", "COLD_AURA", "MOUNTAIN_BORN"],
+    abilities: [
+      "ATTACK",
+      "CAPTURE",
+      "PUSH",
+      "COLD_AURA",
+      "MOUNTAIN_BORN",
+      "FREEZE",
+    ],
   }),
   PATROL_BOAT: role({ ...ORIGINAL_ROLE_RULES_V7.PATROL_BOAT }),
   BATTLESHIP: role({ ...ORIGINAL_ROLE_RULES_V7.BATTLESHIP }),
@@ -2727,7 +2786,16 @@ export const TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7: Readonly<
   // The Martian revision: Fortification and Explosives are renamed.
   MARTIAN: { FORTIFICATION: "Force Fields", EXPLOSIVES: "Disintegrator" },
   // The Ice Folk revision: Fortification and Explosives are renamed.
-  ICE_FOLK: { FORTIFICATION: "Deep Winter", EXPLOSIVES: "Brittle" },
+  // The frozen sea (naval branch section 2.2): the five Naval names.
+  ICE_FOLK: {
+    FORTIFICATION: "Deep Winter",
+    EXPLOSIVES: "Brittle",
+    SHORECRAFT: "Rime",
+    NAVIGATION: "Pack Ice",
+    NAVAL_ENGINEERING: "Icebound",
+    SEAMANSHIP: "Black Ice",
+    SUBMERSIBLES: "Glacier",
+  },
   // The Dwarf revision: Fortification and Explosives are renamed.
   DWARF: { FORTIFICATION: "Dig In", EXPLOSIVES: "Blasting Charges" },
   // The Candy revision: Fortification and Explosives are renamed.
@@ -3747,6 +3815,64 @@ export function dockPopulationV7(
   return (improvement === "SHIPYARD" ? 2 : 1) + harbourPopulation;
 }
 
+/** The frozen sea (section 8.5): the turns ice lasts outside its owner's territory. */
+export const ICE_TURNS_V7 = 3;
+/** The frozen sea (section 8.10): the same with Glacier. */
+export const GLACIER_ICE_TURNS_V7 = 5;
+/** The frozen sea (section 8.4): the tiles of a Freeze line. */
+export const FREEZE_LINE_V7 = 2;
+/** The frozen sea (section 8.4): the Ice Witch's Freeze ring (Chebyshev). */
+export const WITCH_FREEZE_RADIUS_V7 = 1;
+/** The frozen sea (section 8.9): the crush of an icebound unit. */
+export const ICE_CRUSH_DAMAGE_V7 = 3;
+/** The frozen sea (section 8.11): Sea Dog for an Ice Folk seat. */
+export const ICE_SEA_DOG_UNITS_V7 = 3;
+
+/**
+ * The frozen sea (section 8.3): anything that lists the ice tiles (a
+ * canonical state, or a view with the ice on tiles its viewer has explored).
+ */
+export interface IceLookupV7 {
+  readonly ice: readonly {
+    readonly at: { readonly x: number; readonly y: number };
+  }[];
+}
+
+/**
+ * The frozen sea (section 8.3) `iceAtV7`: whether `at` is an ice tile of
+ * the lookup. Always false in a match without an Ice Folk seat (the list is
+ * empty).
+ */
+export function isIceAtV7(
+  lookup: IceLookupV7,
+  at: { readonly x: number; readonly y: number },
+): boolean {
+  const ice = lookup.ice;
+  if (ice.length === 0) return false;
+  for (const entry of ice)
+    if (entry.at.x === at.x && entry.at.y === at.y) return true;
+  return false;
+}
+
+/**
+ * The frozen sea (section 8.9) `unitIsIceboundV7`: an afloat unit (`NAVAL`
+ * or `EMBARKED`) standing on an ice tile. Derived, never stored. It cannot
+ * Move, Attack, Board, or retaliate, and no shove, Push, Knockback, or
+ * Tractor Beam moves it.
+ */
+export function unitIsIceboundV7(
+  lookup: IceLookupV7,
+  unit: {
+    readonly form: UnitFormV7;
+    readonly at: { readonly x: number; readonly y: number };
+  },
+): boolean {
+  return (
+    (unit.form === "NAVAL" || unit.form === "EMBARKED") &&
+    isIceAtV7(lookup, unit.at)
+  );
+}
+
 /** The unit facts the naval-branch helpers read (state and public units). */
 export interface NavalBranchUnitFactsV7 {
   readonly id: number;
@@ -3758,15 +3884,19 @@ export interface NavalBranchUnitFactsV7 {
 /**
  * The naval branch (section 5.2): whether the unit is submerged (a
  * `NAVAL`-form unit whose role has `SUBMERGED`: the Submarine). An `ATTACK`
- * on it is legal only from Chebyshev distance 1.
+ * on it is legal only from Chebyshev distance 1. The frozen sea (section
+ * 8.9): an icebound Submarine is not submerged.
  */
 export function unitIsSubmergedV7(
-  roster: FactionRosterV7,
-  unit: NavalBranchUnitFactsV7,
+  roster: FactionRosterV7 & IceLookupV7,
+  unit: NavalBranchUnitFactsV7 & {
+    readonly at: { readonly x: number; readonly y: number };
+  },
 ): boolean {
   return (
     unit.form === "NAVAL" &&
-    unitRoleRuleV7(roster, unit).abilities.includes("SUBMERGED")
+    unitRoleRuleV7(roster, unit).abilities.includes("SUBMERGED") &&
+    !isIceAtV7(roster, unit.at)
   );
 }
 
@@ -3790,14 +3920,18 @@ export function attackIsTorpedoV7(
  * `NAVAL`-form attacker whose role has `RAM` and whose kind's capabilities
  * under its owner have `ram` (Seamanship), that has moved this turn (an
  * interrupted Move counts; `plannedMove` estimates an attack after a planned
- * Move), at Chebyshev distance 1, on a target afloat.
+ * Move), at Chebyshev distance 1, on a target afloat that is not icebound
+ * (the frozen sea, section 8.9: no ram moves a ship frozen in).
  */
 export function attackIsRamV7(
-  roster: FactionRosterV7,
+  roster: FactionRosterV7 & IceLookupV7,
   attacker: NavalBranchUnitFactsV7 & {
     readonly activation: { readonly moved: boolean };
   },
-  target: { readonly form: UnitFormV7 },
+  target: {
+    readonly form: UnitFormV7;
+    readonly at: { readonly x: number; readonly y: number };
+  },
   distance: number,
   attackerOwnerResearchedTechs: readonly TechnologyIdV7[],
   plannedMove = false,
@@ -3807,6 +3941,7 @@ export function attackIsRamV7(
     distance === 1 &&
     (attacker.activation.moved || plannedMove) &&
     (target.form === "NAVAL" || target.form === "EMBARKED") &&
+    !isIceAtV7(roster, target.at) &&
     unitRoleRuleV7(roster, attacker).abilities.includes("RAM") &&
     unitCapabilitiesV7(roster, attacker, attackerOwnerResearchedTechs).ram
   );
@@ -3893,6 +4028,14 @@ export function halfPowerAttack2V7(attack2: number): number {
  *   Forest, Mountain, and Shallow Water, nothing else (the Martian revision
  *   section 7.4).
  *
+ * - Ice (the frozen sea, docs/product/RULESET_7_NAVAL_BRANCH.md section
+ *   8.3; `ice`: the tile is a water tile with an ice entry): ground for
+ *   every unit that is not afloat, whatever the depth and without
+ *   Navigation or Engineering, and never entered by an afloat unit. A
+ *   caller that places something that may not stand on ice (an Egg, a
+ *   reward or treasure unit, a rising, a mound) passes `ice: false`, so the
+ *   tile stays water for it.
+ *
  * Occupancy, settlement sites, territory, and exploration are not terrain
  * and stay with each caller.
  */
@@ -3903,7 +4046,13 @@ export function canEnterTerrainV7(input: {
   readonly engineering: boolean;
   readonly navigation: boolean;
   readonly mountainBorn: boolean;
+  readonly ice: boolean;
 }): boolean {
+  if (
+    input.ice &&
+    (input.terrain === "SHALLOW_WATER" || input.terrain === "DEEP_WATER")
+  )
+    return !input.afloat;
   switch (input.terrain) {
     case "GRASS":
     case "FOREST":
@@ -3931,6 +4080,11 @@ export function canEnterTerrainV7(input: {
  * Move unless the unit is Mountain-born, and a Forest unless the unit has
  * Forest freedom (Fieldcraft); a step along a Road edge (both ends usable
  * Road nodes for the mover) waives both.
+ *
+ * Slip (the frozen sea, docs/product/RULESET_7_NAVAL_BRANCH.md section
+ * 8.7): entering an ice tile (`ice`) ends the Move of a ground unit that is
+ * not of the Ice Folk kind (`iceFolk`). No Road edge and no Fieldcraft
+ * waives it.
  */
 export function terrainStopsMoveV7(input: {
   readonly terrain: TerrainIdV7;
@@ -3938,12 +4092,33 @@ export function terrainStopsMoveV7(input: {
   readonly mountainBorn: boolean;
   readonly ignoresForest: boolean;
   readonly roadEdge: boolean;
+  readonly ice: boolean;
+  readonly iceFolk: boolean;
 }): boolean {
+  if (input.movementMode !== "GROUND") return false;
+  if (input.ice && !input.iceFolk) return true;
   return (
-    input.movementMode === "GROUND" &&
     !input.roadEdge &&
     ((input.terrain === "MOUNTAIN" && !input.mountainBorn) ||
       (input.terrain === "FOREST" && !input.ignoresForest))
+  );
+}
+
+/**
+ * Whether the tree of `faction` unlocks `role` for training (the Fighter is
+ * always trainable). The frozen sea (naval branch section 8.11): the Ice
+ * Folk tree unlocks no ship, so `TRAIN_NAVAL` is refused for an Ice Folk
+ * seat whatever it researched.
+ */
+export function factionUnlocksRoleV7(
+  faction: FactionIdV7,
+  role: UnitRoleIdV7,
+): boolean {
+  return (
+    role === "FIGHTER" ||
+    factionTreeV7(faction).nodes.some((item) =>
+      item.unlockedRoles.includes(role),
+    )
   );
 }
 
@@ -3990,6 +4165,7 @@ export function unitMayEnterMountainV7(
     engineering,
     navigation: false,
     mountainBorn: unitRoleMechanicsV7(roster, unit).mountainBorn,
+    ice: false,
   });
 }
 
@@ -4184,6 +4360,22 @@ export interface TechnologyCapabilitiesV7 {
    * `HARBOUR_POPULATION_V7`).
    */
   readonly harbourPopulation: 0 | 1;
+  /**
+   * The frozen sea (naval branch section 8.4): what the units of the player
+   * Freeze: nothing, Shallow Water (Rime), or Deep Water too (Pack Ice).
+   */
+  readonly freezeWater: "NONE" | "SHALLOW" | "DEEP";
+  /** The frozen sea (section 8.9): a Freeze locks hostile afloat units in. */
+  readonly icebound: boolean;
+  /** The frozen sea (section 8.8): Black Ice. */
+  readonly blackIce: boolean;
+  /**
+   * The frozen sea (sections 8.5 and 8.10): `turnsLeft` of the ice the
+   * player makes (`ICE_TURNS_V7`, or `GLACIER_ICE_TURNS_V7` with Glacier).
+   */
+  readonly iceTurns: number;
+  /** The frozen sea (section 8.10): Glacier's Snow cover on ice. */
+  readonly iceCover: boolean;
 }
 
 export function technologyCapabilitiesV7(
@@ -4239,6 +4431,12 @@ export function technologyCapabilitiesV7(
   let crumbsBite = 0;
   let ram = false;
   let harbourPopulation: 0 | 1 = 0;
+  let freezeShallow = false;
+  let freezeDeep = false;
+  let icebound = false;
+  let blackIce = false;
+  let iceTurns: number = ICE_TURNS_V7;
+  let iceCover = false;
   for (const unlock of unlocks)
     switch (unlock.kind) {
       case "COMMAND":
@@ -4346,6 +4544,20 @@ export function technologyCapabilitiesV7(
       case "HARBOURS":
         harbourPopulation = unlock.population;
         break;
+      case "FREEZE":
+        if (unlock.depth === "DEEP") freezeDeep = true;
+        else freezeShallow = true;
+        break;
+      case "ICEBOUND":
+        icebound = true;
+        break;
+      case "BLACK_ICE":
+        blackIce = true;
+        break;
+      case "GLACIER":
+        iceTurns = unlock.iceTurns;
+        iceCover = true;
+        break;
       case "CONFECTIONER_SUPPORT":
       case "ENGINEER_SUPPORT":
       case "WITCH_SUPPORT":
@@ -4407,6 +4619,12 @@ export function technologyCapabilitiesV7(
     ram,
     boarding: commands.has("BOARD"),
     harbourPopulation,
+    // Pack Ice requires Rime, so `DEEP` implies the shallows.
+    freezeWater: freezeDeep ? "DEEP" : freezeShallow ? "SHALLOW" : "NONE",
+    icebound,
+    blackIce,
+    iceTurns,
+    iceCover,
   });
   TECHNOLOGY_CAPABILITIES_CACHE_V7.set(cacheKey, result);
   if (TECHNOLOGY_CAPABILITIES_CACHE_V7.size > 32) {

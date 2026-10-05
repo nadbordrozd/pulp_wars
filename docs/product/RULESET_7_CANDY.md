@@ -61,7 +61,7 @@ in it like every other faction: [sections 2.4](#24-setup) and
 [16](#16-naval-branch)).
 
 **Ruleset ID:** `pulp-wars-poc-7r38` (the engine bead's identity; the
-current identity is `pulp-wars-poc-7r43`). The contract was written when
+current identity is `pulp-wars-poc-7r44`). The contract was written when
 `main` was at `pulp-wars-poc-7r35` and named no number: **`7rNN` and `v7rNN`
 stand for `7r38` and `v7r38` everywhere below, and "the previous identity"
 for `pulp-wars-poc-7r37`.**

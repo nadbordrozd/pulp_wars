@@ -27,6 +27,9 @@ import {
   SNOW_COVER_V7,
   terrainGivesCoverV7,
   terrainStopsMoveV7,
+  isIceAtV7,
+  factionUnlocksRoleV7,
+  unitIsIceboundV7,
   unitCapacitySlotsV7,
   unitIsMountainBornV7,
   unitIsSluggishV7,
@@ -50,6 +53,7 @@ import {
   unitAvoidsForeignSitesV7,
   unitGlidesV7,
   unitIgnoresZocStopsV7,
+  unitOwnerIsIceFolkV7,
 } from "../engine/v7/ice-folk";
 import { validatePlayerMovementPassagePathV7 } from "../engine/v7/movement";
 import {
@@ -73,6 +77,7 @@ import {
 } from "../engine/v7/query";
 import {
   COMMAND_KIND_ORDER_V7,
+  NAVAL_ROLE_IDS_V7,
   REWARD_IDS_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
@@ -1879,7 +1884,14 @@ function* hasReplacementPathWorkV7(
           continue;
         const passedOnly = ownOccupied.has(key);
         if (passedOnly && validation.stopped) continue;
-        if (!passedOnly && same(next, target)) return true;
+        // The frozen sea: a prefix that ends where a slide continues is
+        // not a legal Move end.
+        if (
+          !passedOnly &&
+          validation.slideContinues === undefined &&
+          same(next, target)
+        )
+          return true;
         best.set(key, validation.spentPoints2);
         if (!validation.stopped) queue.push(candidate);
       }
@@ -2069,6 +2081,17 @@ function* navalPlanWorkV7(
   // pulp_wars-68k.3: no naval plan while Shorecraft is forbidden (the Dry
   // Land Naval branch, or a mission that forbids it; CAMPAIGN.md 2.3).
   if (forbiddenTechnologiesV7(view.setup).has("SHORECRAFT"))
+    return NO_NAVAL_PLAN_V7;
+  // The frozen sea engine (`pulp_wars-5ti.3`, RULESET_7_NAVAL_BRANCH.md
+  // section 17): a seat whose tree unlocks no ship (the Ice Folk) has no
+  // ship and cannot embark, so it has no naval plan: no Port for embarking,
+  // no transport, no escort. It plays on its own landmass until the ice
+  // plan of `pulp_wars-5ti.5`.
+  if (
+    !NAVAL_ROLE_IDS_V7.some((role) =>
+      factionUnlocksRoleV7(view.viewer.faction, role),
+    )
+  )
     return NO_NAVAL_PLAN_V7;
   const tilesByKey = new Map(
     view.board.tiles.map((tile) => [coordKey(tile.at), tile]),
@@ -3070,6 +3093,9 @@ function* publicThreatenedTilesWorkV7(
   const wail = publicWailThreatV7(view, unit);
   if (!wail && (!facts.abilities.includes("ATTACK") || facts.attack2 <= 0))
     return [];
+  // The frozen sea (`pulp_wars-5ti.3`): an icebound unit cannot move or
+  // attack, so it threatens nothing.
+  if (unitIsIceboundV7(view, unit)) return [];
   const minimumRange = wail ? 1 : facts.minimumRange;
   const maximumRange = wail ? WAIL_THREAT_RADIUS_V7 : facts.maximumRange;
   // Revision 17: a goblin-crewed land unit may Kaboom after any Move (even a
@@ -3179,6 +3205,13 @@ function* publicThreatenedTilesWorkV7(
             mountainBorn: unitIsMountainBornV7(view, unit),
             ignoresForest: false,
             roadEdge,
+            // The frozen sea (`pulp_wars-5ti.3`, correctness only): known
+            // ice is ground on which another faction's ground unit slips.
+            // An Ice Folk unit's slide is left out of this estimate (it
+            // walks the ice here); the ice rules of the policy are
+            // `pulp_wars-5ti.5`.
+            ice: isIceAtV7(view, tile.at),
+            iceFolk: unitOwnerIsIceFolkV7(view, unit),
           });
         const snowStop =
           deepSnow && !roadEdge && tile.explored && tile.snow === true;
@@ -3296,7 +3329,11 @@ function publicMovementTilePossible(
     publicPlayersAllied(view, unit.ownerId, tile.territoryOwnerId)
   )
     return false;
+  // The frozen sea (`pulp_wars-5ti.3`): known ice is ground for a land-form
+  // unit and closed to a unit afloat.
+  const ice = isIceAtV7(view, tile.at);
   if (unit.form === "LAND") {
+    if (ice) return true;
     // The Martian revision: a walker or flyer enters a Mountain without
     // Engineering and crosses Shallow Water (Deep Water needs its owner's
     // private Navigation, so the estimate leaves it out).
@@ -3321,7 +3358,7 @@ function publicMovementTilePossible(
         ))
     );
   }
-  return tile.biome === null;
+  return tile.biome === null && !ice;
 }
 
 /**
@@ -3349,6 +3386,10 @@ function isPolicyCandidate(
   command: CommandV7,
 ): boolean {
   if (command.kind === "WAIT") return false;
+  // The frozen sea engine (`pulp_wars-5ti.3`, RULESET_7_NAVAL_BRANCH.md
+  // section 17): until the ice plan of `pulp_wars-5ti.5` the policy Freezes
+  // nothing. The command is offered only to an Ice Folk seat with Rime.
+  if (command.kind === "FREEZE") return false;
   // The Candy revision (`pulp_wars-jdb.4`, RULESET_7_CANDY.md section 14):
   // a Rush only with a plan, and the one Re-bake and the one Toss per unit
   // the Candy rules chose (their scores reject the others). With a group

@@ -361,6 +361,44 @@ describe("BOARD legality, in the spec's order", () => {
       }).code,
     ).toBe("NOT_ACTIVE_PLAYER");
   });
+
+  it("row 10: a prize on Deep Water needs the actor's Navigation (it keeps its tile)", () => {
+    // `pulp_wars-5ti.3`: no seat owns a ship on Deep Water without
+    // Navigation, so this Board was offered and then refused as an invalid
+    // state. A boarder on Shallow Water next to a target on Deep Water.
+    const build = (technologies: readonly TechnologyIdV7[]) => {
+      const base = navalArenaV7({
+        technologies: [technologies, NAVAL_TECHS_V7],
+        units: [
+          { seat: 0, role: "PATROL_BOAT", at: { x: 2, y: 3 } },
+          { seat: 1, role: "PATROL_BOAT", at: { x: 2, y: 4 } },
+        ],
+      });
+      const target = navalUnitAtV7(base, { x: 2, y: 4 });
+      return {
+        state: patchNavalUnitV7(base, target.id, { hp: 1 }),
+        command: {
+          kind: "BOARD",
+          unitId: navalUnitAtV7(base, { x: 2, y: 3 }).id,
+          targetUnitId: target.id,
+        } satisfies CommandV7,
+      };
+    };
+    const offered = (state: GameStateV7) =>
+      queryPlayerCommandsV7(viewForV7(state, seatV7(state, 0).id)).filter(
+        (command) => command.kind === "BOARD",
+      );
+    const without = build(["SHORECRAFT", "SEAMANSHIP"]);
+    expect(rejectV7(without.state, 0, without.command)).toEqual({
+      code: "BOARD_NOT_LEGAL",
+      params: { reason: "DEEP_WATER" },
+    });
+    expect(offered(without.state)).toEqual([]);
+    const withNavigation = build(["SHORECRAFT", "NAVIGATION", "SEAMANSHIP"]);
+    expect(offered(withNavigation.state)).toEqual([withNavigation.command]);
+    const result = acceptV7(withNavigation.state, 0, withNavigation.command);
+    expect(parseGameStateV7(result.state)).not.toBeNull();
+  });
 });
 
 describe("BOARD result", () => {

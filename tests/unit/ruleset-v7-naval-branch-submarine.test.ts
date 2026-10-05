@@ -37,6 +37,11 @@ import {
 // Submarine, Submerged (attacked only from an adjacent tile), and Torpedo
 // (it attacks only units afloat, which never strike back).
 
+/** Every faction but the Ice Folk, who have no ships (the frozen sea). */
+const SEAFARING_FACTIONS = FACTION_IDS_V7.filter(
+  (faction) => faction !== "ICE_FOLK",
+);
+
 const WITHOUT_SUBMERSIBLES: readonly TechnologyIdV7[] = [
   "SHORECRAFT",
   "NAVIGATION",
@@ -64,7 +69,7 @@ function attacks(state: GameStateV7, seat: 0 | 1, unitId: number): number[] {
 
 describe("training a Submarine", () => {
   it("is trained with TRAIN_NAVAL at an active empty dock for 9 Coins by every faction with Submersibles", () => {
-    for (const faction of FACTION_IDS_V7) {
+    for (const faction of SEAFARING_FACTIONS) {
       const other: FactionIdV7 = faction === "ORIGINAL" ? "UNDEAD" : "ORIGINAL";
       const state = navalArenaV7({ factions: [faction, other], units: [] });
       const actor = seatV7(state, 0);

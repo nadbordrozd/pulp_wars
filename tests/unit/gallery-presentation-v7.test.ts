@@ -3,6 +3,7 @@ import {
   FACTION_IDS_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
+  isNavalRoleV7,
 } from "../../src/engine/index";
 import {
   DEFAULT_GALLERY_FILTERS_V7,
@@ -41,7 +42,10 @@ describe("Gallery presentation", () => {
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7) {
         const cell = galleryUnitCellV7(role, faction);
-        expect(cell.kind).toBe("UNIT");
+        // The frozen sea: the Ice Folk have no ships (an empty cell).
+        expect(cell.kind).toBe(
+          faction === "ICE_FOLK" && isNavalRoleV7(role) ? "EMPTY" : "UNIT",
+        );
         if (cell.kind !== "UNIT") continue;
         expect(cell.name).toBe(effectiveRoleRuleV7(role, faction).label);
         expect(cell.subject.startsWith("UNIT:")).toBe(true);
@@ -246,6 +250,8 @@ describe("Gallery animation preview scenes", () => {
   it("plays every role's first cue on the demo board", () => {
     for (const faction of FACTION_IDS_V7)
       for (const role of UNIT_ROLE_IDS_V7) {
+        // A faction without the role has an empty cell (Ice Folk ships).
+        if (galleryUnitCellV7(role, faction).kind === "EMPTY") continue;
         const cues = galleryDemoCuesV7(faction, role);
         expect(cues.length, `${faction} ${role}`).toBeGreaterThan(0);
         const scene = buildGalleryDemoSceneV7(

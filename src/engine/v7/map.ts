@@ -3911,6 +3911,8 @@ function initialMapStateFromV7(
       monster === null ? entities.units : [...entities.units, monster.unit],
     treasureChests: generated.map.treasureChests,
     curiosities: generated.map.curiosities,
+    // The frozen sea (naval branch section 8.3): no ice at the start.
+    ice: [],
     monsters: monster === null ? [] : [monster.entry],
     graves: [],
     plagued: [],
@@ -3974,6 +3976,8 @@ function showcaseInitialStateV7(
     units: entities.units,
     treasureChests: [],
     curiosities: [],
+    // The frozen sea (naval branch section 3.3): an Ice Folk seat's ice.
+    ice: entities.ice,
     monsters: [],
     graves: [],
     plagued: [],

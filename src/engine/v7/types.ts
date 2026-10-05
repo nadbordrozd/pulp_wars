@@ -5,7 +5,7 @@ export const COMMAND_SCHEMA_VERSION_7 = 7 as const;
 export const EVENT_SCHEMA_VERSION_7 = 7 as const;
 export const SAVE_FORMAT_VERSION_7 = 7 as const;
 export const REPLAY_FORMAT_VERSION_7 = 7 as const;
-export const RULESET_7_ID = "pulp-wars-poc-7r43" as const;
+export const RULESET_7_ID = "pulp-wars-poc-7r44" as const;
 /**
  * Every earlier Ruleset 7 identity, oldest first. Readers report these as
  * incompatible (never invalid). An identity bump must append the outgoing
@@ -54,8 +54,9 @@ export const PRIOR_RULESET_7_IDS = Object.freeze([
   "pulp-wars-poc-7r40",
   "pulp-wars-poc-7r41",
   "pulp-wars-poc-7r42",
+  "pulp-wars-poc-7r43",
 ] as const);
-export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r43.current" as const;
+export const SAVE_STORAGE_KEY_V7 = "pulpWars.save.v7r44.current" as const;
 /**
  * The map generator a setup names (docs/product/RULESET_7_MAP_SCALE.md
  * section 8.8): `V4` is the many-seats generator of `pulp_wars-ykw.3`
@@ -211,6 +212,9 @@ export const COMMAND_KIND_ORDER_V7 = Object.freeze([
   // The Ice Folk revision: the Sled's Bolas and the Ice Witch's Cold Snap.
   "THROW_BOLAS",
   "COLD_SNAP",
+  // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4):
+  // an Ice Folk land unit turns the water next to it to ice.
+  "FREEZE",
   // The Dwarf revision: the Steam Mole's Tunnel, the Gyrocopter's bombing
   // run, and the Engineer's Assemble.
   "TUNNEL",
@@ -342,6 +346,11 @@ export const DOMAIN_EVENT_KIND_ORDER_V7 = Object.freeze([
   "UNITS_RALLIED",
   // The Ice Folk revision: a Bolas, a Cold Snap, or a Cold Aura chilled units.
   "UNITS_CHILLED",
+  // The naval branch (sections 8.4, 8.5, and 8.9): a Freeze made ice; ice
+  // melted at an End Turn; icebound units were crushed at a Start Turn.
+  "WATER_FROZEN",
+  "ICE_MELTED",
+  "UNITS_CRUSHED",
   // The Candy revision: a unit went on a Sugar Rush.
   "UNIT_SUGAR_RUSHED",
   "WOUNDED_TENDED",
@@ -742,6 +751,13 @@ export interface GameStateV7 {
    */
   readonly curiosities: readonly CuriosityV7[];
   /**
+   * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.3):
+   * the ice tiles, sorted by (y, x), at most one entry per tile. An ice
+   * tile is a water tile (never a dock) with an entry; its terrain does not
+   * change. Always empty in a match whose setup has no ICE_FOLK seat.
+   */
+  readonly ice: readonly IceTileV7[];
+  /**
    * Map curiosities (section 10.2): one entry per Giant Spider on the board
    * (a unit owned by `NEUTRAL_OWNER_ID_V7`), sorted by `unitId`. Always
    * empty when `setup.curiosities` is false and on the Showcase and mission
@@ -855,6 +871,18 @@ export interface GameStateV7 {
   readonly tossedThisTurn: readonly UnitId[];
   readonly pendingChoices: readonly PendingChoiceV7[];
   readonly outcome: MatchOutcomeV7 | null;
+}
+
+/**
+ * The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.3): one
+ * ice tile. `ownerId` is the player whose unit froze it last; `turnsLeft`
+ * (0 to 5) counts that owner's End Turns before it melts, and does not
+ * count down while the tile is in its owner's territory.
+ */
+export interface IceTileV7 {
+  readonly at: CoordV7;
+  readonly ownerId: PlayerId;
+  readonly turnsLeft: number;
 }
 
 /**

@@ -117,7 +117,7 @@ describe("which tiles are Snow (section 6.1)", () => {
     expect(isSnowV7(witch, at(4, 3))).toBe(true);
   });
 
-  it("follows the Witch's Move, her death, and her embarking, and never stores anything", () => {
+  it("follows the Witch's Move and her death, and never stores anything (a Witch never embarks since the frozen sea)", () => {
     let state = iceFieldV7(
       [
         { seat: 0, role: "CAPTAIN", at: at(4, 3) },
@@ -143,15 +143,6 @@ describe("which tiles are Snow (section 6.1)", () => {
     );
     const killed = attackV7(dying, at(5, 3), at(4, 3));
     expect(isSnowV7(killed.state, at(3, 3))).toBe(false);
-    // Embarked: no Blizzard.
-    const afloat = iceFieldV7(
-      [
-        { seat: 0, role: "CAPTAIN", at: at(4, 2), form: "EMBARKED" },
-        { seat: 1, role: "FIGHTER", at: at(1, 1) },
-      ],
-      { techs: { 0: [] }, water: [at(4, 2)] },
-    );
-    expect(isSnowV7(afloat, at(4, 3))).toBe(false);
   });
 
   it("follows the owner: a captured Ice Folk city stops being Snow, a city the Ice Folk capture becomes Snow", () => {

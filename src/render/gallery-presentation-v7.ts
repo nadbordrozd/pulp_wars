@@ -10,6 +10,7 @@ import {
   SPATIAL_ECONOMIC_ACTIONS_V7,
   UNIT_ROLE_IDS_V7,
   effectiveRoleRuleV7,
+  factionUnlocksRoleV7,
   isEggLaidRoleV7,
   isNavalRoleV7,
   roleMechanicsV7,
@@ -232,6 +233,16 @@ export function galleryUnitCellV7(
   row: GalleryUnitRowIdV7,
   faction: FactionIdV7,
 ): GalleryUnitCellV7 {
+  // The frozen sea (naval branch section 8.11): a faction whose tree unlocks
+  // no ship (the Ice Folk) has no ship and no transport.
+  if (
+    (row === "TRANSPORT" && !factionUnlocksRoleV7(faction, "PATROL_BOAT")) ||
+    (row !== "TRANSPORT" &&
+      row !== "EGG" &&
+      isNavalRoleV7(row) &&
+      !factionUnlocksRoleV7(faction, row))
+  )
+    return { kind: "EMPTY", row, faction };
   if (row === "TRANSPORT")
     return {
       kind: "UNIT",

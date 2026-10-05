@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r43`. Role facts resolve through the unit's
+previews under `pulp-wars-poc-7r44`. Role facts resolve through the unit's
 kind (`unitFactionV7`: its owner's faction registration, or its original
 owner's while it is mind-controlled,
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14
@@ -281,7 +281,14 @@ units the seat trains only the naval role its plan asks for, in every match
 plan never asks for one, and the policy does not yet use the Ram, Board, or
 Submarines on purpose
 ([naval branch overlay, section 13.1](../product/RULESET_7_NAVAL_BRANCH.md#131-seafaring-seats-bead-5ti4),
-`pulp_wars-5ti.4`). The plan still becomes active
+`pulp_wars-5ti.4`). Since the frozen sea (`pulp_wars-5ti.3`, `7r44`) an Ice
+Folk seat has no ships: it makes no naval plan, `FREEZE` is never a policy
+candidate, and its units reach only what they can walk to (ice that exists
+included). Every seat's threat estimate treats ice as ground for land units,
+gives a slipping unit one tile of ice, and gives an icebound unit no threat;
+it does not follow a slide
+([naval branch overlay, sections 13.2 and 13.3](../product/RULESET_7_NAVAL_BRANCH.md#132-the-ice-folk-bead-5ti5),
+`pulp_wars-5ti.5`). The plan still becomes active
 only as before, so a seat with objectives on its own land does not start an
 invasion across the water; see the limits below.
 

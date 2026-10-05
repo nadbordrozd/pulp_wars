@@ -18,7 +18,7 @@ import type { DomainEventV7, PlagueDamageEntryV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
 import { releaseControlledV7 } from "./martian";
 import { unitSightRadiusAtV7 } from "./movement";
-import { riftAtV7 } from "./rift";
+import { noRisingAtV7 } from "./rift";
 import type {
   CoordV7,
   GameStateV7,
@@ -97,7 +97,7 @@ export function resolveStartTurnPlagueV7(
     if (
       bite !== undefined &&
       victim.form === "LAND" &&
-      !riftAtV7(state.board, victim.at)
+      !noRisingAtV7(state.board, victim.at)
     ) {
       const allocation = allocateUnitId(nextEntityId);
       nextEntityId = allocation.nextEntityId;

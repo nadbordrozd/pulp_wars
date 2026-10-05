@@ -99,7 +99,7 @@ import { at, kindsV7, movedV7 } from "../fixtures/v7-revision20";
 // (docs/product/RULESET_7_MARTIANS.md sections 2 to 4, 10.9, 10.10, and 11).
 
 /** The revision number of this identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 43;
+const REVISION = 44;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 
@@ -263,7 +263,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
   });
 
   it("has the new kinds at the stated positions (48 command and 76 event kinds; the Ice Folk revision adds two and one, the Dwarf revision three and four)", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(57);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(58);
     const hatch = COMMAND_KIND_ORDER_V7.indexOf("HATCH");
     expect(COMMAND_KIND_ORDER_V7.slice(hatch, hatch + 4)).toEqual([
       "HATCH",
@@ -276,7 +276,7 @@ describe("Martian faction registration (sections 2 and 11)", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(97);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
     const after = (kind: string) =>
       DOMAIN_EVENT_KIND_ORDER_V7[
         DOMAIN_EVENT_KIND_ORDER_V7.indexOf(kind as never) + 1

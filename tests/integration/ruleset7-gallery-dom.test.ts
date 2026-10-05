@@ -170,11 +170,13 @@ describe("Ruleset 7 Gallery", () => {
       "TRANSPORT",
       "EGG",
     ]);
-    // 12 rows of eight units, and one Egg.
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(97);
+    // 12 rows of eight units, and one Egg; the Ice Folk have no ships and
+    // no transport since the frozen sea (`pulp_wars-5ti.3`): four empty
+    // cells more.
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(93);
     expect(
       document.querySelectorAll(".v7-gallery-cell-wrap.is-empty"),
-    ).toHaveLength(7);
+    ).toHaveLength(11);
     expect(cell("FIGHTER", "UNDEAD").getAttribute("aria-label")).toBe(
       "Skeleton, Undead",
     );
@@ -256,7 +258,7 @@ describe("Ruleset 7 Gallery", () => {
     );
     required<HTMLButtonElement>('[data-action="gallery-factions-all"]').click();
     required<HTMLButtonElement>('[data-action="gallery-rows-all"]').click();
-    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(97);
+    expect(document.querySelectorAll(".v7-gallery-cell")).toHaveLength(93);
   });
 
   it("survives storage that throws", () => {

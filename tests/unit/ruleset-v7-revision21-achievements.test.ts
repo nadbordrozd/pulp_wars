@@ -684,7 +684,9 @@ describe("ruleset-7 revision-21 Sea Dog", () => {
       : []),
   ];
 
-  it.each(FACTIONS)(
+  // An Ice Folk seat has no ships: its Sea Dog counts land units on ice
+  // (tests/unit/ruleset-v7-frozen-sea-ground.test.ts).
+  it.each(FACTIONS.filter((faction) => faction !== "ICE_FOLK"))(
     "unlocks for %s with three naval units at its Start Turn, once",
     (faction) => {
       const state = fieldV7(ships(3, false), {

@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r43`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
+## Current release contract (`pulp-wars-poc-7r44`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
 
-The current runtime is `pulp-wars-poc-7r43` (autosave
-`pulpWars.save.v7r43.current`; saves and replays of `pulp-wars-poc-7r42`
+The current runtime is `pulp-wars-poc-7r44` (autosave
+`pulpWars.save.v7r44.current`; saves and replays of `pulp-wars-poc-7r43`
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -226,6 +226,17 @@ a headless water match was recomputed. A Dry Land match plays the same
 commands as at `7r42`. The overlay is not folded into the current rules yet
 (`pulp_wars-5ti.9`); the Normal AI's use of the branch, its art, and its
 interface are later beads (`pulp_wars-5ti.4`, `5ti.6`, `5ti.7`).
+`pulp_wars-5ti.3` (`7r44`) is engine step II of the same overlay, the Ice
+Folk frozen sea: the Ice Folk tree has no ship, and its five Naval
+technologies give Freeze, the slide, Icebound and the crush, Black Ice, and
+Glacier, with the command `FREEZE`, the state and view list `ice`, the
+events `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED`, and the
+combat-preview fields `iceCover` and `icebound`. Generated boards did not
+change; an Ice Folk Showcase seat has ice where its three boats stood. A
+match without an Ice Folk seat plays the same commands as at `7r43`; the one
+pinned headless match that changed has an Ice Folk seat on Continents. The
+Ice Folk Normal AI's use of the ice and the interface for `FREEZE` are later
+beads (`pulp_wars-5ti.5`, `5ti.7`).
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
 Dwarves, and the Candy are part of the default route: match setup always
 offers a
@@ -246,7 +257,7 @@ Candy have no balance report); the release does not rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r43` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r44` identity (ruleset ID, autosave key, the
   map revision `REGIONAL_BIOMES_NAVAL_V4`, the
   eight-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`/`CANDY`
@@ -263,7 +274,9 @@ Candy have no balance report); the release does not rerun their matrices.
   numbers, faction, Rush, Crumbs, combat, interactions, persistence, and
   headless) and the Candy Normal AI suite, the naval branch engine suites
   (`tests/unit/ruleset-v7-naval-branch-*.test.ts`: identity, Ram, Board,
-  Submarine, Harbours, persistence, and headless), the mission, curiosity, Giant
+  Submarine, Harbours, persistence, and headless) and the frozen sea suites
+  (`tests/unit/ruleset-v7-frozen-sea-*.test.ts`: identity, Freeze, slide,
+  turns, Icebound, ground, persistence, and headless), the mission, curiosity, Giant
   Spider, owner-reader, and Martian and Ice Folk balance-round suites named
   above, persistence, and the DOM shell and
   landing tests (the Goblin explosion, the other AI, and the

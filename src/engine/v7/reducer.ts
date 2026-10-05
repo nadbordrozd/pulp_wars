@@ -32,6 +32,9 @@ import {
   canEnterTerrainV7,
   effectiveRoleRuleV7,
   flyerMayStandOnSiteV7,
+  factionUnlocksRoleV7,
+  isIceAtV7,
+  unitIsIceboundV7,
   unitFliesV7,
   unitIsMountainBornV7,
   unitMovementModeV7,
@@ -59,6 +62,14 @@ import {
   type SpatialEconomicCommandKindV7,
 } from "../rules/ruleset-v7";
 import { hasExactKeysV7 } from "./schema";
+import {
+  freezeSetV7,
+  resolveBlackIceV7,
+  resolveIceCrushV7,
+  resolveThawV7,
+  unitFreezesRingV7,
+  withFrozenV7,
+} from "./ice";
 import {
   attackMaximumRangeV7,
   canBeChilledV7,
@@ -179,7 +190,7 @@ import { unitSightRadiusAtV7, validateMovementPathV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import { parseGameStateV7 } from "./state-schema";
 import { wailResultEntriesV7, wailTargetsV7 } from "./wail";
-import { isRiftTerrainV7, riftAtV7 } from "./rift";
+import { isRiftTerrainV7, noRisingAtV7 } from "./rift";
 import { allOwnedUnitsV7, tileOccupiedV7 } from "./units";
 import {
   applyAssembleV7,
@@ -323,7 +334,12 @@ export type RuleErrorCodeV7 =
   // an illegal Board (`NOT_A_SHIP`, `TARGET_IMMUNE`, `OUT_OF_RANGE`,
   // `TARGET_HEALTHY`). A torpedo at a land unit is `ATTACK_NOT_LEGAL` with
   // the reason `NOT_AFLOAT` (section 5.3).
-  | "BOARD_NOT_LEGAL";
+  | "BOARD_NOT_LEGAL"
+  // The frozen sea (section 8.4): an illegal Freeze (`OUT_OF_RANGE`,
+  // `NO_TARGET`). An icebound unit's Attack is `ATTACK_NOT_LEGAL`, its
+  // Board `BOARD_NOT_LEGAL`, and its Move `MOVEMENT_ILLEGAL`, each with the
+  // reason `ICEBOUND` (section 8.9).
+  | "FREEZE_NOT_LEGAL";
 export interface RuleErrorV7 {
   readonly code: RuleErrorCodeV7;
   readonly params: Readonly<Record<string, JsonValue>>;
@@ -734,6 +750,8 @@ function applyCommandCoreV7(
     return applyThrowBolas(stateInput, state, actor, command);
   if (command.kind === "COLD_SNAP")
     return applyColdSnap(stateInput, state, actor, command.unitId);
+  if (command.kind === "FREEZE")
+    return applyFreeze(stateInput, state, actor, command);
   if (command.kind === "TUNNEL")
     return applyTunnelV7(DWARF_KIT_V7, stateInput, state, actor, command);
   if (command.kind === "BOMB_RUN")
@@ -1564,6 +1582,8 @@ function applyPort(
   );
   if (
     tile.terrain !== "SHALLOW_WATER" ||
+    // The frozen sea (naval branch section 8.3): no Port on ice.
+    isIceAtV7(state, at) ||
     tile.improvement !== null ||
     tile.site !== null ||
     tile.road ||
@@ -1712,6 +1732,10 @@ function applyTrainNaval(
   if (!city.cityActionAvailable)
     return rejected(original, "CITY_ACTION_SPENT", { cityId: city.id });
   const player = requirePlayer(state, actor);
+  // The frozen sea (naval branch section 8.11): a tree that unlocks no ship
+  // (the Ice Folk's) never trains one, whatever the seat researched.
+  if (!factionUnlocksRoleV7(player.faction, command.role))
+    return rejected(original, "UNIT_ROLE_INVALID", { role: command.role });
   const rule = effectiveRoleRuleV7(command.role, player.faction);
   const tile = tileAtV7(state.board, command.at);
   if (
@@ -1827,6 +1851,9 @@ function applyDisembark(
         ownerId: unit.ownerId,
         role: unit.role,
       }),
+      // The frozen sea (naval branch section 8.3): a transport may land on
+      // adjacent ice (an icebound one too: the crew climbs out).
+      ice: isIceAtV7(state, command.at),
     }) ||
     (territoryOwner !== undefined &&
       territoryOwner !== actor &&
@@ -2368,6 +2395,7 @@ function applyBeamDown(
         explored: isExplored(player, command.to),
         site: tile.site,
         terrain: tile.terrain,
+        ice: isIceAtV7(state, command.to),
         // The Dwarf revision section 5.3: the occupancy predicate.
         occupied: tileOccupiedV7(state, command.to),
         chest: state.treasureChests.some((chest) => same(chest, command.to)),
@@ -2685,6 +2713,7 @@ function applyTractorBeam(
       explored: isExplored(player, step),
       site: tile.site,
       terrain: tile.terrain,
+      ice: isIceAtV7(state, step),
       // The Dwarf revision section 5.3: the occupancy predicate.
       occupied: tileOccupiedV7(state, step, target.id),
       chest: state.treasureChests.some((chest) => same(chest, step)),
@@ -2888,6 +2917,117 @@ function applyColdSnap(
         ),
       }),
       [unitsChilledEventV7(actor, witch.id, "COLD_SNAP", applied.results)],
+    );
+  } catch (cause) {
+    return arithmeticFailure(original, cause);
+  }
+}
+
+/**
+ * The naval branch, the frozen sea
+ * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4): `FREEZE`. An Ice
+ * Folk land unit turns the water next to it to ice: two tiles out in a
+ * straight line from `at` (the Ice Witch: every tile around her, with `at`
+ * her own tile). It is a primary action, not an Attack, and costs no Coins.
+ * Every tile of the freeze set gets (or refreshes) an entry owned by the
+ * actor, and with Icebound a hostile afloat unit on a frozen tile is locked
+ * in the ice. A Freeze moves no unit and touches no dock.
+ */
+function applyFreeze(
+  original: GameStateV7,
+  state: GameStateV7,
+  actor: PlayerId,
+  command: Extract<CommandV7, { kind: "FREEZE" }>,
+): ApplyCommandResultV7 {
+  if (state.commandIndex === Number.MAX_SAFE_INTEGER)
+    return rejected(original, "INTEGER_OVERFLOW");
+  const actorCheck = validateUnitActor(state, actor, command.unitId);
+  if (!actorCheck.ok)
+    return rejected(original, actorCheck.code, actorCheck.params);
+  const unit = actorCheck.unit;
+  if (
+    unit.form !== "LAND" ||
+    !unitRoleRuleV7(state, unit).abilities.includes("FREEZE")
+  )
+    return rejected(original, "UNIT_ROLE_INVALID", { role: unit.role });
+  const player = requirePlayer(state, actor);
+  // A unit-level unlock (the Mind Control revision section 5.2): the
+  // controller's research through the unit's kind's tree.
+  const capabilities = unitCapabilitiesV7(state, unit, player.researchedTechs);
+  if (capabilities.freezeWater === "NONE")
+    return rejected(original, "TECH_REQUIRED", { tech: "SHORECRAFT" });
+  if (
+    unit.activation.overrunActive ||
+    primaryUsed(unit) ||
+    primaryActionBlockedAfterMoveV7(state, unit)
+  )
+    return rejected(original, "UNIT_ALREADY_ACTED", { unitId: unit.id });
+  const ring = unitFreezesRingV7(state, unit);
+  if (ring ? !same(command.at, unit.at) : chebyshev(command.at, unit.at) !== 1)
+    return rejected(original, "FREEZE_NOT_LEGAL", { reason: "OUT_OF_RANGE" });
+  const frozen = freezeSetV7({
+    from: unit.at,
+    at: command.at,
+    ring,
+    freezeWater: capabilities.freezeWater,
+    icebound: capabilities.icebound,
+    tileAt: (at) => {
+      const tile = tileAtV7(state.board, at);
+      if (tile === undefined) return undefined;
+      const occupant = state.units.find(
+        (candidate) => candidate.hp > 0 && same(candidate.at, at),
+      );
+      return {
+        explored: isExplored(player, at),
+        terrain: tile.terrain,
+        improvement: tile.improvement,
+        ice: isIceAtV7(state, at),
+        unit:
+          occupant === undefined
+            ? null
+            : {
+                id: occupant.id,
+                form: occupant.form,
+                hostile: arePlayersHostileV7(state, actor, occupant.ownerId),
+              },
+      };
+    },
+  });
+  if (frozen.tiles.length === 0)
+    return rejected(original, "FREEZE_NOT_LEGAL", { reason: "NO_TARGET" });
+  try {
+    return accepted(
+      checked({
+        ...state,
+        commandIndex: nextSafe(state.commandIndex),
+        ice: withFrozenV7(
+          state.ice,
+          frozen.tiles,
+          actor,
+          capabilities.iceTurns,
+        ),
+        units: state.units.map((candidate) =>
+          candidate.id === unit.id
+            ? {
+                ...candidate,
+                activation: {
+                  ...candidate.activation,
+                  specialActed: true,
+                  handled: true,
+                },
+              }
+            : candidate,
+        ),
+      }),
+      [
+        {
+          kind: "WATER_FROZEN",
+          playerId: actor,
+          unitId: unit.id,
+          tiles: frozen.tiles,
+          icebound: frozen.icebound,
+        },
+      ],
     );
   } catch (cause) {
     return arithmeticFailure(original, cause);
@@ -3265,10 +3405,13 @@ function applyMove(
   // it embarks there with the ordinary result of embarking. No Port needed.
   const movementMode =
     unit.form === "LAND" ? unitMovementModeV7(state, unit) : "GROUND";
+  // The frozen sea (naval branch section 10): a machine that ends its Move
+  // on ice stands there (no self-launch).
   const selfLaunches =
     movementMode !== "GROUND" &&
     validation.traversedPath.length > 0 &&
-    destinationTile?.biome === null;
+    destinationTile?.biome === null &&
+    !isIceAtV7(state, validation.destination);
   const embarks = autoEmbarks || selfLaunches;
   try {
     const treasure = resolveTreasure(
@@ -3584,6 +3727,8 @@ function treasureKnightPlacement(
           engineering: player.researchedTechs.includes("ENGINEERING"),
           navigation: player.researchedTechs.includes("NAVIGATION"),
           mountainBorn: mechanics.mountainBorn,
+          // The frozen sea: no treasure unit is placed on ice.
+          ice: false,
         }) ||
         // The Dwarf revision section 5.3: the occupancy predicate.
         tileOccupiedV7(state, candidate) ||
@@ -3615,6 +3760,10 @@ function applyAttack(
   const attacker = actorCheck.unit;
   if (attacker.form === "EMBARKED")
     return rejected(original, "ATTACK_NOT_LEGAL", { reason: "EMBARKED" });
+  // The frozen sea (naval branch section 8.9): an icebound ship is frozen
+  // solid and cannot attack.
+  if (unitIsIceboundV7(state, attacker))
+    return rejected(original, "ATTACK_NOT_LEGAL", { reason: "ICEBOUND" });
   const rule = unitRoleRuleV7(state, attacker);
   // The Dwarf revision section 6.1: a Gyrocopter has no ordinary attack.
   if (rule.abilities.includes("BOMB_RUN") && !rule.abilities.includes("ATTACK"))
@@ -3734,6 +3883,10 @@ function applyBoard(
     primaryActionBlockedAfterMoveV7(state, boarder)
   )
     return rejected(original, "UNIT_ALREADY_ACTED", { unitId: boarder.id });
+  // The frozen sea (naval branch section 4.2 row 4a): an icebound ship
+  // cannot board (an icebound target may be boarded, and stays icebound).
+  if (unitIsIceboundV7(state, boarder))
+    return rejected(original, "BOARD_NOT_LEGAL", { reason: "ICEBOUND" });
   const target = state.units.find(
     (unit) => unit.id === command.targetUnitId && unit.hp > 0,
   );
@@ -3743,7 +3896,12 @@ function applyBoard(
     });
   if (!arePlayersHostileV7(state, actor, target.ownerId))
     return rejected(original, "TARGET_ALLIED");
-  const block = boardTargetBlockV7(boarder, target);
+  const block = boardTargetBlockV7(
+    boarder,
+    target,
+    tileAtV7(state.board, target.at)?.terrain,
+    ownerResearchedTechsV7(state, actor).includes("NAVIGATION"),
+  );
   if (block !== null)
     return rejected(original, "BOARD_NOT_LEGAL", { reason: block });
   try {
@@ -3850,6 +4008,9 @@ function resolveAttackExchangeV7(
         ),
         navigation: false,
         mountainBorn: unitIsMountainBornV7(state, attacker),
+        // Only a Mountain or a Rift reaches here (an advance onto ice is
+        // an advance onto water terrain, admitted above).
+        ice: false,
       }));
   // The Candy revision section 8: the Bounce is read after the advance, so
   // an advance the resolution refuses is refused for the Bounce too.
@@ -4050,7 +4211,7 @@ function resolveAttackExchangeV7(
     if (
       bite === undefined ||
       victim.form !== "LAND" ||
-      riftAtV7(state.board, victim.at)
+      noRisingAtV7(state.board, victim.at)
     ) {
       // The Ice Folk revision section 5.5: a shattered unit leaves no
       // Grave (the Candy revision section 12.6: it leaves its Crumbs).
@@ -5513,7 +5674,11 @@ function applyEndTurn(
     // player's units, after the Force Fields recharge (no event).
     // The Dwarf revision (sections 5.4 and 6.3): the per-turn lists of the
     // active seat are emptied after the Chill countdown.
-    const counted = chillCountdownV7(fields.state, actor);
+    const chillCounted = chillCountdownV7(fields.state, actor);
+    // The frozen sea (naval branch section 8.5): the thaw, after the Chill
+    // countdown and before the income preview.
+    const thaw = resolveThawV7(chillCounted, actor);
+    const counted = thaw.state;
     // The Martian balance revision (`pulp_wars-1wy.3`): so are the beamed
     // passengers and the used free Tractor Beams.
     const emptied =
@@ -5569,7 +5734,17 @@ function applyEndTurn(
       );
       // The Ice Folk revision section 7.8: the Cold Aura runs after the
       // Shield recharge and before Plague.
-      const aura = resolveColdAuraV7(recharge.state, nextPlayer.id);
+      const coldAura = resolveColdAuraV7(recharge.state, nextPlayer.id);
+      // The frozen sea (naval branch section 9): Black Ice, then the crush,
+      // after the Cold Aura and before Plague.
+      const frozen = resolveStartTurnIceV7(coldAura.state, nextPlayer.id);
+      const aura =
+        frozen.events.length === 0
+          ? coldAura
+          : {
+              state: frozen.state,
+              events: [...coldAura.events, ...frozen.events],
+            };
       // The Dwarf revision section 5.4: the burrowed Moles surface after the
       // Shield recharge (and the Cold Aura) and before Plague.
       const surfacing = resolveStartTurnSurfacingV7(
@@ -5607,6 +5782,7 @@ function applyEndTurn(
       [
         ...recovery.events,
         ...fields.events,
+        ...thaw.events,
         ...candy.events,
         {
           kind: "INCOME_PREVIEWED",
@@ -5868,7 +6044,7 @@ function applyWail(
       if (
         bite === undefined ||
         victim.form !== "LAND" ||
-        riftAtV7(state.board, victim.at)
+        noRisingAtV7(state.board, victim.at)
       ) {
         graves = recordCombatDeathV7(state, graves, victim, "WAIL", events);
         continue;
@@ -6138,13 +6314,86 @@ function applyKaboom(
  * chain's rising reveals, and the live economy when a unit died. Runs inside
  * the Start Turn before Windmill healing.
  */
+/**
+ * The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.8 and
+ * 8.9) at the Start Turn of `playerId`: Black Ice, then the crush. A crushed
+ * unit is a death afloat: no credit and no Grave. A crushed Brain (an
+ * embarked one) releases its controlled unit right after its death, an
+ * embarked exploding unit explodes on its tile, and the live economy is
+ * recomputed (a crushed unit may have besieged a city).
+ */
+function resolveStartTurnIceV7(
+  state: GameStateV7,
+  playerId: PlayerId,
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  if (state.ice.length === 0) return { state, events: [] };
+  const blackIce = resolveBlackIceV7(state, playerId);
+  const crush = resolveIceCrushV7(blackIce.state, playerId);
+  if (crush.events.length === 0) return blackIce;
+  const events: DomainEventV7[] = [...blackIce.events, ...crush.events];
+  if (crush.dead.length === 0) return { state: crush.state, events };
+  const release = releaseControlledV7(
+    crush.state.units,
+    crush.state.burrowed,
+    crush.state.mindControlled,
+    crush.state.players,
+    events,
+  );
+  const released: GameStateV7 = {
+    ...crush.state,
+    units: [...release.units],
+    burrowed: release.burrowed,
+    mindControlled: release.mindControlled,
+  };
+  const economy = recomputeLiveEconomyV7(
+    blackIce.state,
+    { board: released.board, cities: released.cities, units: released.units },
+    released.populationContributions,
+  );
+  events.push(...economyAndGrowth(economy.changes));
+  return withDeathBlastChainV7(
+    blackIce.state,
+    {
+      state: {
+        ...released,
+        cities: economy.cities,
+        populationContributions: economy.populationContributions,
+      },
+      events,
+    },
+    "CRUSHED",
+  );
+}
+
 function resolveStartTurnPlagueAndChainV7(
   state: GameStateV7,
   playerId: PlayerId,
 ): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
-  const plague = resolveStartTurnPlagueV7(state, playerId);
+  return withDeathBlastChainV7(
+    state,
+    resolveStartTurnPlagueV7(state, playerId),
+    "PLAGUE",
+  );
+}
+
+/**
+ * Revision 17 section 6.7: the death blasts of the exploding units a Start
+ * Turn step killed (`UNIT_DIED` with `cause` in `result.events`, read from
+ * `state`, the state before the step), with the chain they start, its
+ * Plunder, risings, and the live economy. Returns `result` itself when no
+ * exploding unit died.
+ */
+function withDeathBlastChainV7(
+  state: GameStateV7,
+  result: {
+    readonly state: GameStateV7;
+    readonly events: readonly DomainEventV7[];
+  },
+  cause: "PLAGUE" | "CRUSHED",
+): { readonly state: GameStateV7; readonly events: readonly DomainEventV7[] } {
+  const plague = result;
   const initial = plague.events.flatMap((event) => {
-    if (event.kind !== "UNIT_DIED" || event.cause !== "PLAGUE") return [];
+    if (event.kind !== "UNIT_DIED" || event.cause !== cause) return [];
     const victim = requireValue(
       state.units.find((unit) => unit.id === event.unitId),
     );
@@ -6547,6 +6796,8 @@ function rewardDisplacementCellV7(
           engineering: owner.researchedTechs.includes("ENGINEERING"),
           navigation: owner.researchedTechs.includes("NAVIGATION"),
           mountainBorn: unitIsMountainBornV7(state, unit),
+          // A displacement tile is land (its biome is not null).
+          ice: false,
         })
       )
         return false;

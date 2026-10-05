@@ -533,17 +533,8 @@ describe("Who can be Chilled (section 5.2)", () => {
     expect(rejectedV7(eggs, bolas(eggs, at(3, 5), at(2, 7))).params).toEqual({
       reason: "TARGET_IMMUNE",
     });
-    // An embarked Sled cannot throw.
-    const afloat = iceFieldV7(
-      [
-        { seat: 0, role: "RAIDER", at: at(5, 2), form: "EMBARKED" },
-        { seat: 1, role: "FIGHTER", at: at(5, 3) },
-      ],
-      { water: [at(5, 2)] },
-    );
-    expect(
-      rejectedV7(afloat, bolas(afloat, at(5, 2), at(5, 3))).params,
-    ).toEqual({ reason: "EMBARKED" });
+    // (No embarked Sled since the frozen sea, `pulp_wars-5ti.3`: an Ice Folk
+    // unit never embarks, so the EMBARKED row cannot be reached.)
     // A hidden target is not found.
     const hidden = checkedV7({
       ...state,
@@ -720,19 +711,8 @@ describe("Cold Snap (section 6.4)", () => {
         unitId: unitAtV7(hidden, at(5, 3)).id,
       }).params,
     ).toEqual({ reason: "NO_TARGET" });
-    const afloat = iceFieldV7(
-      [
-        { seat: 0, role: "CAPTAIN", at: at(5, 2), form: "EMBARKED" },
-        { seat: 1, role: "FIGHTER", at: at(5, 3) },
-      ],
-      { water: [at(5, 2)] },
-    );
-    expect(
-      rejectedV7(afloat, {
-        kind: "COLD_SNAP",
-        unitId: unitAtV7(afloat, at(5, 2)).id,
-      }).params,
-    ).toEqual({ reason: "EMBARKED" });
+    // (No embarked Witch since the frozen sea, `pulp_wars-5ti.3`: the
+    // EMBARKED row cannot be reached.)
     const yeti = iceFieldV7([
       { seat: 0, role: "FIGHTER", at: at(5, 3) },
       { seat: 1, role: "FIGHTER", at: at(5, 4) },

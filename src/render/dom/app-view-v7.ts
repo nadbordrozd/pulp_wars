@@ -642,6 +642,9 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // button per ship that arms it; the ship to capture is picked on the
   // board (docs/ui/BOARD_TARGETING.md section 3.4).
   "BOARD",
+  // The frozen sea engine (bead pulp_wars-5ti.3): likewise Freeze, which
+  // aims at one of the eight tiles around the unit.
+  "FREEZE",
 ]);
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
 export const OWN_UNIT_PASS_THROUGH_TEXT_V7 =
@@ -4198,7 +4201,21 @@ export class Ruleset7DomAppView {
         }
         // The Ice Folk revision (section 13.2): what Snow and a Blizzard do
         // for the viewer's faction.
+        // The frozen sea (naval branch section 8.3, `pulp_wars-5ti.3`): a
+        // plain chip for an ice tile until the naval UI bead.
+        const iceHere = view.ice.find(
+          (entry) => entry.at.x === tile.at.x && entry.at.y === tile.at.y,
+        );
+        const iceTooltip =
+          iceHere === undefined
+            ? ""
+            : `Ice: land units stand here and ships cannot enter. ${
+                iceHere.permanent
+                  ? "It does not melt in its owner's territory"
+                  : `It melts in ${String(iceHere.turnsLeft)} of its owner's turns unless a land unit stands on it`
+              }`;
         for (const [shown, label, tooltip, kind] of [
+          [iceHere !== undefined, "Ice", iceTooltip, "ice"],
           [tile.snow === true, SNOW_LABEL_V7, snowTooltipV7(view), "snow"],
           [
             tile.blizzard === true,
@@ -9320,7 +9337,7 @@ function setupFrom(draft: DraftV7): MatchSetupV7 | null {
   if (!Number.isSafeInteger(seed) || seed < 0 || seed > 0xffff_ffff)
     return null;
   return {
-    rulesetId: "pulp-wars-poc-7r43",
+    rulesetId: "pulp-wars-poc-7r44",
     seed,
     width: effectiveBoardSize(draft),
     height: effectiveBoardSize(draft),
@@ -9431,6 +9448,19 @@ function effectDescription(
       return NAVAL_RAM_UNLOCK_V7;
     case "HARBOURS":
       return harboursUnlockTextV7(effect.population);
+    // The naval branch engine, the frozen sea (`pulp_wars-5ti.3`): the plain
+    // sentences of RULESET_7_NAVAL_BRANCH.md section 8.2, until the naval
+    // interface (`pulp_wars-5ti.7`).
+    case "FREEZE":
+      return effect.depth === "DEEP"
+        ? "Freeze: the deep sea freezes too"
+        : "Freeze: a unit turns the water next to it to ice, two tiles out in a straight line (the Ice Witch: every tile around her); your units slide across ice";
+    case "ICEBOUND":
+      return "Icebound: freeze a ship in place; it cannot sail, shoot, or strike back, and the ice crushes it for 3 each turn";
+    case "BLACK_ICE":
+      return "Black Ice: whoever stands on your ice at the start of your turn is frosted";
+    case "GLACIER":
+      return `Glacier: your ice lasts ${effect.iceTurns} turns and your units on it have Snow cover`;
     case "UNIT_ROLE":
       return label(effect.role);
     case "RESOURCE_REVEAL":
@@ -9639,6 +9669,9 @@ function technologyEffectGroupIdV7(
   switch (effect.kind) {
     case "UNIT_ROLE":
       return "UNITS";
+    // The frozen sea: Freeze is an action of the units.
+    case "FREEZE":
+      return "ACTIONS";
     case "COMMAND":
       return effect.command.startsWith("BUILD_") &&
         effect.command !== "BUILD_ROAD"
@@ -9684,6 +9717,9 @@ function technologyEffectGroupIdV7(
     case "PEPPERMINT_SURPRISE":
     case "RAM":
     case "HARBOURS":
+    case "ICEBOUND":
+    case "BLACK_ICE":
+    case "GLACIER":
     case "OVERRUN":
     case "CHARGE_BONUS":
     case "MELEE_FIELD_DEMOLITION":

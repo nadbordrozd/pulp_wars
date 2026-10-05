@@ -4,6 +4,8 @@ import {
   canCrossWaterV7,
   canEnterTerrainV7,
   flyerMayStandOnSiteV7,
+  isIceAtV7,
+  unitIsIceboundV7,
   isMindControlledV7,
   technologyCapabilitiesV7,
   ownerResearchedTechsV7,
@@ -34,6 +36,7 @@ import {
   isUnitVisibleToPlayerV7,
   withUnitAtForObservationV7,
 } from "./observation";
+import { iceIndexSetV7, unitKindWalksIceV7, unitSlidesV7 } from "./ice";
 import { tileAtV7 } from "./spatial-economy";
 import type {
   CoordV7,
@@ -66,7 +69,14 @@ export type MovementFailureReasonV7 =
   // another faction's ground unit, so a path cannot continue past it.
   | "SNOW_STOPS_MOVE"
   // The Dwarf revision section 5.3: no Move ends on a mound tile.
-  | "MOUND";
+  | "MOUND"
+  // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.6,
+  // 8.7, and 8.9): a path that stops or turns where a slide continues; a
+  // path that continues past an ice tile a slipping unit entered; a Move of
+  // an icebound unit.
+  | "SLIDE_FORCED"
+  | "ICE_STOPS_MOVE"
+  | "ICEBOUND";
 
 export type MovementPathResultV7 =
   | {
@@ -75,6 +85,14 @@ export type MovementPathResultV7 =
       readonly traversedPath: readonly CoordV7[];
       readonly spentPoints2: number;
       readonly stopped: boolean;
+      /**
+       * The frozen sea (section 8.6), route searches only: the path ends on
+       * an ice tile from which the unit's slide continues, in this
+       * direction. Such a path is a prefix, never a legal `MOVE` (which is
+       * rejected with `SLIDE_FORCED`); only the pass-through probe of the
+       * enumerations returns it.
+       */
+      readonly slideContinues?: { readonly dx: number; readonly dy: number };
       readonly explored: readonly CoordV7[];
       readonly revealed: readonly CoordV7[];
       readonly interruption: {
@@ -90,7 +108,9 @@ export type MovementPathResultV7 =
           | "SNOW"
           // The Dwarf revision: a mound on a tile the mover had not
           // explored, met on the last tile of the Move.
-          | "MOUND";
+          | "MOUND"
+          // The frozen sea: ice a slipping unit had not known before.
+          | "ICE";
       } | null;
     }
   | { readonly legal: false; readonly reason: MovementFailureReasonV7 };
@@ -188,23 +208,50 @@ function validateMovementPathWithOptionsV7(
   const prowls = unitIgnoresZocStopsV7(state, unit);
   const ownSitesOnly = flies || unitAvoidsForeignSitesV7(state, unit);
   let currentSnow = snowAt(current);
+  // The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md sections 8.3,
+  // 8.6, 8.7, and 8.9): ice is read once, from the state before the command.
+  // It is ground for a land-form unit and closed to a unit afloat; an Ice
+  // Folk unit slides on it (forced, at no cost), another faction's ground
+  // unit slips (its Move ends there), and an icebound unit never moves.
+  const iceSet = iceIndexSetV7(state, state.board.width);
+  const iceAt = (at: CoordV7): boolean =>
+    iceSet.size > 0 && iceSet.has(at.y * state.board.width + at.x);
+  if (unit.form !== "LAND" && iceAt(unit.at))
+    return { legal: false, reason: "ICEBOUND" };
+  const slides = iceSet.size > 0 && unitSlidesV7(state, unit);
+  const iceFolkKind = unitKindWalksIceV7(state, unit);
+  /** The direction the next step must take: the slide continues. */
+  let slide: { readonly dx: number; readonly dy: number } | null = null;
 
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
     if (step === undefined) throw new RangeError("INVALID_STATE");
     if (chebyshev(current, step) !== 1)
       return { legal: false, reason: "NOT_ADJACENT" };
+    // Section 8.6: the slide is forced; a path that turns is rejected.
+    const sliding = slide !== null;
+    if (
+      slide !== null &&
+      (step.x !== current.x + slide.dx || step.y !== current.y + slide.dy)
+    )
+      return { legal: false, reason: "SLIDE_FORCED" };
+    slide = null;
     const tile = tileAtV7(state.board, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     const wasExplored = contains(explored, step);
     const wasKnownBeforeCommand = contains(knownBeforeCommand, step);
+    const stepIce = iceAt(step);
     // The Ice Folk balance revision (`pulp_wars-1wy.3`,
     // RULESET_7_BALANCE_MARTIAN_ICE.md section 6.1): Glide is a step from a
     // Snow tile onto a Snow tile (both ends read from the state before the
-    // command); it never adds to a Road node's half cost.
+    // command); it never adds to a Road node's half cost. A slid tile costs
+    // nothing.
     const stepSnow = snowAt(step);
-    spentPoints2 +=
-      currentRoadNode || (glides && currentSnow && stepSnow) ? 1 : 2;
+    spentPoints2 += sliding
+      ? 0
+      : currentRoadNode || (glides && currentSnow && stepSnow)
+        ? 1
+        : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     const owner = tileOwner(state, tile);
@@ -216,10 +263,13 @@ function validateMovementPathWithOptionsV7(
         candidate.hp > 0 &&
         same(candidate.at, step),
     );
-    // A flyer passes over a unit of any owner; no Move ends on a unit.
+    // A flyer passes over a unit of any owner; no Move ends on a unit. The
+    // frozen sea (section 10): a sliding unit never passes a unit on ice,
+    // own or not.
     const passesOwnUnit =
       occupant !== undefined &&
       (occupant.ownerId === unit.ownerId || flies) &&
+      !(slides && stepIce) &&
       (passThroughProbe || index < path.length - 1);
     const occupied = occupant !== undefined && !passesOwnUnit;
     // The Dwarf revision section 5.3: a Move may pass over a mound tile but
@@ -249,10 +299,14 @@ function validateMovementPathWithOptionsV7(
         interruption: { at: step, reason: "MOUND" },
       };
     }
+    // Section 8.3: an ice tile is ground, not water, for a land-form unit.
     const water =
-      tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER";
+      (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
+      !stepIce;
+    // Section 8.11: a unit of the Ice Folk kind never embarks.
     const autoEmbark =
       unit.form === "LAND" &&
+      !iceFolkKind &&
       index === path.length - 1 &&
       (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
       tile.territoryCityId !== null &&
@@ -282,6 +336,7 @@ function validateMovementPathWithOptionsV7(
               engineering: capabilities.mountainMovement,
               navigation,
               mountainBorn,
+              ice: stepIce,
             })
         : !canEnterTerrainV7({
             terrain: tile.terrain,
@@ -290,6 +345,7 @@ function validateMovementPathWithOptionsV7(
             engineering: capabilities.mountainMovement,
             navigation,
             mountainBorn: false,
+            ice: stepIce,
           });
     // The Martian revision section 7.2: a flyer may pass over a settlement
     // center it does not own but never ends a Move there (the Ice Folk
@@ -377,22 +433,64 @@ function validateMovementPathWithOptionsV7(
     // by terrain; the Ice Folk revision section 7.1: nor is a Mountain-born
     // unit by a Mountain.
     const roadEdge = currentRoadNode && stepRoadNode;
+    // The frozen sea section 8.7: slip (a ground unit of another kind ends
+    // its Move on entering ice).
+    const iceStops =
+      stepIce && unit.form === "LAND" && mode === "GROUND" && !iceFolkKind;
     const groundStops = terrainStopsMoveV7({
       terrain: tile.terrain,
       movementMode: mode,
       mountainBorn,
       ignoresForest,
       roadEdge,
+      ice: stepIce && unit.form === "LAND",
+      iceFolk: iceFolkKind,
     });
     // The Ice Folk revision section 6.2 (3): deep snow, waived by a Road edge.
     const snowStops = snowStopped && stepSnow && !roadEdge;
     const terrainStops = groundStops || snowStops;
     const stops = !wasExplored || terrainStops || entersZoc;
+    // Section 8.6: a step that entered ice the mover knew of continues
+    // straight on while the next tile in that direction is on the board,
+    // known before the command, ice, and free of units and mounds, and
+    // while the tile it is on is not in a hostile zone of control.
+    if (slides && stepIce && wasKnownBeforeCommand && !stops) {
+      const dx = step.x - current.x;
+      const dy = step.y - current.y;
+      const next = { x: step.x + dx, y: step.y + dy };
+      if (
+        tileAtV7(state.board, next) !== undefined &&
+        contains(knownBeforeCommand, next) &&
+        iceAt(next) &&
+        !tileOccupiedV7(state, next, unit.id)
+      )
+        slide = { dx, dy };
+    }
     traversedPath.push(step);
     current = step;
     currentRoadNode = stepRoadNode;
     currentSnow = stepSnow;
     if (stops && index < path.length - 1) {
+      // The frozen sea: ice a slipping unit had not known before the
+      // command interrupts the Move there instead of rejecting it.
+      if (iceStops && wasExplored && !wasKnownBeforeCommand) {
+        const entered = lastFreeEnteredPath(
+          state,
+          unit,
+          traversedPath,
+          ownSitesOnly,
+        );
+        return {
+          legal: true,
+          destination: entered.at(-1) ?? unit.at,
+          traversedPath: entered,
+          spentPoints2,
+          stopped: true,
+          explored,
+          revealed: unique(revealed),
+          interruption: { at: step, reason: "ICE" },
+        };
+      }
       // Section 6.5: Snow the mover could not know about (a hidden Witch's
       // Blizzard) interrupts the Move there instead of rejecting it. Every
       // Blizzard tile is next to its Witch, so this Move usually meets her
@@ -442,13 +540,15 @@ function validateMovementPathWithOptionsV7(
         legal: false,
         reason: !wasExplored
           ? "UNEXPLORED_INTERMEDIATE"
-          : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
-            ? "MOUNTAIN_STOPS_MOVE"
-            : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
-              ? "FOREST_STOPS_MOVE"
-              : snowStops
-                ? "SNOW_STOPS_MOVE"
-                : "ZOC_STOPS_MOVE",
+          : iceStops
+            ? "ICE_STOPS_MOVE"
+            : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
+              ? "MOUNTAIN_STOPS_MOVE"
+              : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
+                ? "FOREST_STOPS_MOVE"
+                : snowStops
+                  ? "SNOW_STOPS_MOVE"
+                  : "ZOC_STOPS_MOVE",
       };
     }
     if (stops)
@@ -463,12 +563,17 @@ function validateMovementPathWithOptionsV7(
         interruption: null,
       };
   }
+  // Section 8.6: a path that stops where a slide continues is rejected; a
+  // route search extends it instead.
+  if (slide !== null && !passThroughProbe)
+    return { legal: false, reason: "SLIDE_FORCED" };
   return {
     legal: true,
     destination: current,
     traversedPath,
     spentPoints2,
     stopped: false,
+    ...(slide === null ? {} : { slideContinues: slide }),
     explored,
     revealed: unique(revealed),
     interruption: null,
@@ -509,7 +614,15 @@ export function reachableMovementPathsV7(
       )
         continue;
       const destinationKey = key(validation.destination);
-      const prior = best.get(destinationKey);
+      // The frozen sea (naval branch section 8.6): a prefix that ends where
+      // a slide continues is a passing state of its own (the tile and the
+      // direction), never a destination.
+      const pending = validation.slideContinues;
+      const stateKey =
+        pending === undefined
+          ? destinationKey
+          : `${destinationKey}>${pending.dx},${pending.dy}`;
+      const prior = best.get(stateKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
       // only when the Move would not have to stop on it. The Martian
@@ -534,8 +647,8 @@ export function reachableMovementPathsV7(
             unit.ownerId,
           ));
       if (ownOccupied && validation.stopped) continue;
-      best.set(destinationKey, validation.spentPoints2);
-      if (!ownOccupied)
+      best.set(stateKey, validation.spentPoints2);
+      if (!ownOccupied && pending === undefined)
         results.set(destinationKey, {
           destination: validation.destination,
           path: candidate,
@@ -581,7 +694,15 @@ export function reachablePlayerMovementPathsV7(
       )
         continue;
       const destinationKey = key(validation.destination);
-      const prior = best.get(destinationKey);
+      // The frozen sea (naval branch section 8.6): a prefix that ends where
+      // a slide continues is a passing state of its own (the tile and the
+      // direction), never a destination.
+      const pending = validation.slideContinues;
+      const stateKey =
+        pending === undefined
+          ? destinationKey
+          : `${destinationKey}>${pending.dx},${pending.dy}`;
+      const prior = best.get(stateKey);
       if (prior !== undefined && prior <= validation.spentPoints2) continue;
       // An own-occupied tile is never a destination; it is only passed, and
       // only when the Move would not have to stop on it. The Martian
@@ -597,8 +718,8 @@ export function reachablePlayerMovementPathsV7(
         (ownSitesOnly &&
           !publicFlyerMayStandV7(view, unit, publicTileAt(view, destination)));
       if (ownOccupied && validation.stopped) continue;
-      best.set(destinationKey, validation.spentPoints2);
-      if (!ownOccupied)
+      best.set(stateKey, validation.spentPoints2);
+      if (!ownOccupied && pending === undefined)
         results.set(destinationKey, {
           destination: validation.destination,
           path: candidate,
@@ -651,6 +772,8 @@ interface PublicMovementContextV7 {
   readonly ownedCityKeys: ReadonlySet<string>;
   readonly unitsByPosition: ReadonlyMap<string, readonly PublicUnitV7[]>;
   readonly hostileZocKeys: Map<string, ReadonlySet<string>>;
+  /** The frozen sea: the board indices of the ice the viewer knows of. */
+  readonly ice: ReadonlySet<number>;
 }
 
 const PUBLIC_MOVEMENT_CONTEXTS_V7 = new WeakMap<
@@ -681,6 +804,7 @@ function publicMovementContextV7(view: PlayerViewV7): PublicMovementContextV7 {
     ),
     unitsByPosition,
     hostileZocKeys: new Map(),
+    ice: iceIndexSetV7(view, view.board.width),
   };
   PUBLIC_MOVEMENT_CONTEXTS_V7.set(view, context);
   return context;
@@ -736,19 +860,40 @@ function validatePlayerMovementPathWithContextV7(
     return tile?.explored === true && tile.snow === true;
   };
   let currentSnow = publicSnowAt(current);
+  // The frozen sea (naval branch sections 8.3, 8.6, 8.7, and 8.9): the ice
+  // on explored tiles is public, so slides, slips, and icebound units are
+  // exact here. The same rules as the canonical validation.
+  const iceSet = context.ice;
+  const iceAt = (at: CoordV7): boolean =>
+    iceSet.size > 0 && iceSet.has(at.y * view.board.width + at.x);
+  if (unit.form !== "LAND" && iceAt(unit.at))
+    return { legal: false, reason: "ICEBOUND" };
+  const slides = iceSet.size > 0 && unitSlidesV7(view, unit);
+  const iceFolkKind = unitKindWalksIceV7(view, unit);
+  let slide: { readonly dx: number; readonly dy: number } | null = null;
   const traversedPath: CoordV7[] = [];
   for (let index = 0; index < path.length; index += 1) {
     const step = path[index];
     if (step === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
     if (chebyshev(current, step) !== 1)
       return { legal: false, reason: "NOT_ADJACENT" };
+    const sliding = slide !== null;
+    if (
+      slide !== null &&
+      (step.x !== current.x + slide.dx || step.y !== current.y + slide.dy)
+    )
+      return { legal: false, reason: "SLIDE_FORCED" };
+    slide = null;
     const tile = publicTileAt(view, step);
     if (tile === undefined) return { legal: false, reason: "OUT_OF_BOUNDS" };
+    const stepIce = tile.explored && iceAt(step);
     if (tile.explored) {
       const water =
-        tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER";
+        (tile.terrain === "SHALLOW_WATER" || tile.terrain === "DEEP_WATER") &&
+        !stepIce;
       const autoEmbark =
         unit.form === "LAND" &&
+        !iceFolkKind &&
         index === path.length - 1 &&
         tile.explored &&
         (tile.improvement === "PORT" || tile.improvement === "SHIPYARD") &&
@@ -775,15 +920,20 @@ function validatePlayerMovementPathWithContextV7(
     // the public Snow flags. Hidden Snow can only make the canonical step
     // cheaper, so every offered Move stays within the canonical budget.
     const stepSnow = tile.explored && tile.snow === true;
-    spentPoints2 +=
-      currentRoadNode || (glides && currentSnow && stepSnow) ? 1 : 2;
+    spentPoints2 += sliding
+      ? 0
+      : currentRoadNode || (glides && currentSnow && stepSnow)
+        ? 1
+        : 2;
     if (spentPoints2 > budget2)
       return { legal: false, reason: "BUDGET_EXCEEDED" };
     if (tile.explored === false && tile.diplomaticBlock === "ALLIED_TERRITORY")
       return { legal: false, reason: "ALLY_TERRITORY_FORBIDDEN" };
     // Only the mover's own visible units can be passed, and never ended on.
-    // The Martian revision: a flyer passes every visible unit.
-    const passesOwnUnits = passThroughProbe || index < path.length - 1;
+    // The Martian revision: a flyer passes every visible unit. The frozen
+    // sea: a sliding unit never passes a unit on ice.
+    const passesOwnUnits =
+      (passThroughProbe || index < path.length - 1) && !(slides && stepIce);
     if (
       context.unitsByPosition
         .get(key(step))
@@ -813,6 +963,8 @@ function validatePlayerMovementPathWithContextV7(
         engineering: capabilities.mountainMovement,
         navigation,
         mountainBorn,
+        // A land tile (its biome is not null); ice is handled above.
+        ice: false,
       })
     )
       return { legal: false, reason: "ENGINEERING_REQUIRED" };
@@ -831,6 +983,9 @@ function validatePlayerMovementPathWithContextV7(
     const stepRoadNode = isUsablePublicRoadNodeV7(view, tile, context);
     const roadEdge = currentRoadNode && stepRoadNode;
     const snowStops = snowStopped && stepSnow && !roadEdge;
+    // The frozen sea section 8.7: slip.
+    const iceStops =
+      stepIce && unit.form === "LAND" && mode === "GROUND" && !iceFolkKind;
     const terrainStops =
       tile.explored &&
       (terrainStopsMoveV7({
@@ -839,9 +994,26 @@ function validatePlayerMovementPathWithContextV7(
         mountainBorn,
         ignoresForest,
         roadEdge,
+        ice: stepIce && unit.form === "LAND",
+        iceFolk: iceFolkKind,
       }) ||
         snowStops);
     const stops = !tile.explored || terrainStops || entersZoc;
+    // Section 8.6: the slide (the same rule as the canonical validation;
+    // every tile it reads is explored and every unit on it visible).
+    if (slides && stepIce && !stops) {
+      const dx = step.x - current.x;
+      const dy = step.y - current.y;
+      const next = { x: step.x + dx, y: step.y + dy };
+      const nextTile = publicTileAt(view, next);
+      if (
+        nextTile?.explored === true &&
+        iceAt(next) &&
+        !context.unitsByPosition.has(key(next)) &&
+        moundAtV7(view, next) === undefined
+      )
+        slide = { dx, dy };
+    }
     traversedPath.push(step);
     current = step;
     currentRoadNode = stepRoadNode;
@@ -851,13 +1023,15 @@ function validatePlayerMovementPathWithContextV7(
         legal: false,
         reason: !tile.explored
           ? "UNEXPLORED_INTERMEDIATE"
-          : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
-            ? "MOUNTAIN_STOPS_MOVE"
-            : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
-              ? "FOREST_STOPS_MOVE"
-              : snowStops
-                ? "SNOW_STOPS_MOVE"
-                : "ZOC_STOPS_MOVE",
+          : iceStops
+            ? "ICE_STOPS_MOVE"
+            : mode === "GROUND" && tile.terrain === "MOUNTAIN" && !mountainBorn
+              ? "MOUNTAIN_STOPS_MOVE"
+              : mode === "GROUND" && tile.terrain === "FOREST" && !ignoresForest
+                ? "FOREST_STOPS_MOVE"
+                : snowStops
+                  ? "SNOW_STOPS_MOVE"
+                  : "ZOC_STOPS_MOVE",
       };
     if (stops)
       return {
@@ -871,12 +1045,15 @@ function validatePlayerMovementPathWithContextV7(
         interruption: null,
       };
   }
+  if (slide !== null && !passThroughProbe)
+    return { legal: false, reason: "SLIDE_FORCED" };
   return {
     legal: true,
     destination: current,
     traversedPath,
     spentPoints2,
     stopped: false,
+    ...(slide === null ? {} : { slideContinues: slide }),
     explored: view.viewer.explored,
     revealed: [],
     interruption: null,
@@ -1027,8 +1204,12 @@ function projectsZocV7(
   // Map curiosities (section 8.3): nor does the neutral Monster.
   if (unitFliesV7(state, projector) || isNeutralOwnerV7(projector.ownerId))
     return false;
+  // The frozen sea (naval branch sections 8.3 and 8.9): an icebound unit is
+  // frozen solid and projects nothing; an ice tile takes zones of control
+  // like land (from land units, never from naval units).
+  if (unitIsIceboundV7(state, projector)) return false;
   const targetTile = tileAtV7(state.board, at);
-  const water = targetTile?.biome === null;
+  const water = targetTile?.biome === null && !isIceAtV7(state, at);
   if (!water) return projector.form !== "NAVAL";
   if (projector.form === "NAVAL") {
     if (targetTile?.terrain !== "DEEP_WATER") return true;
@@ -1106,6 +1287,8 @@ function publicHostileZoc(
         // curiosities (section 8.3): nor does the neutral Monster.
         unitFliesV7(view, unit) ||
         isNeutralOwnerV7(unit.ownerId) ||
+        // The frozen sea: an icebound unit projects nothing.
+        unitIsIceboundV7(view, unit) ||
         unit.ownerId === target.ownerId ||
         publicAllied(view, target.ownerId, unit.ownerId)
       )
@@ -1132,7 +1315,9 @@ function publicProjectsZocV7(
 ): boolean {
   const targetTile = publicTileAt(view, at);
   if (targetTile === undefined || !targetTile.explored) return true;
-  if (targetTile.biome !== null) return projector.form !== "NAVAL";
+  // The frozen sea: ice takes zones of control like land.
+  if (targetTile.biome !== null || isIceAtV7(view, at))
+    return projector.form !== "NAVAL";
   if (projector.form === "NAVAL") return true;
   const rule = unitRoleRuleV7(view, projector);
   return (

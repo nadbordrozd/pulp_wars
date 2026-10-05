@@ -7,6 +7,7 @@ import {
   SHOWCASE_UNIT_TEMPLATES_V7,
   TECHNOLOGY_IDS_V7,
   UNIT_ROLE_IDS_V7,
+  isNavalRoleV7,
   appendReplayCommandV7,
   applyCommandV7,
   arePlayersHostileV7,
@@ -236,9 +237,12 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         crumbs,
         splattedThisTurn,
         tossedThisTurn,
+        ice,
         ...withoutMonsters
       } = revision19State;
       expect(monsters).toEqual([]);
+      // `pulp_wars-5ti.3`: and the empty ice list.
+      expect(ice).toEqual([]);
       expect([beamedThisTurn, tractorUsedThisTurn]).toEqual([[], []]);
       // `pulp_wars-jdb.3`: and the four empty Candy lists.
       expect([sugarRush, crumbs, splattedThisTurn, tossedThisTurn]).toEqual([
@@ -944,7 +948,9 @@ describe("ruleset-7 revision-18 Showcase play", () => {
       const own = state.units.filter(
         (unit) => unit.ownerId === state.humanPlayerId,
       );
-      expect(own).toHaveLength(11);
+      // The frozen sea (`pulp_wars-5ti.3`): an Ice Folk seat has no ships.
+      const shipless = faction === "ICE_FOLK";
+      expect(own).toHaveLength(shipless ? 8 : 11);
       for (const unit of own) {
         const offered = commands.filter(
           (command) => "unitId" in command && command.unitId === unit.id,
@@ -969,7 +975,9 @@ describe("ruleset-7 revision-18 Showcase play", () => {
         ),
       );
       expect([...trained].sort()).toEqual(
-        UNIT_ROLE_IDS_V7.filter((role) => role !== "JUGGERNAUT").sort(),
+        UNIT_ROLE_IDS_V7.filter(
+          (role) => role !== "JUGGERNAUT" && !(shipless && isNavalRoleV7(role)),
+        ).sort(),
       );
       expect(commands.at(-1)).toEqual({ kind: "END_TURN" });
     }

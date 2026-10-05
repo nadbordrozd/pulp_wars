@@ -2,6 +2,7 @@ import { canonicalHash, canonicalJson } from "../replay/canonical";
 import type { PlayerId, UnitId } from "../model/ids";
 import {
   FORCE_FIELD_SHIELD_V7,
+  GLACIER_ICE_TURNS_V7,
   GROWTH_HP_V7,
   MIND_CONTROL_COOLDOWN_TURNS_V7,
   MIND_CONTROL_LIMIT_V7,
@@ -53,6 +54,7 @@ import {
   type EggStatusV7,
   type FactionIdV7,
   type GameStateV7,
+  type IceTileV7,
   type ImprovementIdV7,
   type MatchOutcomeV7,
   type MatchSetupV7,
@@ -122,6 +124,7 @@ const STATE_KEYS = [
   "eggs",
   "graves",
   "humanPlayerId",
+  "ice",
   "mindControlCooldowns",
   "monsters",
   "nextEntityId",
@@ -210,6 +213,8 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     setup === null || board === null || treasureChests === null
       ? null
       : parseCuriosities(input.curiosities, setup, board, treasureChests);
+  // The frozen sea (naval branch section 8.3): the ice tiles.
+  const ice = parseIce(input.ice);
   const graves = parseSortedCoords(input.graves);
   const plagued = parsePlagued(input.plagued);
   const bitten = parseBitten(input.bitten);
@@ -257,6 +262,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     units === null ||
     treasureChests === null ||
     curiosities === null ||
+    ice === null ||
     monsters === null ||
     graves === null ||
     plagued === null ||
@@ -323,6 +329,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
       splattedThisTurn,
       tossedThisTurn,
       curiosities,
+      ice,
       choices,
       outcome,
       humanPlayerId,
@@ -351,6 +358,7 @@ export function parseGameStateV7(input: unknown): GameStateV7 | null {
     units,
     treasureChests,
     curiosities,
+    ice,
     monsters,
     graves,
     plagued,
@@ -1540,6 +1548,74 @@ function parseSortedCoords(input: unknown): readonly CoordV7[] | null {
 }
 
 /**
+ * The naval branch, the frozen sea
+ * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.3): the ice list,
+ * strictly ascending by (y, x) (so no tile holds two), each entry with a
+ * `turnsLeft` from 0 to `GLACIER_ICE_TURNS_V7`. The tiles and owners are
+ * checked with the cross references (`iceValid`).
+ */
+function parseIce(input: unknown): readonly IceTileV7[] | null {
+  if (!isDenseArrayV7(input)) return null;
+  const values: IceTileV7[] = [];
+  for (const candidate of input) {
+    if (!hasExactKeysV7(candidate, ["at", "ownerId", "turnsLeft"])) return null;
+    const at = parseCoordV7(candidate.at);
+    const ownerId = parsePlayerIdV7(candidate.ownerId);
+    const turnsLeft = candidate.turnsLeft;
+    if (
+      at === null ||
+      ownerId === null ||
+      !isNonNegativeSafeIntegerV7(turnsLeft) ||
+      turnsLeft > GLACIER_ICE_TURNS_V7 ||
+      (values.length > 0 &&
+        compareCoordsV7((values.at(-1) as IceTileV7).at, at) >= 0)
+    )
+      return null;
+    values.push({ at, ownerId, turnsLeft });
+  }
+  return values;
+}
+
+/**
+ * The frozen sea (section 8.3) cross references: the list is empty in a
+ * match without an Ice Folk seat; every entry lies on a water tile of the
+ * board that is not a dock and is owned by a player of the match; no unit of
+ * the Ice Folk kind is afloat, and no Ice Folk seat owns a ship.
+ */
+function iceValid(
+  value: CrossInput,
+  playerById: ReadonlyMap<PlayerStateV7["id"], PlayerStateV7>,
+  kindOf: (unit: UnitStateV7) => FactionIdV7 | undefined,
+): boolean {
+  if (!value.setup.factions.includes("ICE_FOLK")) return value.ice.length === 0;
+  for (const entry of value.ice) {
+    const tile = tileAt(value.board, entry.at);
+    if (
+      tile === undefined ||
+      tile.biome !== null ||
+      (tile.terrain !== "SHALLOW_WATER" && tile.terrain !== "DEEP_WATER") ||
+      tile.improvement === "PORT" ||
+      tile.improvement === "SHIPYARD" ||
+      !playerById.has(entry.ownerId)
+    )
+      return false;
+  }
+  for (const unit of [
+    ...value.units,
+    ...value.burrowed.map((entry) => entry.unit),
+  ]) {
+    if (isNeutralOwnerV7(unit.ownerId)) continue;
+    if (isAfloatFormV7(unit.form) && kindOf(unit) === "ICE_FOLK") return false;
+    if (
+      unit.form === "NAVAL" &&
+      playerById.get(unit.ownerId)?.faction === "ICE_FOLK"
+    )
+      return false;
+  }
+  return true;
+}
+
+/**
  * Map curiosities (docs/product/RULESET_7_MAP_CURIOSITIES.md section 10.2):
  * the curiosity list, strictly ascending by (y, x) (so no tile holds two).
  * It is empty unless the setup's `curiosities` is true on a generated map;
@@ -1638,6 +1714,7 @@ interface CrossInput {
   splattedThisTurn: readonly UnitId[];
   tossedThisTurn: readonly UnitId[];
   curiosities: readonly CuriosityV7[];
+  ice: readonly IceTileV7[];
   choices: readonly PendingChoiceV7[];
   outcome: MatchOutcomeV7 | null;
   humanPlayerId: PlayerStateV7["id"];
@@ -1683,6 +1760,7 @@ function validateCrossReferences(value: CrossInput): boolean {
   // The Dwarf revision section 5.2: unit IDs are unique across `units` and
   // `burrowed`, and the next entity ID is above all of them (all-units).
   const burrowedUnits = burrowed.map((entry) => entry.unit);
+  const iceKeys = new Set(value.ice.map((entry) => key(entry.at)));
   const entityIds = [
     ...cities.map((item) => item.id),
     ...contributions.map((item) => item.id),
@@ -1756,7 +1834,12 @@ function validateCrossReferences(value: CrossInput): boolean {
       kind === undefined ||
       // Revision 19: an Egg stands on land like a land-form unit; only naval
       // and embarked units are afloat.
-      isAfloatFormV7(unit.form) !== (tile.biome === null) ||
+      // The frozen sea (naval branch section 8.3): a land-form unit may
+      // stand on an ice tile (water with an ice entry); an Egg never does.
+      (isAfloatFormV7(unit.form)
+        ? tile.biome !== null
+        : tile.biome === null &&
+          !(unit.form === "LAND" && iceKeys.has(key(unit.at)))) ||
       (isAfloatFormV7(unit.form) &&
         tile.terrain === "DEEP_WATER" &&
         !owner.researchedTechs.includes("NAVIGATION")) ||
@@ -1924,7 +2007,8 @@ function validateCrossReferences(value: CrossInput): boolean {
       value.activePlayerId,
       value.setup,
     ) ||
-    !candyListsValid(value, playerById, kindOf)
+    !candyListsValid(value, playerById, kindOf) ||
+    !iceValid(value, playerById, kindOf)
   )
     return false;
   // Revision 19: an Egg takes no status, so it is never plagued or bitten.

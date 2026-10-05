@@ -9,6 +9,7 @@ import {
   BLASTING_ERUPTION_DAMAGE_V7,
   DIVE_BOMB_DAMAGE_V7,
   HEAVY_TRACTOR_PULL_V7,
+  ICE_CRUSH_DAMAGE_V7,
   REPAIR_MACHINE_V7,
   SHIELD_CAP_V7,
   SNOW_COVER_V7,
@@ -313,6 +314,10 @@ const FIELDS: Readonly<Record<DomainEventKindV7, readonly string[]>> = {
   ],
   UNITS_RALLIED: ["kind", "captainId", "unitIds"],
   UNITS_CHILLED: ["kind", "playerId", "sourceUnitId", "source", "results"],
+  // The naval branch, the frozen sea (sections 8.4, 8.5, and 8.9).
+  WATER_FROZEN: ["kind", "playerId", "unitId", "tiles", "icebound"],
+  ICE_MELTED: ["kind", "tiles", "freed"],
+  UNITS_CRUSHED: ["kind", "playerId", "results"],
   WOUNDED_TENDED: ["kind", "captainId", "results"],
   DEAD_RAISED: ["kind", "playerId", "unitId", "results"],
   GRAVE_DEVOURED: ["kind", "playerId", "unitId", "at", "amount", "hpAfter"],
@@ -576,6 +581,12 @@ export function parsePlayerEventEnvelopeV7(
     const projectedChill = parseProjectedUnitsChilled(candidate);
     if (projectedChill !== null) {
       events.push(projectedChill);
+      continue;
+    }
+    // The frozen sea: a Freeze by a unit the viewer cannot see.
+    const projectedFreeze = parseProjectedWaterFrozen(candidate);
+    if (projectedFreeze !== null) {
+      events.push(projectedFreeze);
       continue;
     }
     // The Dwarf revision (section 13.11): hidden tunnel tiles and a hidden
@@ -1198,12 +1209,37 @@ function validPayload(
     case "UNITS_CHILLED":
       // The Ice Folk revision (section 11): the source is never a target and
       // every result is an applied Chill (`turnsLeft` 2).
+      // The frozen sea (naval branch section 8.8): Black Ice has no source
+      // unit, and every other source has one.
       return (
         id(e.playerId) &&
-        id(e.sourceUnitId) &&
+        (e.source === "BLACK_ICE"
+          ? e.sourceUnitId === null
+          : id(e.sourceUnitId)) &&
         chillSource(e.source) &&
         chillResults(e.results, e.sourceUnitId)
       );
+    case "WATER_FROZEN":
+      // The frozen sea (section 8.4): at least one tile, in (y, x) order;
+      // the newly icebound units in unit-ID order, never the actor.
+      return (
+        id(e.playerId) &&
+        id(e.unitId) &&
+        sortedCoords(e.tiles) &&
+        (e.tiles as readonly unknown[]).length > 0 &&
+        ascendingIds(e.icebound) &&
+        !(e.icebound as readonly unknown[]).includes(e.unitId)
+      );
+    case "ICE_MELTED":
+      // Section 8.5: at least one tile; the freed units in unit-ID order.
+      return (
+        sortedCoords(e.tiles) &&
+        (e.tiles as readonly unknown[]).length > 0 &&
+        ascendingIds(e.freed)
+      );
+    case "UNITS_CRUSHED":
+      // Section 8.9: the fixed crush, split between HP and a Shield.
+      return id(e.playerId) && crushResults(e.results);
     case "WOUNDED_TENDED":
       return id(e.captainId) && tendResults(e.results);
     case "DEAD_RAISED":
@@ -1255,6 +1291,8 @@ function validPayload(
           "SNOW",
           // The Dwarf revision: a hidden mound on the last tile of a Move.
           "MOUND",
+          // The frozen sea: ice a slipping unit had not known before.
+          "ICE",
         ].includes(e.reason as string)
       );
     case "TILES_REVEALED":
@@ -1383,6 +1421,8 @@ function validPayload(
           "ERUPTION",
           // The Candy revision: a Peppermint Surprise.
           "PEPPERMINT",
+          // The frozen sea: an icebound unit crushed by the ice.
+          "CRUSHED",
         ].includes(e.cause as string)
       );
     case "UNIT_MIND_CONTROLLED":
@@ -1531,6 +1571,8 @@ function combat(input: unknown): boolean {
       "bounceTo",
       "ram",
       "torpedo",
+      "iceCover",
+      "icebound",
     ])
   )
     return false;
@@ -1663,9 +1705,13 @@ function combat(input: unknown): boolean {
       input.push as string,
     ) &&
     (input.noRetaliationReason === null ||
-      ["DEFENDER_DIED", "OUT_OF_RANGE", "UNANSWERED", "SPLATTED"].includes(
-        input.noRetaliationReason as string,
-      )) &&
+      [
+        "DEFENDER_DIED",
+        "OUT_OF_RANGE",
+        "UNANSWERED",
+        "SPLATTED",
+        "ICEBOUND",
+      ].includes(input.noRetaliationReason as string)) &&
     // The Candy revision (section 13): a Splatted defender survives and
     // does not retaliate; the Rush bonus is on a first attack and never
     // with Charge or Inspired; a Splat needs a surviving target; a Bounce
@@ -1698,7 +1744,25 @@ function combat(input: unknown): boolean {
       (input.retaliation === false &&
         input.attackerDies === false &&
         input.noRetaliationReason !== "OUT_OF_RANGE" &&
-        input.noRetaliationReason !== "SPLATTED"))
+        input.noRetaliationReason !== "SPLATTED" &&
+        input.noRetaliationReason !== "ICEBOUND")) &&
+    // The frozen sea (naval branch sections 8.9 and 8.10): an icebound
+    // defender never retaliates and is never rammed or pushed; ice cover is
+    // a cover, so the defense bonus is not 1.
+    typeof input.iceCover === "boolean" &&
+    typeof input.icebound === "boolean" &&
+    (input.icebound !== true ||
+      (input.retaliation === false &&
+        input.attackerDies === false &&
+        input.ram === false &&
+        input.push !== "WILL_PUSH" &&
+        input.iceCover === false)) &&
+    (input.noRetaliationReason !== "ICEBOUND" || input.icebound === true) &&
+    (input.iceCover !== true ||
+      (input.snowCover === false &&
+        input.defenseBonusNumerator === SNOW_COVER_V7.numerator &&
+        input.defenseBonusDenominator === SNOW_COVER_V7.denominator &&
+        input.fortificationLevel === 0))
   );
 }
 function splash(input: unknown): boolean {
@@ -1977,9 +2041,46 @@ function ascendingIds(input: unknown): boolean {
     )
   );
 }
+/**
+ * The frozen sea (naval branch section 8.9) `UNITS_CRUSHED` results:
+ * non-empty, in strictly increasing unit-ID order; each a hit of 1 to
+ * `ICE_CRUSH_DAMAGE_V7` split between HP and a Shield.
+ */
+function crushResults(input: unknown): boolean {
+  if (!isDenseArrayV7(input) || input.length === 0) return false;
+  let prior = 0;
+  for (const result of input) {
+    if (
+      !hasExactKeysV7(result, [
+        "damage",
+        "hpAfter",
+        "shieldDamage",
+        "unitId",
+      ]) ||
+      !id(result.unitId) ||
+      !nn(result.damage) ||
+      !nn(result.shieldDamage) ||
+      !nn(result.hpAfter) ||
+      Number(result.shieldDamage) > SHIELD_CAP_V7 ||
+      Number(result.damage) + Number(result.shieldDamage) < 1 ||
+      Number(result.damage) + Number(result.shieldDamage) >
+        ICE_CRUSH_DAMAGE_V7 ||
+      Number(result.unitId) <= prior
+    )
+      return false;
+    prior = Number(result.unitId);
+  }
+  return true;
+}
 /** The Ice Folk revision: the source of a `UNITS_CHILLED`. */
 function chillSource(input: unknown): boolean {
-  return input === "BOLAS" || input === "COLD_SNAP" || input === "COLD_AURA";
+  return (
+    input === "BOLAS" ||
+    input === "COLD_SNAP" ||
+    input === "COLD_AURA" ||
+    // The frozen sea (naval branch section 8.8): Black Ice.
+    input === "BLACK_ICE"
+  );
 }
 /**
  * The Ice Folk revision `UNITS_CHILLED` results: non-empty, in strictly
@@ -2014,6 +2115,22 @@ function parseProjectedUnitsChilled(input: unknown): PlayerEventV7 | null {
     id(input.playerId) &&
     chillSource(input.source) &&
     chillResults(input.results, null)
+    ? (input as unknown as PlayerEventV7)
+    : null;
+}
+/**
+ * The frozen sea (naval branch section 12): `WATER_FROZEN` projected to a
+ * viewer that explored a frozen tile but cannot see the freezing unit
+ * (`unitId` null).
+ */
+function parseProjectedWaterFrozen(input: unknown): PlayerEventV7 | null {
+  return hasExactKeysV7(input, FIELDS.WATER_FROZEN) &&
+    input.kind === "WATER_FROZEN" &&
+    input.unitId === null &&
+    id(input.playerId) &&
+    sortedCoords(input.tiles) &&
+    (input.tiles as readonly unknown[]).length > 0 &&
+    ascendingIds(input.icebound)
     ? (input as unknown as PlayerEventV7)
     : null;
 }

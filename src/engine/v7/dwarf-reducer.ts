@@ -5,6 +5,7 @@ import {
   BOMB_RANGE_V7,
   armouredDamageV7,
   canEnterTerrainV7,
+  isIceAtV7,
   isMindControlledV7,
   seatRoleMechanicsV7,
   seatRoleRuleV7,
@@ -45,7 +46,7 @@ import {
 import { reachableMovementPathsV7, unitSightRadiusAtV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { ApplyCommandResultV7, RuleErrorCodeV7 } from "./reducer";
-import { riftAtV7 } from "./rift";
+import { noRisingAtV7 } from "./rift";
 import { spatialContributionAtV7, tileAtV7 } from "./spatial-economy";
 import type {
   BurrowedEntryV7,
@@ -170,6 +171,8 @@ export function tunnelTileLegalV7(
       engineering: owner.researchedTechs.includes("ENGINEERING"),
       navigation: false,
       mountainBorn: unitIsMountainBornV7(state, unit),
+      // A tunnel tile is land (its biome is not null), never ice.
+      ice: false,
     }) ||
     tileOccupiedV7(state, at) ||
     state.treasureChests.some((chest) => same(chest, at))
@@ -586,7 +589,7 @@ export function resolveStartTurnSurfacingV7(
       if (
         bite === undefined ||
         victim.form !== "LAND" ||
-        riftAtV7(board, victim.at)
+        noRisingAtV7(board, victim.at)
       )
         graves = recordCombatDeathV7(
           lookup,
@@ -869,7 +872,7 @@ export function applyBombRunV7(
       if (
         bite === undefined ||
         target.form !== "LAND" ||
-        riftAtV7(state.board, target.at)
+        noRisingAtV7(state.board, target.at)
       )
         graves = recordCombatDeathV7(state, graves, target, "BOMB", events);
       else {
@@ -970,7 +973,13 @@ export function applyBombRunV7(
       });
     // Step 6: a surviving Gyrocopter that landed on water self-launches.
     const landing = tileAtV7(state.board, to);
-    if (survivor !== undefined && landing?.biome === null) {
+    // The frozen sea (naval branch section 8.3): a Gyrocopter that lands
+    // on ice stands there.
+    if (
+      survivor !== undefined &&
+      landing?.biome === null &&
+      !isIceAtV7(state, to)
+    ) {
       units = units.map((unit) =>
         unit.id === gyro.id
           ? {

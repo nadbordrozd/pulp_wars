@@ -983,7 +983,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // value below is unchanged.
           // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
           // moving every later kind forward by one (was b34c5a…3ef8).
-          "32a2e1c4cbc5f2f56739d727946319c1c0e3bebd66995fc9ee79e2a64b5815c0",
+          // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after
+          // COLD_SNAP, moving every later kind forward by one (was
+          // 32a2e1…15c0).
+          "b495e0feb3bf9d57e71e239a82c30346cf27d80e25753da4793344f085835c8e",
         );
         // Revision 13 shifts the command-kind ordinals in AI tie-break
         // tuples (spec section 8); this is the value with revision-12
@@ -1060,7 +1063,10 @@ describe("Ruleset 7 revision-11 bounded tactical AI", () => {
           // command-kind ordinal forward by three (was 9651ad…0520).
           // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
           // moving every later kind forward by one (was 02ba06…c4a5).
-          "d9e8edaca015f56c82cc5625c73b73b023b2767fa6f9229c345c8e5a101c968a",
+          // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after
+          // COLD_SNAP, moving every later command-kind ordinal forward by
+          // one (was d9e8ed…968a).
+          "7e8bcc81c357fcf5286249aac5952c507df31dba72723eb67332b4a3b5b5dce8",
         );
         // With revision-12 ordinals (pulp_wars-9s0.1: was c56f00…73c1;
         // pulp_wars-0hi.3: was 091615…054b).

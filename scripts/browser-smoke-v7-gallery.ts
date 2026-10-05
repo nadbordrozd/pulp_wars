@@ -41,12 +41,14 @@ export async function probeGalleryV7(
   );
   // Eight factions (the Candy since pulp_wars-jdb.3): twelve rows of eight
   // (the Submarine since pulp_wars-5ti.2)
-  // units and the one Egg, whose row is empty for the seven other factions.
+  // units and the one Egg, whose row is empty for the seven other factions;
+  // the Ice Folk have no ships and no transport (pulp_wars-5ti.3): four
+  // more empty cells.
   if (
     table.factions.join() !==
       "ORIGINAL,UNDEAD,GOBLIN,DINOSAUR,MARTIAN,ICE_FOLK,DWARF,CANDY" ||
-    table.cells !== 97 ||
-    table.empty !== 7 ||
+    table.cells !== 93 ||
+    table.empty !== 11 ||
     table.overflow > 0
   )
     throw new Error(`Gallery table is incomplete: ${JSON.stringify(table)}`);

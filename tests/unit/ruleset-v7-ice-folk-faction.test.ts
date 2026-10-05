@@ -25,6 +25,7 @@ import {
   PLAYER_EVENT_KIND_ORDER_V7,
   ROCKFALL_ATTACK2_V7,
   RULESET_7,
+  isNavalRoleV7,
   SHATTER_HP_V7,
   SHOWCASE_UNIT_TEMPLATES_V7,
   STARTING_FIGHTERS_V7,
@@ -161,20 +162,20 @@ describe("Ice Folk faction registration (sections 2 and 11)", () => {
   // The Dwarf revision (`pulp_wars-78i.3`) adds three command kinds after
   // COLD_SNAP and four event kinds (ruleset-v7-dwarf-faction.test.ts).
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(57);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(58);
     const tractor = COMMAND_KIND_ORDER_V7.indexOf("TRACTOR_BEAM");
     expect(COMMAND_KIND_ORDER_V7.slice(tractor, tractor + 4)).toEqual([
       "TRACTOR_BEAM",
       "THROW_BOLAS",
       "COLD_SNAP",
-      "TUNNEL",
+      "FREEZE", // the frozen sea (pulp_wars-5ti.3) inserts FREEZE after COLD_SNAP
     ]);
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(97);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     expect(after(DOMAIN_EVENT_KIND_ORDER_V7, "UNITS_RALLIED")).toBe(
@@ -582,7 +583,9 @@ describe("Ice Folk roster (section 3)", () => {
         sightRadius,
         technology,
         mayUsePrimaryActionAfterMove,
-        abilities,
+        // The frozen sea (naval branch section 8.4): every Ice Folk land
+        // role lists Freeze last; it does nothing before Rime.
+        abilities: [...abilities, "FREEZE"],
       });
       expect(roleMechanicsV7(role, "ICE_FOLK"), label).toMatchObject({
         capacitySlots: 1,
@@ -860,8 +863,30 @@ describe("Ice Folk technology (section 4)", () => {
         human.branch,
         human.tier,
         human.prerequisites,
-        human.unlockedRoles,
+        // The frozen sea (naval branch sections 2.2 and 8.11): no ship.
+        human.unlockedRoles.filter((role) => !isNavalRoleV7(role)),
       ]);
+      const ICE_NAVAL: Readonly<Record<string, readonly unknown[]>> = {
+        SHORECRAFT: [{ kind: "FREEZE", depth: "SHALLOW" }],
+        NAVIGATION: [{ kind: "FREEZE", depth: "DEEP" }],
+        NAVAL_ENGINEERING: [{ kind: "ICEBOUND" }],
+        SEAMANSHIP: [{ kind: "BLACK_ICE" }],
+        SUBMERSIBLES: [{ kind: "GLACIER", iceTurns: 5 }],
+      };
+      if (human.branch === "NAVAL") {
+        // The five Naval nodes keep their economic unlocks, lose every
+        // ship, the Ram, and Board, and gain the ice unlocks.
+        expect(ice.unlocks, human.id).toEqual([
+          ...human.unlocks.filter(
+            (unlock) =>
+              !(unlock.kind === "UNIT_ROLE" && isNavalRoleV7(unlock.role)) &&
+              unlock.kind !== "RAM" &&
+              !(unlock.kind === "COMMAND" && unlock.command === "BOARD"),
+          ),
+          ...must(ICE_NAVAL[human.id], human.id),
+        ]);
+        return;
+      }
       if (human.id === "ADMINISTRATION")
         expect(ice.unlocks).toEqual(
           human.unlocks.map((unlock) =>
@@ -883,6 +908,12 @@ describe("Ice Folk technology (section 4)", () => {
     expect(TECHNOLOGY_DISPLAY_NAME_OVERRIDES_V7.ICE_FOLK).toEqual({
       FORTIFICATION: "Deep Winter",
       EXPLOSIVES: "Brittle",
+      // The frozen sea (naval branch section 2.2).
+      SHORECRAFT: "Rime",
+      NAVIGATION: "Pack Ice",
+      NAVAL_ENGINEERING: "Icebound",
+      SEAMANSHIP: "Black Ice",
+      SUBMERSIBLES: "Glacier",
     });
   });
 
@@ -923,9 +954,14 @@ describe("Ice Folk technology (section 4)", () => {
     });
     const ice = technologyCapabilitiesV7(all, "ICE_FOLK");
     const human = technologyCapabilitiesV7(all, "ORIGINAL");
-    expect(ice.trainableRoles).toEqual(human.trainableRoles);
+    // The frozen sea (naval branch section 8.11): no ship and no Board.
+    expect(ice.trainableRoles).toEqual(
+      human.trainableRoles.filter((role) => !isNavalRoleV7(role)),
+    );
     expect(ice.commands).toEqual(
-      human.commands.filter((command) => command !== "BUILD_FIELD_DEFENSE"),
+      human.commands.filter(
+        (command) => command !== "BUILD_FIELD_DEFENSE" && command !== "BOARD",
+      ),
     );
     expect(ice.commands).toContain("BLAST_MOUNTAIN");
     expect(ice.mountainMovement).toBe(true);
@@ -962,8 +998,25 @@ describe("Ice Folk technology (section 4)", () => {
     expect(text("ADMINISTRATION").join()).toContain("Cold Snap");
     expect(technologyNameV7("FORTIFICATION", "ICE_FOLK")).toBe("Deep Winter");
     expect(technologyNameV7("EXPLOSIVES", "ICE_FOLK")).toBe("Brittle");
+    // The frozen sea (naval branch section 2.2): the five Naval names.
+    expect(
+      (
+        [
+          "SHORECRAFT",
+          "NAVIGATION",
+          "NAVAL_ENGINEERING",
+          "SEAMANSHIP",
+          "SUBMERSIBLES",
+        ] as const
+      ).map((tech) => technologyNameV7(tech, "ICE_FOLK")),
+    ).toEqual(["Rime", "Pack Ice", "Icebound", "Black Ice", "Glacier"]);
     for (const tech of TECHNOLOGY_IDS_V7)
-      if (tech !== "FORTIFICATION" && tech !== "EXPLOSIVES")
+      if (
+        tech !== "FORTIFICATION" &&
+        tech !== "EXPLOSIVES" &&
+        ORIGINAL_BASELINE_V5_NODES.find((node) => node.id === tech)?.branch !==
+          "NAVAL"
+      )
         expect(technologyNameV7(tech, "ICE_FOLK")).toBe(
           technologyNameV7(tech, "ORIGINAL"),
         );
@@ -1131,11 +1184,19 @@ describe("Ice Folk Showcase (section 2.4)", () => {
         unit.at,
         unit.homeCityId,
       ]);
-    expect(shape(state)).toEqual(shape(reference));
     const iceId = seatIdV7(state, 0);
+    // The frozen sea (naval branch section 3.3): an Ice Folk seat has no
+    // ship; the IDs of its three boats stay unused.
+    expect(shape(state)).toEqual(
+      shape(reference).filter(
+        ([, ownerId, , form]) => !(ownerId === iceId && form === "NAVAL"),
+      ),
+    );
     const own = state.units.filter((unit) => unit.ownerId === iceId);
     expect(own.map((unit) => unit.role)).toEqual(
-      SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role),
+      SHOWCASE_UNIT_TEMPLATES_V7.map((entry) => entry.role).filter(
+        (role) => !isNavalRoleV7(role),
+      ),
     );
     for (const unit of own)
       expect(unit.hp).toBe(effectiveRoleRuleV7(unit.role, "ICE_FOLK").maxHp);
@@ -1144,7 +1205,9 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     expect(
       state.players.find((player) => player.id === iceId)?.researchedTechs,
     ).toEqual(TECHNOLOGY_IDS_V7);
-    // Capital 5 of 7, North 3 of 6, Coast 3 of 6 (every role one slot; level 4 with the Submarine since `pulp_wars-5ti.2`).
+    // Capital 5 of 7, North 3 of 6, Coast 0 of 6 (every role one slot; the
+    // Coast city is level 4 for the three boats an Ice Folk seat does not
+    // have, naval branch section 3.3).
     expect(
       state.cities
         .filter((city) => city.ownerId === iceId)
@@ -1155,7 +1218,7 @@ describe("Ice Folk Showcase (section 2.4)", () => {
     ).toEqual([
       [5, 7],
       [3, 6],
-      [3, 6],
+      [0, 6],
     ]);
     expect(playerIncomeV7(state, iceId).totalCoins).toBe(17);
   });
@@ -1230,6 +1293,10 @@ describe("Ice Folk public unit stats (section 11)", () => {
       planted: null,
       sweepDamage: 0,
       blizzard: false,
+      // The frozen sea (naval branch section 12).
+      onIce: false,
+      slides: true,
+      iceCover: false,
     });
     expect(stats(at(4, 3)).iceFolk).toMatchObject({
       planted: true,

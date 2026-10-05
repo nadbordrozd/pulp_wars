@@ -1,5 +1,4 @@
 import {
-  boardTargetBlockV7,
   isAfloatFormV7,
   previewBoardV7,
   unitRoleRuleV7,
@@ -17,6 +16,7 @@ import {
   boardBlockTextV7,
   boardTargetLabelV7,
   navalCombatLinesV7,
+  viewBoardTargetBlockV7,
 } from "../naval-presentation-v7";
 import type {
   BoardRenderPlanEntryV7,
@@ -119,7 +119,7 @@ export function addNavalPickEntriesV7(
       )
     )
       continue;
-    const reason = boardTargetBlockV7(boarder, unit);
+    const reason = viewBoardTargetBlockV7(view, boarder, unit);
     if (reason === null) continue;
     entries.push({
       key: `ability-target:BOARD_BLOCKED:${unit.id}`,

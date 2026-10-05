@@ -221,8 +221,8 @@ export function prunedIceFolkV7(state: GameStateV7): GameStateV7 {
 /** One `UNITS_CHILLED` event (section 11). */
 export function unitsChilledEventV7(
   playerId: PlayerId,
-  sourceUnitId: UnitId,
-  source: "BOLAS" | "COLD_SNAP" | "COLD_AURA",
+  sourceUnitId: UnitId | null,
+  source: "BOLAS" | "COLD_SNAP" | "COLD_AURA" | "BLACK_ICE",
   results: readonly ChillStatusV7[],
 ): Extract<DomainEventV7, { readonly kind: "UNITS_CHILLED" }> {
   return {

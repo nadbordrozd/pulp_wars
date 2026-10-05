@@ -317,7 +317,9 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // three (was ffcd2f…677b); the revision-12-ordinal value is unchanged.
       // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
       // moving every later kind forward by one (was fdc900…1608).
-      "32d19a8c92bbba6024c83121fa71cf8104452422cf8f8a3e80fe6a93791619d3",
+      // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after COLD_SNAP,
+      // moving every later kind forward by one (was 32d19a…19d3).
+      "0a83be5f1602a2160185d503460b26013b1f359cd627943d0e205f3f2d72b889",
     );
     // Revision 13 shifts the command-kind ordinals in AI tie-break tuples
     // (spec section 8); this is the value with revision-12 ordinals
@@ -1056,7 +1058,10 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
       // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK,
       // moving every later command-kind ordinal forward by one (was
       // ba920b…9a33).
-      "6b50029f26b061e511547d3d5ae4a99654653950a125834e5c0fb63b5b9d9b1e",
+      // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after COLD_SNAP,
+      // moving every later command-kind ordinal forward by one (was
+      // 6b5002…9b1e).
+      "fb95f7862cea5d9d0bc7986dfac8c9d0c74d4c0ed019acc2f63c0ffde0ca9f14",
     );
     expect(
       canonicalHash(withRevision12CandidateOrdinalsV7(revision4Candidates)),
@@ -1073,7 +1078,7 @@ describe("ruleset-7 revision-4 Normal public policy", () => {
     const source = upgradeRetainedPublicViewV7(retained);
 
     expect(canonicalJson(retained)).toBe(retainedBytes);
-    expect(source.rulesetId).toBe("pulp-wars-poc-7r43");
+    expect(source.rulesetId).toBe("pulp-wars-poc-7r44");
     expect(source.viewer.factionTreeId).toBe("ORIGINAL_BASELINE_V5");
     expect(
       source.players.every(

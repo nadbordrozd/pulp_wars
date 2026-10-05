@@ -39,7 +39,7 @@ const setup: MatchSetupV7 = {
 
 describe("ruleset-7 revision-8 deterministic foundation", () => {
   it("freezes the exact identity and registries", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r44");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -114,7 +114,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // COLD_SNAP (50) and UNITS_CHILLED (77); the Dwarf revision TUNNEL,
     // BOMB_RUN, and ASSEMBLE (53) and four event kinds (81); the Candy
     // revision three more commands (56); the naval branch BOARD (57).
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(57);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(58);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     // The Mind Control revision adds UNIT_RELEASED (82 event kinds).
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
@@ -122,7 +122,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96); the
     // naval branch SHIP_BOARDED (97).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(97);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
     // Revision 19 inserts HATCH after KABOOM (and, until revision 20,
     // STAMPEDE between them), LAY_EGG after TRAIN_NAVAL, EGG_LAID and
     // EGG_HATCHED after NAVAL_UNIT_TRAINED, and UNIT_GREW after
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-8 deterministic foundation", () => {
       // The Ice Folk revision inserts its two right after TRACTOR_BEAM.
       "THROW_BOLAS",
       "COLD_SNAP",
-      "TUNNEL",
+      "FREEZE", // the frozen sea (pulp_wars-5ti.3) inserts FREEZE after COLD_SNAP
     ]);
     expect(
       COMMAND_KIND_ORDER_V7.slice(

@@ -50,7 +50,7 @@ import {
 import { unitSightRadiusAtV7 } from "./movement";
 import { isUnitVisibleToPlayerV7 } from "./observation";
 import type { ApplyCommandResultV7 } from "./reducer";
-import { riftAtV7 } from "./rift";
+import { noRisingAtV7 } from "./rift";
 import { tileAtV7 } from "./spatial-economy";
 import type {
   CoordV7,
@@ -156,6 +156,9 @@ export function rebakeTileLegalV7(
       engineering: player.researchedTechs.includes("ENGINEERING"),
       navigation: player.researchedTechs.includes("NAVIGATION"),
       mountainBorn: mechanics.mountainBorn,
+      // The frozen sea (naval branch section 8.3): nothing is re-baked on
+      // ice (Crumbs never lie there).
+      ice: false,
     })
   )
     return false;
@@ -487,7 +490,7 @@ export function resolveCrumbsEatingV7(
   if (
     bite === undefined ||
     eater.form !== "LAND" ||
-    riftAtV7(eaten.board, eater.at)
+    noRisingAtV7(eaten.board, eater.at)
   )
     graves = recordCombatDeathV7(eaten, graves, eater, "PEPPERMINT", events);
   else {

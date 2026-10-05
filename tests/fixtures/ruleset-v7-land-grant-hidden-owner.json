@@ -15,9 +15,9 @@
   },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r43",
+    "rulesetId": "pulp-wars-poc-7r44",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r43",
+      "rulesetId": "pulp-wars-poc-7r44",
       "seed": 1,
       "width": 16,
       "height": 16,
@@ -7004,6 +7004,7 @@
     ],
     "treasureChests": [],
     "curiosities": [],
+    "ice": [],
     "monsters": [],
     "graves": [
       { "x": 7, "y": 0 },

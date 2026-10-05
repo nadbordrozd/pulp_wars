@@ -14,11 +14,13 @@ import {
   primaryActionBlockedAfterMoveV7,
   technologyCapabilitiesV7,
   unitCapacitySlotsV7,
+  unitIsIceboundV7,
   unitIsMountainBornV7,
   unitMovementModeV7,
   unitRoleMechanicsV7,
   unitRoleRuleV7,
   type FactionRosterV7,
+  type IceLookupV7,
   type MartianUnitFactsV7,
   type SluggishLookupV7,
 } from "../rules/ruleset-v7";
@@ -753,6 +755,11 @@ export interface PlacementTileFactsV7 {
   /** Null unless the tile is a settlement site. */
   readonly site: unknown;
   readonly terrain: TerrainIdV7;
+  /**
+   * The frozen sea (naval branch section 8.3): the tile is ice (ground for
+   * a land-form unit, closed to a unit afloat).
+   */
+  readonly ice: boolean;
   /** A unit (other than the moved one) or a mound is on the tile. */
   readonly occupied: boolean;
   /** A treasure chest is on the tile. */
@@ -795,6 +802,7 @@ export function beamDownDestinationLegalV7(
       afloat: false,
       ...technology,
       mountainBorn: unitIsMountainBornV7(roster, passenger),
+      ice: facts.ice,
     }) &&
     !facts.occupied &&
     !facts.chest &&
@@ -902,7 +910,7 @@ export type TractorBeamTargetBlockV7 = "TARGET_IMMUNE" | "OUT_OF_RANGE";
  * or a two-slot unit; `OUT_OF_RANGE` outside the rule's reach.
  */
 export function tractorBeamTargetBlockV7(
-  roster: FactionRosterV7,
+  roster: FactionRosterV7 & IceLookupV7,
   rule: TractorBeamRuleV7,
   puller: { readonly at: CoordV7 },
   target: {
@@ -917,7 +925,10 @@ export function tractorBeamTargetBlockV7(
     target.form === "EGG" ||
     target.role === "JUGGERNAUT" ||
     isNeutralOwnerV7(target.ownerId) ||
-    unitCapacitySlotsV7(roster, target) !== 1
+    unitCapacitySlotsV7(roster, target) !== 1 ||
+    // The frozen sea (naval branch section 8.9): no pull moves an icebound
+    // unit.
+    unitIsIceboundV7(roster, target)
   )
     return "TARGET_IMMUNE";
   const distance = chebyshev(puller.at, target.at);
@@ -955,6 +966,7 @@ export function tractorBeamStepLegalV7(
       afloat: isAfloatFormV7(target.form),
       ...technology,
       mountainBorn: unitIsMountainBornV7(roster, target),
+      ice: facts.ice,
     }) &&
     !facts.occupied &&
     !facts.chest &&

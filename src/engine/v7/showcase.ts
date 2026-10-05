@@ -4,7 +4,11 @@ import {
   type CityId,
   type UnitId,
 } from "../model/ids";
-import { dockPopulationV7, effectiveRoleRuleV7 } from "../rules/ruleset-v7";
+import {
+  dockPopulationV7,
+  effectiveRoleRuleV7,
+  technologyCapabilitiesV7,
+} from "../rules/ruleset-v7";
 import {
   growthSpentV7,
   harbourPopulationForV7,
@@ -20,6 +24,7 @@ import {
   type CityRewardRecordV7,
   type CityStateV7,
   type CoordV7,
+  type IceTileV7,
   type ImprovementIdV7,
   type MatchSetupV7,
   type PlayerStateV7,
@@ -278,6 +283,8 @@ export interface ShowcaseEntitiesV7 {
   readonly cities: readonly CityStateV7[];
   readonly populationContributions: readonly PopulationContributionV7[];
   readonly units: readonly UnitStateV7[];
+  /** The frozen sea: the ice of the Ice Folk seats, sorted by (y, x). */
+  readonly ice: readonly IceTileV7[];
   readonly nextEntityId: number;
 }
 
@@ -456,13 +463,33 @@ export function createShowcaseEntitiesV7(
       ),
     );
   });
-  players.forEach((_, seat) => {
+  // The naval branch, the frozen sea
+  // (docs/product/RULESET_7_NAVAL_BRANCH.md section 3.3): an Ice Folk seat
+  // has no ship. The water tiles where its boats would stand are its ice
+  // instead, with the countdown of the ice it makes (every technology is
+  // researched, so Glacier's); the one in its Coast territory is permanent.
+  // The seat still takes the three entity IDs, so every other unit of the
+  // Showcase keeps its ID whatever the factions.
+  const ice: IceTileV7[] = [];
+  players.forEach((player, seat) => {
     for (const template of SHOWCASE_UNIT_TEMPLATES_V7.slice(1)) {
       const unit = allocateUnitId(nextEntityId);
       nextEntityId = unit.nextEntityId;
+      if (isNavalRoleV7(template.role) && player.faction === "ICE_FOLK") {
+        ice.push({
+          at: { x: (centers[seat] as number) + template.dx, y: template.y },
+          ownerId: player.id,
+          turnsLeft: technologyCapabilitiesV7(
+            player.researchedTechs,
+            player.faction,
+          ).iceTurns,
+        });
+        continue;
+      }
       units.push(unitFor(seat, unit.id, template));
     }
   });
+  ice.sort((left, right) => left.at.y - right.at.y || left.at.x - right.at.x);
   if (
     SHOWCASE_UNIT_TEMPLATES_V7.length !== UNIT_ROLE_IDS_V7.length ||
     SHOWCASE_UNIT_TEMPLATES_V7.some(
@@ -505,6 +532,7 @@ export function createShowcaseEntitiesV7(
     cities,
     populationContributions,
     units,
+    ice,
     nextEntityId,
   };
 }

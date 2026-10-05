@@ -46,7 +46,13 @@ export interface CombatPreviewV7 {
    * the ordinary rules but was Splatted this turn.
    */
   readonly noRetaliationReason:
-    "DEFENDER_DIED" | "OUT_OF_RANGE" | "UNANSWERED" | "SPLATTED" | null;
+    | "DEFENDER_DIED"
+    | "OUT_OF_RANGE"
+    | "UNANSWERED"
+    | "SPLATTED"
+    // The frozen sea (naval branch section 8.9): an icebound defender.
+    | "ICEBOUND"
+    | null;
   readonly advances: boolean;
   readonly push: "WILL_PUSH" | "BLOCKED" | "UNKNOWN_BEHIND_FOG";
   readonly attacksUsed: number;
@@ -189,6 +195,18 @@ export interface CombatPreviewV7 {
    * target survives).
    */
   readonly torpedo: boolean;
+  /**
+   * The frozen sea (section 8.10): the defender is an Ice Folk land unit on
+   * ice with Glacier and no fortification of its own; its cover is the Snow
+   * cover (`SNOW_COVER_V7`, in `defenseBonusNumerator` and
+   * `defenseBonusDenominator`).
+   */
+  readonly iceCover: boolean;
+  /**
+   * The frozen sea (section 8.9): the defender is icebound and does not
+   * retaliate (`noRetaliationReason` is `ICEBOUND` when it survives).
+   */
+  readonly icebound: boolean;
 }
 export interface CombatSplashEntryV7 {
   readonly unitId: UnitId;
@@ -717,11 +735,55 @@ export type DomainEventV7 =
       readonly kind: "UNITS_CHILLED";
       readonly playerId: PlayerId;
       readonly sourceUnitId: UnitId | null;
-      readonly source: "BOLAS" | "COLD_SNAP" | "COLD_AURA";
+      // The frozen sea (naval branch section 8.8): Black Ice at a Start
+      // Turn, with no source unit.
+      readonly source: "BOLAS" | "COLD_SNAP" | "COLD_AURA" | "BLACK_ICE";
       readonly results: readonly {
         readonly unitId: UnitId;
         readonly sluggish: boolean;
         readonly turnsLeft: 0 | 1 | 2;
+      }[];
+    }
+  | {
+      /**
+       * The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4):
+       * the unit `unitId` of `playerId` froze `tiles` (in (y, x) order; a
+       * tile that was already ice is refreshed) and locked the afloat units
+       * `icebound` (in unit-ID order) in the ice. A projection keeps the
+       * tiles the viewer has explored and the units it can see, and is
+       * dropped when no tile is left.
+       */
+      readonly kind: "WATER_FROZEN";
+      readonly playerId: PlayerId;
+      /** Null only in a projection to a viewer that cannot see the unit. */
+      readonly unitId: UnitId | null;
+      readonly tiles: readonly CoordV7[];
+      readonly icebound: readonly UnitId[];
+    }
+  | {
+      /**
+       * The frozen sea (section 8.5): the ice on `tiles` (in (y, x) order)
+       * melted at an End Turn, and the icebound units `freed` (in unit-ID
+       * order) float free. Projected like `WATER_FROZEN`.
+       */
+      readonly kind: "ICE_MELTED";
+      readonly tiles: readonly CoordV7[];
+      readonly freed: readonly UnitId[];
+    }
+  | {
+      /**
+       * The frozen sea (section 8.9): at the Start Turn of `playerId` every
+       * icebound unit on its ice took the crush, in unit-ID order: `damage`
+       * is HP damage and `shieldDamage` what its Shield absorbed first.
+       * Deaths follow as `UNIT_DIED` cause `CRUSHED`.
+       */
+      readonly kind: "UNITS_CRUSHED";
+      readonly playerId: PlayerId;
+      readonly results: readonly {
+        readonly unitId: UnitId;
+        readonly damage: number;
+        readonly shieldDamage: number;
+        readonly hpAfter: number;
       }[];
     }
   | {
@@ -845,7 +907,13 @@ export type DomainEventV7 =
          * The Dwarf revision (section 5.3): the unit met a mound on a tile it
          * had not explored, on the last tile of its Move.
          */
-        | "MOUND";
+        | "MOUND"
+        /**
+         * The frozen sea (naval branch section 8.7): a ground unit that
+         * slips entered ice it had not known before the command and stopped
+         * there.
+         */
+        | "ICE";
     }
   | {
       readonly kind: "TILES_REVEALED";
@@ -1036,7 +1104,12 @@ export type DomainEventV7 =
          * The Candy revision (section 6.3): an eater killed by the
          * Peppermint Surprise of the Crumbs it ate.
          */
-        | "PEPPERMINT";
+        | "PEPPERMINT"
+        /**
+         * The frozen sea (naval branch section 8.9): an icebound unit
+         * crushed by the ice (no credit, no Grave).
+         */
+        | "CRUSHED";
     }
   | {
       /** Revision 13: a Zombie's land-form victim rose as a Zombie. */

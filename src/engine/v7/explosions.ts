@@ -9,7 +9,7 @@ import type { CombatSplashEntryV7, DomainEventV7 } from "./events";
 import { recordCombatDeathV7 } from "./graves";
 import { absorbHitV7, releaseControlledV7, withShieldsV7 } from "./martian";
 import { exhaustedActivationV7 } from "./plague";
-import { riftAtV7 } from "./rift";
+import { noRisingAtV7 } from "./rift";
 import type {
   BittenStatusV7,
   BoardStateV7,
@@ -450,7 +450,7 @@ export function resolveStateExplosionChainV7(
       if (
         bite === undefined ||
         victim.form !== "LAND" ||
-        riftAtV7(board, victim.at)
+        noRisingAtV7(board, victim.at)
       ) {
         graves = recordCombatDeathV7(
           {

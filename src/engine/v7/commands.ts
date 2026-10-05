@@ -144,6 +144,18 @@ export type CommandV7 =
     }
   | {
       /**
+       * The naval branch, the frozen sea
+       * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4): an Ice Folk
+       * land unit freezes the water next to it: two tiles out in a straight
+       * line from `at` (one of the eight tiles around it), or, for the Ice
+       * Witch, every tile around her (`at` is her own tile).
+       */
+      readonly kind: "FREEZE";
+      readonly unitId: UnitId;
+      readonly at: CoordV7;
+    }
+  | {
+      /**
        * The Dwarf revision (section 5.1): a Steam Mole tunnels to `to`,
        * optionally taking an adjacent Hammerer (`rider`) to the tile
        * `rider.to` next to `to`.
@@ -426,6 +438,14 @@ export function parseCommandV7(input: unknown): CommandParseResultV7 {
     return unit === null || target === null || to === null
       ? invalid(kind)
       : { ok: true, value: { kind, unitId: unit, targetUnitId: target, to } };
+  }
+  if (kind === "FREEZE") {
+    if (!hasExactKeysV7(input, ["at", "kind", "unitId"])) return invalid(kind);
+    const unit = parseUnitIdV7(candidate.unitId);
+    const at = parseCoordV7(candidate.at);
+    return unit === null || at === null
+      ? invalid(kind)
+      : { ok: true, value: { kind, unitId: unit, at } };
   }
   if (kind === "ASSEMBLE") {
     if (!hasExactKeysV7(input, ["kind", "to", "unitId"])) return invalid(kind);

@@ -5,9 +5,12 @@ drafted, critiqued, and redrafted ([Appendix A](#appendix-a-draft-critique-redra
 **Engine step I is implemented** (`pulp_wars-5ti.2`, identity
 `pulp-wars-poc-7r43`, which is `7rA` below): the five-technology branch,
 the Submarine, Ram, Board, and Harbours for all eight factions, as recorded
-in [section 20](#20-engine-step-i-as-built-pulp_wars-5ti2). Engine step II
-(the Ice Folk frozen sea), the Normal AI, the art, and the interface are
-not implemented. It is an overlay over
+in [section 20](#20-engine-step-i-as-built-pulp_wars-5ti2). **Engine step II
+is implemented** (`pulp_wars-5ti.3`, identity `pulp-wars-poc-7r44`, which is
+`7rB` below): the Ice Folk frozen sea, as recorded in
+[section 22](#22-engine-step-ii-as-built-pulp_wars-5ti3). The first part of the
+interface and the art are in ([section 21](#21-naval-interface-first-part-as-built-pulp_wars-5ti7)); the Normal AI and
+the frozen sea interface are not implemented. It is an overlay over
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r35`
 (seven factions, map curiosities engine I), and it supersedes the deferred
 floe of the [Ice Folk overlay section 17.3](RULESET_7_ICE_FOLK.md#173-deferred-the-floe).
@@ -249,18 +252,19 @@ HP or less) captures it; the prize is patched up just above that line.
 `BOARD { kind, unitId, targetUnitId }` is a primary action. It is not an
 Attack and costs no Coins. Legality, in this order (all rejections atomic):
 
-| #   | Requirement                                                                                                                       | Rejection                                      |
-| --- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| 1   | `unitId` is the actor's own unit on the board.                                                                                    | the ordinary unit errors                       |
-| 2   | It is in `NAVAL` form (any ship role).                                                                                            | `BOARD_NOT_LEGAL { reason: "NOT_A_SHIP" }`     |
-| 3   | Its kind's capabilities under its owner have `boarding` (Seamanship).                                                             | `TECH_REQUIRED { tech: "SEAMANSHIP" }`         |
-| 4   | It has not used a primary action, and `unitMayActAfterMoveV7` allows it if it moved (so a Battleship that moved cannot board).    | `UNIT_ALREADY_ACTED`                           |
-| 4a  | It is not icebound (step II).                                                                                                     | `BOARD_NOT_LEGAL { reason: "ICEBOUND" }`       |
-| 5   | `targetUnitId` is a unit on the board the actor can see.                                                                          | `TARGET_NOT_FOUND`                             |
-| 6   | It is hostile to the actor.                                                                                                       | `TARGET_ALLIED`                                |
-| 7   | It is in `NAVAL` form (a transport, a self-launched machine, or a land unit is never boarded).                                    | `BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
-| 8   | It is within Chebyshev distance 1.                                                                                                | `BOARD_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
-| 9   | Its HP is at most `floor(maxHp / 3)` (`BOARDING_HP_DIVISOR_V7` 3): Patrol Boat 3, Submarine 4, Battleship 8 (promoted: 5, 5, 10). | `BOARD_NOT_LEGAL { reason: "TARGET_HEALTHY" }` |
+| #   | Requirement                                                                                                                                             | Rejection                                      |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1   | `unitId` is the actor's own unit on the board.                                                                                                          | the ordinary unit errors                       |
+| 2   | It is in `NAVAL` form (any ship role).                                                                                                                  | `BOARD_NOT_LEGAL { reason: "NOT_A_SHIP" }`     |
+| 3   | Its kind's capabilities under its owner have `boarding` (Seamanship).                                                                                   | `TECH_REQUIRED { tech: "SEAMANSHIP" }`         |
+| 4   | It has not used a primary action, and `unitMayActAfterMoveV7` allows it if it moved (so a Battleship that moved cannot board).                          | `UNIT_ALREADY_ACTED`                           |
+| 4a  | It is not icebound (step II).                                                                                                                           | `BOARD_NOT_LEGAL { reason: "ICEBOUND" }`       |
+| 5   | `targetUnitId` is a unit on the board the actor can see.                                                                                                | `TARGET_NOT_FOUND`                             |
+| 6   | It is hostile to the actor.                                                                                                                             | `TARGET_ALLIED`                                |
+| 7   | It is in `NAVAL` form (a transport, a self-launched machine, or a land unit is never boarded).                                                          | `BOARD_NOT_LEGAL { reason: "TARGET_IMMUNE" }`  |
+| 8   | It is within Chebyshev distance 1.                                                                                                                      | `BOARD_NOT_LEGAL { reason: "OUT_OF_RANGE" }`   |
+| 9   | Its HP is at most `floor(maxHp / 3)` (`BOARDING_HP_DIVISOR_V7` 3): Patrol Boat 3, Submarine 4, Battleship 8 (promoted: 5, 5, 10).                       | `BOARD_NOT_LEGAL { reason: "TARGET_HEALTHY" }` |
+| 10  | The boarder's owner could sail the prize where it stands: a target on Deep Water needs the actor's Navigation (the prize's kind follows its new owner). | `BOARD_NOT_LEGAL { reason: "DEEP_WATER" }`     |
 
 - **Result.** The target's `ownerId` becomes the actor's owner, `homeCityId`
   null (an orphan: it uses no slot anywhere and is never re-homed),
@@ -1666,6 +1670,80 @@ the second part of the bead. Where this differs from
    code-drawn stand-ins; the technology cards keep the stand-ins of
    [section 20](#20-engine-step-i-as-built-pulp_wars-5ti2) item 12 until
    the art bead registers its subjects.
+
+## 22. Engine step II as built (`pulp_wars-5ti.3`)
+
+Engine step II took the identity **`pulp-wars-poc-7r44`** (autosave
+`pulpWars.save.v7r44.current`; `7r43` is the last prior identity). The map
+revision did not change. [Section 8](#8-ice-folk-the-frozen-sea) is
+implemented as written: the ice list, Freeze, the thaw, the slide, the slip,
+Black Ice, Icebound and the crush, Glacier, and an Ice Folk tree with no
+ship. What the code does where this document left a choice, or reads
+differently:
+
+1. **Shapes.** The command `FREEZE` follows `COLD_SNAP`; the events
+   `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED` follow `UNITS_CHILLED`.
+   The state has `ice`, the view `ice` with `permanent`. The combat preview
+   has `iceCover` and `icebound`. A unit's public stats have `icebound`
+   exactly when the match has an Ice Folk seat, and the `iceFolk` block has
+   `onIce`, `slides`, and `iceCover`. A match without an Ice Folk seat plays
+   the commands of the same setup and seed at `7r43`.
+2. **Glacier's cover is the Snow cover of today, × 1.25.**
+   [Section 8.10](#810-glacier) quotes × 1.5, the Snow cover when this
+   overlay was written; the Snow cover has been × 1.25 since `7r37`, and the
+   rule says "the Snow cover". `iceCover` is public on a visible unit, like
+   Dig In, so every preview is exact.
+3. **Freeze.** The Ice Witch is the role with the Blizzard; her `at` is her
+   own tile. `previewFreezeV7(view, unitId, at)` returns
+   `{ unitId, tiles, refreshed, icebound }`. The Freezing unit is marked like
+   a unit that used a special action. A Freeze by a mind-controlled Ice Folk
+   unit makes its controller's ice.
+4. **Slide.** A slide starts only on ice that was there, and explored by the
+   mover, before the command; it never passes a unit, the mover's own
+   included. The movement query offers a destination only where a Move can
+   end. **Slip:** a slipping unit that steps onto ice it could not know of
+   (a tile it had not explored) stops there and its Move is interrupted with
+   reason `ICE`, as for Snow.
+5. **Icebound.** An icebound unit projects no ZOC. A Juggernaut's Push, a
+   Knockback, a ram's shove, a Charge! push, and a Tractor Beam leave it
+   where it is (the Tractor Beam is refused with `TARGET_IMMUNE`). It is not
+   rammed and not submerged.
+6. **The crush hits every icebound unit on the player's ice,** whoever owns
+   the unit, as [section 8.9](#89-icebound-and-the-crush) says literally
+   (the Ice Folk freeze only hostile ships, so an own or allied icebound
+   ship does not arise in play).
+7. **Projection.** `WATER_FROZEN` and `ICE_MELTED` reach a viewer with the
+   tiles it has explored and the units it can see, and are dropped when no
+   tile is left; `WATER_FROZEN.unitId` is null for a viewer that cannot see
+   the Freezing unit. `UNITS_CRUSHED` is projected like the Plague's damage.
+8. **Board on Deep Water (a step I fault, fixed here).** A prize's kind
+   follows its new owner, so a boarder without Navigation cannot take a ship
+   that stands on Deep Water. Step I offered that `BOARD` and then failed on
+   it. [Section 4.2](#42-board) row 10 now refuses it, and it is not offered.
+9. **Showcase.** An Ice Folk seat has eight units and no ship; the IDs of
+   its three boats stay unused, so every other seat keeps its unit IDs. The
+   three boat tiles are its ice with 5 turns. Only the tile next to the
+   Coast city (`y` 12) is in its territory and permanent; the two at `y` 13
+   count down like any ice. Its Coast city has no unit.
+10. **Dead parts.** The Ice Folk tree keeps `NAVAL_TRAINING_DISCOUNT`, which
+    does nothing for it. The three ship roles stay registered for the Ice
+    Folk with their numbers and no unlock. A mission that gives an Ice Folk
+    seat a ship is refused by the mission builder.
+11. **Normal AI: legal, not clever.** An Ice Folk seat makes no naval plan
+    and never picks `FREEZE`, so it does not cross water on purpose; its
+    units may walk onto ice as any Move allows. Other seats' threat estimates
+    treat ice as ground and ignore the slide. The rules of
+    [sections 13.2 and 13.3](#132-the-ice-folk-bead-5ti5) are
+    `pulp_wars-5ti.5`.
+12. **Stand-ins until the interface bead.** Ice is drawn with the Snow
+    overlay over its water, and the tile panel has an "Ice" chip that says
+    when it melts. `FREEZE` has **no control in the interface**: the engine
+    offers it, headless play may use it, and a player cannot yet. A player's
+    Ice Folk units can walk and slide on ice that exists (a Move ends where
+    the slide ends), but a player cannot make ice, so in the browser an Ice
+    Folk seat cannot cross water until the interface bead. The five
+    technology cards carry their names and one sentence each. The Gallery
+    shows no ship and no transport for the Ice Folk.
 
 ## Appendix A. Draft, critique, redraft
 

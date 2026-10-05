@@ -232,6 +232,9 @@ function normalizedInitialState(state: GameStateV7): string {
     crumbs: _crumbs,
     splattedThisTurn: _splatted,
     tossedThisTurn: _tossed,
+    // The frozen sea (`pulp_wars-5ti.3`) adds the `ice` list, empty in every
+    // generated initial state.
+    ice: _ice,
     rulesetId: _rulesetId,
     setup,
     ...rest
@@ -239,6 +242,7 @@ function normalizedInitialState(state: GameStateV7): string {
   if (_rush.length + _crumbs.length + _splatted.length + _tossed.length !== 0)
     throw new Error("a Candy fact in an initial state");
   if (_monsters.length !== 0) throw new Error("a Monster with the option off");
+  if (_ice.length !== 0) throw new Error("ice in an initial state");
   if (_beamed.length !== 0 || _tractor.length !== 0)
     throw new Error("a per-turn Martian fact in an initial state");
   const {
@@ -410,13 +414,16 @@ describe("headless parity and the CLI flag", () => {
       },
       {
         mapType: "CONTINENTS",
+        // The frozen sea (`pulp_wars-5ti.3`, 7r44): an Ice Folk seat has no
+        // ships, so this match was recomputed at 7r44 (the same board; it
+        // was 18 rounds, commands 2c1c37…d518, events bd9d09…7c62).
         factions: ["ICE_FOLK", "DWARF"],
         seed: 5,
-        rounds: 18,
+        rounds: 20,
         commandHash:
-          "2c1c3766514e106c06e9497477d8007079aba9a46ebef941f89ac7b0eabcd518",
+          "15181766086da0e49c57693a1f7e28156e1de59ffd98484f0eb79b8bc95f05ce",
         eventHash:
-          "bd9d09deb737e9d7107a651d4507a18029acc7124ea539d3d3d0c822ca877c62",
+          "18e61e8e061b9a12da48d2fa70b3798846f786df3124b48848ffabeac2f44979",
         mapHash:
           "2cbf36a1c5d03e70dd785be13a1ed7d5dd04fecdd54925baa1b483261d71c9be",
         finalPrngHash:
@@ -479,11 +486,16 @@ describe("headless parity and the CLI flag", () => {
           bounceTo,
           ram,
           torpedo,
+          iceCover,
+          icebound,
           ...preview
         } = event.preview;
         // The naval branch (`pulp_wars-5ti.2`, 7r43) adds two more, neutral
         // while no seat holds Seamanship or Submersibles.
         expect([ram, torpedo]).toEqual([false, false]);
+        // The frozen sea (`pulp_wars-5ti.3`, 7r44) adds two more, neutral
+        // while nothing is frozen.
+        expect([iceCover, icebound]).toEqual([false, false]);
         expect([sugarRushApplied, splatApplied, bounce, bounceTo]).toEqual([
           false,
           false,

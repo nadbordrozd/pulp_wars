@@ -50,6 +50,8 @@ const captured300: PlayerViewV7 = {
   cooling: [],
   mindControlled: [],
   mindControlCooldowns: [],
+  // The frozen sea: no ice.
+  ice: [],
 };
 
 describe("ruleset-7 exact public query indexing", () => {
@@ -73,7 +75,9 @@ describe("ruleset-7 exact public query indexing", () => {
     // 36d712…00db with `V3` since the village density, `pulp_wars-ykw.2`,
     // and 2fe0de…7670 with `V2`, the same view otherwise).
     expect(canonicalHash(measured.view)).toBe(
-      "c843631eca60cc41fa9a06d968769b1e254fe9575d6df50ddc415a47051c6692",
+      // The frozen sea (`pulp_wars-5ti.3`) adds the empty `ice` list (was
+      // c84363…6692, the same view otherwise).
+      "70a55be380083978e25552108713864069e136c74e58a82f865c282450bd16d4",
     );
 
     const planned = drain(measured.view, commands, 113);

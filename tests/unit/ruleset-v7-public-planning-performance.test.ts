@@ -48,6 +48,8 @@ const captured = (commandIndex: 300 | 425): PlayerViewV7 => ({
   cooling: [],
   mindControlled: [],
   mindControlCooldowns: [],
+  // The frozen sea: no ice.
+  ice: [],
 });
 
 describe("ruleset-7 exact public-planning performance", () => {

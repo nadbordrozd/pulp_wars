@@ -68,7 +68,9 @@ export const RULESET7_LATE_PUBLIC_VIEW_NORMAL_DECISION = Object.freeze({
   policyDecisionHash:
     // The naval branch (`pulp_wars-5ti.2`) inserts BOARD after ATTACK, moving
     // every later command kind forward by one (was 7622b4…e548).
-    "a302717690b2a2e90e1d2ea311dfb6d228af6a7053261b1990231e4fbd3b8cc3",
+    // The frozen sea (`pulp_wars-5ti.3`) inserts FREEZE after COLD_SNAP,
+    // moving every later command kind forward by one (was a30271…8cc3).
+    "0618e524f00bcc6b5f6ee2fcd80229a1c3a7f219603c3129491b6c3de72eb49c",
   command: Object.freeze({
     kind: "TRAIN",
     cityId: 16,
@@ -146,10 +148,10 @@ export function upgradeRetainedPublicViewV7(
   });
   return {
     ...retained,
-    rulesetId: "pulp-wars-poc-7r43",
+    rulesetId: "pulp-wars-poc-7r44",
     setup: {
       ...retained.setup,
-      rulesetId: "pulp-wars-poc-7r43",
+      rulesetId: "pulp-wars-poc-7r44",
       mapType: "DRY_LAND",
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V4",
       curiosities: false,
@@ -237,6 +239,8 @@ export function upgradeRetainedPublicViewV7(
     // Map curiosities: the retained match was generated without any (and
     // without a Monster).
     curiosities: [],
+    // The frozen sea: nor any ice.
+    ice: [],
     monsters: [],
     // Revision 13: the retained all-Human match has no Graves.
     graves: [],

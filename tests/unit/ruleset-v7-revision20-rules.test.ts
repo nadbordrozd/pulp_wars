@@ -91,16 +91,16 @@ class MemoryStorage {
 // save keys are obsolete, and the scripts perform no Stampede.
 describe("ruleset-7 revision-20 identity", () => {
   it("keeps 7r19 and 7r20 as prior identities after the later bumps", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r43");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r43");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r44");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r44");
     expect(RULESET_7.version).toBe(7);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r43.current");
-    expect(PRIOR_RULESET_7_IDS.slice(-24, -22)).toEqual([
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r44.current");
+    expect(PRIOR_RULESET_7_IDS.slice(-25, -23)).toEqual([
       "pulp-wars-poc-7r19",
       "pulp-wars-poc-7r20",
     ]);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-24, -22)).toEqual([
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.slice(-25, -23)).toEqual([
       "pulpWars.save.v7r19.current",
       "pulpWars.save.v7r20.current",
     ]);
@@ -142,7 +142,7 @@ describe("ruleset-7 revision-20 identity", () => {
       const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
       const created = createPlayableGameV7(setup);
       if (!created.ok) throw new Error(created.error.code);
-      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r43");
+      expect(created.state.rulesetId).toBe("pulp-wars-poc-7r44");
       const oldSetup = { ...setup, rulesetId: oldId };
       expect(parseMatchSetupV7(setup)).not.toBeNull();
       expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -221,7 +221,7 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
     // revision inserts three commands after HATCH and four events, the
     // Ice Folk revision two commands after TRACTOR_BEAM and one event, and
     // the Dwarf revision three commands after COLD_SNAP and four events.
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(57);
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(58);
     expect(COMMAND_KIND_ORDER_V7).not.toContain("STAMPEDE");
     const kaboom = COMMAND_KIND_ORDER_V7.indexOf("KABOOM");
     expect(COMMAND_KIND_ORDER_V7.slice(kaboom, kaboom + 8)).toEqual([
@@ -232,13 +232,13 @@ describe("ruleset-7 revision-20 Stampede removal", () => {
       "TRACTOR_BEAM",
       "THROW_BOLAS",
       "COLD_SNAP",
-      "TUNNEL",
+      "FREEZE", // the frozen sea (pulp_wars-5ti.3) inserts FREEZE after COLD_SNAP
     ]);
     // Map curiosities (pulp_wars-737.2) add FOUNTAIN_HEALED, SHRINE_CLAIMED,
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(97);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
   });
 
   it("fails to parse a STAMPEDE command, like any unknown kind", () => {

@@ -970,7 +970,9 @@ export function resolveCuriosityClaimV7(
     };
   }
   if (curiosity.kind === "WRECK") {
-    if (!isAfloatFormV7(unit.form)) return null;
+    // The frozen sea (naval branch section 8.11): a Wreck under ice is
+    // salvaged by a land-form unit (it stands on water only on ice).
+    if (!isAfloatFormV7(unit.form) && unit.form !== "LAND") return null;
     return {
       state: {
         ...state,

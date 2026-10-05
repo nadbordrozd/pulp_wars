@@ -523,7 +523,13 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     "src/engine/v7/combat.ts": 1,
     "src/engine/v7/explosions.ts": 1,
     "src/engine/v7/graves.ts": 1,
-    "src/engine/v7/movement.ts": 2,
+    // `pulp_wars-5ti.3` (the frozen sea): a boat or an embarked unit on ice is
+    // Icebound and makes no Move (canonical and public validation; an Egg is
+    // never on water).
+    "src/engine/v7/movement.ts": 4,
+    // `pulp_wars-5ti.3`: a Wreck is salvaged by an afloat unit or by a
+    // land-form unit standing on ice (an Egg never moves onto one).
+    "src/engine/v7/curiosities.ts": 1,
     // Revision 20 removed the Stampede resolution and preview (two tests
     // each in the reducer and the queries).
     // `pulp_wars-v3w`: the public Restless test moved to the shared Recover
@@ -534,7 +540,9 @@ describe("ruleset-7 revision-19 form audit: source", () => {
     // reducer into the shared `mindControlTargetBlockV7` (martian.ts), which
     // the reducer and the public query both call; the Brain gate stays in
     // the reducer. An Egg, an embarked unit, and a boat must still fail it.
-    "src/engine/v7/reducer.ts": 16,
+    // `pulp_wars-5ti.3`: Freeze is used by a land-form unit only (an Egg, an
+    // embarked unit, and a boat must fail it).
+    "src/engine/v7/reducer.ts": 17,
     "src/engine/v7/martian.ts": 1,
     // `pulp_wars-9s0.5`: only a land-form flyer stands on a Rift (an Egg,
     // an embarked unit, and a boat must fail the state check).

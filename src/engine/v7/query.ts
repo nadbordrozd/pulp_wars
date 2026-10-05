@@ -26,6 +26,8 @@ import {
   boardedHpV7,
   dockPopulationV7,
   unitIsSubmergedV7,
+  isIceAtV7,
+  unitIsIceboundV7,
   coverBonusV7,
   terrainGivesCoverV7,
   attackIgnoresCityWallsV7,
@@ -33,6 +35,7 @@ import {
   canEnterTerrainV7,
   chargeRunUpAttack2V7,
   flyerMayStandOnSiteV7,
+  factionUnlocksRoleV7,
   isEggLaidRoleV7,
   isMindControlledV7,
   seatRoleMechanicsV7,
@@ -160,6 +163,7 @@ import {
   unitOwnerIsIceFolkV7,
   withinBolasRangeV7,
 } from "./ice-folk";
+import { freezeSetV7, unitFreezesRingV7, type FreezeSetV7 } from "./ice";
 import {
   absorbHitV7,
   beamDownCarrierReadyV7,
@@ -183,7 +187,7 @@ import {
   recoveryGainV7,
   type RecoveryFactsV7,
 } from "./recovery";
-import { riftAtV7 } from "./rift";
+import { noRisingAtV7, riftAtV7 } from "./rift";
 import { grownHpV7 } from "./growth";
 import { laidEggHpV7, laidEggTurnsV7, publicNestTilesV7 } from "./eggs";
 import type {
@@ -610,6 +614,9 @@ function appendPublicCityCommandsV7(
     if (
       fits(role) &&
       rule.cost !== null &&
+      // The frozen sea (naval branch section 8.11): a tree that unlocks no
+      // ship (the Ice Folk's) is never offered one.
+      factionUnlocksRoleV7(player.faction, role) &&
       (rule.technology === null ||
         player.researchedTechs.includes(rule.technology))
     )
@@ -660,6 +667,8 @@ function publicLandingTilesV7(
           ownerId: unit.ownerId,
           role: unit.role,
         }),
+        // The frozen sea: a transport may land on adjacent ice.
+        ice: isIceAtV7(view, tile.at),
       }) &&
       // The Ice Folk revision section 7.7: nor does a Sabretooth.
       (!unitAvoidsForeignSitesV7(view, {
@@ -805,6 +814,9 @@ function appendPublicUnitCommandsV7(
   const attackReady =
     unit.form !== "EMBARKED" &&
     !crashed &&
+    // The frozen sea (naval branch section 8.9): an icebound ship cannot
+    // attack.
+    !unitIsIceboundV7(view, unit) &&
     (primaryReady ||
       unit.activation.overrunActive ||
       twinShotReadyV7(view, unit));
@@ -909,6 +921,11 @@ function appendPublicUnitCommandsV7(
       coldSnapTargetsV7(view, unit, view.units).length > 0
     )
       candidates.push({ kind: "COLD_SNAP", unitId: unit.id });
+    // The frozen sea (naval branch section 8.4): Freeze, for every `at`
+    // with a non-empty freeze set (one for the Ice Witch: her own tile).
+    if (rule.abilities.includes("FREEZE"))
+      for (const at of publicFreezeTargetsV7(view, unit))
+        candidates.push({ kind: "FREEZE", unitId: unit.id, at });
   }
   // The Dwarf revision: the Steam Mole's Tunnel, the Gyrocopter's bombing
   // run, and the Engineer's Assemble, each offered exactly when legal.
@@ -1087,14 +1104,148 @@ function publicBoardTargetsV7(
     !unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).boarding ||
     unit.activation.overrunActive ||
     primaryUsedForQuery(unit) ||
-    primaryActionBlockedAfterMoveV7(view, unit)
+    primaryActionBlockedAfterMoveV7(view, unit) ||
+    // The frozen sea (section 4.2 row 4a): an icebound ship cannot board.
+    unitIsIceboundV7(view, unit)
   )
     return [];
-  return view.units.filter(
-    (target) =>
-      publicHostile(view, view.viewer.id, target.ownerId) &&
-      boardTargetBlockV7(unit, target) === null,
+  const navigation = view.viewer.researchedTechs.includes("NAVIGATION");
+  return view.units.filter((target) => {
+    if (!publicHostile(view, view.viewer.id, target.ownerId)) return false;
+    // Row 10: a prize on Deep Water needs the viewer's Navigation (a visible
+    // unit stands on an explored tile).
+    const tile = tileAtView(view, target.at);
+    return (
+      boardTargetBlockV7(
+        unit,
+        target,
+        tile?.explored === true ? tile.terrain : undefined,
+        navigation,
+      ) === null
+    );
+  });
+}
+
+/**
+ * The naval branch, the frozen sea
+ * (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.4): the freeze set of a
+ * Freeze by the viewer's land unit `unit` aimed at `at`, from the public
+ * view. Every tile it reads must be explored by the viewer, every unit on an
+ * explored tile is visible, and the ice on explored tiles is public, so it
+ * equals the reducer's set.
+ */
+function publicFreezeSetV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+  at: CoordV7,
+): FreezeSetV7 {
+  const capabilities = unitCapabilitiesV7(
+    view,
+    unit,
+    view.viewer.researchedTechs,
   );
+  return freezeSetV7({
+    from: unit.at,
+    at,
+    ring: unitFreezesRingV7(view, unit),
+    freezeWater: capabilities.freezeWater,
+    icebound: capabilities.icebound,
+    tileAt: (target) => {
+      const tile = tileAtView(view, target);
+      if (tile === undefined) return undefined;
+      if (!tile.explored)
+        return {
+          explored: false,
+          terrain: "GRASS",
+          improvement: null,
+          ice: false,
+          unit: null,
+        };
+      const occupant = view.units.find(
+        (candidate) => candidate.hp > 0 && same(candidate.at, target),
+      );
+      return {
+        explored: true,
+        terrain: tile.terrain,
+        improvement: tile.improvement,
+        ice: isIceAtV7(view, target),
+        unit:
+          occupant === undefined
+            ? null
+            : {
+                id: occupant.id,
+                form: occupant.form,
+                hostile: publicHostile(view, view.viewer.id, occupant.ownerId),
+              },
+      };
+    },
+  });
+}
+
+/**
+ * Section 8.4: the `at` of every `FREEZE` the viewer's land unit may make
+ * now, in (y, x) order: its own tile for the Ice Witch, otherwise each of
+ * the eight tiles around it, each with a non-empty freeze set. The caller
+ * has checked the actor rows (the role's `FREEZE`, land form, and that the
+ * unit may use a primary action); Rime is checked here.
+ */
+function publicFreezeTargetsV7(
+  view: PlayerViewV7,
+  unit: PlayerViewV7["units"][number],
+): readonly CoordV7[] {
+  if (
+    unit.ownerId !== view.viewer.id ||
+    unitCapabilitiesV7(view, unit, view.viewer.researchedTechs).freezeWater ===
+      "NONE"
+  )
+    return [];
+  const candidates = unitFreezesRingV7(view, unit)
+    ? [unit.at]
+    : adjacentPublicTiles(view, unit.at).map((tile) => tile.at);
+  return candidates.filter(
+    (at) => publicFreezeSetV7(view, unit, at).tiles.length > 0,
+  );
+}
+
+/**
+ * Section 8.4: the exact result of an offered `FREEZE`: every tile that
+ * becomes (or stays) ice, the ones of them that were already ice and are
+ * refreshed, and the afloat units locked in the ice.
+ */
+export interface FreezePreviewV7 {
+  readonly unitId: UnitId;
+  readonly tiles: readonly CoordV7[];
+  readonly refreshed: readonly CoordV7[];
+  readonly icebound: readonly UnitId[];
+}
+
+/**
+ * Section 8.4: the preview of `FREEZE` by the viewer's unit `unitId` aimed
+ * at `at`, or null unless that command is offered.
+ */
+export function previewFreezeV7(
+  view: PlayerViewV7,
+  unitId: UnitId,
+  at: CoordV7,
+): FreezePreviewV7 | null {
+  if (
+    !queryPlayerCommandsV7(view).some(
+      (command) =>
+        command.kind === "FREEZE" &&
+        command.unitId === unitId &&
+        same(command.at, at),
+    )
+  )
+    return null;
+  const unit = view.units.find((candidate) => candidate.id === unitId);
+  if (unit === undefined) return null;
+  const frozen = publicFreezeSetV7(view, unit, at);
+  return {
+    unitId,
+    tiles: frozen.tiles,
+    refreshed: frozen.refreshed,
+    icebound: frozen.icebound,
+  };
 }
 
 /**
@@ -1175,6 +1326,7 @@ function publicTunnelTileV7(
       engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
       navigation: false,
       mountainBorn: mobility.mountainBorn,
+      ice: false,
     }) &&
     !tileOccupiedV7(view, at) &&
     !view.treasureChests.some((chest) => same(chest, at)) &&
@@ -1709,6 +1861,7 @@ function publicRebakeFactsV7(
         engineering: player.researchedTechs.includes("ENGINEERING"),
         navigation: player.researchedTechs.includes("NAVIGATION"),
         mountainBorn: mechanics.mountainBorn,
+        ice: false,
       }) ||
       (tile.territoryOwnerId !== null &&
         tile.territoryOwnerId !== player.id &&
@@ -2021,6 +2174,7 @@ function publicPlacementFactsV7(
       explored: false,
       site: null,
       terrain: "GRASS",
+      ice: false,
       occupied: false,
       chest: false,
       alliedTerritory: false,
@@ -2029,6 +2183,7 @@ function publicPlacementFactsV7(
     explored: true,
     site: tile.site,
     terrain: tile.terrain,
+    ice: isIceAtV7(view, at),
     // The Dwarf revision section 5.3: the occupancy predicate.
     occupied: tileOccupiedV7(view, at, exceptUnitId),
     chest: view.treasureChests.some((chest) => same(chest, at)),
@@ -2732,7 +2887,7 @@ export function previewWailV7(
         unit !== undefined &&
         unit.form === "LAND" &&
         // The Rift (RULESET_7_RIFT.md section 4): nothing rises on a Rift.
-        !riftAtV7(view.board, unit.at) &&
+        !noRisingAtV7(view.board, unit.at) &&
         view.bitten.some((entry) => entry.unitId === target.unitId);
       return {
         ...target,
@@ -3361,7 +3516,9 @@ export function estimateCombatV7(
     // units afloat, and a submerged Submarine is attacked only from an
     // adjacent tile.
     (attackIsTorpedoV7(state, attacker) && !isAfloatFormV7(target.form)) ||
-    (distance > 1 && unitIsSubmergedV7(state, target))
+    (distance > 1 && unitIsSubmergedV7(state, target)) ||
+    // The frozen sea (section 8.9): an icebound ship cannot attack.
+    unitIsIceboundV7(state, attacker)
   )
     return null;
   return calculateCombatPreviewV7(
@@ -3509,6 +3666,9 @@ export function queryThreatenedTilesV7(
   // reach); standing in its reach without provoking it is safe.
   if (isNeutralOwnerV7(unit.ownerId))
     return previewMonsterV7(view, unit.id)?.provokeTiles ?? [];
+  // The frozen sea (naval branch section 8.9): an icebound unit cannot
+  // move or attack, so it threatens nothing.
+  if (unitIsIceboundV7(view, unit)) return [];
   const rule = unitRoleRuleV7(view, unit);
   // The Candy revision section 13: a Crashed unit has no attack reach, nor
   // has a Rushed one (it will be Crashed on its next turn) unless Home Sweet
@@ -3563,7 +3723,12 @@ export function queryThreatenedTilesV7(
           .filter((at) => {
             if (!machine) return true;
             const tile = tileAtView(view, at);
-            return tile?.explored !== true || tile.biome !== null;
+            // The frozen sea: a machine that ends on ice stands there.
+            return (
+              tile?.explored !== true ||
+              tile.biome !== null ||
+              isIceAtV7(view, at)
+            );
           })),
   ];
   const rangeFrom = (origin: CoordV7): number => {
@@ -6741,6 +6906,8 @@ function publicTileCommandLegal(
     return (
       view.viewer.coins >= 4 &&
       tile.terrain === "SHALLOW_WATER" &&
+      // The frozen sea (naval branch section 8.3): no Port on ice.
+      !isIceAtV7(view, tile.at) &&
       tile.improvement === null &&
       tile.site === null &&
       !tile.road &&
@@ -6938,7 +7105,10 @@ function publicCombatPreviewCore(
       attacker.activation.attacksUsed >= 1) ||
     primaryActionBlockedAfterMoveV7(view, attacker) ||
     distance < attackerRule.minimumRange ||
-    distance > publicAttackMaximumRangeV7(view, attacker)
+    distance > publicAttackMaximumRangeV7(view, attacker) ||
+    // The frozen sea (naval branch section 8.9): an icebound ship cannot
+    // attack.
+    unitIsIceboundV7(view, attacker)
   )
     return null;
   // The naval branch (docs/product/RULESET_7_NAVAL_BRANCH.md sections 5.2
@@ -7099,7 +7269,13 @@ function publicCombatPreviewCore(
     targetTile.snow === true &&
     tileFortification === 0 &&
     unitOwnerIsIceFolkV7(view, target);
-  const bonus = coverBonusV7(terrainCover, snowCover);
+  // The frozen sea (naval branch section 8.10): Glacier's cover on ice,
+  // read from the target's public stats (its owner's technologies are
+  // private; the stats already hold the unit's fortification).
+  const iceCover = !acid && defenseStats.iceFolk?.iceCover === true;
+  // Section 8.9: an icebound defender never retaliates.
+  const defenderIcebound = unitIsIceboundV7(view, target);
+  const bonus = coverBonusV7(terrainCover, snowCover || iceCover);
   const breachApplied = false;
   const applied = bonus;
   // The Dwarf revision section 7.1: Unflinching (a construct's attack).
@@ -7159,6 +7335,7 @@ function publicCombatPreviewCore(
   const wouldRetaliate =
     !defenderDies &&
     !unanswered &&
+    !defenderIcebound &&
     target.form !== "EMBARKED" &&
     target.form !== "EGG" &&
     roleRetaliatesV7(defenderRule) &&
@@ -7269,8 +7446,8 @@ function publicCombatPreviewCore(
     defenderShieldDamage,
     attackerDies,
     defenderDies,
-    attackerOnRift: riftAtV7(view.board, attacker.at),
-    defenderOnRift: riftAtV7(view.board, target.at),
+    attackerOnRift: noRisingAtV7(view.board, attacker.at),
+    defenderOnRift: noRisingAtV7(view.board, target.at),
     splash,
     splashUnit: (unitId) => view.units.find((unit) => unit.id === unitId),
     plaguedUnitIds: new Set(view.plagued.map((entry) => entry.unitId)),
@@ -7359,6 +7536,7 @@ function publicCombatPreviewCore(
       defenderDies,
       retaliates: retaliation,
       unanswered,
+      icebound: defenderIcebound,
       splatted: wouldRetaliate && splatted,
     }),
     advances,
@@ -7393,8 +7571,8 @@ function publicCombatPreviewCore(
       damageToAttacker,
       attackerDies,
       defenderDies,
-      attackerOnRift: riftAtV7(view.board, attacker.at),
-      defenderOnRift: riftAtV7(view.board, target.at),
+      attackerOnRift: noRisingAtV7(view.board, attacker.at),
+      defenderOnRift: noRisingAtV7(view.board, target.at),
     }),
     ...afflictions,
     runUp: runUpAttack2 / 2,
@@ -7434,6 +7612,8 @@ function publicCombatPreviewCore(
     ...bounced,
     ram,
     torpedo,
+    iceCover,
+    icebound: defenderIcebound,
   };
 }
 
@@ -7463,6 +7643,7 @@ function publicRamShoveState(
       tile,
       targetTile?.explored === true ? targetTile.terrain : undefined,
       tileOccupiedV7(view, behind, defender.id),
+      isIceAtV7(view, behind),
     )
     ? "WILL_PUSH"
     : "BLOCKED";
@@ -7520,6 +7701,8 @@ function publicBounceStateV7(
       engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
       navigation: view.viewer.researchedTechs.includes("NAVIGATION"),
       mountainBorn: unitIsMountainBornV7(view, attacker),
+      // The frozen sea: a land-form attacker may be bounced onto ice.
+      ice: isIceAtV7(view, destination),
     }) &&
     !tileOccupiedV7(view, destination, attacker.id) &&
     !(
@@ -8026,6 +8209,7 @@ function publicAdvanceDestinationLegal(
         engineering: view.viewer.researchedTechs.includes("ENGINEERING"),
         navigation: false,
         mountainBorn: unitIsMountainBornV7(view, attacker),
+        ice: false,
       }))
   );
 }
@@ -8054,12 +8238,21 @@ function publicPushState(
   const tile = tileAtView(view, behind);
   if (tile === undefined) return "BLOCKED";
   if (!tile.explored) return "UNKNOWN_BEHIND_FOG";
+  // The frozen sea (naval branch section 8.9): nothing moves an icebound
+  // unit, whatever is behind it (exact: the ice under a visible unit is
+  // public).
+  if (unitIsIceboundV7(view, defender)) return "BLOCKED";
   // Revision 20: a Charge! reads the explored tile as resolution does (every
   // unit on an explored tile is visible), so its Push and follow preview is
   // exact; the Juggernaut-role Push keeps its historical detection rule.
   if (!attackIsChargeV7(view, attacker) && !publicDetectionCovers(view, behind))
     return "UNKNOWN_BEHIND_FOG";
-  const water = tile.biome === null;
+  // The frozen sea (naval branch sections 8.3 and 8.9): ice is ground for
+  // a land-form unit and closed to a unit afloat, and nothing moves an
+  // icebound unit (the ice on an explored tile is public).
+  if (unitIsIceboundV7(view, defender)) return "BLOCKED";
+  const ice = isIceAtV7(view, behind);
+  const water = tile.biome === null && !ice;
   if (
     (defender.form === "LAND" && water) ||
     (defender.form !== "LAND" && !water)
@@ -8084,6 +8277,7 @@ function publicPushState(
       engineering: false,
       navigation: false,
       mountainBorn: false,
+      ice: false,
     })
   )
     return "BLOCKED";
@@ -8106,7 +8300,7 @@ function publicPushState(
     )
   )
     return "BLOCKED";
-  if (tile.terrain === "DEEP_WATER") {
+  if (tile.terrain === "DEEP_WATER" && !ice) {
     if (defender.ownerId !== view.viewer.id) return "UNKNOWN_BEHIND_FOG";
     if (!view.viewer.researchedTechs.includes("NAVIGATION")) return "BLOCKED";
   }
@@ -8137,7 +8331,12 @@ function publicKnockbackState(
   const tile = tileAtView(view, behind);
   if (tile === undefined) return "BLOCKED";
   if (!tile.explored) return "UNKNOWN_BEHIND_FOG";
-  const water = tile.biome === null;
+  // The frozen sea (naval branch sections 8.3 and 8.9): ice is ground for
+  // a land-form unit and closed to a unit afloat, and nothing moves an
+  // icebound unit (the ice on an explored tile is public).
+  if (unitIsIceboundV7(view, defender)) return "BLOCKED";
+  const ice = isIceAtV7(view, behind);
+  const water = tile.biome === null && !ice;
   if (
     isAfloatFormV7(defender.form) !== water ||
     tile.site !== null ||
@@ -8156,6 +8355,7 @@ function publicKnockbackState(
       engineering: false,
       navigation: false,
       mountainBorn: false,
+      ice: false,
     })
   )
     return "BLOCKED";
@@ -8174,7 +8374,7 @@ function publicKnockbackState(
     )
       return "BLOCKED";
   }
-  if (tile.terrain === "DEEP_WATER") {
+  if (tile.terrain === "DEEP_WATER" && !ice) {
     if (defender.ownerId !== view.viewer.id) return "UNKNOWN_BEHIND_FOG";
     if (!view.viewer.researchedTechs.includes("NAVIGATION")) return "BLOCKED";
   }

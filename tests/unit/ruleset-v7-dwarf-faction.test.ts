@@ -151,10 +151,10 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
   });
 
   it("has 53 command kinds and 81 event kinds, with the new kinds at the stated positions", () => {
-    expect(COMMAND_KIND_ORDER_V7).toHaveLength(57);
-    const snap = COMMAND_KIND_ORDER_V7.indexOf("COLD_SNAP");
+    expect(COMMAND_KIND_ORDER_V7).toHaveLength(58);
+    const snap = COMMAND_KIND_ORDER_V7.indexOf("FREEZE");
     expect(COMMAND_KIND_ORDER_V7.slice(snap, snap + 4)).toEqual([
-      "COLD_SNAP",
+      "FREEZE", // the frozen sea (pulp_wars-5ti.3), after COLD_SNAP
       "TUNNEL",
       "BOMB_RUN",
       "ASSEMBLE",
@@ -164,7 +164,7 @@ describe("Dwarf faction registration (sections 2 and 14)", () => {
     // and WRECK_SALVAGED (85 event kinds); the Giant Spider (pulp_wars-737.3)
     // MONSTER_REGENERATED, NEUTRAL_TURN_STARTED, NEUTRAL_TURN_ENDED, and
     // MONSTER_BOUNTY_AWARDED (89); the Candy revision seven more (96).
-    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(97);
+    expect(DOMAIN_EVENT_KIND_ORDER_V7).toHaveLength(100);
     const after = (order: readonly string[], kind: string) =>
       order[order.indexOf(kind) + 1];
     for (const order of [
@@ -1196,7 +1196,9 @@ describe("Dwarf Showcase (section 2.4)", () => {
       return created.state;
     };
     const state = initial(["DWARF", "ORIGINAL", "UNDEAD", "GOBLIN"]);
-    const reference = initial(["ICE_FOLK", "ORIGINAL", "UNDEAD", "GOBLIN"]);
+    // A Martian reference: an Ice Folk seat has no ships since the frozen
+    // sea (`pulp_wars-5ti.3`).
+    const reference = initial(["MARTIAN", "ORIGINAL", "UNDEAD", "GOBLIN"]);
     expect(state.board).toEqual(reference.board);
     expect(state.cities).toEqual(reference.cities);
     const shape = (source: GameStateV7) =>

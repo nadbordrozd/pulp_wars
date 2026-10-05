@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r43`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r44`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -165,20 +165,27 @@ Archipelago layouts for many seats
 again (map revision `REGIONAL_BIOMES_NAVAL_V4`); the Showcase, the missions,
 and every rule of play did not.
 
-**The naval branch, engine step I, is live and not folded here.**
+**The naval branch, engine steps I and II, is live and not folded here.**
 `pulp-wars-poc-7r43` (`pulp_wars-5ti.2`) implements engine step I of the
 [naval branch overlay](RULESET_7_NAVAL_BRANCH.md): the Naval branch has five
 technologies in all eight trees (Seamanship, tier 2 under Shorecraft:
 **Ram** and **Board**; Submersibles, tier 3 under Seamanship: the
-**Submarine** and **Harbours**). Until the fold of `pulp_wars-5ti.9` the
-overlay is the rule for these (its sections 2 to 7, 9, 10, and 12, with the
-records of its [section 20](RULESET_7_NAVAL_BRANCH.md#20-engine-step-i-as-built-pulp_wars-5ti2)),
+**Submarine** and **Harbours**). `pulp-wars-poc-7r44` (`pulp_wars-5ti.3`)
+implements engine step II, **the Ice Folk frozen sea**: the Ice Folk have no
+ships and never embark; their five Naval technologies (shown as Rime, Pack
+Ice, Icebound, Black Ice, and Glacier) let their land units **Freeze** water
+into ice that everyone's land units can stand on, on which Ice Folk units
+**slide** and others slip, which traps ships (**Icebound**, with the crush),
+Chills enemies standing on it (**Black Ice**), and thaws outside its owner's
+territory. Until the fold of `pulp_wars-5ti.9` the overlay is the rule for
+these (its sections 2 to 10 and 12, with the records of its
+[section 20](RULESET_7_NAVAL_BRANCH.md#20-engine-step-i-as-built-pulp_wars-5ti2)
+and [section 22](RULESET_7_NAVAL_BRANCH.md#22-engine-step-ii-as-built-pulp_wars-5ti3)),
 and the Naval text of this document
 ([sections 6](#6-technology), [11](#11-unit-roster),
 [13](#13-combat-and-fortification), and [14](#14-naval-rules)) still
-describes the three-technology branch. The Ice Folk play the same branch
-until engine step II (`pulp_wars-5ti.3`). A match on Dry Land plays as
-before: the whole branch is forbidden there.
+describes the three-technology branch with ships for every faction. A match
+on Dry Land plays as before: the whole branch is forbidden there.
 
 **The Candy overlay is folded.** `pulp_wars-jdb.8` completed the fold the
 engine bead began: the Candy rules are
@@ -260,7 +267,7 @@ telemetry, and balance sections where the build differs (its
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r43`.
+resolved ones as of `pulp-wars-poc-7r44`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -350,10 +357,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r43`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Ruleset                                    | `pulp-wars-poc-7r44`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| Browser autosave                           | `pulpWars.save.v7r43.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Browser autosave                           | `pulpWars.save.v7r44.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                             |
@@ -8120,6 +8127,7 @@ has no Candy step.
 | Economy     | `pulp-wars-poc-7r41` | `pulp_wars-if6` early economy tweak: 3 starting Coins (was 5), so a first turn has 5 Coins and no longer pays for free research, level 2, and a unit; tier 3 technology base cost 9 (was 12), so one-city costs read 5 / 7 / 9; the per-city steps (1 / 3 / 5) unchanged; missions keep their own Coins; no shape changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | [section 3](#3-players-turns-and-victory), [section 6.1](#61-research-cost)                                                           |
 | Map scale   | `pulp-wars-poc-7r42` | `pulp_wars-ykw.3` map scale engine II: 2 to `F` players (8 today) on every width that holds them (`P(w, type)`, two measured limits on 11 x 11); capitals in domains, `D(w, N)` apart, 2 from the edge, outside the central zone; room and village balance; capital levelling; Continents and Archipelago on ring domains from five seats; long side lakes on boards 14 and wider; as many villages as fit on the new setups; nine seat colours; map revision `REGIONAL_BIOMES_NAVAL_V4`; no shape changed                                                                                                                                                                                                                                                                                                                       | [section 2.1](#21-match-setup), [section 2.3](#23-map-types), [section 3](#3-players-turns-and-victory)                               |
 | Naval       | `pulp-wars-poc-7r43` | `pulp_wars-5ti.2` naval branch engine step I (the overlay's `7rA`): the technologies `SEAMANSHIP` (tier 2 under Shorecraft: Ram, Board) and `SUBMERSIBLES` (tier 3 under Seamanship: the Submarine, Harbours) in all eight trees; the role `SUBMARINE` (9 Coins, 12 HP, Attack 4, Defense 2; Submerged: attacked only from an adjacent tile; Torpedo: attacks only units afloat, never answered); the Ram (+1 Attack and a shove for a Patrol Boat that moved); the command `BOARD` and the event `SHIP_BOARDED` (a ship at a third of its maximum HP or less is captured and patched up one above the line); Harbours (+1 population from every active Port and Shipyard); Dry Land and the naval-forbidden missions forbid all five; a Submarine per Showcase seat, whose Coast city is level 4; not folded into this document | [naval branch overlay](RULESET_7_NAVAL_BRANCH.md)                                                                                     |
+| Naval       | `pulp-wars-poc-7r44` | `pulp_wars-5ti.3` naval branch engine step II (the overlay's `7rB`), the Ice Folk frozen sea: the Ice Folk tree unlocks no ship, Ram, or Board, and an Ice Folk unit never embarks; the command `FREEZE` (a line of two water tiles, the Witch's ring) and the stored `ice` list; ice is ground for land units, thaws outside its owner's territory, and no ship enters it; the slide and the slip; Icebound and the crush (3 at the owner's Start Turn); Black Ice; Glacier (5 turns, Snow cover on ice); the events `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED`; an Ice Folk Showcase seat with ice instead of ships; not folded into this document                                                                                                                                                                      | [naval branch overlay](RULESET_7_NAVAL_BRANCH.md)                                                                                     |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -8497,8 +8505,8 @@ results) were measured on earlier boards.
 
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r43` the rules in this document match the code for
-the eight factions it describes, **except the naval branch of `7r43`, which
+As of `pulp-wars-poc-7r44` the rules in this document match the code for
+the eight factions it describes, **except the naval branch of `7r43` and `7r44`, which
 is not folded** (the first open item below), including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -8528,10 +8536,26 @@ pending balance steps below.
   `ram` and `torpedo` preview fields ([section 13](#13-combat-and-fortification));
   and a Showcase Coast city of level 3 with two ships (level 4, with a
   Submarine east of the Battleship;
-  [section 2.5](#25-showcase-setup)). The Ice Folk have the same branch
-  until engine step II (`pulp_wars-5ti.3`). The Normal AI does not use Ram,
+  [section 2.5](#25-showcase-setup)). The Normal AI does not use Ram,
   Board, or Submarines on purpose (`pulp_wars-5ti.4`), and the interface
   shows them with stand-in art and plain text (`pulp_wars-5ti.6`,
+  `pulp_wars-5ti.7`).
+
+- **Naval branch, engine step II (the Ice Folk frozen sea), not folded**
+  (`pulp_wars-5ti.3`, `pulp-wars-poc-7r44`; the fold is `pulp_wars-5ti.9`).
+  The code follows the overlay's
+  [section 8](RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea) with the
+  as-built records of its
+  [section 22](RULESET_7_NAVAL_BRANCH.md#22-engine-step-ii-as-built-pulp_wars-5ti3).
+  This document still gives the Ice Folk ships, embarking, and the Human
+  Naval technologies ([sections 6](#6-technology), [14](#14-naval-rules),
+  and [21](#21-ice-folk-faction-rules)), has no `FREEZE` command, `ice`
+  list, or `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED` events, and
+  shows an Ice Folk Showcase seat with three ships
+  ([section 2.5](#25-showcase-setup)). The Normal AI of an Ice Folk seat
+  never Freezes and does not cross water on purpose (`pulp_wars-5ti.5`).
+  The interface draws ice with the Snow overlay and has no control for
+  `FREEZE`, so a player's Ice Folk cannot make ice yet (`pulp_wars-5ti.6`,
   `pulp_wars-5ti.7`).
 
 - **Candy: what is left after the fold** (`pulp_wars-jdb.8`; the engine

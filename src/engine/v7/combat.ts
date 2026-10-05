@@ -14,6 +14,8 @@ import {
   chargeRunUpAttack2V7,
   factionRulesV7,
   flyerMayStandOnSiteV7,
+  isIceAtV7,
+  unitIsIceboundV7,
   halfPowerAttack2V7,
   ownerResearchedTechsV7,
   platedCapAppliesV7,
@@ -70,7 +72,7 @@ import {
   winterV7,
 } from "./ice-folk";
 import { absorbHitV7, pierceTileV7, rayPowerV7, shieldOfV7 } from "./martian";
-import { riftAtV7 } from "./rift";
+import { noRisingAtV7, riftAtV7 } from "./rift";
 import { tileAtV7 } from "./spatial-economy";
 import { tileOccupiedV7 } from "./units";
 import {
@@ -94,9 +96,32 @@ export function defenseBonusForUnitV7(
 ): DefenseBonusV7 {
   // The Martian revision section 7.1: a walker or flyer never gets cover.
   if (!unitTakesCoverV7(state, unit)) return NO_BONUS;
+  // The frozen sea (naval branch section 8.10): Glacier gives the Snow
+  // cover on ice (never added to anything else).
   return coverBonusV7(
     terrainGivesCoverV7(tileAtV7(state.board, unit.at)?.terrain),
-    snowCoverAppliesV7(state, unit, snowAt),
+    snowCoverAppliesV7(state, unit, snowAt) || iceCoverAppliesV7(state, unit),
+  );
+}
+
+/**
+ * The frozen sea (docs/product/RULESET_7_NAVAL_BRANCH.md section 8.10):
+ * Glacier's cover. A land-form unit of the Ice Folk kind standing on ice,
+ * whose kind's capabilities under its owner have `iceCover` and whose own
+ * fortification level is 0, has the Snow cover (`SNOW_COVER_V7`).
+ */
+export function iceCoverAppliesV7(
+  state: GameStateV7,
+  unit: UnitStateV7,
+): boolean {
+  return (
+    state.ice.length > 0 &&
+    unitTakesCoverV7(state, unit) &&
+    unitOwnerIsIceFolkV7(state, unit) &&
+    isIceAtV7(state, unit.at) &&
+    unitCapabilitiesV7(state, unit, ownerResearchedTechsV7(state, unit.ownerId))
+      .iceCover &&
+    fortificationLevelForUnitV7(state, unit) === 0
   );
 }
 
@@ -421,6 +446,10 @@ export function calculateCombatPreviewV7(
     ? NO_BONUS
     : defenseBonusForUnitV7(state, defender, snowAt);
   const snowCover = !acid && snowCoverAppliesV7(state, defender, snowAt);
+  const iceCover = !acid && iceCoverAppliesV7(state, defender);
+  // The frozen sea (naval branch section 8.9): an icebound defender is
+  // frozen solid and never retaliates.
+  const defenderIcebound = unitIsIceboundV7(state, defender);
 
   const attackForceNumerator =
     BigInt(attack2) * BigInt(unflinching ? attacker.maxHp : attacker.hp);
@@ -490,6 +519,7 @@ export function calculateCombatPreviewV7(
   const wouldRetaliate =
     !defenderDies &&
     !unanswered &&
+    !defenderIcebound &&
     defender.form !== "EMBARKED" &&
     defender.form !== "EGG" &&
     roleRetaliatesV7(defenderRule) &&
@@ -592,8 +622,8 @@ export function calculateCombatPreviewV7(
     defenderShieldDamage,
     attackerDies,
     defenderDies,
-    attackerOnRift: riftAtV7(state.board, attacker.at),
-    defenderOnRift: riftAtV7(state.board, defender.at),
+    attackerOnRift: noRisingAtV7(state.board, attacker.at),
+    defenderOnRift: noRisingAtV7(state.board, defender.at),
     splash,
     splashUnit: (unitId) => state.units.find((unit) => unit.id === unitId),
     plaguedUnitIds: new Set(state.plagued.map((entry) => entry.unitId)),
@@ -667,8 +697,8 @@ export function calculateCombatPreviewV7(
     damageToAttacker,
     attackerDies,
     defenderDies,
-    attackerOnRift: riftAtV7(state.board, attacker.at),
-    defenderOnRift: riftAtV7(state.board, defender.at),
+    attackerOnRift: noRisingAtV7(state.board, attacker.at),
+    defenderOnRift: noRisingAtV7(state.board, defender.at),
   });
   return {
     attackerId,
@@ -701,6 +731,7 @@ export function calculateCombatPreviewV7(
       defenderDies,
       retaliates,
       unanswered,
+      icebound: defenderIcebound,
       splatted: wouldRetaliate && splatted,
     }),
     advances,
@@ -749,6 +780,8 @@ export function calculateCombatPreviewV7(
     ...bounced,
     ram,
     torpedo,
+    iceCover,
+    icebound: defenderIcebound,
   };
 }
 
@@ -780,6 +813,7 @@ export function ramShoveDestinationV7(
       tile,
       tileAtV7(state.board, defender.at)?.terrain,
       tileOccupiedV7(state, destination, defender.id),
+      isIceAtV7(state, destination),
     )
   )
     return null;
@@ -788,16 +822,19 @@ export function ramShoveDestinationV7(
 
 /**
  * The tile part of the ram's shove (section 4.1), shared by resolution and
- * the public preview: open water that is not a dock, with no unit on it,
- * Shallow Water, or Deep Water only for a target standing on Deep Water.
+ * the public preview: open water that is not ice and not a dock, with no
+ * unit on it, Shallow Water, or Deep Water only for a target standing on
+ * Deep Water.
  */
 export function ramShoveTileOpenV7(
   tile: { readonly terrain: string; readonly improvement: string | null },
   targetTerrain: string | undefined,
   occupied: boolean,
+  ice: boolean,
 ): boolean {
   return (
     !occupied &&
+    !ice &&
     tile.improvement !== "PORT" &&
     tile.improvement !== "SHIPYARD" &&
     (tile.terrain === "SHALLOW_WATER" ||
@@ -814,6 +851,8 @@ export function noRetaliationReasonV7(facts: {
   readonly defenderDies: boolean;
   readonly retaliates: boolean;
   readonly unanswered: boolean;
+  /** The frozen sea (naval branch section 8.9): the defender is icebound. */
+  readonly icebound: boolean;
   readonly splatted: boolean;
 }): CombatPreviewV7["noRetaliationReason"] {
   return facts.defenderDies
@@ -822,9 +861,11 @@ export function noRetaliationReasonV7(facts: {
       ? null
       : facts.unanswered
         ? "UNANSWERED"
-        : facts.splatted
-          ? "SPLATTED"
-          : "OUT_OF_RANGE";
+        : facts.icebound
+          ? "ICEBOUND"
+          : facts.splatted
+            ? "SPLATTED"
+            : "OUT_OF_RANGE";
 }
 
 /**
@@ -1159,6 +1200,10 @@ export function displacementDestinationLegalV7(
   // Revision 19 section 6.2: an Egg cannot be pushed or displaced. Map
   // curiosities (section 8.6): nothing moves the neutral Monster.
   if (moved.form === "EGG" || isNeutralOwnerV7(moved.ownerId)) return false;
+  // The frozen sea (naval branch sections 8.3 and 8.9): no Push, Knockback,
+  // or pull moves an icebound unit; a land-form unit may be moved onto ice
+  // and a unit afloat never.
+  if (unitIsIceboundV7(state, moved)) return false;
   const tile = tileAtV7(state.board, destination);
   if (tile === undefined || tile.site !== null) return false;
   const owner = requirePlayer(state, moved.ownerId);
@@ -1167,6 +1212,7 @@ export function displacementDestinationLegalV7(
       terrain: tile.terrain,
       movementMode: unitMovementModeV7(state, moved),
       afloat: isAfloatFormV7(moved.form),
+      ice: isIceAtV7(state, destination),
       engineering:
         technology?.engineering ??
         owner.researchedTechs.includes("ENGINEERING"),

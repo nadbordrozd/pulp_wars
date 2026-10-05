@@ -11,6 +11,8 @@ import {
   attackIsRayV7,
   boardableAtV7,
   unitIsSubmergedV7,
+  isIceAtV7,
+  unitIsIceboundV7,
   chargeRunUpAttack2V7,
   halfPowerAttack2V7,
   isMindControlledV7,
@@ -27,6 +29,7 @@ import {
 import {
   defenseBonusForUnitV7,
   fortificationPartsForUnitV7,
+  iceCoverAppliesV7,
   snowCoverAppliesV7,
 } from "./combat";
 import {
@@ -43,6 +46,7 @@ import { attackAllowanceV7, matchHasDwarvesV7, unitIsDugInV7 } from "./dwarf";
 import {
   chillOfV7,
   isBlizzardV7,
+  matchHasIceFolkV7,
   isSnowV7,
   shatterThresholdV7,
   unitGlidesV7,
@@ -54,6 +58,7 @@ import {
   shieldOfV7,
   unitShieldMaximumV7,
 } from "./martian";
+import { unitSlidesV7 } from "./ice";
 import { tileAtV7 } from "./spatial-economy";
 import type { GameStateV7, UnitStateV7 } from "./types";
 
@@ -214,6 +219,20 @@ export interface PublicIceFolkMechanicsV7 {
   readonly sweepDamage: number;
   /** A land-form Ice Witch (her Blizzard). */
   readonly blizzard: boolean;
+  /**
+   * The naval branch, the frozen sea
+   * (docs/product/RULESET_7_NAVAL_BRANCH.md section 12): the unit stands on
+   * an ice tile in land form.
+   */
+  readonly onIce: boolean;
+  /** The frozen sea (section 8.6): the unit slides on ice. */
+  readonly slides: boolean;
+  /**
+   * The frozen sea (section 8.10): Glacier's cover applies to the unit now
+   * (on ice, with the capability, fortification 0). Public on a visible
+   * unit, like Dig In, so that every combat preview is exact.
+   */
+  readonly iceCover: boolean;
 }
 /**
  * The Dwarf revision (section 14): the Dwarf mechanics of a unit owned by a
@@ -294,6 +313,12 @@ export interface PublicUnitStatsV7 {
    * boarded (`floor(maxHp / 3)`); null for every unit not in `NAVAL` form.
    */
   readonly boardableAt: number | null;
+  /**
+   * The naval branch, the frozen sea (section 8.9): the unit is icebound
+   * (afloat on an ice tile). Present for every unit exactly when the match
+   * has an Ice Folk seat.
+   */
+  readonly icebound?: boolean;
   /** The Ice Folk revision: present exactly for units of the Ice Folk kind. */
   readonly iceFolk?: PublicIceFolkMechanicsV7;
   /**
@@ -423,6 +448,9 @@ export function publicUnitStatsV7(
   // The Ice Folk revision section 6.2: the cover comes from Snow (the
   // Forest and Mountain cover are the same multiplier, never added).
   const snowCover = snowCoverAppliesV7(state, unit, snowAt);
+  // The frozen sea (naval branch section 8.10): Glacier's cover on ice is
+  // the Snow cover too.
+  const iceCover = iceCoverAppliesV7(state, unit);
   // Section 7.6 Planted: what an attack made now (or on the owner's next
   // turn, before any Move) would have.
   const iceFolk = unitOwnerIsIceFolkV7(state, unit);
@@ -445,7 +473,7 @@ export function publicUnitStatsV7(
     state,
     unit,
     defense.numerator,
-    snowCover,
+    snowCover || iceCover,
   );
   const defenseDelta = rational(
     fortifiedDefense2 * (defense.numerator - defense.denominator),
@@ -704,6 +732,9 @@ export function publicUnitStatsV7(
     chill,
     submerged: unitIsSubmergedV7(state, unit),
     boardableAt: unit.form === "NAVAL" ? boardableAtV7(unit.maxHp) : null,
+    ...(matchHasIceFolkV7(state)
+      ? { icebound: unitIsIceboundV7(state, unit) }
+      : {}),
     ...(goblin
       ? {
           goblin: {
@@ -847,6 +878,9 @@ export function publicUnitStatsV7(
             sweepDamage: unit.form === "LAND" ? mechanics.sweepDamage : 0,
             blizzard:
               unit.form === "LAND" && role.abilities.includes("BLIZZARD"),
+            onIce: unit.form === "LAND" && isIceAtV7(state, unit.at),
+            slides: unitSlidesV7(state, unit),
+            iceCover,
           },
         }
       : {}),
@@ -888,6 +922,8 @@ function eggStats(
     chill: null,
     submerged: false,
     boardableAt: null,
+    // The frozen sea: an Egg is never afloat.
+    ...(matchHasIceFolkV7(state) ? { icebound: false } : {}),
     // The Dwarf revision: an Egg may be bombed (the public per-turn list).
     ...(matchHasDwarvesV7(state)
       ? {
