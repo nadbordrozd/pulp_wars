@@ -142,7 +142,12 @@ const LIVE: readonly ChibiArtAssetV7[] = [
   ...CHIBI_DIRECTION_MARTIAN_ART_ASSETS_V7,
   ...CHIBI_DIRECTION_ICE_FOLK_ART_ASSETS_V7,
   ...CHIBI_DIRECTION_DWARF_ART_ASSETS_V7,
-  ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.map((entry) => entry.asset),
+  // The Candy naval set joined the live list in bead pulp_wars-jdb.3; these
+  // scenes register it under stand-in subjects themselves (candyArt), so it
+  // is left out here (the Dwarf scenes' precedent).
+  ...CHIBI_NAVAL_FACTION_ART_ASSETS_V7.filter(
+    (entry) => entry.faction !== "CANDY",
+  ).map((entry) => entry.asset),
 ];
 
 function candyAsset(id: string): ChibiArtAssetV7 {

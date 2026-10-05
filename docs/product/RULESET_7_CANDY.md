@@ -1,17 +1,45 @@
 # Ruleset 7: Candy faction
 
-**Status:** contract (`pulp_wars-jdb.2`, epic `pulp_wars-jdb`). **The
-engine is implemented** by `pulp_wars-jdb.3` at `pulp-wars-poc-7r38`
-(`7rNN` below is `7r38`, `v7rNN` is `v7r38`, and "the previous identity" is
-`pulp-wars-poc-7r37`), and its rules are folded into
-[Ruleset 7: current rules, section 23](RULESET_7_CURRENT.md#23-candy-faction-rules);
-[section 23](#23-implementation-notes-pulp_wars-jdb3) here records what the
-engine bead did and where it reads the contract narrowly. **The Normal AI
-is implemented** by `pulp_wars-jdb.4`
-([Candy play](../architecture/NORMAL_AI.md#candy-play-pulp_wars-jdb4), with
-its measurements and the rules it reads narrowly). The wired art and UI
-(`jdb.6`) and the coarse balance (`jdb.7`) are pending: until then the
-setup offers the faction with its unit, portrait, city, and ship art and plain command buttons. It turns the approved design (`pulp_wars-jdb.1`, commit
+**Status:** **folded into [Ruleset 7: current rules](RULESET_7_CURRENT.md)
+(kept as history)** by `pulp_wars-jdb.8` at `pulp-wars-poc-7r41`: the
+current rules describe the running eight-faction game, with the Candy in
+their [section 23](RULESET_7_CURRENT.md#23-candy-faction-rules), and win
+wherever this document differs; [section 25](#25-fold-notes-pulp_wars-jdb8)
+here and their
+[known discrepancies](RULESET_7_CURRENT.md#25-known-discrepancies) list
+where the build differs from this text and what is still open. Contract
+(`pulp_wars-jdb.2`, epic `pulp_wars-jdb`), with every step built:
+
+- **the engine** (`pulp_wars-jdb.3`, identity `pulp-wars-poc-7r38`: `7rNN`
+  below is `7r38`, `v7rNN` is `v7r38`, and "the previous identity" is
+  `pulp-wars-poc-7r37`), with its notes in
+  [section 23](#23-implementation-notes-pulp_wars-jdb3);
+- **the Normal AI** (`pulp_wars-jdb.4`:
+  [Candy play](../architecture/NORMAL_AI.md#candy-play-pulp_wars-jdb4) has
+  its rules, its measurements, and what it reads narrowly;
+  [section 14.1](#141-implementation-status-pulp_wars-jdb4) lists what it
+  left out);
+- **the art** (`pulp_wars-jdb.5`: the
+  [Candy art fragment](../art/factions/CANDY.md));
+- **the UI** (`pulp_wars-jdb.6`, with that art wired in), with its notes in
+  [section 24](#24-implementation-notes-pulp_wars-jdb6);
+- **the coarse balance** (`pulp_wars-jdb.7`), **closed on a small sample
+  with no number changed**: 20 wins in 42 games against the other seven
+  factions at `7r38`
+  ([section 19.5](#195-balance-record-pulp_wars-jdb7)). The sample is
+  small (six games per opponent) and predates the changes of `7r39` to
+  `7r41` (the Martian Grunt at 8 HP, the village density, and the 3
+  starting Coins with the cheaper tier 3 technologies), so it is a sanity
+  check, not a measurement.
+
+**Still future:** the unlock achievement ("Sweet Tooth",
+[section 20](#20-the-future-unlock-a-proposal)); until then the Candy are
+an ordinary faction offered in every setup. **Open polish**
+(`pulp_wars-jdb.9`): the Confectioner's portrait, a public "why not" query
+for a Re-bake, the Rush's +1 in the Move stat, and a Candy badge for the
+Classic look.
+
+It turns the approved design (`pulp_wars-jdb.1`, commit
 `0dd3686`: a first draft, a hard critique, a redraft, a second critique, and
 a final redraft, kept as [appendix A](#appendix-a-the-first-draft-and-its-critique)
 and [appendix B](#appendix-b-second-critique)) and the root rulings of
@@ -20,14 +48,11 @@ commands, events, errors, previews, and queries, and re-runs every battle
 number of the design against the engine
 ([section 11](#11-per-unit-battle-analysis);
 [section 21.1](#211-numbers-corrected-by-the-engine-re-run) lists the
-corrections). The engine (`pulp_wars-jdb.3`) implements exactly this
-document; the Normal AI (`jdb.4`), the art (`jdb.5`), the UI (`jdb.6`), and
-the coarse balance (`jdb.7`) follow it; `jdb.8` folds it into
-[Ruleset 7: current rules](RULESET_7_CURRENT.md). It is an overlay over the
-rules in force when `pulp_wars-jdb.3` starts: today that is
+corrections). It was written as an overlay over the rules in force when
+`pulp_wars-jdb.3` started: at the time of writing that was
 [Ruleset 7: current rules](RULESET_7_CURRENT.md) at `pulp-wars-poc-7r35`
-(seven factions and map curiosities I), plus whatever identities land
-first (the root queues the Candy engine behind the Giant Spider of
+(seven factions and map curiosities I), plus whatever identities landed
+first (the root queued the Candy engine behind the Giant Spider of
 [map curiosities](RULESET_7_MAP_CURIOSITIES.md#8-the-monster), auto-Recover,
 [map scale](RULESET_7_MAP_SCALE.md), and the
 [naval branch](RULESET_7_NAVAL_BRANCH.md), whose designs are on `main` at
@@ -35,12 +60,11 @@ first (the root queues the Candy engine behind the Giant Spider of
 in it like every other faction: [sections 2.4](#24-setup) and
 [16](#16-naval-branch)).
 
-**Ruleset ID:** the next free `pulp-wars-poc-7rNN` when `pulp_wars-jdb.3`
-starts. `main` is at `pulp-wars-poc-7r35`; the Giant Spider engine is
-expected to take `7r36`, and other identities may land before the Candy
-engine, so this document names no number: **`7rNN` and `v7rNN` stand for
-that identity everywhere below, and "the previous identity" for the one
-current just before it.**
+**Ruleset ID:** `pulp-wars-poc-7r38` (the engine bead's identity; the
+current identity is `pulp-wars-poc-7r41`). The contract was written when
+`main` was at `pulp-wars-poc-7r35` and named no number: **`7rNN` and `v7rNN`
+stand for `7r38` and `v7r38` everywhere below, and "the previous identity"
+for `pulp-wars-poc-7r37`.**
 
 **Map-generation revision:** unchanged by this revision. Faction choice
 never affects generation.
@@ -284,8 +308,9 @@ unchanged.
 `CONFECTION` was rejected: it would only spare those seven fixtures, while
 every player-facing and tool surface says "Candy", and the tree, art, and
 telemetry names would then differ from the display name. The fold
-(`jdb.8`) rewords the current rules' phrase "the Ruleset 6 Candy
-precedent" (faction model, section 1) to name Ruleset 6 explicitly.
+(`jdb.8`) reworded the current rules' phrase "the Ruleset 6 Candy
+precedent" (faction model, section 1) so that it cannot be read as this
+faction.
 
 ### 2.4 Setup
 
@@ -303,8 +328,10 @@ precedent" (faction model, section 1) to name Ruleset 6 explicitly.
 - Faction choice never affects map generation, capital placement, turn
   order, treasure placement, curiosity placement, or any PRNG draw.
 - **Starting units.** A Candy seat starts with one Gumdrop (the `FIGHTER`
-  role) on its capital at full HP, 5 Coins, and no technology, exactly like
-  every other seat (`STARTING_FIGHTERS_V7` is 1).
+  role) on its capital at full HP, 3 Coins (5 in hand on its first turn,
+  after that Start Turn's income of 2; the contract said 5 Coins, the value
+  before `pulp-wars-poc-7r41`), and no technology, exactly like every other
+  seat (`STARTING_FIGHTERS_V7` is 1).
 - The headless tools accept `candy` in Ruleset 7 `--factions` (next to
   `original`/`human`, `undead`, `goblin`, `dinosaur`, `martian`, `ice`, and
   `dwarf`) and the pairing letter **`C`**. Without `--factions` the default
@@ -1700,7 +1727,10 @@ rules of [section 12.16](#1216-starting-units-rewards-and-treasure);
 `SUGAR_FRENZY_MAX_CONTINUATIONS_V7` 2, with
 `rebakePriceV7(role)` = `ceil(cost / 2)` and `rebakeHpV7(role)` =
 `ceil(maxHp / 2)`. Internal field names are the implementer's choice; the
-serialized literals of this section are normative.
+serialized literals of this section are normative. (As built,
+`"UNKNOWN_BEHIND_FOG"` is also the `bounce` of a Triceratops's Charge!
+whose own push is unknown, and a Rushed unit's Attack stat carries a
+`SUGAR_RUSH` modifier: [section 25](#25-fold-notes-pulp_wars-jdb8).)
 `assertRuleset7Registry` must accept the eighth tree unchanged (same node
 IDs, tiers, branches, prerequisites, and tactical-role labels).
 
@@ -1864,6 +1894,41 @@ Pie that shoots before the melee; a Gunner that Tosses when its shot is
 weak; a Gummy Bear that does not Rush without a continuation or key kill;
 an opponent that eats Crumbs; an opponent that kills the Confectioner
 first; an opponent that prefers a Crashed target.
+
+### 14.1 Implementation status (`pulp_wars-jdb.4`)
+
+Implemented in `src/ai/v7-candy.ts`, with ten switchable groups in
+`CandyPolicyOptionsV7`: `rush`, `crashRetreat`, `rebake`, `pieFirst`,
+`sugarToss`, `production`, and `research` for the Candy seat, and
+`readCrash`, `eatCrumbs`, and `respectBounce` for every seat against it.
+[Candy play](../architecture/NORMAL_AI.md#candy-play-pulp_wars-jdb4)
+describes the rules as built, with their priorities and the head-to-head
+results (27 to 13 in the Candy mirror against the `jdb.3` policy). Where it
+differs from the list above:
+
+- **Not implemented** (no bead yet): the wave plan still counts
+  Crashed units as attackers, and Marshmallows and the Golem use the generic
+  Guard and Juggernaut placement (no "Marshmallows to the front", no Golem
+  garrison rule).
+- **Narrower:** the Home Sweet Home Rush (rule 3) is never taken by a
+  Confectioner or for a chip by a unit below half its HP; a Gunner does not
+  Toss while it has an offered attack on a unit that threatens an own city;
+  a fragile Re-bake is allowed next to an own center or beside an own
+  fighting unit (the technology is not read); Crumbs are not eaten when the
+  bite would be taken for a role that costs less than 4 or would take half
+  the eater's HP.
+- **Simpler:** a `WILL_BOUNCE` melee attack loses 1 on its score, which is
+  also what makes an equal ranged attack win (there is no separate
+  ranged-preference rule); a Crashed hostile unit adds nothing to the
+  danger estimate and wins a tie of the attack score.
+- **Research order:** Drill with a hostile unit in sight, else
+  Marksmanship; Home Sweet Home once a visible hostile unit is within 3 of
+  an own center; Administration at two cities; Sawmilling against a visible
+  Walled city or at three cities; then Drill, Chivalry, and Peppermint
+  Surprise.
+- **Dropped after its head-to-head test:** adding the Rush bonus of every
+  free hostile Candy unit to the danger estimate (11 to 18; it was not in
+  this contract).
 
 ## 15. UI requirements
 
@@ -2141,8 +2206,6 @@ that rule:** a seafaring faction with the Human naval branch, unchanged.
 
 ## 17. Unchanged behaviour of the other factions
 
-## 17. Unchanged behaviour of the other factions
-
 A match without a Candy seat behaves identically to the previous identity
 apart from identity. For equal setups, seeds, and command sequences it
 produces the same maps, legal commands, previews, accepted and rejected
@@ -2383,6 +2446,50 @@ Coarse, on Dry Land:
 If the gameplay fails these, `pulp_wars-jdb.7` iterates within
 [section 19.3](#193-tuning-bounds) and the Candy-only Normal AI, and asks
 the root before going outside the bounds.
+
+### 19.5 Balance record (`pulp_wars-jdb.7`)
+
+At the user's direction (2026-10-04: small scale only) the coarse balance
+was closed on the sanity sample the Normal AI bead had already played, with
+**no number, rule, or identity changed**: every value of
+[section 3](#3-candy-roster) and every constant of
+[section 13](#13-commands-events-errors-state-and-queries) is the contract
+value, and no named lever was applied.
+
+The sample
+([Candy measurements](../architecture/NORMAL_AI.md#candy-measurements)):
+Dry Land, 11 x 11, Normal against Normal, Rival mode, at
+`pulp-wars-poc-7r38`, seeds 0 to 2 in both seat orders, six games per
+opponent.
+
+| Opponent  | Candy wins of 6 |
+| --------- | --------------: |
+| Humans    |               2 |
+| Undead    |               5 |
+| Goblins   |               2 |
+| Dinosaurs |               3 |
+| Martians  |               2 |
+| Ice Folk  |               3 |
+| Dwarves   |               3 |
+| **Total** |    **20 of 42** |
+
+No match stalled, none had a rejected command, and the longest turn had 59
+accepted commands. At six games a pairing, none is shown to be worse than
+about 70 to 30 (5 of 6 against the Undead is the largest lean, and it is
+inside the noise of six games).
+
+**What this is not.** It is not the matrix of
+[section 19.2](#192-measurement) (20 to 40 decided games per opponent on
+two sizes, with the telemetry read per seat), and the acceptance list of
+[section 19.4](#194-balance-acceptance) was not evaluated: the blind-spot,
+every-ability, dominant-unit, and Crash-share lines are unmeasured, and no
+`docs/validation/RULESET_7_CANDY_BALANCE.md` report was written. The sample
+also predates `7r39` to `7r41`: the Martian Grunt has 8 HP since `7r39`
+(was 9), boards have a village density instead of a fixed village count
+since `7r40`, and since `7r41` every seat starts with 3 Coins (5 in hand on
+its first turn) and tier 3 technologies (Sawmilling for the Pie Launcher,
+Chivalry for the Gummy Bear, Peppermint Surprise) have base cost 9 (was
+12). The numbers are to be revisited with the user's play feedback.
 
 ## 20. The future unlock (a proposal)
 
@@ -2729,7 +2836,116 @@ drawn: like every faction, the emblem on the mission screens is the
 Fighter's portrait. LEGACY and the Classic look draw Candy units as Human
 sprites without a Candy badge, as since `jdb.3`. The public `Move` stat of
 a Rushed unit does not include the Rush's +1 (the board's reach does); that
-is the engine's stat breakdown.
+is the engine's stat breakdown. The badge, the Move stat, and a public
+"why not" query for a Re-bake (reading 3) are `pulp_wars-jdb.9`.
+
+## 25. Fold notes (`pulp_wars-jdb.8`)
+
+The fold checked this document and
+[current rules section 23](RULESET_7_CURRENT.md#23-candy-faction-rules)
+against the code at `pulp-wars-poc-7r41` (the registration in
+`src/engine/rules/ruleset-v7.ts`, `src/engine/v7/candy.ts`,
+`candy-reducer.ts`, the Candy hooks of the reducer, the public queries, the
+unit stats, the state schema, and event projection, `src/ai/v7-candy.ts`,
+`src/render/candy-presentation-v7.ts`, the telemetry, the browser smoke
+step, and the tests `tests/unit/ruleset-v7-candy-*.test.ts`). It changed no
+source, test, rule, or identity. The rules sections 3 to 13 describe the
+engine as built, with the readings of
+[section 23](#23-implementation-notes-pulp_wars-jdb3). The rest of this
+section lists where the build differs from this text; the open items are
+also in the current rules'
+[known discrepancies](RULESET_7_CURRENT.md#25-known-discrepancies).
+
+**Corrected in this text by the fold.**
+
+1. The status and the Ruleset ID above (every step built; `7rNN` is
+   `7r38`).
+2. [Section 2.4](#24-setup): a seat starts with 3 Coins, 5 in hand on its
+   first turn (`7r41`); the contract said 5.
+3. A second "17. Unchanged behaviour of the other factions" heading was
+   removed.
+4. [Section 14.1](#141-implementation-status-pulp_wars-jdb4) and
+   [section 19.5](#195-balance-record-pulp_wars-jdb7) were added.
+
+**Engine facts this text does not state** (now in the current rules):
+
+5. **`UNKNOWN_BEHIND_FOG` has a second case.** The estimate's `bounce` is
+   also `"UNKNOWN_BEHIND_FOG"` for a Triceratops's Charge! whose own push
+   is unknown (the push's `UNKNOWN_BEHIND_FOG`, with the tile behind the
+   defender explored), because the attacker's tile after the follow is
+   then unknown.
+6. **The Attack stat shows the Rush; the Move stat does not.** A Rushed
+   unit's public Attack stat carries a `SUGAR_RUSH` modifier (+1) while its
+   first attack is unused and neither Charge nor Inspired applies. Its Move
+   stat is the role's Move: the +1 is in the movement query and in
+   `previewSugarRushV7` only (`pulp_wars-jdb.9`).
+7. **`tossedThisTurn` drops a unit that leaves land form** (it embarks),
+   as well as one that leaves the board.
+8. **A Pillage by a Crashed Golem or a Crashed embarked unit** reports
+   `PILLAGE_INVALID_TARGET` (the role and form test comes before the Crash
+   test there); every other primary action of a Crashed unit reports
+   `UNIT_CRASHED`.
+9. **Numbers that moved with later identities.** Since `7r39` the Martian
+   Grunt has 8 HP, so a Rushed Gummy Bear's first attack kills a full,
+   shielded Grunt (8 through its Shield of 2); the continuation still
+   stops on one (7 +2 sh / 2), as [section 11.8](#118-gummy-bear) says. A
+   full-power Ray Gunner that attacks a Gummy Bear from distance 1 takes 0
+   to HP (its Shield absorbs the 2 of that table). The tables of
+   [section 11](#11-per-unit-battle-analysis) are otherwise pinned at the
+   current registry by `tests/unit/ruleset-v7-candy-numbers.test.ts`.
+
+**Plans of this text that were built differently.**
+
+10. **The setup offered the faction from `jdb.3`**, not from `jdb.6`
+    ([section 18](#18-implementation-split-and-test-expectations);
+    [section 23](#23-implementation-notes-pulp_wars-jdb3) reading 5).
+11. **No Candy badge.** [Section 15.4](#154-what-the-art-bead-must-draw)
+    planned the Human sprite with a Candy badge until the art existed and
+    as the fallback. The art was wired at once; a raster that fails to load
+    falls back to the Human art with no badge, and the Classic and LEGACY
+    looks draw Candy units as Human sprites with no badge
+    (`pulp_wars-jdb.9`). The faction emblem is made and not drawn.
+12. **The UI** differs from [section 15](#15-ui-requirements) as
+    [section 24](#24-implementation-notes-pulp_wars-jdb6) lists (no second
+    press to disarm a Rush, two more unavailable reasons, still markers, the
+    fallen unit's head on the Crumbs). One more text exists: "May bounce
+    back" for an `UNKNOWN_BEHIND_FOG` Bounce. Since `pulp_wars-9im` the
+    Re-bake tile and the Sugar Toss target are picked on the board, like
+    every other target, and since `pulp_wars-621` Frosting marks the units
+    it will heal with a green ring and the amount.
+13. **The browser smoke step is smaller** than
+    [section 18](#18-implementation-split-and-test-expectations) asked. It
+    mounts the Candy UI fixture (development server only; skipped with
+    `--deployed`) and checks the planned Crumbs and the Rushed, Crashed,
+    Splatted, and Sugar Frenzy markers, an armed Sugar Rush sent before its
+    Move, "Rushed" in the dock, a Sugar Toss and a Re-bake picked on the
+    board, and that nothing in the dock names a tile. It does not attack,
+    play through a Crash, Splat and attack, show a Bounce, Frost, or make
+    Crumbs by a scripted death, and it does not play a Candy match from the
+    setup screen: those are covered by the engine, AI, and UI tests and the
+    `npm run review:ruleset7-candy-ui` captures.
+14. **The Normal AI** left out the wave-plan and placement items
+    ([section 14.1](#141-implementation-status-pulp_wars-jdb4)).
+15. **The telemetry is per match, not per seat.** `candy` in the headless
+    metrics (`src/headless/candy-telemetry-v7.ts`) has match totals of the
+    Rushes (by role), Rushed attacks and their kills, units Crashed, spared,
+    and killed while Crashed, Crumbs left, eaten, stale, and re-baked (by
+    role, with Coins), Peppermint damage and kills, Splats and strike-backs
+    prevented, Bounces and blocked Bounces, Sugar Toss and Frosting HP,
+    Sugar Frenzy continuations and the longest chain, and Rushed Escapes.
+    The per-seat, per-round, and per-opponent lines of
+    [section 19.2](#192-measurement) (who ate the Crumbs, Confectioners
+    lost and when, kills and losses by role, the city counts at three
+    rounds) were not built.
+16. **The coarse balance** was a small sample with no matrix, no report
+    file, and no tuning record
+    ([section 19.5](#195-balance-record-pulp_wars-jdb7)).
+17. **The naval branch** ([section 16](#16-naval-branch)) is still a
+    design: the Candy have the current Human Patrol Boat and Battleship, no
+    Submarine, and no ice.
+18. **The release corpus** was not refreshed (the current release validator
+    keeps none; [section 23](#23-implementation-notes-pulp_wars-jdb3)
+    reading 7).
 
 ## Appendix A: the first draft and its critique
 

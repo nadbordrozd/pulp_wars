@@ -1216,28 +1216,34 @@ apart from the extra faction option.
   registry and the constants); a Dwarf viewer is not told of the Raider's
   Escape.
 
-## Current Ruleset 7 Candy stand-in (engine bead)
+## Current Ruleset 7 Candy overlay
 
-The Candy engine bead (`pulp_wars-jdb.3`, `pulp-wars-poc-7r38`) adds only
-what a Candy match needs to be played; the Candy interface of
+This overlay implements
 [Candy spec section 15](../product/RULESET_7_CANDY.md#15-ui-requirements)
-is `pulp_wars-jdb.6`. The rules are
-[current rules section 23](../product/RULESET_7_CURRENT.md#23-candy-faction-rules).
-A match without a Candy seat looks as before apart from the extra faction
-option.
+(`pulp_wars-jdb.6`, after the stand-in of the engine bead
+`pulp_wars-jdb.3`) with the production art of the
+[Candy art fragment](../art/factions/CANDY.md) (bead `pulp_wars-jdb.5`);
+the spec's
+[section 24](../product/RULESET_7_CANDY.md#24-implementation-notes-pulp_wars-jdb6)
+lists where it reads the spec narrowly. The Candy rules are part of
+[Ruleset 7: current rules](../product/RULESET_7_CURRENT.md#23-candy-faction-rules).
+Every cue reads only the public view, the offered commands, and the public
+previews. A match without a Candy seat looks as before apart from the extra
+faction option.
 
 - **Setup.** Every seat's faction select offers the Candy last, after the
   Dwarves, under the one-faction-per-player rule. Saves, resume, and the
   Showcase keep Candy seats.
 - **Art and labels.** Candy units, portraits, cities, and ships use the
   production art of `pulp_wars-jdb.5` (a raster that fails to load falls
-  back to the Human art; there is no Candy badge yet) and are
+  back to the Human art, and the Classic and LEGACY looks draw Human
+  sprites; there is no Candy badge, `pulp_wars-jdb.9`) and are
   named by the Candy registration (Gumdrop, Donut Racer, Gumball
   Gunner, Marshmallow, Confectioner, Pie Launcher, Gummy Bear, Rock Candy
   Golem). Borders and pennants use the Candy colour, cotton-candy pink
-  (`#ffb8d8`). The Gallery has a Candy column with the same art. The
-  Candy icons, the Crumbs marker, and the effect sprites are registered
-  and not drawn yet.
+  (`#ffb8d8`). The Gallery has a Candy column with the same art and plays
+  Sugar Rush, Re-bake, and Sugar Toss on its demo board. The faction emblem
+  is registered and not drawn.
 - **Commands** (the interface of `pulp_wars-jdb.6`, under
   [board targeting](#board-targeting-bead-pulp_wars-9im)). The dock has
   one button per Candy ability: "Sugar Rush", "Re-bake" and "Sugar Toss",
@@ -1252,10 +1258,37 @@ option.
   armed; choosing one tosses the sugar. Its Sugar Toss button narrows the
   board to the heals. The Confectioner's Tend
   Wounded button reads "Frosting". No text contains a coordinate.
-- **Not yet shown.** The Rush reach, the Rushed, Crashed, and Splatted
-  markers, Crumbs on the board, the Splat, Bounce, and eating lines of the
-  previews, the event log text of the seven Candy events, the full
-  technology text, and Help.
+- **Markers.** A Rushed unit carries a chip ("Rushed: +1 Move, +1 Attack on
+  its first attack"; a Donut Racer "Rushed: may move again after
+  attacking"; a Gummy Bear its Sugar Frenzy continuations left as two
+  pips), and on its owner's view a small house when Home Sweet Home will
+  spare it where it stands. A Crashed unit has a swirl over a faded sprite
+  ("Crashed: can move, can't act this turn" on its owner's turn, otherwise
+  "Crashed: can't act on its next turn"), and a Splatted unit a pie
+  ("Splatted: can't strike back this turn"). The markers are still;
+  a Rush, the start and the end of a Crash, a Re-bake, a Sugar Toss, a
+  Bounce, and eaten Crumbs each play a short cue, of which reduced motion
+  holds one frame. Crumbs are a token with the fallen unit's head, a pip
+  per turn left, and a peppermint dot when they bite; the tile info reads
+  "Gummy Bear Crumbs: 3 turns left" and, for Crumbs that bite, "Peppermint
+  Surprise: an enemy that eats them takes 3".
+- **Previews.** An attack preview adds "Sugar Rush +1", "Splat: no
+  strike-back this turn", "No strike-back: Splatted", and "Bounces back",
+  "Bounce blocked", or "May bounce back" (with an arrow to the tile on the
+  board); a Move onto hostile Crumbs says "Eats Crumbs" and the Peppermint
+  damage.
+- **Reasons.** A disabled Sugar Rush says "Crashed", "Already moved",
+  "Already acted", or "Already rushed"; a disabled Re-bake "Crashed", "No
+  home city", "No Crumbs next to it", "The Crumbs are covered", that its
+  city is full, or "Not enough Coins"; a disabled Sugar Toss "Crashed" or
+  "No wounded unit within 2 tiles". A Gumdrop or a Marshmallow that could
+  otherwise build Field Defense says "Candy can't build Field Defense".
+- **Log, technology tree, and Help.** The log has a line for a Rush, a
+  Crash (a count), a Re-bake, eaten Crumbs (with the Peppermint damage),
+  stale Crumbs, a Sugar Toss, a Splat, and a Bounce. A Candy viewer's tree
+  shows Home Sweet Home and Peppermint Surprise with their unlock text, and
+  Help has one sentence per Candy rule for every viewer of a match with a
+  Candy seat.
 
 ## Current Ruleset 7 revision 21 achievements overlay
 

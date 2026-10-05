@@ -38,18 +38,17 @@ Engineer's Assemble and Repair, Dig In, the Steam Cannon's Knockback,
 production and research, and play against each of them; it is gated on a
 match with a Dwarf seat (and a switch for the head-to-head tests), and
 matches without one are byte-identical.
-The Candy (`pulp_wars-jdb.3`, the engine step) have no policy of their own
-yet: a Candy seat plays the ordinary policy on the Candy registration, and
-`isPolicyCandidate` (`src/ai/v7.ts`) leaves `SUGAR_RUSH`, `REBAKE`, and
-`SUGAR_TOSS` out of the candidates, so the policy never Rushes, Re-bakes,
-or Tosses (its Confectioners Frost through the ordinary Tend Wounded
-rule). The three commands are offered only in a match with a Candy seat,
-so matches without one decide as before; the three new command kinds move
-every later kind's ordinal by three, which changes only the `-ordinal`
-tie-break value of the pinned decisions (their revision-12-ordinal hashes
-are unchanged). The Candy policy, and the other factions' play against
-Rush, Crumbs, Splat, and Bounce, is `pulp_wars-jdb.4`
-([Candy overlay section 14](../product/RULESET_7_CANDY.md#14-normal-ai-requirements)).
+The Candy play (`pulp_wars-jdb.4`, `src/ai/v7-candy.ts`) is
+[summarized below](#candy-play-pulp_wars-jdb4): the planned Sugar Rush, the
+retreat of a Crashed unit, Re-bake before training, the Pie Launcher's shot
+before the melee, Sugar Toss, production and research, and play against the
+Crash, Crumbs, and Bounce; it is gated on a match with a Candy seat (and a
+switch per group for the head-to-head tests), and matches without one
+decide as before. The Candy engine step (`pulp_wars-jdb.3`) added the
+`SUGAR_RUSH`, `REBAKE`, and `SUGAR_TOSS` command kinds, which move every
+later kind's ordinal by three; that changes only the `-ordinal` tie-break
+value of the pinned decisions (their revision-12-ordinal hashes are
+unchanged).
 The campaign plan (`pulp_wars-9s0.1`, `src/ai/v7-campaign.ts`) is
 [summarized below](#campaign-expansion-exploration-and-standing-pressure-pulp_wars-9s01):
 every land unit has one job (a village, an invader, the frontier, or a known
@@ -2340,7 +2339,9 @@ Against the Candy (every seat):
   `WILL_BOUNCE` loses 1.
 - Confectioners are hunted by the existing support hunt.
 
-Not covered: the wave plan still counts Crashed units; Marshmallows and the
+Not covered (open, with no bead yet;
+[current rules, known discrepancies](../product/RULESET_7_CURRENT.md#25-known-discrepancies)):
+the wave plan still counts Crashed units; Marshmallows and the
 Golem use the generic Guard and Juggernaut placement. The projection of a
 moved unit (`projectPublicUnits`) now drops the `SUGAR_RUSH` Attack
 modifier with the bonus it recomputes without, so the exact preview adds it
@@ -2391,8 +2392,13 @@ contract's rules).
 both seat assignments, 6 games each; in brackets the `jdb.3` policy on the
 Candy seat): Humans 2 (2), Undead 5 (1), Goblins 2 (2), Dinosaurs 3 (1),
 Martians 2 (1), Ice Folk 3 (1), Dwarves 3 (1): **20 of 42** (9 of 42). A
-sanity sample, not a balance result (`pulp_wars-jdb.7`). No match stalled,
+sanity sample, not a balance result. No match stalled,
 none had a rejected command, and the longest turn had 59 accepted commands.
+The coarse balance bead (`pulp_wars-jdb.7`) was closed on this sample at the
+user's direction, with no number changed
+([balance record](../product/RULESET_7_CANDY.md#195-balance-record-pulp_wars-jdb7));
+it predates the Grunt's 8 HP of `7r39`, the village density of `7r40`, and
+the 3 starting Coins and tier 3 base cost of 9 of `7r41`.
 
 ## The Rift (`pulp_wars-9s0.5`)
 

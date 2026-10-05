@@ -3,9 +3,8 @@
 **Status:** authoritative description of the current Ruleset 7 runtime,
 `pulp-wars-poc-7r41`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
-(`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`, the
-engine step of the [Candy overlay](RULESET_7_CANDY.md), `pulp_wars-jdb.3`:
-[section 23](#23-candy-faction-rules)). It folds in
+(`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
+folds in
 revision 12 (free opening technology, Fruit visible from the start, Fertile
 Ground revealed by Gathering, resources kept under improvements, Normal AI
 opening research, and Raider Escape; no separate overlay document) and the
@@ -60,13 +59,30 @@ notes in
 its engine notes in
 [section 22](RULESET_7_DWARVES.md#22-implementation-notes-pulp_wars-78i3),
 and its UI notes in
-[section 23](RULESET_7_DWARVES.md#23-ui-implementation-notes-pulp_wars-78i6)).
-The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, and the
-Dwarves are part of the ordinary game: faction choice is offered in every
+[section 23](RULESET_7_DWARVES.md#23-ui-implementation-notes-pulp_wars-78i6)),
+and the [Candy overlay](RULESET_7_CANDY.md) (the Candy faction: engine
+`pulp_wars-jdb.3` at `pulp-wars-poc-7r38`, Normal AI `pulp_wars-jdb.4`, UI
+`pulp_wars-jdb.6` with the production art of `pulp_wars-jdb.5`, the root
+rulings of its [section 21.4](RULESET_7_CANDY.md#214-root-rulings), and the
+`pulp_wars-jdb.7` coarse balance, closed on a small sample with no number
+changed
+([balance record](RULESET_7_CANDY.md#195-balance-record-pulp_wars-jdb7)),
+with its Normal AI notes in
+[section 14.1](RULESET_7_CANDY.md#141-implementation-status-pulp_wars-jdb4),
+its engine notes in
+[section 23](RULESET_7_CANDY.md#23-implementation-notes-pulp_wars-jdb3),
+its UI notes in
+[section 24](RULESET_7_CANDY.md#24-implementation-notes-pulp_wars-jdb6),
+and its fold notes in
+[section 25](RULESET_7_CANDY.md#25-fold-notes-pulp_wars-jdb8)).
+The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
+Dwarves, and the Candy are part of the ordinary game: faction choice is offered in every
 match setup, with no development flag. The numbers of the first five
 factions were checked against the engine code at `pulp-wars-poc-7r25`, those
-of the Ice Folk at `pulp-wars-poc-7r30` (`pulp_wars-7g3.8`), and those of
-the Dwarves at `pulp-wars-poc-7r31` (`pulp_wars-78i.8`); `pulp-wars-poc-7r24`
+of the Ice Folk at `pulp-wars-poc-7r30` (`pulp_wars-7g3.8`), those of
+the Dwarves at `pulp-wars-poc-7r31` (`pulp_wars-78i.8`), and those of the
+Candy at `pulp-wars-poc-7r38` (`pulp_wars-jdb.3`) and again at
+`pulp-wars-poc-7r41` (`pulp_wars-jdb.8`); `pulp-wars-poc-7r24`
 (`pulp_wars-7g3.3`) registers the Ice Folk and changes no rule of the other
 factions, `pulp-wars-poc-7r26` (`pulp_wars-9s0.2`) changes only Pangea map
 generation (the coast ring, [section 2.3](#23-map-types)),
@@ -141,19 +157,19 @@ technology base cost to 9 (was 12), so the one-city costs read 5, 7, and 9
 ([section 6.1](#61-research-cost)). The per-city steps, the missions' own
 Coins, and every other rule did not change.
 
-**The Candy overlay is partly pending.** Every faction the engine registers
-is described here, and the Candy engine rules are
-[section 23](#23-candy-faction-rules). The Candy's Normal AI
-(`pulp_wars-jdb.4`), its full UI (`pulp_wars-jdb.6`), and its
-coarse balance (`pulp_wars-jdb.7`) are pending: until then the setup offers
-the Candy with its unit, portrait, city, and ship art and plain command
-buttons, and a Candy
-seat's AI plays the ordinary policy and never Rushes, Re-bakes, or Tosses
-([section 25](#25-known-discrepancies)); the
-[Candy overlay](RULESET_7_CANDY.md) stays the contract for those steps, and
-`pulp_wars-jdb.8` completes this fold (the other faction sections'
-interaction tables do not name the Candy yet; section 23.9 has every
-interaction). The [Dwarf overlay](RULESET_7_DWARVES.md) was folded in by
+**The Candy overlay is folded.** `pulp_wars-jdb.8` completed the fold the
+engine bead began: the Candy rules are
+[section 23](#23-candy-faction-rules), with the Candy named in the shared
+sections where a shared rule reads differently for them, the Normal AI's
+Candy play in [section 16](#16-normal-ai-summary), and the presentation and
+the balance record in
+[section 23.11](#2311-normal-ai-presentation-and-balance). The other
+faction sections' interaction tables (sections 17 to 22) do not name the
+Candy; [section 23.9](#239-interactions-with-other-rules) has every
+interaction. What is still open (the polish items of `pulp_wars-jdb.9`, two
+Normal AI items, a balance check that was a small sample, and the future
+unlock achievement) is in [section 25](#25-known-discrepancies).
+The [Dwarf overlay](RULESET_7_DWARVES.md) was folded in by
 `pulp_wars-78i.8` as [section 22](#22-dwarf-faction-rules). The
 [Mind Control overlay](RULESET_7_MIND_CONTROL.md) is folded: its engine
 step (`pulp_wars-b5f.3`, `7r33`) in sections 20.8 and 20.9, and its Normal
@@ -184,8 +200,9 @@ overlays, revisions [4](RULESET_7_REVISION_4_BIOME_ECONOMY.md),
 [20](RULESET_7_REVISION_20.md), and
 [21](RULESET_7_REVISION_21_ACHIEVEMENTS.md), with the
 [Martian overlay](RULESET_7_MARTIANS.md), the
-[Ice Folk overlay](RULESET_7_ICE_FOLK.md), and the
-[Dwarf overlay](RULESET_7_DWARVES.md). Those documents remain as design
+[Ice Folk overlay](RULESET_7_ICE_FOLK.md), the
+[Dwarf overlay](RULESET_7_DWARVES.md), and the
+[Candy overlay](RULESET_7_CANDY.md). Those documents remain as design
 history, exact schema/ordering detail, measurements, and acceptance
 provenance. When one of them disagrees with this document, this document
 describes the current rules. In particular, the [baseline](RULESET_7.md)
@@ -212,8 +229,12 @@ Yeti and with 10-HP Human Fighters, Raiders, and Marksmen and 15-HP Guards,
 a setup in which every combination of factions is legal, and its
 placeholder-art plan, and the Dwarf overlay keeps the root's decided bomb of
 4 (5 with Dive) in its decisions, tuning bounds, per-unit analysis, and
-some Help text, an identity written as `7rNN`, and a fallback-art plan; the
-values here are current. Where a document and the code disagreed, the
+some Help text, an identity written as `7rNN`, and a fallback-art plan, and
+the Candy overlay keeps an identity written as `7rNN`, a per-unit analysis
+computed at `7r35`, and the plans of its Normal AI, UI, browser smoke,
+telemetry, and balance sections where the build differs (its
+[section 25](RULESET_7_CANDY.md#25-fold-notes-pulp_wars-jdb8) lists them);
+the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
 resolved ones as of `pulp-wars-poc-7r41`.
@@ -287,7 +308,8 @@ registry and builder (`missions/`) and forbidden technologies
 (`forbidden-technologies.ts`), queries,
 views), and `src/ai/v7.ts` with its `src/ai/v7-*.ts` helpers (Normal AI,
 including `src/ai/v7-goblin.ts`, `src/ai/v7-dinosaur.ts`,
-`src/ai/v7-martian.ts`, `src/ai/v7-ice-folk.ts`, and `src/ai/v7-dwarf.ts`).
+`src/ai/v7-martian.ts`, `src/ai/v7-ice-folk.ts`, `src/ai/v7-dwarf.ts`, and
+`src/ai/v7-candy.ts`).
 
 **Not covered here:** production art specifications
 ([Art Direction](../art/ART_DIRECTION.md) and
@@ -303,20 +325,20 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 ## 1. Identity and compatibility
 
-| Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r41`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Browser autosave                           | `pulpWars.save.v7r41.current`                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| Map revision                               | `REGIONAL_BIOMES_NAVAL_V3`                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                        |
-| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                        |
-| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`; `CANDY` → `CANDY_BASELINE_V1`                                                                                                                                                                                           |
-| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"; `CANDY` is "Candy"                                                                                                                                                                                                                                                                                      |
-| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                                                                                                                                                              |
-| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, all described here and offered by the browser setup, the engine, and the headless tools (the Candy with plain command buttons and the ordinary Normal AI until `pulp_wars-jdb.4` and `jdb.6`)                                                                                                                                                                                         |
-| Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); Dwarf ([section 22](#22-dwarf-faction-rules), `pulp_wars-78i.8`); Candy engine ([section 23](#23-candy-faction-rules), `pulp_wars-jdb.3`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
+| Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ruleset                                    | `pulp-wars-poc-7r41`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Browser autosave                           | `pulpWars.save.v7r41.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Map revision                               | `REGIONAL_BIOMES_NAVAL_V3`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                             |
+| Faction to tree binding                    | `ORIGINAL` → `ORIGINAL_BASELINE_V5`; `UNDEAD` → `UNDEAD_BASELINE_V1`; `GOBLIN` → `GOBLIN_BASELINE_V1`; `DINOSAUR` → `DINOSAUR_BASELINE_V1`; `MARTIAN` → `MARTIAN_BASELINE_V1`; `ICE_FOLK` → `ICE_FOLK_BASELINE_V1`; `DWARF` → `DWARF_BASELINE_V1`; `CANDY` → `CANDY_BASELINE_V1`                                                                                                                                                                                                                                |
+| Display names                              | `ORIGINAL` is "Human"; `UNDEAD` is "Undead"; `GOBLIN` is "Goblin"; `DINOSAUR` is "Dinosaur"; `MARTIAN` is "Martian"; `ICE_FOLK` is "Ice Folk"; `DWARF` is "Dwarf"; `CANDY` is "Candy"                                                                                                                                                                                                                                                                                                                           |
+| Achievements (`ACHIEVEMENT_IDS_V7`)        | `EXPLORER`, `ENGINEER`, `MUSTER`, `CONQUEROR`, `LAND_BARON`, `SEA_DOG`, `SLAYER` ([section 5](#5-achievements-and-monuments))                                                                                                                                                                                                                                                                                                                                                                                   |
+| Playable factions                          | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`, all described here and offered by the browser setup, the engine, and the headless tools                                                                                                                                                                                                                                                                                                                                    |
+| Folded overlays                            | Martian ([section 20](#20-martian-faction-rules), `pulp_wars-t6s.7`); Ice Folk ([section 21](#21-ice-folk-faction-rules), `pulp_wars-7g3.8`); Dwarf ([section 22](#22-dwarf-faction-rules), `pulp_wars-78i.8`); Candy ([section 23](#23-candy-faction-rules), `pulp_wars-jdb.8`, after the engine fold of `pulp_wars-jdb.3`); the Rift (`7r28`, [Rift overlay](RULESET_7_RIFT.md)) and one faction per seat (`7r29`, [unique-factions overlay](RULESET_7_UNIQUE_FACTIONS.md)), folded directly when they landed |
 
 - The exact ruleset ID dispatches every state, setup, save, and replay; earlier
   Ruleset 7 identities (`PRIOR_RULESET_7_IDS`, gap-free through
@@ -451,7 +473,9 @@ separate [Ruleset 6](RULESET_6.md) route.
   stores `faction` and the bound `factionTreeId`; state parsing rejects a
   player whose faction differs from its setup entry or whose tree does not
   match its faction.
-- **Faction model** (the Ruleset 6 Candy precedent). Every faction shares
+- **Faction model** (the precedent of Ruleset 6's two factions; its own
+  Candy faction is unrelated to the Ruleset 7 Candy of
+  [section 23](#23-candy-faction-rules)). Every faction shares
   the frozen mechanical role order `FIGHTER`, `RAIDER`, `MARKSMAN`, `GUARD`,
   `CAPTAIN`, `CATAPULT`, `KNIGHT`, `JUGGERNAUT`, `PATROL_BOAT`, `BATTLESHIP`.
   State, commands, events, reward IDs, and event literals serialize the
@@ -683,8 +707,8 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   or a full-HP exhausted unit of the mover's faction's **treasure role**
   (faction rule `treasureUnitRole`: the `KNIGHT` role for Human, Undead, and
   Goblin, so a Knight, Vampire, or Scrap Buggy; the `RAIDER` role for
-  Dinosaur, Martian, Ice Folk, and Dwarf, so a Raptor, a Saucer, a Sled, or
-  a Gyrocopter) on the first legal adjacent
+  Dinosaur, Martian, Ice Folk, Dwarf, and Candy, so a Raptor, a Saucer, a
+  Sled, a Gyrocopter, or a Donut Racer) on the first legal adjacent
   land cell (entered under the treasure unit's own movement mode, so a
   Saucer or a Gyrocopter needs no Engineering for a Mountain; never a mound
   tile), homed to the
@@ -1406,7 +1430,8 @@ Gallery has a Curiosities tab.
   `pulp-wars-poc-7r41`, `pulp_wars-if6`), no technology, a level-1 capital, one
   full-HP unit of its faction's `FIGHTER` role (Fighter for Human, Skeleton
   for Undead, Goblin for Goblin, Caveman for Dinosaur, Grunt at full Shield
-  for Martian, Yeti for Ice Folk, Hammerer for Dwarf) on the capital and
+  for Martian, Yeti for Ice Folk, Hammerer for Dwarf, Gumdrop for Candy) on
+  the capital and
   homed there, seven locked achievement entitlements, and every cell within
   radius 2 of its capital explored. A Dinosaur seat starts with no Egg. A
   Goblin seat, too, starts with a single Goblin: `pulp_wars-0ao.7`
@@ -1593,10 +1618,11 @@ else max(1, min(level, 4) + capital + seaTrade + landTrade + market + min(0, pop
   Mind Control frees its old city's slot at once. A burrowed Dwarf unit
   keeps its home and its slot while it is off the board
   ([section 22.2](#222-the-tunnel-and-burrowed-units)). Martian, Ice Folk,
-  and Dwarf cities have no capacity bonus, and every Ice Folk and Dwarf role
-  uses 1 slot.
+  Dwarf, and Candy cities have no capacity bonus, and every Ice Folk, Dwarf,
+  and Candy role uses 1 slot.
 - `TRAIN`, `TRAIN_NAVAL`, `LAY_EGG`, `ASSEMBLE` (in the Engineer's home
-  city, [section 22.8](#228-engineer-repair-and-assemble)), and a treasure
+  city, [section 22.8](#228-engineer-repair-and-assemble)), `REBAKE` (in the
+  Confectioner's home city, [section 23.3](#233-crumbs)), and a treasure
   unit need `used + slots(role) <= capacity`, otherwise
   `CITY_CAPACITY_FULL` (or the 5-Coin chest). Reward units (a two-slot Brontosaurus or Colossus too) and
   Undead risings ([section 17.3](#173-risings)) may exceed capacity; a
@@ -1710,7 +1736,8 @@ Each reached level grants exactly one reward, chosen by the owner:
   Martian Militia is one Grunt and a Martian Juggernaut reward is a Colossus
   (2 slots, full Shield); an Ice Folk Militia is one Yeti and an Ice Folk
   Juggernaut reward is a Frost Giant; a Dwarf Militia is one Hammerer and a
-  Dwarf Juggernaut reward is a Brass Titan. Reward
+  Dwarf Juggernaut reward is a Brass Titan; a Candy Militia is one Gumdrop
+  and a Candy Juggernaut reward is a Rock Candy Golem. Reward
   IDs (`MILITIA`, `JUGGERNAUT`) are the same for every faction.
 - Rewards settle only for the active player's cities, by city ID then level;
   the first unrewarded level becomes the single pending choice, which blocks
@@ -2099,9 +2126,6 @@ read differently from the Human table are:
 | Fortification  | Home Sweet Home     | Rushed units that end the turn on or next to your city centers don't Crash               |
 | Explosives     | Peppermint Surprise | Blast Mountain; melee attacks destroy Field Defense; enemies that eat your Crumbs take 3 |
 
-(The browser's tree shows the short stand-in text of the engine bead for the
-three Candy unlock kinds until `pulp_wars-jdb.6`.)
-
 The other technologies read the same for every faction. The engine, query,
 and AI checks of land trade read the technology capability
 `landTradeIncomeCoins` (never a raw `COMMERCE` test), and Plunder is the
@@ -2325,6 +2349,7 @@ market income = min(3, 1 + distinct adjacent families)
 | Windmill (Milling)                                | up to 6; never a Dwarf construct                                                                                                 | Start Turn, once per unit                                                    |
 | Troll regeneration (Goblin)                       | up to 4, any tile and form; cures nothing                                                                                        | Start Turn, after Windmill healing                                           |
 | Tend Wounded (Captain, Shaman, Engineer's Repair) | up to 2 (the Engineer: 4 on a Dwarf machine), and cures Plague, Bitten, and Chill                                                | Captain, Shaman, or Engineer action, once per unit per owner turn            |
+| Sugar Toss (Gumball Gunner)                       | up to 2 on one own land-form unit within 2 tiles; cures nothing ([section 23.7](#237-frosting-and-sugar-toss))                   | Gunner action, once per target per owner turn                                |
 | Promotion, growth stage                           | full heal to the new maximum HP; cures nothing (a Dwarf construct's only full heal)                                              | `PROMOTE` (non-growing units); a kill that reaches Big or Alpha (dinosaurs)  |
 | Egg                                               | none: no healing source ever heals an Egg                                                                                        | —                                                                            |
 
@@ -2387,7 +2412,10 @@ market income = min(3, 1 + distinct adjacent families)
   `UNIT_ROLE_INVALID`). The Dwarf Engineer has Attack, **Repair** (its
   Tend Wounded), and Assemble, and no Rally (`RALLY` is never offered and
   is rejected with `UNIT_ROLE_INVALID`;
-  [section 22.8](#228-engineer-repair-and-assemble)).
+  [section 22.8](#228-engineer-repair-and-assemble)). The Candy
+  Confectioner has Attack, **Frosting** (its Tend Wounded), and Re-bake,
+  and no Rally either
+  ([sections 23.3](#233-crumbs) and [23.7](#237-frosting-and-sugar-toss)).
 - **Rally** (Undead: **Frenzy**, labelled "Frenzied"; Goblin: **WAAAGH!**;
   Dinosaur: **War Drums**; Martian: **Psychic Command**; all with the same
   command `RALLY`, flag `inspired`, and event `UNITS_RALLIED`): every
@@ -2403,7 +2431,7 @@ market income = min(3, 1 + distinct adjacent families)
   not stack, and never affects Wail, Kaboom, or blasts. With no eligible
   target the command rejects with `HEAL_TARGET_NOT_FOUND`.
 - **Tend Wounded** (Human Captain, Dinosaur Shaman, Dwarf Engineer as
-  **Repair**): targets every adjacent
+  **Repair**, Candy Confectioner as **Frosting**): targets every adjacent
   own land-form unit (other than the tender, not yet tended this turn) that
   is damaged, plagued, bitten, or Chilled; such a unit is a target even at
   full HP. Each target heals `min(2, maxHp - hp)` (possibly 0), loses both
@@ -2911,7 +2939,7 @@ retaliates, at distance 1 ([section 22.5](#225-gyrocopters-and-the-bombing-run))
   ([section 22.14](#2214-commands-events-errors-and-queries)).
 
 The Candy (`CANDY`) roster, by mechanical role, with the
-`pulp-wars-poc-7r38` values (`CANDY_ROLE_RULES_V7` and
+`pulp-wars-poc-7r38` values, unchanged since (`CANDY_ROLE_RULES_V7` and
 `CANDY_ROLE_MECHANICS_V7`). Every role uses one slot, every Candy unit is
 living, and every Candy land unit is a ground unit:
 
@@ -3166,6 +3194,19 @@ General roster rules:
 - **Burrowed units** have no activation on the board: every command naming
   one is rejected with `UNIT_ALREADY_HANDLED` and never offered
   ([section 22.2](#222-the-tunnel-and-burrowed-units)).
+- **Rushed and Crashed** (Candy units,
+  [section 23.2](#232-sugar-rush-and-the-crash)): `SUGAR_RUSH` is neither a
+  Move nor a primary action, and is legal only before the unit moves or
+  acts. A Rushed unit's ordinary Move has one more point, a Rushed Donut
+  Racer is granted Escape after an attack it survives, and a Rushed Gummy
+  Bear has an Overrun of at most two continuations (Sugar Frenzy). A
+  Crashed unit may Move, Wait, Promote, Disband, embark, and land, and has
+  no primary action (`UNIT_CRASHED`).
+- **Crumbs** ([section 23.4](#234-eating-crumbs-and-the-peppermint-surprise)):
+  a land-form unit that does not fly and ends a `MOVE` of at least one
+  tile or a `DISEMBARK` on Crumbs of a seat hostile to its owner eats them
+  (and takes 3 when that seat has Peppermint Surprise); passing over them,
+  and every placement and displacement, leave them.
 - **Eggs** have no activation of their own: an Egg carries an exhausted
   activation at all times and never needs handling. Every unit command
   naming an own Egg as `unitId` is rejected with `UNIT_IS_EGG { unitId }`
@@ -3203,18 +3244,20 @@ General roster rules:
 
 - `BUILD_FIELD_DEFENSE` (Fortification, 3 Coins) needs a unit whose role
   mechanics allow it (`buildsFieldDefense`: Fighter, Guard, Skeleton, Zombie,
-  or Orc Brute; never the Goblin, and no Dinosaur, Martian, Ice Folk, or
-  Dwarf unit) in land
+  or Orc Brute; never the Goblin, and no Dinosaur, Martian, Ice Folk,
+  Dwarf, or Candy unit) in land
   form that has neither moved nor acted this turn, standing on an explored
   land tile of its owner's territory without Field Defense. It uses the
   unit's whole turn. A Goblin, a Caveman, an Ankylosaurus, a Grunt, a
-  Shield Projector, a Yeti, a Mammoth, a Hammerer, or a Steam Mole is never
+  Shield Projector, a Yeti, a Mammoth, a Hammerer, a Steam Mole, a Gumdrop,
+  or a Marshmallow is never
   offered it and is rejected like any other role that cannot build it
   (`INVALID_TILE` with `action: "BUILD_FIELD_DEFENSE"`); the Dinosaur,
-  Martian, Ice Folk, and Dwarf trees also have no Field Defense unlock
-  (their Fortification is Nesting, Force Fields, Deep Winter, and Dig In).
+  Martian, Ice Folk, Dwarf, and Candy trees also have no Field Defense
+  unlock (their Fortification is Nesting, Force Fields, Deep Winter, Dig
+  In, and Home Sweet Home).
   Field Defense that already stands in territory a Dinosaur, Martian, Ice
-  Folk, or Dwarf seat captures fortifies its units as usual (never a
+  Folk, Dwarf, or Candy seat captures fortifies its units as usual (never a
   Martian walker or flyer or a Gyrocopter, which is never fortified; an Ice
   Folk unit fortified there has no Snow cover; a dug-in Dwarf unit there
   gets one level from the two, never two,
@@ -3345,6 +3388,15 @@ damageToAttacker = roundHalfUp(defenseForce / total * defense * 4.5)
   current HP; as a defender and when it retaliates it is an ordinary unit.
   The preview carries `unflinchingApplied` (true for every such attack, at
   full HP too).
+- **Sugar Rush** (a Rushed Candy unit in land form,
+  [section 23.2](#232-sugar-rush-and-the-crash)): +1 Attack on its first
+  `ATTACK` of the turn, at any range, unless Charge or Inspired applies to
+  that attack; never on retaliation. The preview carries
+  `sugarRushApplied`.
+- **Splat** ([section 23.5](#235-splat)): a unit that survived a Pie
+  Launcher's attack earlier in the active seat's turn does not retaliate
+  (`noRetaliationReason` `SPLATTED`); it keeps its Defense, fortification,
+  cover, and Shield.
 - **Lifesteal** (Vampire): after the exchange, a surviving Vampire heals by
   the HP damage it dealt (as attacker or retaliating defender; never what a
   Shield absorbed), capped at its
@@ -3426,6 +3478,18 @@ Disintegrator ([section 21.5](#215-snow)).
   a `JUGGERNAUT`-role unit, a two-slot unit, and an Egg are never knocked
   back. It is the Push step (the same place, `UNIT_PUSHED`, and the preview
   field `push`).
+- **Bounce** (the Candy Marshmallow and Rock Candy Golem,
+  [section 23.6](#236-bounce)): after the Push, the Knockback, the advance,
+  and the Charge! follow, an attacker that attacked from distance 1, when
+  both units survived and it is still next to the defender, is moved one
+  tile directly away from it under the Push conditions (and never onto a
+  chest tile); a `JUGGERNAUT`-role attacker is never bounced. It moves the
+  attacker, not the target (`UNIT_PUSHED` with the defender as the source;
+  the preview fields `bounce` and `bounceTo`), and a bounced attacker has
+  no Overrun continuation.
+- **Crumbs:** the death of a Candy seat's trainable land unit leaves Crumbs
+  on its tile, right after its Grave when it leaves one
+  ([section 23.3](#233-crumbs)).
 - **Charge! Push and follow** (the Triceratops): a surviving target is
   pushed under the same conditions, and the Triceratops, if it survived,
   follows into the vacated tile under the advance conditions
@@ -3514,8 +3578,9 @@ Disintegrator ([section 21.5](#215-snow)).
   and [section 19.11](#1911-charge) here (growth, Push, and follow); a
   Martian attack then spends the Shields the exchange absorbed and records
   the Cooling of a full-power ray; the Ice Folk steps are in
-  [section 21.13](#2113-attack-resolution-order) and the Dwarf steps in
-  [section 22.11](#2211-resolution-order).
+  [section 21.13](#2113-attack-resolution-order), the Dwarf steps in
+  [section 22.11](#2211-resolution-order), and the Candy steps in
+  [section 23.8](#238-resolution-order).
 
 ## 14. Naval rules
 
@@ -3608,6 +3673,14 @@ Disintegrator ([section 21.5](#215-snow)).
   deferred ([Ice Folk overlay section 17.3](RULESET_7_ICE_FOLK.md#173-deferred-the-floe)).
   `THROW_BOLAS` and `COLD_SNAP` move no unit, so they are not on the
   blockade-event list below.
+- **Candy boats** are the Human Patrol Boat and Battleship too (drawn in the
+  Candy style): one slot, ordinary Promotion, no Candy rule (no Sugar Rush,
+  and a death afloat leaves no Crumbs). Candy land units embark like Human
+  units; an embarked unit cannot Rush, a Rushed unit that embarks still
+  Crashes, and a Crashed embarked unit may land. A boat that attacks a
+  Marshmallow or a Golem from distance 1 is bounced over water, and Splat
+  applies to boats and embarked units
+  ([section 23.9](#239-interactions-with-other-rules)).
 - **Dwarf boats** are the Human Patrol Boat and Battleship too (drawn in the
   Dwarf style): one slot, ordinary Promotion, no Dwarf rule. Dwarf foot
   units and machines other than the Gyrocopter embark at an own active,
@@ -3744,6 +3817,18 @@ Disintegrator ([section 21.5](#215-snow)).
   behind another player's unit (`UNKNOWN_BEHIND_FOG`,
   [section 22.9](#229-steam-cannon-knockback)); see
   [section 22.14](#2214-commands-events-errors-and-queries).
+- **Candy lists and Crumbs.** Crumbs are public on every explored tile,
+  like Graves, with their owner, role, turns left, and whether they bite;
+  the `sugarRush`, `splattedThisTurn`, and `tossedThisTurn` entries of
+  visible units are public, and so are a visible Candy unit's Home Sweet
+  Home and Peppermint Surprise (they tell an opponent what the seat has
+  researched). A viewer that cannot see the eater (the Crumbs' owner, or
+  one that explored the tile) learns that Crumbs were eaten but not by
+  whom; a Re-bake and a Sugar Toss are owner-private
+  like training and tending. Every Candy preview is exact except a Bounce
+  the estimate cannot decide (`UNKNOWN_BEHIND_FOG`,
+  [section 23.6](#236-bounce)); see
+  [section 23.10](#2310-commands-events-errors-and-queries).
 - Exact projection rules are in
   [baseline §9](RULESET_7.md#9-observation-safe-views-events-queries-and-artifacts)
   and the relevant overlay sections.
@@ -4009,6 +4094,44 @@ Disintegrator ([section 21.5](#215-snow)).
   and the Steam Tank use the generic Juggernaut and Knight play. Details
   and measurements:
   [Normal AI Dwarf play](../architecture/NORMAL_AI.md#dwarf-play-pulp_wars-78i4).
+- **Candy play** (`pulp_wars-jdb.4`). Every Candy heuristic is gated on a
+  match with a Candy seat (`src/ai/v7-candy.ts`, with a switch per group
+  for the head-to-head tests) and reads only the public view, the offered
+  commands, and public previews, so matches without one decide as before.
+  As the Candy, Normal considers a Sugar Rush only for a unit with a
+  visible hostile unit within its Move + 1 + range or a threatened own
+  center in Rushed reach, and Rushes when the Rushed attack kills a target
+  no plain plan of the unit kills and the unit does not end in visible
+  lethal reach (unless the kill is a `CATAPULT`, `CAPTAIN`, or `KNIGHT`
+  role; a Gummy Bear also needs a Sugar Frenzy target next to its new tile
+  or such a key kill), when only the Rushed Move reaches a threatened own
+  center with no own unit on it, or, with Home Sweet Home, for an attack
+  that leaves it on or next to an own center (never a Confectioner, and
+  never a chip by a unit below half its HP). A Crashed unit next to a
+  visible hostile melee unit steps to a tile with less visible danger or
+  holds. A Confectioner takes the one best offered Re-bake (the dearest
+  role, the fewest turns left) before its city trains, never where the
+  copy would stand in visible lethal reach with no own center next to it
+  and no own fighting unit beside it, and otherwise walks toward the best
+  affordable own Crumbs within 3. A Pie Launcher shoots first at a target
+  an own unit is about to attack in melee. A Gumball Gunner Tosses to the
+  dearest wounded own unit when its shots neither kill nor deal 3 (and
+  none is on a unit that threatens an own city). It trains a first unit of
+  each role, Gumdrops first in a threatened city, and researches Drill
+  with a hostile unit in sight, else Marksmanship, Home Sweet Home once an
+  own center is threatened, Administration at two cities, Sawmilling
+  against a visible Walled city or at three cities, then Chivalry and
+  Peppermint Surprise. Against the Candy, every seat counts a Crashed
+  hostile unit as no threat and prefers it on a tie, ends a routine Move
+  on hostile Crumbs when the tile is no worse (never for a bite that
+  kills, in visible lethal reach, for Crumbs of a role that costs less
+  than 4 when they bite, or for a bite of half its HP), marks a melee
+  attack that will be bounced down by 1, and hunts Confectioners with the
+  existing support hunt. Not implemented: the wave plan still counts
+  Crashed units, and Marshmallows and the Golem use the generic Guard and
+  Juggernaut placement ([section 25](#25-known-discrepancies)). Details
+  and measurements:
+  [Normal AI Candy play](../architecture/NORMAL_AI.md#candy-play-pulp_wars-jdb4).
 - **Promotion** (revision 20, every faction and match): a wounded unit that
   can be promoted is promoted before any attack, capture, or End Turn, so the
   full heal is not wasted; the policy never holds a Promotion back. This is
@@ -4347,7 +4470,7 @@ without one no Kaboom is offered, no explosion occurs, no Plunder is
 awarded, no Troll exists, Warrens never apply, and every combat preview's
 `gangUp` is 0. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, `GOBLIN_ROLE_RULES_V7`, `GOBLIN_ROLE_MECHANICS_V7`).
-Human, Undead, Dinosaur, Martian, Ice Folk, and Dwarf units keep every
+Human, Undead, Dinosaur, Martian, Ice Folk, Dwarf, and Candy units keep every
 ability against Goblins, and blasts hit them like any unit (Eggs included;
 an Ankylosaurus takes 1 less, [section 19.12](#1912-interactions-with-other-rules);
 a Martian Shield absorbs first,
@@ -4688,7 +4811,7 @@ role, no Nesting slot or Wallbreaker applies, and every combat preview has
 `runUp: 0`, `fortificationIgnored: 0`, `acid: false`, and both Armoured
 flags false. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, `DINOSAUR_ROLE_RULES_V7`, `DINOSAUR_ROLE_MECHANICS_V7`).
-Human, Undead, Goblin, Martian, Ice Folk, and Dwarf units keep every
+Human, Undead, Goblin, Martian, Ice Folk, Dwarf, and Candy units keep every
 ability against Dinosaurs, and Eggs are targets like any unit (never Chilled
 or shattered; hit by an eruption and a bomb). Specification, decisions, and tuning
 records: [revision 19](RULESET_7_REVISION_19_DINOSAURS.md),
@@ -5171,8 +5294,8 @@ accepted, every role has movement mode `GROUND`, and every combat preview
 has `rayPower: "NONE"`, `coolingApplied: false`, and both Shield damages 0.
 Each rule resolves through the unit's kind's registration (`FACTION_RULES_V7`,
 `MARTIAN_ROLE_RULES_V7`, `MARTIAN_ROLE_MECHANICS_V7`) and the helpers of
-`src/engine/v7/martian.ts`. Human, Undead, Goblin, Dinosaur, Ice Folk, and
-Dwarf units keep every ability against Martians, with the Shield rules of
+`src/engine/v7/martian.ts`. Human, Undead, Goblin, Dinosaur, Ice Folk,
+Dwarf, and Candy units keep every ability against Martians, with the Shield rules of
 [section 20.2](#202-shields) applied to the damage they deal (Chill is not
 damage and ignores Shields,
 [section 21.14](#2114-interactions-with-other-rules); a Shield absorbs an
@@ -5963,9 +6086,10 @@ and Engineering returned before, every `curedChill` is false, every unit's
 false. Each rule resolves through the owner's registration
 (`FACTION_RULES_V7`, whose `snow` rule is true only for the Ice Folk,
 `ICE_FOLK_ROLE_RULES_V7`, `ICE_FOLK_ROLE_MECHANICS_V7`) and the helpers of
-`src/engine/v7/ice-folk.ts`. Human, Undead, Goblin, Dinosaur, Martian, and
-Dwarf units keep every ability against the Ice Folk, with the rulings of
-[section 21.14](#2114-interactions-with-other-rules). Specification,
+`src/engine/v7/ice-folk.ts`. Human, Undead, Goblin, Dinosaur, Martian,
+Dwarf, and Candy units keep every ability against the Ice Folk, with the rulings of
+[section 21.14](#2114-interactions-with-other-rules) (the Candy rulings are
+in [section 23.9](#239-interactions-with-other-rules)). Specification,
 per-unit battle analysis, decisions, root rulings, and the tuning record:
 the [Ice Folk overlay](RULESET_7_ICE_FOLK.md) and the
 [Ice Folk balance report](../validation/RULESET_7_ICE_FOLK_BALANCE.md) (the
@@ -6616,9 +6740,10 @@ Dwarf combat-preview fields are false. Each rule resolves through the
 owner's registration (`FACTION_RULES_V7`, `DWARF_ROLE_RULES_V7`,
 `DWARF_ROLE_MECHANICS_V7`) and the helpers of `src/engine/v7/dwarf.ts`,
 `src/engine/v7/dwarf-reducer.ts`, and `src/engine/v7/units.ts`. Human,
-Undead, Goblin, Dinosaur, Martian, and Ice Folk units keep every ability
-against the Dwarves, with the rulings of
-[section 22.13](#2213-interactions-with-other-rules). Specification,
+Undead, Goblin, Dinosaur, Martian, Ice Folk, and Candy units keep every
+ability against the Dwarves, with the rulings of
+[section 22.13](#2213-interactions-with-other-rules) (the Candy rulings are
+in [section 23.9](#239-interactions-with-other-rules)). Specification,
 per-unit battle analysis, decisions, root rulings, and the tuning record:
 the [Dwarf overlay](RULESET_7_DWARVES.md) and the
 [Dwarf balance report](../validation/RULESET_7_DWARF_BALANCE.md) (the `7r31`
@@ -7323,8 +7448,11 @@ unit's kind's registration (`FACTION_RULES_V7`, `CANDY_ROLE_RULES_V7`,
 Ice Folk, and Dwarf units keep every ability against the Candy, with the
 rulings of [section 23.9](#239-interactions-with-other-rules).
 Specification, per-unit battle analysis, decisions, and root rulings: the
-[Candy overlay](RULESET_7_CANDY.md), which also holds the contracts of the
-pending Normal AI, UI, and balance steps.
+[Candy overlay](RULESET_7_CANDY.md), kept as history; where it differs from
+this section, this section is the rule
+([section 25](#25-known-discrepancies)). The Candy are an ordinary faction
+offered in every setup; the achievement that is to unlock them later
+("Sweet Tooth") is not built.
 
 ### 23.1 Roles and labels
 
@@ -7547,8 +7675,10 @@ Escape, and statuses, takes no chest or curiosity, eats no Crumbs, destroys
 no Field Defense, and reveals its sight at the new tile. Events:
 `UNIT_PUSHED { sourceUnitId: defender, targetUnitId: attacker, from, to }`,
 then the attacker's `TILES_REVEALED`. The preview carries `bounce`
-(`NONE`, `WILL_BOUNCE`, `BLOCKED`, or, only in an estimate over an
-unexplored tile, `UNKNOWN_BEHIND_FOG`) and `bounceTo`. A bounced attacker
+(`NONE`, `WILL_BOUNCE`, `BLOCKED`, or, only in an estimate, `UNKNOWN_BEHIND_FOG`:
+the destination is a tile the viewer has not explored, or the attack is a
+Triceratops's Charge! whose own push is unknown, so that its tile after
+the follow is unknown) and `bounceTo`. A bounced attacker
 made no kill, so it has no Overrun continuation; a bounced Raider may still
 Escape.
 
@@ -7691,10 +7821,57 @@ has no Candy step.
   seat, `rushed`, `crashed`, `splatted`, and `tossedThisTurn` (booleans),
   and for Candy units the `candy` block: `sugarRush`, `rushPerk`,
   `bounces`, `splats`, `rebake` (`{ cost, hp }` or null), and the owner's
-  `homeSweetHome` and `crumbsBite`.
+  `homeSweetHome` and `crumbsBite`. A Rushed unit's Attack stat carries the
+  modifier `SUGAR_RUSH` (+1) while its first attack is unused and neither
+  Charge nor Inspired applies; its Move stat is the role's Move and does
+  not show the Rush's +1, which is in the movement query and
+  `previewSugarRushV7` ([section 25](#25-known-discrepancies)).
 - `PublicPlayerV7` and the leaderboard carry `CANDY` and
   `CANDY_BASELINE_V1`. The headless metrics carry the block `candy`
-  (`src/headless/candy-telemetry-v7.ts`), all zero without a Candy seat.
+  (`src/headless/candy-telemetry-v7.ts`), match totals of every Candy
+  ability, all zero without a Candy seat.
+- **Pruning.** Every accepted command drops the `sugarRush`,
+  `splattedThisTurn`, and `tossedThisTurn` entries of units that left the
+  board, the `tossedThisTurn` entries of units that left land form, and the
+  Crumbs of a Candy seat that is no longer active.
+
+### 23.11 Normal AI, presentation, and balance
+
+- **Normal AI** (`pulp_wars-jdb.4`): the Candy play of
+  [section 16](#16-normal-ai-summary).
+- **Presentation** (`pulp_wars-jdb.6`, with the production art of
+  `pulp_wars-jdb.5`; every number and legal choice comes from the public
+  view, the offered commands, and the public previews). Every seat's
+  faction select offers the Candy; their owner colour is cotton-candy pink
+  (`#ffb8d8`), and their units, portraits, cities, and ships have their own
+  art. A Rushed unit carries a chip, a Crashed unit a swirl over a faded
+  sprite, a Splatted unit a pie, and, on its owner's view, a Rushed unit
+  that Home Sweet Home will spare a small house; a Rushed Gummy Bear shows
+  its continuations left as two pips. Crumbs are a token with the fallen
+  unit's head, a pip per turn left, and a peppermint dot when they bite.
+  The Sugar Rush button arms the Rush: the board shows the Rushed reach,
+  and choosing a destination or a target sends `SUGAR_RUSH` and then the
+  Move or the attack; Back, Escape, or another selection sends nothing. A
+  Re-bake tile and a Sugar Toss target are picked on the board, and
+  Frosting marks the units it will heal. The attack preview names a Rush
+  ("Sugar Rush +1"), a Splat, a Splatted target, and a Bounce, and a Move
+  onto hostile Crumbs says "Eats Crumbs" with the Peppermint damage. Help
+  has one sentence per Candy rule, and the technology tree shows Home Sweet
+  Home and Peppermint Surprise to a Candy viewer. The exact texts are in
+  the overlay's [section 15](RULESET_7_CANDY.md#15-ui-requirements), with
+  the differences of its
+  [section 24](RULESET_7_CANDY.md#24-implementation-notes-pulp_wars-jdb6).
+  The Classic and LEGACY looks draw Candy units as Human sprites with no
+  Candy badge ([section 25](#25-known-discrepancies)).
+- **Balance** (`pulp_wars-jdb.7`). The roster and every Candy constant are
+  the overlay's contract values: the coarse balance changed none. It was
+  closed on a small sample at `pulp-wars-poc-7r38` (Dry Land, 11 x 11,
+  Normal against Normal, six games against each other faction): the Candy
+  won 20 of 42 (Humans 2, Undead 5, Goblins 2, Dinosaurs 3, Martians 2,
+  Ice Folk 3, Dwarves 3). The sample predates the Grunt's 8 HP (`7r39`),
+  the village density (`7r40`), and the 3 starting Coins and tier 3 base
+  cost of 9 (`7r41`), and it is a sanity check, not a measurement
+  ([balance record](RULESET_7_CANDY.md#195-balance-record-pulp_wars-jdb7)).
 
 ## 24. Revision history
 
@@ -7746,6 +7923,7 @@ has no Candy step.
 | Curiosities | `pulp-wars-poc-7r36` | `pulp_wars-737.3` map curiosities engine II: the Giant Spider (weight 3, boards 16 and up, lair rules with no cut tile in its area), the neutral owner and registration, the neutral turn after every round (attack the weakest provoker in reach, else the stateless wander; regenerate 4), status and displacement immunity, the 10-Coin bounty, the `monsters` state and view list, `previewMonsterV7`, `monsterRetaliates`, four events, and the owner-reader classification                                  | [section 2.7](#27-map-curiosities), [spec](RULESET_7_MAP_CURIOSITIES.md)                                                              |
 | Balance     | `pulp-wars-poc-7r37` | `pulp_wars-1wy.3` Martian and Ice Folk balance round: Beam Down after the carrier's Move, a pick-up within 2 tiles, the passenger counts as moved (it may still attack), once a turn per unit; the Tractor Beam on the Saucer; the Mothership at 8 Coins with Beam Down and the free once-a-turn Heavy Tractor Beam (reach 2–3, up to 2 tiles); the Grunt at Attack 2 and 9 HP; Glide only from Snow onto Snow; Snow cover × 1.25                                                                                 | [sections 20](#20-martian-faction-rules), [21.5](#215-snow)                                                                           |
 | Candy       | `pulp-wars-poc-7r38` | `pulp_wars-jdb.3` Candy engine: the eighth faction (roster, tree with Home Sweet Home and Peppermint Surprise), Sugar Rush and the Crash, the Donut Racer's Escape and the Gummy Bear's Sugar Frenzy (two continuations at most) while Rushed, Crumbs, going stale, eating, the Peppermint Surprise, Re-bake, Splat, Bounce, Frosting, Sugar Toss; four state lists, three commands, seven events; the setup offers the Candy with its unit, portrait, city, and ship art; matches without a Candy seat unchanged | [section 23](#23-candy-faction-rules), [Candy overlay](RULESET_7_CANDY.md)                                                            |
+| Candy       | `pulp-wars-poc-7r38` | `pulp_wars-jdb.6` Candy UI (`jdb.5` production art), `jdb.4` Candy Normal AI, and `jdb.7` coarse balance (a small sample, no number changed), no identity change                                                                                                                                                                                                                                                                                                                                                  | [section 23.11](#2311-normal-ai-presentation-and-balance)                                                                             |
 | Balance     | `pulp-wars-poc-7r39` | `pulp_wars-1wy.6` measurement of the balance round: the Martian Grunt at 8 HP (was 9), the first step of the design's fallback ladder; the Normal AI's threatened-city Grunt bias 15 (was 14); matches without a Martian seat unchanged                                                                                                                                                                                                                                                                           | [section 11](#11-unit-roster), [balance design](RULESET_7_BALANCE_MARTIAN_ICE.md#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6) |
 | Map scale   | `pulp-wars-poc-7r40` | `pulp_wars-ykw.2` map scale engine I: village density per map type (`S = roundHalfUp(L / LPS)`, `LPS` 15/13/12/12/11) instead of the fixed village table; villages 1 from the edge; lattice packing with nine phases and the wild reserve on Dry Land, Pangea, and Lakes; the row-major fill with the landmass share on Continents and equal home islands on Archipelago; `VILLAGE_DENSITY` invariant; map revision `REGIONAL_BIOMES_NAVAL_V3`; every generated board changed, the Showcase and missions did not  |
 | Economy     | `pulp-wars-poc-7r41` | `pulp_wars-if6` early economy tweak: 3 starting Coins (was 5), so a first turn has 5 Coins and no longer pays for free research, level 2, and a unit; tier 3 technology base cost 9 (was 12), so one-city costs read 5 / 7 / 9; the per-city steps (1 / 3 / 5) unchanged; missions keep their own Coins; no shape changed                                                                                                                                                                                         | [section 3](#3-players-turns-and-victory), [section 6.1](#61-research-cost)                                                           |
@@ -8067,6 +8245,41 @@ of 12. The values were checked against `RULESET_7.startingCoins` and
 `tests/unit/ruleset-v7-revision16-economy.test.ts` and
 `tests/unit/ruleset-v7-technology.test.ts`.
 
+**Candy fold (2026-10-05, `pulp_wars-jdb.8`, `pulp-wars-poc-7r41`, no
+identity change):** the rest of the [Candy overlay](RULESET_7_CANDY.md) was
+folded in after its engine: the Normal AI of `pulp_wars-jdb.4`
+([section 16](#16-normal-ai-summary)), the UI of `pulp_wars-jdb.6` with the
+production art of `pulp_wars-jdb.5`, and the coarse balance of
+`pulp_wars-jdb.7`, which changed no number
+([section 23.11](#2311-normal-ai-presentation-and-balance)). The Candy are
+now named in the shared sections where a shared rule reads differently for
+them: the treasure role ([section 2.2](#22-settlements-and-treasures)), the
+starting unit ([section 3](#3-players-turns-and-victory)), capacity and the
+rewards ([sections 4.4](#44-unit-capacity) and [4.8](#48-city-rewards)),
+Sugar Toss and Frosting ([section 10](#10-recovery-and-support)), Rushed
+and Crashed units, Crumbs, and Field Defense
+([sections 12.2](#122-activation) and [12.3](#123-field-defense)), the Rush
+bonus, Splat, Bounce, and Crumbs in combat
+([sections 13.2](#132-damage) and [13.4](#134-after-combat)), the boats
+([section 14](#14-naval-rules)), and fog
+([section 15](#15-fog-and-observation)). The "keep every ability against"
+sentences of sections 18 to 22 now name the Candy; the interaction tables
+of sections 17 to 22 still do not, and
+[section 23.9](#239-interactions-with-other-rules) has every interaction.
+Section 23 was checked again at `pulp-wars-poc-7r41` against the Candy
+registration, `candy.ts`, `candy-reducer.ts`, the Candy hooks of the
+reducer, the public queries, the unit stats, the state schema, and event
+projection, with `src/ai/v7-candy.ts` and
+`src/render/candy-presentation-v7.ts` for the two summaries. It gained the
+second `UNKNOWN_BEHIND_FOG` case of a Bounce, the `SUGAR_RUSH` Attack
+modifier and the Move stat without the Rush's +1, the pruning of the three
+unit lists, and [section 23.11](#2311-normal-ai-presentation-and-balance).
+The Candy numbers did not change between `7r38` and `7r41`; the player-wide
+numbers of `7r39` to `7r41` (the Grunt's 8 HP, 3 starting Coins, tier 3
+base cost 9) are the ones quoted here. The overlay's own corrections are in
+its [section 25](RULESET_7_CANDY.md#25-fold-notes-pulp_wars-jdb8), and the
+open items in [section 25](#25-known-discrepancies) here.
+
 ## 25. Known discrepancies
 
 As of `pulp-wars-poc-7r41` the rules in this document match the code for
@@ -8074,48 +8287,88 @@ the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
 faction of the Ice Folk overlay, the Dwarf faction of the Dwarf overlay,
-the Candy engine of the Candy overlay,
+the Candy faction of the Candy overlay,
 the mission setup of [section 2.6](#26-mission-setup), the map
 curiosities of [section 2.7](#27-map-curiosities), and the Martian and Ice
 Folk balance round of `7r37` with the Grunt's 8 HP of `7r39`, and the
 village density of `7r40`, and the starting Coins and tier 3 technology base
 cost of `7r41`,
-with two
-open items: the pending Candy steps and the pending balance steps below.
+with these
+open items: the Candy items left after the fold and the pending balance
+steps below.
 
 **Open.**
 
-- **Candy: the AI, the UI, and the balance pending.** The engine step of
-  the [Candy overlay](RULESET_7_CANDY.md) (`pulp_wars-jdb.3`, `7r38`)
-  implements every rule of [section 23](#23-candy-faction-rules). Still to
-  come: the **Normal AI** (`pulp_wars-jdb.4`): a Candy seat plays with the
-  ordinary policy, which trains, moves, attacks, captures, and Frosts with
-  the Candy registration and never issues `SUGAR_RUSH`, `REBAKE`, or
-  `SUGAR_TOSS`, and no seat's policy yet steps onto Crumbs on purpose,
-  avoids a Bounce, or uses a Splat; the **UI** (`pulp_wars-jdb.6`): the
-  setup offers the Candy (the overlay's section 18 said no UI would until
-  that bead; the engine bead's task asked for it so that the faction can be
-  played), with the unit, portrait, city, and ship art of
-  `pulp_wars-jdb.5` wired and no Candy badge for a raster that fails to
-  load, plain dock buttons for the three
-  commands ("Sugar Rush", "Re-bake …", "Toss to …"), "Frosting" as the
-  Confectioner's Tend label, and short stand-in tree text, and with no
-  markers for Rushed, Crashed, Splatted, or Crumbs, no Rush reach, and no
-  Help; and the **coarse balance** (`pulp_wars-jdb.7`): the numbers of
-  `7r38` are the overlay's, not yet measured. Where the code differs from
-  the overlay: (1) the overlay's battle tables were re-run with the real
-  registration at `7r38` and two readings moved with no verdict flipped
-  (a Gummy Bear's Sugar Frenzy continuation against an Ice Witch deals 10
-  and takes 1, not 9 and 2; a plain Gumdrop against a Yeti on Snow deals 5
-  and takes 3, not 4 and 4, since Snow cover is × 1.25; Rushed it still
-  deals 8 and takes 3); (2) a unit eats Crumbs only at the end of a `MOVE`
-  that moved it at least one tile; (3) in a `DISEMBARK` the eating events
-  come before the landing's `TILES_REVEALED`, which stays the last of the
-  landing's own events as before (the overlay lists it before the eating
-  step); (4) a `SUGAR_TOSS` naming a unit the actor cannot see is
-  `HEAL_TARGET_NOT_FOUND`, so a rejection reveals nothing; (5) a state
-  whose Gummy Bear or Donut Racer has a Rush perk's flag without a `RUSHED`
-  entry is refused.
+- **Candy: what is left after the fold** (`pulp_wars-jdb.8`; the engine
+  `pulp_wars-jdb.3`, the Normal AI `pulp_wars-jdb.4`, the art
+  `pulp_wars-jdb.5`, the UI `pulp_wars-jdb.6`, and the coarse balance
+  `pulp_wars-jdb.7` are done, and [section 23](#23-candy-faction-rules)
+  states the rules as built):
+  - **Polish, `pulp_wars-jdb.9`.** (1) The public Move stat of a Rushed unit
+    does not include the Rush's +1; the board's reach, the movement query,
+    and `previewSugarRushV7` do. (2) The engine has no public "why not"
+    query for a Re-bake, so the UI works the reason out from the view in
+    the engine's order (the button is still offered exactly when a `REBAKE`
+    is). (3) The Classic and LEGACY looks draw Candy units as Human sprites
+    with no Candy badge, and a Candy raster that fails to load falls back
+    to the Human art with no badge (the overlay's section 15.4 planned
+    one). (4) The Confectioner's portrait still shows the first sprite's
+    white apron top; the root ruled a pink frosting apron, which the board
+    sprite has ([Candy art fragment](../art/factions/CANDY.md#weak-spots)).
+  - **Normal AI, no bead yet.** Two items of the overlay's section 14 are
+    not implemented: Crashed units are still counted as attackers in the
+    wave plan of their Crash turn, and Marshmallows and the Golem use the
+    generic Guard and Juggernaut placement (no front-row rule, no Golem
+    garrison). The overlay's
+    [section 14.1](RULESET_7_CANDY.md#141-implementation-status-pulp_wars-jdb4)
+    also lists where the built rules are narrower or simpler than its
+    list; those are the rules of [section 16](#16-normal-ai-summary).
+  - **Balance: a small sample.** `pulp_wars-jdb.7` was closed at the user's
+    direction on 42 games at `7r38` (20 won; six per opponent), before the
+    changes of `7r39` to `7r41`. The overlay's matrix (its section 19.2),
+    its acceptance list (section 19.4), and its report file were not
+    produced, and no number was tuned
+    ([section 23.11](#2311-normal-ai-presentation-and-balance)).
+  - **The unlock is future.** The user wants the Candy to become an
+    achievement-unlocked easter egg; the proposed "Sweet Tooth" achievement
+    (the overlay's section 20) is a later bead, and the Candy are offered
+    in every setup until then.
+  - **Smaller than the overlay asked, with no bead:** the faction emblem
+    (`ICON:HUD:CANDY:EMBLEM`) is made and never drawn; the browser smoke's
+    Candy step mounts a fixture and checks the markers, an armed Sugar
+    Rush with its Move, a Sugar Toss, and a Re-bake, and does not attack,
+    play through a Crash, Splat, Bounce, or Frost, or launch a Candy match
+    from the setup screen (the engine, AI, and UI tests and the
+    `review:ruleset7-candy-ui` captures cover those); and the headless
+    `candy` metrics are match totals, without the per-seat, per-round, and
+    per-opponent lines of the overlay's section 19.2.
+  - **Where the code differs from the overlay's rules text** (this
+    document states the code's behavior): (1) the overlay's battle tables
+    were re-run with the real registration at `7r38` and two readings
+    moved with no verdict flipped (a Gummy Bear's Sugar Frenzy
+    continuation against an Ice Witch deals 10 and takes 1, not 9 and 2; a
+    plain Gumdrop against a Yeti on Snow deals 5 and takes 3, not 4 and 4,
+    since Snow cover is × 1.25; Rushed it still deals 8 and takes 3), and
+    since the Grunt's 8 HP of `7r39` a Rushed Gummy Bear's first attack
+    kills a full Grunt through its Shield; (2) a unit eats Crumbs only at
+    the end of a `MOVE` that moved it at least one tile; (3) in a
+    `DISEMBARK` the eating events come before the landing's
+    `TILES_REVEALED`, which stays the last of the landing's own events as
+    before (the overlay lists it before the eating step); (4) a
+    `SUGAR_TOSS` naming a unit the actor cannot see is
+    `HEAL_TARGET_NOT_FOUND`, so a rejection reveals nothing; (5) a state
+    whose Gummy Bear or Donut Racer has a Rush perk's flag without a
+    `RUSHED` entry is refused; (6) the estimate's `bounce` is
+    `UNKNOWN_BEHIND_FOG` also for a Charge! whose own push is unknown; (7)
+    `tossedThisTurn` drops a unit that leaves land form; (8) a `PILLAGE` by
+    a Crashed Golem or embarked unit reports `PILLAGE_INVALID_TARGET`,
+    because that test comes before the Crash test there.
+  - **Superseded overlay text:** its `7rNN` identity (`7r38`), "no UI
+    offers the faction until `pulp_wars-jdb.6`" (the setup offered it from
+    the engine bead), the badge fallback of its section 15.4, the tuning
+    bounds and named levers of its section 19.3 (unused), and its naval
+    section 16, which describes a naval branch that is still a design (the
+    Candy have the current Human Patrol Boat and Battleship).
 
 - **Martian and Ice Folk balance: the measurement
   pending.** The engine step of the
@@ -8379,7 +8632,7 @@ the code's behavior):
   section 16.4 (the production art of `pulp_wars-78i.5` is wired in; the
   Human sprite with a badge remains only the Classic and legacy look).
 
-The revision 13–21 overlays and the Martian, Ice Folk, and Dwarf overlays keep
+The revision 13–21 overlays and the Martian, Ice Folk, Dwarf, and Candy overlays keep
 superseded values (for example the Lich's Attack 2.5 and 20-HP Zombie in
 revision 13, unlimited Plague in revision 14, "Move 3" for embarked units in
 revision 13, the pre-tuning Goblin contract values in the revision-17 bounds

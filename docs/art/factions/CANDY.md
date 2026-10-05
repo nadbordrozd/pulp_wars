@@ -1,12 +1,18 @@
 # Faction fragment: CANDY
 
 **Status:** direction and production art made in bead `pulp_wars-jdb.5`
-(batches `direction-candy` and `naval-candy`). **Partly wired in:** the Candy
+(batches `direction-candy` and `naval-candy`). **Wired in:** the Candy
 engine bead (`pulp_wars-jdb.3`) registers both manifests in the live
-direction registry and draws the unit sprites, portraits, cities, and ships;
-the Candy UI bead `pulp_wars-jdb.6` draws the icons, the Crumbs marker,
-and the effects (see the
-[wiring list](#wiring-list-for-pulp_wars-jdb6)). The look follows
+direction registry and draws the unit sprites, portraits, cities, and
+ships, and the Candy UI bead (`pulp_wars-jdb.6`) draws the icons, the
+Crumbs marker, and the effects (see the
+[wiring list](#wiring-list-for-pulp_wars-jdb6), which is kept as written
+before the wiring). **Still open:** the faction emblem is made and not
+drawn; the Confectioner's portrait still shows the first sprite's white
+apron top and is to be regenerated, and the Classic and LEGACY looks have
+no Candy badge (both `pulp_wars-jdb.9`). The Candy rules are folded into
+[Ruleset 7: current rules](../../product/RULESET_7_CURRENT.md#23-candy-faction-rules)
+(`pulp_wars-jdb.8`). The look follows
 [the Candy spec](../../product/RULESET_7_CANDY.md) (sections 2.1 and 15.4):
 the Kingdom of Sugarcrest, a kingdom of living sweets, in fixed colours with
 the faction colour cotton-candy pink `#ffb8d8`. Every decision below was
@@ -362,7 +368,9 @@ the correction pass).
 The art is in [`chibi-direction-candy-art-manifest.ts`](../../../src/assets/chibi-direction-candy-art-manifest.ts)
 (`CHIBI_DIRECTION_CANDY_ART_ASSETS_V7`, 39 entries;
 `CHIBI_DIRECTION_CANDY_NAVAL_ART_ASSETS_V7`, 5), which no game module
-imports. The subjects exist (`CandyArtSubjectV7` in
+imported when this list was written (items 1 to 4 and 6 were done by the
+engine bead `pulp_wars-jdb.3`, item 5 by the UI bead, except that the
+fallback of item 2 has no Candy badge). The subjects exist (`CandyArtSubjectV7` in
 [`chibi-art-v7.ts`](../../../src/assets/chibi-art-v7.ts)).
 
 1. **Registry.** Add `...CHIBI_DIRECTION_CANDY_ART_ASSETS_V7` to

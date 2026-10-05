@@ -1154,12 +1154,17 @@ async function paletteAndReadability(): Promise<void> {
       contrast: round1(result.contrast),
     };
   };
-  // The faction colour against the seven others and the grounds.
+  // The faction colour against the seven others and the grounds. The Candy
+  // joined FACTION_COLOURS_V7 in bead pulp_wars-jdb.3 and are left out here:
+  // the measure is the Candy look against everyone else.
+  const otherFactionColours = Object.entries(FACTION_COLOURS_V7).filter(
+    ([faction]) => faction !== "CANDY",
+  );
   const candy = rgbOf(CANDY_COLOUR);
   const factionColour = {
     colour: CANDY_COLOUR,
     lightness: round1(lab(candy)[0]),
-    againstFactions: Object.entries(FACTION_COLOURS_V7).map(([faction, hex]) =>
+    againstFactions: otherFactionColours.map(([faction, hex]) =>
       pair("Candy", candy, faction, rgbOf(hex)),
     ),
     againstGrounds: Object.entries(groundMeans).map(([name, rgb]) =>
@@ -1171,8 +1176,8 @@ async function paletteAndReadability(): Promise<void> {
   const toneChecks = tones.map((tone) => ({
     tone,
     hex: hexOf(byName[tone] as Rgb),
-    againstFactionColours: Object.entries(FACTION_COLOURS_V7).map(
-      ([faction, hex]) => pair(tone, byName[tone] as Rgb, faction, rgbOf(hex)),
+    againstFactionColours: otherFactionColours.map(([faction, hex]) =>
+      pair(tone, byName[tone] as Rgb, faction, rgbOf(hex)),
     ),
     againstGrounds: Object.entries(groundMeans).map(([name, rgb]) =>
       pair(tone, byName[tone] as Rgb, name, rgb),

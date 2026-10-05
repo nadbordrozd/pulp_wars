@@ -23,7 +23,12 @@ The current runtime is `pulp-wars-poc-7r41` (autosave
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
-into which `pulp_wars-78i.8` folded the
+into which `pulp_wars-jdb.8` folded the
+[Candy overlay](../product/RULESET_7_CANDY.md) (engine `pulp_wars-jdb.3`
+at `7r38`, Normal AI `pulp_wars-jdb.4`, UI `pulp_wars-jdb.6` with the
+production art of `pulp_wars-jdb.5`, and the `pulp_wars-jdb.7` coarse
+balance, closed on a small sample with no number changed), after
+`pulp_wars-78i.8` folded the
 [Dwarf overlay](../product/RULESET_7_DWARVES.md) (engine `pulp_wars-78i.3`
 at `7r30`, Normal AI `pulp_wars-78i.4`, UI `pulp_wars-78i.6` with the
 production art of `pulp_wars-78i.5`, and the `pulp_wars-78i.7` coarse
@@ -142,11 +147,23 @@ parity digests, the mission pins, and all five `7r34` curiosity pins still
 hold with them removed; no pinned match was recomputed). Its contract tests
 are `tests/unit/ruleset-v7-candy-identity.test.ts`, `-numbers`, `-faction`,
 `-rush`, `-crumbs`, `-combat`, `-interactions`, `-persistence`, and
-`-headless`. The setup offers the Candy with its unit, portrait, city, and
-ship art (`pulp_wars-jdb.5`) and
-plain command buttons; its Normal AI (`pulp_wars-jdb.4`), its
-full UI with a browser smoke probe (`pulp_wars-jdb.6`), and its coarse
-balance (`pulp_wars-jdb.7`) are still to come.
+`-headless`. The other steps of the Candy epic changed no identity: the
+art (`pulp_wars-jdb.5`, reviewed by `npm run
+art:chibi-candy-direction-review`), the Normal AI (`pulp_wars-jdb.4`; its
+contract test is `tests/unit/ruleset-v7-candy-ai.test.ts`), the UI with
+its browser smoke step (`pulp_wars-jdb.6`; its tests are
+`tests/unit/candy-presentation-v7.test.ts`,
+`tests/unit/candy-board-render-v7.test.ts`,
+`tests/integration/ruleset7-candy-dom.test.ts`, and
+`tests/integration/ruleset7-candy-canvas.test.ts`, which run in `npm run
+check`, and its captures come from `npm run review:ruleset7-candy-ui`), the
+coarse balance (`pulp_wars-jdb.7`: no number changed and no report file;
+its evidence is the small sample of the Normal AI bead, 20 wins in 42
+games against the other seven factions at `7r38`, six per opponent,
+[Candy measurements](../architecture/NORMAL_AI.md#candy-measurements),
+played before the changes of `7r39` to `7r41`), and the fold
+(`pulp_wars-jdb.8`), whose open items are in the current rules'
+[known discrepancies](../product/RULESET_7_CURRENT.md#25-known-discrepancies).
 `pulp_wars-1wy.6` (`7r39`) is the measurement of the balance round: the
 Martian Grunt has 8 HP (was 9), the first step of the design's fallback
 ladder
@@ -190,9 +207,11 @@ later factions never had one). Balance evidence is the
 [revision-20 balance report](RULESET_7_REVISION_20_BALANCE.md), and the
 coarse [Martian](RULESET_7_MARTIAN_BALANCE.md),
 [Ice Folk](RULESET_7_ICE_FOLK_BALANCE.md), and
-[Dwarf](RULESET_7_DWARF_BALANCE.md) balance reports, and the small
-[curiosities check](RULESET_7_CURIOSITIES_CHECK.md); the release does not
-rerun their matrices.
+[Dwarf](RULESET_7_DWARF_BALANCE.md) balance reports, the small
+[curiosities check](RULESET_7_CURIOSITIES_CHECK.md), and the small Candy
+sample in
+[Candy measurements](../architecture/NORMAL_AI.md#candy-measurements) (the
+Candy have no balance report); the release does not rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
@@ -211,7 +230,9 @@ rerun their matrices.
   classification, identity, faction, Tunnel, bomb, units, interactions,
   persistence, and headless suites), the Candy engine suites (identity,
   numbers, faction, Rush, Crumbs, combat, interactions, persistence, and
-  headless), persistence, and the DOM shell and
+  headless) and the Candy Normal AI suite, the mission, curiosity, Giant
+  Spider, owner-reader, and Martian and Ice Folk balance-round suites named
+  above, persistence, and the DOM shell and
   landing tests (the Goblin explosion, the other AI, and the
   presentation suites run in `npm run check`). It
   keeps no checked corpus or fingerprint of its own and has no `:refresh`
@@ -226,10 +247,11 @@ rerun their matrices.
   dispatch Raise Dead and mounts the Plague and Bitten fixture; with
   `--deployed` it stops after launch and resume), a **Goblin probe**, a
   **Dinosaur probe**, a **Martian probe**, an **Ice Folk probe**, a **Dwarf
-  probe**, a **Curiosities probe**, and a **Showcase probe**:
+  probe**, a **Curiosities probe**, a **Candy step**, and a **Showcase
+  probe**:
   - The **Goblin probe** (`pulp_wars-0ao.5`, `0ao.7`) checks that every
     seat's select offers exactly Human, Undead, Goblin, Dinosaur, Martian,
-    Ice Folk, and Dwarf, picks
+    Ice Folk, Dwarf, and Candy, picks
     Goblin for seat 0 from the keyboard, launches a Goblin-vs-Undead match
     from the production setup, selects the starting Goblin on its capital
     from the keyboard, checks the Kaboom! button's accessible name (its
@@ -240,7 +262,7 @@ rerun their matrices.
     count, and resumes the save with its Goblin seat on a fresh
     default-route load.
   - The **Dinosaur probe** (`pulp_wars-c87.4`, `0hi.2`) checks the same
-    seven faction options, launches a Showcase with a Dinosaur human seat
+    eight faction options, launches a Showcase with a Dinosaur human seat
     against Undead, Goblin, and Human seats from the production setup,
     selects the
     Triceratops from the keyboard, checks its Charge! unit info (and that
@@ -251,7 +273,7 @@ rerun their matrices.
     Egg card on a nest tile picked on the board, ends the turn, checks that
     the Egg hatched into a Raptor, and resumes the save with its Dinosaur
     seat on a fresh default-route load.
-  - The **Martian probe** (`pulp_wars-t6s.4`) checks the same seven faction
+  - The **Martian probe** (`pulp_wars-t6s.4`) checks the same eight faction
     options, launches a Showcase with a Martian human seat against Undead,
     Goblin, and Dinosaur seats from the production setup, selects a ray
     unit from the
@@ -262,7 +284,7 @@ rerun their matrices.
     the dock (checking the "Saucer beamed down a" announcement and the
     moved Grunt next to the Saucer), and resumes the save with its
     Martian seat on a fresh default-route load.
-  - The **Ice Folk probe** (`pulp_wars-7g3.6`) checks the same seven
+  - The **Ice Folk probe** (`pulp_wars-7g3.6`) checks the same eight
     faction options, launches a Showcase with an Ice Folk human seat
     against Undead, Goblin, and Dinosaur seats from the production setup,
     checks that its strip is under Snow (the view's `snow` flags) and that
@@ -273,7 +295,7 @@ rerun their matrices.
     (checking the "Sled chilled a" announcement and a sluggish Chill entry
     on the target), and resumes the save with its Ice Folk seat and the
     Chill on a fresh default-route load.
-  - The **Dwarf probe** (`pulp_wars-78i.6`) checks the same seven faction
+  - The **Dwarf probe** (`pulp_wars-78i.6`) checks the same eight faction
     options, launches a Showcase with a Dwarf human seat against Undead,
     Goblin, and Human seats from the production setup (the human's "D"
     typeahead passes Dinosaur, whose seat takes the freed Human), selects
@@ -296,6 +318,19 @@ rerun their matrices.
     (the Spider attacks the Fighter beside it) and the Fountain heals the
     unit standing on it. It needs the development server's fixture, so
     with `--deployed` it is skipped and reported as such.
+  - The **Candy step** (`pulp_wars-jdb.6`,
+    `scripts/browser-smoke-v7-candy.ts`) mounts the Candy UI fixture
+    (`tests/fixtures/v7-candy-ui.ts`) in the default look and checks that
+    the board plans the Crumbs and the Rushed, Crashed, Splatted, and Sugar
+    Frenzy markers, that arming the Sugar Rush and choosing a tile only the
+    Rush reaches sends `SUGAR_RUSH` and then the Move, that the moved
+    unit's dock says "Rushed", that a selected Gumball Gunner shows its
+    Moves and heals together and a Sugar Toss is picked on the board, that
+    a Re-bake picked on the board bakes the fallen unit back, and that
+    nothing in the dock names a tile. It needs the development server's
+    fixture, so with `--deployed` it is skipped and reported as such. It
+    does not launch a Candy match from the setup screen (the faction
+    probes check that every select offers the Candy).
 
   The Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Showcase probes use
   no fixture, so they run unchanged with
@@ -316,7 +351,14 @@ rerun their matrices.
   [curiosities check](RULESET_7_CURIOSITIES_CHECK.md), and the Spider's
   panel, the provoke warning, the attack preview, Help, and the Gallery
   tab are covered by the UI tests and the `review:ruleset7-curiosities-ui`
-  captures.
+  captures. Complete Candy matches against each of the other seven factions
+  were played headlessly by the Normal AI bead's small sample, and
+  `npm run check` runs bounded headless matches with a Candy seat against
+  every faction in both seat orders, a four-seat mix, and a Showcase
+  (`tests/unit/ruleset-v7-candy-headless.test.ts`). A Rushed attack, the
+  Crash, Splat, Bounce, Frosting, eaten Crumbs, and the Peppermint Surprise
+  are covered by the engine, AI, and UI tests and the
+  `review:ruleset7-candy-ui` captures, not by the smoke.
 
 - `npm run validate:ruleset7-curiosity-maps`
   (`scripts/validate-ruleset7-curiosity-maps.ts`, `pulp_wars-737.2`,
@@ -355,6 +397,13 @@ rerun their matrices.
   for the Giant Spider, its lair web, the Fountain, the Shrine, the Wreck,
   and their icons and effects, under
   `art/pixellab/reviews/chibi-batch-curiosities/`.
+  `npm run art:chibi-candy-direction-review`
+  (`scripts/art/chibi-candy-direction-review.ts`, `pulp_wars-jdb.5`) does
+  the same for the Candy unit sprites, portraits, cities, fleet, icons,
+  Crumbs marker, and effects, with the 32 px lineup, under
+  `art/pixellab/reviews/chibi-batch-direction-candy/`; its scenes are
+  stand-ins drawn by the review itself, so the Candy as the game draws them
+  are in the `review:ruleset7-candy-ui` captures.
 - **Gate order.** Run `npm run check` **before** the art review commands,
   then restore the checked-in review evidence with `git checkout -- art/`
   after them: on macOS Chrome the reviews rewrite tracked review evidence,
@@ -368,13 +417,14 @@ rerun their matrices.
   refreshed for later revisions; in particular
   `npm run smoke:browser -- --archive-evidence` is not a current release step,
   because it would overwrite that revision-2 evidence with current
-  (`7r37`) captures. The revision-2 validator described below as
+  (`7r41`) captures. The revision-2 validator described below as
   `validate:ruleset7-release` is now `npm run validate:ruleset7-archive-r2`,
   and its `:refresh` variant no longer exists.
 
 The current release gates, in the order they are run from the reviewed
 release revision (the `cross-cutting/release` profile plus the Ruleset 7,
-Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and map-curiosity additions).
+Goblin, Dinosaur, Martian, Ice Folk, Dwarf, map-curiosity, and Candy
+additions).
 `npm run check`
 runs
 before the art
@@ -406,6 +456,7 @@ npm run art:chibi-dinosaur-review
 npm run art:chibi-martian-direction-review
 npm run art:chibi-ice-folk-direction-review
 npm run art:chibi-dwarf-direction-review
+npm run art:chibi-candy-direction-review
 npm run art:curiosities-review
 git checkout -- art/
 npm run smoke:browser
@@ -419,6 +470,7 @@ The results of a release run are recorded on its bead
 `7r23` fold, `pulp_wars-t6s.7` for the five-faction `7r25` fold,
 `pulp_wars-7g3.8` for the six-faction `7r30` fold, `pulp_wars-78i.8` for
 the seven-faction `7r31` fold, `pulp_wars-737.7` for the map-curiosities
+fold, no identity change, `pulp_wars-jdb.8` for the eight-faction `7r41`
 fold, no identity change), not in this document;
 the
 [final release gates](#final-release-gates) and
@@ -427,8 +479,9 @@ revision-2 record.
 
 The revision-16 contract (`pulp-wars-poc-7r16`, Human and Undead), the
 revision-17 and revision-18 three-faction contracts, the four-faction
-`7r23` contract, the five-faction `7r25`–`7r29` contract, and the
-six-faction `7r30` contract are superseded by this one; their validator and smoke were extended in place, not kept as
+`7r23` contract, the five-faction `7r25`–`7r29` contract, the
+six-faction `7r30` contract, and the seven-faction `7r31`–`7r37` contract
+are superseded by this one; their validator and smoke were extended in place, not kept as
 separate commands.
 
 For that revision-2 release, Ruleset 7 was the normal browser default and the

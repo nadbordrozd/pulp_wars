@@ -9,8 +9,8 @@ factions (Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and
 Candy; `pulp_wars-t6s.7` folded the
 [Martian overlay](../product/RULESET_7_MARTIANS.md), `pulp_wars-7g3.8` the
 [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), `pulp_wars-78i.8`
-the [Dwarf overlay](../product/RULESET_7_DWARVES.md), and `pulp_wars-jdb.3`
-the engine step of the [Candy overlay](../product/RULESET_7_CANDY.md) into
+the [Dwarf overlay](../product/RULESET_7_DWARVES.md), and `pulp_wars-jdb.8`
+the [Candy overlay](../product/RULESET_7_CANDY.md) into
 it). The headless CLI
 accepts only the current Ruleset 7 identity, `--ruleset pulp-wars-poc-7r41`
 (plus `pulp-wars-poc-6` and `pulp-wars-poc-5`). Since
@@ -480,18 +480,15 @@ npm run headless -- match --ruleset pulp-wars-poc-7r41 --map-type dry-land --fac
 npm run headless -- match --ruleset pulp-wars-poc-7r41 --map-type showcase --ai-count 3 --factions candy,human,undead,goblin --max-rounds 50
 ```
 
-The engine bead adds no Candy policy. A Candy seat plays with the ordinary
-Normal policy on the Candy registration: it trains, moves, attacks,
-captures, researches, and builds like a Human seat, and its Confectioners
-Frost (their Tend Wounded). It never issues `SUGAR_RUSH`, `REBAKE`, or
-`SUGAR_TOSS` (`isPolicyCandidate` in `src/ai/v7.ts` leaves the three kinds
-out), so no unit Rushes or Crashes and no Crumbs are re-baked in a
-Normal-policy match; the passive rules happen anyway: Candy deaths leave
-Crumbs that go stale or are eaten when an enemy ends a Move on them,
-Marshmallows and Golems bounce their attackers, and Pie Launchers Splat.
-The other factions' policies attack Candy units with their ordinary
-previews, which include Splat and Bounce. The Candy policy is
-`pulp_wars-jdb.4`.
+A Candy seat plays the Candy policy of `pulp_wars-jdb.4`
+([Candy play](NORMAL_AI.md#candy-play-pulp_wars-jdb4)): it Rushes for a
+kill or to reach a threatened city, steps Crashed units out of melee
+reach, Re-bakes before it trains, shoots its Pie Launchers first, and
+Tosses, and the other factions' policies eat its Crumbs, prefer its
+Crashed units on a tie, and mark a melee attack that will be bounced down.
+(The engine bead, `pulp_wars-jdb.3`, played a Candy seat with the ordinary
+policy, which never issued `SUGAR_RUSH`, `REBAKE`, or `SUGAR_TOSS`; that
+policy is what the Candy policy decides as with every group switched off.)
 
 Every v7 result carries a `candy` block (all zero without a Candy seat;
 `src/headless/candy-telemetry-v7.ts`), computed from the events of the
@@ -507,8 +504,11 @@ seven new events like any other kind.
 
 The balance matrix (`npm run balance:ruleset7-undead`) accepts the pairing
 letter `C` (`CH`, `HC`, `CU`, `UC`, `CG`, `GC`, `CD`, `DC`, `CM`, `MC`,
-`CI`, `IC`, `CW`, `WC`, and the four-seat `CHUG`; there is no `CC`); its
-Candy summary and the measurement belong to `pulp_wars-jdb.7`.
+`CI`, `IC`, `CW`, `WC`, and the four-seat `CHUG`; there is no `CC`). It
+has no Candy summary: the coarse balance (`pulp_wars-jdb.7`) was closed on
+the Normal AI bead's small sample (20 wins in 42 games at `7r38`,
+[Candy measurements](NORMAL_AI.md#candy-measurements)) without running the
+matrix.
 
 A match without a Candy seat plays command for command as at `7r37`: the
 all-Human parity digests and the five pinned `7r34` curiosity matches

@@ -18,8 +18,8 @@ Dwarf, and Candy, are described by
 (`pulp_wars-c87.9` folded revisions 19–21 into it, `pulp_wars-t6s.7` the
 [Martian overlay](../product/RULESET_7_MARTIANS.md), `pulp_wars-7g3.8` the
 [Ice Folk overlay](../product/RULESET_7_ICE_FOLK.md), `pulp_wars-78i.8`
-the [Dwarf overlay](../product/RULESET_7_DWARVES.md), and `pulp_wars-jdb.3`
-the engine step of the [Candy overlay](../product/RULESET_7_CANDY.md)). The Dinosaur faction of
+the [Dwarf overlay](../product/RULESET_7_DWARVES.md), and `pulp_wars-jdb.8`
+the [Candy overlay](../product/RULESET_7_CANDY.md)). The Dinosaur faction of
 the [revision-19 overlay](../product/RULESET_7_REVISION_19_DINOSAURS.md)
 (`pulp_wars-c87.2`: identity, roster, capacity slots, Grow, Acid, Armoured;
 `pulp_wars-c87.3`: Eggs, Shaman Hatch, and Nesting, with their public
@@ -654,8 +654,11 @@ the Monster, a unit whose `ownerId` is the reserved neutral owner
 ## Candy engine boundary (`pulp_wars-jdb.3`)
 
 `pulp-wars-poc-7r38` implements the engine step of the
-[Candy overlay](../product/RULESET_7_CANDY.md)
-([current rules section 23](../product/RULESET_7_CURRENT.md#23-candy-faction-rules)).
+[Candy overlay](../product/RULESET_7_CANDY.md), folded by `pulp_wars-jdb.8`
+into
+[current rules section 23](../product/RULESET_7_CURRENT.md#23-candy-faction-rules).
+The UI step (`pulp_wars-jdb.6`) has since replaced the stand-in
+presentation of the last item below.
 
 - **Modules.** `src/engine/v7/candy.ts` holds the predicates and derived
   facts, which take the roster (a state or a view) and plain unit facts:
@@ -695,24 +698,30 @@ the Monster, a unit whose `ownerId` is the reserved neutral owner
   `rushed`, `crashed`, `splatted`, and `tossedThisTurn` flags (present only
   in a match with a Candy seat) and `candy` block, and the `SUGAR_RUSH`
   source of the Attack row.
-- **Presentation until the UI step.** `src/render/dom/app-view-v7.ts` offers
+- **Presentation.** `src/render/dom/app-view-v7.ts` offers
   the Candy in the setup select (cotton-candy pink `#ffb8d8` in
   `FACTION_COLOURS_V7`) and draws its units, portraits, cities, and ships
   with the `pulp_wars-jdb.5` art (`unitArtSubjectV7`, `portraitSubjectV7`,
   `cityArtSubjectV7`, and the generic naval wiring; both Candy manifests
   are in the live direction registry, and a raster that fails falls back
-  to the Human art with no Candy badge yet).
-  The dock shows the three commands as plain buttons
-  labelled by `candyCommandLabelV7` ("Sugar Rush", "Re-bake …: n Coins,
-  n HP", "Toss to …: +n"), names the Confectioner's Tend Wounded
-  "Frosting", and gives the three Candy unlock kinds short tree text. The
-  Rush reach, the Rushed, Crashed, and Splatted markers, Crumbs on the
-  board, the Splat, Bounce, and eating lines of the previews, the event log
-  text, Help, the Candy icons, Crumbs marker, and effect sprites (registered,
-  not drawn), and the browser smoke
-  probe belong to `pulp_wars-jdb.6`; until then the new events play back
-  like any other accepted boundary. The Gallery shows the Candy column with
-  that art.
+  to the Human art with no Candy badge). The engine bead showed the three
+  commands as plain dock buttons. The UI bead (`pulp_wars-jdb.6`) added the
+  Candy interface: `src/render/candy-presentation-v7.ts` (the labels,
+  chips, unavailable reasons, preview lines, Help sentences, technology
+  text, and log lines; it reads the view with the engine's shared
+  predicates and decides no legality),
+  `src/render/canvas/candy-board-plan-v7.ts` (the Rushed, Crashed,
+  Splatted, and Home Sweet Home markers, the Crumbs tokens, the Sugar Rush,
+  Re-bake, and Sugar Toss aiming, and the attack lines),
+  `candy-canvas-v7.ts` (the marker drawing), and `candy-effects-v7.ts` (the
+  cues, including the end of a Crash, which has no event and is read from
+  the two views of the boundary). `npm run review:ruleset7-candy-ui`
+  captures them on the fixtures of `tests/fixtures/v7-candy-ui.ts`, and the
+  browser smoke has a Candy step (`scripts/browser-smoke-v7-candy.ts`). The
+  faction emblem is registered and not drawn, and the Classic and LEGACY
+  looks draw Candy units as Human sprites with no badge
+  (`pulp_wars-jdb.9`). The Gallery shows the Candy column with the art and
+  plays Sugar Rush, Re-bake, and Sugar Toss on its demo board.
 
 ## 0. Ruleset-6 replacement boundary
 
