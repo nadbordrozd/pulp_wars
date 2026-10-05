@@ -1550,6 +1550,50 @@ repeated in the interface.
   up to 8 players, each a different faction." (the number is the faction
   count).
 
+## Current Ruleset 7 title scene and menu
+
+This overlay (`pulp_wars-2yc.4`, `pulp_wars-2yc.9`) restyles the front
+screens of the current Ruleset 7 route (setup, campaign, Continue, save
+recovery). No control was removed or moved in the reading order.
+
+- **Title and menu are one screen.** The logo stands over the title scene
+  and the menu is beside it (a wide screen: the scene fills the left side,
+  fixed, and the menu is a column on the right) or under it (a tablet or a
+  phone: the scene is a band across the top). Play, Continue (the Resume
+  screen, when a save exists), the Skirmish / Campaign switch, Gallery and
+  Settings are all on it; nothing has to be clicked through first.
+- **Title scene.** A diorama drawn on a canvas from the game's art by the
+  board's own art chain, behind the logo: a sky with drifting clouds, the
+  mountain range (the massif pieces), woods (the composed Forest pieces), a
+  Human city, Grass, a coast with a Battleship, and two ranks of units, the
+  flagship (Juggernaut) and the Fighter of the factions, read from the
+  faction list. It re-flows with its size instead of scaling: a wide scene
+  shows all eight factions in both ranks and two columns of sea, a phone
+  three flagships, six Fighters and one column; a short band draws its
+  rows closer together. Art is drawn at a whole number of screen pixels
+  per art pixel (1 to 3). With full motion the clouds drift and each unit
+  bobs by one art pixel, ten frames a second; with reduced motion (the
+  setting, which starts from the system preference) it is a still picture.
+  It is hidden from assistive technology, takes no input and makes no
+  sound; it stops while a match or the Gallery is shown. The LEGACY art
+  set (`?art=legacy`) keeps the plain logo.
+- **Menu.** The setup form is one card with three groups in the old
+  order: **Players** (Opponents, Mode), **Map** (Size, Map, the village
+  and Crowded line, the map's sentence, Curiosities, New map / Use seed)
+  and **Factions**, where each seat is a card in its faction's colour with
+  a large emblem. **Play** is the one primary button, full width. Under
+  it, side by side, **Gallery** and **Settings**, then the Classic rules
+  link.
+- **Settings on the front screens.** The Settings button opens a panel
+  under it (and closes it again) with Motion, Animation speed, UI size,
+  High contrast and the sound toggle and volume, the same controls as a
+  match's Settings; the front screens follow UI size and contrast too.
+  The match-only actions (Restart, Delete save, the map seed, developer
+  tools) stay in a match's Settings.
+- **Continue.** The Resume screen shows the same scene, the summary in a
+  card, Resume as the primary button, New game and Delete, then Gallery and
+  Settings.
+
 ## Current Ruleset 7 Gallery
 
 This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset

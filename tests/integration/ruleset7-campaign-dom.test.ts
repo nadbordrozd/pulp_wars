@@ -172,6 +172,8 @@ describe("Ruleset 7 campaign front screen", () => {
       "summary",
       // The Gallery entry (pulp_wars-ic8) stays on the campaign screen.
       "gallery",
+      // The front-screen Settings entry (pulp_wars-2yc.9) follows it.
+      "front-settings",
       "a",
     ]);
     app.destroy();
@@ -219,6 +221,7 @@ describe("Ruleset 7 campaign front screen", () => {
       "campaign-start",
       "campaign-back",
       "gallery",
+      "front-settings",
       null,
     ]);
     requiredButton('[data-action="campaign-back"]').click();

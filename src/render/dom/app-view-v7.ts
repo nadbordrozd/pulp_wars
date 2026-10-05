@@ -169,6 +169,7 @@ import {
   technologyArtworkLayoutV7,
 } from "./selection-identity-v7";
 import { uiIconV7, type UiIconIdV7 } from "./ui-icons-v7";
+import { TitleSceneViewV7 } from "./title-scene-view-v7";
 import {
   cityArtSubjectV7,
   territoryGroundV7,
@@ -992,6 +993,14 @@ export class Ruleset7DomAppView {
   #matchRoot: HTMLElement | null = null;
   #boardContainer: HTMLElement | null = null;
   #destroyed = false;
+  /**
+   * The title scene behind the logo of every front screen (bead
+   * pulp_wars-2yc.4), built with the first front screen of the CHIBI set
+   * and kept across their redraws.
+   */
+  #titleScene: TitleSceneViewV7 | null = null;
+  /** The front screen's Settings panel is open (bead pulp_wars-2yc.9). */
+  #frontSettingsOpen = false;
   /** The Gallery screen (bead pulp_wars-ic8), built when first opened. */
   #gallery: GalleryViewV7 | null = null;
   #galleryOpen = false;
@@ -1113,6 +1122,7 @@ export class Ruleset7DomAppView {
     this.#unsubscribeAcceptedBoundary = null;
     this.#cancelPresentations();
     this.#gallery?.destroy();
+    this.#titleScene?.destroy();
     this.#boardHost.destroy();
     this.#root.replaceChildren();
   }
@@ -1392,6 +1402,8 @@ export class Ruleset7DomAppView {
         this.#snapshot.phase === "COMPLETE" ||
         this.#snapshot.phase === "ERROR")
     ) {
+      this.#titleScene?.stop();
+      this.#frontSettingsOpen = false;
       this.#renderStableMatch(this.#snapshot.view);
       return;
     }
@@ -1400,11 +1412,15 @@ export class Ruleset7DomAppView {
     this.#matchRoot = null;
     this.#boardContainer = null;
     if (this.#galleryOpen) {
+      this.#titleScene?.stop();
       this.#renderGallery();
       return;
     }
-    const shell = el(this.#document, "div", "v7-app-shell");
+    const shell = el(this.#document, "div", "v7-app-shell v7-front-shell");
     shell.dataset.phase = this.#snapshot.phase.toLowerCase();
+    // The front screens follow the display settings too.
+    shell.dataset.contrast = this.#highContrast ? "high" : "standard";
+    shell.style.setProperty("--ui-scale", String(this.#uiScale));
     shell.append(
       live(this.#document, "v7-live", this.#notice, "polite"),
       live(this.#document, "v7-alert", this.#error, "assertive"),
@@ -1435,7 +1451,20 @@ export class Ruleset7DomAppView {
             ? null
             : `[data-action="${active.dataset.action}"]`
         : null;
+    // The titled layout (the scene beside or above the menu) is a class,
+    // not a `:has()` rule, which every later style recalculation would pay.
+    for (const screen of shell.querySelectorAll(".v7-front-screen"))
+      screen.classList.toggle(
+        "v7-titled",
+        screen.querySelector(":scope > .v7-title") !== null,
+      );
     this.#root.replaceChildren(shell);
+    const scene = this.#titleScene;
+    if (scene !== null) {
+      scene.setMotion(this.#motion);
+      if (shell.contains(scene.root)) scene.start();
+      else scene.stop();
+    }
     const focus = this.#frontFocus ?? kept;
     this.#frontFocus = null;
     if (focus !== null)
@@ -1505,7 +1534,7 @@ export class Ruleset7DomAppView {
     else if (this.#briefingMissionId !== null)
       main.append(this.#briefing(this.#briefingMissionId, progress, replace));
     else main.append(this.#campaignList(progress));
-    main.append(this.#galleryEntry(), this.#ruleset6Link());
+    main.append(this.#frontEntries(), this.#ruleset6Link());
     return main;
   }
 
@@ -1879,8 +1908,54 @@ export class Ruleset7DomAppView {
 
   #brand(): HTMLElement {
     const header = el(this.#document, "header", "v7-brand");
+    // The scene is the live CHIBI look's art, which the CHIBI set preloads.
+    if (this.#artSet === "CHIBI" && this.#chibiDomEnvironment !== null) {
+      this.#titleScene ??= new TitleSceneViewV7(this.#document, {
+        environment: this.#chibiDomEnvironment,
+        motion: this.#motion,
+      });
+      header.classList.add("v7-title");
+      header.append(this.#titleScene.root);
+    }
     header.append(text(this.#document, "h1", "Pulp Wars"));
     return header;
+  }
+
+  /**
+   * The entries under a front screen's main action (bead pulp_wars-2yc.9):
+   * Gallery and Settings side by side, and the Settings panel when open.
+   */
+  #frontEntries(): HTMLElement {
+    const section = el(this.#document, "div", "v7-front-entries");
+    const row = el(this.#document, "div", "v7-front-entry-row");
+    const settings = button(
+      this.#document,
+      "",
+      "front-settings",
+      "secondary-action v7-front-settings-entry",
+    );
+    settings.append(uiIconV7(this.#document, "gear"), "Settings");
+    settings.setAttribute("aria-expanded", String(this.#frontSettingsOpen));
+    settings.setAttribute("aria-controls", "v7-front-settings");
+    settings.onclick = () => {
+      this.#frontSettingsOpen = !this.#frontSettingsOpen;
+      this.#frontFocus = '[data-action="front-settings"]';
+      this.#render();
+      // The panel opens under the button: bring it into view.
+      this.#root
+        .querySelector<HTMLElement>("#v7-front-settings")
+        ?.scrollIntoView?.({ block: "nearest" });
+    };
+    row.append(this.#galleryEntry(), settings);
+    section.append(row);
+    if (this.#frontSettingsOpen) {
+      const panel = el(this.#document, "section", "v7-front-settings");
+      panel.id = "v7-front-settings";
+      panel.setAttribute("aria-label", "Settings");
+      panel.append(this.#displaySettings());
+      section.append(panel);
+    }
+    return section;
   }
 
   #setup(replace: boolean): HTMLElement {
@@ -1889,6 +1964,7 @@ export class Ruleset7DomAppView {
     main.append(this.#brand(), this.#modeSwitch());
     const form = el(this.#document, "form", "v7-setup-form");
     form.append(
+      setupHeading(this.#document, "units", "Players"),
       select(
         this.#document,
         "Opponents",
@@ -1904,6 +1980,7 @@ export class Ruleset7DomAppView {
         this.#draft.aiMode,
         AI_MODE_LABELS,
       ),
+      setupHeading(this.#document, "sight", "Map"),
       select(
         this.#document,
         "Size",
@@ -1983,7 +2060,7 @@ export class Ruleset7DomAppView {
       }
       void this.#launch(setup, replace);
     });
-    main.append(form, this.#galleryEntry(), this.#ruleset6Link());
+    main.append(form, this.#frontEntries(), this.#ruleset6Link());
     return main;
   }
 
@@ -2245,7 +2322,7 @@ export class Ruleset7DomAppView {
     );
     remove.onclick = () => void this.#deleteSave();
     actions.append(resume, replace, remove);
-    main.append(actions, this.#galleryEntry(), this.#ruleset6Link());
+    main.append(actions, this.#frontEntries(), this.#ruleset6Link());
     return main;
   }
 
@@ -6051,9 +6128,11 @@ export class Ruleset7DomAppView {
     return item;
   }
 
-  #settings(): HTMLElement {
-    const section = el(this.#document, "div", "v7-info-screen v7-settings");
-    section.append(text(this.#document, "h2", "Settings"));
+  /**
+   * Motion, animation speed, UI size, contrast and sound: the settings a
+   * match and the front screens share.
+   */
+  #displaySettings(): HTMLElement {
     const display = el(this.#document, "div", "v7-settings-grid");
     const motion = select(
       this.#document,
@@ -6122,6 +6201,13 @@ export class Ruleset7DomAppView {
       },
     });
     display.append(motion, speed, scale, contrast, sound);
+    return display;
+  }
+
+  #settings(): HTMLElement {
+    const section = el(this.#document, "div", "v7-info-screen v7-settings");
+    section.append(text(this.#document, "h2", "Settings"));
+    const display = this.#displaySettings();
     // Every sound with a play button, to audition them.
     const soundTest = this.#document.createElement("details");
     soundTest.className = "v7-developer-tools v7-sound-test-disclosure";
@@ -9850,6 +9936,16 @@ function art(
   image.alt = alt;
   image.dataset.assetId = assetId;
   return image;
+}
+/** A group heading of the setup form: an icon and one word. */
+function setupHeading(
+  documentRoot: Document,
+  icon: UiIconIdV7,
+  label: string,
+): HTMLElement {
+  const heading = el(documentRoot, "h2", "v7-setup-heading");
+  heading.append(uiIconV7(documentRoot, icon), label);
+  return heading;
 }
 /** The size a launch uses; the draft keeps the player's own choice. */
 function effectiveBoardSize(draft: DraftV7): DraftV7["boardSize"] {

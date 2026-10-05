@@ -705,6 +705,13 @@ async function captureMountedUiEvidence(
     connection,
     `document.querySelector('.v7-unit-help-dialog[aria-modal="true"]') === null`,
   );
+  // The embark's presentation may still be playing: the board takes a
+  // target only once it has ended, which is when End Turn is offered
+  // again (the wait used before the transport was selected).
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-action="end-turn"]') instanceof HTMLButtonElement && !document.querySelector('[data-action="end-turn"]').disabled`,
+  );
   await evaluate(
     connection,
     `globalThis.__NAVAL_DOM__.boardHost.activate(${JSON.stringify(landingAt)})`,
