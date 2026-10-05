@@ -598,6 +598,7 @@ describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
     expect(tabs.map((tab) => tab.textContent)).toEqual([
       "Units",
       "Buildings",
+      "Terrain",
       "Curiosities",
     ]);
     required<HTMLButtonElement>(
@@ -660,5 +661,169 @@ describe("Ruleset 7 Gallery: Curiosities (pulp_wars-737.6)", () => {
         window.localStorage.getItem(GALLERY_FILTERS_STORAGE_KEY_V7) ?? "{}",
       ).tab,
     ).toBe("CURIOSITIES");
+  });
+});
+
+describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
+  function openTerrain(): HTMLElement[] {
+    mount();
+    openGallery();
+    required<HTMLButtonElement>('[data-action="gallery-tab-terrain"]').click();
+    return [
+      ...document.querySelectorAll<HTMLElement>(".v7-gallery-table tbody tr"),
+    ];
+  }
+
+  it("lists the terrain with a column per faction where a faction has its own", () => {
+    const rows = openTerrain();
+    expect(required(".v7-gallery-table").getAttribute("aria-label")).toBe(
+      "Terrain",
+    );
+    expect(rows.map((row) => row.dataset.row)).toEqual([
+      "GRASS",
+      "FOREST",
+      "MOUNTAIN",
+      "WATER",
+      "ICE",
+      "RIFT",
+    ]);
+    expect(
+      [...document.querySelectorAll(".v7-gallery-row-head")].map(
+        (head) => head.textContent,
+      ),
+    ).toEqual(["Grass", "Forest", "Mountain", "Water", "Sea Ice", "Rift"]);
+    // Grass: every faction's own ground; the Ice Folk have Snow.
+    expect(rows[0]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(8);
+    expect(cell("GRASS", "ICE_FOLK").getAttribute("aria-label")).toBe(
+      "Snow, Ice Folk",
+    );
+    expect(cell("GRASS", "GOBLIN").querySelector("canvas")).not.toBeNull();
+    // Forest: the Humans' and the Undead's; the others say "same" plainly.
+    expect(
+      [...(rows[1]?.querySelectorAll<HTMLElement>("td") ?? [])].map(
+        (td) =>
+          td.querySelector<HTMLElement>(".v7-gallery-cell")?.dataset.faction ??
+          td.getAttribute("aria-label"),
+      ),
+    ).toEqual([
+      "ORIGINAL",
+      "UNDEAD",
+      "Same as default",
+      "Same as default",
+      "Same as default",
+      "Same as default",
+      "Same as default",
+      "Same as default",
+    ]);
+    expect(rows[1]?.querySelector("td.is-same")?.textContent).toBe("=");
+    // Shared terrain is one cell across the row.
+    for (const index of [2, 3, 5]) {
+      const cells =
+        rows[index]?.querySelectorAll<HTMLElement>(".v7-gallery-cell");
+      expect(cells).toHaveLength(1);
+      expect(cells?.[0]?.closest("td")?.getAttribute("colspan")).toBe("8");
+      expect(cells?.[0]?.dataset.faction).toBe("ALL");
+    }
+    expect(cell("WATER", "ALL").getAttribute("aria-label")).toBe(
+      "Water, every faction",
+    );
+    // Sea ice: the Ice Folk's alone.
+    expect(rows[4]?.querySelectorAll(".v7-gallery-cell")).toHaveLength(1);
+    expect(rows[4]?.querySelectorAll('td[aria-label="None"]')).toHaveLength(7);
+    expect(cell("ICE", "ICE_FOLK")).not.toBeNull();
+    // No coordinates anywhere.
+    expect(required("[data-v7-gallery]").textContent).not.toMatch(
+      /\d+\s*,\s*\d+/,
+    );
+  });
+
+  it("filters terrain rows and factions with the same chips, remembered", () => {
+    openTerrain();
+    expect(
+      [
+        ...document.querySelectorAll<HTMLElement>(
+          '[data-filter="rows"] .v7-gallery-chip',
+        ),
+      ].map((chip) => chip.dataset.value),
+    ).toEqual(["GRASS", "FOREST", "MOUNTAIN", "WATER", "ICE", "RIFT"]);
+    required<HTMLButtonElement>('[data-action="gallery-rows-none"]').click();
+    required<HTMLButtonElement>(
+      '[data-filter="rows"] .v7-gallery-chip[data-value="GRASS"]',
+    ).click();
+    required<HTMLButtonElement>(
+      '[data-filter="factions"] .v7-gallery-chip[data-value="GOBLIN"]',
+    ).click();
+    const cells = [
+      ...document.querySelectorAll<HTMLElement>(".v7-gallery-cell"),
+    ];
+    expect(cells.map((node) => node.dataset.row)).toEqual(
+      Array.from({ length: 7 }, () => "GRASS"),
+    );
+    expect(cells.some((node) => node.dataset.faction === "GOBLIN")).toBe(false);
+    const stored = JSON.parse(
+      window.localStorage.getItem(GALLERY_FILTERS_STORAGE_KEY_V7) ?? "{}",
+    );
+    expect(stored.tab).toBe("TERRAIN");
+    expect(stored.terrainRows).toEqual(["GRASS"]);
+    // The unit rows keep their own selection.
+    expect(stored.unitRows.length).toBeGreaterThan(1);
+  });
+
+  it("opens a sample board drawn by the board host, with every piece, and steps between cells", () => {
+    openTerrain();
+    cell("FOREST", "ORIGINAL").click();
+    const detail = required(".v7-gallery-detail");
+    expect(detail.dataset.tab).toBe("terrain");
+    expect(required("#v7-gallery-detail-title").textContent).toBe("Forest");
+    expect(required(".v7-gallery-detail-faction").textContent).toBe("Human");
+    // The sample: one board host, shown a real view of the patch.
+    expect(hosts).toHaveLength(1);
+    expect(hosts[0]?.mounted).toBe(true);
+    const model = hosts[0]?.updates.at(-1);
+    expect(model?.interactive).toBe(false);
+    expect(model?.artSet).toBe("CHIBI");
+    expect(model?.view.viewer.faction).toBe("ORIGINAL");
+    expect(
+      model?.view.board.tiles.filter(
+        (tile) => tile.explored && tile.terrain === "FOREST",
+      ).length,
+    ).toBeGreaterThan(8);
+    expect(
+      required(".v7-gallery-terrain-board canvas").getAttribute("aria-hidden"),
+    ).toBe("true");
+    // Every piece of the manifest, each its own swatch.
+    const pieces = detail.querySelectorAll(".v7-gallery-piece canvas");
+    expect(pieces.length).toBeGreaterThan(10);
+    // Along the row: only factions with a forest of their own.
+    required<HTMLButtonElement>('[data-action="gallery-next-faction"]').click();
+    expect(required(".v7-gallery-detail-faction").textContent).toBe("Undead");
+    expect(hosts).toHaveLength(2);
+    expect(hosts[0]?.destroyed).toBe(true);
+    expect(hosts[1]?.updates.at(-1)?.view.viewer.faction).toBe("UNDEAD");
+    expect(
+      required<HTMLButtonElement>('[data-action="gallery-next-faction"]')
+        .disabled,
+    ).toBe(true);
+    // Down the column: shared terrain has no faction; back up keeps one.
+    const next = required<HTMLButtonElement>(
+      '[data-action="gallery-next-row"]',
+    );
+    expect(next.getAttribute("aria-label")).toBe("Next terrain: Mountain");
+    next.click();
+    expect(required("#v7-gallery-detail-title").textContent).toBe("Mountain");
+    expect(required(".v7-gallery-detail-kicker").textContent).toBe(
+      "Every faction",
+    );
+    expect(document.querySelector(".v7-gallery-detail-faction")).toBeNull();
+    required<HTMLButtonElement>('[data-action="gallery-next-row"]').click();
+    required<HTMLButtonElement>('[data-action="gallery-next-row"]').click();
+    expect(required("#v7-gallery-detail-title").textContent).toBe("Sea Ice");
+    expect(required(".v7-gallery-detail-faction").textContent).toBe("Ice Folk");
+    expect(hosts.at(-1)?.updates.at(-1)?.view.ice.length).toBeGreaterThan(0);
+    // Closing stops the board and returns to the cell.
+    key(required(".v7-gallery-detail"), "Escape");
+    expect(document.querySelector(".v7-gallery-detail")).toBeNull();
+    expect(hosts.every((host) => host.destroyed)).toBe(true);
+    expect(document.activeElement).toBe(cell("ICE", "ICE_FOLK"));
   });
 });

@@ -50,6 +50,10 @@ import {
   SPIDER_BOUNTY_RULE_V7,
   SPIDER_LABEL_V7,
 } from "./curiosity-presentation-v7";
+import {
+  GALLERY_TERRAIN_ROWS_V7,
+  type GalleryTerrainRowIdV7,
+} from "./gallery-terrain-presentation-v7";
 
 /**
  * The Gallery (bead pulp_wars-ic8, docs/ui/SCREEN_FLOW.md "Gallery"): every
@@ -67,7 +71,7 @@ export const GALLERY_FACTIONS_V7: readonly FactionIdV7[] = FACTION_IDS_V7;
  * no faction: the Giant Spider, its lair, the Fountain of Youth, the Shrine
  * and the Sunken Wreck.
  */
-export type GalleryTabV7 = "UNITS" | "BUILDINGS" | "CURIOSITIES";
+export type GalleryTabV7 = "UNITS" | "BUILDINGS" | "TERRAIN" | "CURIOSITIES";
 
 /** A Curiosities cell: the neutral Giant Spider or a tile overlay. */
 export type GalleryCuriosityRowIdV7 = "SPIDER" | CuriosityOverlayIdV7;
@@ -609,6 +613,8 @@ export interface GalleryFiltersV7 {
   readonly factions: readonly FactionIdV7[];
   readonly unitRows: readonly GalleryUnitRowIdV7[];
   readonly buildingRows: readonly GalleryBuildingRowIdV7[];
+  /** The Terrain tab's rows (bead pulp_wars-2yc.3). */
+  readonly terrainRows: readonly GalleryTerrainRowIdV7[];
 }
 
 export const GALLERY_FILTERS_STORAGE_KEY_V7 = "pulpWars.ruleset7.gallery.v1";
@@ -618,6 +624,7 @@ export const DEFAULT_GALLERY_FILTERS_V7: GalleryFiltersV7 = {
   factions: GALLERY_FACTIONS_V7,
   unitRows: GALLERY_UNIT_ROWS_V7,
   buildingRows: GALLERY_BUILDING_ROWS_V7,
+  terrainRows: GALLERY_TERRAIN_ROWS_V7,
 };
 
 /** Keeps the known values of a stored list, in the canonical order. */
@@ -650,7 +657,9 @@ export function parseGalleryFiltersV7(
   const record = parsed as Record<string, unknown>;
   return {
     tab:
-      record.tab === "BUILDINGS" || record.tab === "CURIOSITIES"
+      record.tab === "BUILDINGS" ||
+      record.tab === "TERRAIN" ||
+      record.tab === "CURIOSITIES"
         ? record.tab
         : "UNITS",
     factions:
@@ -662,6 +671,10 @@ export function parseGalleryFiltersV7(
     buildingRows:
       knownList(record.buildingRows, GALLERY_BUILDING_ROWS_V7) ??
       DEFAULT_GALLERY_FILTERS_V7.buildingRows,
+    // Filters stored before the Terrain tab existed show every terrain.
+    terrainRows:
+      knownList(record.terrainRows, GALLERY_TERRAIN_ROWS_V7) ??
+      DEFAULT_GALLERY_FILTERS_V7.terrainRows,
   };
 }
 
@@ -671,6 +684,7 @@ export function serializeGalleryFiltersV7(filters: GalleryFiltersV7): string {
     factions: filters.factions,
     unitRows: filters.unitRows,
     buildingRows: filters.buildingRows,
+    terrainRows: filters.terrainRows,
   });
 }
 

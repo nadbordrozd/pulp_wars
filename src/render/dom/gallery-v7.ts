@@ -70,6 +70,23 @@ import {
   type GalleryDemoCueV7,
   type GalleryDemoSceneV7,
 } from "../gallery-demo-v7";
+import {
+  GALLERY_TERRAIN_NONE_TEXT_V7,
+  GALLERY_TERRAIN_ROWS_V7,
+  GALLERY_TERRAIN_SAME_TEXT_V7,
+  galleryTerrainCellV7,
+  galleryTerrainDetailsV7,
+  galleryTerrainPerFactionV7,
+  galleryTerrainRowLabelV7,
+  type GalleryTerrainRowIdV7,
+  type GalleryTerrainSwatchV7,
+} from "../gallery-terrain-presentation-v7";
+import { buildGalleryTerrainSampleV7 } from "../gallery-terrain-sample-v7";
+import {
+  createGalleryTerrainArtV7,
+  galleryTerrainBoxV7,
+  type GalleryTerrainArtV7,
+} from "../canvas/gallery-terrain-v7";
 import { roleAbilityNameV7 } from "../role-presentation-v7";
 import { factionNameV7 } from "../undead-presentation-v7";
 
@@ -114,6 +131,13 @@ type GalleryDetailV7 =
       readonly faction: FactionIdV7 | null;
     }
   | {
+      /** Terrain (bead pulp_wars-2yc.3). */
+      readonly tab: "TERRAIN";
+      readonly row: GalleryTerrainRowIdV7;
+      /** Null for terrain every faction shares. */
+      readonly faction: FactionIdV7 | null;
+    }
+  | {
       /** Map curiosities (bead pulp_wars-737.6): they belong to nobody. */
       readonly tab: "CURIOSITIES";
       readonly row: GalleryCuriosityRowIdV7;
@@ -123,9 +147,57 @@ type GalleryDetailV7 =
 const TAB_LABELS: Readonly<Record<GalleryTabV7, string>> = {
   UNITS: "Units",
   BUILDINGS: "Buildings",
+  TERRAIN: "Terrain",
   CURIOSITIES: "Curiosities",
 };
-const TABS: readonly GalleryTabV7[] = ["UNITS", "BUILDINGS", "CURIOSITIES"];
+const TABS: readonly GalleryTabV7[] = [
+  "UNITS",
+  "BUILDINGS",
+  "TERRAIN",
+  "CURIOSITIES",
+];
+
+/** The name of a detail's row, whatever its tab. */
+function detailRowLabel(detail: GalleryDetailV7): string {
+  return detail.tab === "TERRAIN"
+    ? galleryTerrainRowLabelV7(detail.row)
+    : galleryRowLabelV7(detail.row);
+}
+
+/** What a tab's rows are called in the detail's stepping buttons. */
+const ROW_NOUNS: Readonly<Record<GalleryTabV7, string>> = {
+  UNITS: "unit",
+  BUILDINGS: "building",
+  TERRAIN: "terrain",
+  CURIOSITIES: "curiosity",
+};
+
+/** The board model of a Gallery board: a picture, never interactive. */
+function previewModel(
+  key: string,
+  view: PlayerViewV7,
+  commands: GalleryDemoSceneV7["offeredCommands"],
+  motion: "FULL" | "REDUCED",
+): Parameters<BoardHostV7["update"]>[0] {
+  return {
+    matchInstanceId: key,
+    view,
+    offeredCommands: commands,
+    interaction: {
+      selection: null,
+      selectedUnitId: null,
+      selectedAchievement: null,
+    },
+    interactive: false,
+    showCursor: false,
+    motion,
+    animationSpeed: "NORMAL",
+    presentationPaused: false,
+    highContrast: false,
+    artSet: "CHIBI",
+    ...liveBoardLookV7("CHIBI"),
+  };
+}
 
 type DemoStateV7 = "idle" | "playing" | "done";
 
@@ -261,6 +333,13 @@ export class GalleryViewV7 {
     readonly box: ChibiDomBoxV7;
     readonly ownerColor: string | undefined;
   }[] = [];
+  readonly #terrainArt: GalleryTerrainArtV7;
+  #swatches: {
+    readonly canvas: HTMLCanvasElement;
+    readonly swatch: GalleryTerrainSwatchV7;
+  }[] = [];
+  /** The sample board of an open Terrain detail. */
+  #sample: BoardHostV7 | null = null;
   #redrawQueued = false;
   #demo: GalleryDemoV7 | null = null;
   readonly #scenes = new Map<string, GalleryDemoSceneV7 | null>();
@@ -289,11 +368,17 @@ export class GalleryViewV7 {
       stored = null;
     }
     this.#filters = parseGalleryFiltersV7(stored);
-    this.#art = createGalleryArtV7(
+    const rasterEnvironment =
       options.rasterEnvironment ??
-        browserChibiRasterEnvironmentV7(documentRoot),
-      () => this.#queueRedraw(),
+      browserChibiRasterEnvironmentV7(documentRoot);
+    this.#art = createGalleryArtV7(rasterEnvironment, () =>
+      this.#queueRedraw(),
     );
+    this.#terrainArt = createGalleryTerrainArtV7({
+      environment: rasterEnvironment,
+      art: this.#art,
+      redraw: () => this.#queueRedraw(),
+    });
     this.#domArt = createChibiDomArtV7({
       environment:
         options.domEnvironment ?? browserChibiDomEnvironmentV7(documentRoot),
@@ -343,7 +428,9 @@ export class GalleryViewV7 {
       ? this.#filters.unitRows
       : this.#filters.tab === "BUILDINGS"
         ? this.#filters.buildingRows
-        : GALLERY_CURIOSITY_ROWS_V7;
+        : this.#filters.tab === "TERRAIN"
+          ? this.#filters.terrainRows
+          : GALLERY_CURIOSITY_ROWS_V7;
   }
 
   // ---------------------------------------------------------------- render
@@ -360,6 +447,9 @@ export class GalleryViewV7 {
     );
     this.#artSlots = this.#artSlots.filter(
       (slot) => this.#dialog?.contains(slot.slot) === true,
+    );
+    this.#swatches = this.#swatches.filter(
+      (entry) => this.#dialog?.contains(entry.canvas) === true,
     );
     const content = el(this.#document, "div", "v7-gallery-content");
     const soundPanel = this.#soundsOpen ? this.#options.soundPanel : undefined;
@@ -573,6 +663,19 @@ export class GalleryViewV7 {
             }),
         ),
       );
+    else if (this.#filters.tab === "TERRAIN")
+      details.append(
+        this.#chipGroup(
+          "Terrain",
+          "rows",
+          GALLERY_TERRAIN_ROWS_V7.map((row) => ({
+            value: row,
+            label: galleryTerrainRowLabelV7(row),
+          })),
+          this.#filters.terrainRows,
+          (next) => this.#setFilters({ ...this.#filters, terrainRows: next }),
+        ),
+      );
     else
       details.append(
         this.#chipGroup(
@@ -661,9 +764,10 @@ export class GalleryViewV7 {
       return scroll;
     }
     const units = this.#filters.tab === "UNITS";
+    const terrain = this.#filters.tab === "TERRAIN";
     const table = el(this.#document, "table", "v7-gallery-table");
     table.setAttribute("role", "grid");
-    table.setAttribute("aria-label", units ? "Units" : "Buildings");
+    table.setAttribute("aria-label", TAB_LABELS[this.#filters.tab]);
     table.setAttribute("aria-rowcount", String(rows.length + 1));
     table.setAttribute("aria-colcount", String(factions.length + 1));
     const head = this.#document.createElement("thead");
@@ -671,7 +775,12 @@ export class GalleryViewV7 {
     const corner = el(this.#document, "th", "v7-gallery-corner");
     corner.setAttribute("scope", "col");
     corner.append(
-      text(this.#document, "span", units ? "Unit" : "Building", "v7-sr-only"),
+      text(
+        this.#document,
+        "span",
+        units ? "Unit" : terrain ? "Terrain" : "Building",
+        "v7-sr-only",
+      ),
     );
     headRow.append(corner);
     for (const faction of factions) {
@@ -698,7 +807,9 @@ export class GalleryViewV7 {
       const th = text(
         this.#document,
         "th",
-        galleryRowLabelV7(row as GalleryUnitRowIdV7),
+        terrain
+          ? galleryTerrainRowLabelV7(row as GalleryTerrainRowIdV7)
+          : galleryRowLabelV7(row as GalleryUnitRowIdV7),
         "v7-gallery-row-head",
       );
       th.setAttribute("scope", "row");
@@ -708,7 +819,19 @@ export class GalleryViewV7 {
           const cell = galleryUnitCellV7(row as GalleryUnitRowIdV7, faction);
           tr.append(this.#unitCell(cell, rowIndex, column, keys));
         });
-      else {
+      else if (terrain) {
+        const kind = row as GalleryTerrainRowIdV7;
+        if (galleryTerrainPerFactionV7(kind))
+          factions.forEach((faction, column) =>
+            tr.append(
+              this.#terrainCell(kind, faction, rowIndex, column, 1, keys),
+            ),
+          );
+        else
+          tr.append(
+            this.#terrainCell(kind, null, rowIndex, 0, factions.length, keys),
+          );
+      } else {
         const building = row as GalleryBuildingRowIdV7;
         if (galleryBuildingPerFactionV7(building))
           factions.forEach((faction, column) =>
@@ -876,6 +999,86 @@ export class GalleryViewV7 {
     return td;
   }
 
+  /**
+   * A Terrain cell: the terrain as the faction draws it, a plain "same as
+   * default" mark, or "none". `faction` null is the shared cell.
+   */
+  #terrainCell(
+    row: GalleryTerrainRowIdV7,
+    faction: FactionIdV7 | null,
+    rowIndex: number,
+    column: number,
+    span: number,
+    keys: string[],
+  ): HTMLElement {
+    const td = el(this.#document, "td", "v7-gallery-cell-wrap");
+    td.setAttribute("role", "gridcell");
+    if (faction !== null) td.dataset.faction = faction;
+    if (span > 1) {
+      td.setAttribute("colspan", String(span));
+      td.classList.add("is-shared");
+    }
+    const cell = galleryTerrainCellV7(row, faction);
+    if (cell.kind !== "OWN") {
+      const same = cell.kind === "SAME";
+      const label = same
+        ? GALLERY_TERRAIN_SAME_TEXT_V7
+        : GALLERY_TERRAIN_NONE_TEXT_V7;
+      td.classList.add("is-empty");
+      if (same) td.classList.add("is-same");
+      td.dataset.terrainLook = cell.kind.toLowerCase();
+      td.title = label;
+      td.setAttribute("aria-label", label);
+      td.append(
+        text(this.#document, "span", same ? "=" : "—", "v7-gallery-none"),
+      );
+      return td;
+    }
+    const key = cellKey(row, faction);
+    keys.push(key);
+    const node = button(
+      this.#document,
+      "",
+      "gallery-open-terrain",
+      "v7-gallery-cell",
+    );
+    node.dataset.focusKey = key;
+    node.dataset.row = row;
+    node.dataset.faction = faction ?? "ALL";
+    node.dataset.gridRow = String(rowIndex);
+    node.dataset.gridColumn = String(column);
+    node.dataset.gridSpan = String(span);
+    if (faction !== null)
+      node.style.setProperty("--faction", factionColourV7(faction));
+    node.setAttribute(
+      "aria-label",
+      faction === null
+        ? `${cell.name}, every faction`
+        : `${cell.name}, ${factionNameV7(faction)}`,
+    );
+    node.append(
+      this.#swatch(cell.swatch),
+      text(this.#document, "span", cell.name, "v7-gallery-cell-name"),
+    );
+    node.onclick = () => this.#openDetail({ tab: "TERRAIN", row, faction });
+    td.append(node);
+    return td;
+  }
+
+  /** A terrain swatch canvas, drawn (and redrawn) with the tiles. */
+  #swatch(swatch: GalleryTerrainSwatchV7): HTMLCanvasElement {
+    const canvas = this.#document.createElement("canvas");
+    canvas.className = "v7-gallery-tile v7-gallery-swatch-tile";
+    canvas.setAttribute("aria-hidden", "true");
+    canvas.dataset.swatch = swatch.id;
+    const box = galleryTerrainBoxV7(swatch);
+    // Keep the box while rasters load.
+    canvas.style.width = `${box.width * TABLE_SCALE}px`;
+    canvas.style.height = `${box.height * TABLE_SCALE}px`;
+    this.#swatches.push({ canvas, swatch });
+    return canvas;
+  }
+
   #tile(request: GalleryTileRequestV7, cell: HTMLElement | null): HTMLElement {
     const canvas = this.#document.createElement("canvas");
     canvas.className = "v7-gallery-tile";
@@ -953,6 +1156,10 @@ export class GalleryViewV7 {
         if (badge !== null) badge.hidden = !standIn;
       }
     }
+    for (const entry of this.#swatches)
+      entry.canvas.dataset.state = this.#terrainArt
+        .draw(entry.canvas, entry.swatch, TABLE_SCALE, dpr)
+        .toLowerCase();
     for (const slot of this.#artSlots)
       this.#drawArtSlot(slot.slot, slot.subject, slot.box, slot.ownerColor);
   }
@@ -1045,6 +1252,8 @@ export class GalleryViewV7 {
   #closeDetail(returnFocus: boolean): void {
     this.#demo?.destroy();
     this.#demo = null;
+    this.#sample?.destroy();
+    this.#sample = null;
     const detail = this.#detail;
     this.#detail = null;
     this.#dialog?.remove();
@@ -1056,6 +1265,9 @@ export class GalleryViewV7 {
     );
     this.#artSlots = this.#artSlots.filter(
       (slot) => this.#content?.contains(slot.slot) === true,
+    );
+    this.#swatches = this.#swatches.filter(
+      (entry) => this.#content?.contains(entry.canvas) === true,
     );
     this.#content?.removeAttribute("inert");
     if (returnFocus && detail !== null) {
@@ -1089,6 +1301,11 @@ export class GalleryViewV7 {
           galleryUnitCellV7(detail.row, faction).kind === "EMPTY"
         )
           continue;
+        if (
+          detail.tab === "TERRAIN" &&
+          galleryTerrainCellV7(detail.row, faction).kind !== "OWN"
+        )
+          continue;
         return { ...detail, faction } as GalleryDetailV7;
       }
       return null;
@@ -1109,9 +1326,25 @@ export class GalleryViewV7 {
           ? visible
           : detail.tab === "UNITS"
             ? GALLERY_UNIT_ROWS_V7
-            : GALLERY_BUILDING_ROWS_V7;
+            : detail.tab === "TERRAIN"
+              ? GALLERY_TERRAIN_ROWS_V7
+              : GALLERY_BUILDING_ROWS_V7;
       const index = rows.indexOf(detail.row);
       for (let i = index + step; i >= 0 && i < rows.length; i += step) {
+        if (detail.tab === "TERRAIN") {
+          const row = rows[i] as GalleryTerrainRowIdV7;
+          if (!galleryTerrainPerFactionV7(row))
+            return { tab: "TERRAIN", row, faction: null };
+          // The same faction when it has this terrain in its own look,
+          // else the first shown faction that does.
+          const faction = [detail.faction, ...factions].find(
+            (candidate) =>
+              candidate !== null &&
+              galleryTerrainCellV7(row, candidate).kind === "OWN",
+          );
+          if (faction === undefined || faction === null) continue;
+          return { tab: "TERRAIN", row, faction };
+        }
         if (detail.tab === "UNITS") {
           const row = rows[i] as GalleryUnitRowIdV7;
           if (galleryUnitCellV7(row, detail.faction).kind === "EMPTY") continue;
@@ -1147,11 +1380,16 @@ export class GalleryViewV7 {
         : null;
     this.#demo?.destroy();
     this.#demo = null;
+    this.#sample?.destroy();
+    this.#sample = null;
     this.#tiles = this.#tiles.filter(
       (tile) => this.#content?.contains(tile.canvas) === true,
     );
     this.#artSlots = this.#artSlots.filter(
       (slot) => this.#content?.contains(slot.slot) === true,
+    );
+    this.#swatches = this.#swatches.filter(
+      (entry) => this.#content?.contains(entry.canvas) === true,
     );
     const faction = detail.faction;
     const colour = faction === null ? undefined : factionColourV7(faction);
@@ -1175,6 +1413,7 @@ export class GalleryViewV7 {
     dialog.append(close);
     if (detail.tab === "UNITS") this.#unitDetail(dialog, detail);
     else if (detail.tab === "BUILDINGS") this.#buildingDetail(dialog, detail);
+    else if (detail.tab === "TERRAIN") this.#terrainDetail(dialog, detail);
     else this.#curiosityDetail(dialog, detail);
     const scrim = el(this.#document, "div", "v7-scrim v7-gallery-scrim");
     scrim.dataset.dismissable = "true";
@@ -1188,6 +1427,7 @@ export class GalleryViewV7 {
     this.root.append(scrim, dialog);
     this.#redraw();
     if (detail.tab === "UNITS") this.#startDemo(dialog, detail);
+    if (detail.tab === "TERRAIN") this.#startSample(dialog, detail);
     if (focusAction !== null)
       (
         dialog.querySelector<HTMLElement>(
@@ -1202,13 +1442,17 @@ export class GalleryViewV7 {
       readonly name: string;
       readonly factionName: string | null;
       readonly kicker: string;
-      readonly tile: GalleryTileRequestV7;
+      readonly tile: GalleryTileRequestV7 | GalleryTerrainSwatchV7;
       readonly portrait: ArtSubjectV7 | null;
     },
   ): void {
     const header = el(this.#document, "header", "v7-gallery-detail-header");
     const stage = el(this.#document, "div", "v7-gallery-detail-stage");
-    stage.append(this.#tile(input.tile, null));
+    stage.append(
+      "layers" in input.tile
+        ? this.#swatch(input.tile)
+        : this.#tile(input.tile, null),
+    );
     const titles = el(this.#document, "div", "v7-gallery-detail-titles");
     if (input.factionName !== null) {
       const faction = el(this.#document, "p", "v7-gallery-detail-faction");
@@ -1255,7 +1499,7 @@ export class GalleryViewV7 {
           ? target.faction === null
             ? ""
             : factionNameV7(target.faction)
-          : galleryRowLabelV7(target.row);
+          : detailRowLabel(target);
     for (const [action, label, target, direction, kind] of [
       [
         "gallery-previous-faction",
@@ -1273,22 +1517,14 @@ export class GalleryViewV7 {
       ],
       [
         "gallery-previous-row",
-        detail.tab === "UNITS"
-          ? "Previous unit"
-          : detail.tab === "BUILDINGS"
-            ? "Previous building"
-            : "Previous curiosity",
+        `Previous ${ROW_NOUNS[detail.tab]}`,
         neighbours.previousRow,
         "UP",
         "ROW",
       ],
       [
         "gallery-next-row",
-        detail.tab === "UNITS"
-          ? "Next unit"
-          : detail.tab === "BUILDINGS"
-            ? "Next building"
-            : "Next curiosity",
+        `Next ${ROW_NOUNS[detail.tab]}`,
         neighbours.nextRow,
         "DOWN",
         "ROW",
@@ -1438,6 +1674,78 @@ export class GalleryViewV7 {
       );
     body.append(facts);
     dialog.append(body);
+  }
+
+  /**
+   * A terrain: the sample board the real board host draws (the terrain
+   * round a capital, a Fighter for scale) and every piece of its art.
+   */
+  #terrainDetail(
+    dialog: HTMLElement,
+    detail: Extract<GalleryDetailV7, { readonly tab: "TERRAIN" }>,
+  ): void {
+    const details = galleryTerrainDetailsV7(detail.row, detail.faction);
+    const first = details.pieces[0];
+    this.#detailHeader(dialog, {
+      name: details.name,
+      factionName: details.factionName,
+      kicker: details.kicker,
+      tile: first ?? { id: detail.row, box: { kind: "TILE" }, layers: [] },
+      portrait: null,
+    });
+    const body = el(this.#document, "div", "v7-gallery-detail-body");
+    const board = el(
+      this.#document,
+      "div",
+      "v7-gallery-demo-board v7-gallery-terrain-board",
+    );
+    board.setAttribute("aria-hidden", "true");
+    const pieces = el(this.#document, "ul", "v7-gallery-pieces");
+    pieces.setAttribute("aria-label", "Pieces");
+    for (const piece of details.pieces) {
+      const item = el(this.#document, "li", "v7-gallery-piece");
+      item.dataset.piece = piece.id;
+      item.append(this.#swatch(piece));
+      pieces.append(item);
+    }
+    body.append(board, pieces);
+    dialog.dataset.preview = "false";
+    dialog.append(body);
+  }
+
+  /** Mounts the sample board of a Terrain detail on the real board host. */
+  #startSample(
+    dialog: HTMLElement,
+    detail: Extract<GalleryDetailV7, { readonly tab: "TERRAIN" }>,
+  ): void {
+    const board = dialog.querySelector<HTMLElement>(
+      ".v7-gallery-terrain-board",
+    );
+    const view = buildGalleryTerrainSampleV7(detail.row, detail.faction);
+    if (board === null || view === null) {
+      board?.remove();
+      return;
+    }
+    const host =
+      this.#options.createDemoHost?.() ?? new CanvasBoardHostV7(this.#document);
+    this.#sample = host;
+    host.mount(board, {
+      onSelection: () => undefined,
+      onCommand: () => undefined,
+    });
+    // The sample is a picture: no tab stop, nothing read out.
+    for (const canvas of board.querySelectorAll("canvas")) {
+      canvas.tabIndex = -1;
+      canvas.setAttribute("aria-hidden", "true");
+    }
+    host.update(
+      previewModel(
+        `gallery-terrain:${detail.row}:${detail.faction ?? "ALL"}`,
+        view,
+        [],
+        this.#options.motion(),
+      ),
+    );
   }
 
   /** A curiosity: its one sentence, and the Spider's stats and bounty. */
@@ -1745,24 +2053,7 @@ class GalleryDemoV7 {
     view: PlayerViewV7,
     commands: GalleryDemoSceneV7["offeredCommands"],
   ): Parameters<BoardHostV7["update"]>[0] {
-    return {
-      matchInstanceId: this.#key,
-      view,
-      offeredCommands: commands,
-      interaction: {
-        selection: null,
-        selectedUnitId: null,
-        selectedAchievement: null,
-      },
-      interactive: false,
-      showCursor: false,
-      motion: this.#motion,
-      animationSpeed: "NORMAL",
-      presentationPaused: false,
-      highContrast: false,
-      artSet: "CHIBI",
-      ...liveBoardLookV7("CHIBI"),
-    };
+    return previewModel(this.#key, view, commands, this.#motion);
   }
 
   #show(cue: GalleryDemoCueV7, moment: "before" | "after"): void {

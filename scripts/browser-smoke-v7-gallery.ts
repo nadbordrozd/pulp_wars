@@ -119,6 +119,51 @@ export async function probeGalleryV7(
   await driver.waitForExpression(
     `document.querySelector('.v7-gallery-detail') === null && document.activeElement?.dataset.row === 'CATAPULT'`,
   );
+  // The Terrain tab (bead pulp_wars-2yc.3): the faction filter carries over
+  // (seven grounds, no Goblin one), every swatch is drawn, and a detail's
+  // sample board is drawn by the board host with the pieces under it.
+  await driver.pointerClick('[data-action="gallery-tab-terrain"]');
+  await driver.waitForExpression(
+    `document.querySelector('.v7-gallery-table')?.getAttribute('aria-label') === 'Terrain' && [...document.querySelectorAll('.v7-gallery-swatch-tile')].every((tile) => tile.dataset.state === 'ready')`,
+  );
+  const terrain = await driver.evaluate<{
+    readonly rows: readonly string[];
+    readonly grass: readonly string[];
+    readonly same: number;
+    readonly overflow: number;
+  }>(
+    `({ rows: [...document.querySelectorAll('.v7-gallery-table tbody tr')].map((row) => row.dataset.row), grass: [...document.querySelectorAll('.v7-gallery-cell[data-row="GRASS"]')].map((cell) => cell.dataset.faction), same: document.querySelectorAll('.v7-gallery-cell-wrap.is-same').length, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth })`,
+  );
+  if (
+    terrain.rows[0] !== "GRASS" ||
+    !terrain.rows.includes("FOREST") ||
+    terrain.grass.length !== 7 ||
+    terrain.grass.includes("GOBLIN") ||
+    terrain.same === 0 ||
+    terrain.overflow > 0
+  )
+    throw new Error(
+      `Gallery terrain is incomplete: ${JSON.stringify(terrain)}`,
+    );
+  await driver.capture("gallery-terrain.png");
+  await driver.pointerClick(
+    '.v7-gallery-cell[data-row="FOREST"][data-faction="ORIGINAL"]',
+  );
+  await driver.waitForExpression(
+    `document.querySelector('.v7-gallery-detail #v7-gallery-detail-title')?.textContent === 'Forest' && document.querySelector('.v7-gallery-terrain-board canvas.board-canvas-v7')?.width > 0 && document.querySelectorAll('.v7-gallery-piece').length > 0 && [...document.querySelectorAll('.v7-gallery-detail .v7-gallery-swatch-tile')].every((tile) => tile.dataset.state === 'ready')`,
+  );
+  const pieces = await driver.evaluate<number>(
+    `document.querySelectorAll('.v7-gallery-piece').length`,
+  );
+  await driver.capture("gallery-terrain-detail.png");
+  await driver.pressEscape();
+  await driver.waitForExpression(
+    `document.querySelector('.v7-gallery-detail') === null && document.activeElement?.dataset.row === 'FOREST'`,
+  );
+  await driver.pointerClick('[data-action="gallery-tab-units"]');
+  await driver.waitForExpression(
+    `document.querySelector('.v7-gallery-cell[data-row="CATAPULT"]') !== null`,
+  );
   // Reset the remembered filters, then go Back to the front screen.
   await driver.pointerClick('[data-action="gallery-factions-all"]');
   await driver.pointerClick('[data-action="gallery-rows-all"]');
@@ -129,5 +174,5 @@ export async function probeGalleryV7(
   await driver.evaluate(
     `localStorage.removeItem(${JSON.stringify(GALLERY_SMOKE_STORAGE_KEY_V7)})`,
   );
-  return `${table.cells} unit cells in ${table.factions.length} faction columns, filtered to ${filtered.cells.length} and remembered, Lich detail played its attack, Escape and Back returned focus`;
+  return `${table.cells} unit cells in ${table.factions.length} faction columns, filtered to ${filtered.cells.length} and remembered, Lich detail played its attack, Terrain tab with ${terrain.rows.length} rows and a Forest sample board over ${pieces} pieces, Escape and Back returned focus`;
 }

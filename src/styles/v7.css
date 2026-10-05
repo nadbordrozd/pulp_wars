@@ -4239,6 +4239,30 @@
   pointer-events: none;
 }
 
+/* Terrain (pulp_wars-2yc.3): "same as default" cells and the piece strip. */
+.v7-gallery-cell-wrap.is-same {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.v7-gallery-pieces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-end;
+  max-height: 22rem;
+  margin: 0;
+  padding: 0.5rem;
+  overflow: auto;
+  border-radius: 12px;
+  background: rgb(0 0 0 / 22%);
+  list-style: none;
+}
+
+.v7-gallery-piece canvas {
+  max-width: 100%;
+}
+
 .v7-gallery-demo-controls {
   display: flex;
   flex-wrap: wrap;
@@ -4342,6 +4366,21 @@
     width: 5rem;
     min-width: 5rem;
     font-size: 0.75rem;
+  }
+
+  /* Four tabs on one line (the Terrain tab, pulp_wars-2yc.3). */
+  .v7-gallery-tab {
+    padding: 0 0.55rem;
+    font-size: 0.85rem;
+  }
+
+  /*
+   * A cell shared by every faction spans the whole (scrolling) row: it
+   * sits at the row's start, where the first screen shows it.
+   */
+  .v7-gallery-cell-wrap.is-shared .v7-gallery-cell {
+    justify-items: start;
+    padding-left: 1.4rem;
   }
 
   .v7-gallery-detail,

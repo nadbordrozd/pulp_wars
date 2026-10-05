@@ -1627,6 +1627,29 @@ This overlay (`pulp_wars-ic8`) adds one front screen to the current Ruleset
   its portrait, its stats (HP, Attack, Defense, Move, Range), its
   regeneration and its bounty; the down and up arrows step through the
   five, and there is no animation preview.
+- **Terrain tab** (`pulp_wars-2yc.3`), between Buildings and Curiosities,
+  with the same faction and row chips (the terrain rows are remembered
+  with the other filters). Rows: **Grass**, **Forest**, **Mountain**,
+  **Water**, **Sea Ice** and **Rift**. A terrain some faction draws in a
+  look of its own has one cell per faction: Grass (every faction's ground;
+  "Snow" for the Ice Folk), Forest (the Humans' and the Undead's) and Sea
+  Ice (the Ice Folk's alone). A faction that draws it like the default
+  shows a plain "=" ("Same as default"), a faction without it "—"
+  ("None"); neither is a button. Terrain every faction shares (Mountain,
+  Water, Rift) is one cell across the row. A cell shows one tile of the
+  terrain. Its detail has no rules text: a **sample board** drawn by the
+  real board host (a five by five patch round that faction's capital with
+  the terrain beside it and a Fighter for scale, so composed forests and
+  massifs, coasts, the faction's ground inside its borders, Snow, and sea
+  ice inside and outside the borders look as they do in a match) and,
+  under it, every **piece** of the terrain's art from the manifests (the
+  tile variants, the composed Forest pieces and clumps, the massif pieces
+  and mined mountains, the four sea ice floes, the six Rift pieces). The
+  arrows step along the factions that have the terrain in their own look
+  and through the shown rows. When a faction gets forests or mountains of
+  its own, its cell, pieces and sample board appear from
+  `galleryTerrainLookV7` and `galleryTerrainPiecesV7`
+  (`src/render/gallery-terrain-presentation-v7.ts`).
 
 ## Current Ruleset 7 map curiosities overlay
 

@@ -223,6 +223,7 @@ describe("Gallery presentation", () => {
       factions: ["UNDEAD", "DWARF"] as const,
       unitRows: ["FIGHTER"] as const,
       buildingRows: ["CITY_1", "FARM"] as const,
+      terrainRows: ["GRASS", "ICE"] as const,
     };
     expect(parseGalleryFiltersV7(serializeGalleryFiltersV7(filters))).toEqual(
       filters,
