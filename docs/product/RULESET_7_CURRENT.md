@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r44`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r45`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`). It
 folds in
@@ -195,6 +195,10 @@ without an Ice Folk seat has no ice. What is still open (the Normal AI's
 use of the branch, `pulp_wars-5ti.4` and `pulp_wars-5ti.5`; the coarse
 balance on water maps, `pulp_wars-5ti.8`; and the polish items of
 `pulp_wars-5ti.10`) is in [section 25](#25-known-discrepancies).
+`pulp-wars-poc-7r45` (`pulp_wars-5ti.11`) fixes one rule of the frozen sea:
+a unit on ice has no fortification, so a Dwarf Hammerer or Steam Mole is
+never dug in on an ice tile ([section 22.7](#227-dig-in)). No shape changed,
+and a match without both a Dwarf and an Ice Folk seat plays as at `7r44`.
 
 **The Candy overlay is folded.** `pulp_wars-jdb.8` completed the fold the
 engine bead began: the Candy rules are
@@ -281,7 +285,7 @@ the build differs (its sections 20 to 24 list them);
 the values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r44`.
+resolved ones as of `pulp-wars-poc-7r45`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -382,10 +386,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r44`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Ruleset                                    | `pulp-wars-poc-7r45`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Browser autosave                           | `pulpWars.save.v7r44.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Browser autosave                           | `pulpWars.save.v7r45.current`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V4`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -7517,10 +7521,14 @@ nothing here happens: the `ice` list is always empty.
 - **Water for everything else.** No terrain cover (Glacier gives Ice Folk
   units the Snow cover there), no Walls or Field Defense, never Snow, and
   no Road, building, improvement, Grave, Egg, mound, Crumbs, chest, reward
-  or treasure unit, rising, Re-bake, Assemble, or tunnel end on it. The one
-  fortification a unit can have on ice is a Dwarf's Dig In, which is read
-  from the distance to its owner's city center and not from the tile
-  ([section 22.7](#227-dig-in)). **A death on ice is a water death:** no
+  or treasure unit, rising, Re-bake, Assemble, or tunnel end on it. **A
+  unit on ice has no fortification of any kind:** Walls and Field Defense
+  never exist on water, and since `7r45` (`pulp_wars-5ti.11`) a Dwarf is
+  never dug in on ice, however near its city center
+  ([section 22.7](#227-dig-in)). Glacier's cover is the only shelter on
+  ice. A unit standing on ice acts on the land beside it as usual: a
+  Shaman hatches an Egg ashore, an Engineer assembles a Gunner ashore, and
+  a Confectioner re-bakes Crumbs ashore. **A death on ice is a water death:** no
   Grave, no Infect or Bitten rising, no Crumbs. The tile's Fish or Pearls
   stay and may be harvested under the ordinary gates; a Port cannot be
   built on ice, and ice never forms on a dock. Sea trade counts an ice tile
@@ -8190,7 +8198,9 @@ HP left after one bomb on a fresh target (Shield absorbed in brackets):
 
 A land-form unit whose role has `digsIn` (Hammerer, Steam Mole), owned by a
 seat with the `digIn` capability (Dig In, the Dwarf Fortification), **is dug
-in** (`unitIsDugInV7`) when both hold:
+in** (`unitIsDugInV7`) when both hold, **and it does not stand on ice**
+(`7r45`, `pulp_wars-5ti.11`: a unit on a frozen water tile has no
+fortification, [section 21.16](#2116-the-frozen-sea)):
 
 1. its activation's `moved` is false: during its owner's turn it has not
    moved this turn; during any other player's turn it did not move on its
@@ -9024,6 +9034,7 @@ has no Candy step.
 | Naval       | `pulp-wars-poc-7r43` | `pulp_wars-5ti.2` naval branch engine step I (the overlay's `7rA`): the technologies `SEAMANSHIP` (tier 2 under Shorecraft: Ram, Board) and `SUBMERSIBLES` (tier 3 under Seamanship: the Submarine, Harbours) in all eight trees; the role `SUBMARINE` (9 Coins, 12 HP, Attack 4, Defense 2; Submerged: attacked only from an adjacent tile; Torpedo: attacks only units afloat, never answered); the Ram (+1 Attack and a shove for a Patrol Boat that moved); the command `BOARD` and the event `SHIP_BOARDED` (a ship at a third of its maximum HP or less is captured and patched up one above the line); Harbours (+1 population from every active Port and Shipyard); Dry Land and every registered mission forbid all five; a Submarine per Showcase seat, whose Coast city is level 4; folded into sections 14 and 21.16 | [naval branch overlay](RULESET_7_NAVAL_BRANCH.md)                                                                                     |
 | Naval       | `pulp-wars-poc-7r44` | `pulp_wars-5ti.3` naval branch engine step II (the overlay's `7rB`), the Ice Folk frozen sea: the Ice Folk tree unlocks no ship, Ram, or Board, and an Ice Folk unit never embarks; the command `FREEZE` (a line of two water tiles, the Witch's ring) and the stored `ice` list; ice is ground for land units, thaws outside its owner's territory, and no ship enters it; the slide and the slip; Icebound and the crush (3 at the owner's Start Turn); Black Ice; Glacier (5 turns, Snow cover on ice); the events `WATER_FROZEN`, `ICE_MELTED`, and `UNITS_CRUSHED`; an Ice Folk Showcase seat with ice instead of ships; folded by `pulp_wars-5ti.9`                                                                                                                                                                        | [naval branch overlay](RULESET_7_NAVAL_BRANCH.md)                                                                                     |
 | Naval       | `pulp-wars-poc-7r44` | `pulp_wars-5ti.6` naval art (a Submarine and portrait per seafaring faction, the sea ice, the Icebound overlay), `pulp_wars-5ti.7` naval UI (Board, Bow Ram, the Submarine, Harbours; Freeze, ice, the slide, Icebound), and the `pulp_wars-5ti.9` fold, no identity change; the Normal AI's use of the branch and the balance check are open                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | [sections 14](#14-naval-rules) and [21.16](#2116-the-frozen-sea)                                                                      |
+| Naval       | `pulp-wars-poc-7r45` | `pulp_wars-5ti.11` no fortification on ice: a Dwarf Hammerer or Steam Mole on an ice tile is never dug in (it was, within 1 of its own city center); every interaction row of the frozen sea has a focused test; no shape changed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | [sections 21.16](#2116-the-frozen-sea) and [22.7](#227-dig-in)                                                                        |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -9452,7 +9463,7 @@ and autosave key (it is `7r43`). The overlay's own corrections are in its
 
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r44` the rules in this document match the code for
+As of `pulp-wars-poc-7r45` the rules in this document match the code for
 the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -9463,7 +9474,7 @@ curiosities of [section 2.7](#27-map-curiosities), and the Martian and Ice
 Folk balance round of `7r37` with the Grunt's 8 HP of `7r39`, and the
 village density of `7r40`, and the starting Coins and tier 3 technology base
 cost of `7r41`, and the many seats of `7r42`, and the naval branch of
-`7r43` and `7r44`,
+`7r43` and `7r44` with the ice fortification fix of `7r45`,
 with these
 open items: what is left of the naval branch after the fold, the Candy
 items left after the fold, and the pending balance steps below.
@@ -9506,16 +9517,6 @@ items left after the fold, and the pending balance steps below.
     not the turns or the permanence, which the interface reads from two
     other public facts. (3) The Ice Witch's Freeze has no confirm step on a
     phone. (4) The slide arrow and the crush pill are thin at desktop zoom.
-  - **Tests the overlay planned and the build does not have, no bead.** The
-    overlay's section 16 asked for one test per row of its interaction
-    table. The frozen-sea suites cover the Push, Knockback, Charge!,
-    Tractor Beam, Beam Down, advance, bombing-run landing, a death on ice,
-    Port building, Glacier's cover, Sea Dog, the Showcase, persistence, and
-    headless play; they have no dedicated test for a Wreck under ice, an
-    eruption or a tunnel at ice, an Egg, a Re-bake or an Assemble at ice, a
-    mind-controlled Ice Folk unit's Freeze and slide, an icebound unit's
-    Recover and Promote, ice fishing, or sea trade under ice. Those rules
-    are stated here from the code.
   - **Where the code differs from the overlay's rules text** (this
     document states the code's behavior): (1) Glacier's cover is the Snow
     cover of today, × 1.25 (the overlay's section 8.10 quotes × 1.5); (2)
@@ -9526,11 +9527,10 @@ items left after the fold, and the pending balance steps below.
     refuse allied territory, and an unexplored tile is `BLOCKED`); (6)
     `BOARD` of a ship on Deep Water needs the boarder's Navigation
     (`DEEP_WATER`); (7) the crush hits every icebound unit on the player's
-    ice, whoever owns it, and needs no technology; (8) **a Dwarf Hammerer
-    or Steam Mole standing still on ice next to its own city center is dug
-    in**, although the overlay's section 8.3 says a unit on ice has no
-    fortification: Dig In is read from the distance to the center, not from
-    the tile (a ruling for the root; this document states the code); (9)
+    ice, whoever owns it, and needs no technology; (8) (resolved at `7r45`,
+    `pulp_wars-5ti.11`: a Dwarf on ice was dug in next to its own center;
+    the code now follows the overlay's section 8.3, no fortification on
+    ice); (9)
     there is no `slideEndV7` helper and `canCrossWaterV7` was not extended:
     the slide is part of the movement validation (canonical and public),
     and a unit afloat is kept off ice by `canEnterTerrainV7`; (10) the

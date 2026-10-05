@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r44`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
+## Current release contract (`pulp-wars-poc-7r45`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
 
-The current runtime is `pulp-wars-poc-7r44` (autosave
-`pulpWars.save.v7r44.current`; saves and replays of `pulp-wars-poc-7r43`
+The current runtime is `pulp-wars-poc-7r45` (autosave
+`pulpWars.save.v7r45.current`; saves and replays of `pulp-wars-poc-7r44`
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -248,6 +248,13 @@ current rules
 ([section 21.16](../product/RULESET_7_CURRENT.md#2116-the-frozen-sea)). The
 Ice Folk Normal AI's use of the ice is a later bead (`pulp_wars-5ti.5`),
 and the branch has had no balance check (`pulp_wars-5ti.8`).
+`pulp_wars-5ti.11` (`7r45`) fixes one rule: a unit on ice has no
+fortification, so a Dwarf is never dug in on an ice tile. No shape changed;
+`tests/unit/ruleset-v7-frozen-sea-interactions.test.ts` holds that rule and
+one test per interaction row of the frozen sea (a Wreck under ice, the
+Tunnel and the eruption, Eggs, Crumbs and Re-bake, Assemble, a
+mind-controlled Ice Folk unit, an icebound ship's Recover and Promote, Fish
+and Pearls, Port income, a Submarine next to ice).
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
 Dwarves, and the Candy are part of the default route: match setup always
 offers a
@@ -270,7 +277,7 @@ The naval branch has no balance evidence yet: its water-map matrix is
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r44` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r45` identity (ruleset ID, autosave key, the
   map revision `REGIONAL_BIOMES_NAVAL_V4`, the
   eight-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`/`CANDY`

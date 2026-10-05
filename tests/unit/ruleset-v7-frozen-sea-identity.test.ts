@@ -63,31 +63,37 @@ const NAVAL_BRANCH = [
 ] as const satisfies readonly TechnologyIdV7[];
 const SEAFARERS = FACTION_IDS_V7.filter((faction) => faction !== "ICE_FOLK");
 
-describe("the frozen sea identity (7r44)", () => {
-  it("is 7r44 with 7r43 last in the gap-free prior list and its save key obsolete", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r44");
-    expect(PRIOR_RULESET_7_IDS.at(-1)).toBe("pulp-wars-poc-7r43");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(43);
+// The frozen sea took `7r44`. `pulp_wars-5ti.11` took `7r45` for one rule
+// fix (no Dig In on ice; tests/unit/ruleset-v7-frozen-sea-interactions.test.ts),
+// with no shape change, so `7r44` is the last prior identity here.
+describe("the frozen sea identity (7r44, then 7r45 for the ice fortification fix)", () => {
+  it("is 7r45 with 7r44 last in the gap-free prior list and its save key obsolete", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r45");
+    expect(PRIOR_RULESET_7_IDS.slice(-2)).toEqual([
+      "pulp-wars-poc-7r43",
+      "pulp-wars-poc-7r44",
+    ]);
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(44);
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r44.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r45.current");
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r43.current",
+      "pulpWars.save.v7r44.current",
     );
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
   });
 
-  it("rejects a 7r43 setup, state, replay, and save without migration", () => {
+  it("rejects a 7r44 setup, state, replay, and save without migration", () => {
     const setup = goblinSetupV7(["ORIGINAL", "UNDEAD"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const { state } = created;
-    expect(state.rulesetId).toBe("pulp-wars-poc-7r44");
-    const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r43" };
+    expect(state.rulesetId).toBe("pulp-wars-poc-7r45");
+    const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r44" };
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
     expect(
       parseGameStateV7({
         ...state,
-        rulesetId: "pulp-wars-poc-7r43",
+        rulesetId: "pulp-wars-poc-7r44",
         setup: oldSetup,
       }),
     ).toBeNull();
@@ -109,13 +115,13 @@ describe("the frozen sea identity (7r44)", () => {
       parseSaveV7(
         JSON.stringify({
           ...save,
-          rulesetId: "pulp-wars-poc-7r43",
+          rulesetId: "pulp-wars-poc-7r44",
           setup: oldSetup,
-          state: { ...save.state, rulesetId: "pulp-wars-poc-7r43" },
+          state: { ...save.state, rulesetId: "pulp-wars-poc-7r44" },
         }),
       ),
     ).toMatchObject({ kind: "INCOMPATIBLE" });
-    // A state without the `ice` list is not a 7r44 state.
+    // A state without the `ice` list is not a current state.
     const { ice: _ice, ...withoutIce } = state;
     void _ice;
     expect(parseGameStateV7(withoutIce)).toBeNull();

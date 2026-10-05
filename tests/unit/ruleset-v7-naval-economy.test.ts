@@ -536,6 +536,27 @@ describe("ruleset-7 naval economy", () => {
     expect(seaTradeCityIdsV7(transitOccupied, base.humanPlayerId)).toEqual(
       new Set([cityBId, cityCId]),
     );
+    // The frozen sea (`pulp_wars-5ti.11`, current rules section 21.16): sea
+    // trade counts an ice tile as water, so the route runs under the ice.
+    const frozenRoute = {
+      ...base,
+      ice: [5, 6, 7].map((x) => ({
+        at: { x, y: 2 },
+        ownerId: hostile.ownerId,
+        turnsLeft: 3,
+      })),
+    };
+    expect(seaTradeCityIdsV7(frozenRoute, base.humanPlayerId)).toEqual(
+      new Set([cityBId, cityCId]),
+    );
+    expect(
+      [cityBId, cityCId].map((id) =>
+        cityIncomeV7(
+          frozenRoute,
+          frozenRoute.cities.find((city) => city.id === id) ?? cityB,
+        ),
+      ),
+    ).toEqual([3, 2]);
     const blockaded = {
       ...base,
       units: [

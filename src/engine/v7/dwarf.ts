@@ -63,9 +63,14 @@ function unitOwnerCapabilitiesV7(
  * through its kind's tree, that has not moved (its activation's `moved`),
  * standing on or next to (`DIG_IN_RADIUS_V7`) the center of a city its
  * owner (its controller) owns, whatever the tile's territory.
+ *
+ * `pulp_wars-5ti.11` (`7r45`): never on ice. A land-form unit stands on a
+ * water tile only where that tile is ice, and a unit on ice has no
+ * fortification of any kind (current rules section 21.16): nobody digs in
+ * on a frozen sea.
  */
 export function unitIsDugInV7(
-  state: Pick<GameStateV7, "players" | "cities" | "mindControlled">,
+  state: Pick<GameStateV7, "players" | "cities" | "mindControlled" | "board">,
   unit: DwarfUnitFactsV7,
 ): boolean {
   if (
@@ -75,6 +80,9 @@ export function unitIsDugInV7(
     !unitOwnerCapabilitiesV7(state, unit).digIn
   )
     return false;
+  const terrain =
+    state.board.tiles[unit.at.y * state.board.width + unit.at.x]?.terrain;
+  if (terrain === "SHALLOW_WATER" || terrain === "DEEP_WATER") return false;
   return state.cities.some(
     (city) =>
       city.ownerId === unit.ownerId &&

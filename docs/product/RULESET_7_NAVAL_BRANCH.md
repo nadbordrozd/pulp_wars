@@ -1761,6 +1761,13 @@ differently:
     Folk seat cannot cross water until the interface bead. The five
     technology cards carry their names and one sentence each. The Gallery
     shows no ship and no transport for the Ice Folk.
+13. **No Dig In on ice (`pulp_wars-5ti.11`, `pulp-wars-poc-7r45`).** Step II
+    left a Dwarf Hammerer or Steam Mole dug in on an ice tile within 1 of
+    its own city center, against [section 8.3](#83-ice-tiles) ("no
+    fortification"). Since `7r45` a unit on ice is never dug in. The same
+    bead added one test per interaction row of
+    [section 10](#10-interactions-with-existing-rules) that had none; none
+    of them found another difference.
 
 ## 23. Naval interface, second part, as built (`pulp_wars-5ti.7`)
 
