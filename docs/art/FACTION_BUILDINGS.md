@@ -491,6 +491,8 @@ Weak spots:
 - **The Frost Garden's snow banks still vanish on Snow.**
 - **Roads** under a Farm now show round the plot and between the beds,
   wherever the sprite is transparent.
-- The technology card of Farming still says "Neighboring farms join into
-  one field" (the engine's `CONNECTED_FARM_VISUALS` effect); that is true
-  only in the classic look now.
+- _Fixed in bead `pulp_wars-2o7.5`:_ the technology card of Farming said
+  "Neighboring farms join into one field" (the engine's
+  `CONNECTED_FARM_VISUALS` effect), which is true only where Farms are
+  drawn joined. The card now shows that line in the Classic look and the
+  LEGACY art set only (`farmsJoinInLookV7`); the effect stays in the tree.

@@ -1101,6 +1101,56 @@ describe("Ruleset 7 DOM shell", () => {
     third.destroy();
   });
 
+  it("says farms join into one field only where they are drawn joined: the Classic look and LEGACY (pulp_wars-2o7.5)", async () => {
+    const line = "Neighboring farms join into one field";
+    const farmingUnlocks = (): string[] => {
+      if (document.querySelector('[data-action="tech-farming"]') === null)
+        requiredButton('[data-action="tech"]').click();
+      requiredButton('[data-action="tech-farming"]').click();
+      return [...document.querySelectorAll(".v7-tech-unlocks > li")].map(
+        (item) => item.textContent ?? "",
+      );
+    };
+    const app = bootstrapRuleset7App(document, {
+      storage: null,
+      boardHost: new CapturingBoardHost(),
+    });
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => app.controller.snapshot().phase === "ACTIVE");
+    // The current look draws every Farm as a whole sprite of its own: the
+    // card lists the Farm and its rule, and makes no claim about joining.
+    const current = farmingUnlocks();
+    expect(current.length).toBeGreaterThan(0);
+    expect(current.join("\n")).toContain("Build farm");
+    expect(current).not.toContain(line);
+    expect(document.body.textContent).not.toContain(line);
+    // The Classic look still pairs neighbouring Farms into one field.
+    openMenuItem("settings");
+    requiredInput("v7-classic-look").click();
+    const classic = farmingUnlocks();
+    expect(classic).toContain(line);
+    expect(classic.filter((item) => item !== line)).toEqual(current);
+    openMenuItem("settings");
+    requiredInput("v7-classic-look").click();
+    expect(farmingUnlocks()).toEqual(current);
+    app.destroy();
+    window.localStorage.clear();
+
+    // The LEGACY art set never had the new look.
+    document.body.innerHTML = '<div id="app"></div>';
+    const legacy = bootstrapRuleset7App(document, {
+      storage: null,
+      artSet: "LEGACY",
+      boardHost: new CapturingBoardHost(),
+    });
+    chooseSeed();
+    requiredButton('[data-action="launch"]').click();
+    await waitUntil(() => legacy.controller.snapshot().phase === "ACTIVE");
+    expect(farmingUnlocks()).toContain(line);
+    legacy.destroy();
+  });
+
   it("draws the new visual direction by default and offers a persistent Classic look developer option (pulp_wars-3tq.6)", async () => {
     const key = "pulpWars.ruleset7.boardClassicLook.v1";
     const retiredKey = "pulpWars.ruleset7.boardVisualDirection.v1";

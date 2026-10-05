@@ -5636,6 +5636,7 @@ export class Ruleset7DomAppView {
     for (const group of technologyEffectGroupsV7(
       node.effects,
       this.#viewerFaction(),
+      { farmsJoin: farmsJoinInLookV7(this.#artSet, this.#classicLook) },
     ))
       for (const item of group.items) {
         const entry = text(this.#document, "li", item);
@@ -9969,10 +9970,29 @@ export interface TechnologyEffectGroupV7 {
   readonly items: readonly string[];
 }
 
-/** Keeps technology prose grouped directly by the structured unlock union. */
+/**
+ * Whether neighbouring Farms are drawn as one field. They are in the LEGACY
+ * art set and in the Classic look; in the current look every Farm is one
+ * whole sprite on its tile (bead pulp_wars-2o7.2), so the Farming card must
+ * not promise a joined field there (bead pulp_wars-2o7.5).
+ */
+export function farmsJoinInLookV7(
+  artSet: ArtSetV7 | undefined,
+  classicLook: boolean,
+): boolean {
+  return artSet !== "CHIBI" || classicLook;
+}
+
+/**
+ * Keeps technology prose grouped directly by the structured unlock union.
+ * `farmsJoin: false` leaves out the one line that describes a drawing, not a
+ * rule ("Neighboring farms join into one field"), for a look that does not
+ * draw it; the effect itself stays in the tree.
+ */
 export function technologyEffectGroupsV7(
   effects: PublicTechnologyNodeV7["effects"],
   faction: FactionIdV7,
+  options: { readonly farmsJoin?: boolean } = {},
 ): readonly TechnologyEffectGroupV7[] {
   const order: readonly TechnologyEffectGroupV7["id"][] = [
     "UNITS",
@@ -9992,6 +10012,8 @@ export function technologyEffectGroupsV7(
   };
   const grouped = new Map<TechnologyEffectGroupV7["id"], string[]>();
   for (const effect of effects) {
+    if (effect.kind === "CONNECTED_FARM_VISUALS" && options.farmsJoin === false)
+      continue;
     const id = technologyEffectGroupIdV7(effect);
     const descriptions =
       effect.kind === "UNIT_ROLE"

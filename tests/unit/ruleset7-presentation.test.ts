@@ -13,6 +13,7 @@ import { corePresentationPlanV7 } from "../../src/render/canvas/presentation-pla
 import {
   cityIncomeForViewerV7,
   economicFormulaV7,
+  farmsJoinInLookV7,
   monumentSourceForViewerV7,
   recruitmentRolePresentationV7,
   specialBoundaryNoticeV7,
@@ -186,6 +187,42 @@ describe("Ruleset 7 public presentation", () => {
     const battleship = recruitmentRolePresentationV7("BATTLESHIP", "ORIGINAL");
     expect(battleship.restrictions).not.toContain("Can't capture.");
     expect(battleship.restrictions).not.toContain("Can't attack after moving.");
+  });
+
+  it("promises a joined field of Farms only in a look that draws one (pulp_wars-2o7.5)", () => {
+    // LEGACY and the Classic look pair neighbouring Farms; the current look
+    // draws each Farm as a whole sprite (bead pulp_wars-2o7.2).
+    expect(farmsJoinInLookV7("CHIBI", false)).toBe(false);
+    expect(farmsJoinInLookV7("CHIBI", true)).toBe(true);
+    expect(farmsJoinInLookV7("LEGACY", false)).toBe(true);
+    expect(farmsJoinInLookV7("LEGACY", true)).toBe(true);
+    expect(farmsJoinInLookV7(undefined, false)).toBe(true);
+    const effects = [
+      { kind: "COMMAND", command: "BUILD_FARM" },
+      { kind: "CONNECTED_FARM_VISUALS" },
+    ] as const;
+    const joined = [
+      {
+        id: "BUILDINGS",
+        label: "Buildings",
+        items: ["Build farm", "Neighboring farms join into one field"],
+      },
+    ];
+    expect(technologyEffectGroupsV7(effects, "ORIGINAL")).toEqual(joined);
+    expect(
+      technologyEffectGroupsV7(effects, "ORIGINAL", { farmsJoin: true }),
+    ).toEqual(joined);
+    expect(
+      technologyEffectGroupsV7(effects, "ORIGINAL", { farmsJoin: false }),
+    ).toEqual([{ id: "BUILDINGS", label: "Buildings", items: ["Build farm"] }]);
+    // Nothing else is dropped, and a card of that one effect has no group.
+    expect(
+      technologyEffectGroupsV7(
+        [{ kind: "CONNECTED_FARM_VISUALS" }],
+        "ORIGINAL",
+        { farmsJoin: false },
+      ),
+    ).toEqual([]);
   });
 
   it("groups technology detail items from structured effect kinds", () => {
