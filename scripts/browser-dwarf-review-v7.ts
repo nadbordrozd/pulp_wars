@@ -258,18 +258,17 @@ async function showcaseTour(
     `document.querySelector('[data-action="dwarf-tunnel"]')?.click()`,
   );
   await delay(800);
-  evidence[`showcase${size}TunnelPanel`] = await evaluate(
-    connection,
-    `Array.from(document.querySelectorAll('[data-v7-dwarf-pick] [data-action^="tunnel-"]')).map((node) => node.getAttribute('aria-label'))`,
-  );
   await capture(connection, `showcase-tunnel-pick-${size}.png`);
+  // Bead pulp_wars-9im: the destinations and the Hammerers that can ride
+  // are board targets (the dock lists neither), read after the capture.
+  evidence[`showcase${size}TunnelPanel`] = await boardTargets(connection);
   await deselect(connection);
 }
 
 /**
  * Bead pulp_wars-78i.9: the passenger-first Tunnel and the Dig In
  * earthwork. On the Dwarf UI fixture: Tunnel pressed (the Hammerer
- * seated, its rope and badge, the short destination list), a destination
+ * seated, its rope and badge, the destinations on the board), a destination
  * focused (the Mole's and the Hammerer's ghosts), chosen (the solid tile,
  * the other landings as dots, the confirmation), the Hammerer moved to a
  * dot, and the dig. On the Dig In fixture: two Hammerers that can ride
@@ -289,7 +288,7 @@ async function polishTour(
   const panel = async (name: string): Promise<void> => {
     evidence[`polish-${size}-${name}`] = await evaluate(
       connection,
-      `(() => { const panel = document.querySelector('[data-v7-dwarf-pick]'); return panel === null ? null : { passengers: Array.from(panel.querySelectorAll('.v7-dwarf-passenger')).map((node) => node.getAttribute('aria-label')), buttons: Array.from(panel.querySelectorAll('button')).map((node) => node.getAttribute('aria-label') ?? node.textContent), name: panel.getAttribute('aria-label'), text: Array.from(panel.querySelectorAll('p')).map((node) => node.textContent) }; })()`,
+      `(() => { const panel = document.querySelector('[data-v7-dwarf-pick]'); return panel === null ? null : { boardTargets: Number(panel.dataset.boardTargets ?? '0'), riding: Array.from(panel.querySelectorAll('.v7-dwarf-passenger')).map((node) => node.getAttribute('aria-label')), buttons: Array.from(panel.querySelectorAll('button')).map((node) => node.getAttribute('aria-label') ?? node.textContent), name: panel.getAttribute('aria-label'), text: Array.from(panel.querySelectorAll('p')).map((node) => node.textContent) }; })()`,
     );
   };
   const both = async (name: string): Promise<void> => {
@@ -910,6 +909,45 @@ async function focusCell(connection: Connection, at: Coord): Promise<void> {
     `document.querySelector('canvas.board-canvas-v7')?.focus()`,
   );
   await delay(400);
+}
+
+/**
+ * Bead pulp_wars-9im (docs/ui/BOARD_TARGETING.md): the aimed ability's
+ * targets as the player meets them. The dock lists none, so they are read
+ * from the board: the aiming panel's count, then each target's cursor
+ * description, stepped with Tab in reading order. `listed` names any dock
+ * button that is still one target's own (there must be none). It moves the
+ * board cursor, so it is called after the stage's capture.
+ */
+async function boardTargets(connection: Connection): Promise<unknown> {
+  const panel = (await evaluate(
+    connection,
+    `(() => { const panel = document.querySelector('.v7-selection-dock .v7-board-pick'); const dock = document.querySelector('.v7-selection-dock'); return { count: panel === null ? null : Number(panel.dataset.boardTargets ?? '0'), buttons: panel === null ? [] : Array.from(panel.querySelectorAll('button')).map((node) => node.dataset.action ?? ''), listed: dock === null ? [] : Array.from(dock.querySelectorAll('button')).map((node) => node.dataset.action ?? '').filter((action) => /^(mind-control|tractor-beam|bolas|bomb-target|beam-passenger|beam-tile|sugar-toss|rebake|command-hatch|tunnel-passenger|tunnel-to)-\\d+/.test(action)) }; })()`,
+  )) as {
+    readonly count: number | null;
+    readonly buttons: readonly string[];
+    readonly listed: readonly string[];
+  };
+  const onBoard = `document.activeElement === document.querySelector('canvas.board-canvas-v7')`;
+  await evaluate(
+    connection,
+    `document.querySelector('canvas.board-canvas-v7')?.focus()`,
+  );
+  const targets: unknown[] = [];
+  for (let step = 0; step < (panel.count ?? 0); step += 1) {
+    await keys(connection, ["Tab"]);
+    // Past the last target Tab leaves the board for the dock.
+    if ((await evaluate(connection, onBoard)) !== true) break;
+    const text = await cursorText(connection);
+    targets.push(text);
+  }
+  await evaluate(
+    connection,
+    `document.querySelector('canvas.board-canvas-v7')?.focus()`,
+  );
+  if (panel.listed.length > 0)
+    errors.push(`The dock lists targets: ${panel.listed.join(", ")}`);
+  return { ...panel, targets };
 }
 
 async function cursorText(connection: Connection): Promise<unknown> {

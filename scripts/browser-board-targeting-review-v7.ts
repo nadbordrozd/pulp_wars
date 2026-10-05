@@ -19,8 +19,13 @@ import { ruleset7FixtureMountExpressionV7 } from "./browser-undead-fixture-v7";
  * panel's buttons and fails when the dock lists a target. It needs the Vite
  * dev server, because the fixtures are imported from `tests/fixtures`.
  *
+ * Bead pulp_wars-621 adds the recipients of an area support (section 2.1):
+ * a Captain's Tend Wounded at rest and with its button focused, a Rally
+ * with its button focused, an Engineer's Repair, a Confectioner's Frosting
+ * and a Shaman whose Egg is a target while its wounded Caveman is a mark.
+ *
  * Usage: tsx scripts/browser-board-targeting-review-v7.ts
- *   http://localhost:6173/ [--output-dir=<new-dir>]
+ *   http://localhost:6173/ [--output-dir=<new-dir>] [--only=<name-prefix>]
  */
 
 interface DebugTarget {
@@ -58,6 +63,11 @@ interface Shot {
   readonly action?: string;
   /** A board target to choose after arming (the next stage). */
   readonly then?: string;
+  /**
+   * A dock button to focus without pressing it (bead pulp_wars-621): an
+   * area support's button, whose focus makes its recipients prominent.
+   */
+  readonly focus?: string;
   /** The highlight styles the capture is expected to show (for the reader). */
   readonly marks: readonly string[];
 }
@@ -188,7 +198,67 @@ const SHOTS: readonly Shot[] = [
     unit: "zombie",
     marks: ["ATTACK", "MOVE"],
   },
+  // Bead pulp_wars-621: the recipients of an area support (a broken Help
+  // ring with the amount), quiet at rest and prominent with the button
+  // focused. They are marks, not targets.
+  {
+    name: "area-heal-rest",
+    module: "/tests/fixtures/v7-area-support-ui.ts",
+    fixture: "humanTendFixtureV7",
+    coords: "HUMAN_TEND_V7",
+    unit: "captain",
+    marks: ["MOVE", "AREA_SUPPORT_QUIET"],
+  },
+  {
+    name: "area-heal-focused",
+    module: "/tests/fixtures/v7-area-support-ui.ts",
+    fixture: "humanTendFixtureV7",
+    coords: "HUMAN_TEND_V7",
+    unit: "captain",
+    focus: "command-tend_wounded",
+    marks: ["MOVE", "AREA_SUPPORT_PROMINENT"],
+  },
+  {
+    name: "area-rally-focused",
+    module: "/tests/fixtures/v7-area-support-ui.ts",
+    fixture: "humanTendFixtureV7",
+    coords: "HUMAN_TEND_V7",
+    unit: "captain",
+    focus: "command-rally",
+    marks: ["MOVE", "AREA_SUPPORT_PROMINENT"],
+  },
+  {
+    name: "area-repair-rest",
+    module: "/tests/fixtures/v7-dwarf-ui.ts",
+    fixture: "dwarfUiFixtureV7",
+    coords: "DWARF_UI_V7",
+    unit: "engineer",
+    marks: ["MOVE", "AREA_SUPPORT_QUIET"],
+  },
+  {
+    name: "area-frosting-focused",
+    module: "/tests/fixtures/v7-candy-ui.ts",
+    fixture: "candyUiFixtureV7",
+    coords: "CANDY_UI_V7",
+    unit: "confectioner",
+    focus: "command-tend_wounded",
+    marks: ["MOVE", "AREA_SUPPORT_PROMINENT"],
+  },
+  {
+    name: "area-heal-beside-hatch",
+    module: "/tests/fixtures/v7-area-support-ui.ts",
+    fixture: "dinosaurTendFixtureV7",
+    coords: "DINOSAUR_TEND_V7",
+    unit: "shaman",
+    marks: ["MOVE", "SUPPORT", "AREA_SUPPORT_QUIET"],
+  },
 ];
+
+/** `--only=<prefix>` keeps the captures whose name starts with it. */
+const only = process.argv
+  .slice(2)
+  .find((argument) => argument.startsWith("--only="))
+  ?.slice("--only=".length);
 
 const baseUrl = new URL(
   process.argv.slice(2).find((argument) => argument.startsWith("http")) ??
@@ -236,8 +306,10 @@ try {
   await connection.send("Runtime.enable");
   for (const size of ["desktop", "phone"] as const) {
     await viewport(connection, size);
-    for (const shot of SHOTS) await take(connection, shot, size);
-    await helpLegend(connection, size);
+    for (const shot of SHOTS)
+      if (only === undefined || shot.name.startsWith(only))
+        await take(connection, shot, size);
+    if (only === undefined) await helpLegend(connection, size);
   }
   await writeFile(
     path.join(output.directory, "evidence.json"),
@@ -288,6 +360,16 @@ async function take(
       `${REVIEW}.boardHost.activate(${JSON.stringify(next)})`,
     );
   }
+  if (shot.focus !== undefined) {
+    await waitFor(
+      connection,
+      `document.querySelector('[data-action="${shot.focus}"][data-area-support="true"]') !== null`,
+    );
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="${shot.focus}"]').focus()`,
+    );
+  }
   await delay(900);
   const seen = (await evaluate(
     connection,
@@ -296,6 +378,8 @@ async function take(
       const dock = document.querySelector('.v7-selection-dock');
       return {
         marks: ${JSON.stringify(shot.marks)},
+        areaSupportButtons: dock === null ? [] : Array.from(dock.querySelectorAll('button[data-area-support="true"]')).map((node) => node.dataset.action ?? ''),
+        focused: document.activeElement?.getAttribute('data-action') ?? null,
         panelButtons: panel === null ? null : Array.from(panel.querySelectorAll('button')).map((node) => node.dataset.action ?? ''),
         boardTargets: panel?.dataset.boardTargets ?? null,
         dockActions: dock === null ? [] : Array.from(dock.querySelectorAll('button')).map((node) => node.dataset.action ?? ''),

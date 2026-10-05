@@ -306,16 +306,16 @@ async function fixtureTour(
   );
   await delay(700);
   await capture(connection, `beam-down-passenger-${suffix}.png`);
+  // Bead pulp_wars-9im: the passengers and the tiles are board targets
+  // (the dock lists neither), read after each capture.
+  evidence[`${suffix}BeamPassengers`] = await boardTargets(connection);
   await evaluate(
     connection,
     `${REVIEW}.boardHost.activate(${JSON.stringify(at.capitalGrunt)})`,
   );
   await delay(700);
-  evidence[`${suffix}BeamTiles`] = await evaluate(
-    connection,
-    `Array.from(document.querySelectorAll('.v7-martian-choice-button')).map((node) => node.textContent)`,
-  );
   await capture(connection, `beam-down-tiles-${suffix}.png`);
+  evidence[`${suffix}BeamTiles`] = await boardTargets(connection);
   await evaluate(
     connection,
     `${REVIEW}.boardHost.activate(${JSON.stringify({ x: 7, y: 6 })})`,
@@ -345,9 +345,11 @@ async function fixtureTour(
     `document.querySelector('[data-v7-martian-pick]')?.textContent ?? null`,
   );
   await capture(connection, `mind-control-pick-${suffix}.png`);
+  // The targets are picked on the board: the weakened enemy is taken.
+  evidence[`${suffix}MindControlTargets`] = await boardTargets(connection);
   await evaluate(
     connection,
-    `document.querySelector('[data-action^="mind-control-"]')?.click()`,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(at.weakTarget)})`,
   );
   await waitFor(
     connection,
@@ -510,13 +512,18 @@ async function controlTour(
   );
   await delay(500);
   await capture(connection, `mind-control-aim-${size}.png`);
-  evidence[`control${size}Aim`] = await evaluate(
-    connection,
-    `({ panel: document.querySelector('[data-v7-martian-pick]')?.textContent ?? null, choices: Array.from(document.querySelectorAll('[data-action^="mind-control-"]')).map((node) => node.getAttribute('aria-label')), cursor: document.getElementById(document.querySelector('canvas.board-canvas-v7')?.getAttribute('aria-describedby') ?? '')?.textContent ?? null })`,
-  );
+  evidence[`control${size}Aim`] = {
+    panel: await evaluate(
+      connection,
+      `document.querySelector('[data-v7-martian-pick]')?.textContent ?? null`,
+    ),
+    cursor: await cursorText(connection),
+    // Bead pulp_wars-9im: the targets are on the board, not in the dock.
+    board: await boardTargets(connection),
+  };
   await evaluate(
     connection,
-    `document.querySelector('[data-action^="mind-control-"]')?.click()`,
+    `${REVIEW}.boardHost.activate(${JSON.stringify(start.weakTarget)})`,
   );
   await waitFor(
     connection,
@@ -790,6 +797,45 @@ async function focusCell(connection: Connection, at: Coord): Promise<void> {
   await delay(400);
 }
 
+/**
+ * Bead pulp_wars-9im (docs/ui/BOARD_TARGETING.md): the aimed ability's
+ * targets as the player meets them. The dock lists none, so they are read
+ * from the board: the aiming panel's count, then each target's cursor
+ * description, stepped with Tab in reading order. `listed` names any dock
+ * button that is still one target's own (there must be none). It moves the
+ * board cursor, so it is called after the stage's capture.
+ */
+async function boardTargets(connection: Connection): Promise<unknown> {
+  const panel = (await evaluate(
+    connection,
+    `(() => { const panel = document.querySelector('.v7-selection-dock .v7-board-pick'); const dock = document.querySelector('.v7-selection-dock'); return { count: panel === null ? null : Number(panel.dataset.boardTargets ?? '0'), buttons: panel === null ? [] : Array.from(panel.querySelectorAll('button')).map((node) => node.dataset.action ?? ''), listed: dock === null ? [] : Array.from(dock.querySelectorAll('button')).map((node) => node.dataset.action ?? '').filter((action) => /^(mind-control|tractor-beam|bolas|bomb-target|beam-passenger|beam-tile|sugar-toss|rebake|command-hatch|tunnel-passenger|tunnel-to)-\\d+/.test(action)) }; })()`,
+  )) as {
+    readonly count: number | null;
+    readonly buttons: readonly string[];
+    readonly listed: readonly string[];
+  };
+  const onBoard = `document.activeElement === document.querySelector('canvas.board-canvas-v7')`;
+  await evaluate(
+    connection,
+    `document.querySelector('canvas.board-canvas-v7')?.focus()`,
+  );
+  const targets: unknown[] = [];
+  for (let step = 0; step < (panel.count ?? 0); step += 1) {
+    await keys(connection, ["Tab"]);
+    // Past the last target Tab leaves the board for the dock.
+    if ((await evaluate(connection, onBoard)) !== true) break;
+    const text = await cursorText(connection);
+    targets.push(text);
+  }
+  await evaluate(
+    connection,
+    `document.querySelector('canvas.board-canvas-v7')?.focus()`,
+  );
+  if (panel.listed.length > 0)
+    errors.push(`The dock lists targets: ${panel.listed.join(", ")}`);
+  return { ...panel, targets };
+}
+
 async function cursorText(connection: Connection): Promise<unknown> {
   return evaluate(
     connection,
@@ -809,6 +855,7 @@ async function keys(
   names: readonly string[],
 ): Promise<void> {
   const codes: Readonly<Record<string, number>> = {
+    Tab: 9,
     Enter: 13,
     Escape: 27,
     ArrowLeft: 37,

@@ -430,25 +430,6 @@ export function addDwarfPickEntriesV7(
   }
 }
 
-/**
- * The Repair targets of a selected own Engineer, from the exact Tend
- * Wounded preview (section 16.1: the targets highlighted with "+4" or "+2").
- */
-export function dwarfEngineerSelectedV7(
-  view: PlayerViewV7,
-  unitId: number,
-): boolean {
-  const unit = view.units.find((candidate) => candidate.id === unitId);
-  return (
-    unit !== undefined &&
-    unit.form === "LAND" &&
-    dwarfStatsV7(view, unit.id) !== undefined &&
-    (unitRoleRuleV7(view, unit).abilities as readonly string[]).includes(
-      "ASSEMBLE",
-    )
-  );
-}
-
 /** The Dwarf additions to an ATTACK target (section 16.1). */
 export interface DwarfAttackTargetExtrasV7 {
   readonly notes: readonly string[];

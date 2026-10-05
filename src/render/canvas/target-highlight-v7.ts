@@ -128,7 +128,6 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   SUGAR_TOSS: "SUPPORT",
   BEAM_DOWN_PASSENGER: "SUPPORT",
   TUNNEL_PASSENGER: "SUPPORT",
-  MONUMENT: "PLACE",
   LAY_EGG: "PLACE",
   BEAM_DOWN: "PLACE",
   ASSEMBLE: "PLACE",
@@ -221,7 +220,33 @@ export interface TargetHighlightOptionsV7 {
   readonly dash?: readonly number[];
   /** Thicker strokes for the high-contrast setting. */
   readonly highContrast?: boolean;
+  /**
+   * The Help ring of an area support's recipient (bead pulp_wars-621): a
+   * broken ring, so it is not taken for a target that can be picked. QUIET
+   * is thin with a smaller plus, PROMINENT the full weight with a soft
+   * fill. Omitted, the mark is a pickable target's whole ring.
+   */
+  readonly weight?: AreaSupportWeightV7;
 }
+
+/** Dash and gap of a recipient's broken ring, in world units. */
+export const AREA_SUPPORT_DASH_V7: readonly number[] = [16, 7];
+
+/**
+ * How strongly an area support's recipient is marked: quiet while its
+ * healer is merely selected, prominent while the one button that helps
+ * them all is hovered or focused.
+ */
+export type AreaSupportWeightV7 = "QUIET" | "PROMINENT";
+
+/** The soft fill inside a prominent area support ring. */
+export const AREA_SUPPORT_FILL_V7 = "#b6f36a30";
+
+/** Stroke widths in world units: [normal, high contrast]. */
+export const TARGET_HIGHLIGHT_WIDTHS_V7 = {
+  TARGET: [4, 5],
+  QUIET: [3.25, 4.25],
+} as const;
 
 const ALL_EDGES: readonly TileEdge[] = ["NORTH", "EAST", "SOUTH", "WEST"];
 
@@ -271,12 +296,22 @@ export function drawTargetHighlightV7(
   const spec = TARGET_HIGHLIGHTS_V7[style];
   const { x, y, size, zoom } = cell;
   const stroke = options.stroke ?? spec.stroke;
-  const width = (options.highContrast === true ? 5 : 4) * zoom;
+  const quiet = options.weight === "QUIET";
+  const width =
+    TARGET_HIGHLIGHT_WIDTHS_V7[quiet ? "QUIET" : "TARGET"][
+      options.highContrast === true ? 1 : 0
+    ] * zoom;
   const dash = (options.dash ?? spec.dash).map((part) => part * zoom);
   context.save();
   context.lineCap = spec.shape === "DOTTED_PIPS" ? "round" : "butt";
   if (spec.shape === "RING_PLUS") {
     const radius = size * 0.42;
+    if (options.weight === "PROMINENT") {
+      context.fillStyle = AREA_SUPPORT_FILL_V7;
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      context.fill();
+    }
     casedStroke(
       context,
       () => {
@@ -285,12 +320,15 @@ export function drawTargetHighlightV7(
       },
       stroke,
       width,
-      [],
+      // A pickable Help target's ring is whole; a recipient's is broken.
+      options.weight === undefined
+        ? []
+        : AREA_SUPPORT_DASH_V7.map((part) => part * zoom),
     );
     // The plus badge on the ring's upper right.
     const badgeX = x + radius * Math.SQRT1_2;
     const badgeY = y - radius * Math.SQRT1_2;
-    const badge = 11 * zoom;
+    const badge = (quiet ? 9.5 : 11) * zoom;
     context.setLineDash([]);
     context.fillStyle = stroke;
     context.strokeStyle = TARGET_HIGHLIGHT_CASING_V7;
@@ -300,7 +338,7 @@ export function drawTargetHighlightV7(
     context.fill();
     context.stroke();
     context.strokeStyle = "#10131c";
-    context.lineWidth = 3.5 * zoom;
+    context.lineWidth = (quiet ? 3 : 3.5) * zoom;
     const arm = badge * 0.55;
     context.beginPath();
     context.moveTo(badgeX - arm, badgeY);

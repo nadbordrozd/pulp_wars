@@ -77,7 +77,8 @@ itself.
 - **Place is needed.** The audit below has four actions that put something
   on a tile the selected unit does not go to (Lay Egg, Assemble, Re-bake,
   the Beam Down tile); drawing them as Moves would say the unit goes
-  there. A Monument tile target, should one be planned, is a Place too.
+  there. A Monument is not among them: its tile is selected first
+  (section 3.3), so there is no Monument target family.
 - **Neighbouring marks** share an edge once: an Attack mark wins it over a
   Place mark, a Place mark over a Move mark; a Help ring owns no edge.
 - **Move variants** keep their own stroke, each with a legend in the dock:
@@ -96,9 +97,46 @@ Until this bead every target was a dashed tile outline in a colour of its
 faction (Martian magenta, pale ice, light earth, copper, steam white, candy
 pink, cream, mint). Those colours no longer mark targets. Effect previews
 that are not targets keep their own looks: ability areas and their "−3"
-and "+2 HP" cells (Wail, Kaboom!, Tend Wounded, Repair, Frosting, Raise
-Dead, Devour, a Cold Snap's reach, the Beam Down pick-up range, a pull's
-path, an eruption ring, a splash ring).
+cells (Wail, Kaboom!, Raise Dead, Devour, a Cold Snap's reach, the Beam
+Down pick-up range, a pull's path, an eruption ring, a splash ring). The
+units an area support would help are the exception: they wear the Help
+mark in its own weight (section 2.1).
+
+### 2.1 Area support: marked, not picked (bead `pulp_wars-621`)
+
+Some abilities have one button that helps **every** eligible own unit in
+reach: Tend Wounded (a Dwarf Engineer's Repair, a Candy Confectioner's
+Frosting) and Rally (Frenzy, WAAAGH!, War Drums, Psychic Command). There
+is nothing to pick, but the player should see who is helped and by how
+much, as with a targeted heal. The Ice Folk have no such ability.
+
+- **The mark** is the Help mark with a **broken ring**: the same green,
+  the same plus badge, the ring drawn in dashes. A whole ring is a unit to
+  pick; a broken ring is a unit the button will help.
+- **Heals are marked while the healer is selected** and its button is on
+  offer, in every match. Each recipient carries the exact result of the
+  engine's public preview at the top of its tile: "+2 HP", "+4 HP" (a
+  machine under Repair), "Cure" (Plague, a bite or Chill is removed), or
+  "+2 · Cure". At rest the ring is thin with a small plus, so it sits
+  under the unit's Move and Attack marks rather than competing with them.
+- **Hovering or focusing the button makes its marks prominent**: the ring
+  at a target's full weight with a soft green fill. Nothing in the dock
+  changes. Leaving or blurring returns them to rest.
+- **A Rally is marked only while its button is hovered or focused.** It is
+  on offer almost every turn and has no amount to read, so marking it at
+  rest would ring half the army whenever a Captain is selected. Its
+  recipients (from the engine's own eligibility rule) then show the
+  prominent ring without a label, and the heal marks step aside for it.
+  On a phone, which has no hover, a Rally is therefore not marked; its
+  button and tooltip are unchanged.
+- **They are not targets.** A click or tap on a marked unit selects it, as
+  on any own unit; Tab does not step through them; the dock lists none of
+  them. The one button is the only way to use the ability.
+- **While another ability of the unit is aimed** (Assemble, Re-bake) the
+  marks step aside with the unit's other previews.
+
+Before this bead the heal recipients were a square teal outline, shown
+only in matches with an Undead seat or for an Engineer or a Confectioner.
 
 ## 3. Audit of every dock action
 
@@ -109,15 +147,15 @@ area fixed by the rules, or it opens a screen).
 
 ### 3.1 Every unit
 
-| Action                                                        | Class | How it is chosen now                                                  | Style  |
-| ------------------------------------------------------------- | ----- | --------------------------------------------------------------------- | ------ |
-| Move (also Embark: a Move onto a Port; Escape; Launch; Glide) | (a)   | Unarmed: a highlighted tile                                           | Move   |
-| Attack (melee, ranged, ray, bombs, a Spider)                  | (a)   | Unarmed: a highlighted hostile unit, with its preview                 | Attack |
-| Disembark, and the two-step landing                           | (a)   | Unarmed: a highlighted shore tile ("Land now", "Move 1, then land")   | Move   |
-| Recover, Wait, Capture, Promote, Pillage, Disband             | (c)   | One button; acts on the unit or its own tile                          | none   |
-| Build Field Defense (Fortify)                                 | (c)   | One button; the unit's own tile                                       | none   |
-| Rally (Frenzy, WAAAGH!)                                       | (c)   | One button; every own unit in the fixed radius                        | none   |
-| Tend Wounded (Repair, Frosting)                               | (c)   | One button; every own unit next to the healer, previewed on the board | none   |
+| Action                                                        | Class | How it is chosen now                                                 | Style                   |
+| ------------------------------------------------------------- | ----- | -------------------------------------------------------------------- | ----------------------- |
+| Move (also Embark: a Move onto a Port; Escape; Launch; Glide) | (a)   | Unarmed: a highlighted tile                                          | Move                    |
+| Attack (melee, ranged, ray, bombs, a Spider)                  | (a)   | Unarmed: a highlighted hostile unit, with its preview                | Attack                  |
+| Disembark, and the two-step landing                           | (a)   | Unarmed: a highlighted shore tile ("Land now", "Move 1, then land")  | Move                    |
+| Recover, Wait, Capture, Promote, Pillage, Disband             | (c)   | One button; acts on the unit or its own tile                         | none                    |
+| Build Field Defense (Fortify)                                 | (c)   | One button; the unit's own tile                                      | none                    |
+| Rally (Frenzy, WAAAGH!, War Drums, Psychic Command)           | (c)   | One button; its recipients are marked while it is hovered or focused | Help, broken ring (2.1) |
+| Tend Wounded (Repair, Frosting)                               | (c)   | One button; every recipient is marked with its heal or cure          | Help, broken ring (2.1) |
 
 ### 3.2 Faction abilities
 
@@ -144,11 +182,11 @@ area fixed by the rules, or it opens a screen).
 | Dwarf    | Bomb Run: target     | (b)   | A button per target, and board targets                 | The board targets only                                                                                       | Attack                       |
 | Dwarf    | Bomb Run: landing    | (a)   | A tile on the board                                    | Unchanged                                                                                                    | Move                         |
 | Dwarf    | Assemble             | (a)   | A tile on the board                                    | Unchanged                                                                                                    | Place                        |
-| Dwarf    | Repair               | (c)   | The Engineer's Tend Wounded button                     | Unchanged                                                                                                    | none                         |
+| Dwarf    | Repair               | (c)   | The Engineer's Tend Wounded button                     | The button is unchanged; the Repair recipients are marked (2.1)                                              | Help, broken ring            |
 | Candy    | Sugar Rush           | (a)   | One button arms it; a tile or an attack on the board   | Unchanged                                                                                                    | Move, Attack                 |
 | Candy    | Re-bake              | (b)   | A portrait button per Crumbs tile, and board targets   | The Crumbs tiles on the board only, each with the unit's ghost, price and HP                                 | Place                        |
 | Candy    | Sugar Toss           | (b)   | A portrait button per healable unit, and board targets | The healable units are highlighted unarmed beside the Gunner's Moves and Attacks; the button narrows to them | Help                         |
-| Candy    | Frosting             | (c)   | The Confectioner's Tend Wounded button                 | Unchanged                                                                                                    | none                         |
+| Candy    | Frosting             | (c)   | The Confectioner's Tend Wounded button                 | The button is unchanged; the Frosting recipients are marked (2.1)                                            | Help, broken ring            |
 
 ### 3.3 Cities, tiles, ships and curiosities
 
@@ -199,8 +237,21 @@ for tools; it is never read out.
   `scripts/browser-smoke-v7-candy.ts`) picks the Beam Down passenger, the
   Mind Control target, the Bolas target, the Sugar Toss target and the
   Re-bake tile on the board.
+- `tests/unit/area-support-render-v7.test.ts` and
+  `tests/integration/ruleset7-area-support-dom.test.ts` (section 2.1): on
+  a scene per faction (`tests/fixtures/v7-area-support-ui.ts`), every heal
+  recipient is marked with the public preview's amount, quiet at rest and
+  prominent while the button is hovered or focused; a Rally is marked only
+  then; no mark is a map target; the dock keeps one button and lists no
+  recipient; a click on a marked unit selects it.
 - `scripts/browser-board-targeting-review-v7.ts` (dev server only)
   captures every style on the faction fixtures, on Grass, Snow, a Forest,
-  Mountains and the Undead ground, at desktop and phone widths, and the
-  Help legend:
+  Mountains and the Undead ground, at desktop and phone widths, the area
+  support marks at rest and with their button focused, and the Help
+  legend (`--only=<name-prefix>` keeps a part of the captures):
   `npx tsx scripts/browser-board-targeting-review-v7.ts http://localhost:6173/ --output-dir=<new-dir>`.
+- The faction reviews `scripts/browser-martian-review-v7.ts`,
+  `scripts/browser-dwarf-review-v7.ts` and
+  `scripts/browser-balance-ui-review-v7.ts` read an aimed ability's
+  targets from the board (the aiming panel's `data-board-targets` and each
+  target's cursor description, stepped with Tab) and pick on the board.

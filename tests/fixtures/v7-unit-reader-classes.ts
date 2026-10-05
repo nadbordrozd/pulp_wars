@@ -388,8 +388,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     // The Dwarf UI (pulp_wars-78i.6) reads the board; mounds only through
     // the view's `burrowed` list.
     "src/render/canvas/dwarf-board-plan-v7.ts::addDwarfPickEntriesV7": "BOARD",
-    "src/render/canvas/dwarf-board-plan-v7.ts::dwarfEngineerSelectedV7":
-      "BOARD",
     "src/render/canvas/dwarf-board-plan-v7.ts::dwarfPickTargetsV7": "BOARD",
     "src/render/canvas/ice-folk-board-plan-v7.ts::addIceFolkPickEntriesV7":
       "BOARD",
@@ -484,8 +482,6 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/candy-presentation-v7.ts::candyBoundaryNoticeV7": "BOARD",
     "src/render/candy-presentation-v7.ts::candyFieldDefenseBlockedV7": "BOARD",
     "src/render/canvas/candy-board-plan-v7.ts::candyAttackTargetExtrasV7":
-      "BOARD",
-    "src/render/canvas/candy-board-plan-v7.ts::candyConfectionerSelectedV7":
       "BOARD",
     "src/render/canvas/candy-board-plan-v7.ts::candyPickTargetsV7": "BOARD",
   };

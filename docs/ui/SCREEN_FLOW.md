@@ -86,6 +86,16 @@ are in [BOARD_TARGETING.md](BOARD_TARGETING.md). In short:
   reached with the arrow keys. Past the last target Tab leaves the board.
 - **Help** shows the four marks with their names under "How to play", and
   lists Tab as "Next target".
+- **Area support is marked, not picked** (bead `pulp_wars-621`,
+  [BOARD_TARGETING.md section 2.1](BOARD_TARGETING.md#21-area-support-marked-not-picked-bead-pulp_wars-621)).
+  Tend Wounded, Repair and Frosting mark every unit they would help with a
+  broken Help ring and the exact "+2 HP", "+4 HP" or "Cure", in every
+  match, while the healer is selected; hovering or focusing the button
+  makes the marks prominent. A Rally (Frenzy, WAAAGH!, War Drums, Psychic
+  Command) marks its recipients only while its button is hovered or
+  focused. The marked units are not targets: a click selects them. Where a
+  later section limits the Tend Wounded board labels to Undead matches or
+  describes a square outline, this paragraph wins.
 
 ### Research prompts (bead `pulp_wars-gl1`)
 

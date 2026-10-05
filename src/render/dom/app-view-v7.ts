@@ -112,7 +112,10 @@ import {
   type StorageAdapter,
 } from "../../persistence/index";
 import { CanvasBoardHostV7, type BoardHostV7 } from "../canvas/board-host-v7";
-import type { BoardSelectionV7 } from "../canvas/board-renderer-v7";
+import type {
+  AreaSupportFocusV7,
+  BoardSelectionV7,
+} from "../canvas/board-renderer-v7";
 import {
   DEFAULT_BOARD_SATURATION_V7,
   SATURATION_STEP_V7,
@@ -727,6 +730,12 @@ export class Ruleset7DomAppView {
    */
   #kaboomArmedUnitId: number | null = null;
   #kaboomHoverUnitId: number | null = null;
+  /**
+   * Bead pulp_wars-621: the own unit whose area support button (Tend
+   * Wounded, Repair, Frosting; Rally) is hovered or focused; the board
+   * draws that button's recipients prominent.
+   */
+  #areaSupportHover: AreaSupportFocusV7 | null = null;
   /**
    * Revision 19: the own city and egg-laid role whose nest tile is being
    * picked on the board (Escape, Cancel or another selection leaves).
@@ -2029,6 +2038,7 @@ export class Ruleset7DomAppView {
           this.#selection = selection;
           this.#kaboomArmedUnitId = null;
           this.#kaboomHoverUnitId = null;
+          this.#areaSupportHover = null;
           this.#layEggPick = null;
           this.#martianPick = null;
           this.#iceFolkPick = null;
@@ -2396,6 +2406,12 @@ export class Ruleset7DomAppView {
         // unit previews its blast on the board.
         ...(kaboomUnitId !== null && kaboomUnitId === selectedUnitId
           ? { kaboomPreviewUnitId: kaboomUnitId }
+          : {}),
+        // Bead pulp_wars-621: the hovered or focused area support button
+        // of the selected unit makes its recipients' marks prominent.
+        ...(this.#areaSupportHover !== null &&
+        this.#areaSupportHover.unitId === selectedUnitId
+          ? { areaSupportFocus: this.#areaSupportHover }
           : {}),
         // Revision 19: the nest tiles of the Egg being laid.
         ...(this.#layEggPick !== null &&
@@ -4166,6 +4182,10 @@ export class Ruleset7DomAppView {
       );
       action.append(text(this.#document, "span", label, "v7-action-label"));
       action.title = label;
+      // Bead pulp_wars-621: an area support's one button helps every
+      // marked unit; hovering or focusing it makes their marks prominent.
+      if (command.kind === "TEND_WOUNDED" || command.kind === "RALLY")
+        this.#linkAreaSupportButton(action, command.unitId, command.kind);
       // Faction building looks (epic pulp_wars-xdh): the tooltip says what
       // the faction's building counts as ("Counts as a Farm.").
       const factionBuilding = factionBuildCommandV7(
@@ -6066,6 +6086,7 @@ export class Ruleset7DomAppView {
     if (this.#localBusy()) return false;
     this.#kaboomArmedUnitId = null;
     this.#kaboomHoverUnitId = null;
+    this.#areaSupportHover = null;
     this.#layEggPick = null;
     this.#martianPick = null;
     this.#iceFolkPick = null;
@@ -6493,6 +6514,37 @@ export class Ruleset7DomAppView {
     const hide = (): void => {
       if (this.#kaboomHoverUnitId !== unitId) return;
       this.#kaboomHoverUnitId = null;
+      this.#syncBoard();
+    };
+    action.addEventListener("pointerenter", show);
+    action.addEventListener("focus", show);
+    action.addEventListener("pointerleave", hide);
+    action.addEventListener("blur", hide);
+  }
+
+  /**
+   * Bead pulp_wars-621 (docs/ui/BOARD_TARGETING.md section 2.1): hover and
+   * focus of an area support's button make its recipients' marks prominent
+   * on the board, without re-rendering the dock. The button is still the
+   * only way to use the ability: the marked units are not targets.
+   */
+  #linkAreaSupportButton(
+    action: HTMLButtonElement,
+    unitId: UnitId,
+    kind: AreaSupportFocusV7["kind"],
+  ): void {
+    action.dataset.areaSupport = "true";
+    const shown = (): boolean =>
+      this.#areaSupportHover?.unitId === unitId &&
+      this.#areaSupportHover.kind === kind;
+    const show = (): void => {
+      if (shown()) return;
+      this.#areaSupportHover = { unitId, kind };
+      this.#syncBoard();
+    };
+    const hide = (): void => {
+      if (!shown()) return;
+      this.#areaSupportHover = null;
       this.#syncBoard();
     };
     action.addEventListener("pointerenter", show);

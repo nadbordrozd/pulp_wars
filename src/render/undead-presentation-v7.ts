@@ -443,11 +443,15 @@ export function tendPreviewPresentationV7(
   };
 }
 
-/** Canvas label of one Tend target: `+2 HP`, `Cure`, or `+2 · Cure`. */
+/**
+ * Canvas label of one Tend target: `+2 HP`, `Cure`, or `+2 · Cure`. A cured
+ * Chill is a cure too (bead pulp_wars-621), so a Chilled unit at full HP
+ * reads "Cure", never "+0 HP".
+ */
 export function tendTargetLabelV7(
   result: TendWoundedPreviewV7["results"][number],
 ): string {
-  const cure = result.curedPlague || result.curedBitten;
+  const cure = result.curedPlague || result.curedBitten || result.curedChill;
   if (result.amount > 0 && cure) return `+${result.amount} · Cure`;
   return cure ? "Cure" : `+${result.amount} HP`;
 }

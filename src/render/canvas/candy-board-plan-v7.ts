@@ -290,22 +290,3 @@ export function candyAttackTargetExtrasV7(
 export function isCandyPickCommandV7(kind: CommandV7["kind"]): boolean {
   return kind === "SUGAR_RUSH" || kind === "REBAKE" || kind === "SUGAR_TOSS";
 }
-
-/**
- * A selected own Confectioner: its Frosting targets are highlighted from
- * the exact Tend Wounded preview, like a Dwarf Engineer's Repair.
- */
-export function candyConfectionerSelectedV7(
-  view: PlayerViewV7,
-  unitId: number,
-): boolean {
-  const unit = view.units.find((candidate) => candidate.id === unitId);
-  return (
-    unit !== undefined &&
-    unit.form === "LAND" &&
-    candyStatsV7(view, unit.id).candy !== undefined &&
-    (unitRoleRuleV7(view, unit).abilities as readonly string[]).includes(
-      "REBAKE",
-    )
-  );
-}

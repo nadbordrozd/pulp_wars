@@ -15,6 +15,7 @@ import type {
   UnitRoleIdV7,
 } from "../../engine/index";
 import {
+  isRallyTargetV7,
   previewAttackExplosionsV7,
   previewHatchV7,
   previewKaboomV7,
@@ -143,7 +144,6 @@ import { shatterBoardCueV7 } from "./ice-folk-effects-v7";
 import {
   addDwarfPickEntriesV7,
   dwarfAttackTargetExtrasV7,
-  dwarfEngineerSelectedV7,
   dwarfMoundEntriesV7,
   dwarfPickTargetsV7,
   dwarfUnitMarkersV7,
@@ -168,11 +168,11 @@ import {
   drawTargetHighlightV7,
   targetHighlightEdgeRankV7,
   targetHighlightStyleV7,
+  type AreaSupportWeightV7,
   type TargetHighlightStyleV7,
 } from "./target-highlight-v7";
 import {
   candyAttackTargetExtrasV7,
-  candyConfectionerSelectedV7,
   candyCrumbsEntriesV7,
   candyPickTargetsV7,
   candyUnitMarkersV7,
@@ -298,6 +298,12 @@ export type BoardSelectionV7 =
   | { readonly kind: "UNIT"; readonly unitId: number }
   | { readonly kind: "CITY"; readonly cityId: number };
 
+/** The hovered or focused area support button of an own unit. */
+export interface AreaSupportFocusV7 {
+  readonly unitId: number;
+  readonly kind: "TEND_WOUNDED" | "RALLY";
+}
+
 export interface BoardRenderInteractionV7 {
   readonly selection: BoardSelectionV7 | null;
   readonly selectedUnitId: number | null;
@@ -309,6 +315,14 @@ export interface BoardRenderInteractionV7 {
    * shows none.
    */
   readonly kaboomPreviewUnitId?: number | null;
+  /**
+   * Bead pulp_wars-621: the own unit whose area support button is hovered
+   * or focused, and which one: Tend Wounded (Repair, Frosting) draws its
+   * recipients' marks prominent; Rally (Frenzy, WAAAGH!, War Drums) shows
+   * its recipients, which have no mark otherwise. Null or omitted leaves
+   * the heal marks quiet.
+   */
+  readonly areaSupportFocus?: AreaSupportFocusV7 | null;
   /**
    * Revision 19: the own city and egg-laid role whose nest tile is being
    * picked. Its legal nest tiles become the only map targets; null or
@@ -360,7 +374,6 @@ export interface MapCommandTargetV7 {
   readonly family:
     | "MOVE"
     | "ATTACK"
-    | "MONUMENT"
     | "DISEMBARK"
     | "LANDING_AFTER_MOVE"
     /** Revision 19: an adjacent own Egg a Shaman may hatch. */
@@ -668,6 +681,15 @@ export interface BoardRenderPlanEntryV7 {
   readonly abilityStyle?: AbilityPreviewStyleV7;
   /** ABILITY_TARGET: lethal previewed damage. */
   readonly lethal?: boolean;
+  /**
+   * ABILITY_TARGET only (bead pulp_wars-621; docs/ui/BOARD_TARGETING.md
+   * section 2.1): an own unit that the selected unit's one-button area
+   * support would heal or inspire. It is drawn as a broken Help ring: thin
+   * while the healer is selected, at full weight with a soft fill while
+   * the button is hovered or focused. It is never a map target: a click
+   * selects the unit.
+   */
+  readonly areaSupport?: AreaSupportWeightV7;
   /**
    * UNIT only, revision 19: a visible Egg of any owner and its public
    * countdown (owner Start Turns until it hatches).
@@ -1213,7 +1235,15 @@ export function buildBoardRenderPlanV7(
         interaction.candyPick === null ||
         interaction.candyPick.unitId !== selectedUnitId)
     )
-      addAbilityPreviews(entries, view, commands, selectedUnitId);
+      addAbilityPreviews(
+        entries,
+        view,
+        commands,
+        selectedUnitId,
+        interaction.areaSupportFocus?.unitId === selectedUnitId
+          ? interaction.areaSupportFocus.kind
+          : null,
+      );
     // The Martian revision: the Force Field of a selected Shield Projector
     // and the control link between a controlled unit and its Brain.
     if (martianMatch)
@@ -3763,6 +3793,36 @@ export function drawBoardV7(input: {
   for (const entry of input.plan.entries) {
     if (entry.kind !== "ABILITY_TARGET" || entry.abilityStyle === undefined)
       continue;
+    if (entry.areaSupport !== undefined) {
+      // Bead pulp_wars-621: a recipient of an area support is the Help
+      // ring, quiet or prominent, with its amount as the label.
+      const x = camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom;
+      const y = camera.offsetY + entry.at.y * TILE_HEIGHT * camera.zoom;
+      drawTargetHighlightV7(
+        context,
+        { x, y, size: TILE_WIDTH * camera.zoom, zoom: camera.zoom },
+        "SUPPORT",
+        {
+          highContrast: input.highContrast ?? false,
+          weight: entry.areaSupport,
+        },
+      );
+      if (entry.label !== undefined && entry.label !== "")
+        drawAbilityTargetV7(
+          context,
+          x,
+          y,
+          camera.zoom,
+          entry.abilityStyle,
+          entry.label,
+          false,
+          placer,
+          defer,
+          undefined,
+          false,
+        );
+      continue;
+    }
     drawAbilityTargetV7(
       context,
       camera.offsetX + entry.at.x * TILE_WIDTH * camera.zoom,
@@ -4918,6 +4978,8 @@ function addAbilityPreviews(
   view: PlayerViewV7,
   commands: readonly CommandV7[],
   selectedUnitId: number,
+  /** The unit's area support button that is hovered or focused. */
+  areaSupportFocus: AreaSupportFocusV7["kind"] | null = null,
 ): void {
   const unitId = view.units.find((unit) => unit.id === selectedUnitId)?.id;
   if (unitId === undefined) return;
@@ -4984,17 +5046,15 @@ function addAbilityPreviews(
         label: "Rise",
       });
   }
-  // Revision 14: Tend Wounded heals and cures, shown in Undead matches only
-  // (a Human-only match keeps its revision-12 board).
-  // The Dwarf revision: an Engineer's Repair shows its targets too (+4 on
-  // machines, +2 on the others).
-  if (
-    offered("TEND_WOUNDED") &&
-    (matchHasUndeadV7(view) ||
-      dwarfEngineerSelectedV7(view, unitId) ||
-      // The Candy revision: a Confectioner's Frosting shows its targets.
-      candyConfectionerSelectedV7(view, unitId))
-  ) {
+  // Bead pulp_wars-621: an area support marks every unit it would affect
+  // with the Help ring, in every match (docs/ui/BOARD_TARGETING.md section
+  // 2.1). Tend Wounded (a Dwarf Engineer's Repair, +4 on machines; a Candy
+  // Confectioner's Frosting) carries the exact heal or cure of the public
+  // preview: quiet while the healer is selected, prominent while its
+  // button is hovered or focused. They step aside for a hovered Rally.
+  if (offered("TEND_WOUNDED") && areaSupportFocus !== "RALLY") {
+    const areaSupport: AreaSupportWeightV7 =
+      areaSupportFocus === "TEND_WOUNDED" ? "PROMINENT" : "QUIET";
     const preview = previewTendWoundedV7(view, unitId);
     for (const result of preview?.results ?? []) {
       const target = view.units.find((unit) => unit.id === result.unitId);
@@ -5006,8 +5066,27 @@ function addAbilityPreviews(
         at: target.at,
         abilityStyle: "TEND",
         label: tendTargetLabelV7(result),
+        areaSupport,
       });
     }
+  }
+  // Rally (Frenzy, WAAAGH!, War Drums) is nearly always on offer and has
+  // no amount to read, so its recipients are marked only while its button
+  // is hovered or focused: the units the engine's own eligibility rule
+  // would inspire, each a ring without a label.
+  if (offered("RALLY") && areaSupportFocus === "RALLY") {
+    const captain = view.units.find((unit) => unit.id === unitId);
+    if (captain !== undefined)
+      for (const target of view.units)
+        if (isRallyTargetV7(view, captain, target))
+          entries.push({
+            key: `ability-target:RALLY:${target.id}`,
+            kind: "ABILITY_TARGET",
+            layer: 7.5,
+            at: target.at,
+            abilityStyle: "RALLY",
+            areaSupport: "PROMINENT",
+          });
   }
   // Revision 19: adjacent own Eggs laid this turn cannot be hatched yet.
   for (const egg of commands.length === 0

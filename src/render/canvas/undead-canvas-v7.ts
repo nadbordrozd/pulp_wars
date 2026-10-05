@@ -18,6 +18,8 @@ export type AbilityPreviewStyleV7 =
   | "DEVOUR"
   | "SPLASH"
   | "TEND"
+  /** Bead pulp_wars-621: a unit a Rally would inspire (the Help green). */
+  | "RALLY"
   /** Revision 17: a previewed blast area and the units it hits. */
   | "BLAST"
   /** Revision 17: an own or allied unit hit by a blast or bomb (warning). */
@@ -485,7 +487,10 @@ const STYLE_COLORS: Readonly<
   RAISE: { fill: "rgba(120, 230, 150, 0.2)", stroke: "#8ff0a4" },
   DEVOUR: { fill: "rgba(255, 128, 104, 0.2)", stroke: "#ff9a84" },
   SPLASH: { fill: "rgba(255, 170, 70, 0.18)", stroke: "#ffb35c" },
-  TEND: { fill: "rgba(103, 229, 202, 0.18)", stroke: "#67e5ca" },
+  // Bead pulp_wars-621: the recipients of an area support wear the Help
+  // ring, so their labels take its green (TARGET_HIGHLIGHTS_V7.SUPPORT).
+  TEND: { fill: "rgba(182, 243, 106, 0.18)", stroke: "#b6f36a" },
+  RALLY: { fill: "rgba(182, 243, 106, 0.18)", stroke: "#b6f36a" },
   // Revision 17: the blast is unowned (GOBLIN.md), so its preview uses the
   // pale spark cream; friendly fire adds yellow-and-charcoal hazard stripes.
   BLAST: { fill: "rgba(255, 248, 208, 0.24)", stroke: "#fff8d0" },
@@ -574,18 +579,24 @@ export function drawAbilityTargetV7(
    * attack's label stack placed after it.
    */
   paintLater?: (paint: () => void) => void,
+  /**
+   * Bead pulp_wars-621: false leaves the square outline out (the caller
+   * drew the cell's own mark, an area support's Help ring).
+   */
+  outline = true,
 ): void {
   const size = 128 * zoom;
   context.save();
   context.strokeStyle = STYLE_COLORS[style].stroke;
   context.lineWidth = 3 * zoom;
   context.setLineDash([]);
-  context.strokeRect(
-    x - size / 2 + 9 * zoom,
-    y - size / 2 + 9 * zoom,
-    size - 18 * zoom,
-    size - 18 * zoom,
-  );
+  if (outline)
+    context.strokeRect(
+      x - size / 2 + 9 * zoom,
+      y - size / 2 + 9 * zoom,
+      size - 18 * zoom,
+      size - 18 * zoom,
+    );
   if (style === "BLAST_FRIENDLY") {
     context.strokeStyle = HAZARD_STRIPE;
     context.setLineDash([7 * zoom, 7 * zoom]);
