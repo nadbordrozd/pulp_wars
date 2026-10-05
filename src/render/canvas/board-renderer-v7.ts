@@ -324,6 +324,12 @@ import {
   type ChibiMassifCellV7,
 } from "./chibi-massif-v7";
 import {
+  coastCellsOfV7,
+  drawCoastSandV7,
+  type CoastSandArtV7,
+} from "./coast-sand-v7";
+import { drawSettlementShadowV7 } from "./settlement-shadow-v7";
+import {
   drawFactionGrassV7,
   factionGrassCellsOfV7,
   factionGrassGladeLayersV7,
@@ -1917,6 +1923,10 @@ export function drawBoardV7(input: {
   readonly mountainArt?: { resolve(): ChibiMassifArtV7 | null };
   /** EXPERIMENT pulp_wars-2o7.4 (faction-grass-v7.ts); the live look only. */
   readonly factionGrassArt?: { resolve(): FactionGrassArtV7 | null };
+  /** A TRY (pulp_wars-2yc.8): cities and villages on a ground shadow. */
+  readonly settlementShadow?: boolean;
+  /** The shoreline (pulp_wars-2yc.5, coast-sand-v7.ts); the live look only. */
+  readonly coastArt?: CoastSandArtV7;
   /**
    * The Mind Control revision: the control halo's pulse clock in ms (0, the
    * default, and reduced motion draw it static in the faction colour).
@@ -2182,6 +2192,10 @@ export function drawBoardV7(input: {
     direction === undefined ? null : (input.factionGrassArt?.resolve() ?? null);
   const factionGrassCells =
     factionGrassArt === null ? null : factionGrassCellsOfV7(input.plan.entries);
+  // The shoreline (pulp_wars-2yc.5), in the live look only.
+  const coastArt = direction === undefined ? null : (input.coastArt ?? null);
+  const coastCells =
+    coastArt === null ? null : coastCellsOfV7(input.plan.entries);
   // Composed forests on Snow: caps go on cell by cell, so a piece that
   // spans a Snow border is capped only over its Snow cells.
   const forestSnowCells = new Set<string>();
@@ -2643,6 +2657,9 @@ export function drawBoardV7(input: {
               "OVERFLOW",
               sceneAlpha,
             );
+          // The shoreline (pulp_wars-2yc.5): sand and surf over the ground.
+          if (pass === "GROUND")
+            drawCoastSandV7(context, forestFrame, coastArt, entry, coastCells);
           continue;
         }
         if (pass === "GROUND") {
@@ -3038,6 +3055,13 @@ export function drawBoardV7(input: {
               chibiReady.asset.id,
             );
           }
+          // A TRY (pulp_wars-2yc.8): a city or a village on its shadow.
+          if (
+            direction !== undefined &&
+            chibiReady !== null &&
+            input.settlementShadow === true
+          )
+            drawSettlementShadowV7(context, entry, rect, sceneAlpha);
           // The Martian revision: a flyer casts a ground shadow (over land
           // or water) and is drawn lifted above it; the ground cue stays put.
           // The Dwarf revision: the Gyrocopter flies the same way.

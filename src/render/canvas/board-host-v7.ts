@@ -167,6 +167,12 @@ import {
 } from "./chibi-massif-v7";
 import { FACTION_GRASS_TILES_V7 } from "../../assets/faction-grass-manifest";
 import {
+  coastSandEnabledV7,
+  createCoastSandArtV7,
+  type CoastSandArtV7,
+} from "./coast-sand-v7";
+import { settlementShadowEnabledV7 } from "./settlement-shadow-v7";
+import {
   createFactionGrassArtV7,
   factionGrassEnabledV7,
   type FactionGrassArtV7,
@@ -328,6 +334,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   readonly #mountainArt: { resolve(): ChibiMassifArtV7 | null };
   /** EXPERIMENT pulp_wars-2o7.4: undefined with the switch off. */
   readonly #factionGrassArt?: { resolve(): FactionGrassArtV7 | null };
+  /** A TRY (pulp_wars-2yc.8): the settlement shadow switch, read once. */
+  readonly #settlementShadow = settlementShadowEnabledV7();
+  /** The shoreline (pulp_wars-2yc.5): undefined with the switch off. */
+  readonly #coastArt?: CoastSandArtV7;
   /** The Blizzard's slow ambient redraw (a timer, not every frame). */
   #blizzardTimer: number | null = null;
   /** The unit being shattered on the board, cased in ice until it bursts. */
@@ -456,6 +466,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             redraw: () => this.#draw(),
             set: CHIBI_MOUNTAIN_ART_SET_V7,
           });
+    if (coastSandEnabledV7())
+      this.#coastArt = createCoastSandArtV7(
+        browserChibiRasterEnvironmentV7(documentRoot),
+      );
     if (factionGrassEnabledV7())
       this.#factionGrassArt = createFactionGrassArtV7({
         environment: browserChibiRasterEnvironmentV7(documentRoot),
@@ -1594,6 +1608,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         dwarfArt: this.#dwarfArt,
         forestArt: this.#forestArt,
         mountainArt: this.#mountainArt,
+        ...(this.#coastArt === undefined ? {} : { coastArt: this.#coastArt }),
+        settlementShadow: this.#settlementShadow,
         ...(this.#factionGrassArt === undefined
           ? {}
           : { factionGrassArt: this.#factionGrassArt }),
