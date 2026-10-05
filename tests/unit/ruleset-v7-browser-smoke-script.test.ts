@@ -56,6 +56,39 @@ describe("Ruleset 7 browser smoke script", () => {
     );
   });
 
+  it("plays the frozen sea in the CHIBI look: Freeze, the slide, an icebound ship", () => {
+    // The frozen sea (bead pulp_wars-5ti.7, second part).
+    const source = readFileSync("scripts/browser-naval-smoke-v7.ts", "utf8");
+    expect(source).toContain("await captureFrozenSeaEvidence(");
+    expect(source).toContain("/tests/fixtures/v7-frozen-sea-ui.ts");
+    // The fixture app is mounted again with the CHIBI art set, and the
+    // naval art's ability icons are checked as loaded images.
+    expect(source).toContain("artSet: 'CHIBI'");
+    expect(source).toContain(
+      `document.querySelector('.v7-unit-ability[data-ability="\${ability}"] img')`,
+    );
+    expect(source).toContain("icon.complete && icon.naturalWidth > 0");
+    expect(source).toContain("Freeze must have exactly one dock button");
+    expect(source).toContain("Freeze must not be a per-tile dock command");
+    expect(source).toContain(
+      "document.querySelector('[data-v7-freeze-pick].v7-board-pick')?.dataset.boardTargets === '3'",
+    );
+    expect(source).toContain(
+      "trace?.command?.kind !== 'FREEZE' || !trace.eventKinds.includes('WATER_FROZEN')",
+    );
+    expect(source).toContain("the Sled did not reach the far shore");
+    expect(source).toContain('[data-unit-status="ice-crush"]');
+    expect(source).toContain("Ice Folk technology name: ");
+    // The aiming is captured before the Freeze is accepted, and the slide
+    // after it.
+    expect(source.indexOf("frozen-freeze-aim.png")).toBeLessThan(
+      source.indexOf("the board pick did not accept FREEZE with WATER_FROZEN"),
+    );
+    expect(source.indexOf("frozen-witch-ring.png")).toBeLessThan(
+      source.indexOf("frozen-slide.png"),
+    );
+  });
+
   it("arms transient controls before trusted pointer launch and waits for the native select to close", () => {
     const source = readFileSync("scripts/browser-smoke-v7.ts", "utf8");
     // Default match, its natural outcome, and the default-route Undead and

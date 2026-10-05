@@ -28,6 +28,7 @@ import {
   iceFolkAbilityNameV7,
   iceFolkRecruitNotesV7,
 } from "./ice-folk-presentation-v7";
+import { FREEZE_RULE_V7 } from "./frozen-sea-presentation-v7";
 import {
   NAVAL_RAM_RULE_V7,
   SUBMERGED_RULE_V7,
@@ -195,6 +196,9 @@ export function roleAbilityDescriptionV7(
     // shared by every faction.
     case "RAM":
       return `With Seamanship: ${NAVAL_RAM_RULE_V7.replace(/^A Patrol Boat/, "a Patrol Boat")}`;
+    // The frozen sea (`pulp_wars-5ti.7`): every Ice Folk land role.
+    case "FREEZE":
+      return `With Rime: ${FREEZE_RULE_V7.replace(/^A unit/, "it")}`;
     case "SUBMERGED":
       return SUBMERGED_RULE_V7;
     case "TORPEDO":

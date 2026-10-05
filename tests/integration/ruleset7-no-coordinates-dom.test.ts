@@ -66,6 +66,11 @@ import {
   navalUnitAtV7,
   patchNavalUnitV7,
 } from "../fixtures/v7-naval-branch";
+import {
+  frozenFreezeUiFixtureV7,
+  frozenIceboundUiFixtureV7,
+  frozenSlideUiFixtureV7,
+} from "../fixtures/v7-frozen-sea-ui";
 import { riftUiFixtureV7 } from "../fixtures/v7-rift-ui";
 import { undeadShowcaseFixtureV7 } from "../fixtures/v7-undead-ui";
 
@@ -89,7 +94,7 @@ const STAGE_FAMILIES = new Set([
 /** These toggle or adjust an aimed ability without finishing it. */
 const ADJUST_FAMILIES = new Set(["TUNNEL_PASSENGER", "TUNNEL_RIDER"]);
 const ABILITY_BUTTONS =
-  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true']), .v7-selection-dock [data-candy-ability]:not([aria-disabled='true']), .v7-selection-dock [data-naval-ability]:not([aria-disabled='true'])";
+  ".v7-selection-dock [data-dwarf-ability]:not([aria-disabled='true']), .v7-selection-dock [data-martian-ability]:not([aria-disabled='true']), .v7-selection-dock [data-ice-folk-ability]:not([aria-disabled='true']), .v7-selection-dock [data-candy-ability]:not([aria-disabled='true']), .v7-selection-dock [data-naval-ability]:not([aria-disabled='true']), .v7-selection-dock [data-freeze-ability]:not([aria-disabled='true'])";
 
 /**
  * The fixtures, and steps each sweep must reach (so a fixture that stops
@@ -184,6 +189,22 @@ const FIXTURES: readonly (readonly [
     "Naval boarding",
     navalBoardingFixtureV7,
     ["naval-board aimed", "naval-board performed"],
+  ],
+  // The frozen sea (bead pulp_wars-5ti.7, second part): a Yeti's Freeze is
+  // armed and its tile picked on the board, the Ice Witch's casts her
+  // ring; the ice chips, the slide, the slip and an icebound ship.
+  [
+    "Frozen sea: Freeze",
+    frozenFreezeUiFixtureV7,
+    ["freeze aimed", "freeze performed"],
+  ],
+  ["Frozen sea: slide", frozenSlideUiFixtureV7, []],
+  ["Frozen sea: slip", () => frozenSlideUiFixtureV7({ slipper: true }), []],
+  ["Frozen sea: icebound", frozenIceboundUiFixtureV7, []],
+  [
+    "Frozen sea: icebound victim",
+    () => frozenIceboundUiFixtureV7({ victim: true }),
+    [],
   ],
 ];
 
@@ -657,7 +678,7 @@ function targetListOffences(
   const dock = document.querySelector<HTMLElement>(".v7-selection-dock");
   if (dock === null || host.lastModel === null) return offences;
   for (const panel of dock.querySelectorAll<HTMLElement>(
-    "[data-v7-martian-pick], [data-v7-ice-folk-pick], [data-v7-dwarf-pick], [data-v7-candy-pick], [data-v7-naval-pick]",
+    "[data-v7-martian-pick], [data-v7-ice-folk-pick], [data-v7-dwarf-pick], [data-v7-candy-pick], [data-v7-naval-pick], [data-v7-freeze-pick]",
   )) {
     if (!panel.classList.contains("v7-board-pick"))
       offences.push("an aiming panel is not a board pick");

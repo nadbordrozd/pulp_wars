@@ -152,6 +152,27 @@ import {
 } from "./naval-board-plan-v7";
 import { drawNavalUnitMarkersV7 } from "./naval-canvas-v7";
 import {
+  addFreezePickEntriesV7,
+  addFreezeRingEntriesV7,
+  freezePickTargetsV7,
+  iceboundMarkerV7,
+  moveOnIceLabelV7,
+  moveOnIceV7,
+  seaIceCellsV7,
+  type FreezePickV7,
+  type FreezeRingWeightV7,
+  type IceboundMarkerV7,
+  type MoveSlideV7,
+  type SeaIceCellV7,
+} from "./frozen-sea-board-plan-v7";
+import {
+  drawIceboundMarkerV7,
+  drawSeaIceCellV7,
+  drawSlideArrowV7,
+} from "./frozen-sea-canvas-v7";
+import { frozenSeaCombatNotesV7 } from "../frozen-sea-presentation-v7";
+import { seaIceArtSubjectV7 } from "../../assets/chibi-art-v7";
+import {
   addDwarfPickEntriesV7,
   dwarfAttackTargetExtrasV7,
   dwarfMoundEntriesV7,
@@ -374,6 +395,18 @@ export interface BoardRenderInteractionV7 {
    * map targets; null or omitted aims none.
    */
   readonly navalPick?: NavalPickV7 | null;
+  /**
+   * The frozen sea (bead pulp_wars-5ti.7): the Freeze a line role is
+   * aiming. The tiles it may freeze toward become the only map targets;
+   * null or omitted aims none.
+   */
+  readonly freezePick?: FreezePickV7 | null;
+  /**
+   * The frozen sea: the Ice Witch whose Freeze button is hovered or
+   * focused; her ring is then drawn prominent with its outcome. Null or
+   * omitted leaves the ring quiet.
+   */
+  readonly freezeRingFocusUnitId?: number | null;
 }
 
 /** Revision 19: the ID of the legacy code-drawn Egg (no raster exists). */
@@ -441,7 +474,12 @@ export interface MapCommandTargetV7 {
      * The naval branch interface: an enemy ship the selected ship may
      * capture, while its Board is aimed.
      */
-    | "BOARD";
+    | "BOARD"
+    /**
+     * The frozen sea: the tile next to the unit that an aimed Freeze starts
+     * on (its line runs on from there).
+     */
+    | "FREEZE";
   /**
    * Revision 16: a two-command landing. `command` is the one-cell Move to
    * the intermediate water cell; the UI sends this `DISEMBARK` only when that
@@ -591,6 +629,16 @@ export interface MapCommandTargetV7 {
     readonly to: CoordV7 | null;
     readonly blocked: boolean;
   };
+  /** The frozen sea: every tile an aimed Freeze turns to ice. */
+  readonly freeze?: { readonly tiles: readonly CoordV7[] };
+  /**
+   * The frozen sea: the slides of a Move across ice (an arrow from the tile
+   * the unit steps from to the tile it stops on), drawn for every such
+   * destination and at full weight on the focused one.
+   */
+  readonly slide?: readonly MoveSlideV7[];
+  /** The frozen sea: this Move ends on ice because the unit slips there. */
+  readonly slip?: true;
   /** Revision 13: public splash entries of this attack (Undead matches only). */
   readonly splash?: readonly {
     readonly at: CoordV7;
@@ -766,6 +814,10 @@ export interface BoardRenderPlanEntryV7 {
    * ship at or below its boarding line (any owner).
    */
   readonly naval?: NavalUnitMarkersV7;
+  /** TERRAIN only, the frozen sea: the sea ice over this water cell. */
+  readonly seaIce?: SeaIceCellV7;
+  /** UNIT only, the frozen sea: a ship locked in the ice, and its crush. */
+  readonly icebound?: IceboundMarkerV7;
   /** CRUMBS only, the Candy revision: the role, the turns left, the bite. */
   readonly crumbs?: CandyCrumbsMarkerV7;
   /** CURIOSITY only (bead pulp_wars-737.6): which tile overlay this is. */
@@ -809,6 +861,8 @@ export function buildBoardRenderPlanV7(
   // (a match without an Ice Folk seat has neither).
   const iceFolkMatch = matchHasIceFolkSeatV7(view);
   const winter = iceFolkMatch ? iceFolkTerrainCellsV7(view) : null;
+  // The frozen sea: the ice over each water cell, from the view's ice list.
+  const seaIce = seaIceCellsV7(view);
   // The Rift (bead pulp_wars-9s0.5): a piece read from explored cells only.
   const riftAt = (at: CoordV7): boolean | null => {
     if (
@@ -881,6 +935,9 @@ export function buildBoardRenderPlanV7(
       ...(territoryGround === null ? {} : { territoryGround }),
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
+      ...(seaIce.has(coordKey(tile.at))
+        ? { seaIce: seaIce.get(coordKey(tile.at)) as SeaIceCellV7 }
+        : {}),
       ...(winter === null
         ? {}
         : {
@@ -1072,6 +1129,8 @@ export function buildBoardRenderPlanV7(
     const candy = candyMatch ? candyUnitMarkersV7(view, unit) : undefined;
     // The naval branch interface: Submerged and Boardable, on any ship.
     const naval = navalUnitMarkersV7(view, unit);
+    // The frozen sea: a ship locked in the ice, and the crush it takes.
+    const icebound = iceFolkMatch ? iceboundMarkerV7(view, unit) : undefined;
     // The Martian revision: a machine afloat is drawn as itself (never as
     // the transport); the Mind Control revision: a controlled unit keeps its
     // own name and sprite and carries the control halo and brain chip.
@@ -1141,6 +1200,7 @@ export function buildBoardRenderPlanV7(
       ...(dwarf === undefined ? {} : { dwarf }),
       ...(candy === undefined ? {} : { candy }),
       ...(naval === undefined ? {} : { naval }),
+      ...(icebound === undefined ? {} : { icebound }),
       ...(monster
         ? { monster: { provoked: monsterProvokedV7(view, unit.id) } }
         : {}),
@@ -1346,6 +1406,13 @@ export function buildBoardRenderPlanV7(
     interaction.navalPick.unitId === interaction.selectedUnitId
       ? interaction.navalPick
       : null;
+  // The frozen sea: likewise while a line role's Freeze is aimed.
+  const freezePick =
+    interaction.freezePick !== undefined &&
+    interaction.freezePick !== null &&
+    interaction.freezePick.unitId === interaction.selectedUnitId
+      ? interaction.freezePick
+      : null;
   /** The Candy revision: the art of a role the viewer would bake back. */
   const candyGhost = (
     role: UnitRoleIdV7,
@@ -1376,44 +1443,67 @@ export function buildBoardRenderPlanV7(
             ? dwarfPickTargetsV7(view, commands, dwarfPick)
             : navalPick !== null
               ? navalPickTargetsV7(view, commands, navalPick)
-              : candyPick !== null
-                ? candyPickTargetsV7(
-                    view,
-                    commands,
-                    candyPick,
-                    // An armed Rush shows the unit's attacks with the bonus.
-                    candyPick.kind === "SUGAR_RUSH"
-                      ? commandMapTargets(
-                          view,
-                          commands.filter(
-                            (command) => command.kind === "ATTACK",
-                          ),
-                          candyPick.unitId,
-                          { assumeSugarRush: true },
-                        )
-                      : [],
-                    candyGhost,
-                  )
-                : dedupeMapTargets([
-                    ...mapTargets(view, commands, interaction.selectedUnitId),
-                    // Bead pulp_wars-9im: a selected Gunner shows the units
-                    // it may heal beside its Moves and Attacks, unarmed: an
-                    // own unit is never a Move or an Attack target.
-                    ...(unarmedToss === undefined
-                      ? []
-                      : candyPickTargetsV7(
-                          view,
-                          commands,
-                          { kind: "SUGAR_TOSS", unitId: unarmedToss.unitId },
-                          [],
-                          candyGhost,
-                        )),
-                  ]);
+              : freezePick !== null
+                ? freezePickTargetsV7(view, commands, freezePick)
+                : candyPick !== null
+                  ? candyPickTargetsV7(
+                      view,
+                      commands,
+                      candyPick,
+                      // An armed Rush shows the unit's attacks with the bonus.
+                      candyPick.kind === "SUGAR_RUSH"
+                        ? commandMapTargets(
+                            view,
+                            commands.filter(
+                              (command) => command.kind === "ATTACK",
+                            ),
+                            candyPick.unitId,
+                            { assumeSugarRush: true },
+                          )
+                        : [],
+                      candyGhost,
+                    )
+                  : dedupeMapTargets([
+                      ...mapTargets(view, commands, interaction.selectedUnitId),
+                      // Bead pulp_wars-9im: a selected Gunner shows the units
+                      // it may heal beside its Moves and Attacks, unarmed: an
+                      // own unit is never a Move or an Attack target.
+                      ...(unarmedToss === undefined
+                        ? []
+                        : candyPickTargetsV7(
+                            view,
+                            commands,
+                            { kind: "SUGAR_TOSS", unitId: unarmedToss.unitId },
+                            [],
+                            candyGhost,
+                          )),
+                    ]);
   if (martianPick !== null)
     addMartianPickEntriesV7(entries, view, targets, martianPick);
   if (iceFolkPick !== null) addIceFolkPickEntriesV7(entries, view, iceFolkPick);
   if (dwarfPick !== null)
     addDwarfPickEntriesV7(entries, view, commands, dwarfPick);
+  if (freezePick !== null)
+    addFreezePickEntriesV7(entries, view, commands, targets, freezePick);
+  else if (
+    iceFolkMatch &&
+    selectedUnitId !== null &&
+    !kaboomPreview &&
+    layEgg === null &&
+    martianPick === null &&
+    iceFolkPick === null &&
+    dwarfPick === null &&
+    candyPick === null &&
+    navalPick === null
+  ) {
+    // The Ice Witch's ring: quiet while she is selected, prominent while
+    // her Freeze button is hovered or focused.
+    const weight: FreezeRingWeightV7 =
+      interaction.freezeRingFocusUnitId === selectedUnitId
+        ? "PROMINENT"
+        : "QUIET";
+    addFreezeRingEntriesV7(entries, view, commands, selectedUnitId, weight);
+  }
   if (navalPick !== null)
     addNavalPickEntriesV7(entries, view, targets, navalPick);
   else if (
@@ -1423,7 +1513,8 @@ export function buildBoardRenderPlanV7(
     martianPick === null &&
     iceFolkPick === null &&
     dwarfPick === null &&
-    candyPick === null
+    candyPick === null &&
+    freezePick === null
   )
     // A Submarine the selected unit cannot attack from where it stands.
     addSubmergedReasonEntriesV7(entries, view, commands, selectedUnitId);
@@ -2086,7 +2177,12 @@ export function drawBoardV7(input: {
     x: number,
     y: number,
   ): void => {
-    if (entry.snow === undefined && entry.blizzard !== true) return;
+    if (
+      entry.snow === undefined &&
+      entry.blizzard !== true &&
+      entry.seaIce === undefined
+    )
+      return;
     const cell =
       chibiArt === undefined
         ? {
@@ -2104,6 +2200,37 @@ export function drawBoardV7(input: {
           );
     if (entry.snow !== undefined)
       drawSnowCellV7(context, iceFolkArt, cell, entry.snow, sceneAlpha);
+    if (entry.seaIce !== undefined) {
+      // The frozen sea: the cut ice sheet of the water's depth over it (a
+      // code-drawn floe in LEGACY and while the sheet loads), then cracks.
+      const sheet =
+        chibiArt === undefined
+          ? null
+          : chibiArt.resolve({
+              subject: seaIceArtSubjectV7(
+                entry.seaIce.depth === "SHALLOW"
+                  ? "SHALLOW_WATER"
+                  : "DEEP_WATER",
+              ),
+              at: entry.at,
+              deviceScale: 1,
+            });
+      const tile =
+        sheet?.kind === "READY" && sheet.density === 1
+          ? (iceFolkArt?.seaIce(
+              sheet.image,
+              entry.seaIce.openWater,
+              entry.seaIce.variant,
+              entry.seaIce.permanent,
+            ) ?? null)
+          : null;
+      drawSeaIceCellV7(context, cell, entry.at, entry.seaIce, tile, {
+        sceneAlpha,
+        zoom: camera.zoom,
+        smoothing: !isWholeScale(chibiMasterScale(camera) * devicePixelRatio),
+        highContrast: input.highContrast ?? false,
+      });
+    }
     if (entry.blizzard === true)
       drawBlizzardCellV7(context, entry.at, cell, blizzardTime, sceneAlpha);
   };
@@ -3019,7 +3146,12 @@ export function drawBoardV7(input: {
               drawShatterCracksV7(context, rect, shatterCue.cracks);
             } else if (entry.iceFolk?.chill === "FROZEN")
               drawFrozenCasingV7(context, iceFolkArt, image, rect);
-            else if (entry.iceFolk?.chill === "FROSTED")
+            // The frozen sea: an icebound ship's hull is rimed too (with
+            // the pack ice at its foot, the frost crust of section 14.1).
+            else if (
+              entry.iceFolk?.chill === "FROSTED" ||
+              entry.icebound !== undefined
+            )
               drawFrostedRimeV7(context, iceFolkArt, image, rect);
           }
           // The Martian revision: a walker afloat wades (ripples at its feet).
@@ -3291,6 +3423,26 @@ export function drawBoardV7(input: {
               navalArtRoleOfSubjectV7(entry.artSubject) ===
                 "SUBMARINE_SUBMERGED"
             ),
+          });
+          context.restore();
+        }
+        // The frozen sea: the pack ice at an icebound ship's foot and the
+        // crush it takes next.
+        if (entry.kind === "UNIT" && entry.icebound !== undefined) {
+          const overlay =
+            chibiPiece && chibiArt !== undefined
+              ? chibiArt.resolve({
+                  subject: "OVERLAY:ICEBOUND",
+                  at: entry.at,
+                  deviceScale: chibiMasterScale(camera) * devicePixelRatio,
+                })
+              : null;
+          context.save();
+          context.globalAlpha = sceneAlpha;
+          drawIceboundMarkerV7(context, entry.icebound, x, y, camera.zoom, {
+            overlay: overlay?.kind === "READY" ? overlay.image : null,
+            smoothing: overlay?.kind === "READY" ? overlay.smoothing : true,
+            highContrast: input.highContrast ?? false,
           });
           context.restore();
         }
@@ -3842,6 +3994,13 @@ export function drawBoardV7(input: {
       input.previewFocus ?? null,
       input.highContrast ?? false,
     );
+    drawSlidePreviewV7(
+      context,
+      camera,
+      input.plan,
+      input.previewFocus ?? null,
+      input.highContrast ?? false,
+    );
   };
   if (goblinAreaFirst) drawAreaPreviews();
   // The Martian revision: the shooter's note goes on the focused target,
@@ -4066,7 +4225,12 @@ function mapTargetEdges(
       // `pulp_wars-1wy.5`: a Glide tile keeps its whole pale-ice outline
       // where it touches a plain Move tile.
       const priority = (candidate: MapCommandTargetV7): number =>
-        targetPriority(candidate) + (candidate.glide === true ? 0.5 : 0);
+        targetPriority(candidate) +
+        (candidate.glide === true ||
+        candidate.slide !== undefined ||
+        candidate.slip === true
+          ? 0.5
+          : 0);
       if (winner === undefined || priority(target) > priority(winner.target))
         winners.set(key, { target, edge });
     }
@@ -4126,6 +4290,10 @@ function targetVariant(target: MapCommandTargetV7 | undefined): {
   if (target?.launch === true)
     return { stroke: LAUNCH_TARGET_STROKE_V7, dash: [3, 5] };
   if (target?.glide === true) return { stroke: GLIDE_TARGET_STROKE_V7 };
+  // The frozen sea: the tile a slide stops on, and the tile a slip ends
+  // on, take the pale ice too (the arrow and the legend say which).
+  if (target?.slide !== undefined || target?.slip === true)
+    return { stroke: GLIDE_TARGET_STROKE_V7 };
   if (target?.family === "LANDING_AFTER_MOVE")
     return { stroke: LANDING_AFTER_MOVE_STROKE_V7, dash: [3, 6] };
   return {};
@@ -4578,6 +4746,51 @@ function drawCandyFocusPreviewV7(
     camera.zoom,
     highContrast,
   );
+}
+
+/**
+ * The frozen sea: the slide of every Move that crosses ice, as an arrow
+ * from the tile the unit steps from to the tile it stops on (a slide two
+ * destinations share is drawn once); the focused destination's slides are
+ * drawn last and at full weight.
+ */
+function drawSlidePreviewV7(
+  context: CanvasRenderingContext2D,
+  camera: CameraState,
+  plan: BoardRenderPlanV7,
+  focus: CoordV7 | null,
+  highContrast: boolean,
+): void {
+  const sliding = plan.targets.filter(
+    (target) => target.slide !== undefined && target.slide.length > 0,
+  );
+  if (sliding.length === 0) return;
+  const point = (at: CoordV7): { readonly x: number; readonly y: number } => ({
+    x: camera.offsetX + at.x * TILE_WIDTH * camera.zoom,
+    y: camera.offsetY + at.y * TILE_HEIGHT * camera.zoom,
+  });
+  const drawn = new Set<string>();
+  const draw = (target: MapCommandTargetV7, prominent: boolean): void => {
+    for (const slide of target.slide ?? []) {
+      const end = slide.tiles.at(-1);
+      if (end === undefined) continue;
+      const slideKey = `${coordKey(slide.from)}>${coordKey(end)}`;
+      if (!prominent && drawn.has(slideKey)) continue;
+      drawn.add(slideKey);
+      drawSlideArrowV7(
+        context,
+        [slide.from, ...slide.tiles].map(point),
+        camera.zoom,
+        { prominent, highContrast },
+      );
+    }
+  };
+  const focused =
+    focus === null
+      ? undefined
+      : sliding.find((candidate) => same(candidate.at, focus));
+  for (const target of sliding) if (target !== focused) draw(target, false);
+  if (focused !== undefined) draw(focused, true);
 }
 
 /**
@@ -5268,9 +5481,34 @@ function mapTargets(
   selectedUnitId: number | null,
 ): MapCommandTargetV7[] {
   return [
-    ...commandMapTargets(view, commands, selectedUnitId),
+    ...commandMapTargets(view, commands, selectedUnitId).map((target) =>
+      withMoveOnIceV7(view, target),
+    ),
     ...landingAfterMoveTargets(view, commands, selectedUnitId),
   ];
+}
+
+/**
+ * The frozen sea: a Move across ice carries its slides (a unit that slides)
+ * or says that it ends there (a unit that slips), from the command's own
+ * path and the view's ice list. Every other target is returned as it is.
+ */
+function withMoveOnIceV7(
+  view: PlayerViewV7,
+  target: MapCommandTargetV7,
+): MapCommandTargetV7 {
+  if (target.family !== "MOVE" || target.command.kind !== "MOVE") return target;
+  const onIce = moveOnIceV7(view, target.command);
+  const label = moveOnIceLabelV7(onIce);
+  if (onIce === null || label === null) return target;
+  return {
+    ...target,
+    ...(onIce.slip ? { slip: true as const } : { slide: onIce.slides }),
+    semanticLabel:
+      target.semanticLabel === undefined
+        ? label
+        : `${target.semanticLabel}. ${label}`,
+  };
 }
 
 /** Revision 19: the legal nest tiles of the Egg being laid. */
@@ -5510,6 +5748,8 @@ function commandMapTargets(
         ...(dwarf?.notes ?? []),
         ...(candy?.notes ?? []),
         ...(naval?.notes ?? []),
+        // The frozen sea: Glacier's cover on ice, and a target frozen in.
+        ...(preview === null ? [] : frozenSeaCombatNotesV7(preview)),
       ].filter((part): part is string => part !== null);
       const note = noteParts.length === 0 ? null : noteParts.join(" · ");
       const semanticParts = [

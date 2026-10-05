@@ -22,6 +22,7 @@ import {
   iceFolkSnowTileV7,
   type IceFolkRasterV7,
 } from "../../assets/chibi-direction-ice-folk-presentation";
+import { seaIceTileV7 } from "../../assets/sea-ice-v7";
 import type { ChibiRasterEnvironmentV7 } from "./chibi-art-resolver-v7";
 import {
   SNOW_EDGE_EAST_V7,
@@ -149,6 +150,18 @@ export interface IceFolkBoardArtV7 {
     image: CanvasImageSource,
     heightShare: number,
   ): { readonly image: CanvasImageSource; readonly margin: number } | null;
+  /**
+   * The frozen sea (bead pulp_wars-5ti.7): the ice sheet `sheet` (the
+   * loaded `TERRAIN:ICE_SHALLOW` or `TERRAIN:ICE_DEEP` master) cut at its
+   * open-water sides and, when `permanent`, dusted with snow
+   * (`seaIceTileV7`). One surface per sheet, side set, variant and state.
+   */
+  seaIce(
+    sheet: CanvasImageSource,
+    openWater: number,
+    variant: number,
+    permanent: boolean,
+  ): CanvasImageSource | null;
 }
 
 function intrinsicSize(
@@ -237,6 +250,14 @@ export function createIceFolkBoardArtV7(
                 alpha: ICE_FOLK_CHILL_MARKER_V7.frosted.alpha,
               }),
         ),
+      );
+    },
+    seaIce(sheet, openWater, variant, permanent) {
+      return fromImage(
+        sheet,
+        `sea-ice:${openWater}|${variant}|${permanent ? 1 : 0}`,
+        (pixels) =>
+          surface(seaIceTileV7(pixels, openWater, variant, permanent)),
       );
     },
     casing(image, heightShare) {

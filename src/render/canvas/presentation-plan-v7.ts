@@ -23,6 +23,7 @@ import {
   type CandyFeedbackEffectV7,
 } from "./candy-effects-v7";
 import { attackEffectForV7, type AttackEffectIdV7 } from "./attack-effects-v7";
+import { playerFactionColourV7 } from "./faction-colours-v7";
 
 export type CorePresentationStepV7 =
   | {
@@ -85,6 +86,9 @@ export type CorePresentationStepV7 =
       readonly cells: readonly CoordV7[];
       readonly from?: CoordV7;
       readonly unitId?: number;
+      /** PRIZE_FLAG: the former owner's colour and the captor's. */
+      readonly fromColour?: string;
+      readonly toColour?: string;
       readonly durationMs: number;
       /** Another player's cue: the camera frames it, like enemy moves. */
       readonly followCamera?: true;
@@ -795,6 +799,60 @@ export function corePresentationPlanV7(
             ? {}
             : { from: source.at }),
         });
+    } else if (event.kind === "WATER_FROZEN") {
+      // The frozen sea: frost spreads from the Freezing unit over the
+      // tiles the viewer knows.
+      const cells = event.tiles.filter(isExplored);
+      const source =
+        event.unitId === null ? undefined : unitAnywhere(event.unitId);
+      if (cells.length > 0)
+        pushIceFolk({
+          effect: "ICE_FREEZE",
+          cells,
+          ...(source === undefined || !isExplored(source.at)
+            ? {}
+            : { from: source.at }),
+        });
+    } else if (event.kind === "ICE_MELTED") {
+      const cells = event.tiles.filter(isExplored);
+      if (cells.length > 0) pushIceFolk({ effect: "ICE_MELT", cells });
+    } else if (event.kind === "UNITS_CRUSHED") {
+      // The crush: the ice closes on each frozen ship, then its hit shows.
+      const hits = event.results.flatMap((result) => {
+        const unit = unitAnywhere(result.unitId);
+        return unit === undefined || !isExplored(unit.at)
+          ? []
+          : [{ result, at: unit.at }];
+      });
+      if (hits.length > 0) {
+        pushIceFolk({
+          effect: "ICE_CRUSH",
+          cells: hits.map((hit) => hit.at),
+        });
+        for (const hit of hits)
+          steps.push({
+            kind: "DAMAGE",
+            unitId: hit.result.unitId,
+            at: hit.at,
+            damage: hit.result.damage + hit.result.shieldDamage,
+            lethal: hit.result.hpAfter <= 0,
+            durationMs: 100,
+          });
+      }
+    } else if (event.kind === "SHIP_BOARDED") {
+      // The naval branch: the prize's flag changes to its captor's colour.
+      if (isExplored(event.at)) {
+        const colourOf = (playerId: number): string | undefined =>
+          playerFactionColourV7(after, playerId);
+        const fromColour = colourOf(event.fromPlayerId);
+        const toColour = colourOf(event.playerId);
+        pushIceFolk({
+          effect: "PRIZE_FLAG",
+          cells: [event.at],
+          ...(fromColour === undefined ? {} : { fromColour }),
+          ...(toColour === undefined ? {} : { toColour }),
+        });
+      }
     } else if (event.kind === "UNIT_TUNNELLED") {
       // The Dwarf revision: the Mole (and its rider) dive in and a dirt
       // trail runs to the mound. A projection hides the tiles a viewer has

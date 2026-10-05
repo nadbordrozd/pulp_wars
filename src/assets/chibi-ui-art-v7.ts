@@ -144,6 +144,17 @@ export const CHIBI_TECH_ART_SUBJECTS_V7 = {
   SUBMERSIBLES: "ICON:TECH:SUBMERSIBLES",
 } as const satisfies Readonly<Record<TechnologyIdV7, ArtSubjectV7>>;
 
+/** The Ice Folk cards of the Naval branch (see `technologySubjectV7`). */
+export const ICE_FOLK_NAVAL_TECH_SUBJECTS_V7: Readonly<
+  Partial<Record<TechnologyIdV7, ArtSubjectV7>>
+> = {
+  SHORECRAFT: "ICON:STATUS:CHILLED",
+  NAVIGATION: "EFFECT:SHATTER_SHARDS",
+  NAVAL_ENGINEERING: "OVERLAY:ICEBOUND",
+  SEAMANSHIP: "EFFECT:COLD_SNAP",
+  SUBMERSIBLES: "ICON:STATUS:FROZEN",
+};
+
 /**
  * Technology art for a viewer's faction: the units and portraits a
  * technology shows follow the faction (an Undead Drill shows the Zombie, a
@@ -168,6 +179,16 @@ export function technologySubjectV7(
     (tech === "FORTIFICATION" || tech === "EXPLOSIVES")
   )
     return `ICON:TECH:ICE_FOLK:${tech}`;
+  // The frozen sea (bead pulp_wars-5ti.7): the Ice Folk Naval branch has no
+  // ship, so its cards show the ice instead of a Port, a compass, a wheel,
+  // a Battleship and a diving helmet: Rime the frost of Chill, Pack Ice
+  // the drifting floes, Icebound the pack ice, Black Ice the frost ring and
+  // Glacier the ice block. Stand-ins of registered art until the faction
+  // has icons of its own for them.
+  if (faction === "ICE_FOLK") {
+    const frozen = ICE_FOLK_NAVAL_TECH_SUBJECTS_V7[tech];
+    if (frozen !== undefined) return frozen;
+  }
   if (
     faction === "DWARF" &&
     (tech === "FORTIFICATION" || tech === "EXPLOSIVES")

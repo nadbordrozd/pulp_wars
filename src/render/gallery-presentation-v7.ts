@@ -222,7 +222,18 @@ export type GalleryUnitCellV7 =
       readonly kind: "EMPTY";
       readonly row: GalleryUnitRowIdV7;
       readonly faction: FactionIdV7;
+      /**
+       * The frozen sea: why the cell is empty on purpose. `NO_SHIPS`: the
+       * faction builds no ship and no transport (the Ice Folk freeze the
+       * sea instead); the Gallery shows an ice mark with that sentence.
+       */
+      readonly reason?: "NO_SHIPS";
     };
+
+/** The Gallery's words for a faction with no ship in a naval row. */
+export const GALLERY_NO_SHIPS_LABEL_V7 = "Ice";
+export const GALLERY_NO_SHIPS_TEXT_V7 =
+  "No ships: the Ice Folk freeze the sea and slide across it";
 
 /** A faction lays Eggs when one of its roles is egg-laid (the Dinosaurs). */
 export function factionLaysEggsV7(faction: FactionIdV7): boolean {
@@ -242,7 +253,7 @@ export function galleryUnitCellV7(
       isNavalRoleV7(row) &&
       !factionUnlocksRoleV7(faction, row))
   )
-    return { kind: "EMPTY", row, faction };
+    return { kind: "EMPTY", row, faction, reason: "NO_SHIPS" };
   if (row === "TRANSPORT")
     return {
       kind: "UNIT",

@@ -390,6 +390,18 @@ export const UNIT_READER_CLASSES_V7: Readonly<Record<string, "BOARD" | "ALL">> =
     "src/render/naval-presentation-v7.ts::boardUnavailableTextV7": "BOARD",
     "src/render/naval-presentation-v7.ts::navalCombatLinesV7": "BOARD",
     "src/render/naval-presentation-v7.ts::navalBoundaryNoticeV7": "BOARD",
+    // The frozen sea interface (`pulp_wars-5ti.7`): Freeze's unit and the
+    // ships it locks in, the slide of a Move, and the frozen-sea notices
+    // read what stands on the board (nothing burrows under ice or water).
+    "src/render/canvas/frozen-sea-board-plan-v7.ts::freezePickTargetsV7":
+      "BOARD",
+    "src/render/canvas/frozen-sea-board-plan-v7.ts::addIceboundPreviewEntries":
+      "BOARD",
+    "src/render/canvas/frozen-sea-board-plan-v7.ts::addFreezeRingEntriesV7":
+      "BOARD",
+    "src/render/canvas/frozen-sea-board-plan-v7.ts::moveOnIceV7": "BOARD",
+    "src/render/frozen-sea-presentation-v7.ts::frozenSeaBoundaryNoticeV7":
+      "BOARD",
     "src/render/canvas/board-host-v7.ts::<module>": "BOARD",
     "src/render/canvas/board-host-v7.ts::CanvasBoardHostV7.pinIceFolkFeedback":
       "BOARD",

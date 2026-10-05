@@ -279,13 +279,26 @@ describe("naval branch art (pulp_wars-5ti.6)", () => {
   it("shows the two technologies with their icons for every faction, and registers the Ram, Board and Torpedo icons", () => {
     const classic = buildChibiArtRegistryV7(CHIBI_ART_ASSETS_V7).registry;
     for (const faction of FACTION_IDS_V7) {
+      // The frozen sea (`pulp_wars-5ti.7`): the Ice Folk have no ship; their
+      // Black Ice and Glacier cards show ice (registered stand-ins).
       expect(technologySubjectV7("SEAMANSHIP", faction), faction).toBe(
-        "ICON:TECH:SEAMANSHIP",
+        faction === "ICE_FOLK" ? "EFFECT:COLD_SNAP" : "ICON:TECH:SEAMANSHIP",
       );
       expect(technologySubjectV7("SUBMERSIBLES", faction), faction).toBe(
-        "ICON:TECH:SUBMERSIBLES",
+        faction === "ICE_FOLK"
+          ? "ICON:STATUS:FROZEN"
+          : "ICON:TECH:SUBMERSIBLES",
       );
     }
+    expect(technologySubjectV7("SHORECRAFT", "ICE_FOLK")).toBe(
+      "ICON:STATUS:CHILLED",
+    );
+    expect(technologySubjectV7("NAVIGATION", "ICE_FOLK")).toBe(
+      "EFFECT:SHATTER_SHARDS",
+    );
+    expect(technologySubjectV7("NAVAL_ENGINEERING", "ICE_FOLK")).toBe(
+      "OVERLAY:ICEBOUND",
+    );
     const icons: readonly (readonly [ArtSubjectV7, string])[] = [
       ["ICON:TECH:SEAMANSHIP", "chibi-icon-tech-seamanship"],
       ["ICON:TECH:SUBMERSIBLES", "chibi-icon-tech-submersibles"],

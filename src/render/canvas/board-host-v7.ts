@@ -32,6 +32,7 @@ import {
   drawMartianFeedbackV7,
   type MartianFeedbackV7,
 } from "./martian-effects-v7";
+import { iceChipTooltipV7, iceOnTileV7 } from "../frozen-sea-presentation-v7";
 import {
   ICE_FOLK_EFFECT_DURATIONS_V7,
   ICE_FOLK_EFFECT_SUBJECTS_V7,
@@ -583,8 +584,10 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
     // The Candy revision: an armed Sugar Rush, a Re-bake or a Sugar Toss
     // likewise.
     const candyPick = model.interaction.candyPick ?? null;
-    // The naval branch interface: an aimed Board likewise.
-    const navalPick = model.interaction.navalPick ?? null;
+    // The naval branch interface: an aimed Board likewise, and (the
+    // frozen sea) an aimed Freeze.
+    const navalPick =
+      model.interaction.navalPick ?? model.interaction.freezePick ?? null;
     const subject =
       unitId !== null
         ? String(unitId)
@@ -2058,11 +2061,17 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         (interaction.martianPick ?? null) !== null ||
         (interaction.iceFolkPick ?? null) !== null ||
         (interaction.navalPick ?? null) !== null ||
+        (interaction.freezePick ?? null) !== null ||
         (interaction.layEgg ?? null) !== null);
     this.#description.textContent = [
       aimed ? actions.join(", ") : "",
       title(tile.terrain),
       // The Ice Folk revision: what Snow and a Blizzard do for the viewer.
+      // The frozen sea: the tile's ice, when it melts, and Black Ice.
+      ...(() => {
+        const ice = iceOnTileV7(model.view, at);
+        return ice === undefined ? [] : [iceChipTooltipV7(model.view, ice)];
+      })(),
       tile.snow === true ? snowTooltipV7(model.view) : "",
       tile.blizzard === true ? BLIZZARD_TOOLTIP_V7 : "",
       tile.resource !== null && tile.resource !== "UNKNOWN_RESOURCE"
@@ -2312,6 +2321,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
       (interaction.martianPick ?? null) !== null ||
       (interaction.iceFolkPick ?? null) !== null ||
       (interaction.navalPick ?? null) !== null ||
+      (interaction.freezePick ?? null) !== null ||
       (interaction.layEgg ?? null) !== null;
     if (!aimed && !model.interactive) return [];
     const cells = new Map<string, CoordV7>();
@@ -2824,6 +2834,8 @@ function iceFolkFeedbackOf(
     cells: step.cells,
     ...(step.from === undefined ? {} : { from: step.from }),
     ...(step.unitId === undefined ? {} : { unitId: step.unitId }),
+    ...(step.fromColour === undefined ? {} : { fromColour: step.fromColour }),
+    ...(step.toColour === undefined ? {} : { toColour: step.toColour }),
     progress,
   };
 }

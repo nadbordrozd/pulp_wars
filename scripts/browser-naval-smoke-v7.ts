@@ -183,6 +183,10 @@ try {
     connection,
     output.directory,
   );
+  const frozenSea = await captureFrozenSeaEvidence(
+    connection,
+    output.directory,
+  );
 
   for (const size of [11, 25] as const) {
     await mountVisual(connection, size);
@@ -243,6 +247,7 @@ try {
         functional,
         mountedUi,
         navalBranch,
+        frozenSea,
         visuals: {
           boards: [11, 25],
           zooms: ["min", "normal", "max"],
@@ -738,50 +743,10 @@ async function captureNavalBranchEvidence(
   connection: Connection,
   directory: string,
 ): Promise<Record<string, unknown>> {
-  // The app accepts input once the last presentation is over and every
-  // achievement notice (the fixtures explore the whole map) is dismissed.
-  const settle = async (): Promise<void> => {
-    for (let attempt = 0; attempt < 200; attempt += 1) {
-      const ready = await evaluate<boolean>(
-        connection,
-        `(() => {
-          const dismiss = document.querySelector('[data-action="dismiss-achievement"]');
-          if (dismiss instanceof HTMLButtonElement) {
-            dismiss.click();
-            return false;
-          }
-          const end = document.querySelector('[data-action="end-turn"]');
-          return document.querySelector('[data-v7-region="achievement-notice"]') === null && end instanceof HTMLButtonElement && !end.disabled;
-        })()`,
-      );
-      if (ready) return;
-      await delay(50);
-    }
-    throw new Error("The naval branch scene did not settle");
-  };
-  const scene = async (name: string): Promise<Record<string, unknown>> => {
-    await settle();
-    const at = await evaluate<Record<string, unknown>>(
-      connection,
-      `(async () => {
-        const fixtures = await import('/tests/fixtures/v7-naval-ui.ts');
-        const dom = globalThis.__NAVAL_DOM__;
-        dom.boardHost.resetInspectionCycle?.();
-        dom.replaceState(fixtures[${JSON.stringify(name)}]());
-        dom.traces.length = 0;
-        return fixtures.NAVAL_UI_V7;
-      })()`,
-    );
-    await settle();
-    await delay(150);
-    await settle();
-    return at;
-  };
-  const activate = (at: unknown): Promise<unknown> =>
-    evaluate(
-      connection,
-      `globalThis.__NAVAL_DOM__.boardHost.activate(${JSON.stringify(at)})`,
-    );
+  const tools = sceneTools(connection);
+  const { activate } = tools;
+  const scene = (name: string): Promise<Record<string, unknown>> =>
+    tools.scene("/tests/fixtures/v7-naval-ui.ts", "NAVAL_UI_V7", name);
 
   // Board: one button arms it, the two prizes are picked on the board.
   const boarding = await scene("navalBoardingUiFixtureV7");
@@ -922,6 +887,434 @@ async function captureNavalBranchEvidence(
   );
   await delay(100);
   return { boarded, phonePick, rammed, submerged, cards };
+}
+
+/**
+ * Scene helpers of the mounted fixture app (`__NAVAL_DOM__`): `settle`
+ * waits until the app accepts input (the last presentation is over and
+ * every achievement notice, which the whole-map fixtures raise, is
+ * dismissed), `scene` replaces the state with a fixture of `module` and
+ * returns its coordinates table, `activate` clicks a board cell.
+ */
+function sceneTools(connection: Connection): {
+  readonly settle: () => Promise<void>;
+  readonly scene: (
+    module: string,
+    table: string,
+    name: string,
+    argument?: unknown,
+  ) => Promise<Record<string, unknown>>;
+  readonly activate: (at: unknown) => Promise<unknown>;
+} {
+  const settle = async (): Promise<void> => {
+    for (let attempt = 0; attempt < 200; attempt += 1) {
+      const ready = await evaluate<boolean>(
+        connection,
+        `(() => {
+          const dismiss = document.querySelector('[data-action="dismiss-achievement"]');
+          if (dismiss instanceof HTMLButtonElement) {
+            dismiss.click();
+            return false;
+          }
+          const end = document.querySelector('[data-action="end-turn"]');
+          return document.querySelector('[data-v7-region="achievement-notice"]') === null && end instanceof HTMLButtonElement && !end.disabled;
+        })()`,
+      );
+      if (ready) return;
+      await delay(50);
+    }
+    throw new Error("The naval branch scene did not settle");
+  };
+  const scene = async (
+    module: string,
+    table: string,
+    name: string,
+    argument?: unknown,
+  ): Promise<Record<string, unknown>> => {
+    await settle();
+    const at = await evaluate<Record<string, unknown>>(
+      connection,
+      `(async () => {
+        const fixtures = await import(${JSON.stringify(module)});
+        const dom = globalThis.__NAVAL_DOM__;
+        dom.boardHost.resetInspectionCycle?.();
+        dom.replaceState(fixtures[${JSON.stringify(name)}](${argument === undefined ? "" : JSON.stringify(argument)}));
+        dom.traces.length = 0;
+        return fixtures[${JSON.stringify(table)}];
+      })()`,
+    );
+    await settle();
+    await delay(150);
+    await settle();
+    return at;
+  };
+  const activate = (at: unknown): Promise<unknown> =>
+    evaluate(
+      connection,
+      `globalThis.__NAVAL_DOM__.boardHost.activate(${JSON.stringify(at)})`,
+    );
+  return { settle, scene, activate };
+}
+
+/**
+ * The frozen sea (bead pulp_wars-5ti.7, second part), in the live CHIBI
+ * look: the fixture app is mounted again with the CHIBI art set, so the
+ * naval art (the Ram and Torpedo ability icons, the sea ice sheets, the
+ * Icebound pack ice) is drawn by the gate. A Yeti's Freeze is armed and its
+ * tile picked on the board; the Ice Witch's ring is previewed and cast; a
+ * Sled slides across an ice bridge to the far shore; an icebound Battleship
+ * shows its chips; the Ice Folk technology cards carry their names. Each
+ * scene is a fixture of tests/fixtures/v7-frozen-sea-ui.ts.
+ */
+async function captureFrozenSeaEvidence(
+  connection: Connection,
+  directory: string,
+): Promise<Record<string, unknown>> {
+  await evaluate(
+    connection,
+    `(async () => {
+      const engine = await import('/src/engine/index.ts');
+      const fixtures = await import('/tests/fixtures/v7-naval-ui.ts');
+      const { Ruleset7DomAppView } = await import('/src/render/dom/app-view-v7.ts');
+      const { CanvasBoardHostV7 } = await import('/src/render/canvas/board-host-v7.ts');
+      globalThis.__NAVAL_DOM__?.destroy?.();
+      let state = fixtures.navalSubmarineUiFixtureV7();
+      const subscribers = new Set();
+      const boundarySubscribers = new Set();
+      const traces = [];
+      const ai = { active: false, fastForward: false, policySlices: 0, acceptedCommands: 0, lastSliceMilliseconds: 0, maximumSliceMilliseconds: 0 };
+      const snapshot = () => {
+        const view = engine.viewForV7(state, state.humanPlayerId);
+        return {
+          phase: 'ACTIVE', view,
+          offeredCommands: engine.queryPlayerCommandsV7(view),
+          savedAt: null, hasStoredSave: false, recovery: null,
+          saveWarning: null, diagnostic: null, transitioning: false, ai,
+        };
+      };
+      const emit = () => {
+        const next = snapshot();
+        for (const subscriber of subscribers) subscriber(next);
+      };
+      const controller = {
+        snapshot,
+        subscribe(subscriber) { subscribers.add(subscriber); subscriber(snapshot()); return () => subscribers.delete(subscriber); },
+        subscribeAcceptedBoundary(subscriber) { boundarySubscribers.add(subscriber); return () => boundarySubscribers.delete(subscriber); },
+        async dispatch(command) {
+          const beforeState = state;
+          const beforeView = engine.viewForV7(beforeState, beforeState.humanPlayerId);
+          const applied = engine.applyCommandV7(beforeState, beforeState.humanPlayerId, command);
+          if (!applied.accepted) return { accepted: false, reason: 'ENGINE_REJECTED', error: applied.error };
+          state = applied.state;
+          const afterView = engine.viewForV7(state, state.humanPlayerId);
+          const playerEvents = engine.projectEventsV7(beforeState, state, state.humanPlayerId, applied.events);
+          traces.push({ command, eventKinds: playerEvents.events.map((event) => event.kind) });
+          const boundary = { actor: 'HUMAN', beforeView, afterView, playerEvents };
+          for (const subscriber of boundarySubscribers) subscriber(boundary);
+          emit();
+          return { accepted: true, beforeView, afterView, playerEvents };
+        },
+        async launch() { throw new Error('fixture launch unavailable'); },
+        async resume() { return true; },
+        async returnToMenu() { return false; },
+        async progressAiTurns() { return { ok: true, acceptedCommands: 0, playerEventBatches: [], view: snapshot().view, policySlices: 0, maximumSliceMilliseconds: 0 }; },
+        async restart() { return { ok: false }; },
+        async deleteStoredSave() { return true; },
+        setFastForward() {},
+        exportSafeLog() { return { ok: true, filename: 'fixture.json', source: '{}' }; },
+        exportDebugBundle() { return { ok: false, reason: 'NO_ACTIVE_MATCH' }; },
+      };
+      const root = document.querySelector('#app');
+      if (!(root instanceof HTMLElement)) throw new Error('app root missing');
+      const boardHost = new CanvasBoardHostV7(document);
+      const view = new Ruleset7DomAppView(document, root, controller, { boardHost, artSet: 'CHIBI', settingsStorage: null });
+      globalThis.__NAVAL_DOM__ = {
+        boardHost, traces, snapshot,
+        replaceState(next) { state = next; emit(); },
+        destroy() { view.destroy(); },
+      };
+    })()`,
+  );
+  await delay(500);
+  const tools = sceneTools(connection);
+  const { activate } = tools;
+  const frozen = (
+    name: string,
+    argument?: unknown,
+  ): Promise<Record<string, unknown>> =>
+    tools.scene(
+      "/tests/fixtures/v7-frozen-sea-ui.ts",
+      "FROZEN_UI_V7",
+      name,
+      argument,
+    );
+  // A phone capture of an aimed ability: it is disarmed, armed again at
+  // the phone's size (so the camera frames its targets as it would for a
+  // player on a phone) and captured.
+  const phone = async (
+    file: string,
+    cancel: string,
+    arm: string,
+    armed: string,
+  ): Promise<void> => {
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="${cancel}"]').click()`,
+    );
+    await connection.send("Emulation.setDeviceMetricsOverride", {
+      width: 390,
+      height: 844,
+      deviceScaleFactor: 2,
+      mobile: true,
+    });
+    await delay(400);
+    await evaluate(
+      connection,
+      `document.querySelector('.v7-selection-dock [data-action="${arm}"]').click()`,
+    );
+    await waitForExpression(connection, armed);
+    await delay(400);
+    await evaluate(
+      connection,
+      `(() => {
+        const dock = document.querySelector('.v7-selection-dock');
+        if (!(dock instanceof HTMLElement)) throw new Error('the aiming dock is missing on a phone');
+        const bounds = dock.getBoundingClientRect();
+        if (bounds.right > innerWidth + 1 || bounds.height > innerHeight * 0.5)
+          throw new Error('the aiming dock does not fit a phone');
+      })()`,
+    );
+    await capture(connection, file, directory);
+    await connection.send("Emulation.setDeviceMetricsOverride", {
+      width: 1440,
+      height: 1000,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+    await delay(300);
+  };
+
+  // The naval art in the CHIBI look: the Bow Ram and Torpedo lines of a
+  // ship's information carry their icons.
+  const naval = await tools.scene(
+    "/tests/fixtures/v7-naval-ui.ts",
+    "NAVAL_UI_V7",
+    "navalSubmarineUiFixtureV7",
+  );
+  const abilityIcons: Record<string, unknown> = {};
+  for (const [ability, at] of [
+    ["ram", naval.adjacentBoat],
+    ["torpedo", naval.ownSubmarine],
+  ] as const) {
+    await activate(at);
+    await waitForExpression(
+      connection,
+      `document.querySelector('.v7-selection-dock[data-selection-kind="unit"] [data-action="unit-help"]') instanceof HTMLButtonElement`,
+    );
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="unit-help"]').click()`,
+    );
+    await waitForExpression(
+      connection,
+      `(() => {
+        const icon = document.querySelector('.v7-unit-ability[data-ability="${ability}"] img');
+        return icon instanceof HTMLImageElement && icon.complete && icon.naturalWidth > 0;
+      })()`,
+    );
+    abilityIcons[ability] = await evaluate<string>(
+      connection,
+      `document.querySelector('.v7-unit-ability[data-ability="${ability}"] strong').textContent`,
+    );
+    await delay(150);
+    await capture(connection, `chibi-ability-${ability}.png`, directory);
+    await evaluate(
+      connection,
+      `document.querySelector('[data-action="close-unit-help"]')?.click()`,
+    );
+    await delay(100);
+  }
+
+  // Freeze, a line role: one button arms it, the tile is picked on the board.
+  const freeze = await frozen("frozenFreezeUiFixtureV7");
+  await activate(freeze.yeti);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock [data-action="freeze"][data-freeze-ability="line"]') instanceof HTMLButtonElement`,
+  );
+  await evaluate(
+    connection,
+    `(() => {
+      const buttons = document.querySelectorAll('.v7-selection-dock [data-freeze-ability="line"]');
+      if (buttons.length !== 1) throw new Error('Freeze must have exactly one dock button');
+      if (document.querySelector('[data-action^="command-freeze"]') !== null)
+        throw new Error('Freeze must not be a per-tile dock command');
+      buttons[0].click();
+    })()`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-freeze-pick].v7-board-pick')?.dataset.boardTargets === '3'`,
+  );
+  await delay(250);
+  await capture(connection, "frozen-freeze-aim.png", directory);
+  await phone(
+    "frozen-freeze-aim-phone.png",
+    "freeze-pick-cancel",
+    "freeze",
+    `document.querySelector('[data-v7-freeze-pick].v7-board-pick')?.dataset.boardTargets === '3'`,
+  );
+  await waitForExpression(
+    connection,
+    `document.querySelector('[data-v7-freeze-pick].v7-board-pick') !== null`,
+  );
+  await activate(freeze.freezeAt);
+  await waitForExpression(
+    connection,
+    `globalThis.__NAVAL_DOM__.traces.length === 1`,
+  );
+  const frozenLine = await evaluate<Record<string, unknown>>(
+    connection,
+    `(() => {
+      const trace = globalThis.__NAVAL_DOM__.traces[0];
+      if (trace?.command?.kind !== 'FREEZE' || !trace.eventKinds.includes('WATER_FROZEN'))
+        throw new Error('the board pick did not accept FREEZE with WATER_FROZEN');
+      const ice = globalThis.__NAVAL_DOM__.snapshot().view.ice;
+      if (ice.length !== 2) throw new Error('the Freeze did not make two ice tiles');
+      return { command: trace.command.kind, ice: ice.length };
+    })()`,
+  );
+  await tools.settle();
+
+  // Freeze, the Ice Witch: her ring is previewed while her one button is
+  // focused, and the button casts it.
+  await activate(freeze.witch);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock [data-action="freeze"][data-freeze-ability="ring"]') instanceof HTMLButtonElement`,
+  );
+  await evaluate(
+    connection,
+    `document.querySelector('.v7-selection-dock [data-action="freeze"]').focus()`,
+  );
+  await delay(250);
+  await capture(connection, "frozen-witch-ring.png", directory);
+  await evaluate(
+    connection,
+    `(() => {
+      globalThis.__NAVAL_DOM__.traces.length = 0;
+      document.querySelector('.v7-selection-dock [data-action="freeze"]').click();
+    })()`,
+  );
+  await waitForExpression(
+    connection,
+    `globalThis.__NAVAL_DOM__.traces.length === 1`,
+  );
+  const frozenRing = await evaluate<Record<string, unknown>>(
+    connection,
+    `(() => {
+      const trace = globalThis.__NAVAL_DOM__.traces[0];
+      if (trace?.command?.kind !== 'FREEZE' || !trace.eventKinds.includes('WATER_FROZEN'))
+        throw new Error("the Witch's button did not accept FREEZE with WATER_FROZEN");
+      return { command: trace.command.kind, ice: globalThis.__NAVAL_DOM__.snapshot().view.ice.length };
+    })()`,
+  );
+
+  // The slide: a Sled steps onto the bridge, slides to its end and steps
+  // ashore on the far side in one Move.
+  const slide = await frozen("frozenSlideUiFixtureV7", { sled: true });
+  await activate(slide.bridgeHead);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock [data-landing-marker="slide"]') !== null`,
+  );
+  // Zoomed out one step, so the whole bridge shows above the dock.
+  await evaluate(connection, `globalThis.__NAVAL_DOM__.boardHost.zoom('OUT')`);
+  await delay(350);
+  await capture(connection, "frozen-slide.png", directory);
+  await evaluate(connection, `globalThis.__NAVAL_DOM__.boardHost.zoom('IN')`);
+  await delay(200);
+  await activate(slide.farShore);
+  await waitForExpression(
+    connection,
+    `globalThis.__NAVAL_DOM__.traces.length === 1`,
+  );
+  const crossed = await evaluate<Record<string, unknown>>(
+    connection,
+    `(() => {
+      const trace = globalThis.__NAVAL_DOM__.traces[0];
+      if (trace?.command?.kind !== 'MOVE') throw new Error('the slide was not a MOVE');
+      const end = trace.command.path[trace.command.path.length - 1];
+      if (end.x !== 1 || end.y !== 8) throw new Error('the Sled did not reach the far shore');
+      return { command: trace.command.kind, steps: trace.command.path.length };
+    })()`,
+  );
+
+  // Icebound: the viewer's own Battleship frozen in, with its crush warning
+  // and the melting stages beside it.
+  const icebound = await frozen("frozenIceboundUiFixtureV7", { victim: true });
+  await activate(icebound.frozenShip);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock [data-unit-status="icebound"]') !== null && document.querySelector('.v7-selection-dock [data-unit-status="ice-crush"]') !== null`,
+  );
+  await delay(250);
+  await capture(connection, "frozen-icebound.png", directory);
+  const crush = await evaluate<Record<string, unknown>>(
+    connection,
+    `(() => {
+      const blocked = document.querySelector('.v7-selection-dock [data-action="icebound-blocked"]');
+      if (!(blocked instanceof HTMLButtonElement) || blocked.getAttribute('aria-disabled') !== 'true')
+        throw new Error('the icebound ship does not say why it cannot act');
+      return {
+        chip: document.querySelector('.v7-selection-dock [data-unit-status="ice-crush"]').textContent,
+        reason: blocked.title,
+      };
+    })()`,
+  );
+  // The ice chip of a melting tile.
+  const melting = icebound.melting as readonly unknown[];
+  await activate(melting[2]);
+  await waitForExpression(
+    connection,
+    `document.querySelector('.v7-selection-dock [data-winter="ice"]')?.dataset.iceTurns === '1'`,
+  );
+  await delay(200);
+  await capture(connection, "frozen-melting-ice.png", directory);
+
+  // The Ice Folk technology cards.
+  await frozen("frozenFreezeUiFixtureV7");
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="tech"]').click()`,
+  );
+  await delay(150);
+  const cards = await evaluate<Record<string, unknown>>(
+    connection,
+    `(() => {
+      const names = {};
+      for (const tech of ['shorecraft', 'navigation', 'naval_engineering', 'seamanship', 'submersibles']) {
+        const card = document.querySelector('[data-action="tech-' + tech + '"]');
+        if (!(card instanceof HTMLButtonElement)) throw new Error('technology card missing: ' + tech);
+        names[tech] = card.querySelector('.v7-tech-name')?.textContent;
+      }
+      const expected = { shorecraft: 'Rime', navigation: 'Pack Ice', naval_engineering: 'Icebound', seamanship: 'Black Ice', submersibles: 'Glacier' };
+      for (const [tech, name] of Object.entries(expected))
+        if (names[tech] !== name) throw new Error('Ice Folk technology name: ' + tech + ' is ' + names[tech]);
+      document.querySelector('[data-action="tech-shorecraft"]').click();
+      document.querySelector('[data-tech-branch="NAVAL"]')?.scrollIntoView({ inline: 'center', block: 'nearest' });
+      return names;
+    })()`,
+  );
+  await delay(250);
+  await capture(connection, "frozen-tech-cards.png", directory);
+  await evaluate(
+    connection,
+    `document.querySelector('[data-action="close-overlay"]').click()`,
+  );
+  await delay(100);
+  await evaluate(connection, `globalThis.__NAVAL_DOM__.destroy()`);
+  return { abilityIcons, frozenLine, frozenRing, crossed, crush, cards };
 }
 
 async function mountVisual(

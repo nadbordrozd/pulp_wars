@@ -140,6 +140,63 @@ its second part). The targeting rules are in
   for their registered subjects, so art registered later appears without
   a change here.
 
+### Frozen sea: Freeze, ice, the slide, Icebound (bead `pulp_wars-5ti.7`)
+
+The second part of the naval interface: the Ice Folk
+[frozen sea](../product/RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea).
+The targeting rules are in
+[BOARD_TARGETING.md section 3.5](BOARD_TARGETING.md#35-the-frozen-sea-freeze-the-slide-icebound-bead-pulp_wars-5ti7).
+
+- **Freeze.** Every Ice Folk land unit next to water has one Freeze
+  button (a snowflake). A line role's arms it: the tiles it may freeze
+  toward are Place targets labelled "Ice 2 · 3 turns" (or "· stays" in its
+  own territory), the far tile of each line is tinted, and a click, a tap
+  or Enter freezes. The Ice Witch's button casts her ring at once; the
+  ring is marked while she is selected and lifted, with its label, while
+  the button is hovered or focused. A disabled button names the reason
+  ("Needs Rime", "Deep Water needs Pack Ice", "Already acted this turn").
+- **Ice on the board.** An ice tile is drawn as a sheet over its water,
+  paler over Shallow Water and bluer over Deep Water, with a ragged edge
+  where it meets open water. Ice in its owner's territory, which never
+  melts, is dusted with snow; other ice shows cracks that grow as it
+  nears melting (a hairline at 3 turns or more, two cracks at 2, three
+  wide ones at 1 or 0). LEGACY draws a plain floe in the same colours.
+- **The ice chip.** A selected ice tile shows "Ice · 3" (a snowflake and
+  the owner's turns left) or "Ice · stays"; its tooltip says what ice is,
+  when it melts, and, on the viewer's own ice with Black Ice, that enemies
+  standing there are frosted.
+- **Moving on ice.** A sliding unit's destinations are the tiles it really
+  stops on; each slide draws an arrow from the tile it steps from to the
+  tile it stops on, and the dock's legend reads "Slide: it stops where the
+  ice ends". Another faction's ground unit sees the ice tile beside it
+  with the legend "Ice: your Move ends here". An Ice Folk unit standing on
+  ice has the chip "On ice", or "Ice cover" with Glacier (its Defense
+  term reads "+25%", named "Ice cover").
+- **Icebound.** A ship locked in the ice wears pack ice at its foot, rime
+  on its hull and a pill with its next crush, for every viewer. Its dock
+  has the chips "Icebound" and "−3 HP" (or "Sinks"), whose tooltip says at
+  the start of whose turn; its owner sees one disabled "Sail" button with
+  "Icebound: it cannot sail, shoot or board". An attack on it reads
+  "Icebound: no strike-back".
+- **Cues.** A Freeze spreads frost over its tiles, melting ice breaks into
+  floes, the crush closes on a frozen ship before its hit number, and a
+  boarded ship's flag changes from its former owner's colour to its
+  captor's. Reduced motion holds one frame of each. Notices: "You froze 2
+  tiles", "Ice melted on 1 tile: your Patrol Boat floats free", "The ice
+  crushed your Battleship for 3".
+- **Technology cards.** The Ice Folk Naval branch reads Rime, Pack Ice,
+  Icebound, Black Ice and Glacier, each with one short line and no ship
+  (Rime adds "The Ice Folk build no ships"); the cards show ice (a
+  snowflake, floes, the pack ice, a frost ring and an ice block) until
+  the faction has icons of its own for them.
+- **Help.** The Ice Folk list is "On the ice" (Freeze, Slide, Thaw, No
+  ships, Black Ice, Icebound, Glacier). Every other faction keeps "At
+  sea" and, in a match with an Ice Folk seat, gains one line on ice. The
+  Ice Folk Sea Dog goal reads "Hold the ice with 3 units at once."
+- **Gallery.** The Ice Folk cells of the Patrol Boat, Battleship,
+  Submarine and Transport rows show a snowflake and "Ice" ("No ships: the
+  Ice Folk freeze the sea and slide across it") instead of a dash.
+
 ### Research prompts (bead `pulp_wars-gl1`)
 
 A tile in the player's own territory whose resource the player cannot use

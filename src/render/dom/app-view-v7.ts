@@ -43,6 +43,7 @@ import {
   previewTendWoundedV7,
   previewWailV7,
   previewEconomicV7,
+  previewFreezeV7,
   isEggLaidRoleV7,
   previewHatchV7,
   previewLayEggV7,
@@ -383,6 +384,43 @@ import {
 } from "../naval-presentation-v7";
 import type { NavalPickV7 } from "../canvas/naval-board-plan-v7";
 import {
+  BLACK_ICE_UNLOCK_V7,
+  FREEZE_DEEP_UNLOCK_V7,
+  FREEZE_LABEL_V7,
+  FREEZE_LINE_TOOLTIP_V7,
+  FREEZE_PICK_V7,
+  FREEZE_RING_TOOLTIP_V7,
+  FREEZE_SHALLOW_UNLOCK_V7,
+  ICEBOUND_BLOCKED_V7,
+  ICEBOUND_LABEL_V7,
+  ICEBOUND_TOOLTIP_V7,
+  ICEBOUND_UNLOCK_V7,
+  ICE_COVER_LABEL_V7,
+  ICE_COVER_TOOLTIP_V7,
+  ICE_FOR_SHIPS_HELP_V7,
+  ICE_HELP_RULES_V7,
+  ICE_NO_SHIPS_NOTE_V7,
+  ICE_SEA_DOG_GOAL_V7,
+  ON_ICE_LABEL_V7,
+  SLIDE_MOVE_LABEL_V7,
+  SLIDE_RULE_V7,
+  SLIP_MOVE_LABEL_V7,
+  crushWarningV7,
+  freezeOutcomeTextV7,
+  freezeOutcomeV7,
+  freezeUnavailableTextV7,
+  freezesRingV7,
+  frozenSeaBoundaryNoticeV7,
+  glacierUnlockTextV7,
+  iceChipLabelV7,
+  iceChipTooltipV7,
+  unitHasFreezeV7,
+} from "../frozen-sea-presentation-v7";
+import {
+  moveOnIceV7,
+  type FreezePickV7,
+} from "../canvas/frozen-sea-board-plan-v7";
+import {
   ASSEMBLE_LABEL_V7,
   ASSEMBLE_PICK_V7,
   ASSEMBLE_UNLOCK_TEXT_V7,
@@ -642,8 +680,9 @@ const NON_BUTTON_COMMANDS = new Set<CommandV7["kind"]>([
   // button per ship that arms it; the ship to capture is picked on the
   // board (docs/ui/BOARD_TARGETING.md section 3.4).
   "BOARD",
-  // The frozen sea engine (bead pulp_wars-5ti.3): likewise Freeze, which
-  // aims at one of the eight tiles around the unit.
+  // The frozen sea (bead pulp_wars-5ti.7): likewise Freeze: one button per
+  // unit; a line role's arms it and the tile is picked on the board, the
+  // Ice Witch's casts her ring (BOARD_TARGETING.md section 3.5).
   "FREEZE",
 ]);
 /** Revision 18 (sections 3.4 and 4.4) movement help and technology text. */
@@ -841,6 +880,14 @@ export class Ruleset7DomAppView {
    * nothing).
    */
   #navalPick: NavalPickV7 | null = null;
+  /**
+   * The frozen sea: the Freeze a line role is aiming on the board (Escape,
+   * Cancel or another selection leaves it and sends nothing), and the Ice
+   * Witch whose Freeze button is hovered or focused (her ring is then
+   * drawn prominent).
+   */
+  #freezePick: FreezePickV7 | null = null;
+  #freezeHoverUnitId: number | null = null;
   #unitHelpModal: HTMLElement | null = null;
   #modalReturnAction: string | null = null;
   /**
@@ -1099,6 +1146,10 @@ export class Ruleset7DomAppView {
       } else if (this.#navalPick !== null) {
         // The naval branch interface: Escape first disarms Board.
         this.#cancelNavalPick();
+        return;
+      } else if (this.#freezePick !== null) {
+        // The frozen sea: Escape first disarms Freeze.
+        this.#cancelFreezePick();
         return;
       } else this.#selection = null;
       this.#render();
@@ -2260,6 +2311,8 @@ export class Ruleset7DomAppView {
           this.#dwarfPick = null;
           this.#candyPick = null;
           this.#navalPick = null;
+          this.#freezePick = null;
+          this.#freezeHoverUnitId = null;
           this.#selectedRecruitHelp = null;
           this.#selectedUnitHelpId = null;
           this.#selectedModifier = null;
@@ -2657,6 +2710,16 @@ export class Ruleset7DomAppView {
         this.#navalPick.unitId === selectedUnitId
           ? { navalPick: this.#navalPick }
           : {}),
+        // The frozen sea: the Freeze being aimed, and the Witch whose
+        // Freeze button is hovered or focused.
+        ...(this.#freezePick !== null &&
+        this.#freezePick.unitId === selectedUnitId
+          ? { freezePick: this.#freezePick }
+          : {}),
+        ...(this.#freezeHoverUnitId !== null &&
+        this.#freezeHoverUnitId === selectedUnitId
+          ? { freezeRingFocusUnitId: this.#freezeHoverUnitId }
+          : {}),
       },
     };
   }
@@ -2677,6 +2740,8 @@ export class Ruleset7DomAppView {
       this.#dwarfPick = null;
       this.#candyPick = null;
       this.#navalPick = null;
+      this.#freezePick = null;
+      this.#freezeHoverUnitId = null;
       this.#render();
       this.#queueBoardFocus();
     };
@@ -3101,6 +3166,44 @@ export class Ruleset7DomAppView {
             "grapple",
           );
       }
+      // The frozen sea: a ship locked in the ice (any owner) with the
+      // crush it takes next, and an Ice Folk unit standing on ice with
+      // Glacier's cover, from the public unit stats.
+      if (matchHasIceFolkSeatV7(view) && stats !== undefined) {
+        const frozenChip = (
+          label: string,
+          status: string,
+          title: string,
+        ): HTMLElement => {
+          const cue = el(this.#document, "span", "v7-chip v7-ice-folk-chip");
+          cue.append(
+            uiIconV7(this.#document, "snowflake"),
+            text(this.#document, "span", label),
+          );
+          cue.dataset.unitStatus = status;
+          cue.title = title;
+          cue.setAttribute("aria-label", title);
+          identityColumn?.append(cue);
+          return cue;
+        };
+        const crush = crushWarningV7(view, unit);
+        if (crush !== null) {
+          frozenChip(ICEBOUND_LABEL_V7, "icebound", ICEBOUND_TOOLTIP_V7);
+          const warning = frozenChip(crush.label, "ice-crush", crush.text);
+          warning.classList.add("is-warning");
+          warning.dataset.lethal = String(crush.lethal);
+        }
+        if (stats.iceFolk?.onIce === true)
+          frozenChip(
+            stats.iceFolk.iceCover ? ICE_COVER_LABEL_V7 : ON_ICE_LABEL_V7,
+            stats.iceFolk.iceCover ? "ice-cover" : "on-ice",
+            stats.iceFolk.iceCover
+              ? ICE_COVER_TOOLTIP_V7
+              : stats.iceFolk.slides
+                ? SLIDE_RULE_V7.replace(/\.$/, "")
+                : "On ice: it walks here and does not slide",
+          );
+      }
       // The Ice Folk revision (section 13.1): the Chill of a unit of any
       // owner (Frozen, Frosted or Thawing), and an Ice Folk unit's Blizzard
       // or Snow, Rockfall reach and Boulder throw, from `stats.chill` and
@@ -3326,11 +3429,20 @@ export class Ruleset7DomAppView {
               "v7-stat-modifier",
             );
             term.dataset.modifierSource = modifier.source.toLowerCase();
+            // The frozen sea (section 8.10): Glacier's cover on ice is the
+            // Snow cover's amount; the dock names it for what it is.
+            const iceCover =
+              modifier.source === "SNOW" && stats.iceFolk?.iceCover === true;
             term.setAttribute(
               "aria-label",
-              `${modifier.sourceLabel}: ${modifier.description}`,
+              iceCover
+                ? ICE_COVER_TOOLTIP_V7
+                : `${modifier.sourceLabel}: ${modifier.description}`,
             );
-            term.dataset.tooltip = modifier.sourceLabel;
+            term.dataset.tooltip = iceCover
+              ? ICE_COVER_LABEL_V7
+              : modifier.sourceLabel;
+            if (iceCover) term.dataset.iceCover = "true";
             term.setAttribute(
               "aria-expanded",
               String(this.#selectedModifier === modifierId),
@@ -3544,6 +3656,9 @@ export class Ruleset7DomAppView {
       if (launchLegend !== null) dock.append(launchLegend);
       const glideLegend = this.#glideLegend(view, unit.id);
       if (glideLegend !== null) dock.append(glideLegend);
+      // The frozen sea: what the pale tiles on ice mean for this unit.
+      const iceLegend = this.#iceMoveLegend(view, unit.id);
+      if (iceLegend !== null) dock.append(iceLegend);
       // Revision 19: what an Egg is, in one sentence, right in its dock.
       if (egg && eggTurns !== null) {
         const info = text(
@@ -3679,6 +3794,8 @@ export class Ruleset7DomAppView {
         ...this.#candyActionButtons(view, unit.id),
         // The naval branch interface: Board likewise.
         ...this.#navalActionButtons(view, unit.id),
+        // The frozen sea: Freeze likewise.
+        ...this.#freezeActionButtons(view, unit.id),
       ].reverse())
         actions.prepend(button);
       if (goblinFieldDefenseBlockedV7(view, unit.id)) {
@@ -3789,7 +3906,8 @@ export class Ruleset7DomAppView {
         this.#iceFolkPickPanel(view, unit.id) ??
         this.#dwarfPickPanel(view, unit.id) ??
         this.#candyPickPanel(unit.id) ??
-        this.#navalPickPanel(unit.id);
+        this.#navalPickPanel(unit.id) ??
+        this.#freezePickPanel(unit.id);
       if (martianPanel !== null) {
         dock.dataset.hasActions = "true";
         dock.append(martianPanel);
@@ -4201,21 +4319,19 @@ export class Ruleset7DomAppView {
         }
         // The Ice Folk revision (section 13.2): what Snow and a Blizzard do
         // for the viewer's faction.
-        // The frozen sea (naval branch section 8.3, `pulp_wars-5ti.3`): a
-        // plain chip for an ice tile until the naval UI bead.
+        // The frozen sea (naval branch section 8.3): the ice of the tile,
+        // with its countdown ("Ice · 3") or "stays" in its owner's
+        // territory; the tooltip says what ice is and when it melts.
         const iceHere = view.ice.find(
           (entry) => entry.at.x === tile.at.x && entry.at.y === tile.at.y,
         );
-        const iceTooltip =
-          iceHere === undefined
-            ? ""
-            : `Ice: land units stand here and ships cannot enter. ${
-                iceHere.permanent
-                  ? "It does not melt in its owner's territory"
-                  : `It melts in ${String(iceHere.turnsLeft)} of its owner's turns unless a land unit stands on it`
-              }`;
         for (const [shown, label, tooltip, kind] of [
-          [iceHere !== undefined, "Ice", iceTooltip, "ice"],
+          [
+            iceHere !== undefined,
+            iceHere === undefined ? "" : iceChipLabelV7(iceHere),
+            iceHere === undefined ? "" : iceChipTooltipV7(view, iceHere),
+            "ice",
+          ],
           [tile.snow === true, SNOW_LABEL_V7, snowTooltipV7(view), "snow"],
           [
             tile.blizzard === true,
@@ -4232,6 +4348,12 @@ export class Ruleset7DomAppView {
             "v7-chip v7-ice-folk-chip",
           );
           chip.dataset.winter = kind;
+          if (kind === "ice" && iceHere !== undefined) {
+            chip.prepend(uiIconV7(this.#document, "snowflake"));
+            chip.dataset.iceTurns = iceHere.permanent
+              ? "permanent"
+              : String(iceHere.turnsLeft);
+          }
           chip.title = tooltip;
           chip.setAttribute("aria-label", tooltip);
           details.append(chip);
@@ -5307,14 +5429,26 @@ export class Ruleset7DomAppView {
       view.setup.mapType !== "DRY_LAND" &&
       !forbiddenTechnologiesV7(view.setup).has("SEAMANSHIP")
     ) {
+      // The frozen sea: the Ice Folk have no ships, so their list is "On
+      // the ice"; every other faction's "At sea" gains one line on ice in a
+      // match with an Ice Folk seat.
+      const onTheIce = view.viewer.faction === "ICE_FOLK";
       const rules = this.#document.createElement("ul");
-      rules.className = "v7-help-tips v7-help-goblin v7-help-naval";
-      for (const [name, sentence] of NAVAL_HELP_RULES_V7) {
+      rules.className = `v7-help-tips v7-help-goblin ${onTheIce ? "v7-help-ice" : "v7-help-naval"}`;
+      for (const [name, sentence] of onTheIce
+        ? ICE_HELP_RULES_V7
+        : [
+            ...NAVAL_HELP_RULES_V7,
+            ...(matchHasIceFolkSeatV7(view) ? [ICE_FOR_SHIPS_HELP_V7] : []),
+          ]) {
         const item = el(this.#document, "li", "v7-help-rule");
         item.append(text(this.#document, "strong", `${name}:`), ` ${sentence}`);
         rules.append(item);
       }
-      section.append(text(this.#document, "h3", "At sea"), rules);
+      section.append(
+        text(this.#document, "h3", onTheIce ? "On the ice" : "At sea"),
+        rules,
+      );
     }
     // Map curiosities (section 12.1): the four sentences, the bounty and
     // the setup option, each with its legend icon, in a match that was
@@ -5761,7 +5895,10 @@ export class Ruleset7DomAppView {
         text(
           this.#document,
           "p",
-          ACHIEVEMENT_GOALS_V7[achievement],
+          // The frozen sea (section 8.11): the Ice Folk hold the ice.
+          achievement === "SEA_DOG" && view.viewer.faction === "ICE_FOLK"
+            ? ICE_SEA_DOG_GOAL_V7
+            : ACHIEVEMENT_GOALS_V7[achievement],
           "v7-achievement-goal",
         ),
         meter,
@@ -6561,6 +6698,8 @@ export class Ruleset7DomAppView {
     this.#dwarfPick = null;
     this.#candyPick = null;
     this.#navalPick = null;
+    this.#freezePick = null;
+    this.#freezeHoverUnitId = null;
     let restoreAction =
       command.kind === "RESEARCH" ? `tech-${command.tech.toLowerCase()}` : null;
     this.#presentationActive = true;
@@ -8115,6 +8254,229 @@ export class Ruleset7DomAppView {
   }
 
   /**
+   * The frozen sea (bead pulp_wars-5ti.7; BOARD_TARGETING.md section 3.5):
+   * the one Freeze button of an own unit with the ability. A line role's
+   * button arms it (pressed while aiming) and the tile to freeze toward is
+   * picked on the board. The Ice Witch's Freeze has nothing to aim: her
+   * ring is marked on the board while she is selected, drawn prominent
+   * while the button is hovered or focused, and the button casts it.
+   * Without an offered Freeze, a unit next to water shows the button
+   * disabled with the engine's reason; every other unit shows none. An
+   * icebound own ship gets one disabled button that says why it cannot
+   * sail, shoot or board.
+   */
+  #freezeActionButtons(
+    view: PlayerViewV7,
+    unitId: UnitId,
+  ): readonly HTMLButtonElement[] {
+    const unit = view.units.find((candidate) => candidate.id === unitId);
+    if (
+      unit === undefined ||
+      unit.ownerId !== view.viewer.id ||
+      !matchHasIceFolkSeatV7(view) ||
+      this.#snapshot.offeredCommands.length === 0
+    )
+      return [];
+    if (crushWarningV7(view, unit) !== null && !unit.activation.handled) {
+      const frozen = button(
+        this.#document,
+        "",
+        "icebound-blocked",
+        "v7-context-action",
+      );
+      frozen.append(
+        uiIconV7(this.#document, "snowflake", "v7-ui-icon v7-command-icon"),
+        text(this.#document, "span", "Sail", "v7-action-label"),
+      );
+      frozen.setAttribute("aria-disabled", "true");
+      frozen.dataset.disabledReason = "icebound";
+      frozen.dataset.freezeAbility = "icebound";
+      frozen.title = ICEBOUND_BLOCKED_V7;
+      frozen.setAttribute(
+        "aria-label",
+        `Sail and attack unavailable. ${ICEBOUND_BLOCKED_V7}`,
+      );
+      frozen.onclick = () => {
+        this.#notice = `${ICEBOUND_BLOCKED_V7}.`;
+        this.#showToast(`${ICEBOUND_BLOCKED_V7}.`);
+        this.#pendingFocusAction = "icebound-blocked";
+        this.#render();
+      };
+      return [frozen];
+    }
+    if (!unitHasFreezeV7(view, unit)) return [];
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command): command is Extract<CommandV7, { kind: "FREEZE" }> =>
+        command.kind === "FREEZE" && command.unitId === unit.id,
+    );
+    const reason = freezeUnavailableTextV7(view, unit, commands.length > 0);
+    if (commands.length === 0 && reason === null) return [];
+    const ring = freezesRingV7(view, unit);
+    const action = button(this.#document, "", "freeze", "v7-context-action");
+    action.append(
+      this.#chibiArt("ICON:ACTION:FREEZE", CHIBI_DOM_BOXES_V7.action)
+        ?.element ??
+        uiIconV7(this.#document, "snowflake", "v7-ui-icon v7-command-icon"),
+      text(this.#document, "span", FREEZE_LABEL_V7, "v7-action-label"),
+    );
+    action.dataset.freezeAbility = ring ? "ring" : "line";
+    if (reason !== null) {
+      // aria-disabled keeps the reason reachable by keyboard and touch.
+      action.setAttribute("aria-disabled", "true");
+      action.dataset.disabledReason = reason;
+      action.title = reason;
+      action.setAttribute(
+        "aria-label",
+        `${FREEZE_LABEL_V7} unavailable. ${reason}`,
+      );
+      action.onclick = () => {
+        this.#notice = `${reason}.`;
+        this.#showToast(`${reason}.`);
+        this.#pendingFocusAction = "freeze";
+        this.#render();
+      };
+      return [action];
+    }
+    action.disabled = this.#localBusy();
+    if (ring) {
+      const command = commands[0];
+      const preview =
+        command === undefined
+          ? null
+          : previewFreezeV7(view, command.unitId, command.at);
+      if (command === undefined || preview === null) return [];
+      const outcome = freezeOutcomeTextV7(freezeOutcomeV7(view, unit, preview));
+      action.title = `${FREEZE_RING_TOOLTIP_V7}. ${outcome}`;
+      action.setAttribute("aria-label", `${FREEZE_LABEL_V7}. ${outcome}`);
+      action.dataset.boardTiles = String(preview.tiles.length);
+      const show = (): void => {
+        if (this.#freezeHoverUnitId === unit.id) return;
+        this.#freezeHoverUnitId = unit.id;
+        this.#syncBoard();
+      };
+      const hide = (): void => {
+        if (this.#freezeHoverUnitId !== unit.id) return;
+        this.#freezeHoverUnitId = null;
+        this.#syncBoard();
+      };
+      action.addEventListener("pointerenter", show);
+      action.addEventListener("focus", show);
+      action.addEventListener("pointerleave", hide);
+      action.addEventListener("blur", hide);
+      action.onclick = () => void this.#dispatch(command);
+      return [action];
+    }
+    const aiming = this.#freezePick !== null;
+    action.title = FREEZE_LINE_TOOLTIP_V7;
+    action.setAttribute(
+      "aria-label",
+      `${FREEZE_LABEL_V7}. ${FREEZE_LINE_TOOLTIP_V7}`,
+    );
+    action.setAttribute("aria-pressed", String(aiming));
+    action.onclick = () =>
+      aiming ? this.#cancelFreezePick() : this.#startFreezePick(unit.id);
+    return [action];
+  }
+
+  /** Starts aiming the selected unit's Freeze. */
+  #startFreezePick(unitId: UnitId): void {
+    if (this.#localBusy()) return;
+    this.#freezePick = { kind: "FREEZE", unitId };
+    this.#notice = `${FREEZE_PICK_V7}.`;
+    this.#pendingFocusAction = null;
+    this.#render();
+    // The board takes the keyboard, so Tab and Enter pick.
+    this.#queueBoardFocus();
+  }
+
+  /** Leaves the aiming, and returns focus to the Freeze button. */
+  #cancelFreezePick(): void {
+    const pick = this.#freezePick;
+    this.#freezePick = null;
+    this.#pendingFocusAction = pick === null ? null : "freeze";
+    this.#render();
+  }
+
+  /**
+   * The Freeze aiming panel in the dock: the action's icon and name, its
+   * "?" and Cancel. The tiles are highlighted and picked on the board,
+   * each with what freezes and for how long; the dock lists none. Null
+   * (and the aiming ends) when nothing is offered any more.
+   */
+  #freezePickPanel(unitId: UnitId): HTMLElement | null {
+    const pick = this.#freezePick;
+    if (pick === null || pick.unitId !== unitId) return null;
+    const commands = this.#snapshot.offeredCommands.filter(
+      (command) => command.kind === "FREEZE" && command.unitId === unitId,
+    );
+    if (commands.length === 0) {
+      this.#freezePick = null;
+      return null;
+    }
+    const panel = el(
+      this.#document,
+      "section",
+      "v7-kaboom-preview v7-martian-pick v7-ice-folk-pick v7-freeze-pick v7-board-pick",
+    );
+    panel.dataset.v7FreezePick = "line";
+    panel.dataset.boardTargets = String(commands.length);
+    panel.setAttribute("aria-label", FREEZE_PICK_V7);
+    panel.append(
+      this.#pickHead(
+        "ICON:ACTION:FREEZE",
+        "snowflake",
+        FREEZE_LABEL_V7,
+        `${FREEZE_PICK_V7}. ${FREEZE_LINE_TOOLTIP_V7}`,
+      ),
+    );
+    const buttons = el(this.#document, "div", "button-row v7-kaboom-actions");
+    const cancel = button(
+      this.#document,
+      "Cancel",
+      "freeze-pick-cancel",
+      "v7-kaboom-cancel",
+    );
+    cancel.onclick = () => this.#cancelFreezePick();
+    buttons.append(cancel);
+    panel.append(buttons);
+    return panel;
+  }
+
+  /**
+   * The frozen sea: the legend of a unit's Moves on ice, shown while it has
+   * any: "Slide" for a unit that slides to where the ice ends, "Ice: your
+   * Move ends here" for a unit that slips.
+   */
+  #iceMoveLegend(view: PlayerViewV7, unitId: UnitId): HTMLElement | null {
+    if (view.ice.length === 0) return null;
+    let slide = false;
+    let slip = false;
+    for (const command of this.#snapshot.offeredCommands) {
+      if (command.kind !== "MOVE" || command.unitId !== unitId) continue;
+      const onIce = moveOnIceV7(view, command);
+      if (onIce === null) continue;
+      if (onIce.slip) slip = true;
+      else slide = true;
+    }
+    if (!slide && !slip) return null;
+    const legend = el(this.#document, "ul", "v7-landing-legend");
+    legend.setAttribute("aria-label", "Ice markers");
+    for (const [shown, marker, label] of [
+      [slide, "slide", SLIDE_MOVE_LABEL_V7],
+      [slip, "slip", SLIP_MOVE_LABEL_V7],
+    ] as const) {
+      if (!shown) continue;
+      const item = el(this.#document, "li", "v7-landing-legend-item");
+      item.dataset.landingMarker = marker;
+      const swatch = el(this.#document, "span", "v7-landing-legend-swatch");
+      swatch.setAttribute("aria-hidden", "true");
+      item.append(swatch, text(this.#document, "span", label));
+      legend.append(item);
+    }
+    return legend;
+  }
+
+  /**
    * The naval branch interface (bead pulp_wars-5ti.7; BOARD_TARGETING.md
    * section 3.4): the one Board button of an own ship. A ship it may
    * capture is also a ship it may attack, so the button arms Board (pressed
@@ -9448,19 +9810,17 @@ function effectDescription(
       return NAVAL_RAM_UNLOCK_V7;
     case "HARBOURS":
       return harboursUnlockTextV7(effect.population);
-    // The naval branch engine, the frozen sea (`pulp_wars-5ti.3`): the plain
-    // sentences of RULESET_7_NAVAL_BRANCH.md section 8.2, until the naval
-    // interface (`pulp_wars-5ti.7`).
+    // The frozen sea (RULESET_7_NAVAL_BRANCH.md section 8.2).
     case "FREEZE":
       return effect.depth === "DEEP"
-        ? "Freeze: the deep sea freezes too"
-        : "Freeze: a unit turns the water next to it to ice, two tiles out in a straight line (the Ice Witch: every tile around her); your units slide across ice";
+        ? FREEZE_DEEP_UNLOCK_V7
+        : FREEZE_SHALLOW_UNLOCK_V7;
     case "ICEBOUND":
-      return "Icebound: freeze a ship in place; it cannot sail, shoot, or strike back, and the ice crushes it for 3 each turn";
+      return ICEBOUND_UNLOCK_V7;
     case "BLACK_ICE":
-      return "Black Ice: whoever stands on your ice at the start of your turn is frosted";
+      return BLACK_ICE_UNLOCK_V7;
     case "GLACIER":
-      return `Glacier: your ice lasts ${effect.iceTurns} turns and your units on it have Snow cover`;
+      return glacierUnlockTextV7(effect.iceTurns);
     case "UNIT_ROLE":
       return label(effect.role);
     case "RESOURCE_REVEAL":
@@ -9567,6 +9927,14 @@ function navalTechnologyNotesV7(
   technology: PublicTechnologyNodeV7["id"],
   faction: FactionIdV7,
 ): readonly string[] {
+  // The frozen sea: the Ice Folk have no ships, so the notes about
+  // embarking, sailing and warships are not theirs.
+  if (faction === "ICE_FOLK") {
+    if (technology === "SHORECRAFT") return [ICE_NO_SHIPS_NOTE_V7];
+    if (technology === "NAVIGATION") return ["Active Ports link sea trade"];
+    if (technology === "NAVAL_ENGINEERING" || technology === "SUBMERSIBLES")
+      return [];
+  }
   // "Board" now names the capture of a ship (Seamanship), so putting a
   // unit to sea is "embark".
   if (technology === "SHORECRAFT") return [SHORECRAFT_EMBARK_NOTE_V7];
@@ -9817,9 +10185,12 @@ function boundaryNoticeV7(
   const curiosity = curiosityBoundaryNoticeV7(events, before, after);
   // The naval branch interface: a ship boarded.
   const naval = navalBoundaryNoticeV7(events, before, after);
+  // The frozen sea: a Freeze, a thaw, the crush, a slip.
+  const frozenSea = frozenSeaBoundaryNoticeV7(events, before, after);
   const parts = [
     curiosity?.text ?? null,
     naval?.text ?? null,
+    frozenSea?.text ?? null,
     undead?.text ?? null,
     goblin?.text ?? null,
     dinosaur?.text ?? null,
@@ -9838,7 +10209,8 @@ function boundaryNoticeV7(
     dwarf === null &&
     candy === null &&
     curiosity === null &&
-    naval === null
+    naval === null &&
+    frozenSea === null
   )
     return { text: special, toast: special !== null };
   return {
@@ -9853,7 +10225,8 @@ function boundaryNoticeV7(
       dwarf?.toast === true ||
       candy?.toast === true ||
       curiosity?.toast === true ||
-      naval?.toast === true,
+      naval?.toast === true ||
+      frozenSea?.toast === true,
   };
 }
 function techAchievementV7(tech: TechnologyIdV7): AchievementIdV7 | null {

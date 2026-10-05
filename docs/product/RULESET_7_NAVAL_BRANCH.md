@@ -1218,8 +1218,9 @@ Where it differs from the table:
 - **Review:** the ice review is its own command,
   `npm run art:naval-branch-ice-review`.
 
-The ice tiles and the overlay are registered and not drawn; what remains is listed in
-[NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#what-remains-to-wire).
+The ice tiles and the overlay are drawn since the frozen-sea interface
+([section 23](#23-naval-interface-second-part-as-built-pulp_wars-5ti7);
+[NAVAL_FACTIONS.md](../art/NAVAL_FACTIONS.md#wired-by-the-frozen-sea-interface-pulp_wars-5ti7)).
 
 ## 15. Headless support, measurement, tuning bounds, and balance acceptance
 
@@ -1744,6 +1745,48 @@ differently:
     Folk seat cannot cross water until the interface bead. The five
     technology cards carry their names and one sentence each. The Gallery
     shows no ship and no transport for the Ice Folk.
+
+## 23. Naval interface, second part, as built (`pulp_wars-5ti.7`)
+
+The interface of engine step II. It changes no rule and no identity. Where
+this differs from [section 14.1](#141-surfaces-bead-5ti7) or
+[section 22](#22-engine-step-ii-as-built-pulp_wars-5ti3) item 12:
+
+1. **Freeze has a control.** A line role's one button arms it and the tile
+   is picked on the board in the Place style, labelled from
+   `previewFreezeV7`; the Ice Witch's one button casts her ring, which is
+   marked while she is selected
+   ([board targeting section 3.5](../ui/BOARD_TARGETING.md#35-the-frozen-sea-freeze-the-slide-icebound-bead-pulp_wars-5ti7)).
+   The label's "N turns" is the unit owner's `iceTurns` and "stays" a tile
+   in that owner's territory: the preview carries the tiles, the refreshed
+   ones and the ships, not the countdown, so the interface reads those two
+   public facts beside it.
+2. **Ice is drawn as ice,** not Snow: the two sheets of the art, cut at
+   open water and dusted when permanent (`seaIceTileV7`), then code-drawn
+   cracks in three stages (a hairline at 3 turns or more, two at 2, three
+   wide at 1 or 0).
+3. **The slide** is an arrow from the tile the unit steps from to the tile
+   it stops on, drawn for every destination reached by a slide (the spec
+   asked for the whole path on hover only; the arrow is the path). Tiles
+   that cannot be stopped on are not offered (the engine's).
+4. **Slip** reads "Ice: your Move ends here" in the dock's legend, and a
+   Move interrupted on unknown ice "Ice: the Move ended there".
+5. **Icebound** is the pack-ice raster with the Frosted rime and a crush
+   pill; the dock text is "Icebound: cannot sail, shoot, board or strike
+   back" and the crush chip "−3 HP" with whose Start Turn in its tooltip.
+6. **Black Ice** is told on the owner's own ice chip only; other viewers
+   see the Frosted marker on their units after the Start Turn.
+7. **Glacier's cover** reads "Ice cover" (a chip, the Defense term and the
+   attack preview's note); its amount is the Snow cover's.
+8. **Cues** are code-drawn: Freeze, melt, crush, and (left from the first
+   part) the flag change of a boarded ship. They ride the Ice Folk effect
+   step, so reduced motion holds one frame of each.
+9. **Technology cards.** The Ice Folk Naval cards show registered ice art
+   as stand-ins (`ICE_FOLK_NAVAL_TECH_SUBJECTS_V7`); dedicated icons are
+   art work. Freeze has no registered action icon and shows the snowflake
+   glyph.
+10. **Normal AI.** Unchanged: an Ice Folk seat still never Freezes
+    ([section 22](#22-engine-step-ii-as-built-pulp_wars-5ti3) item 11).
 
 ## Appendix A. Draft, critique, redraft
 

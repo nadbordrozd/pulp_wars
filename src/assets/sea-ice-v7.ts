@@ -20,9 +20,10 @@
  * Pure and deterministic, like the Snow tiles of the Ice Folk
  * (iceFolkSnowTileV7): the same sheet, sides and variant always give the
  * same pixels, so a board can cache one surface per combination (16 side
- * sets x 2 variants x 2 depths x 2 states). NOT WIRED: the engine has no
- * ice state yet (engine step II of the naval branch); the review
- * `npm run art:naval-branch-ice-review` draws its mock map with it.
+ * sets x 2 variants x 2 depths x 2 states). The board draws it since the
+ * frozen-sea interface (bead pulp_wars-5ti.7, `IceFolkBoardArtV7.seaIce`);
+ * the review `npm run art:naval-branch-ice-review` draws its mock map
+ * with it.
  */
 
 export interface SeaIceRasterV7 {

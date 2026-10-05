@@ -3355,6 +3355,8 @@
 }
 
 /* An Ice Folk unit's Glide tiles: pale-ice dashed outlines. */
+.v7-landing-legend-item[data-landing-marker="slide"] .v7-landing-legend-swatch,
+.v7-landing-legend-item[data-landing-marker="slip"] .v7-landing-legend-swatch,
 .v7-landing-legend-item[data-landing-marker="glide"] .v7-landing-legend-swatch {
   border-color: #d6f0ff;
 }
@@ -3471,6 +3473,27 @@
 
 .v7-naval-chip[data-unit-status="boardable"] .v7-ui-icon {
   color: #ffd98a;
+}
+
+/* The frozen sea (bead pulp_wars-5ti.7): Freeze, Icebound, the crush. */
+.v7-context-action[data-freeze-ability][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.v7-context-action[data-freeze-ability][aria-pressed="true"] {
+  border-color: #7fcbff;
+}
+
+.v7-ice-folk-chip[data-unit-status="ice-crush"] {
+  border-color: #ff8a80;
+  color: #ffd9d4;
+}
+
+.v7-ice-folk-chip .v7-ui-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
 }
 
 .v7-naval-pick {
@@ -3946,6 +3969,20 @@
 .v7-gallery-cell-wrap.is-empty {
   color: var(--line);
   vertical-align: middle;
+}
+
+/* The frozen sea: a shipless faction's naval rows (the Ice Folk). */
+.v7-gallery-cell-wrap.is-frozen {
+  color: #9fd8f2;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.v7-gallery-cell-wrap.is-frozen .v7-ui-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: 0 auto 2px;
 }
 
 .v7-gallery-cell {

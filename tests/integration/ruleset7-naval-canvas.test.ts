@@ -14,6 +14,11 @@ import {
 } from "../../src/render/canvas/board-host-v7";
 import * as renderer from "../../src/render/canvas/board-renderer-v7";
 import {
+  FROZEN_UI_V7,
+  frozenFreezeUiFixtureV7,
+  frozenIceboundUiFixtureV7,
+} from "../fixtures/v7-frozen-sea-ui";
+import {
   NAVAL_UI_V7,
   navalBoardingUiFixtureV7,
   navalRamUiFixtureV7,
@@ -92,6 +97,94 @@ describe("Board on the board host", () => {
         targetUnitId: unitAt(view, NAVAL_UI_V7.prizes[0]).id,
       },
     });
+    rig.host.destroy();
+  });
+
+  it("steps through an armed Freeze's tiles with Tab and Enter freezes", () => {
+    // The frozen sea (bead pulp_wars-5ti.7, second part).
+    const state = frozenFreezeUiFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const yeti = unitAt(view, FROZEN_UI_V7.yeti);
+    const callbacks = { onSelection: vi.fn(), onCommand: vi.fn() };
+    const rig = hostRig(view, callbacks);
+    const tab = (): boolean => {
+      const event = new KeyboardEvent("keydown", {
+        key: "Tab",
+        bubbles: true,
+        cancelable: true,
+      });
+      rig.canvas.dispatchEvent(event);
+      return event.defaultPrevented;
+    };
+    const description = (): string =>
+      document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? "";
+    rig.host.update({
+      matchInstanceId: 1,
+      view,
+      offeredCommands: queryPlayerCommandsV7(view),
+      interactive: true,
+      motion: "REDUCED",
+      animationSpeed: "NORMAL",
+      presentationPaused: false,
+      highContrast: false,
+      interaction: {
+        selection: { kind: "UNIT", unitId: yeti.id },
+        selectedUnitId: yeti.id,
+        selectedAchievement: null,
+        freezePick: { kind: "FREEZE", unitId: yeti.id },
+      },
+    });
+    expect(rig.plan().targets.map((target) => target.family)).toEqual([
+      "FREEZE",
+      "FREEZE",
+      "FREEZE",
+    ]);
+    for (let step = 0; step < 3; step += 1) {
+      expect(tab(), String(step)).toBe(true);
+      expect(description()).toMatch(/^Freeze: [12] tiles? of ice\. /);
+      expect(description()).not.toMatch(/\b\d{1,2}, ?\d{1,2}\b/);
+    }
+    // Past the last tile Tab leaves the board.
+    expect(tab()).toBe(false);
+    rig.canvas.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter", bubbles: true }),
+    );
+    expect(callbacks.onCommand).toHaveBeenCalledTimes(1);
+    expect(callbacks.onCommand.mock.calls[0]?.[0]).toMatchObject({
+      family: "FREEZE",
+      command: { kind: "FREEZE", unitId: yeti.id },
+    });
+    rig.host.destroy();
+  });
+
+  it("describes an ice tile under the cursor without coordinates", () => {
+    const state = frozenIceboundUiFixtureV7();
+    const view = viewForV7(state, state.humanPlayerId);
+    const rig = hostRig(view);
+    rig.host.update({
+      matchInstanceId: 1,
+      view,
+      offeredCommands: queryPlayerCommandsV7(view),
+      interactive: true,
+      motion: "REDUCED",
+      animationSpeed: "NORMAL",
+      presentationPaused: false,
+      highContrast: false,
+      interaction: {
+        selection: null,
+        selectedUnitId: null,
+        selectedAchievement: null,
+      },
+    });
+    rig.host.activate(FROZEN_UI_V7.permanent);
+    const description =
+      document.querySelector('[id^="ruleset7-map-cursor-"]')?.textContent ?? "";
+    expect(description).toContain("It does not melt in your territory");
+    expect(description).not.toMatch(/\b\d{1,2}, ?\d{1,2}\b/);
+    // The plan the renderer gets carries the ice cells.
+    expect(
+      rig.plan().entries.filter((entry) => entry.seaIce !== undefined),
+    ).toHaveLength(view.ice.length);
     rig.host.destroy();
   });
 

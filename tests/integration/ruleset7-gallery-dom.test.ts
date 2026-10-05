@@ -177,6 +177,23 @@ describe("Ruleset 7 Gallery", () => {
     expect(
       document.querySelectorAll(".v7-gallery-cell-wrap.is-empty"),
     ).toHaveLength(11);
+    // The frozen sea (`pulp_wars-5ti.7`): the four Ice Folk cells are empty
+    // on purpose and say why; the seven Egg cells keep their dash.
+    const frozen = [
+      ...document.querySelectorAll<HTMLElement>(
+        ".v7-gallery-cell-wrap.is-frozen",
+      ),
+    ];
+    expect(frozen).toHaveLength(4);
+    for (const cell of frozen) {
+      expect(cell.dataset.faction).toBe("ICE_FOLK");
+      expect(cell.dataset.emptyReason).toBe("no-ships");
+      expect(cell.getAttribute("aria-label")).toBe(
+        "No ships: the Ice Folk freeze the sea and slide across it",
+      );
+      expect(cell.textContent).toBe("Ice");
+      expect(cell.querySelector('[data-icon="snowflake"]')).not.toBeNull();
+    }
     expect(cell("FIGHTER", "UNDEAD").getAttribute("aria-label")).toBe(
       "Skeleton, Undead",
     );

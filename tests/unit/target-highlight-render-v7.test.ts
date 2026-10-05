@@ -76,6 +76,7 @@ const EVERY_FAMILY: Readonly<
   BEAM_DOWN: "PLACE",
   ASSEMBLE: "PLACE",
   REBAKE: "PLACE",
+  FREEZE: "PLACE",
 };
 
 describe("target highlight vocabulary", () => {

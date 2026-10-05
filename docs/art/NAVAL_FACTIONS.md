@@ -540,22 +540,25 @@ Done in this bead:
    over it (`drawNavalUnitMarkersV7`'s `wash`); the unit information adds
    the Ram and Torpedo icons.
 
-### What remains to wire
+### Wired by the frozen-sea interface (`pulp_wars-5ti.7`)
 
-Nothing below is drawn today; each waits for the frozen-sea engine (step
-II).
+1. **Ice tiles.** The board draws, over the water tile,
+   `seaIceTileV7(sheet, openWater, variant, permanent)` of the tile's depth
+   (`seaIceArtSubjectV7`), one cached surface per sheet, side set, variant
+   and state (`IceFolkBoardArtV7.seaIce`), then the code-drawn melting
+   cracks (`drawSeaIceCellV7`). LEGACY, and a sheet that is still loading,
+   draw a plain floe in the sheets' mean colours.
+2. **Icebound.** Over a ship frozen in: the Frosted rime of its sprite,
+   then `OVERLAY:ICEBOUND` on the lower half of its cell and a pill with
+   the crush it takes next (`drawIceboundMarkerV7`); LEGACY draws a jagged
+   strip in code.
+3. **Ice Folk technology cards.** Rime, Pack Ice, Icebound, Black Ice and
+   Glacier show registered ice art as stand-ins (`ICON:STATUS:CHILLED`,
+   `EFFECT:SHATTER_SHARDS`, `OVERLAY:ICEBOUND`, `EFFECT:COLD_SNAP`,
+   `ICON:STATUS:FROZEN`; `ICE_FOLK_NAVAL_TECH_SUBJECTS_V7`).
 
-1. **An icebound Submarine** is not submerged: the engine's `submerged`
-   stat will say so, and the board then draws the whole sprite again.
-2. **Ice tiles.** When the engine has `ice` (step II), the board draws,
-   over the water tile, `seaIceTileV7(sheet, openWater, variant, permanent)`
-   of the tile's depth (`seaIceArtSubjectV7`), cached per combination like
-   the Snow tiles, then the code-drawn melting cracks.
-3. **Icebound.** Over a ship frozen in: the Frosted rime of its sprite,
-   then `OVERLAY:ICEBOUND` on the lower half of its cell.
-4. **Ice Folk technology names.** Seamanship and Submersibles are Black
-   Ice and Glacier for the Ice Folk after step II; their cards then show a
-   ship's wheel and a diving helmet until they get icons of their own.
+What remains for art: icons of their own for those five cards, and an
+`ICON:ACTION:FREEZE` (the Freeze button shows the code-drawn snowflake).
 
 ### Evidence
 

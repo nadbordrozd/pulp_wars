@@ -68,7 +68,15 @@ export type AbilityPreviewStyleV7 =
    * in the neutral bone white and umber of its art.
    */
   | "MONSTER_AREA"
-  | "MONSTER_REACH";
+  | "MONSTER_REACH"
+  /**
+   * The frozen sea (bead pulp_wars-5ti.7): the tiles a Freeze turns to ice
+   * that are not picked themselves (a line's far tile, the Ice Witch's
+   * ring), in the Place style's cream on an ice tint; FREEZE_FOCUS is the
+   * ring while her button is hovered or focused.
+   */
+  | "FREEZE"
+  | "FREEZE_FOCUS";
 
 /** Legacy and CHIBI Undead badge frames, relative to the cell centre. */
 export const UNDEAD_BADGE_FRAME_V7 = {
@@ -509,6 +517,8 @@ const STYLE_COLORS: Readonly<
   SWEEP: { fill: "rgba(127, 203, 255, 0.2)", stroke: "#7fcbff" },
   CHILL: { fill: "rgba(127, 203, 255, 0.24)", stroke: "#d6f0ff" },
   COLD_SNAP: { fill: "rgba(127, 203, 255, 0.1)", stroke: "#7fcbff" },
+  FREEZE: { fill: "rgba(214, 240, 255, 0.2)", stroke: "#ffe7a3" },
+  FREEZE_FOCUS: { fill: "rgba(214, 240, 255, 0.42)", stroke: "#ffe7a3" },
   // The Dwarf revision: DWARF_PALETTE_V7's light earth and lit copper.
   TUNNEL: { fill: "rgba(160, 122, 82, 0.3)", stroke: "#d8b58a" },
   ERUPTION: { fill: "rgba(160, 122, 82, 0.16)", stroke: "#c99a66" },

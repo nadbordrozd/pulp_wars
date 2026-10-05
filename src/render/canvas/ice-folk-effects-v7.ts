@@ -29,7 +29,20 @@ export type IceFolkFeedbackEffectV7 =
   /** A Cold Aura: a flash over the Giant's eight tiles, frost on each target. */
   | "COLD_AURA"
   /** A Mammoth's Sweep: a white arc across the three tiles in front of it. */
-  | "SWEEP";
+  | "SWEEP"
+  /**
+   * The frozen sea (bead pulp_wars-5ti.7): a Freeze spreading over its
+   * tiles, ice melting into floes, and the crush closing on a frozen ship.
+   */
+  | "ICE_FREEZE"
+  | "ICE_MELT"
+  | "ICE_CRUSH"
+  /**
+   * The naval branch: a boarded ship's flag changes from its former
+   * owner's colour to its captor's (code-drawn, like the cues above; it
+   * rides the same overlay step).
+   */
+  | "PRIZE_FLAG";
 
 export interface IceFolkFeedbackV7 {
   readonly effect: IceFolkFeedbackEffectV7;
@@ -39,6 +52,9 @@ export interface IceFolkFeedbackV7 {
   readonly from?: CoordV7;
   /** SHATTER: the shattered unit (the board draws its casing until it bursts). */
   readonly unitId?: number;
+  /** PRIZE_FLAG: the former owner's colour and the captor's. */
+  readonly fromColour?: string;
+  readonly toColour?: string;
   readonly progress: number;
 }
 
@@ -51,6 +67,10 @@ export const ICE_FOLK_EFFECT_DURATIONS_V7: Readonly<
   BOLAS: 560,
   COLD_AURA: 460,
   SWEEP: 300,
+  ICE_FREEZE: 520,
+  ICE_MELT: 480,
+  ICE_CRUSH: 460,
+  PRIZE_FLAG: 560,
 };
 
 /** The Shatter timeline's step boundaries, in ms from the hit. */
@@ -420,6 +440,140 @@ export function drawIceFolkFeedbackV7(
         context.arc(origin.x, origin.y, radius, startAngle, startAngle + sweep);
         context.stroke();
       }
+      context.restore();
+    }
+  } else if (feedback.effect === "ICE_FREEZE") {
+    // The frozen sea: frost spreads from the Freezing unit, tile by tile
+    // (the nearest first), as a pale wash that settles into the new ice.
+    const from = feedback.from;
+    const size = 128 * zoom;
+    const ordered = [...feedback.cells].sort((left, right) => {
+      if (from === undefined) return 0;
+      const distance = (at: CoordV7): number =>
+        Math.max(Math.abs(at.x - from.x), Math.abs(at.y - from.y));
+      return distance(left) - distance(right);
+    });
+    ordered.forEach((at, index) => {
+      const start = (index / Math.max(1, ordered.length)) * 0.45;
+      const local = clamp01((progress - start) / 0.55);
+      if (local <= 0 || local >= 1) return;
+      const point = centre(at);
+      context.save();
+      context.globalAlpha *= swell(local) * 0.75;
+      context.fillStyle = "#ffffff";
+      const grown = size * (0.35 + 0.65 * local);
+      context.fillRect(point.x - grown / 2, point.y - grown / 2, grown, grown);
+      context.strokeStyle = iceGlow;
+      context.lineWidth = Math.max(1, 3 * zoom);
+      context.lineCap = "round";
+      for (let spoke = 0; spoke < 6; spoke += 1) {
+        const angle = (spoke / 6) * Math.PI * 2;
+        context.beginPath();
+        context.moveTo(point.x, point.y);
+        context.lineTo(
+          point.x + Math.cos(angle) * grown * 0.42,
+          point.y + Math.sin(angle) * grown * 0.42,
+        );
+        context.stroke();
+      }
+      context.restore();
+    });
+  } else if (feedback.effect === "ICE_MELT") {
+    // The ice gives way: a fading pale sheet that breaks into drifting
+    // floes over the open water.
+    const size = 128 * zoom;
+    for (const at of feedback.cells) {
+      const point = centre(at);
+      context.save();
+      context.globalAlpha *= (1 - progress) * 0.7;
+      context.fillStyle = icePale;
+      const drift = progress * 14 * zoom;
+      for (const [dx, dy] of [
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+      ] as const) {
+        const floe = size * (0.4 - 0.18 * progress);
+        context.fillRect(
+          point.x + dx * (size * 0.22 + drift) - floe / 2,
+          point.y + dy * (size * 0.22 + drift) - floe / 2,
+          floe,
+          floe,
+        );
+      }
+      context.restore();
+    }
+  } else if (feedback.effect === "ICE_CRUSH") {
+    // The crush: cracks snap across each frozen ship's tile and the ice
+    // closes in from both sides.
+    const size = 128 * zoom;
+    for (const at of feedback.cells) {
+      const point = centre(at);
+      const squeeze = swell(progress) * 14 * zoom;
+      context.save();
+      context.globalAlpha *= 1 - clamp01((progress - 0.7) / 0.3);
+      context.fillStyle = "#ffffff";
+      for (const side of [-1, 1] as const)
+        context.fillRect(
+          point.x + side * (size * 0.36 - squeeze) - 5 * zoom,
+          point.y - size * 0.05,
+          10 * zoom,
+          size * 0.42,
+        );
+      context.strokeStyle = iceDark;
+      context.lineWidth = Math.max(1, 3 * zoom);
+      context.lineCap = "round";
+      context.lineJoin = "round";
+      const reach = clamp01(progress / 0.5);
+      for (const side of [-1, 1] as const) {
+        context.beginPath();
+        context.moveTo(point.x, point.y + size * 0.18);
+        context.lineTo(
+          point.x + side * size * 0.16 * reach,
+          point.y + size * (0.18 - 0.1 * reach),
+        );
+        context.lineTo(
+          point.x + side * size * 0.3 * reach,
+          point.y + size * (0.18 + 0.06 * reach),
+        );
+        context.stroke();
+      }
+      context.restore();
+    }
+  } else if (feedback.effect === "PRIZE_FLAG") {
+    // The naval branch: a boarded ship's flag changes. The old colour's
+    // pennant drops and the captor's rises on a short mast over the hull.
+    for (const at of feedback.cells) {
+      const point = body(at);
+      const mastTop = point.y - 34 * zoom;
+      const mastFoot = point.y + 6 * zoom;
+      context.save();
+      context.globalAlpha *= 1 - clamp01((progress - 0.8) / 0.2);
+      context.strokeStyle = outline;
+      context.lineWidth = Math.max(1, 3 * zoom);
+      context.lineCap = "round";
+      context.beginPath();
+      context.moveTo(point.x, mastFoot);
+      context.lineTo(point.x, mastTop);
+      context.stroke();
+      const pennant = (colour: string, heightShare: number): void => {
+        const y = mastFoot + (mastTop - mastFoot) * heightShare;
+        context.fillStyle = colour;
+        context.strokeStyle = outline;
+        context.lineWidth = Math.max(1, 1.5 * zoom);
+        context.beginPath();
+        context.moveTo(point.x, y);
+        context.lineTo(point.x + 22 * zoom, y + 7 * zoom);
+        context.lineTo(point.x, y + 14 * zoom);
+        context.closePath();
+        context.fill();
+        context.stroke();
+      };
+      // The old flag comes down in the first half, the new one goes up.
+      if (progress < 0.5)
+        pennant(feedback.fromColour ?? "#9c968a", 1 - progress * 2);
+      else pennant(feedback.toColour ?? "#ffffff", (progress - 0.5) * 2);
       context.restore();
     }
   }

@@ -39,6 +39,8 @@ import {
   GALLERY_CURIOSITY_ROWS_V7,
   GALLERY_FACTIONS_V7,
   GALLERY_FILTERS_STORAGE_KEY_V7,
+  GALLERY_NO_SHIPS_LABEL_V7,
+  GALLERY_NO_SHIPS_TEXT_V7,
   GALLERY_UNIT_ROWS_V7,
   galleryBuildingDetailsV7,
   galleryBuildingGroundV7,
@@ -729,6 +731,24 @@ export class GalleryViewV7 {
     td.dataset.faction = cell.faction;
     if (cell.kind === "EMPTY") {
       td.classList.add("is-empty");
+      if (cell.reason === "NO_SHIPS") {
+        // The frozen sea: the Ice Folk have no ship on purpose; the cell
+        // shows an ice mark and says so, instead of a bare dash.
+        td.classList.add("is-frozen");
+        td.dataset.emptyReason = "no-ships";
+        td.title = GALLERY_NO_SHIPS_TEXT_V7;
+        td.setAttribute("aria-label", GALLERY_NO_SHIPS_TEXT_V7);
+        td.append(
+          uiIconV7(this.#document, "snowflake"),
+          text(
+            this.#document,
+            "span",
+            GALLERY_NO_SHIPS_LABEL_V7,
+            "v7-gallery-none",
+          ),
+        );
+        return td;
+      }
       td.append(text(this.#document, "span", "—", "v7-gallery-none"));
       td.setAttribute("aria-label", "None");
       return td;

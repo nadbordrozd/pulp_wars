@@ -88,12 +88,6 @@ export function iceFolkTerrainCellsV7(view: PlayerViewV7): {
     if (tile.snow === true && tile.biome !== null) snowKeys.add(key(tile.at));
     if (tile.blizzard === true) blizzard.add(key(tile.at));
   }
-  // The frozen sea (naval branch section 8.3, `pulp_wars-5ti.3`): until the
-  // naval UI bead draws ice of its own, an ice tile is drawn with the Snow
-  // overlay over its water (a stand-in).
-  for (const entry of view.ice) {
-    snowKeys.add(key(entry.at));
-  }
   const snow = new Map<string, IceFolkSnowCellV7>();
   const { width, height } = view.board;
   for (const cell of snowKeys) {

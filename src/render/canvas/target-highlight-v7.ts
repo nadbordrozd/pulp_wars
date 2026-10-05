@@ -134,6 +134,8 @@ const FAMILY_STYLES_V7: Readonly<Record<string, TargetHighlightStyleV7>> = {
   BEAM_DOWN: "PLACE",
   ASSEMBLE: "PLACE",
   REBAKE: "PLACE",
+  // The frozen sea: the tile a line role's Freeze starts on.
+  FREEZE: "PLACE",
 };
 
 /** Every family the vocabulary knows, for the audit and its tests. */

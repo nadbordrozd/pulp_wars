@@ -29,8 +29,8 @@ The dock never lists one button, portrait or chip per target.
   unit), so a click on each does what its mark says.
 - **Arming where two actions could claim one target.** A Mind Control, a
   Tractor Beam, a Bolas, a Bomb Run or a Board aims at units the unit could
-  also attack; a Tunnel, an Assemble, a Beam Down, a Re-bake or a Sugar Rush
-  aims at tiles it could also move to. Each has one button that arms it.
+  also attack; a Tunnel, an Assemble, a Beam Down, a Re-bake, a Sugar Rush
+  or a Freeze aims at tiles it could also move to. Each has one button that arms it.
   While it is armed only its targets are highlighted and clickable; Back,
   Cancel, Escape or choosing something else disarms it. The choice between
   two actions on one target is therefore made with the armed button, never
@@ -177,6 +177,8 @@ area fixed by the rules, or it opens a screen).
 | Ice Folk | Bolas                | (b)   | A chip per target, and board targets                   | The board targets only                                                                                       | Attack                       |
 | Ice Folk | Cold Snap            | (c)   | One "Cast Cold Snap" (it chills every unit in reach)   | Unchanged; the chilled units are marked and any of them casts it too                                         | Attack                       |
 | Ice Folk | Blizzard, Rockfall   | (c)   | No action (a passive aura; part of an Attack)          | Unchanged                                                                                                    | none                         |
+| Ice Folk | Freeze (a line role) | (a)   | No control (the frozen sea had no interface)           | One button arms it; the tile to freeze toward is picked on the board (section 3.5)                           | Place                        |
+| Ice Folk | Freeze (Ice Witch)   | (c)   | No control                                             | One button casts her ring; its tiles are marked while she is selected (section 3.5)                          | none (an area preview)       |
 | Dwarf    | Tunnel: passenger    | (b)   | A portrait button per Hammerer and "Alone"             | The badged Hammerers on the board; the dock shows who rides and one "Alone" toggle                           | Help                         |
 | Dwarf    | Tunnel: destination  | (a)   | A tile on the board, chosen then confirmed             | Unchanged                                                                                                    | Move                         |
 | Dwarf    | Bomb Run: target     | (b)   | A button per target, and board targets                 | The board targets only                                                                                       | Attack                       |
@@ -265,6 +267,61 @@ adds one targeted action and three previews. Code:
   ID stays `RAM`. Shorecraft's note is "Units embark at active Ports",
   since "Board" now names the capture.
 
+### 3.5 The frozen sea: Freeze, the slide, Icebound (bead `pulp_wars-5ti.7`)
+
+The Ice Folk
+([rules](../product/RULESET_7_NAVAL_BRANCH.md#8-ice-folk-the-frozen-sea))
+freeze the sea instead of sailing it. Code:
+`src/render/frozen-sea-presentation-v7.ts` (the words),
+`src/render/canvas/frozen-sea-board-plan-v7.ts` (the plan) and
+`src/render/canvas/frozen-sea-canvas-v7.ts` (ice cells, cracks, the slide
+arrow, the icebound marker).
+
+- **Freeze of a line role is armed.** A tile next to the unit that is
+  already ice is both a Move and a Freeze (a refresh), so Freeze follows
+  the arming rule: **one Freeze button** (a snowflake). Armed, each tile
+  the engine offers a `FREEZE` on is a target in the **Place** style,
+  labelled with the exact outcome of `previewFreezeV7`: **"Ice 2 · 3
+  turns"** (the tiles that freeze and how long they last; 5 with Glacier),
+  **"Ice 1 · stays"** where the ice is in the unit owner's territory and
+  never melts, "Ice 2 · 3 turns, 1 stays" for a line that leaves it. The
+  far tile of each line is tinted with a dashed cream edge (it is frozen
+  too, and is not picked), and a ship a line would lock in reads
+  "Icebound" (the target's note counts them). A click, a tap or Enter
+  freezes; Escape, Cancel or another selection disarms; Tab steps through
+  the tiles. The aiming panel holds the "?" and Cancel only.
+- **The Ice Witch's Freeze is not aimed.** It always freezes her ring, so
+  there is nothing to pick: her one Freeze button casts it. The tiles it
+  would turn to ice are marked while she is selected (the same tint and
+  dashed cream edge, quiet), and lifted, with the outcome's label on her
+  tile, while the button is hovered or focused. They are an area preview,
+  not targets, like an area support's recipients (section 2.1): a click on
+  one does what its own mark says. On a phone, which has no hover, the
+  quiet marks are the preview.
+- **Reasons.** When no `FREEZE` is offered, a unit with the ability that
+  stands next to water shows the button disabled with the first failing
+  row of the rules: "Needs Rime", "Frozen: it moved", "Already acted this
+  turn", "Deep Water needs Pack Ice" or "No water here can freeze". A unit
+  with no water beside it has no Freeze button.
+- **The slide is part of a Move.** The engine offers a sliding unit only
+  the tiles a Move can end on, so its destinations are ordinary Move
+  targets. A destination reached by a slide is outlined in the pale ice of
+  a Glide tile and draws an **arrow** from the tile the unit steps from,
+  across the ice, to the tile it stops on (once per slide, at full weight
+  on the focused destination); the dock's legend reads "Slide: it stops
+  where the ice ends". The path is the command's own. A unit that does not
+  slide (the Sabretooth, a walker, a flyer) has plain Moves.
+- **The slip.** A ground unit of another faction is offered the ice tile
+  next to it as an ordinary Move; it takes the same pale outline and the
+  legend "Ice: your Move ends here". A Move that stops on ice the unit did
+  not know of is announced ("Ice: the Move ended there").
+- **An icebound ship** is no target of its owner's: the engine offers it
+  no Move, Attack or Board. It wears the pack ice at its hull's foot and a
+  pill with the crush it takes next ("−3", "Sinks"); its dock has the
+  chips "Icebound" and "−3 HP" (whose turn, in the tooltip) and, for its
+  owner, one disabled "Sail" button with the reason. Board's own reason
+  for an icebound boarder is in section 3.4.
+
 ## 4. The aiming panel
 
 While an ability is armed the dock shows its aiming panel in place of the
@@ -314,6 +371,20 @@ for tools; it is never read out.
   numbers. The naval browser smoke (`scripts/browser-naval-smoke-v7.ts`)
   arms Board, picks the prize on the board at desktop and phone widths,
   rams, and reads the Submerged chip.
+- `tests/unit/frozen-sea-presentation-render-v7.test.ts`,
+  `tests/integration/ruleset7-frozen-sea-dom.test.ts` and
+  `tests/integration/ruleset7-naval-canvas.test.ts` (section 3.5, scenes in
+  `tests/fixtures/v7-frozen-sea-ui.ts`): a line role's Freeze (one button,
+  the exact "Ice N" label, the far tile, a board pick sends the offered
+  command, Escape and Cancel disarm, Tab and Enter on the real board
+  host, the reasons), the Witch's ring (quiet, prominent on focus, cast on
+  press, Deep Water only with Pack Ice), the slide and its arrow, the
+  Sabretooth's plain Moves, the slip, an icebound ship's chips, reason and
+  crush, the melting stages and permanent ice. The guard test sweeps five
+  frozen-sea scenes. The naval browser smoke mounts the fixture app in
+  the CHIBI look, arms Freeze and picks its tile on the board at desktop
+  and phone widths, casts the Witch's ring, slides a Sled across a bridge
+  to the far shore, and reads an icebound ship's crush.
 - `scripts/browser-board-targeting-review-v7.ts` (dev server only)
   captures every style on the faction fixtures, on Grass, Snow, a Forest,
   Mountains and the Undead ground, at desktop and phone widths, the area

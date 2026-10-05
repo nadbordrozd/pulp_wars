@@ -134,6 +134,10 @@ function fakeIceFolkArt(): IceFolkBoardArtV7 {
   return {
     snowTile: (edges, variant) =>
       ({ snow: `${edges}|${variant}` }) as unknown as CanvasImageSource,
+    seaIce: (_sheet, openWater, variant, permanent) =>
+      ({
+        seaIce: `${openWater}|${variant}|${String(permanent)}`,
+      }) as unknown as CanvasImageSource,
     caps: (image, kind) =>
       ({
         caps: kind,
