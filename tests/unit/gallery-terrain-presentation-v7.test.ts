@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { assetInventoryV7 } from "../../src/assets/asset-inventory-v7";
 import { CHIBI_FOREST_ART_SET_V7 } from "../../src/assets/chibi-forest-pieces-manifest";
+import { FACTION_FOREST_ART_SETS_V7 } from "../../src/assets/faction-forest-pieces-manifest";
+import { FACTION_FOREST_IDS_V7 } from "../../src/render/canvas/faction-forests-v7";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "../../src/assets/chibi-mountain-ranges-manifest";
 import { FACTION_GRASS_TILES_V7 } from "../../src/assets/faction-grass-manifest";
 import { FACTION_IDS_V7 } from "../../src/engine/index";
@@ -60,24 +62,28 @@ describe("Gallery terrain presentation", () => {
   });
 
   it("marks a faction without its own forest plainly, and slots one in where it exists", () => {
-    // Today only the Undead draw their own Forest.
-    expect(galleryTerrainCellV7("FOREST", "UNDEAD").kind).toBe("OWN");
-    expect(galleryTerrainCellV7("FOREST", "GOBLIN")).toEqual({
+    // Six factions have a forest of their own (pulp_wars-2yc.2); Ice Folk
+    // territory is Snow, and its pines are the default ones under caps.
+    expect(galleryTerrainCellV7("FOREST", "ICE_FOLK")).toEqual({
       kind: "SAME",
       row: "FOREST",
-      faction: "GOBLIN",
+      faction: "ICE_FOLK",
     });
-    const undead = galleryTerrainPiecesV7("FOREST", "UNDEAD");
-    expect(undead.length).toBeGreaterThan(0);
-    expect(
-      undead.every((piece) =>
-        piece.layers.some(
-          (layer) =>
-            layer.kind === "SUBJECT" &&
-            layer.subject === "TERRAIN:UNDEAD:FOREST",
-        ),
-      ),
-    ).toBe(true);
+    for (const faction of FACTION_FOREST_IDS_V7) {
+      expect(galleryTerrainCellV7("FOREST", faction).kind).toBe("OWN");
+      const pieces = galleryTerrainPiecesV7("FOREST", faction);
+      const set = FACTION_FOREST_ART_SETS_V7[faction];
+      // A single piece on the faction's ground, then the whole set.
+      expect(pieces[0]?.box.kind).toBe("TILE");
+      expect(pieces[0]?.layers).toHaveLength(2);
+      expect(pieces.length).toBe(1 + set.pieces.length + set.clumps.length);
+      const urls = pieces.flatMap(galleryTerrainRasterUrlsV7);
+      for (const piece of [...set.pieces, ...set.clumps])
+        expect(urls, piece.id).toContain(piece.url);
+      // Never a piece of the default Forest.
+      for (const piece of CHIBI_FOREST_ART_SET_V7.pieces)
+        expect(urls).not.toContain(piece.url);
+    }
     // Sea ice is the Ice Folk's alone.
     for (const faction of FACTION_IDS_V7)
       expect(galleryTerrainLookV7("ICE", faction)).toBe(

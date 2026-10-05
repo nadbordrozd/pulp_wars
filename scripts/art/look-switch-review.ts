@@ -34,6 +34,8 @@ export interface LookSwitchShot {
   readonly crop?: readonly [number, number, number, number];
   /** A rectangle of the page shown again at 3x. */
   readonly zoom?: readonly [number, number, number, number];
+  /** The page size (default 1440 x 900); a whole large map needs more. */
+  readonly size?: readonly [number, number];
 }
 
 const delay = (ms: number): Promise<void> =>
@@ -168,6 +170,12 @@ async function capture(
   const url = new URL(base);
   url.searchParams.set("art", "chibi");
   if (!on) url.searchParams.set(parameter, "0");
+  await connection.send("Emulation.setDeviceMetricsOverride", {
+    width: shot.size?.[0] ?? 1440,
+    height: shot.size?.[1] ?? 900,
+    deviceScaleFactor: 1,
+    mobile: false,
+  });
   await evaluate(connection, `globalThis.__SWITCH_OLD__ = true`).catch(
     () => undefined,
   );
@@ -222,7 +230,12 @@ async function pair(
   after: string,
   out: string,
 ): Promise<void> {
-  const crop = shot.crop ?? [0, 60, 1440, 840];
+  const crop = shot.crop ?? [
+    0,
+    60,
+    shot.size?.[0] ?? 1440,
+    (shot.size?.[1] ?? 900) - 60,
+  ];
   const cut = (
     file: string,
     box: readonly [number, number, number, number],

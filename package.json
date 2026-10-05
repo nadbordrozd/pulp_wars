@@ -61,6 +61,7 @@
     "art:chibi-forest-pieces": "tsx scripts/art/chibi-forest-pieces.ts",
     "art:chibi-forest-review": "tsx scripts/art/chibi-forest-review.ts",
     "art:chibi-mountain-ranges": "tsx scripts/art/chibi-mountain-ranges.ts",
+    "art:faction-forests": "tsx scripts/art/faction-forests.ts",
     "art:faction-grass": "tsx scripts/art/faction-grass.ts",
     "art:faction-grass-review": "tsx scripts/art/faction-grass-review.ts",
     "art:chibi-batch-review": "tsx scripts/art/chibi-batch-review.ts",

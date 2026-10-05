@@ -1,0 +1,140 @@
+{
+  "bead": "pulp_wars-2yc.2",
+  "sets": {
+    "UNDEAD": {
+      "grass": "public/assets/chibi/terrain/chibi-undead-grass-1.png",
+      "clumps": [
+        {
+          "recipe": "undead-a",
+          "candidate": 3
+        },
+        {
+          "recipe": "undead-b",
+          "candidate": 0
+        },
+        {
+          "recipe": "undead-b",
+          "candidate": 2
+        },
+        {
+          "recipe": "undead-b",
+          "candidate": 3
+        }
+      ],
+      "soften": {
+        "gapSkip": 0.3,
+        "outlineBlend": 0.7,
+        "tonePull": 0.25,
+        "lift": 0.24,
+        "silhouetteBlend": 0.3
+      }
+    },
+    "GOBLIN": {
+      "grass": "public/assets/chibi/terrain/faction-grass/chibi-goblin-grass-1.png",
+      "clumps": [
+        {
+          "recipe": "goblin-a",
+          "candidate": 0
+        },
+        {
+          "recipe": "goblin-a",
+          "candidate": 1
+        },
+        {
+          "recipe": "goblin-a",
+          "candidate": 2
+        },
+        {
+          "recipe": "goblin-a",
+          "candidate": 3
+        }
+      ],
+      "soften": {
+        "gapSkip": 0.3,
+        "outlineBlend": 0.7,
+        "tonePull": 0.25,
+        "lift": 0.24,
+        "silhouetteBlend": 0.3
+      }
+    },
+    "DINOSAUR": {
+      "grass": "public/assets/chibi/terrain/faction-grass/chibi-dinosaur-grass-1.png",
+      "clumps": [
+        {
+          "recipe": "dinosaur-a",
+          "candidate": 0
+        },
+        {
+          "recipe": "dinosaur-a",
+          "candidate": 1
+        },
+        {
+          "recipe": "dinosaur-a",
+          "candidate": 3
+        }
+      ]
+    },
+    "MARTIAN": {
+      "grass": "public/assets/chibi/terrain/faction-grass/chibi-martian-grass-1.png",
+      "clumps": [
+        {
+          "recipe": "martian-a",
+          "candidate": 0
+        },
+        {
+          "recipe": "martian-a",
+          "candidate": 1
+        },
+        {
+          "recipe": "martian-a",
+          "candidate": 3
+        }
+      ],
+      "soften": {
+        "gapSkip": 0.3,
+        "outlineBlend": 0.7,
+        "tonePull": 0.25,
+        "lift": 0.24,
+        "silhouetteBlend": 0.3
+      }
+    },
+    "DWARF": {
+      "grass": "public/assets/chibi/terrain/faction-grass/chibi-dwarf-grass-1.png",
+      "clumps": [
+        {
+          "recipe": "dwarf-a",
+          "candidate": 0
+        },
+        {
+          "recipe": "dwarf-a",
+          "candidate": 1
+        },
+        {
+          "recipe": "dwarf-a",
+          "candidate": 3
+        }
+      ]
+    },
+    "CANDY": {
+      "grass": "public/assets/chibi/terrain/faction-grass/chibi-candy-grass-1.png",
+      "clumps": [
+        {
+          "recipe": "candy-a",
+          "candidate": 0
+        },
+        {
+          "recipe": "candy-a",
+          "candidate": 1
+        },
+        {
+          "recipe": "candy-b",
+          "candidate": 1
+        },
+        {
+          "recipe": "candy-b",
+          "candidate": 3
+        }
+      ]
+    }
+  }
+}

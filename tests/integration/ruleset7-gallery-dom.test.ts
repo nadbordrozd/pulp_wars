@@ -698,7 +698,8 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
       "Snow, Ice Folk",
     );
     expect(cell("GRASS", "GOBLIN").querySelector("canvas")).not.toBeNull();
-    // Forest: the Humans' and the Undead's; the others say "same" plainly.
+    // Forest: every faction's own (pulp_wars-2yc.2) but the Ice Folk's,
+    // whose territory is Snow: that cell says "same" plainly.
     expect(
       [...(rows[1]?.querySelectorAll<HTMLElement>("td") ?? [])].map(
         (td) =>
@@ -708,12 +709,12 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
     ).toEqual([
       "ORIGINAL",
       "UNDEAD",
+      "GOBLIN",
+      "DINOSAUR",
+      "MARTIAN",
       "Same as default",
-      "Same as default",
-      "Same as default",
-      "Same as default",
-      "Same as default",
-      "Same as default",
+      "DWARF",
+      "CANDY",
     ]);
     expect(rows[1]?.querySelector("td.is-same")?.textContent).toBe("=");
     // Shared terrain is one cell across the row.
@@ -800,10 +801,11 @@ describe("Ruleset 7 Gallery: Terrain (pulp_wars-2yc.3)", () => {
     expect(hosts).toHaveLength(2);
     expect(hosts[0]?.destroyed).toBe(true);
     expect(hosts[1]?.updates.at(-1)?.view.viewer.faction).toBe("UNDEAD");
+    // The Goblins' forest is next (pulp_wars-2yc.2).
     expect(
       required<HTMLButtonElement>('[data-action="gallery-next-faction"]')
         .disabled,
-    ).toBe(true);
+    ).toBe(false);
     // Down the column: shared terrain has no faction; back up keeps one.
     const next = required<HTMLButtonElement>(
       '[data-action="gallery-next-row"]',

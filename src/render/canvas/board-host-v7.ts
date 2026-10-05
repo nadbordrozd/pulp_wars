@@ -172,6 +172,11 @@ import {
   type CoastSandArtV7,
 } from "./coast-sand-v7";
 import { settlementShadowEnabledV7 } from "./settlement-shadow-v7";
+import { FACTION_FOREST_ART_SETS_V7 } from "../../assets/faction-forest-pieces-manifest";
+import {
+  createFactionForestArtV7,
+  factionForestsEnabledV7,
+} from "./faction-forests-v7";
 import {
   createFactionGrassArtV7,
   factionGrassEnabledV7,
@@ -331,6 +336,8 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
   /** The Ice Folk Snow tiles, snow caps, rime and casings, built once. */
   readonly #iceFolkArt: IceFolkBoardArtV7;
   readonly #forestArt: { resolve(): ChibiForestArtV7 | null };
+  /** Faction forests (pulp_wars-2yc.2): undefined with the switch off. */
+  readonly #factionForestArt?: { resolve(): ChibiForestArtV7 | null };
   readonly #mountainArt: { resolve(): ChibiMassifArtV7 | null };
   /** EXPERIMENT pulp_wars-2o7.4: undefined with the switch off. */
   readonly #factionGrassArt?: { resolve(): FactionGrassArtV7 | null };
@@ -456,6 +463,13 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
             redraw: () => this.#draw(),
             set: CHIBI_FOREST_ART_SET_V7,
           });
+    if (factionForestsEnabledV7())
+      this.#factionForestArt = createFactionForestArtV7({
+        environment: browserChibiRasterEnvironmentV7(documentRoot),
+        redraw: () => this.#draw(),
+        base: this.#forestArt,
+        sets: FACTION_FOREST_ART_SETS_V7,
+      });
     // Mountains as massifs (pulp_wars-e9f, pulp_wars-2o7.1): ridges and
     // single mountains that fill their cells, tall under other Mountains.
     this.#mountainArt =
@@ -1606,7 +1620,7 @@ export class CanvasBoardHostV7 implements BoardHostV7 {
         iceFolkShatter: this.#iceFolkShatter,
         // The Dwarf revision: the Dig In earthwork rasters.
         dwarfArt: this.#dwarfArt,
-        forestArt: this.#forestArt,
+        forestArt: this.#factionForestArt ?? this.#forestArt,
         mountainArt: this.#mountainArt,
         ...(this.#coastArt === undefined ? {} : { coastArt: this.#coastArt }),
         settlementShadow: this.#settlementShadow,

@@ -49,10 +49,18 @@ const UP = 24;
 const TALL_UP = 48;
 const TERRAIN = "public/assets/chibi/terrain";
 const OUT = "public/assets/chibi/mountains";
-const DIR = "scripts/art/chibi/mountain-ranges";
+/**
+ * An exploration run (bead pulp_wars-2yc.1): with MOUNTAIN_RANGES_RUN set to
+ * a directory, `plan`, `generate` and `review` read that directory's
+ * recipes.json and keep its records.json and raw candidates there, with the
+ * same rules. The production commands refuse to run then.
+ */
+const RUN = process.env.MOUNTAIN_RANGES_RUN?.replace(/\/+$/, "") || undefined;
+const DIR = RUN ?? "scripts/art/chibi/mountain-ranges";
 const RECIPES = `${DIR}/recipes.json`;
 const RECORDS = `${DIR}/records.json`;
-const RAW = "art/pixellab/chibi-raw/mountain-ranges";
+const RAW =
+  RUN === undefined ? "art/pixellab/chibi-raw/mountain-ranges" : `${RUN}/raw`;
 const FRAGMENTS = "scripts/art/chibi/fragments";
 export const MOUNTAIN_RANGES_RECORD = "src/assets/chibi-mountain-ranges.json";
 const API = "https://api.pixellab.ai/v2";
@@ -1333,6 +1341,10 @@ async function main(): Promise<void> {
   if (command === "generate") return generate(root, rest);
   if (command === "review" && rest[0] !== undefined)
     return review(root, path.resolve(rest[0]), rest.slice(1));
+  if (RUN !== undefined)
+    throw new Error(
+      `MOUNTAIN_RANGES_RUN is set: only plan, generate and review work on an exploration run (${command ?? "check"} is a production command)`,
+    );
   if (command === "bake") return bake(root);
   if (command === "stats") return stats(root);
   if (command === "sheet" && rest[0] !== undefined)

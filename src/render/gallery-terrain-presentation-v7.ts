@@ -15,7 +15,9 @@ import {
   CHIBI_MOUNTAIN_ART_SET_V7,
   CHIBI_RANGE_MINED_MOUNTAIN_ART_ASSETS_V7,
 } from "../assets/chibi-mountain-ranges-manifest";
+import { FACTION_FOREST_ART_SETS_V7 } from "../assets/faction-forest-pieces-manifest";
 import { FACTION_GRASS_TILES_V7 } from "../assets/faction-grass-manifest";
+import { factionForestIdV7 } from "./canvas/faction-forests-v7";
 import { factionNameV7 } from "./undead-presentation-v7";
 
 /**
@@ -84,7 +86,10 @@ export function galleryTerrainLookV7(
       ? "OWN"
       : "SAME";
   if (row === "FOREST")
-    return territoryGroundV7(faction) !== null ? "OWN" : "SAME";
+    return factionForestIdV7(faction) !== null ||
+      territoryGroundV7(faction) !== null
+      ? "OWN"
+      : "SAME";
   return "SAME";
 }
 
@@ -237,6 +242,47 @@ export function galleryTerrainPiecesV7(
         ]),
       );
     return subjectTiles(territoryTerrainSubjectV7("TERRAIN:GRASS", ground));
+  }
+  const forest = row === "FOREST" ? factionForestIdV7(faction) : null;
+  if (forest !== null) {
+    // A faction's forest (pulp_wars-2yc.2): a single piece on the
+    // faction's ground first, then every piece and seam clump of its set.
+    const set = FACTION_FOREST_ART_SETS_V7[forest];
+    const grass = FACTION_GRASS_TILES_V7.find(
+      (entry) => entry.id === forest && entry.toned !== true,
+    );
+    const single = set.pieces.find((piece) => piece.shape === "1x1");
+    const rasterLayer = (piece: {
+      readonly url: string;
+      readonly width: number;
+      readonly height: number;
+    }): GalleryTerrainLayerV7 => ({
+      kind: "RASTER",
+      url: piece.url,
+      width: piece.width,
+      height: piece.height,
+    });
+    return [
+      ...(single === undefined
+        ? []
+        : [
+            tile(`${forest}-forest`, [
+              grass === undefined
+                ? subjectLayer(
+                    territoryTerrainSubjectV7("TERRAIN:GRASS", ground),
+                  )
+                : { kind: "RASTER", url: grass.url, width: 80, height: 80 },
+              rasterLayer(single),
+            ]),
+          ]),
+      ...[...set.pieces, ...set.clumps].map(
+        (piece): GalleryTerrainSwatchV7 => ({
+          id: piece.id,
+          box: { kind: "PIECE", width: piece.width, height: piece.height },
+          layers: [rasterLayer(piece)],
+        }),
+      ),
+    ];
   }
   if (row === "FOREST") {
     const own = subjectTiles(

@@ -1,0 +1,132 @@
+{
+  "bead": "pulp_wars-2yc.2",
+  "shared": {
+    "klass": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+  },
+  "recipes": [
+    {
+      "id": "dinosaur-a",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93001,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text",
+      "subject": "Subject: a jungle clump: two leaning palm trees, one squat cycad and giant fern fronds; lush deep greens (#2f7d45, #4fa55a) with yellow-green highlights and brown ringed trunks; the outline is a dark green tone, never pure black.",
+      "styleImage": {
+        "file": "public/assets/chibi/terrain/chibi-forest-1.body.png"
+      },
+      "notes": "Sample: the jungle clump, styled from the default Forest clump so scale, outline and softness match.",
+      "review": "Four jungle clumps of palms, a cycad and fern fronds, deep greens, dark green outline, at the default clump's scale. 0 (61 x 65), 1 (78 x 59) and 3 (74 x 66) are the set's clumps. 2 measures lit from the right (faces -2.2) and is left out."
+    },
+    {
+      "id": "martian-a",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93101,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text",
+      "subject": "Subject: a clump of alien growths, not trees: four tall red-ochre fungal stalks and spires of different heights (#b06a48, shade #7f4634) with rounded teal caps (#3f9c93, light #6fc4b6) and small teal bulbs at the foot; no leaves, no green; the outline is a dark red-brown tone, never pure black.",
+      "notes": "Sample: the alien growths without a style image, because the default clump's green palette would be copied.",
+      "review": "Four clumps of red-ochre fungal stalks with teal caps and teal bulbs at the foot; all lit from the left (faces +13.7 to +30.5). 0, 1 and 3 are the set's clumps; 2 is 88 px tall, over the 86 a clump may be."
+    },
+    {
+      "id": "undead-a",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93201,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text",
+      "subject": "Subject: a clump of four dead and dying trees: bare crooked grey-brown trunks and branches, two with thin dark blue-green crowns and a few pale yellow-grey leaves; gloomy dusk colours (canopy #4f5f5a, bark #6b5d55, leaves #c9c79a); the outline is a dark tone, never pure black.",
+      "styleImage": {
+        "file": "public/assets/chibi/terrain/chibi-forest-1.body.png"
+      },
+      "notes": "Dead and dying trees, styled from the default Forest clump.",
+      "review": "Bare crooked trunks, two with thin dark crowns and pale leaves: the look. Only 3 (75 x 83) fits well and is a clump of the set; 1 is 71 x 86, 0 is 102 px tall and 2 is 87: over or at the 86 px a clump may be."
+    },
+    {
+      "id": "goblin-a",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93301,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text",
+      "subject": "Subject: a scrubby thicket: two crooked half-dead trees with sparse olive-yellow leaves, thorn bushes of dry brown twigs and one sawn tree stump; dry olive and straw colours (#8a8f3e, #b5a85a, bark #6b5133); the outline is a dark tone, never pure black.",
+      "styleImage": {
+        "file": "public/assets/chibi/terrain/chibi-forest-1.body.png"
+      },
+      "notes": "Scrub, thorn and a stump, styled from the default Forest clump.",
+      "review": "Four clumps of crooked half-dead trees, dry twig bushes and sawn stumps in olive, straw and brown; none lit from the right (faces -0.1 to +8.0). All four are the set's clumps."
+    },
+    {
+      "id": "dwarf-a",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93401,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text",
+      "subject": "Subject: three sturdy dark pine trees (#2f5a45, light #3f7355) with thick brown trunks, standing among two mossy grey boulders (#8d9488, moss #6f8a55); the outline is a dark tone, never pure black.",
+      "styleImage": {
+        "file": "public/assets/chibi/terrain/chibi-forest-1.body.png"
+      },
+      "notes": "Dark pines among mossy boulders, styled from the default Forest clump.",
+      "review": "Dark pines with thick trunks among mossy grey boulders. 0, 1 and 3 are the set's clumps (faces -0.2 to +4.5); 2 is 78 x 84 with the pines cut close to the image edge and is left out."
+    },
+    {
+      "id": "candy-a",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93501,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text",
+      "subject": "Subject: a clump of sweet trees: chocolate-brown trunks (#5a3a28) with round mint-green (#8fd4b0) and cream-white candy-floss canopies, and one small striped lollipop as an accent; mostly mint, cream and chocolate, very little pink; the outline is a dark chocolate tone, never pure black.",
+      "notes": "Sweet trees without a style image: the palette is the faction's, not the Forest's.",
+      "review": "Chocolate trunks under round mint and cream canopies, two with swirls, each clump with a small lollipop: mint, cream and chocolate, no pink. 0 and 1 are clumps of the set. 2 and 3 measure lit from the right (faces -2.6 and -9.8): the cream canopies stand on the right, which the measure reads as light from that side; they are left out all the same."
+    },
+    {
+      "id": "undead-b",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93202,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text",
+      "subject": "Subject: a low clump of four dead and dying trees, no taller than it is wide: bare crooked grey-brown trunks and branches, two with thin dark blue-green crowns and a few pale yellow-grey leaves; gloomy dusk colours, the same as the style image; the whole clump with space above it.",
+      "styleImage": {
+        "recipe": "undead-a",
+        "candidate": 3
+      },
+      "notes": "More Undead clumps that fit the 86 px a clump may be tall, styled from undead-a-3.",
+      "review": "Four lower clumps in the same hand, 71 to 83 px tall, all lit from the left (faces +5.1 to +14.1): 0 and 2 keep a tattered dark crown, 1 and 3 are bare. 0, 2 and 3 are clumps of the set."
+    },
+    {
+      "id": "candy-b",
+      "endpoint": "generate-image-v2",
+      "width": 80,
+      "height": 104,
+      "seed": 93502,
+      "fragments": ["style", "camera-three-quarter", "light-south-west"],
+      "klass": "@klass",
+      "negative": "ground plate, platform, grass square, soil patch, slab, background, buildings, people, text",
+      "subject": "Subject: a clump of sweet trees, the same as the style image: chocolate-brown trunks with round mint-green and cream-white candy-floss canopies and one small striped lollipop; every canopy is lighter on its left side and darker on its right side; mostly mint, cream and chocolate, very little pink.",
+      "styleImage": {
+        "recipe": "candy-a",
+        "candidate": 0
+      },
+      "notes": "More Candy clumps lit from the left, styled from candy-a-0.",
+      "review": "Four clumps of plain round mint and cream canopies on chocolate trunks with one lollipop each, lit from the left (faces +1.3 to +23.7); the swirls of candy-a are gone. 1 and 3 are clumps of the set."
+    }
+  ]
+}

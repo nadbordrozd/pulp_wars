@@ -330,6 +330,11 @@ import {
 } from "./coast-sand-v7";
 import { drawSettlementShadowV7 } from "./settlement-shadow-v7";
 import {
+  factionForestCellsOfV7,
+  factionForestPlanMemberV7,
+  type FactionForestIdV7,
+} from "./faction-forests-v7";
+import {
   drawFactionGrassV7,
   factionGrassCellsOfV7,
   factionGrassGladeLayersV7,
@@ -732,6 +737,8 @@ export interface BoardRenderPlanEntryV7 {
   readonly territoryGround?: TerritoryGroundV7;
   /** EXPERIMENT pulp_wars-2o7.4: the faction grass of the cell's territory. */
   readonly factionGrass?: FactionGrassIdV7;
+  /** Faction forests (pulp_wars-2yc.2): a Forest cell's own faction set. */
+  readonly factionForest?: FactionForestIdV7;
   readonly label?: string;
   readonly ownerId?: number | null;
   readonly hp?: number;
@@ -961,6 +968,7 @@ export function buildBoardRenderPlanV7(
       ...(riftPiece === undefined ? {} : { riftPiece }),
       ...(territoryGround === null ? {} : { territoryGround }),
       ...factionGrassPlanMemberV7(tile.terrain, tileFaction),
+      ...factionForestPlanMemberV7(tile.terrain, tileFaction),
       ownerId: tile.territoryOwnerId,
       ...ownerPresentation(view, tile.territoryOwnerId),
       ...(seaIce.has(coordKey(tile.at))
@@ -2175,8 +2183,16 @@ export function drawBoardV7(input: {
   // and seam clumps can cross cell borders over finished ground.
   const forestArt =
     chibiArt === undefined ? null : (input.forestArt?.resolve() ?? null);
+  // Faction forests (pulp_wars-2yc.2): with their art object each
+  // faction's Forest is packed as a forest of its own, in the live look.
   const forestCells =
-    forestArt === null ? null : forestCellsOf(input.plan, forestArt);
+    forestArt === null
+      ? null
+      : (factionForestCellsOfV7(
+          input.plan.entries,
+          forestArt,
+          direction !== undefined,
+        ) ?? forestCellsOf(input.plan, forestArt));
   if (forestCells !== null)
     for (const key of forestCells.keys()) splitCells.add(key);
   // Composed mountain ranges (pulp_wars-e9f), the same way.

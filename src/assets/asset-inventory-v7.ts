@@ -4,6 +4,7 @@ import type { ArtSetV7, ChibiArtAssetV7 } from "./chibi-art-v7";
 import { chibiDirectionArtAssetsV7 } from "./chibi-direction-art-manifest";
 import { CHIBI_FOREST_ART_SET_V7 } from "./chibi-forest-pieces-manifest";
 import { CHIBI_MOUNTAIN_ART_SET_V7 } from "./chibi-mountain-ranges-manifest";
+import { FACTION_FOREST_ART_SETS_V7 } from "./faction-forest-pieces-manifest";
 import { FACTION_GRASS_TILES_V7 } from "./faction-grass-manifest";
 import { ACCEPTED_ART_URLS } from "./generated-art-manifest";
 
@@ -103,6 +104,13 @@ function classicEntries(): AssetInventoryEntryV7[] {
       url: tile.url,
       group: tile.id satisfies AssetGroupV7,
     })),
+    // The forest of each faction (pulp_wars-2yc.2), loaded with its faction.
+    ...Object.entries(FACTION_FOREST_ART_SETS_V7).flatMap(([id, set]) =>
+      [...set.pieces, ...set.clumps].map(({ url }) => ({
+        url,
+        group: id as AssetGroupV7,
+      })),
+    ),
   ];
 }
 

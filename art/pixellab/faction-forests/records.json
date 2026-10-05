@@ -1,0 +1,492 @@
+{
+  "dinosaur-a": {
+    "id": "dinosaur-a",
+    "jobId": "375c68a8-10bd-49d9-a5c1-92d394547c88",
+    "at": "2026-10-05T19:30:11.451Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a jungle clump: two leaning palm trees, one squat cycad and giant fern fronds; lush deep greens (#2f7d45, #4fa55a) with yellow-green highlights and brown ringed trunks; the outline is a dark green tone, never pure black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93001,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a jungle clump: two leaning palm trees, one squat cycad and giant fern fronds; lush deep greens (#2f7d45, #4fa55a) with yellow-green highlights and brown ringed trunks; the outline is a dark green tone, never pure black."
+        }
+      ],
+      "style_image": "file public/assets/chibi/terrain/chibi-forest-1.body.png sha256 ae5e1c17c031bbadb023fc081a89eaff5efc2fbd4104bc141f00e7e91017197c",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/dinosaur-a-0.png",
+        "sha256": "e8bec0d70a15ecda0ef8c74905f86a525aae5b68d8c2583122be48feefa4ea68"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/dinosaur-a-1.png",
+        "sha256": "a563b8bac94ed335dcdca062751f3e991f95950238041993bbf852138cad191f"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/dinosaur-a-2.png",
+        "sha256": "e5a1fc29cf3823e681ad21b2ac2e799af55c3cf90f741e90c3b83c32805fcc63"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/dinosaur-a-3.png",
+        "sha256": "f5db11f79c79e70bcf6356892964bb9659d8e413905c4af2655a18061ca7ce8a"
+      }
+    ]
+  },
+  "martian-a": {
+    "id": "martian-a",
+    "jobId": "182eb8a0-ca7e-4c25-8dbd-c9f527095467",
+    "at": "2026-10-05T19:31:52.467Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a clump of alien growths, not trees: four tall red-ochre fungal stalks and spires of different heights (#b06a48, shade #7f4634) with rounded teal caps (#3f9c93, light #6fc4b6) and small teal bulbs at the foot; no leaves, no green; the outline is a dark red-brown tone, never pure black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93101,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a clump of alien growths, not trees: four tall red-ochre fungal stalks and spires of different heights (#b06a48, shade #7f4634) with rounded teal caps (#3f9c93, light #6fc4b6) and small teal bulbs at the foot; no leaves, no green; the outline is a dark red-brown tone, never pure black."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/martian-a-0.png",
+        "sha256": "ce01c7b39c33a5c7a6300541c4ca16d65a225fe09832cfc1ba0d6a7a46ab565f"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/martian-a-1.png",
+        "sha256": "6b468bd175270a3deca49c8de679691fc306b4a19e0070ed8cf0bbd936c181a6"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/martian-a-2.png",
+        "sha256": "a58b81a6193481e213852ae5dc2154bbd6d4fb03feb4b0186dc4a7568575e252"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/martian-a-3.png",
+        "sha256": "bfd48606d144f3d9f7b97c32aba00aae302d6cdb4f402217bdf9471d381c9ec1"
+      }
+    ]
+  },
+  "undead-a": {
+    "id": "undead-a",
+    "jobId": "1a176c24-9278-4bbe-832f-55a67812d0aa",
+    "at": "2026-10-05T19:34:21.609Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a clump of four dead and dying trees: bare crooked grey-brown trunks and branches, two with thin dark blue-green crowns and a few pale yellow-grey leaves; gloomy dusk colours (canopy #4f5f5a, bark #6b5d55, leaves #c9c79a); the outline is a dark tone, never pure black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93201,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a clump of four dead and dying trees: bare crooked grey-brown trunks and branches, two with thin dark blue-green crowns and a few pale yellow-grey leaves; gloomy dusk colours (canopy #4f5f5a, bark #6b5d55, leaves #c9c79a); the outline is a dark tone, never pure black."
+        }
+      ],
+      "style_image": "file public/assets/chibi/terrain/chibi-forest-1.body.png sha256 ae5e1c17c031bbadb023fc081a89eaff5efc2fbd4104bc141f00e7e91017197c",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-a-0.png",
+        "sha256": "25e68e31c10eb4326d3ea1999e817f48a8a2fa42aa1112a8acd1a2582fad46c0"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-a-1.png",
+        "sha256": "e5796719f1e41d2d8de1d9cb71e97b66d210a404cd19e24a41d61bbdba1615fc"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-a-2.png",
+        "sha256": "852500bdf18518122eed5cdb890fe0cde35bfccfd0a2794c8c060f3bb4925a77"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-a-3.png",
+        "sha256": "e97a02c148681989438310d305f0edeba31a9fc602f4d61fc7cbd1ec497f72c6"
+      }
+    ]
+  },
+  "goblin-a": {
+    "id": "goblin-a",
+    "jobId": "092b09ae-0060-443e-a232-9740297d1a33",
+    "at": "2026-10-05T19:35:51.682Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a scrubby thicket: two crooked half-dead trees with sparse olive-yellow leaves, thorn bushes of dry brown twigs and one sawn tree stump; dry olive and straw colours (#8a8f3e, #b5a85a, bark #6b5133); the outline is a dark tone, never pure black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93301,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a scrubby thicket: two crooked half-dead trees with sparse olive-yellow leaves, thorn bushes of dry brown twigs and one sawn tree stump; dry olive and straw colours (#8a8f3e, #b5a85a, bark #6b5133); the outline is a dark tone, never pure black."
+        }
+      ],
+      "style_image": "file public/assets/chibi/terrain/chibi-forest-1.body.png sha256 ae5e1c17c031bbadb023fc081a89eaff5efc2fbd4104bc141f00e7e91017197c",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/goblin-a-0.png",
+        "sha256": "c074da7df52815b12ef9d31a8bbf8afe3108ca7d417daf6678366ff350ea15bf"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/goblin-a-1.png",
+        "sha256": "90acc110c16bb73e7d35d7924b7939d3f9f424eb870809510fa7fd7f7d91894d"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/goblin-a-2.png",
+        "sha256": "726c38d152f1ad17c75a0079586f49b7c509ac02451bf58f8f019ff9729980f1"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/goblin-a-3.png",
+        "sha256": "ec1d4f5024f5ca84eb7091b011e96f1913c413eda066c2a211dd400b01ba9191"
+      }
+    ]
+  },
+  "dwarf-a": {
+    "id": "dwarf-a",
+    "jobId": "8d47daa8-7e41-4dc0-9314-033f33089d04",
+    "at": "2026-10-05T19:37:50.403Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: three sturdy dark pine trees (#2f5a45, light #3f7355) with thick brown trunks, standing among two mossy grey boulders (#8d9488, moss #6f8a55); the outline is a dark tone, never pure black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93401,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: three sturdy dark pine trees (#2f5a45, light #3f7355) with thick brown trunks, standing among two mossy grey boulders (#8d9488, moss #6f8a55); the outline is a dark tone, never pure black."
+        }
+      ],
+      "style_image": "file public/assets/chibi/terrain/chibi-forest-1.body.png sha256 ae5e1c17c031bbadb023fc081a89eaff5efc2fbd4104bc141f00e7e91017197c",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/dwarf-a-0.png",
+        "sha256": "82c702cbbc281dfb3090dd5101eb4d6bb226170bfa992b92f5950bbd5109fb6f"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/dwarf-a-1.png",
+        "sha256": "457c8845f6d5bd87c91f746409a126659a8a704673b3d52058f9c1246d419b75"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/dwarf-a-2.png",
+        "sha256": "e5f1607452668ad03c8713ca7ea48e1f6f6ef5e56c0b3cce9a95f486a4aa9ef5"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/dwarf-a-3.png",
+        "sha256": "b0e871ee510c77ab8083e2e2fbaeb21c81b50975e0efbc7bb24f98d70fd8eacf"
+      }
+    ]
+  },
+  "candy-a": {
+    "id": "candy-a",
+    "jobId": "28790640-7d17-4a30-ac74-5ac2b77d0ba8",
+    "at": "2026-10-05T19:39:53.470Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a clump of sweet trees: chocolate-brown trunks (#5a3a28) with round mint-green (#8fd4b0) and cream-white candy-floss canopies, and one small striped lollipop as an accent; mostly mint, cream and chocolate, very little pink; the outline is a dark chocolate tone, never pure black. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93501,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a clump of sweet trees: chocolate-brown trunks (#5a3a28) with round mint-green (#8fd4b0) and cream-white candy-floss canopies, and one small striped lollipop as an accent; mostly mint, cream and chocolate, very little pink; the outline is a dark chocolate tone, never pure black."
+        }
+      ]
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-a-0.png",
+        "sha256": "0faa93b9faceef86b146a33feb9d13d3139730989272fdabed803fa7b23ca681"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-a-1.png",
+        "sha256": "63c7e153df43079474fd1ba81c23134816b3b5c66979c0f9edc2a60e553fcdda"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-a-2.png",
+        "sha256": "c8dbe9416367cfc0cf0acc43115a9d71e69fa6ba90fceaac5e6adf877523b2ad"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-a-3.png",
+        "sha256": "f9250b27e669622e25a7e04297c210bfd7e83e57650b13aac5252d5a1c4eeeed"
+      }
+    ]
+  },
+  "undead-b": {
+    "id": "undead-b",
+    "jobId": "104a60b0-0205-4b7f-9708-31400953af4f",
+    "at": "2026-10-05T19:46:41.387Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a low clump of four dead and dying trees, no taller than it is wide: bare crooked grey-brown trunks and branches, two with thin dark blue-green crowns and a few pale yellow-grey leaves; gloomy dusk colours, the same as the style image; the whole clump with space above it. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93202,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a low clump of four dead and dying trees, no taller than it is wide: bare crooked grey-brown trunks and branches, two with thin dark blue-green crowns and a few pale yellow-grey leaves; gloomy dusk colours, the same as the style image; the whole clump with space above it."
+        }
+      ],
+      "style_image": "recipe undead-a#3 sha256 e97a02c148681989438310d305f0edeba31a9fc602f4d61fc7cbd1ec497f72c6",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-b-0.png",
+        "sha256": "e74be5c9779e1043d7139b39917d148c54ae2532336d4e031964eab80c6bed1c"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-b-1.png",
+        "sha256": "94fa00cd8774d97d3edc3e6bd44fc2c0457ef222e63d25c63efdc3c312e02944"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-b-2.png",
+        "sha256": "26b4d5b9403959202c214d6473ceae25a60787fe0bc236869bb94ff66cfcf37c"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/undead-b-3.png",
+        "sha256": "209323406abac7f927f277fe7788de5d068f40c5410b2429483d058ac732f581"
+      }
+    ]
+  },
+  "candy-b": {
+    "id": "candy-b",
+    "jobId": "7402f5a2-c149-4cf5-9c61-58047c362fc1",
+    "at": "2026-10-05T19:48:25.484Z",
+    "request": {
+      "endpoint": "generate-image-v2",
+      "description": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful. Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it. Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right. Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil. Subject: a clump of sweet trees, the same as the style image: chocolate-brown trunks with round mint-green and cream-white candy-floss canopies and one small striped lollipop; every canopy is lighter on its left side and darker on its right side; mostly mint, cream and chocolate, very little pink. Must not include: photorealism, painterly brushwork, gradients, dithering, noise, tiny details, thin outline, low-poly 3D, faceted polygons, blur, text, letters, numbers, logo, UI, frame, health bar, selection ring, cropped subject, ground plate, platform, grass square, soil patch, slab, background, buildings, people.",
+      "image_size": {
+        "width": 80,
+        "height": 104
+      },
+      "no_background": true,
+      "seed": 93502,
+      "layers": [
+        {
+          "source": "scripts/art/chibi/fragments/style.txt",
+          "text": "Style: bold chibi pixel art for a playful turn-based strategy board game, a board game come to life: chunky simple shapes, flat colours with one shadow tone, low detail, clean readable silhouette that reads at a glance at small size, slightly silly and cheerful."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/camera-three-quarter.txt",
+          "text": "Camera: consistent strategy-game camera, three-quarter view looking slightly down, the subject faces down and to the right (south-east), whole subject visible and centred on a transparent background, nothing cropped. The subject stands directly on the empty transparent background: nothing at all is drawn under it."
+        },
+        {
+          "source": "scripts/art/chibi/fragments/light-south-west.txt",
+          "text": "Light: the sun is low in the south-west, at the bottom left of the image: faces turned to the left or to the viewer are lit, faces turned to the right are in shadow, snow is brightest on its left side, and nothing is lit from the right."
+        },
+        {
+          "source": "recipes.json klass",
+          "text": "Class: one small clump of trees for a strategy map: three to five trees standing close together as one free-standing cut-out, calmer and less saturated than units, simple shapes, no face. It stands on the empty transparent background with nothing drawn under it: no ground, no grass, no soil."
+        },
+        {
+          "source": "recipes.json subject",
+          "text": "Subject: a clump of sweet trees, the same as the style image: chocolate-brown trunks with round mint-green and cream-white candy-floss canopies and one small striped lollipop; every canopy is lighter on its left side and darker on its right side; mostly mint, cream and chocolate, very little pink."
+        }
+      ],
+      "style_image": "recipe candy-a#0 sha256 0faa93b9faceef86b146a33feb9d13d3139730989272fdabed803fa7b23ca681",
+      "style_options": {
+        "color_palette": true,
+        "outline": true,
+        "detail": true,
+        "shading": true
+      }
+    },
+    "usageUsd": 0.095,
+    "candidates": [
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-b-0.png",
+        "sha256": "802767f751a5c446e9451b21ba3bad6900ceeeab6c9b5acafcec859e88b4085b"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-b-1.png",
+        "sha256": "07bc08b7d7f9c216ae7354202c0b731a8279b02cb37d6b236e614a1e3cb336be"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-b-2.png",
+        "sha256": "619fcaf315506c67b72d987472d0baa39bb6fa5cc2ffe266a01a8ba718f55289"
+      },
+      {
+        "file": "art/pixellab/faction-forests/raw/candy-b-3.png",
+        "sha256": "53701fadb4d8a4c20cde16051dbba59dabadbce6e020e459dc7a0dd077db0e59"
+      }
+    ]
+  }
+}

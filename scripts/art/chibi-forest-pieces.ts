@@ -61,6 +61,50 @@ const CLUMP_WEIGHTS: Readonly<Record<string, number>> = {
   "chibi-forest-5": 1,
 };
 
+/**
+ * A piece set: which clumps it is stamped from and where it is written.
+ * The default set is the Forest every faction shared; the faction sets of
+ * bead pulp_wars-2yc.2 (scripts/art/faction-forests.ts) are stamped by the
+ * same lattice and softened by the same recipe.
+ */
+export interface ForestPieceSet {
+  readonly bead: string;
+  /** Piece ids are `<prefix>-piece-<shape>-<letter>`, seams `<prefix>-seam-<n>`. */
+  readonly prefix: string;
+  /** Directory of the piece and seam masters. */
+  readonly out: string;
+  readonly clumps: readonly {
+    readonly id: string;
+    /**
+     * An 80 x 104 body layer, or with `candidate` a raw 80 x 104 PixelLab
+     * candidate, which is trimmed and stood where a clump stands.
+     */
+    readonly file: string;
+    readonly candidate?: true;
+    /** How often it is drawn, against the others. */
+    readonly weight: number;
+    /** The seam clump's file name in `out`. */
+    readonly seam: string;
+  }[];
+  /** The clumps whose mean foliage colour the tone pull moves toward. */
+  readonly toneClumps: number;
+  /** The ground tile the lift moves toward. */
+  readonly grass: string;
+  /**
+   * Whether a clump is also stamped mirrored. The default set does; the
+   * faction sets do not, because a mirrored clump is lit from the other
+   * side (the sun is at the bottom left, the user 2026-10-05).
+   */
+  readonly mirror: boolean;
+  /**
+   * The set's own softening instead of SOFTEN. A set of thin, busy shapes
+   * (bare branches, fungal stalks) is thinned and lifted further, and may
+   * also move its outer outline `silhouetteBlend` of the way to the ground
+   * colour, which the default set never does.
+   */
+  readonly soften?: ForestSoften;
+}
+
 /** Variants per shape: three of the common ones, two of each L. */
 const VARIANTS: Readonly<Record<ForestShapeV7, number>> = {
   "1x1": 3,
@@ -96,6 +140,9 @@ const LATTICE = { firstLine: 38, lineStep: 40, stampStep: 52, seedBase: 9100 };
  * chibi sprites. `stats` shows the result against the old Forest cell.
  */
 const SOFTEN = { gapSkip: 0.18, outlineBlend: 0.6, tonePull: 0.2, lift: 0.16 };
+export type ForestSoften = typeof SOFTEN & {
+  readonly silhouetteBlend?: number;
+};
 /** Luma below which a pixel is outline. */
 const OUTLINE_LUMA = 0.14;
 
@@ -122,7 +169,7 @@ export interface ForestPiecesRecord {
   readonly cellPx: number;
   readonly overflowPx: number;
   readonly lattice: typeof LATTICE;
-  readonly soften: typeof SOFTEN;
+  readonly soften: ForestSoften;
   readonly clumps: readonly {
     readonly id: string;
     readonly path: string;
@@ -191,17 +238,67 @@ function opaqueBox(r: Raster): { x: number; y: number; w: number; h: number } {
   return { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
 }
 
-async function loadClumps(root: string): Promise<Clump[]> {
+/** The default Forest set, exactly as bead pulp_wars-maw.3 baked it. */
+export const DEFAULT_FOREST_SET: ForestPieceSet = {
+  bead: "pulp_wars-maw.3",
+  prefix: "chibi-forest",
+  out: OUT,
+  clumps: CLUMP_IDS.map((id) => ({
+    id,
+    file: `${TERRAIN}/${id}.body.png`,
+    weight: CLUMP_WEIGHTS[id] ?? 1,
+    seam: `${id.replace("chibi-forest-", "chibi-forest-seam-")}.png`,
+  })),
+  toneClumps: 2,
+  grass: `${TERRAIN}/chibi-grass-1.png`,
+  mirror: true,
+};
+
+/** Where a raw candidate's clump stands on its 80 x 104 body layer. */
+export const CANDIDATE_BODY = { foot: 85, maxWidth: 78, maxHeight: 86 };
+
+/**
+ * A raw candidate as a body layer: alpha made hard, trimmed, centred, its
+ * foot on row 85 (the default clumps stand on rows 82 to 86).
+ */
+function candidateBody(read: Raster, file: string): Raster {
+  const hard: Raster = {
+    width: read.width,
+    height: read.height,
+    data: new Uint8Array(read.data),
+  };
+  for (let i = 3; i < hard.data.length; i += 4)
+    hard.data[i] = (hard.data[i] ?? 0) >= 128 ? 255 : 0;
+  const box = opaqueBox(hard);
+  if (box.w > CANDIDATE_BODY.maxWidth || box.h > CANDIDATE_BODY.maxHeight)
+    throw new Error(
+      `${file}: a clump of ${box.w} x ${box.h} px is over ${CANDIDATE_BODY.maxWidth} x ${CANDIDATE_BODY.maxHeight}`,
+    );
+  const body: Raster = {
+    width: CELL,
+    height: CELL + UP,
+    data: new Uint8Array(CELL * (CELL + UP) * 4),
+  };
+  paint(
+    body,
+    crop(hard, box),
+    Math.round((CELL - box.w) / 2),
+    CANDIDATE_BODY.foot + 1 - box.h,
+  );
+  return body;
+}
+
+async function loadClumps(root: string, set: ForestPieceSet): Promise<Clump[]> {
   const clumps: Clump[] = [];
-  for (const id of CLUMP_IDS) {
-    const file = `${TERRAIN}/${id}.body.png`;
+  for (const { id, file, candidate } of set.clumps) {
     const bytes = await readFile(path.join(root, file));
     const read = await readRaster(bytes);
-    const body: Raster = {
+    const plain: Raster = {
       width: read.width,
       height: read.height,
       data: new Uint8Array(read.data),
     };
+    const body = candidate === true ? candidateBody(plain, file) : plain;
     if (body.width !== CELL || body.height !== CELL + UP)
       throw new Error(`${file}: expected an 80 x 104 body layer`);
     const trim = opaqueBox(body);
@@ -262,8 +359,9 @@ function derivePiece(
   shape: ForestShapeV7,
   seed: number,
   clumps: readonly Clump[],
-  soften: typeof SOFTEN | typeof NO_SOFTEN,
+  soften: ForestSoften | typeof NO_SOFTEN,
   tones: Tones,
+  set: ForestPieceSet,
 ): Raster {
   const rows = FOREST_SHAPES_V7[shape];
   const cellCount = rows.join("").replaceAll(".", "").length;
@@ -278,11 +376,17 @@ function derivePiece(
   // The two original clumps are drawn twice as often as the two newer,
   // slightly more saturated ones, which keeps the pieces' mean saturation
   // inside the range of the old Forest clumps (`stats`).
+  const weightOf = (id: string): number =>
+    set.clumps.find((clump) => clump.id === id)?.weight ?? 1;
   const sources = clumps.flatMap((clump) =>
-    Array.from({ length: CLUMP_WEIGHTS[clump.id] ?? 1 }, () => [
-      { clump, raster: clump.raster },
-      { clump, raster: flop(clump.raster) },
-    ]).flat(),
+    Array.from({ length: weightOf(clump.id) }, () =>
+      set.mirror
+        ? [
+            { clump, raster: clump.raster },
+            { clump, raster: flop(clump.raster) },
+          ]
+        : [{ clump, raster: clump.raster }],
+    ).flat(),
   );
   const random = rng(seed);
   const covered = (cx: number, cy: number): boolean => rows[cy]?.[cx] === "#";
@@ -389,7 +493,7 @@ const lumaOf = (r: number, g: number, b: number): number =>
 
 function softened(
   source: Raster,
-  soften: typeof SOFTEN | typeof NO_SOFTEN,
+  soften: ForestSoften | typeof NO_SOFTEN,
   tones: Tones,
 ): Raster {
   if (soften.outlineBlend === 0 && soften.tonePull === 0 && soften.lift === 0)
@@ -430,7 +534,14 @@ function softened(
         for (let dy = -2; dy <= 2 && !silhouette; dy += 1)
           for (let dx = -2; dx <= 2 && !silhouette; dx += 1)
             if (!opaque(x + dx, y + dy)) silhouette = true;
-        if (silhouette) continue;
+        if (silhouette) {
+          const blend =
+            "silhouetteBlend" in soften ? (soften.silhouetteBlend ?? 0) : 0;
+          if (blend > 0)
+            for (let c = 0; c < 3; c += 1)
+              data[i + c] = mix(colour[c] ?? 0, tones.grass[c] ?? 0, blend);
+          continue;
+        }
         // Inside the canopy: towards the foliage around it.
         const sum = [0, 0, 0];
         let count = 0;
@@ -489,13 +600,12 @@ function meanColour(
 async function loadTones(
   root: string,
   clumps: readonly Clump[],
+  set: ForestPieceSet,
 ): Promise<Tones> {
-  const grass = await readRaster(
-    await readFile(path.join(root, `${TERRAIN}/chibi-grass-1.png`)),
-  );
+  const grass = await readRaster(await readFile(path.join(root, set.grass)));
   return {
     foliage: meanColour(
-      clumps.slice(0, 2).map((clump) => clump.raster),
+      clumps.slice(0, set.toneClumps).map((clump) => clump.raster),
       (r, g, b) => lumaOf(r, g, b) >= OUTLINE_LUMA,
     ),
     grass: meanColour(
@@ -514,13 +624,16 @@ async function loadTones(
 /** Every piece as its sources derive it today, with the record. */
 export async function deriveForestPieces(
   root: string,
-  soften: typeof SOFTEN | typeof NO_SOFTEN = SOFTEN,
+  soften: ForestSoften | typeof NO_SOFTEN = SOFTEN,
+  set: ForestPieceSet = DEFAULT_FOREST_SET,
 ): Promise<{
   readonly record: ForestPiecesRecord;
   readonly files: ReadonlyMap<string, Buffer>;
 }> {
-  const clumps = await loadClumps(root);
-  const tones = await loadTones(root, clumps);
+  // A set's own softening stands in for the default one, not for NO_SOFTEN.
+  if (soften === SOFTEN && set.soften !== undefined) soften = set.soften;
+  const clumps = await loadClumps(root, set);
+  const tones = await loadTones(root, clumps, set);
   // The seam clumps the board draws between pieces: each clump on its own,
   // softened like the pieces (its whole outline is silhouette).
   const seams: ForestPiecesRecord["clumps"][number]["seam"][] = [];
@@ -529,10 +642,10 @@ export async function deriveForestPieces(
   for (const shape of Object.keys(VARIANTS) as ForestShapeV7[])
     for (let variant = 0; variant < VARIANTS[shape]; variant += 1) {
       const seed = LATTICE.seedBase + pieces.length * 7;
-      const raster = derivePiece(shape, seed, clumps, soften, tones);
+      const raster = derivePiece(shape, seed, clumps, soften, tones, set);
       const bytes = await encodePng(raster);
-      const id = `chibi-forest-piece-${shape.toLowerCase()}-${String.fromCharCode(97 + variant)}`;
-      const file = `${OUT}/${id}.png`;
+      const id = `${set.prefix}-piece-${shape.toLowerCase()}-${String.fromCharCode(97 + variant)}`;
+      const file = `${set.out}/${id}.png`;
       files.set(file, bytes);
       pieces.push({
         id,
@@ -546,10 +659,10 @@ export async function deriveForestPieces(
         pixelSha256: pixelSha256(raster),
       });
     }
-  for (const clump of clumps) {
+  for (const [index, clump] of clumps.entries()) {
     const raster = softened(clump.raster, soften, tones);
     const bytes = await encodePng(raster);
-    const file = `${OUT}/${clump.id.replace("chibi-forest-", "chibi-forest-seam-")}.png`;
+    const file = `${set.out}/${set.clumps[index]?.seam ?? `${clump.id}.png`}`;
     files.set(file, bytes);
     seams.push({
       path: file,
@@ -562,11 +675,11 @@ export async function deriveForestPieces(
   return {
     record: {
       schemaVersion: 1,
-      bead: "pulp_wars-maw.3",
+      bead: set.bead,
       cellPx: CELL,
       overflowPx: UP,
       lattice: LATTICE,
-      soften: SOFTEN,
+      soften: soften === NO_SOFTEN ? SOFTEN : (soften as ForestSoften),
       clumps: clumps.map(
         ({ id, path: file, sha256: hash, trim, up }, index) => ({
           id,
@@ -701,7 +814,7 @@ function overGround(
 }
 
 async function stats(root: string): Promise<void> {
-  const clumps = await loadClumps(root);
+  const clumps = await loadClumps(root, DEFAULT_FOREST_SET);
   const read = async (file: string): Promise<Raster> => {
     const raster = await readRaster(await readFile(path.join(root, file)));
     return {
@@ -719,7 +832,7 @@ async function stats(root: string): Promise<void> {
     oldCells.push(crop(master, { x: 0, y: UP, w: CELL, h: CELL }));
   }
   const cells = async (
-    soften: typeof SOFTEN | typeof NO_SOFTEN,
+    soften: ForestSoften | typeof NO_SOFTEN,
     only?: ForestShapeV7,
   ): Promise<Raster[]> => {
     const { files, record } = await deriveForestPieces(root, soften);
