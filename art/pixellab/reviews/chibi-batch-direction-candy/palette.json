@@ -4,58 +4,58 @@
     {
       "name": "outline",
       "use": "the thick chibi outline",
-      "hex": "#0f0406",
+      "hex": "#0f0305",
       "share": 22.1,
-      "lightness": 1.8
+      "lightness": 1.6
     },
     {
       "name": "pinkLit",
       "use": "glaze, frosting, jelly and crystal, lit",
-      "hex": "#fe9fc6",
-      "share": 0.5,
-      "lightness": 76
+      "hex": "#fb90b5",
+      "share": 0.6,
+      "lightness": 72.1
     },
     {
       "name": "pinkShade",
       "use": "the shadow tone of the pink",
-      "hex": "#75374c",
+      "hex": "#703348",
       "share": 3.4,
-      "lightness": 31.9
+      "lightness": 30.2
     },
     {
       "name": "white",
       "use": "marshmallow, cream, sugar and the hard shine",
-      "hex": "#f8f3eb",
-      "share": 4,
-      "lightness": 96.1
+      "hex": "#faf8f0",
+      "share": 3.4,
+      "lightness": 97.5
     },
     {
       "name": "cream",
       "use": "cream shade, vanilla and pale sponge",
-      "hex": "#f3dfbd",
-      "share": 5.4,
-      "lightness": 89.6
+      "hex": "#f2ddbc",
+      "share": 6.2,
+      "lightness": 89.2
     },
     {
       "name": "biscuit",
       "use": "wafer, graham cracker, donut dough and caramel",
-      "hex": "#cb7c28",
-      "share": 22,
-      "lightness": 59.2
+      "hex": "#ca7a26",
+      "share": 22.9,
+      "lightness": 58.7
     },
     {
       "name": "chocolate",
       "use": "chocolate, gingerbread shade and feet",
-      "hex": "#652918",
+      "hex": "#642716",
       "share": 33.7,
-      "lightness": 25
+      "lightness": 24.5
     },
     {
       "name": "mint",
       "use": "the small mint trim",
-      "hex": "#78d0aa",
+      "hex": "#76cfa8",
       "share": 1,
-      "lightness": 77.2
+      "lightness": 76.8
     }
   ],
   "codePalette": {

@@ -2404,10 +2404,211 @@
         "recipe": "gingerbread-a"
       },
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Chocolatier look (pulp_wars-jdb.10): the user chose the Gingerbread Giant for the Juggernaut role in place of the Rock Candy Golem. A huge gingerbread man edged with white icing, gumdrop buttons, a grin, dark chocolate gauntlets and boots and a hammer on its back (84 x 102 px of the 88 x 104 canvas, feet on row 102): the biggest Candy unit. Imported from the options run; the asset id keeps the name rock-candy-golem. Superseded by gingerbread-smile-b-nohammer.",
+        "reviewedAt": "2026-10-05T17:30:32.874Z"
+      }
+    },
+    "gingerbread-smile-a": {
+      "id": "gingerbread-smile-a",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "jobId": "8f7dd1cb-08b0-4c08-ac03-3ad7375d5ec1",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-rock-candy-golem",
+        "subject": "UNIT:CANDY:JUGGERNAUT",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 314101,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "recipe": "gingerbread-a",
+          "candidate": 0,
+          "sha256": "4782b225184b3db994055f87097ef47dbefa56c8315900b77d5e83b069312a2a"
+        }
+      },
+      "submittedAt": "2026-10-05T21:58:24.726Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/gingerbread-smile-a.png",
+      "rawSheetSha256": "426d3ea1608fb1e994aed968707bebd9b7d431da0e226b886522b989a6d1af97",
+      "plateHints": [
+        {
+          "bandRows": 20,
+          "groundShare": 0.1052,
+          "footprintWidthShare": 0.5952,
+          "suspect": false
+        },
+        {
+          "bandRows": 20,
+          "groundShare": 0.1052,
+          "footprintWidthShare": 0.5952,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T21:59:05.855Z",
+      "usageUsd": 0.00797879409790039,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "A friendly face with dot eyes, but its smile is a dark line; the second seed drew the white icing smile that was asked for.",
+        "reviewedAt": "2026-10-05T22:03:06.321Z"
+      }
+    },
+    "gingerbread-smile-b": {
+      "id": "gingerbread-smile-b",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "jobId": "ed2b6a78-b904-4bcc-847d-bbf4d95ee470",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-rock-candy-golem",
+        "subject": "UNIT:CANDY:JUGGERNAUT",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 314102,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "recipe": "gingerbread-a",
+          "candidate": 0,
+          "sha256": "4782b225184b3db994055f87097ef47dbefa56c8315900b77d5e83b069312a2a"
+        }
+      },
+      "submittedAt": "2026-10-05T21:59:05.865Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/gingerbread-smile-b.png",
+      "rawSheetSha256": "6f8538db34e05bffa3c3c759f9b28e85327d3bc1faaaa0608089a23a6ecf0b2f",
+      "plateHints": [
+        {
+          "bandRows": 20,
+          "groundShare": 0.0223,
+          "footprintWidthShare": 0.5952,
+          "suspect": false
+        },
+        {
+          "bandRows": 20,
+          "groundShare": 0.0223,
+          "footprintWidthShare": 0.5952,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T21:59:55.010Z",
+      "usageUsd": 0.009029651191499498,
+      "review": {
+        "verdict": "REJECTED",
+        "candidate": null,
+        "notes": "The right smiling face (round eyes with a shine, pink cheeks, a wide white icing smile), still carrying the hammer; superseded by its edit gingerbread-smile-b-nohammer.",
+        "reviewedAt": "2026-10-05T22:03:06.466Z"
+      }
+    },
+    "gingerbread-smile-b-nohammer": {
+      "id": "gingerbread-smile-b-nohammer",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "jobId": "f86059ee-1790-45b2-a302-38aae4b6afb1",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-candy-rock-candy-golem",
+        "subject": "UNIT:CANDY:JUGGERNAUT",
+        "faction": "CANDY",
+        "recipeClass": "unit",
+        "requestSize": {
+          "width": 88,
+          "height": 104
+        },
+        "seed": 314103,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "recipe": "gingerbread-smile-b",
+          "candidate": 0,
+          "sha256": "57d16057ac73978513fd95012c479baf0d179ef364dd45b72a880c0f037f205f"
+        }
+      },
+      "submittedAt": "2026-10-05T22:01:19.572Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 88,
+        "height": 104
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/gingerbread-smile-b-nohammer.png",
+      "rawSheetSha256": "1ab16620fe640a40539e746ece71a8cd811e6dfb7eb12d65867ee2de247d0099",
+      "plateHints": [
+        {
+          "bandRows": 20,
+          "groundShare": 0.0224,
+          "footprintWidthShare": 0.575,
+          "suspect": false
+        },
+        {
+          "bandRows": 20,
+          "groundShare": 0.0224,
+          "footprintWidthShare": 0.575,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T22:02:34.004Z",
+      "usageUsd": 0.011770837201012506,
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Chocolatier look (pulp_wars-jdb.10): the user chose the Gingerbread Giant for the Juggernaut role in place of the Rock Candy Golem. A huge gingerbread man edged with white icing, gumdrop buttons, a grin, dark chocolate gauntlets and boots and a hammer on its back (84 x 102 px of the 88 x 104 canvas, feet on row 102): the biggest Candy unit. Imported from the options run; the asset id keeps the name rock-candy-golem.",
-        "reviewedAt": "2026-10-05T17:30:32.874Z"
+        "notes": "The user: \"I want him smiling instead of angry.\" The Gingerbread Giant with round happy eyes, pink cheeks and a wide white icing smile, no brows and no teeth, and without the hammer on its back that nobody asked for; head, icing trim, bow tie, buttons, chocolate gauntlets and boots, pose and height unchanged.",
+        "reviewedAt": "2026-10-05T22:03:06.615Z"
       }
     },
     "gumball-gunner-a": {
@@ -7421,10 +7622,77 @@
       "completedAt": "2026-10-05T17:32:17.633Z",
       "usageUsd": 0.007887230502234565,
       "review": {
+        "verdict": "REJECTED",
+        "candidate": 0,
+        "notes": "Chocolatier look (pulp_wars-jdb.10): the Gingerbread Giant's portrait, a round gingerbread head edged with white icing, a wide grin, a cream bow tie, icing-trimmed shoulders and a raised fist, like the map sprite. Superseded by portrait-gingerbread-smile-a.",
+        "reviewedAt": "2026-10-05T17:32:54.902Z"
+      }
+    },
+    "portrait-gingerbread-smile-a": {
+      "id": "portrait-gingerbread-smile-a",
+      "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+      "jobId": "48709621-8956-488a-8c1e-2631ee7efb97",
+      "request": {
+        "endpoint": "edit-image-pixen",
+        "model": "edit-image-pixen",
+        "batch": "direction-candy",
+        "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+        "subject": "PORTRAIT:CANDY:JUGGERNAUT",
+        "faction": "CANDY",
+        "recipeClass": "portrait",
+        "requestSize": {
+          "width": 48,
+          "height": 48
+        },
+        "seed": 314111,
+        "noBackground": true,
+        "options": {},
+        "layers": [
+          {
+            "layer": "recipe",
+            "source": "batch manifest recipe",
+            "text": "Change only his face: he is smiling and friendly, not fierce. Erase the slanted brows and the open mouth with teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the shoulders, the raised fist, every shape, thick black outline and style the same, on a transparent background."
+          }
+        ],
+        "prompt": "Change only his face: he is smiling and friendly, not fierce. Erase the slanted brows and the open mouth with teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the shoulders, the raised fist, every shape, thick black outline and style the same, on a transparent background.",
+        "negativePrompt": "",
+        "description": "Change only his face: he is smiling and friendly, not fierce. Erase the slanted brows and the open mouth with teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the shoulders, the raised fist, every shape, thick black outline and style the same, on a transparent background.",
+        "editInstruction": "Change only his face: he is smiling and friendly, not fierce. Erase the slanted brows and the open mouth with teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the shoulders, the raised fist, every shape, thick black outline and style the same, on a transparent background.",
+        "source": {
+          "recipe": "portrait-gingerbread-b",
+          "candidate": 0,
+          "sha256": "7eed52c84001802e5835aa8c10891a2508a25374e4596e8e9fc9e5f9cc0c27ae"
+        }
+      },
+      "submittedAt": "2026-10-05T21:59:55.023Z",
+      "candidateCount": 2,
+      "candidateSize": {
+        "width": 48,
+        "height": 48
+      },
+      "rawSheet": "art/pixellab/chibi-raw/batch-direction-candy/portrait-gingerbread-smile-a.png",
+      "rawSheetSha256": "6823bb19100afbc481cc352aa30edb99b97ce8fdb1652c8581dfbac8ae554374",
+      "plateHints": [
+        {
+          "bandRows": 9,
+          "groundShare": 0.5023,
+          "footprintWidthShare": 0.5625,
+          "suspect": false
+        },
+        {
+          "bandRows": 9,
+          "groundShare": 0.5023,
+          "footprintWidthShare": 0.5625,
+          "suspect": false
+        }
+      ],
+      "completedAt": "2026-10-05T22:00:31.363Z",
+      "usageUsd": 0.0075545728471544055,
+      "review": {
         "verdict": "ACCEPTED",
         "candidate": 0,
-        "notes": "Chocolatier look (pulp_wars-jdb.10): the Gingerbread Giant's portrait, a round gingerbread head edged with white icing, a wide grin, a cream bow tie, icing-trimmed shoulders and a raised fist, like the map sprite.",
-        "reviewedAt": "2026-10-05T17:32:54.902Z"
+        "notes": "The Gingerbread Giant's portrait with the friendly face of the map sprite: round dot eyes, pink cheeks and a closed smile; head, bow tie, shoulders and raised fist unchanged.",
+        "reviewedAt": "2026-10-05T22:03:06.767Z"
       }
     },
     "portrait-gumball-gunner-a": {
@@ -9812,13 +10080,13 @@
       "subject": "UNIT:CANDY:JUGGERNAUT",
       "assetClass": "GIANT_UNIT",
       "status": "ACCEPTED",
-      "recipe": "gingerbread-a",
+      "recipe": "gingerbread-smile-b-nohammer",
       "candidate": 0,
-      "candidateSha256": "4782b225184b3db994055f87097ef47dbefa56c8315900b77d5e83b069312a2a",
+      "candidateSha256": "0e5b28989cfadb5566919aa62e01fa99dd84f74297dfd2aff117b131433283b1",
       "master": {
         "path": "public/assets/chibi/units/chibi-direction-candy-rock-candy-golem.png",
-        "sha256": "a896fbe43e6348b236742d9c790b8510c4b47fc28cbfd0b9d95daa66fb56abec",
-        "pixelSha256": "05f08e0a760b4b1c39823abbc232df30af021eab4cdca4ef7ffba85f4ba1afa5",
+        "sha256": "a4473b72e6cea755574141d5c9e41b7c23764fe75b82affd044afe492f46249b",
+        "pixelSha256": "576177f640939e1b1c613a392f09af5f7888654b9fd90fb2dd48273050a4ac39",
         "width": 88,
         "height": 104
       },
@@ -9846,7 +10114,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 131,
+          "accentPixels": 98,
           "trimPixels": 0
         }
       },
@@ -9862,8 +10130,8 @@
       },
       "plateCheck": {
         "bandRows": 20,
-        "groundShare": 0.1002,
-        "footprintWidthShare": 0.5952,
+        "groundShare": 0.0224,
+        "footprintWidthShare": 0.575,
         "suspect": false
       },
       "reviewChecks": {
@@ -9873,8 +10141,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Chocolatier look (pulp_wars-jdb.10): the user chose the Gingerbread Giant for the Juggernaut role in place of the Rock Candy Golem. A huge gingerbread man edged with white icing, gumdrop buttons, a grin, dark chocolate gauntlets and boots and a hammer on its back (84 x 102 px of the 88 x 104 canvas, feet on row 102): the biggest Candy unit. Imported from the options run; the asset id keeps the name rock-candy-golem.",
-      "acceptedAt": "2026-10-05T17:30:32.874Z"
+      "notes": "The user: \"I want him smiling instead of angry.\" The Gingerbread Giant with round happy eyes, pink cheeks and a wide white icing smile, no brows and no teeth, and without the hammer on its back that nobody asked for; head, icing trim, bow tie, buttons, chocolate gauntlets and boots, pose and height unchanged.",
+      "acceptedAt": "2026-10-05T22:03:06.615Z"
     },
     "chibi-direction-effect-candy-bounce": {
       "id": "chibi-direction-effect-candy-bounce",
@@ -11514,13 +11782,13 @@
       "subject": "PORTRAIT:CANDY:JUGGERNAUT",
       "assetClass": "PORTRAIT",
       "status": "ACCEPTED",
-      "recipe": "portrait-gingerbread-b",
+      "recipe": "portrait-gingerbread-smile-a",
       "candidate": 0,
-      "candidateSha256": "7eed52c84001802e5835aa8c10891a2508a25374e4596e8e9fc9e5f9cc0c27ae",
+      "candidateSha256": "eae8151ff62235da41e735b8be8c589a3cd5c60cf0d4ffb491051ef23b29fd33",
       "master": {
         "path": "public/assets/chibi/portraits/chibi-direction-portrait-candy-rock-candy-golem.png",
-        "sha256": "8f51ad04ae10f7368d00dabb2d8624089d1106d867a1ae0845225daa30848c8f",
-        "pixelSha256": "80e1baf329c0acef804613be1e30dbcfe91bc7f2bbcb3b391c1e7c1900cbab73",
+        "sha256": "9c6673568b2183968d4fee67cdc0d6a366bd76d737a73bad76438cb3ef58e81c",
+        "pixelSha256": "e143add8041b75641d4feb81d1ad37b02ad35f6843d87ed46682b04b1d598d14",
         "width": 48,
         "height": 48
       },
@@ -11548,7 +11816,7 @@
               "add": 0.42
             }
           },
-          "accentPixels": 10,
+          "accentPixels": 6,
           "trimPixels": 0
         }
       },
@@ -11564,7 +11832,7 @@
       },
       "plateCheck": {
         "bandRows": 9,
-        "groundShare": 0.3516,
+        "groundShare": 0.5023,
         "footprintWidthShare": 0.5625,
         "suspect": false
       },
@@ -11575,8 +11843,8 @@
         "noPlate": true,
         "camera": true
       },
-      "notes": "Chocolatier look (pulp_wars-jdb.10): the Gingerbread Giant's portrait, a round gingerbread head edged with white icing, a wide grin, a cream bow tie, icing-trimmed shoulders and a raised fist, like the map sprite.",
-      "acceptedAt": "2026-10-05T17:32:54.902Z"
+      "notes": "The Gingerbread Giant's portrait with the friendly face of the map sprite: round dot eyes, pink cheeks and a closed smile; head, bow tie, shoulders and raised fist unchanged.",
+      "acceptedAt": "2026-10-05T22:03:06.767Z"
     }
   }
 }

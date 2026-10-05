@@ -2194,6 +2194,70 @@
       "promptAddendum": "A close-up: the gingerbread man's big round head with its icing grin fills the whole square; no legs and no feet.",
       "negativeAddendum": "full body, legs, feet, human, person, skin, hair, beard, drips, crystals, golem, rock, weapon",
       "notes": "Bead pulp_wars-jdb.10: the Gingerbread Giant's portrait; second seed."
+    },
+    {
+      "id": "gingerbread-smile-a",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 314101,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "gingerbread-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 follow-up (the user: \"I want him smiling instead of angry\"): the face only, first seed."
+    },
+    {
+      "id": "gingerbread-smile-b",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 314102,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "gingerbread-a",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 follow-up: the smiling face, second seed."
+    },
+    {
+      "id": "portrait-gingerbread-smile-a",
+      "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 314111,
+      "requestSize": {
+        "width": 48,
+        "height": 48
+      },
+      "source": {
+        "recipe": "portrait-gingerbread-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only his face: he is smiling and friendly, not fierce. Erase the slanted brows and the open mouth with teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the shoulders, the raised fist, every shape, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 follow-up: the portrait with the friendly smile of the map sprite."
+    },
+    {
+      "id": "gingerbread-smile-b-nohammer",
+      "asset": "chibi-direction-candy-rock-candy-golem",
+      "endpoint": "edit-image-pixen",
+      "seed": 314103,
+      "requestSize": {
+        "width": 88,
+        "height": 104
+      },
+      "source": {
+        "recipe": "gingerbread-smile-b",
+        "candidate": 0
+      },
+      "editInstruction": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background.",
+      "notes": "Bead pulp_wars-jdb.10 follow-up: the hammer on his back was never asked for; removed so the gauntlets carry the big hitter."
     }
   ]
 }

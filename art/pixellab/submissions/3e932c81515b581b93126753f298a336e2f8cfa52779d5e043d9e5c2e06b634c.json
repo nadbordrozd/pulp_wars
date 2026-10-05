@@ -1,0 +1,36 @@
+{
+  "id": "gingerbread-smile-b",
+  "jobId": "ed2b6a78-b904-4bcc-847d-bbf4d95ee470",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-rock-candy-golem",
+    "subject": "UNIT:CANDY:JUGGERNAUT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 314102,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change only his face: he is smiling and friendly, not angry. Erase the angry slanted brows and the bared teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the gumdrop buttons, the chocolate gauntlets and boots, the pose, the size, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "gingerbread-a",
+      "candidate": 0,
+      "sha256": "4782b225184b3db994055f87097ef47dbefa56c8315900b77d5e83b069312a2a"
+    }
+  }
+}

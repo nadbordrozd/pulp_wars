@@ -1,0 +1,36 @@
+{
+  "id": "gingerbread-smile-b-nohammer",
+  "jobId": "f86059ee-1790-45b2-a302-38aae4b6afb1",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-candy-rock-candy-golem",
+    "subject": "UNIT:CANDY:JUGGERNAUT",
+    "faction": "CANDY",
+    "recipeClass": "unit",
+    "requestSize": {
+      "width": 88,
+      "height": 104
+    },
+    "seed": 314103,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change only one thing: erase the hammer on his back completely, both its grey stone head behind his shoulder at the top left and its striped handle that sticks out at the lower left behind his arm, leaving empty transparent space. Do not redraw anything else: keep the smiling face, the gingerbread head and body, the icing trim, the bow tie, the buttons, the chocolate gauntlets and boots, the pose, the size, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "gingerbread-smile-b",
+      "candidate": 0,
+      "sha256": "57d16057ac73978513fd95012c479baf0d179ef364dd45b72a880c0f037f205f"
+    }
+  }
+}

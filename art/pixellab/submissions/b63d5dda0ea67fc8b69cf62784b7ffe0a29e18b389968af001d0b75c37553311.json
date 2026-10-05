@@ -1,0 +1,36 @@
+{
+  "id": "portrait-gingerbread-smile-a",
+  "jobId": "48709621-8956-488a-8c1e-2631ee7efb97",
+  "request": {
+    "endpoint": "edit-image-pixen",
+    "model": "edit-image-pixen",
+    "batch": "direction-candy",
+    "asset": "chibi-direction-portrait-candy-rock-candy-golem",
+    "subject": "PORTRAIT:CANDY:JUGGERNAUT",
+    "faction": "CANDY",
+    "recipeClass": "portrait",
+    "requestSize": {
+      "width": 48,
+      "height": 48
+    },
+    "seed": 314111,
+    "noBackground": true,
+    "options": {},
+    "layers": [
+      {
+        "layer": "recipe",
+        "source": "batch manifest recipe",
+        "text": "Change only his face: he is smiling and friendly, not fierce. Erase the slanted brows and the open mouth with teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the shoulders, the raised fist, every shape, thick black outline and style the same, on a transparent background."
+      }
+    ],
+    "prompt": "Change only his face: he is smiling and friendly, not fierce. Erase the slanted brows and the open mouth with teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the shoulders, the raised fist, every shape, thick black outline and style the same, on a transparent background.",
+    "negativePrompt": "",
+    "description": "Change only his face: he is smiling and friendly, not fierce. Erase the slanted brows and the open mouth with teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the shoulders, the raised fist, every shape, thick black outline and style the same, on a transparent background.",
+    "editInstruction": "Change only his face: he is smiling and friendly, not fierce. Erase the slanted brows and the open mouth with teeth; give him two round happy black dot eyes with a white shine, two small pink cheeks and one wide closed smile, a curved line of white icing. Do not redraw anything else: keep the gingerbread head, the icing trim, the bow tie, the shoulders, the raised fist, every shape, thick black outline and style the same, on a transparent background.",
+    "source": {
+      "recipe": "portrait-gingerbread-b",
+      "candidate": 0,
+      "sha256": "7eed52c84001802e5835aa8c10891a2508a25374e4596e8e9fc9e5f9cc0c27ae"
+    }
+  }
+}
