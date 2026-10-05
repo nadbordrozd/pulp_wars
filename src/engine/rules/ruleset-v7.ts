@@ -2889,7 +2889,10 @@ export function gravesEnabledV7(setup: {
 export const RULESET_7 = deepFreeze({
   id: RULESET_7_ID,
   version: 7 as const,
-  startingCoins: 5 as const,
+  // Early economy tweak (`pulp_wars-if6`, `pulp-wars-poc-7r41`): 3 (5
+  // before). With the first Start Turn's income of 2 a first turn has 5
+  // Coins: the free opening research and two harvests, and no unit.
+  startingCoins: 3 as const,
   factionTrees: FACTION_TREES_V7,
 });
 
@@ -2898,13 +2901,17 @@ export const RULESET_7 = deepFreeze({
  * costs `base + step * (C - 1)` Coins, `C` being the researcher's owned city
  * count. Tier 1 is `5 + 1(C - 1)` (unchanged); tier 2 `7 + 3(C - 1)` (was
  * `7 + 2(C - 1)`); tier 3 `12 + 5(C - 1)` (was `9 + 3(C - 1)`).
+ *
+ * Early economy tweak (`pulp_wars-if6`, `pulp-wars-poc-7r41`): the tier 3
+ * base is 9 (12 before), so the one-city costs read 5 / 7 / 9. The per-city
+ * steps are unchanged: tier 3 is `9 + 5(C - 1)`.
  */
 export const TECHNOLOGY_RESEARCH_COST_V7: Readonly<
   Record<1 | 2 | 3, { readonly base: number; readonly step: number }>
 > = deepFreeze({
   1: { base: 5, step: 1 },
   2: { base: 7, step: 3 },
-  3: { base: 12, step: 5 },
+  3: { base: 9, step: 5 },
 });
 
 export function technologyResearchCostV7(

@@ -263,6 +263,8 @@ describe("ruleset-7 revision-18 Showcase setup", () => {
         },
         players: revision19State.players.map((player) => ({
           ...player,
+          // `pulp_wars-if6` (7r41): 3 starting Coins; the pins have 5.
+          coins: player.coins + 2,
           achievementEntitlements: player.achievementEntitlements.slice(0, 3),
         })),
         units: revision19State.units.map((unit) =>
@@ -669,14 +671,14 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
     });
     // The first seat's Start Turn runs at creation and pays that income.
     for (const [faction, coins] of [
-      ["ORIGINAL", 21],
-      ["UNDEAD", 21],
-      ["GOBLIN", 19],
+      ["ORIGINAL", 19],
+      ["UNDEAD", 19],
+      ["GOBLIN", 17],
     ] as const) {
       const created = playableShowcase([faction, "ORIGINAL"]);
       expect(created.state.players.map((player) => player.coins)).toEqual([
         coins,
-        5,
+        3,
       ]);
       expect(created.events[0]).toEqual({
         kind: "TURN_STARTED",
@@ -688,13 +690,13 @@ describe("ruleset-7 revision-18 Showcase cities", () => {
 });
 
 describe("ruleset-7 revision-18 Showcase players and units", () => {
-  it("starts every seat with 23 technologies, 256 explored cells, and 5 Coins", () => {
+  it("starts every seat with 23 technologies, 256 explored cells, and 3 Coins", () => {
     const state = rawShowcase(["GOBLIN", "ORIGINAL", "UNDEAD"]);
     expect(TECHNOLOGY_IDS_V7).toHaveLength(23);
     for (const player of state.players) {
       expect(player.researchedTechs).toEqual(TECHNOLOGY_IDS_V7);
       expect(player.explored).toHaveLength(256);
-      expect(player.coins).toBe(5);
+      expect(player.coins).toBe(3);
       expect(player.status).toBe("ACTIVE");
       expect(player.achievementEntitlements).toEqual([
         { achievement: "EXPLORER", unlocked: false, spent: false },

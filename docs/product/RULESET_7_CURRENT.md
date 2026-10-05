@@ -1,7 +1,7 @@
 # Pulp Wars Ruleset 7: current rules
 
 **Status:** authoritative description of the current Ruleset 7 runtime,
-`pulp-wars-poc-7r40`, for all eight registered factions, Human (`ORIGINAL`),
+`pulp-wars-poc-7r41`, for all eight registered factions, Human (`ORIGINAL`),
 Undead (`UNDEAD`), Goblin (`GOBLIN`), Dinosaur (`DINOSAUR`), Martian
 (`MARTIAN`), Ice Folk (`ICE_FOLK`), Dwarf (`DWARF`), and Candy (`CANDY`, the
 engine step of the [Candy overlay](RULESET_7_CANDY.md), `pulp_wars-jdb.3`:
@@ -133,7 +133,13 @@ follow its land, villages may stand one tile from the edge, and Dry Land,
 Pangea, and Lakes keep a wild reserve for curiosities and Rifts
 ([section 2.2](#22-settlements-and-treasures)). Every generated board
 changed (map revision `REGIONAL_BIOMES_NAVAL_V3`); the Showcase, the
-missions, and every other rule did not.
+missions, and every other rule did not, and `pulp-wars-poc-7r41`
+(`pulp_wars-if6`, an early economy tweak) starts every seat with 3 Coins
+(was 5), so a first turn has 5 Coins in hand
+([section 3](#3-players-turns-and-victory)), and lowers the tier 3
+technology base cost to 9 (was 12), so the one-city costs read 5, 7, and 9
+([section 6.1](#61-research-cost)). The per-city steps, the missions' own
+Coins, and every other rule did not change.
 
 **The Candy overlay is partly pending.** Every faction the engine registers
 is described here, and the Candy engine rules are
@@ -210,7 +216,7 @@ some Help text, an identity written as `7rNN`, and a fallback-art plan; the
 values here are current. Where a document and the code disagreed, the
 code's behavior is the rule and is stated below;
 [Known discrepancies](#25-known-discrepancies) lists the open items and the
-resolved ones as of `pulp-wars-poc-7r40`.
+resolved ones as of `pulp-wars-poc-7r41`.
 
 **Terms.** "On the board" means a unit that currently exists (HP above 0).
 **Living** has the narrower revision-13 meaning used by Wail, Plague,
@@ -299,10 +305,10 @@ separate [Ruleset 6](RULESET_6.md) route.
 
 | Boundary                                   | Current value                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ruleset                                    | `pulp-wars-poc-7r40`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Ruleset                                    | `pulp-wars-poc-7r41`                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Game-state schema                          | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Command/event/save/replay numeric versions | `7`                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Browser autosave                           | `pulpWars.save.v7r40.current`                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Browser autosave                           | `pulpWars.save.v7r41.current`                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Map revision                               | `REGIONAL_BIOMES_NAVAL_V3`                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Frozen `FactionId` order                   | `ORIGINAL`, `UNDEAD`, `GOBLIN`, `DINOSAUR`, `MARTIAN`, `ICE_FOLK`, `DWARF`, `CANDY`                                                                                                                                                                                                                                                                                                                                                                                        |
 | Frozen `FactionTreeId` order               | `ORIGINAL_BASELINE_V5`, `UNDEAD_BASELINE_V1`, `GOBLIN_BASELINE_V1`, `DINOSAUR_BASELINE_V1`, `MARTIAN_BASELINE_V1`, `ICE_FOLK_BASELINE_V1`, `DWARF_BASELINE_V1`, `CANDY_BASELINE_V1`                                                                                                                                                                                                                                                                                        |
@@ -428,9 +434,11 @@ separate [Ruleset 6](RULESET_6.md) route.
   match without a Martian seat is the `7r38` match. The village density
   (`pulp_wars-ykw.2`, `7r40`) changed map generation only and no shape: the
   setup's `mapGenerationRevision` is `REGIONAL_BIOMES_NAVAL_V3`, the only
-  value a setup may carry.
+  value a setup may carry. The early economy tweak (`pulp_wars-if6`, `7r41`)
+  changed the starting Coins and one number of the research cost table, and
+  no shape.
 - The current browser route deletes only the known obsolete Ruleset 7 autosave
-  keys (through `pulpWars.save.v7r39.current`) and preserves the Ruleset 6
+  keys (through `pulpWars.save.v7r40.current`) and preserves the Ruleset 6
   save, settings, the art-set preference, and unrelated storage.
 - The normal browser entry and `?ruleset=7` launch Ruleset 7; exact
   `?ruleset=6` launches Ruleset 6; any other value is an unsupported-ruleset
@@ -654,7 +662,9 @@ A match is one human against 1–3 equal-rules Normal AI seats, in `RIVAL` or
   territory) holds at least two **growth resources** of one kind: Fruit on
   Grass, Game on Forest, or (on non-Dry-Land maps) Fish on Shallow Water. So
   every capital can reach level 2 on its owner's first turn: free research, two
-  harvests at 2 Coins each out of the first turn's 7 Coins. A deterministic,
+  harvests at 2 Coins each out of the first turn's 5 Coins (3 starting Coins and the first Start
+  Turn's income of 2; 7 before `pulp-wars-poc-7r41`, which left a unit's
+  price over). A deterministic,
   PRNG-free growth floor runs on each candidate after the settlement ring
   floors and water draws: for each capital in `(y, x)` order that lacks two of
   one kind, it adds the missing Fruit (on empty ring Grass) or Game (on empty
@@ -878,8 +888,8 @@ for them.
   to one city.
 
 **Players.** Every seat has all 23 technologies (nothing is left to
-research and the free opening technology does not apply), 5 Coins before its
-first Start Turn (so the first seat shows 21 Coins, or 19 for a Goblin seat),
+research and the free opening technology does not apply), 3 Coins before its
+first Start Turn (so the first seat shows 19 Coins, or 17 for a Goblin seat),
 all 256 cells explored, and seven locked achievement entitlements. Explorer
 and Muster unlock at each seat's first evaluation; no other achievement does
 (no processor reaches output 6, three cities and two ships are below the
@@ -1392,7 +1402,8 @@ Gallery has a Curiosities tab.
 
 ## 3. Players, turns, and victory
 
-- Every seat starts with 5 Coins, no technology, a level-1 capital, one
+- Every seat starts with 3 Coins (`RULESET_7.startingCoins`; 5 before
+  `pulp-wars-poc-7r41`, `pulp_wars-if6`), no technology, a level-1 capital, one
   full-HP unit of its faction's `FIGHTER` role (Fighter for Human, Skeleton
   for Undead, Goblin for Goblin, Caveman for Dinosaur, Grunt at full Shield
   for Martian, Yeti for Ice Folk, Hammerer for Dwarf) on the capital and
@@ -1795,20 +1806,22 @@ added the last four, constants in `src/engine/v7/achievements.ts`):
 ```text
 tier 1 = 5  + 1 * (C - 1)
 tier 2 = 7  + 3 * (C - 1)
-tier 3 = 12 + 5 * (C - 1)
+tier 3 = 9  + 5 * (C - 1)
 ```
 
 | Cities `C` | Tier 1 | Tier 2 | Tier 3 |
 | ---------: | -----: | -----: | -----: |
-|          1 |      5 |      7 |     12 |
-|          2 |      6 |     10 |     17 |
-|          3 |      7 |     13 |     22 |
-|          4 |      8 |     16 |     27 |
-|          5 |      9 |     19 |     32 |
-|          6 |     10 |     22 |     37 |
+|          1 |      5 |      7 |      9 |
+|          2 |      6 |     10 |     14 |
+|          3 |      7 |     13 |     19 |
+|          4 |      8 |     16 |     24 |
+|          5 |      9 |     19 |     29 |
+|          6 |     10 |     22 |     34 |
 
 `C` is the researcher's currently owned city count
-(`TECHNOLOGY_RESEARCH_COST_V7`). Research is permanent,
+(`TECHNOLOGY_RESEARCH_COST_V7`). The tier 3 base is 9 since
+`pulp-wars-poc-7r41` (`pulp_wars-if6`; 12 before, so every tier 3 cost is 3
+lower); the per-city steps did not change. Research is permanent,
 costs Coins only, and needs the one listed prerequisite. No technology starts
 known (a mission may start a seat with some, [section 2.6](#26-mission-setup)).
 On `DRY_LAND` the three Naval technologies are visible but cannot be
@@ -7144,7 +7157,7 @@ empty surfacedThisTurn and bombedThisTurn → income preview → next seat's Sta
 | Level-5+ reward (`JUGGERNAUT`)     | Brass Titan                    |
 | Treasure chest unit                | **Gyrocopter** (role `RAIDER`) |
 
-- A Dwarf seat starts with one Hammerer on its capital at full HP, 5 Coins,
+- A Dwarf seat starts with one Hammerer on its capital at full HP, 3 Coins,
   and no technology (`STARTING_FIGHTERS_V7` and `MILITIA_FIGHTERS_V7` are 1).
   The starting Hammerer has the fresh setup activation, so once the seat has
   Dig In it is dug in on its capital center if it does not move.
@@ -7735,6 +7748,7 @@ has no Candy step.
 | Candy       | `pulp-wars-poc-7r38` | `pulp_wars-jdb.3` Candy engine: the eighth faction (roster, tree with Home Sweet Home and Peppermint Surprise), Sugar Rush and the Crash, the Donut Racer's Escape and the Gummy Bear's Sugar Frenzy (two continuations at most) while Rushed, Crumbs, going stale, eating, the Peppermint Surprise, Re-bake, Splat, Bounce, Frosting, Sugar Toss; four state lists, three commands, seven events; the setup offers the Candy with its unit, portrait, city, and ship art; matches without a Candy seat unchanged | [section 23](#23-candy-faction-rules), [Candy overlay](RULESET_7_CANDY.md)                                                            |
 | Balance     | `pulp-wars-poc-7r39` | `pulp_wars-1wy.6` measurement of the balance round: the Martian Grunt at 8 HP (was 9), the first step of the design's fallback ladder; the Normal AI's threatened-city Grunt bias 15 (was 14); matches without a Martian seat unchanged                                                                                                                                                                                                                                                                           | [section 11](#11-unit-roster), [balance design](RULESET_7_BALANCE_MARTIAN_ICE.md#17-measurement-and-the-grunt-at-8-hp-pulp_wars-1wy6) |
 | Map scale   | `pulp-wars-poc-7r40` | `pulp_wars-ykw.2` map scale engine I: village density per map type (`S = roundHalfUp(L / LPS)`, `LPS` 15/13/12/12/11) instead of the fixed village table; villages 1 from the edge; lattice packing with nine phases and the wild reserve on Dry Land, Pangea, and Lakes; the row-major fill with the landmass share on Continents and equal home islands on Archipelago; `VILLAGE_DENSITY` invariant; map revision `REGIONAL_BIOMES_NAVAL_V3`; every generated board changed, the Showcase and missions did not  |
+| Economy     | `pulp-wars-poc-7r41` | `pulp_wars-if6` early economy tweak: 3 starting Coins (was 5), so a first turn has 5 Coins and no longer pays for free research, level 2, and a unit; tier 3 technology base cost 9 (was 12), so one-city costs read 5 / 7 / 9; the per-city steps (1 / 3 / 5) unchanged; missions keep their own Coins; no shape changed                                                                                                                                                                                         | [section 3](#3-players-turns-and-victory), [section 6.1](#61-research-cost)                                                           |
 
 **Documentation parity (2026-09-28, no ruleset or identity change):** where
 older documents disagreed with the code, the code's behavior was adopted as
@@ -8035,9 +8049,27 @@ with `tests/unit/ruleset-v7-map-scale.test.ts` and
 quoted in [section 2.7](#27-map-curiosities) were measured on `7r39`
 boards; the map scale design's section 5.5 has the `7r40` counts.
 
+**Early economy tweak (2026-10-05, `pulp_wars-if6`,
+`pulp-wars-poc-7r41`):** the starting Coins went from 5 to 3
+([section 3](#3-players-turns-and-victory); with the first Start Turn's
+income of 2 a first turn has 5 Coins, enough for the capital growth
+guarantee of [section 2.2](#22-settlements-and-treasures) and no unit; the
+Showcase seats start with 3 as well, [section 2.5](#25-showcase-setup))
+and the tier 3 technology base cost from 12 to 9
+([section 6.1](#61-research-cost): formula and table), direct number
+changes requested for play, with no overlay document and no balance
+measurement. The first Start Turn's income, the per-city steps, the free
+opening technology, the missions' own Coins, and every other rule are
+unchanged. Balance figures quoted in this document and in the balance and
+campaign documents were measured with 5 starting Coins and the tier 3 base
+of 12. The values were checked against `RULESET_7.startingCoins` and
+`TECHNOLOGY_RESEARCH_COST_V7` with
+`tests/unit/ruleset-v7-revision16-economy.test.ts` and
+`tests/unit/ruleset-v7-technology.test.ts`.
+
 ## 25. Known discrepancies
 
-As of `pulp-wars-poc-7r40` the rules in this document match the code for
+As of `pulp-wars-poc-7r41` the rules in this document match the code for
 the eight factions it describes, including the Dinosaur faction of revisions
 19 and 20, the achievements of revision 21, the Martian faction of the
 Martian overlay with the engine of the Mind Control overlay, the Ice Folk
@@ -8046,7 +8078,9 @@ the Candy engine of the Candy overlay,
 the mission setup of [section 2.6](#26-mission-setup), the map
 curiosities of [section 2.7](#27-map-curiosities), and the Martian and Ice
 Folk balance round of `7r37` with the Grunt's 8 HP of `7r39`, and the
-village density of `7r40`, with two
+village density of `7r40`, and the starting Coins and tier 3 technology base
+cost of `7r41`,
+with two
 open items: the pending Candy steps and the pending balance steps below.
 
 **Open.**

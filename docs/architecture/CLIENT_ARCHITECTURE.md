@@ -2,9 +2,9 @@
 
 ## Ruleset-7 revision-12 current boundary
 
-The current client runs `pulp-wars-poc-7r40` (autosave
-`pulpWars.save.v7r40.current`; startup removes the obsolete Ruleset 7 keys
-through `pulpWars.save.v7r39.current`;
+The current client runs `pulp-wars-poc-7r41` (autosave
+`pulpWars.save.v7r41.current`; startup removes the obsolete Ruleset 7 keys
+through `pulpWars.save.v7r40.current`;
 [mission setups](#mission-setups-pulp_wars-68k2),
 [map curiosities](#map-curiosities-pulp_wars-7372),
 [the Giant Spider](#the-giant-spider-pulp_wars-7373),

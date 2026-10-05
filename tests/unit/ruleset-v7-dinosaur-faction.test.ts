@@ -123,23 +123,23 @@ const EGG_LAID_ROLES: readonly UnitRoleIdV7[] = [
 ];
 
 describe("ruleset-7 revision-19 identity", () => {
-  it("keeps r18 among the gap-free prior identities after the r40 identity, and the save key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r40");
-    expect(RULESET_7.id).toBe("pulp-wars-poc-7r40");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
+  it("keeps r18 among the gap-free prior identities after the r41 identity, and the save key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r41");
+    expect(RULESET_7.id).toBe("pulp-wars-poc-7r41");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r41.current");
     expect([...PRIOR_RULESET_7_IDS]).toEqual([
       "pulp-wars-poc-7",
       ...Array.from(
-        { length: 38 },
+        { length: 39 },
         (_, index) => `pulp-wars-poc-7r${index + 2}`,
       ),
     ]);
-    expect(PRIOR_RULESET_7_IDS.at(-22)).toBe("pulp-wars-poc-7r18");
+    expect(PRIOR_RULESET_7_IDS.at(-23)).toBe("pulp-wars-poc-7r18");
     expect(PRIOR_RULESET_7_IDS).not.toContain(RULESET_7_ID);
     expect([...OBSOLETE_SAVE_STORAGE_KEYS_V7]).toEqual([
       "pulpWars.save.v7.current",
       ...Array.from(
-        { length: 38 },
+        { length: 39 },
         (_, index) => `pulpWars.save.v7r${index + 2}.current`,
       ),
     ]);
@@ -177,7 +177,7 @@ describe("ruleset-7 revision-19 identity", () => {
     const setup = goblinSetupV7(["DINOSAUR", "ORIGINAL"]);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
-    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r40");
+    expect(created.state.rulesetId).toBe("pulp-wars-poc-7r41");
     const oldSetup = { ...setup, rulesetId: "pulp-wars-poc-7r18" };
     expect(parseMatchSetupV7(setup)).not.toBeNull();
     expect(parseMatchSetupV7(oldSetup)).toBeNull();
@@ -1056,7 +1056,7 @@ describe("ruleset-7 Dinosaur technology", () => {
 });
 
 describe("ruleset-7 Dinosaur starting units and substitutions", () => {
-  it("starts a Dinosaur seat with one Caveman, 5 Coins, no technology, and no Egg", () => {
+  it("starts a Dinosaur seat with one Caveman, 3 Coins, no technology, and no Egg", () => {
     expect(STARTING_FIGHTERS_V7.DINOSAUR).toBe(1);
     expect(MILITIA_FIGHTERS_V7.DINOSAUR).toBe(1);
     for (const [seed, mapType, factions] of [
@@ -1079,7 +1079,7 @@ describe("ruleset-7 Dinosaur starting units and substitutions", () => {
         const unit = state.units[seat];
         if (player === undefined || capital === undefined || unit === undefined)
           throw new Error("seat missing");
-        expect([player.coins, player.researchedTechs]).toEqual([5, []]);
+        expect([player.coins, player.researchedTechs]).toEqual([3, []]);
         expect(unit).toMatchObject({
           id: seat * 2 + 2,
           ownerId: player.id,

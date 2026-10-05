@@ -28,11 +28,12 @@ import { goblinSetupV7 } from "../fixtures/v7-goblin-arena";
 // map curiosities engine I (`pulp_wars-737.2`) 7r35, the Giant Spider
 // (`pulp_wars-737.3`) 7r36, the Martian and Ice Folk balance round
 // (`pulp_wars-1wy.3`) 7r37, the Candy engine (`pulp_wars-jdb.3`) 7r38, the
-// Martian Grunt's 8 HP (`pulp_wars-1wy.6`) 7r39, and the village density
-// (`pulp_wars-ykw.2`) 7r40.
+// Martian Grunt's 8 HP (`pulp_wars-1wy.6`) 7r39, the village density
+// (`pulp_wars-ykw.2`) 7r40, and the early economy tweak (`pulp_wars-if6`,
+// 3 starting Coins and tier 3 technology base cost 9) 7r41.
 
 /** The revision number of the current identity (`pulp-wars-poc-7rNN`). */
-const REVISION = 40;
+const REVISION = 41;
 const ID = `pulp-wars-poc-7r${REVISION}`;
 const PREVIOUS_ID = `pulp-wars-poc-7r${REVISION - 1}`;
 

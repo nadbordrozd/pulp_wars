@@ -797,7 +797,10 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // within 60 rounds; seed 4 had two. pulp_wars-0hi.3: with the Human core
     // roles at +2 HP the seed-4 match ends in round 21 with no Wail; seed 8
     // has two (of seeds 0-23, so do 9, 11, 15, 17, and 23).
-    const setup = setupWith(["UNDEAD", "ORIGINAL"], 8);
+    // pulp_wars-if6: with 3 starting Coins the seed-8 match ends in round 22
+    // with no Wail; seed 2 has two (of seeds 0-23, so do 1, 3, 4, 5, 13, 17,
+    // 20, 22, and 23).
+    const setup = setupWith(["UNDEAD", "ORIGINAL"], 2);
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     let state = created.state;
@@ -844,7 +847,9 @@ describe("ruleset-7 revision-13 Wail: events, projection, and persistence", () =
     // with the revision-16 economy numbers (seed 16 did on revision-16 maps
     // before them, seed 11 on revision-14/15 maps, seed 3 on revision-13
     // maps).
-    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 15), {
+    // With 3 starting Coins (`pulp_wars-if6`) seed 15 trains no Lich; seed 2
+    // fields four, and they splash.
+    const match = runAiMatchV7(setupWith(["UNDEAD", "ORIGINAL"], 2), {
       maxRounds: 45,
     });
     expect(match.errors).toEqual([]);

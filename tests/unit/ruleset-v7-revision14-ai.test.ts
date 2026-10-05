@@ -364,9 +364,12 @@ describe("ruleset-7 revision-14 Normal AI: headless play", () => {
     // rounds: 3, 7, and 11; 3 and 7 also plague). The village density
     // (`pulp_wars-ykw.2`) regenerates every board again: of seeds 0-23 only
     // seed 21 Pangea trains a Lich and plagues within 40 rounds.
+    // With 3 starting Coins (`pulp_wars-if6`) every opening changes: of
+    // seeds 0-23 only seed 3 Pangea trains a Lich (two) and plagues within
+    // 40 rounds.
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
-      seed: 21,
+      seed: 3,
       width: 11,
       height: 11,
       aiCount: 1,

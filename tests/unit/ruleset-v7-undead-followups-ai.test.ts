@@ -271,11 +271,13 @@ describe("vkq.21 Normal AI: Liches and Vampires stay ashore", () => {
     // embarked three Undead units within 12 rounds. On the village-density
     // boards (`pulp_wars-ykw.2`) seed 22 embarks Undead units within 12
     // rounds (8 of seeds 0-32 do).
+    // With 3 starting Coins (`pulp_wars-if6`) seed 22 embarks none within 12
+    // rounds; seed 13 embarks four Undead units (9 of seeds 0-32 embark).
     const setup: MatchSetupV7 = {
       rulesetId: RULESET_7_ID,
       mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
       curiosities: false,
-      seed: 22,
+      seed: 13,
       width: 14,
       height: 14,
       aiCount: 1,

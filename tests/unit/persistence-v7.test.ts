@@ -44,12 +44,12 @@ const setup: MatchSetupV7 = {
   mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V3",
   curiosities: false,
 };
-/** A one-city tier-3 technology (revision 16: 12 Coins, was 9). */
+/** A one-city tier-3 technology (9 Coins since `pulp_wars-if6`; 12 in revision 16). */
 const TIER_3_COST = technologyResearchCostV7(3, 1);
 
 describe("ruleset-7 save and replay foundation", () => {
   it("uses an independent v7 save key and round-trips a canonical initial save", () => {
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r41.current");
     const created = createPlayableGameV7(setup);
     if (!created.ok) throw new Error(created.error.code);
     const replay = createReplayV7(setup);
@@ -63,12 +63,12 @@ describe("ruleset-7 save and replay foundation", () => {
     expect(created.state.commandIndex).toBe(0);
     expect(
       created.state.players.find((player) => player.id === active)?.coins,
-    ).toBe(7);
+    ).toBe(5);
     expect(
       created.state.players
         .filter((player) => player.id !== active)
         .map((player) => player.coins),
-    ).toEqual([5]);
+    ).toEqual([3]);
     expect(runReplayV7(replay)).toMatchObject({
       acceptedCommands: 0,
       state: created.state,

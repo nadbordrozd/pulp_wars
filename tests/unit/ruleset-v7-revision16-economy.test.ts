@@ -41,16 +41,21 @@ import {
 // slopes, level income term capped at 4, Market capped at 3), tested as
 // section 10.3 requires.
 
-/** Section 6.2 prices, `C` = 1..8 cities: [tier 1, tier 2, tier 3]. */
+/**
+ * Section 6.2 prices, `C` = 1..8 cities: [tier 1, tier 2, tier 3]. The tier
+ * 3 column is the early economy tweak's (`pulp_wars-if6`, 7r41): base 9
+ * instead of revision 16's 12, the step of 5 unchanged
+ * (docs/product/RULESET_7_CURRENT.md section 6.1).
+ */
 const RESEARCH_COST_TABLE: readonly (readonly [number, number, number])[] = [
-  [5, 7, 12],
-  [6, 10, 17],
-  [7, 13, 22],
-  [8, 16, 27],
-  [9, 19, 32],
-  [10, 22, 37],
-  [11, 25, 42],
-  [12, 28, 47],
+  [5, 7, 9],
+  [6, 10, 14],
+  [7, 13, 19],
+  [8, 16, 24],
+  [9, 19, 29],
+  [10, 22, 34],
+  [11, 25, 39],
+  [12, 28, 44],
 ];
 
 describe("ruleset-7 revision-16 research costs", () => {
@@ -58,7 +63,7 @@ describe("ruleset-7 revision-16 research costs", () => {
     expect(TECHNOLOGY_RESEARCH_COST_V7).toEqual({
       1: { base: 5, step: 1 },
       2: { base: 7, step: 3 },
-      3: { base: 12, step: 5 },
+      3: { base: 9, step: 5 },
     });
     expect(
       RESEARCH_COST_TABLE.map((_, index) =>
@@ -92,10 +97,10 @@ describe("ruleset-7 revision-16 research costs", () => {
         ) - technologyResearchCostV7(1, cities);
     expect(factionTreeV7("ORIGINAL").nodes).toHaveLength(23);
     expect([1, 2, 3, 5, 6, 8].map((cities) => whole(cities, false))).toEqual([
-      191, 267, 343, 495, 571, 723,
+      164, 240, 316, 468, 544, 696,
     ]);
     // Dry Land has 20 technologies (no Naval branch).
-    expect(whole(1, true)).toBe(191 - 5 - 7 - 12);
+    expect(whole(1, true)).toBe(164 - 5 - 7 - 9);
   });
 
   it("offers the revision-16 costs in the public tree and charges them", () => {
@@ -109,10 +114,10 @@ describe("ruleset-7 revision-16 research costs", () => {
     );
     const costOf = (id: TechnologyIdV7) =>
       tree.nodes.find((node) => node.id === id)?.cost;
-    // One city: the free opener, then 7 and 12.
+    // One city: the free opener, then 7 and 9 (12 before `pulp_wars-if6`).
     expect(costOf("GATHERING")).toBe(0);
     expect(costOf("FARMING")).toBe(7);
-    expect(costOf("COMMERCE")).toBe(12);
+    expect(costOf("COMMERCE")).toBe(9);
 
     let state = initial;
     for (const tech of ["GATHERING", "FARMING"] as const) {

@@ -68,13 +68,14 @@ describe("ruleset-7 technology", () => {
   });
 
   it("uses the exact city-scaled formula without unsafe arithmetic", () => {
-    // Revision 16: tier 2 = 7 + 3(C - 1), tier 3 = 12 + 5(C - 1).
+    // Revision 16: tier 2 = 7 + 3(C - 1); `pulp_wars-if6` (7r41): tier 3 =
+    // 9 + 5(C - 1) (12 + 5(C - 1) before).
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 1)),
-    ).toEqual([5, 7, 12]);
+    ).toEqual([5, 7, 9]);
     expect(
       [1, 2, 3].map((tier) => technologyResearchCostV7(tier as 1 | 2 | 3, 4)),
-    ).toEqual([8, 16, 27]);
+    ).toEqual([8, 16, 24]);
     expect(() => technologyResearchCostV7(3, Number.MAX_SAFE_INTEGER)).toThrow(
       "INTEGER_OVERFLOW",
     );
@@ -112,7 +113,7 @@ describe("ruleset-7 technology", () => {
     expect(Object.isFrozen(ORIGINAL_ROLE_RULES_V7)).toBe(true);
   });
 
-  it("researches the entire graph for 191 coins without PRNG use", () => {
+  it("researches the entire graph for 164 coins without PRNG use", () => {
     let state = richV7(
       checkedV7({
         ...initialV7(),
@@ -142,7 +143,7 @@ describe("ruleset-7 technology", () => {
       state = result.state;
     }
     expect(state.players[0]).toMatchObject({
-      coins: 809,
+      coins: 836,
       researchedTechs: TECHNOLOGY_IDS_V7,
     });
   });

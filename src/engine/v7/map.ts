@@ -1087,7 +1087,7 @@ export function capitalGrowthCountsV7(
 /**
  * Revision 16 `CAPITAL_GROWTH`: the capital's ring holds at least two growth
  * resources of the same kind, so free research of that kind's technology and
- * two harvests (4 of the first turn's 7 Coins) reach level 2 on turn 1.
+ * two harvests (4 of the first turn's 5 Coins) reach level 2 on turn 1.
  */
 export function capitalGrowthReadyV7(
   board: BoardStateV7,

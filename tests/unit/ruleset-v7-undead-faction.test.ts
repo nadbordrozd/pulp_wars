@@ -86,8 +86,8 @@ const READY: UnitStateV7["activation"] = {
 
 describe("ruleset-7 revision-13 identity and faction registration", () => {
   it("pins the current identity, frozen faction and tree orders, and bindings", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r40");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r41");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r41.current");
     expect(FACTION_IDS_V7).toEqual([
       "ORIGINAL",
       "UNDEAD",
@@ -142,11 +142,11 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
     ).toThrow(RangeError);
   });
 
-  it("cleans obsolete keys through v7r39 and preserves the r40 save", () => {
+  it("cleans obsolete keys through v7r40 and preserves the r41 save", () => {
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-1)).toBe(
-      "pulpWars.save.v7r39.current",
+      "pulpWars.save.v7r40.current",
     );
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(39);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).toHaveLength(40);
     expect(OBSOLETE_SAVE_STORAGE_KEYS_V7).not.toContain(SAVE_STORAGE_KEY_V7);
     const storage = new MemoryStorage([
       ["pulpWars.save.v7r12.current", "r12"],
@@ -177,7 +177,8 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
       ["pulpWars.save.v7r37.current", "r37"],
       ["pulpWars.save.v7r38.current", "r38"],
       ["pulpWars.save.v7r39.current", "r39"],
-      [SAVE_STORAGE_KEY_V7, "r40"],
+      ["pulpWars.save.v7r40.current", "r40"],
+      [SAVE_STORAGE_KEY_V7, "r41"],
       ["pulpWars.save.current", "v6"],
       ["pulpWars.settings.v1", "settings"],
     ]);
@@ -211,8 +212,9 @@ describe("ruleset-7 revision-13 identity and faction registration", () => {
         "pulpWars.save.v7r37.current",
         "pulpWars.save.v7r38.current",
         "pulpWars.save.v7r39.current",
+        "pulpWars.save.v7r40.current",
       ],
-      removedCount: 28,
+      removedCount: 29,
       warning: null,
     });
     expect([...storage.values.keys()]).toEqual([
@@ -1615,6 +1617,13 @@ describe("ruleset-7 all-Human parity digests", () => {
   // resolves on different HP ratios, and the policy values the Human roles
   // by their HP. Seed 7 is now a conquest in round 22 with 232 commands (was
   // the 30-round cap with 448); seed 1234 has 386 commands (was 381).
+  // `pulp_wars-if6` (7r41: 3 starting Coins instead of 5, tier 3 technology
+  // base cost 9 instead of 12) re-pins the command, event, final state,
+  // view, and command digests of both matches; map and post-generation PRNG
+  // digests are unchanged. Every opening changes: a first turn has 5 Coins,
+  // so no seat buys a unit on it. Seed 7 now reaches the 30-round cap with
+  // 466 commands (was a conquest in round 22 with 232); seed 1234 has 341
+  // commands (was 386).
   const BASELINE = [
     {
       seed: 7,
@@ -1623,23 +1632,23 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "RIVAL",
       mapType: "CONTINENTS",
       maxRounds: 30,
-      acceptedCommands: 232,
-      rounds: 22,
-      termination: "OUTCOME",
+      acceptedCommands: 466,
+      rounds: 31,
+      termination: "ROUND_CAP",
       mapHash:
         "251ae814b9c22679f8ed6b288c0a9ae2a06574b84b5b719521970f6f24a3e51c",
       postGenerationPrngHash:
         "a988ca340180a5f62984e0aad88733fb8a247a35228089f59202d66c969776e1",
       commandHash:
-        "4881f4041a7e7a43d7714ba1cf09a05998cabac2813ca6ce8287a70358f0de4b",
+        "34fa0a047e074b45012e9fc1729ffa8a951908464dcde382d7b7de6a303921d5",
       eventHash:
-        "27a26d17cdcd670818208dd16f9fb65c4da0d5afd0da03e51addf9eb0532bda4",
+        "5fea8833b65d9eea644d42d120f78619cd04baa8e082a666294d9cc8001d8aef",
       normalizedFinalStateHash:
-        "f9384561f69ddf23da78784a04893e84ad300e0d6e4546c69250e66c609ac962",
+        "e2eef1f86f93ac15b4c9b5ddc2195ad45c14a967a97a29dfe7feeeaa925722f6",
       normalizedHumanViewHash:
-        "8a796286b4d03b9856fa1e2ae73807564c4b7f22e62907e9ff7464260b72a318",
+        "8a26ef8b4876d6d880c78927e541aad20391a1070cb495432be71d1e6a2bf8e0",
       normalizedHumanCommandsHash:
-        "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "c9d3fa6a1945397ff2992f042634cb417b1d6f0d9899adc965af566dc2d2af0b",
     },
     {
       seed: 1234,
@@ -1648,7 +1657,7 @@ describe("ruleset-7 all-Human parity digests", () => {
       aiMode: "COOPERATIVE",
       mapType: "ARCHIPELAGO",
       maxRounds: 18,
-      acceptedCommands: 386,
+      acceptedCommands: 341,
       rounds: 19,
       termination: "ROUND_CAP",
       mapHash:
@@ -1656,15 +1665,15 @@ describe("ruleset-7 all-Human parity digests", () => {
       postGenerationPrngHash:
         "b11910d95aeab8c56bbf6f72f63d4e6f6b30f7e43f842d8354e7badf23e1050c",
       commandHash:
-        "4071ac288075a99d34786f8b6bc7196e5780518343fda157cb664e8b4d9ab249",
+        "f12718df22bf47aa7d747e7395dcd34c4aa58824ffd5ca0b2c89434eeb5e04bd",
       eventHash:
-        "35f737de1370d7712000d60136aa6a3110cfa2b29e957dd9be14bf47536e184a",
+        "c2bc4fc600c9ddf9cb58dd72ed75d5bcdcc4dfcdebd03afb1857688ecc2c95c6",
       normalizedFinalStateHash:
-        "4d8b26d81699880571635d8a544350289b6b115a3b9d22d2eeac35e6aeaa0666",
+        "4e6d8329bd4491c426e422134760ff4b993a06016a33997e6429dec2b813f7b2",
       normalizedHumanViewHash:
-        "40335d64b5099d426e7b7777dea44ad9bcb30b1d7720b47b06c5a5a7c62bf747",
+        "767e08d117b3c956f121a622b33cced97f936b40025890dd3477034a0fbd5a15",
       normalizedHumanCommandsHash:
-        "a2c1e5f148a2a8f81d100a4d8cd8ceb022b84a5b3d842214b677dbb0ce59c169",
+        "b1d589f358328c6e50956bcd3321a3f86fce18bf1ee32e967c9d315efa908a15",
     },
   ] as const;
 

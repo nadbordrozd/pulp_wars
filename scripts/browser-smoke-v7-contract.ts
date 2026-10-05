@@ -52,7 +52,7 @@ export function validatePreview(evidence: PreviewEvidenceV7): void {
     evidence.initial.commandIndex !== 0 ||
     evidence.initial.viewerId !== 1 ||
     evidence.initial.activePlayerId !== 2 ||
-    evidence.initial.humanCoins !== 5 ||
+    evidence.initial.humanCoins !== 3 ||
     evidence.initial.projectedViewerId !== 1
   )
     throw new Error(
@@ -61,7 +61,7 @@ export function validatePreview(evidence: PreviewEvidenceV7): void {
   if (
     evidence.returned.viewerId !== 1 ||
     evidence.returned.activePlayerId !== 1 ||
-    evidence.returned.humanCoins !== 7 ||
+    evidence.returned.humanCoins !== 5 ||
     evidence.returned.commandIndex < 1 ||
     evidence.returned.policySlices < evidence.returned.commandIndex ||
     !evidence.returned.fastForwardObserved ||
@@ -72,7 +72,7 @@ export function validatePreview(evidence: PreviewEvidenceV7): void {
     );
   if (
     evidence.persisted.version !== 7 ||
-    evidence.persisted.rulesetId !== "pulp-wars-poc-7r40" ||
+    evidence.persisted.rulesetId !== "pulp-wars-poc-7r41" ||
     evidence.persisted.commandIndex !== evidence.returned.commandIndex
   )
     throw new Error(

@@ -250,10 +250,16 @@ function normalizedInitialState(state: GameStateV7): string {
   void _rulesetId;
   void _option;
   void _setupRulesetId;
+  // The early economy tweak (`pulp_wars-if6`, 7r41) starts every seat with 3
+  // Coins; the pins were taken with 5, so each player gets the 2 back.
   // The village density (`pulp_wars-ykw.2`, 7r40) renamed the map revision a
   // setup names; the pins hash the name they were taken with.
   return canonicalHash({
     ...rest,
+    players: rest.players.map((player) => ({
+      ...player,
+      coins: player.coins + 2,
+    })),
     setup: { ...setupRest, mapGenerationRevision: "REGIONAL_BIOMES_NAVAL_V2" },
   });
 }
@@ -333,7 +339,7 @@ describe("generation (section 4)", () => {
 // ------------------------------------------------------ Headless ---
 
 describe("headless parity and the CLI flag", () => {
-  it("with the option off plays the pinned matches command for command across map types and factions (recomputed at 7r40)", () => {
+  it("with the option off plays the pinned matches command for command across map types and factions (recomputed at 7r41)", () => {
     // Computed on main at 7r34 (8540406a): runAiMatchV7 with
     // { maxCommands: 250, maxRounds: 40 }. The Martian and Ice Folk balance
     // round (`pulp_wars-1wy.3`, 7r37) changes, by design, every match with
@@ -352,6 +358,11 @@ describe("headless parity and the CLI flag", () => {
     // regenerates every board, so all five pins (maps, PRNG ends, commands,
     // events, and rounds) were recomputed at 7r40; the 7r34 boards
     // themselves are held by the parity test above.
+    // The early economy tweak (`pulp_wars-if6`, 7r41: 3 starting Coins, tier
+    // 3 technology base cost 9) changes every opening, so the command and
+    // event hashes of all five pins were recomputed at 7r41, with the rounds
+    // of the Pangea and Archipelago pins and the PRNG end of the Pangea pin;
+    // the maps did not change.
     const pins: readonly {
       readonly mapType: MapTypeV7;
       readonly factions: readonly FactionIdV7[];
@@ -370,9 +381,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 3,
         rounds: 16,
         commandHash:
-          "fea037e7304a1d9ae094da727ad91e860e327ea5edaec506a8f952d52694878b",
+          "fe4df5a231b97da048cbd50145f52cfc8925159602d9771907c0d8abf2e4eb8e",
         eventHash:
-          "73f6e1acf8aa4e975b3922709f8036d6799c04570de9df2b904e836dbfe91642",
+          "051368513c45601d97d256a4bf891fa018041bb11f5c2af4d915b69845a04234",
         mapHash:
           "9a1a8d70a071c4a01b6944df9fb2f7a565b19bb7f04315354bd25787165cd463",
         finalPrngHash:
@@ -382,15 +393,15 @@ describe("headless parity and the CLI flag", () => {
         mapType: "PANGEA",
         factions: ["GOBLIN", "DINOSAUR", "MARTIAN"],
         seed: 11,
-        rounds: 13,
+        rounds: 14,
         commandHash:
-          "8b809c438f1e3d8a9fd54a885bd7a14e29f9426734ee10195446c6d70a645230",
+          "d0923573af9747dfe6551466b7128acccc78408b59f0331809dd9ef2b8efeec5",
         eventHash:
-          "9bdfa6575e29088eb352d6ce25b7573768d5bea1b4fb57f2349d5cca14ce1a1d",
+          "6f512de22c3a42b932af5d39473d492ef812cc1edcb497f503acdaf97817a52e",
         mapHash:
           "4152eac3ae5b2f83030ae357843bb7a2c4c681c0891d7a1f6d75fbb47c826da7",
         finalPrngHash:
-          "a7974c364018eee3dc830b590c3e659010e22dc94f4e336092a66796b750830f",
+          "d5f2922b9707007a5823e25d84dc2de6a82846de79d50b718da29b12000ae7af",
       },
       {
         mapType: "CONTINENTS",
@@ -398,9 +409,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 5,
         rounds: 18,
         commandHash:
-          "6d1476944acafbc2934b1ea7a7af69308ae9bb8edaddb25b4d1c88b3dff8ade0",
+          "22148ab2355b4e07c784dda9704cb90e917f0b33d1e9e61a1c7ca4bc10cf39c1",
         eventHash:
-          "3a2a161d25c1951ffc4b4d77291ac63c1dc39ee190e3a9f87c94d08c1a4f55bd",
+          "f992373087169f8927a42fe89ef5f34deed94f6bbb55e08ff9a36dbada00ede0",
         mapHash:
           "5a15d5d0d3850a8a2e29608d411c2d673859613f638aef60421919b747da7081",
         finalPrngHash:
@@ -410,11 +421,11 @@ describe("headless parity and the CLI flag", () => {
         mapType: "ARCHIPELAGO",
         factions: ["MARTIAN", "ORIGINAL", "GOBLIN"],
         seed: 7,
-        rounds: 15,
+        rounds: 16,
         commandHash:
-          "c89a157c93c89989bf0d92dd09bac97621962260ab11689b5b66be11bd04f585",
+          "b7db052a0b270df86eaf6100b4a3c15444e3e1a2fdd95ba14727ff1c887d6c7a",
         eventHash:
-          "b69ac5b03d95aeef8f106c5589e7b262bea0d9be95f9db2b122067d100b210f2",
+          "3d379511e138c6d473721e5f6cc999d343238ab3dcf1e30f6b421894267394e7",
         mapHash:
           "efb35e3c21d801d15041a266b7640efe2b79a26da1417ec8e4c9f69c741da441",
         finalPrngHash:
@@ -426,9 +437,9 @@ describe("headless parity and the CLI flag", () => {
         seed: 2,
         rounds: 12,
         commandHash:
-          "1ff11a555d73ee8036aaec99d3212a6b1e6bd61989c87e7f8498403eba75785a",
+          "107beff1effef6dfababc1701295637d6a1b8437b14cd78b996a7a99c54f92c1",
         eventHash:
-          "84e68a88bd87a2bb3fef762a2e5036294c00922b666a2040921a653b4821f546",
+          "0e8b5243d28ade1e738dd629254e5201ffc631aa6739e116328bd91ea00efa95",
         mapHash:
           "9655fa2d6cf9c0e7d7ac425d7098c8fe09650995af6f1a5fb363184e30a70f45",
         finalPrngHash:

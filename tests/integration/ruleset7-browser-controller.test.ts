@@ -50,7 +50,7 @@ describe("Ruleset 7 browser controller", () => {
     controller.destroy();
   });
 
-  it("installs command zero with the exact AI-first 7/5 boundary and autosave", async () => {
+  it("installs command zero with the exact AI-first 5/3 boundary and autosave", async () => {
     const storage = new MemoryStorage();
     const controller = new Ruleset7BrowserController({
       storage,
@@ -67,7 +67,7 @@ describe("Ruleset 7 browser controller", () => {
       transitioning: false,
       view: {
         commandIndex: 0,
-        viewer: { id: 1, coins: 5 },
+        viewer: { id: 1, coins: 3 },
         turnOrder: [2, 1],
       },
     });
@@ -83,7 +83,7 @@ describe("Ruleset 7 browser controller", () => {
     const parsed = parseSaveV7(stored);
     expect(parsed.kind).toBe("VALID");
     if (parsed.kind !== "VALID") throw new Error(parsed.diagnostic);
-    expect(parsed.save.state.players.map((item) => item.coins)).toEqual([5, 7]);
+    expect(parsed.save.state.players.map((item) => item.coins)).toEqual([3, 5]);
     controller.destroy();
   });
 
@@ -371,6 +371,11 @@ describe("Ruleset 7 browser controller", () => {
       "RESEARCH",
       (command) => command.kind === "RESEARCH" && command.tech === "GATHERING",
     );
+    // `pulp_wars-if6`: a first turn has 5 Coins (7 before), so Farming (7)
+    // waits for the second turn's income.
+    await dispatchKind(controller, "END_TURN");
+    const opened = await controller.progressAiTurns();
+    if (!opened.ok) throw new Error(opened.diagnostic);
     await dispatchKind(
       controller,
       "RESEARCH",

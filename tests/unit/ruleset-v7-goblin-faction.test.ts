@@ -81,12 +81,12 @@ import {
 // 9, and 13).
 
 describe("ruleset-7 revision-17 identity", () => {
-  it("keeps r16 among the prior identities after the r40 identity and cleans the r16 key", () => {
-    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r40");
-    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r40.current");
-    expect(PRIOR_RULESET_7_IDS.at(-24)).toBe("pulp-wars-poc-7r16");
-    expect(PRIOR_RULESET_7_IDS).toHaveLength(39);
-    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-24)).toBe(
+  it("keeps r16 among the prior identities after the r41 identity and cleans the r16 key", () => {
+    expect(RULESET_7_ID).toBe("pulp-wars-poc-7r41");
+    expect(SAVE_STORAGE_KEY_V7).toBe("pulpWars.save.v7r41.current");
+    expect(PRIOR_RULESET_7_IDS.at(-25)).toBe("pulp-wars-poc-7r16");
+    expect(PRIOR_RULESET_7_IDS).toHaveLength(40);
+    expect(OBSOLETE_SAVE_STORAGE_KEYS_V7.at(-25)).toBe(
       "pulpWars.save.v7r16.current",
     );
     const storage = new MemoryStorage([
@@ -828,7 +828,7 @@ describe("ruleset-7 Goblin starting units", () => {
     expect(checkedSeats).toBe(6);
   });
 
-  it("gives the starting Goblin a fresh activation, 5 Coins, and no technology", () => {
+  it("gives the starting Goblin a fresh activation, 3 Coins, and no technology", () => {
     const setup = goblinSetupV7(["GOBLIN", "ORIGINAL"], 3);
     const initial = createInitialMapStateV7(setup);
     if (!initial.ok) throw new Error(initial.error.code);
@@ -838,8 +838,8 @@ describe("ruleset-7 Goblin starting units", () => {
         player.researchedTechs,
       ]),
     ).toEqual([
-      [5, []],
-      [5, []],
+      [3, []],
+      [3, []],
     ]);
     for (const unit of initial.state.units)
       expect(unit.activation).toEqual({

@@ -971,7 +971,7 @@ describe("Ice Folk technology (section 4)", () => {
 });
 
 describe("Ice Folk starting units and substitutions (section 10.12)", () => {
-  it("starts an Ice Folk seat with one Yeti at full HP, 5 Coins, and no technology", () => {
+  it("starts an Ice Folk seat with one Yeti at full HP, 3 Coins, and no technology", () => {
     for (const [seed, mapType, factions] of [
       [3, "PANGEA", ["ICE_FOLK", "ORIGINAL"]],
       [9, "LAKES", ["ICE_FOLK", "ICE_FOLK"]],
@@ -987,7 +987,7 @@ describe("Ice Folk starting units and substitutions (section 10.12)", () => {
         if (faction !== "ICE_FOLK") return;
         const player = must(state.players[seat]);
         const capital = must(state.cities[seat]);
-        expect([player.coins, player.researchedTechs]).toEqual([5, []]);
+        expect([player.coins, player.researchedTechs]).toEqual([3, []]);
         const own = state.units.filter((unit) => unit.ownerId === player.id);
         expect(own).toHaveLength(1);
         expect(own[0]).toMatchObject({

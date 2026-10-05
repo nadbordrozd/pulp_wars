@@ -16,10 +16,10 @@ The current runtime identity and rules are described by
 [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md).
 This frozen revision-2 record and corpus remain unchanged.
 
-## Current release contract (`pulp-wars-poc-7r40`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
+## Current release contract (`pulp-wars-poc-7r41`: Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy)
 
-The current runtime is `pulp-wars-poc-7r40` (autosave
-`pulpWars.save.v7r40.current`; saves and replays of `pulp-wars-poc-7r39`
+The current runtime is `pulp-wars-poc-7r41` (autosave
+`pulpWars.save.v7r41.current`; saves and replays of `pulp-wars-poc-7r40`
 and earlier are refused, and startup removes their autosave keys). Its eight
 factions, Human, Undead, Goblin, Dinosaur, Martian, Ice Folk, Dwarf, and Candy, are
 all described by [Ruleset 7: current rules](../product/RULESET_7_CURRENT.md),
@@ -170,6 +170,14 @@ validate:ruleset7-map-scale` (`scripts/validate-ruleset7-map-scale.ts`)
 generates every map type, size, and seat count on seeds 0-255 and compares
 against the `7r39` baseline in
 `scripts/ruleset7-map-scale-baseline-7r39.json`.
+`pulp_wars-if6` (`7r41`) is an early economy tweak: every seat starts
+with 3 Coins (was 5), so a first turn has 5 Coins in hand, and the tier 3
+technology base cost is 9 (was 12), so the one-city costs read 5, 7, and 9
+([current rules, sections 3 and 6.1](../product/RULESET_7_CURRENT.md#61-research-cost)).
+The per-city steps did not change, and no shape changed. Every pin on a
+headless match was recomputed; generated boards and the missions (which set
+their own Coins) did not change.
+`npm run validate:ruleset7-naval-playable` lists the Normal AI's landing/embark oscillation on Pangea and Lakes boards as warnings (`pulp_wars-eru`, deferred) and still fails on one on Continents.
 The Undead, the Goblins, the Dinosaurs, the Martians, the Ice Folk, the
 Dwarves, and the Candy are part of the default route: match setup always
 offers a
@@ -188,7 +196,7 @@ rerun their matrices.
 
 - `npm run validate:ruleset7-release`
   (`scripts/validate-ruleset7-current-release.ts`) is the current release
-  contract. It checks the `7r40` identity (ruleset ID, autosave key, the
+  contract. It checks the `7r41` identity (ruleset ID, autosave key, the
   map revision `REGIONAL_BIOMES_NAVAL_V3`, the
   eight-entry
   `ORIGINAL`/`UNDEAD`/`GOBLIN`/`DINOSAUR`/`MARTIAN`/`ICE_FOLK`/`DWARF`/`CANDY`

@@ -1048,7 +1048,7 @@ describe("Dwarf technology (section 4)", () => {
 });
 
 describe("Dwarf starting units and substitutions (section 13.13)", () => {
-  it("starts a Dwarf seat with one Hammerer at full HP, 5 Coins, and no technology", () => {
+  it("starts a Dwarf seat with one Hammerer at full HP, 3 Coins, and no technology", () => {
     for (const [seed, mapType, factions] of [
       [3, "PANGEA", ["DWARF", "ORIGINAL"]],
       [11, "CONTINENTS", ["UNDEAD", "DWARF", "MARTIAN", "GOBLIN"]],
@@ -1063,7 +1063,7 @@ describe("Dwarf starting units and substitutions (section 13.13)", () => {
         if (faction !== "DWARF") return;
         const player = must(state.players[seat]);
         const capital = must(state.cities[seat]);
-        expect([player.coins, player.researchedTechs]).toEqual([5, []]);
+        expect([player.coins, player.researchedTechs]).toEqual([3, []]);
         const own = state.units.filter((unit) => unit.ownerId === player.id);
         expect(own).toHaveLength(1);
         expect(own[0]).toMatchObject({

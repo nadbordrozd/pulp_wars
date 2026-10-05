@@ -3,7 +3,7 @@
 ## Revision-11 bounded tactical policy (current under revision 12)
 
 The production policy consumes only the legal public schema, commands, and
-previews under `pulp-wars-poc-7r40`. Role facts resolve through the unit's
+previews under `pulp-wars-poc-7r41`. Role facts resolve through the unit's
 kind (`unitFactionV7`: its owner's faction registration, or its original
 owner's while it is mind-controlled,
 [Mind Control revision](../product/RULESET_7_MIND_CONTROL.md)); the revision-13 Undead tactics, the revision-14
@@ -302,6 +302,8 @@ read from the public view:
 
 The naval plan is inactive on Dry Land, so a Dry Land match plays exactly
 as before (20 matches on 11 x 11 and 14 x 14 compared hash for hash).
+
+Open (`pulp_wars-eru`, deferred): with the `7r41` economy a unit still boards, steps off one tile away, and re-boards on some Pangea and Lakes boards; `npm run validate:ruleset7-naval-playable` reports it as a warning there and fails on it only on Continents.
 
 A Raider pickets its richest city only while a threat to an own city is
 visible, and a screen does not step back from its job to stand next to a

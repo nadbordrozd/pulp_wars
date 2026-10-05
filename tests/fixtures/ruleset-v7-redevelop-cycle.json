@@ -1,12 +1,12 @@
 {
-  "description": "pulp_wars-9s0.9: the start of player 1's round-28 turn in a 14 x 14 Dry Land Martian mirror (seed 9) where the Normal AI before the fix repeated REDEVELOP and BUILD_LUMBER_CAMP on (10, 5) until its Coins ran out. pulp_wars-1wy.3: state re-identified as pulp-wars-poc-7r37 and given the two empty per-turn Martian lists (`beamedThisTurn`, `tractorUsedThisTurn`); its thirteen Grunts at the balance round's maximum HP (maxHp 9, hp clamped). pulp_wars-jdb.3: state re-identified as pulp-wars-poc-7r38 and given the four empty Candy lists (`sugarRush`, `crumbs`, `splattedThisTurn`, `tossedThisTurn`). pulp_wars-1wy.6: state re-identified as pulp-wars-poc-7r40; its thirteen Grunts at the 8 HP of the fallback (maxHp 8, hp clamped).",
+  "description": "pulp_wars-9s0.9: the start of player 1's round-28 turn in a 14 x 14 Dry Land Martian mirror (seed 9) where the Normal AI before the fix repeated REDEVELOP and BUILD_LUMBER_CAMP on (10, 5) until its Coins ran out. pulp_wars-1wy.3: state re-identified as pulp-wars-poc-7r37 and given the two empty per-turn Martian lists (`beamedThisTurn`, `tractorUsedThisTurn`); its thirteen Grunts at the balance round's maximum HP (maxHp 9, hp clamped). pulp_wars-jdb.3: state re-identified as pulp-wars-poc-7r38 and given the four empty Candy lists (`sugarRush`, `crumbs`, `splattedThisTurn`, `tossedThisTurn`). pulp_wars-1wy.6: state re-identified as pulp-wars-poc-7r39; its thirteen Grunts at the 8 HP of the fallback (maxHp 8, hp clamped). pulp_wars-ykw.2: state re-identified as pulp-wars-poc-7r40 and its setup renamed to map revision `REGIONAL_BIOMES_NAVAL_V3`; the board is unchanged. pulp_wars-if6: state re-identified as pulp-wars-poc-7r41 (3 starting Coins, tier 3 technology base cost 9); the state is otherwise unchanged.",
   "playerId": 1,
   "target": { "x": 10, "y": 5 },
   "state": {
     "schemaVersion": 7,
-    "rulesetId": "pulp-wars-poc-7r40",
+    "rulesetId": "pulp-wars-poc-7r41",
     "setup": {
-      "rulesetId": "pulp-wars-poc-7r40",
+      "rulesetId": "pulp-wars-poc-7r41",
       "seed": 9,
       "width": 14,
       "height": 14,
