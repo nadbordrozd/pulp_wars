@@ -6,7 +6,10 @@ const location = new URL(globalThis.location.href);
 const route = selectBrowserRulesetRoute(location.search, import.meta.env.DEV);
 const app =
   route.kind === "RULESET_7"
-    ? (await import("./app/v7-bootstrap")).bootstrapRuleset7App(document)
+    ? // The look's art is preloaded behind the loading screen first.
+      await (
+        await import("./app/v7-preload-boot")
+      ).bootstrapPreloadedRuleset7App(document)
     : route.kind === "RULESET_6"
       ? (await import("./app/v6-bootstrap")).bootstrapRuleset6App(document)
       : route.kind === "LEGACY_V5"

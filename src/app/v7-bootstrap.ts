@@ -80,7 +80,9 @@ export function bootstrapRuleset7App(
   };
 }
 
-function browserStorageV7(browser: Window | null): StorageAdapter | null {
+export function browserStorageV7(
+  browser: Window | null,
+): StorageAdapter | null {
   if (browser === null) return null;
   try {
     return browser.localStorage;

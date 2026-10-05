@@ -337,6 +337,16 @@ Roads, that text now describes the **Classic look** developer option
   piece is not drawn until its raster is ready (never the previous art
   first), and a piece whose direction raster fails to load falls back to its
   classic asset alone.
+- **Loading screen** (bead `pulp_wars-2yc.6`). The game loads all the art of
+  its look before the first screen: every faction's units, portraits,
+  buildings and cities, terrain pieces, effects and icons. While that takes
+  longer than 150 ms the page shows a crest over a progress bar and no
+  text (the bar is labelled "Loading" for assistive technology; it does not
+  animate under reduced motion). After it, a sprite seen for the first time
+  is drawn at once, in a match, the Gallery or a dialog. An image that
+  fails to load does not hold the game back: it loads when first needed,
+  with the fallback above. See
+  [Asset preloading](../architecture/CLIENT_ARCHITECTURE.md#asset-preloading-pulp_wars-2yc6).
 
 ## Current Ruleset 7 revision 9 overlay
 

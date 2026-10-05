@@ -330,6 +330,7 @@ import {
   type FactionGrassArtV7,
   type FactionGrassIdV7,
 } from "./faction-grass-v7";
+import { noteLazyRasterV7, preloadedRasterV7 } from "./preloaded-rasters-v7";
 import { drawLegacyRiftV7, riftPieceV7 } from "./rift-presentation-v7";
 import { factionColourV7 } from "./faction-colours-v7";
 import {
@@ -5194,6 +5195,14 @@ export function createBoardImageResolverV7(
     if (source === undefined) return null;
     let record = cache.get(assetId);
     if (record === undefined) {
+      // A preloaded raster is ready at once (bead pulp_wars-2yc.6).
+      const preloaded = preloadedRasterV7(source);
+      if (preloaded !== null) {
+        record = { image: preloaded, ready: true };
+        cache.set(assetId, record);
+        return preloaded;
+      }
+      noteLazyRasterV7(source);
       const image = documentRoot.createElement("img");
       record = { image, ready: false };
       cache.set(assetId, record);

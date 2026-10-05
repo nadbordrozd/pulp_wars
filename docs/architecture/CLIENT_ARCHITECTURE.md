@@ -1901,7 +1901,9 @@ CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
   to the legacy asset rather than showing the key colour.
 - A subject with no registered raster, or whose raster fails to load, draws
   its legacy asset at the chibi geometry. A registered raster that is still
-  loading draws nothing, as legacy images do.
+  loading draws nothing, as legacy images do; in the game the look's
+  rasters are preloaded, so this state is not reached (see
+  [Asset preloading](#asset-preloading-pulp_wars-2yc6)).
 - **The default look** of the CHIBI set is the visual direction
   ([VISUAL_DIRECTION_2026-10.md](../art/VISUAL_DIRECTION_2026-10.md)):
   `liveBoardLookV7` (`src/render/canvas/live-board-look-v7.ts`) gives the
@@ -1936,6 +1938,64 @@ CHIBI follows [chibi direction](../art/CHIBI_ART_DIRECTION.md) sections 3–4:
   a city, a Port or a Shipyard (`drawDirectedFlagV7` and the corner pennant
   remain for the study directions), and a capital gets the stock crown
   (`drawCapitalCrownV7`).
+
+### Asset preloading (`pulp_wars-2yc.6`)
+
+The Ruleset 7 route starts through `bootstrapPreloadedRuleset7App`
+(`src/app/v7-preload-boot.ts`), which fetches and decodes the art of the
+look in use before it mounts the app. Every screen (title and setup, Resume,
+the campaign, a match, the Showcase, the Gallery) is drawn by that app, so a
+piece seen for the first time is drawn with its final art in that frame.
+
+- **Inventory.** `assetInventoryV7(look)` in
+  `src/assets/asset-inventory-v7.ts` derives the files of a look from the
+  manifests the client resolves art from: `CHIBI_ART_ASSETS_V7`, the
+  direction registry's `chibiDirectionArtAssetsV7()`, the composed forest
+  and mountain sets and the faction grass tiles for the CHIBI set, each
+  with its density, owner-mask and layer files, and `ACCEPTED_ART_URLS` for
+  LEGACY. Nothing is listed by hand; `preload-inventory-ui-assets-v7.test.ts`
+  fails when a manifest module under `src/assets` exports a raster the
+  inventory does not cover. Each entry carries a group (`SHARED` or a
+  faction); `assetInventoryForFactionsV7` gives the part a match can show.
+- **Looks.** `LIVE` (the CHIBI set with the visual direction) contains
+  `CLASSIC` (the developer option "Classic look"), because the live look
+  draws the default art for shared terrain, icons and effects and as the
+  stand-in of a failed direction raster. `LEGACY` is preloaded only when
+  `?art=legacy` selects it. The Classic look option asks
+  `MountRuleset7AppOptions.ensureLookAssets` before it switches and waits
+  for a preload when the other look is not loaded yet (a page started in
+  the classic look switching to the live one).
+- **One blocking phase.** The whole look, every faction, is preloaded at
+  the start (671 files, about 1.4 MB, for `LIVE`): the Gallery and an
+  eight-player match show all of them, and the set is small enough that a
+  second, background phase would add nothing.
+- **Preloader.** `createAssetPreloaderV7` (`src/app/asset-preloader-v7.ts`)
+  loads at most 24 rasters at once through an injectable loader (the
+  browser's creates an image element and awaits `decode()`), retries a
+  failure once, and gives each raster 15 s and the whole preload 30 s. A
+  raster that fails is reported once with `console.warn` and left out; the
+  game starts regardless, and rasters still in flight when the budget runs
+  out reach the store when they arrive.
+- **Store.** Decoded rasters go to the page's store
+  (`src/render/canvas/preloaded-rasters-v7.ts`).
+  `browserChibiRasterEnvironmentV7().loadImage` (the board, the interface,
+  the Gallery, the composed forests, massifs and faction grass, the effect
+  sprites) and `createBoardImageResolverV7` (legacy assets) ask it first
+  and settle synchronously, so the resolvers never report `LOADING` for a
+  preloaded raster and the caches derived from it (owner recolours, tones,
+  shadows, forest and massif bakes, grass spills, trimmed interface art)
+  are built in the frame that first needs them. A URL the store does not
+  hold (no preload in tests and the art reviews, a failed preload, a
+  legacy stand-in of a subject without CHIBI art) loads on demand exactly
+  as before, with its fallback; after the preload such a load is recorded
+  (`lazyRasterLoadsV7`, exposed as `lazyAssetLoads()` on the app), and the
+  browser smoke fails when a match or the Gallery recorded one.
+- **Loading screen.** `mountLoadingScreenV7`
+  (`src/render/dom/loading-screen-v7.ts`): an inline crest over a progress
+  bar (`role="progressbar"`, label "Loading"), no visible text, no raster.
+  It appears only when the preload takes longer than 150 ms, so a warm
+  cache never flashes it; the bar's width eases only without
+  `prefers-reduced-motion: reduce`.
 
 ### Sound (`pulp_wars-2yc.10`)
 

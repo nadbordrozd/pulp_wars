@@ -725,6 +725,14 @@ export interface MountRuleset7AppOptions {
    */
   readonly galleryDemoHost?: () => BoardHostV7;
   /**
+   * Asset preloading (bead pulp_wars-2yc.6): asked before the view switches
+   * to a look. Null when the look's art is already loaded; otherwise the
+   * switch waits for the promise. Absent (tests): the look switches at once.
+   */
+  readonly ensureLookAssets?: (
+    look: "LIVE" | "CLASSIC",
+  ) => Promise<unknown> | null;
+  /**
    * The game's sound (bead pulp_wars-2yc.10); tests inject one. By default
    * the browser's, which stays silent until the first user gesture and
    * wherever there is no WebAudio. An injected one is the caller's to
@@ -948,6 +956,8 @@ export class Ruleset7DomAppView {
    * instead of the new visual direction. Presentation only, off by default.
    */
   #classicLook = false;
+  /** The look last chosen; it becomes `#classicLook` once its art is loaded. */
+  #classicLookWanted = false;
   /**
    * Interface art of the classic look (the default registry alone); built
    * on first use, so the default game never loads the previous portraits.
@@ -975,6 +985,7 @@ export class Ruleset7DomAppView {
   #gallery: GalleryViewV7 | null = null;
   #galleryOpen = false;
   readonly #galleryDemoHost: (() => BoardHostV7) | undefined;
+  readonly #ensureLookAssets: MountRuleset7AppOptions["ensureLookAssets"];
   /** Sound effects (bead pulp_wars-2yc.10, docs/ui/SOUND.md). */
   readonly #audio: GameAudioV1;
   readonly #ownsAudio: boolean;
@@ -1000,6 +1011,7 @@ export class Ruleset7DomAppView {
     this.#randomSeed =
       options.randomSeed ?? (() => browserRandomSeedV7(documentRoot));
     this.#galleryDemoHost = options.galleryDemoHost;
+    this.#ensureLookAssets = options.ensureLookAssets;
     this.#ownsAudio = options.audio === undefined;
     this.#audio =
       options.audio ??
@@ -1051,6 +1063,7 @@ export class Ruleset7DomAppView {
     }
     this.#boardSaturation = loadBoardSaturationV7(this.#settingsStorage);
     this.#classicLook = loadBoardClassicLookV7(this.#settingsStorage);
+    this.#classicLookWanted = this.#classicLook;
     this.#snapshot = controller.snapshot();
     this.#document.addEventListener("keydown", this.#onKeyDown);
     this.#root.addEventListener("dragstart", this.#onDragStart);
@@ -6248,14 +6261,25 @@ export class Ruleset7DomAppView {
     const input = this.#document.createElement("input");
     input.type = "checkbox";
     input.id = "v7-classic-look";
-    input.checked = this.#classicLook;
+    input.checked = this.#classicLookWanted;
     input.addEventListener("change", () => {
-      this.#classicLook = input.checked;
-      if (!storeBoardClassicLookV7(this.#settingsStorage, input.checked))
+      const classic = input.checked;
+      if (!storeBoardClassicLookV7(this.#settingsStorage, classic))
         this.#error = "Settings could not be saved.";
-      this.#refreshBoard();
-      // The docks and cards switch their portraits with the board.
-      this.#queueChibiRender();
+      this.#classicLookWanted = classic;
+      const apply = (): void => {
+        // A newer choice made while this one's art loaded wins.
+        if (this.#destroyed || this.#classicLookWanted !== classic) return;
+        this.#classicLook = classic;
+        this.#refreshBoard();
+        // The docks and cards switch their portraits with the board.
+        this.#queueChibiRender();
+      };
+      // The other look's art is preloaded before it is drawn; a failed
+      // preload still switches (its pieces load on demand).
+      const pending = this.#ensureLookAssets?.(classic ? "CLASSIC" : "LIVE");
+      if (pending === null || pending === undefined) apply();
+      else void pending.then(apply, apply);
     });
     label.append(
       input,

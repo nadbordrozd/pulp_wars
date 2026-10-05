@@ -16,6 +16,7 @@ import {
 } from "./chibi-terrain-fringe-v7";
 import type { Point } from "./geometry";
 import { parseHexColourV7, recolourOwnerPixelsV7 } from "./owner-recolour-v7";
+import { noteLazyRasterV7, preloadedRasterV7 } from "./preloaded-rasters-v7";
 
 export type ChibiResolutionV7 =
   /** No usable chibi raster: draw the legacy asset at chibi geometry. */
@@ -151,6 +152,14 @@ export function browserChibiRasterEnvironmentV7(
 ): ChibiRasterEnvironmentV7 {
   return {
     loadImage(url, settle) {
+      // A preloaded raster settles at once (bead pulp_wars-2yc.6): the
+      // piece is drawn in this frame, never as a stand-in first.
+      const preloaded = preloadedRasterV7(url);
+      if (preloaded !== null) {
+        settle(true);
+        return preloaded;
+      }
+      noteLazyRasterV7(url);
       const image = documentRoot.createElement("img");
       image.addEventListener("load", () => settle(true));
       image.addEventListener("error", () => settle(false));

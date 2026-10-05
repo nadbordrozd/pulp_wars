@@ -24,6 +24,7 @@ import { probeCandyV7 } from "./browser-smoke-v7-candy";
 import { probeCuriositiesV7 } from "./browser-smoke-v7-curiosities";
 import { probeGalleryV7 } from "./browser-smoke-v7-gallery";
 import { probeManySeatsV7 } from "./browser-smoke-v7-many-seats";
+import { assertPreloadedV7 } from "./browser-smoke-v7-preload";
 import { probeResearchPromptV7 } from "./browser-smoke-v7-research-prompt";
 import { probeSoundV7 } from "./browser-smoke-v7-sound";
 import {
@@ -642,6 +643,12 @@ try {
       connection,
       `document.querySelector('[data-v7-region="results"]') !== null`,
     );
+    // Bead pulp_wars-2yc.6: a whole match, in which every unit type that
+    // was trained appeared for the first time, loaded no raster on demand.
+    await assertPreloadedV7(
+      { evaluate: (expression) => evaluate(connection, expression) },
+      "the default match",
+    );
     await capture(connection, "default-v7-outcome-desktop.png");
     const artifacts = {
       "desktop-ai-return.png": await fileSha256(
@@ -752,6 +759,13 @@ try {
           openCompactMenuItem(connection, action),
         capture: (name) => capture(connection, name),
       });
+  // Bead pulp_wars-2yc.6: the sound step's match and Settings (the sound
+  // panel is drawn without rasters) loaded nothing on demand either.
+  if (!deployed)
+    await assertPreloadedV7(
+      { evaluate: (expression) => evaluate(connection, expression) },
+      "the sound step",
+    );
   const showcase = await probeShowcaseMatch(connection);
   // Bead pulp_wars-ic8: the Gallery from the fresh front screen.
   const gallery = await probeGalleryV7({
@@ -776,6 +790,13 @@ try {
     openCompactMenuItem: (action) => openCompactMenuItem(connection, action),
     capture: (name) => capture(connection, name),
   });
+  // Bead pulp_wars-2yc.6: every faction has just been on the board for the
+  // first time on this page (the seats' emblems, the units and cities of
+  // the most players); none of their rasters was loaded on demand.
+  const preload = await assertPreloadedV7(
+    { evaluate: (expression) => evaluate(connection, expression) },
+    "the many-players match",
+  );
   const campaign = await probeCampaign(connection);
   await evaluate(
     connection,
@@ -859,7 +880,7 @@ try {
       ? "bounded launch/End Turn/resume compatibility probe"
       : `natural default match ${outcome.outcome} in round ${outcome.round}/${outcome.commandIndex} commands`;
   console.log(
-    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; research prompt ${researchPrompt}; sound ${sound}; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Candy ${candy}. Curiosities ${curiosities}. Many players ${manySeats}. Evidence: ${reviewRoot}`,
+    `Ruleset-7 browser functional smoke passed in ${version.product ?? "Chrome"}; timing ${timing.status} (${timingMode}, ${timing.budgetMilliseconds}ms budget): production AI ${preview.returned.commandIndex} commands/${preview.returned.policySlices} slices/max ${preview.returned.maximumSliceMilliseconds.toFixed(1)}ms; ${coldSummary}; ${outcomeSummary}; launch/resume/restart/delete, routing and four-key isolation passed; research prompt ${researchPrompt}; sound ${sound}; Campaign ${campaign}; art sets ${chibi}; Undead setup ${undead}; Goblin ${goblin}; Dinosaur ${dinosaur}; Martian ${martian}; Ice Folk ${iceFolk}; Dwarf ${dwarf}; Showcase ${showcase}; Gallery ${gallery}. Candy ${candy}. Curiosities ${curiosities}. Many players ${manySeats}; asset preload ${preload}. Evidence: ${reviewRoot}`,
   );
 } finally {
   try {

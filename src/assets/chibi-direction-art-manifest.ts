@@ -548,9 +548,13 @@ export const CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7: readonly ChibiArtAssetV7[] =
     },
   ];
 
-/** The registry the live look resolves before the default art. */
-export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
-  const built = buildChibiArtRegistryV7([
+/**
+ * Every asset of the registry the live look resolves before the default art,
+ * in registration order. The asset preloader reads the same list
+ * (src/assets/asset-inventory-v7.ts), so a set added here is preloaded.
+ */
+export function chibiDirectionArtAssetsV7(): readonly ChibiArtAssetV7[] {
+  return [
     ...CHIBI_DIRECTION_ART_ASSETS_V7,
     ...CHIBI_DIRECTION_GOBLIN_ART_ASSETS_V7,
     // --- Undead (pulp_wars-3tq.12) ---
@@ -581,7 +585,12 @@ export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
     // --- Map curiosities (pulp_wars-737.5 art, wired in by pulp_wars-737.6):
     // the neutral Giant Spider, the tile overlays, icons, effects, marker.
     ...CHIBI_CURIOSITIES_ART_ASSETS_V7,
-  ]);
+  ];
+}
+
+/** The registry the live look resolves before the default art. */
+export function chibiDirectionArtRegistryV7(): ChibiArtRegistryV7 {
+  const built = buildChibiArtRegistryV7(chibiDirectionArtAssetsV7());
   if (built.problems.length > 0) throw new Error(built.problems.join("; "));
   return built.registry;
 }

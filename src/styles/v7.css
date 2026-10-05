@@ -86,6 +86,55 @@
   background: var(--panel);
 }
 
+/* ---------- Loading screen (asset preload) ---------- */
+
+.v7-loading {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.5rem;
+  min-height: 100dvh;
+  padding: 1.25rem;
+}
+
+.v7-loading-icon {
+  width: 4.5rem;
+  height: 4.5rem;
+}
+
+.v7-loading-shield {
+  fill: var(--accent-dark, #7c2f2a);
+  stroke: var(--paper, #f6efdd);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.v7-loading-star {
+  fill: var(--gold, #e9b949);
+}
+
+.v7-loading-bar {
+  width: min(16rem, 70vw);
+  height: 0.6rem;
+  overflow: hidden;
+  border: 1px solid var(--v7-edge-strong);
+  border-radius: 999px;
+  background: var(--v7-glass);
+}
+
+.v7-loading-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gold, #e9b949);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .v7-loading-fill {
+    transition: width 120ms ease-out;
+  }
+}
+
 /* ---------- Front screens ---------- */
 
 .v7-front-screen {
